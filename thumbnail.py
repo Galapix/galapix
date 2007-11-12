@@ -51,7 +51,7 @@ def process_file(pathname):
             md5 = get_md5(pathname)
 
             orig_img = Image.open(pathname)
-            for res in [16, 32, 64, 128, 256, 512, 1024]:
+            for res in [16, 32, 64, 128, 256, 512, 1024, 2048]:
                 genthumb(pathname, md5, orig_img, res)
 
         except IOError, err:

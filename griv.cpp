@@ -1,3 +1,8 @@
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include <vector>
 #include <math.h>
 #include <sstream>
@@ -11,6 +16,42 @@
 SDL_Surface* screen = 0;
 int x_offset = 0;
 int y_offset = 0;
+
+bool is_directory(const std::string& pathname)
+{
+  struct stat buf;
+  stat(pathname.c_str(), &buf);
+  return S_ISDIR(buf.st_mode);
+}
+
+std::vector<std::string>
+open_directory(const std::string& pathname)
+{
+  std::vector<std::string> dir_list;
+
+  DIR* dp    = 0;
+  dirent* de = 0;
+
+  dp = ::opendir(pathname.c_str());
+
+  if (dp == 0)
+    {
+      std::cout << "System: Couldn't open: " << pathname << std::endl;
+    }
+  else
+    {
+      while ((de = ::readdir(dp)) != 0)
+        {
+          if (strcmp(de->d_name, ".")  != 0 &&
+              strcmp(de->d_name, "..") != 0)
+            dir_list.push_back(pathname + "/" + de->d_name);
+        }
+
+      closedir(dp);
+    }
+
+  return dir_list;
+}
 
 std::string getxattr(const std::string& pathname)
 {
@@ -103,22 +144,34 @@ public:
 
   void add(const std::string& filename)
   {
-    std::string md5 = getxattr(filename);
-    if (!md5.empty())
+    // if directory, do recursion
+    if (is_directory(filename))
       {
-        images.push_back(Image(md5));
+        std::vector<std::string> dir_list = open_directory(filename);
+        for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
+          {
+            add(*i);
+          }
       }
     else
       {
-        std::cout << "Ignoring: " << filename << std::endl;
+        std::string md5 = getxattr(filename);
+        if (!md5.empty())
+          {
+            images.push_back(Image(md5));
+          }
+        else
+          {
+            std::cout << "Ignoring: " << filename << std::endl;
+          }
       }
   }
 
   void zoom_in()
   {
     res *= 2;
-    if (res > 1024)
-      res = 1024;
+    if (res > 2048)
+      res = 2048;
     else
       { //300,200 ~ 212, 134 ~ 64, 0
         x_offset *= 2;
@@ -147,24 +200,24 @@ int main(int argc, char** argv)
   }
   atexit(SDL_Quit); 
   
-    Uint32 flags = 0;
+  Uint32 flags = 0;
   
-    if (1)
-      {
-        flags |= SDL_FULLSCREEN;
-        screen = SDL_SetVideoMode(1152, 864, 0, flags);
-      }
-    else
-      {
-        flags |= SDL_RESIZABLE;
-        screen = SDL_SetVideoMode(800, 600, 0, flags);
-      }
+  if (1)
+    {
+      flags |= SDL_FULLSCREEN;
+      screen = SDL_SetVideoMode(1152, 864, 0, flags);
+    }
+  else
+    {
+      flags |= SDL_RESIZABLE;
+      screen = SDL_SetVideoMode(800, 600, 0, flags);
+    }
     
-    if (screen == NULL) 
-      {
-        std::cout << "Unable to set video mode: " << SDL_GetError() << std::endl;
-        exit(1);
-      }
+  if (screen == NULL) 
+    {
+      std::cout << "Unable to set video mode: " << SDL_GetError() << std::endl;
+      exit(1);
+    }
 
   SDL_WM_SetCaption("Griv 0.0.1", 0 /* icon */);
 
@@ -173,7 +226,9 @@ int main(int argc, char** argv)
   Workspace workspace;
 
   for(int i = 1; i < argc; ++i)
-    workspace.add(argv[i]);
+    {
+      workspace.add(argv[i]);
+    }
 
   bool drag_n_drop = false;
   int old_res = -1;
@@ -227,7 +282,8 @@ int main(int argc, char** argv)
               case SDL_MOUSEBUTTONDOWN:
               case SDL_MOUSEBUTTONUP:
                 
-                if (event.button.button == 3)
+                if (event.button.button == 3 ||
+                    event.button.button == 5)
                   {
                     if (event.button.state == SDL_PRESSED)
                       {
@@ -235,7 +291,8 @@ int main(int argc, char** argv)
                         workspace.zoom_out();
                       }
                   }
-                else if (event.button.button == 1)
+                else if (event.button.button == 1 ||
+                         event.button.button == 4)
                   {
                     if (event.button.state == SDL_PRESSED)
                       {
