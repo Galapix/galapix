@@ -1,0 +1,17 @@
+griv 
+=====
+
+griv is a image viewer that allows you to directly zoom into thumbnails.
+
+Usage:
+======
+
+To use it, first you have to generate thumbnails by calling:
+
+./thumbnail.py [PATHNAME]...
+
+Once done, you can view any collectino of files in that directory:
+
+./griv [PATHNAME]...
+
+# EOF #

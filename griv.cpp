@@ -16,6 +16,7 @@
 SDL_Surface* screen = 0;
 int x_offset = 0;
 int y_offset = 0;
+std::string config_home;
 
 bool is_directory(const std::string& pathname)
 {
@@ -100,7 +101,7 @@ struct Image
         if (surface == 0 || res != this->res)
           {
             std::ostringstream out;
-            out << "/home/ingo/.griv/" << res << "/" << uid << ".jpg";
+            out << config_home << "/.griv/" << res << "/" << uid << ".jpg";
             surface = IMG_Load(out.str().c_str());
             //std::cout << "Loading: " << out.str() << std::endl;
             this->res = res;
@@ -194,6 +195,17 @@ public:
 
 int main(int argc, char** argv)
 {
+  char* home;
+  if ((home = getenv("HOME")))
+    {
+      config_home = home;
+    }
+  else
+    {
+      std::cout << "Couldn't get HOME environment variable" << std::endl;
+      return 0;
+    }
+
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
     std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
     exit(1);
@@ -310,7 +322,8 @@ int main(int argc, char** argv)
 
       if (workspace.res != old_res ||
           old_x_offset != x_offset ||
-          old_y_offset != y_offset)
+          old_y_offset != y_offset
+          )
         {
           SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
           workspace.draw();
@@ -322,7 +335,7 @@ int main(int argc, char** argv)
         }
       else
         {
-          SDL_Delay(20);
+          SDL_Delay(5);
         }
     }
 
