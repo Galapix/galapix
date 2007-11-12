@@ -33,6 +33,16 @@
 class Image
 {
 public:
+  static SDL_Surface* loading_16;
+  static SDL_Surface* loading_32;
+  static SDL_Surface* loading_64;
+  static SDL_Surface* loading_128;
+  static SDL_Surface* loading_256;
+  static SDL_Surface* loading_512;
+  static SDL_Surface* loading_1024;
+
+  static void init();
+
   std::string uid;
   SDL_Surface* surface;
   int res;

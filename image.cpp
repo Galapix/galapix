@@ -23,17 +23,27 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_GRIV_HPP
-#define HEADER_GRIV_HPP
+#include "SDL_image.h"
+#include "image.hpp"
 
-#include <SDL.h>
-#include <string>
+SDL_Surface* Image::loading_16;
+SDL_Surface* Image::loading_32;
+SDL_Surface* Image::loading_64;
+SDL_Surface* Image::loading_128;
+SDL_Surface* Image::loading_256;
+SDL_Surface* Image::loading_512;
+SDL_Surface* Image::loading_1024;
 
-extern int x_offset;
-extern int y_offset;
-extern SDL_Surface* screen;
-extern std::string config_home;
-
-#endif
+void 
+Image::init()
+{
+  loading_1024 = IMG_Load("loading_1024.jpg");
+  loading_512  = IMG_Load("loading_512.jpg");
+  loading_256  = IMG_Load("loading_256.jpg");
+  loading_128  = IMG_Load("loading_128.jpg");
+  loading_64   = IMG_Load("loading_64.jpg");
+  loading_32   = IMG_Load("loading_32.jpg");
+  loading_16   = IMG_Load("loading_16.jpg");
+}
 
 /* EOF */

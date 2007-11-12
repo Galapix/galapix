@@ -23,16 +23,15 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_GRIV_HPP
-#define HEADER_GRIV_HPP
+#ifndef HEADER_FILESYSTEM_HPP
+#define HEADER_FILESYSTEM_HPP
 
-#include <SDL.h>
 #include <string>
+#include <vector>
 
-extern int x_offset;
-extern int y_offset;
-extern SDL_Surface* screen;
-extern std::string config_home;
+bool is_directory(const std::string& pathname);
+std::vector<std::string> open_directory(const std::string& pathname);
+std::string getxattr(const std::string& pathname);
 
 #endif
 

@@ -23,17 +23,65 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_GRIV_HPP
-#define HEADER_GRIV_HPP
+#include <stdexcept>
+#include <iostream>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <attr/xattr.h>
 
-#include <SDL.h>
-#include <string>
+#include "filesystem.hpp"
 
-extern int x_offset;
-extern int y_offset;
-extern SDL_Surface* screen;
-extern std::string config_home;
+bool is_directory(const std::string& pathname)
+{
+  struct stat buf;
+  stat(pathname.c_str(), &buf);
+  return S_ISDIR(buf.st_mode);
+}
 
-#endif
+std::vector<std::string>
+open_directory(const std::string& pathname)
+{
+  std::vector<std::string> dir_list;
+
+  DIR* dp    = 0;
+  dirent* de = 0;
+
+  dp = ::opendir(pathname.c_str());
+
+  if (dp == 0)
+    {
+      std::cout << "System: Couldn't open: " << pathname << std::endl;
+    }
+  else
+    {
+      while ((de = ::readdir(dp)) != 0)
+        {
+          if (strcmp(de->d_name, ".")  != 0 &&
+              strcmp(de->d_name, "..") != 0)
+            dir_list.push_back(pathname + "/" + de->d_name);
+        }
+
+      closedir(dp);
+    }
+
+  return dir_list;
+}
+
+std::string getxattr(const std::string& pathname)
+{
+  char buf[2048];
+  int len;
+  if ((len = getxattr (pathname.c_str(), "user.griv.md5", buf, 2048)) < 0)
+    {
+      if (errno == ENOATTR)
+        return "";
+      else
+        throw std::runtime_error("Couldn't get xattr for " + pathname);
+    }
+
+  return std::string(buf, len);
+}
 
 /* EOF */

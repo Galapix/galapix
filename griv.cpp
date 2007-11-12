@@ -1,18 +1,13 @@
-#include <dirent.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <vector>
 #include <math.h>
 #include <sstream>
 #include <sys/types.h>
-#include <attr/xattr.h>
 #include <stdexcept>
 #include <iostream>
 #include "SDL.h"
 #include "SDL_image.h"
 
+#include "workspace.hpp"
 #include "loader.hpp"
 #include "image.hpp"
 
@@ -21,130 +16,6 @@ int x_offset = 0;
 int y_offset = 0;
 std::string config_home;
 bool force_redraw = false;
-
-bool is_directory(const std::string& pathname)
-{
-  struct stat buf;
-  stat(pathname.c_str(), &buf);
-  return S_ISDIR(buf.st_mode);
-}
-
-std::vector<std::string>
-open_directory(const std::string& pathname)
-{
-  std::vector<std::string> dir_list;
-
-  DIR* dp    = 0;
-  dirent* de = 0;
-
-  dp = ::opendir(pathname.c_str());
-
-  if (dp == 0)
-    {
-      std::cout << "System: Couldn't open: " << pathname << std::endl;
-    }
-  else
-    {
-      while ((de = ::readdir(dp)) != 0)
-        {
-          if (strcmp(de->d_name, ".")  != 0 &&
-              strcmp(de->d_name, "..") != 0)
-            dir_list.push_back(pathname + "/" + de->d_name);
-        }
-
-      closedir(dp);
-    }
-
-  return dir_list;
-}
-
-std::string getxattr(const std::string& pathname)
-{
-  char buf[2048];
-  int len;
-  if ((len = getxattr (pathname.c_str(), "user.griv.md5", buf, 2048)) < 0)
-    {
-      if (errno == ENOATTR)
-        return "";
-      else
-        throw std::runtime_error("Couldn't get xattr for " + pathname);
-    }
-
-  return std::string(buf, len);
-}
-
-class Workspace
-{
-public:
-  std::vector<Image> images;
-  int res;
-  
-public:
-  Workspace()
-  {
-    res = 16;
-  }
-
-  void draw()
-  {
-    int w = int(sqrt(4 * images.size() / 3));
-    for(int i = 0; i < int(images.size()); ++i)
-      {
-        images[i].draw((i % w) * res + x_offset + screen->w/2,
-                       (i / w) * res + y_offset + screen->h/2,
-                       res);
-      }
-  }
-
-  void add(const std::string& filename)
-  {
-    // if directory, do recursion
-    if (is_directory(filename))
-      {
-        std::vector<std::string> dir_list = open_directory(filename);
-        for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
-          {
-            add(*i);
-          }
-      }
-    else
-      {
-        std::string md5 = getxattr(filename);
-        if (!md5.empty())
-          {
-            images.push_back(Image(md5));
-          }
-        else
-          {
-            std::cout << "Ignoring: " << filename << std::endl;
-          }
-      }
-  }
-
-  void zoom_in()
-  {
-    res *= 2;
-    if (res > 2048)
-      res = 2048;
-    else
-      { //300,200 ~ 212, 134 ~ 64, 0
-        x_offset *= 2;
-        y_offset *= 2;
-      }
-  }
-
-  void zoom_out()
-  {
-    res /= 2;
-    if (res < 16)
-      res = 16;
-    else
-      {
-        x_offset /= 2;
-        y_offset /= 2;
-      }
-  }
-};
 
 int main(int argc, char** argv)
 {
@@ -187,6 +58,8 @@ int main(int argc, char** argv)
   SDL_WM_SetCaption("Griv 0.0.1", 0 /* icon */);
 
   SDL_EnableUNICODE(1);
+
+  Image::init();
 
   Workspace workspace;
 
