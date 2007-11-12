@@ -13,10 +13,14 @@
 #include "SDL.h"
 #include "SDL_image.h"
 
+#include "loader.hpp"
+#include "image.hpp"
+
 SDL_Surface* screen = 0;
 int x_offset = 0;
 int y_offset = 0;
 std::string config_home;
+bool force_redraw = false;
 
 bool is_directory(const std::string& pathname)
 {
@@ -68,57 +72,6 @@ std::string getxattr(const std::string& pathname)
 
   return std::string(buf, len);
 }
-
-struct Image
-{
-  std::string uid;
-  SDL_Surface* surface;
-  int res;
-  
-  Image(const std::string& uid) 
-    : uid(uid),
-      surface(0),
-      res(0)
-  {
-  }
-
-  void draw(int x, int y, int res)
-  {
-    if (x > screen->w ||
-        y > screen->h ||
-        x < -res || 
-        y < -res)
-      {
-        if (0)
-          if (surface)
-            {
-              SDL_FreeSurface(surface);
-              surface = 0;
-            }
-      }
-    else
-      {
-        if (surface == 0 || res != this->res)
-          {
-            std::ostringstream out;
-            out << config_home << "/.griv/" << res << "/" << uid << ".jpg";
-            surface = IMG_Load(out.str().c_str());
-            //std::cout << "Loading: " << out.str() << std::endl;
-            this->res = res;
-          }
-
-        if (surface != 0)
-          {
-            SDL_Rect dstrect;
-
-            dstrect.x = x;
-            dstrect.y = y;
-
-            SDL_BlitSurface(surface, NULL, screen, &dstrect);
-          }
-      }
-  }
-};
 
 class Workspace
 {
@@ -214,9 +167,9 @@ int main(int argc, char** argv)
   
   Uint32 flags = 0;
   
-  if (1)
+  if (0)
     {
-      flags |= SDL_FULLSCREEN;
+      //flags |= SDL_FULLSCREEN;
       screen = SDL_SetVideoMode(1152, 864, 0, flags);
     }
   else
@@ -257,6 +210,11 @@ int main(int argc, char** argv)
                 exit(1);
                 break;
 
+              case SDL_VIDEORESIZE:
+                screen = SDL_SetVideoMode(event.resize.w, event.resize.h, 0, SDL_RESIZABLE);
+                force_redraw = true;
+                break;
+
               case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                   {
@@ -270,6 +228,7 @@ int main(int argc, char** argv)
                       flags |= SDL_FULLSCREEN;
                     
                     screen = SDL_SetVideoMode(1152, 864, 0, flags);
+                    force_redraw = true;
                   }
                 else if (event.key.keysym.sym == SDLK_SPACE)
                   {
@@ -322,8 +281,8 @@ int main(int argc, char** argv)
 
       if (workspace.res != old_res ||
           old_x_offset != x_offset ||
-          old_y_offset != y_offset
-          )
+          old_y_offset != y_offset ||
+          force_redraw)
         {
           SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
           workspace.draw();
@@ -332,6 +291,7 @@ int main(int argc, char** argv)
           old_res = workspace.res;
           old_x_offset = x_offset;
           old_y_offset = y_offset;
+          force_redraw = false;
         }
       else
         {
