@@ -67,31 +67,48 @@ public:
   SDL_Surface* surface;
   int res;
   bool image_requested;
-  
+
+  SDL_mutex* mutex;
+
+
   Image(const std::string& uid) 
     : uid(uid),
       surface(0),
       res(0),
       image_requested(false)
   {
+    mutex = SDL_CreateMutex();
+  }
+
+  ~Image()
+  {
+    SDL_DestroyMutex(mutex);
   }
 
   void receive(SDL_Surface* new_surface)
-  {
+  { 
+    SDL_LockMutex(mutex);
     if (new_surface)
       {
         if (surface)
-          SDL_FreeSurface(surface);    
-    
-        //std::cout << "Image recieved: " << new_surface << std::endl;
-        surface = new_surface;
+          {
+            SDL_Surface* old_surface = surface;
+            surface = new_surface;
+            SDL_FreeSurface(old_surface); 
+          }
+        else
+          {
+            surface = new_surface;
+          }
         force_redraw = true;
       }
     image_requested = false;
+    SDL_UnlockMutex(mutex);
   }
 
   void draw(int x, int y, int res)
   {
+    SDL_LockMutex(mutex);
     if (x > screen->w ||
         y > screen->h ||
         x < -res || 
@@ -123,6 +140,7 @@ public:
         else if (image_requested)
           SDL_BlitSurface(placeholder(res), NULL, screen, &dstrect);        
       }
+    SDL_UnlockMutex(mutex);
   }
 };
 

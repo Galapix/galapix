@@ -43,7 +43,7 @@ inline bool has_suffix(const std::string& str, const std::string& suffix)
 class Workspace
 {
 public:
-  std::vector<Image> images;
+  std::vector<Image*> images;
   int res;
   
 public:
@@ -57,9 +57,9 @@ public:
     int w = int(sqrt(4 * images.size() / 3));
     for(int i = 0; i < int(images.size()); ++i)
       {
-        images[i].draw((i % w) * res + x_offset + screen->w/2,
-                       (i / w) * res + y_offset + screen->h/2,
-                       res);
+        images[i]->draw((i % w) * res + x_offset + screen->w/2,
+                        (i / w) * res + y_offset + screen->h/2,
+                        res);
       }
   }
 
@@ -75,12 +75,14 @@ public:
             add(*i);
           }
       }
-    else if (has_suffix(filename, ".jpg"))
+    else if (has_suffix(filename, ".jpg") ||
+             has_suffix(filename, ".JPG")
+             )
       {
         std::string md5 = getxattr(filename);
         if (!md5.empty())
           {
-            images.push_back(Image(md5));
+            images.push_back(new Image(md5));
           }
         else
           {
