@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <iostream>
 #include "SDL_image.h"
 #include "image.hpp"
 
@@ -37,6 +38,8 @@ SDL_Surface* Image::loading_1024;
 void 
 Image::init()
 {
+  std::cout << "Image" << std::endl;
+
   loading_1024 = IMG_Load("loading_1024.jpg");
   loading_512  = IMG_Load("loading_512.jpg");
   loading_256  = IMG_Load("loading_256.jpg");

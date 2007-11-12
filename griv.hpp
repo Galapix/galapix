@@ -33,6 +33,7 @@ extern int x_offset;
 extern int y_offset;
 extern SDL_Surface* screen;
 extern std::string config_home;
+extern bool force_redraw;
 
 #endif
 

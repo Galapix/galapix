@@ -15,7 +15,7 @@ SDL_Surface* screen = 0;
 int x_offset = 0;
 int y_offset = 0;
 std::string config_home;
-bool force_redraw = false;
+bool force_redraw = true;
 
 int main(int argc, char** argv)
 {
@@ -72,6 +72,8 @@ int main(int argc, char** argv)
   int old_res = -1;
   int old_x_offset = -1;
   int old_y_offset = -1;
+  Uint32 next_redraw = 0;
+  loader.launch_thread();
   while(true)
     {
       SDL_Event event;
@@ -92,6 +94,10 @@ int main(int argc, char** argv)
                 if (event.key.keysym.sym == SDLK_ESCAPE)
                   {
                     exit(1);
+                  }
+                else if (event.key.keysym.sym == SDLK_RETURN)
+                  {
+                    loader.process_job();
                   }
                 else if (event.key.keysym.sym == SDLK_F11)
                   {
@@ -131,8 +137,9 @@ int main(int argc, char** argv)
                   {
                     if (event.button.state == SDL_PRESSED)
                       {
-                        std::cout << "zoom out" << std::endl;
+                        //std::cout << "zoom out" << std::endl;
                         workspace.zoom_out();
+                        loader.clear();
                       }
                   }
                 else if (event.button.button == 1 ||
@@ -140,8 +147,9 @@ int main(int argc, char** argv)
                   {
                     if (event.button.state == SDL_PRESSED)
                       {
-                        std::cout << "zoom in" << std::endl;
+                        //std::cout << "zoom in" << std::endl;
                         workspace.zoom_in();
+                        loader.clear();
                       }
                   }
                 else if (event.button.button == 2)
@@ -155,8 +163,9 @@ int main(int argc, char** argv)
       if (workspace.res != old_res ||
           old_x_offset != x_offset ||
           old_y_offset != y_offset ||
-          force_redraw)
+          (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())))
         {
+          force_redraw = false;
           SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 0, 0, 0));
           workspace.draw();
           SDL_Flip(screen);
@@ -164,7 +173,7 @@ int main(int argc, char** argv)
           old_res = workspace.res;
           old_x_offset = x_offset;
           old_y_offset = y_offset;
-          force_redraw = false;
+          next_redraw = SDL_GetTicks() + 500;
         }
       else
         {

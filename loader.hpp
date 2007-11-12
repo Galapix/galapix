@@ -26,19 +26,44 @@
 #ifndef HEADER_LOADER_HPP
 #define HEADER_LOADER_HPP
 
+#include "SDL.h"
+#include "SDL_thread.h"
+
 #include <string>
+#include <vector>
 
 class Image;
+
+struct Job
+{
+  std::string filename;
+  Image* image;
+
+  Job(const std::string& filename, Image* image)
+    : filename(filename), image(image)
+  {}
+};
 
 /** */
 class Loader
 {
 private:
+  typedef std::vector<Job> Jobs;
+  Jobs jobs;
+  SDL_mutex* mutex;
+  SDL_Thread* thread;
 public:
+  static int thread_func(void*);
+
   Loader();
   ~Loader();
 
-  void request(const std::string& filename, Image* receiver);
+  void launch_thread();
+
+  void request(const std::string& uid, int res, Image* receiver);
+  void process_job();
+  void clear();
+  bool empty();
 private:
   Loader (const Loader&);
   Loader& operator= (const Loader&);

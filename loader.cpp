@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <iostream>
 #include "SDL_image.h"
 #include "image.hpp"
 #include "loader.hpp"
@@ -31,17 +32,78 @@ Loader loader;
 
 Loader::Loader()
 {
+  mutex  = SDL_CreateMutex();
+  thread = 0;
 }
 
 Loader::~Loader()
 {
+  SDL_DestroyMutex(mutex);
+}
+
+int
+Loader::thread_func(void*)
+{
+  while(1)
+    {
+      loader.process_job();
+
+      if (loader.empty())
+        SDL_Delay(100);
+    }
+  return 0;
 }
 
 void
-Loader::request(const std::string& filename, Image* receiver)
+Loader::launch_thread()
 {
-  SDL_Surface* surface = IMG_Load(filename.c_str());
-  receiver->receive(surface);
+  thread = SDL_CreateThread(&Loader::thread_func, 0);
+}
+
+void
+Loader::request(const std::string& uid, int res, Image* receiver)
+{
+  std::ostringstream out;
+  out << config_home << "/.griv/" << res << "/" << uid << ".jpg";
+
+  SDL_LockMutex(mutex);
+  jobs.push_back(Job(out.str(), receiver));
+  SDL_UnlockMutex(mutex);
+}
+
+void
+Loader::process_job()
+{ // Thread this
+  SDL_LockMutex(mutex);
+  if (!jobs.empty())
+    {
+      // Lock
+      Job job = jobs.back();
+      jobs.pop_back();
+      // Unlock
+
+      //std::cout << "Loading: " << job.filename << std::endl;
+      SDL_Surface* img = IMG_Load(job.filename.c_str());
+      job.image->receive(img);
+    }
+  SDL_UnlockMutex(mutex);
+}
+
+void
+Loader::clear()
+{
+  SDL_LockMutex(mutex);
+  for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
+      (*i).image->receive(0);
+
+  jobs.clear();
+  SDL_UnlockMutex(mutex);
+}
+
+bool
+Loader::empty()
+{
+  return jobs.empty();
 }
 
 /* EOF */

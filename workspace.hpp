@@ -31,6 +31,15 @@
 #include "griv.hpp"
 #include "image.hpp"
 
+inline bool has_suffix(const std::string& str, const std::string& suffix)
+{
+  if (str.length() >= suffix.length())
+    return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
+  else
+    return false;
+}
+
+
 class Workspace
 {
 public:
@@ -59,13 +68,14 @@ public:
     // if directory, do recursion
     if (is_directory(filename))
       {
+        std::cout << '.' << std::flush;
         std::vector<std::string> dir_list = open_directory(filename);
         for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
           {
             add(*i);
           }
       }
-    else
+    else if (has_suffix(filename, ".jpg"))
       {
         std::string md5 = getxattr(filename);
         if (!md5.empty())

@@ -43,23 +43,51 @@ public:
 
   static void init();
 
+  static SDL_Surface* placeholder(int res)
+  {
+    if (res == 16)
+      return loading_16;
+    else if (res == 32)
+      return loading_32;
+    else if (res == 64)
+      return loading_64;
+    else if (res == 128)
+      return loading_128;
+    else if (res == 256)
+      return loading_256;
+    else if (res == 512)
+      return loading_512;
+    else if (res == 1024)
+      return loading_1024;
+    else 
+      return loading_1024;
+  }
+
   std::string uid;
   SDL_Surface* surface;
   int res;
+  bool image_requested;
   
   Image(const std::string& uid) 
     : uid(uid),
       surface(0),
-      res(0)
+      res(0),
+      image_requested(false)
   {
   }
 
   void receive(SDL_Surface* new_surface)
   {
-    if (surface)
-      SDL_FreeSurface(surface);    
+    if (new_surface)
+      {
+        if (surface)
+          SDL_FreeSurface(surface);    
     
-    surface = new_surface;
+        //std::cout << "Image recieved: " << new_surface << std::endl;
+        surface = new_surface;
+        force_redraw = true;
+      }
+    image_requested = false;
   }
 
   void draw(int x, int y, int res)
@@ -68,8 +96,8 @@ public:
         y > screen->h ||
         x < -res || 
         y < -res)
-      {
-        if (0)
+      { // Image out of screen
+        if (res >= 512)
           if (surface)
             {
               SDL_FreeSurface(surface);
@@ -77,26 +105,23 @@ public:
             }
       }
     else
-      {
-        if (surface == 0 || res != this->res)
-          {
-            std::ostringstream out;
-            out << config_home << "/.griv/" << res << "/" << uid << ".jpg";
-            loader.request(out.str(), this);
-            //surface = IMG_Load(out.str().c_str());
-            //std::cout << "Loading: " << out.str() << std::endl;
-            this->res = res;
-          }
+      { // image on screen
+        if (!image_requested)
+          if (surface == 0 || res != this->res)
+            {
+              //std::cout << "Requesting" << std::endl;
+              loader.request(uid, res, this);
+              image_requested = true;
+              this->res = res;
+            }
 
-        if (surface != 0)
-          {
-            SDL_Rect dstrect;
-
-            dstrect.x = x;
-            dstrect.y = y;
-
-            SDL_BlitSurface(surface, NULL, screen, &dstrect);
-          }
+        SDL_Rect dstrect;
+        dstrect.x = x;
+        dstrect.y = y;
+        if (surface)
+          SDL_BlitSurface(surface, NULL, screen, &dstrect);
+        else if (image_requested)
+          SDL_BlitSurface(placeholder(res), NULL, screen, &dstrect);        
       }
   }
 };
