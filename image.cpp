@@ -49,8 +49,9 @@ Image::init()
   loading_16   = IMG_Load("loading_16.jpg");
 }
 
-Image::Image(const std::string& uid) 
-  : uid(uid),
+Image::Image(const std::string& url, const std::string& md5)
+  : url(url), 
+    md5(md5),
     surface(0),
     res(0),
     image_requested(false)
@@ -107,7 +108,7 @@ Image::draw(int x, int y, int res)
         if (surface == 0 || res != this->res)
           {
             //std::cout << "Requesting" << std::endl;
-            loader.request(uid, res, this);
+            loader.request(url, md5, res, this);
             image_requested = true;
             this->res = res;
           }

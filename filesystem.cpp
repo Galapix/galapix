@@ -36,6 +36,12 @@
 std::string Filesystem::home_directory;
 
 bool
+Filesystem::exist(const std::string& pathname)
+{
+  return access(pathname.c_str(), F_OK) == 0;
+}
+
+bool
 Filesystem::is_directory(const std::string& pathname)
 {
   struct stat buf;
@@ -105,6 +111,16 @@ Filesystem::init()
 void
 Filesystem::deinit()
 {
+}
+
+std::string
+Filesystem::realpath(const std::string& pathname)
+{
+  char* result = ::realpath(pathname.c_str(), NULL);
+  std::string res = result;
+  free(result);
+  
+  return res;
 }
 
 /* EOF */

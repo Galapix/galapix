@@ -69,20 +69,25 @@ Workspace::add(const std::string& filename)
            has_suffix(filename, ".JPG")
            )
     {
-      std::string md5 = Filesystem::getxattr(filename);
-      if (!md5.empty())
-        {
-          images.push_back(new Image(md5));
-        }
-      else
-        {
-          std::cout << "Ignoring: " << filename << std::endl;
+      std::string url = "file://" + Filesystem::realpath(filename);
+      images.push_back(new Image(url, ""));
+      if (0)
+        { // old xattr support
+          std::string md5 = Filesystem::getxattr(filename);
+          if (!md5.empty())
+            {
+              images.push_back(new Image(url, md5));
+            }
+          else
+            {
+              std::cout << "Ignoring: " << filename << std::endl;
+            }
         }
     }
 }
 
 void
-Workspace::zoom_in()
+Workspace::zoom_in(int x, int y)
 {
   res *= 2;
   if (res > 2048)
@@ -91,17 +96,25 @@ Workspace::zoom_in()
     { //300,200 ~ 212, 134 ~ 64, 0
       x_offset *= 2;
       y_offset *= 2;
+
+      // FIXME: only works for 2x zoom
+      x_offset -= x;
+      y_offset -= y;
     }
 }
 
 void
-Workspace::zoom_out()
+Workspace::zoom_out(int x, int y)
 {
   res /= 2;
   if (res < 16)
     res = 16;
   else
     {
+      // FIXME: only works for 2x zoom: generic: (-offset*zoom + offset)
+      x_offset += x;
+      y_offset += y;
+
       x_offset /= 2;
       y_offset /= 2;
     }

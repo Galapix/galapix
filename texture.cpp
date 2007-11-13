@@ -23,29 +23,14 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_FILESYSTEM_HPP
-#define HEADER_FILESYSTEM_HPP
+#include "texture.hpp"
 
-#include <string>
-#include <vector>
-
-class Filesystem
+Texture::Texture(SDL_Surface* surface)
 {
-private:
-  static std::string home_directory;
+}
 
-public:
-  static bool is_directory(const std::string& pathname);
-  static bool exist(const std::string& pathname);
-  static std::vector<std::string> open_directory(const std::string& pathname);
-  static std::string getxattr(const std::string& pathname);
-  static std::string get_home() { return home_directory; }
-  static std::string realpath(const std::string& pathname);
-  
-  static void init();
-  static void deinit();
-};
-
-#endif
+Texture::~Texture()
+{
+}
 
 /* EOF */

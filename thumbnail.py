@@ -17,11 +17,14 @@ if not config_home:
     print "Couldn't find $HOME environment variable"
     exit()
 else:
-    for res in [2048, 1024, 512, 256, 128, 64, 32, 16]:
-        dir = config_home + "/.griv/%d" % res
-        if not os.access(dir, os.F_OK):
-            os.mkdir(dir)
-            print "Created", dir
+    # FIXME: mkdir also 00-ff
+    for hex in [a+b for a in "0123456789abcdef" for b in "0123456789abcdef"]:
+        for org in ["by_url", "by_md5"]:
+            for res in [2048, 1024, 512, 256, 128, 64, 32, 16]:
+                dir = config_home + "/.griv/cache/%s/%d/%s" % (org, res, hex)
+                if not os.access(dir, os.F_OK):
+                    os.mkdir(dir)
+                    print "Created", dir
 
 def has_extension(filename, extensions):
     for ext in extensions:
@@ -52,7 +55,8 @@ def get_md5(filename):
 def genthumb(orig_filename, guid, img):
     global config_home
     for res in [2048, 1024, 512, 256, 128, 64, 32, 16]:
-        filename = config_home + "/.griv/%d/%s.jpg" % (res, guid)
+        filename = config_home + "/.griv/cache/by_md5/%d/%s/%s.jpg" % (res, guid[0:2], guid[2:])
+
         if not os.path.exists(filename):
             if res < img.size[0] or res < img.size[1]:
                 if (img.size[0] > img.size[1]):
@@ -64,6 +68,21 @@ def genthumb(orig_filename, guid, img):
                 img.save(filename, "JPEG", quality = 75)
 
                 print "%s %4d %s => %s" % (guid, res, orig_filename, filename)
+
+        if os.path.exists(filename):
+            url = "file://" + os.path.abspath(orig_filename)
+            m = md5.new()
+            m.update(url)
+            url_md5 = m.hexdigest()
+            dirs = config_home + "/.griv/cache/by_url/%d/%s" % (res, url_md5[0:2])
+            if not os.access(dirs, os.F_OK):
+                os.makedirs(dirs)
+            url_filename = config_home + "/.griv/cache/by_url/%d/%s/%s.jpg" % (res, url_md5[0:2], url_md5[2:])
+
+            if not os.access(url_filename, os.F_OK):
+                #print "linking: ", filename, url_filename
+                os.link(filename, url_filename)
+                xattr.setxattr(url_filename, "user.griv.url", url)
 
 def process_file(pathname):
     if os.path.isdir(pathname): 

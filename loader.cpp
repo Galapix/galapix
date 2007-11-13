@@ -24,6 +24,8 @@
 */
 
 #include <iostream>
+#include <iomanip>
+#include <stdexcept>
 #include "filesystem.hpp"
 #include "SDL_image.h"
 #include "image.hpp"
@@ -62,10 +64,23 @@ Loader::launch_thread()
 }
 
 void
-Loader::request(const std::string& uid, int res, Image* receiver)
+Loader::request(const std::string& url, const std::string& md5, int res, Image* receiver)
 {
   std::ostringstream out;
-  out << Filesystem::get_home() << "/.griv/" << res << "/" << uid << ".jpg";
+
+  if (0)
+    {
+      out << Filesystem::get_home() << "/.griv/cache/by_md5/"
+          << res << "/" << md5.substr(0, 2) << "/" << md5.substr(2)
+          << ".jpg";
+    }
+  else
+    {
+      std::string m = this->md5(url);
+      out << Filesystem::get_home() << "/.griv/cache/by_url/"
+          << res << "/" << m.substr(0,2) << "/" << m.substr(2) << ".jpg";
+      std::cout << "Debug: " << url << " " << this->md5(url) << std::endl;
+    }
 
   SDL_LockMutex(mutex);
   jobs.push_back(Job(out.str(), receiver));
@@ -105,6 +120,25 @@ bool
 Loader::empty()
 {
   return jobs.empty();
+}
+
+std::string
+Loader::md5(const std::string& str)
+{
+  unsigned char hash[16]; /* enough size for MD5 */
+  MHASH td = mhash_init(MHASH_MD5);
+  if (td == MHASH_FAILED) 
+    throw std::runtime_error("Failed to init MHash");
+  
+  mhash(td, str.c_str(), str.length());
+  
+  mhash_deinit(td, hash);
+
+  std::ostringstream out;
+  for (int i = 0; i < 16; i++) 
+    out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
+
+  return out.str();
 }
 
 /* EOF */

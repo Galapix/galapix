@@ -32,6 +32,8 @@
 #include <string>
 #include <vector>
 
+#include <mhash.h>
+
 class Image;
 
 struct Job
@@ -52,6 +54,7 @@ private:
   Jobs jobs;
   SDL_mutex* mutex;
   SDL_Thread* thread;
+
 public:
   static int thread_func(void*);
 
@@ -60,10 +63,11 @@ public:
 
   void launch_thread();
 
-  void request(const std::string& uid, int res, Image* receiver);
+  void request(const std::string& url, const std::string& uid, int res, Image* receiver);
   void process_job();
   void clear();
   bool empty();
+  std::string md5(const std::string& str);
 private:
   Loader (const Loader&);
   Loader& operator= (const Loader&);

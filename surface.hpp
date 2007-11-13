@@ -23,63 +23,23 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#ifndef HEADER_SURFACE_HPP
+#define HEADER_SURFACE_HPP
 
-#include <sstream>
-#include "display.hpp"
-#include "loader.hpp"
-#include "griv.hpp"
-
-class Image
+/** */
+class Surface
 {
-public:
-  // Place holder images when no other is available
-  static SDL_Surface* loading_16;
-  static SDL_Surface* loading_32;
-  static SDL_Surface* loading_64;
-  static SDL_Surface* loading_128;
-  static SDL_Surface* loading_256;
-  static SDL_Surface* loading_512;
-  static SDL_Surface* loading_1024;
-
-  static void init();
-  static void deinit() {}
-
-  static SDL_Surface* placeholder(int res)
-  {
-    if (res == 16)
-      return loading_16;
-    else if (res == 32)
-      return loading_32;
-    else if (res == 64)
-      return loading_64;
-    else if (res == 128)
-      return loading_128;
-    else if (res == 256)
-      return loading_256;
-    else if (res == 512)
-      return loading_512;
-    else if (res == 1024)
-      return loading_1024;
-    else 
-      return loading_1024;
-  }
-
-  std::string url;
-  std::string md5;
-
+private:
   SDL_Surface* surface;
-  int res;
-  bool image_requested;
 
-  SDL_mutex* mutex;
+public:
+  Surface();
+  ~Surface();
 
-  Image(const std::string& url, const std::string& md5);
-  ~Image();
-
-  void receive(SDL_Surface* new_surface);
-  void draw(int x, int y, int res);
+  void draw(int x, int y);
+private:
+  Surface (const Surface&);
+  Surface& operator= (const Surface&);
 };
 
 #endif

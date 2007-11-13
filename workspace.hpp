@@ -42,8 +42,9 @@ public:
 
   void draw();
   void add(const std::string& filename);
-  void zoom_in();
-  void zoom_out();
+
+  void zoom_in(int x, int y);
+  void zoom_out(int x, int y);
 };
 
 #endif

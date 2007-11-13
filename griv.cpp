@@ -85,7 +85,8 @@ Griv::process_events()
                 if (event.button.state == SDL_PRESSED)
                   {
                     //std::cout << "zoom out" << std::endl;
-                    workspace->zoom_out();
+                    workspace->zoom_out(event.button.x - Display::get_width()/2,
+                                        event.button.y - Display::get_height()/2);
                     loader.clear();
                   }
               }
@@ -95,7 +96,8 @@ Griv::process_events()
                 if (event.button.state == SDL_PRESSED)
                   {
                     //std::cout << "zoom in" << std::endl;
-                    workspace->zoom_in();
+                    workspace->zoom_in(event.button.x - Display::get_width()/2,
+                                       event.button.y - Display::get_height()/2);
                     loader.clear();
                   }
               }
