@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include "filesystem.hpp"
 #include "SDL_image.h"
 #include "image.hpp"
 #include "loader.hpp"
@@ -64,7 +65,7 @@ void
 Loader::request(const std::string& uid, int res, Image* receiver)
 {
   std::ostringstream out;
-  out << config_home << "/.griv/" << res << "/" << uid << ".jpg";
+  out << Filesystem::get_home() << "/.griv/" << res << "/" << uid << ".jpg";
 
   SDL_LockMutex(mutex);
   jobs.push_back(Job(out.str(), receiver));

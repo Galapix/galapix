@@ -33,7 +33,10 @@
 
 #include "filesystem.hpp"
 
-bool is_directory(const std::string& pathname)
+std::string Filesystem::home_directory;
+
+bool
+Filesystem::is_directory(const std::string& pathname)
 {
   struct stat buf;
   stat(pathname.c_str(), &buf);
@@ -41,7 +44,7 @@ bool is_directory(const std::string& pathname)
 }
 
 std::vector<std::string>
-open_directory(const std::string& pathname)
+Filesystem::open_directory(const std::string& pathname)
 {
   std::vector<std::string> dir_list;
 
@@ -69,11 +72,12 @@ open_directory(const std::string& pathname)
   return dir_list;
 }
 
-std::string getxattr(const std::string& pathname)
+std::string
+Filesystem::getxattr(const std::string& pathname)
 {
   char buf[2048];
   int len;
-  if ((len = getxattr (pathname.c_str(), "user.griv.md5", buf, 2048)) < 0)
+  if ((len = ::getxattr(pathname.c_str(), "user.griv.md5", buf, 2048)) < 0)
     {
       if (errno == ENOATTR)
         return "";
@@ -82,6 +86,25 @@ std::string getxattr(const std::string& pathname)
     }
 
   return std::string(buf, len);
+}
+
+void
+Filesystem::init()
+{
+  char* home;
+  if ((home = getenv("HOME")))
+    {
+      home_directory = home;
+    }
+  else
+    {
+      throw std::runtime_error("Couldn't get HOME environment variable");
+    }
+}
+
+void
+Filesystem::deinit()
+{
 }
 
 /* EOF */

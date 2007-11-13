@@ -23,26 +23,64 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_FILESYSTEM_HPP
-#define HEADER_FILESYSTEM_HPP
+#include <iostream>
+#include "display.hpp"
 
-#include <string>
-#include <vector>
+SDL_Surface* Display::screen = 0;
+Uint32 Display::flags = 0;
 
-class Filesystem
+void
+Display::init()
 {
-private:
-  static std::string home_directory;
+  if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+      std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
+      exit(1);
+    }
+  atexit(SDL_Quit); 
+ 
+  flags = SDL_RESIZABLE;
+  screen = SDL_SetVideoMode(1024, 768, 0, flags);
+    
+  if (screen == NULL) 
+    {
+      std::cout << "Unable to set video mode: " << SDL_GetError() << std::endl;
+      exit(1);
+    }
 
-public:
-  static bool is_directory(const std::string& pathname);
-  static std::vector<std::string> open_directory(const std::string& pathname);
-  static std::string getxattr(const std::string& pathname);
-  static std::string get_home() { return home_directory; }
-  static void init();
-  static void deinit();
-};
+  SDL_WM_SetCaption("Griv 0.0.1", 0 /* icon */);
 
-#endif
+  SDL_EnableUNICODE(1);
+}
+
+void
+Display::toggle_fullscreen()
+{
+  if (flags & SDL_FULLSCREEN)
+    flags = SDL_RESIZABLE;
+  else
+    flags |= SDL_FULLSCREEN;
+ 
+  // Should use desktop resolution for this instead, but how?
+  screen = SDL_SetVideoMode(1152, 864, 0, flags); 
+}
+
+void
+Display::resize(int w, int h)
+{
+  screen = SDL_SetVideoMode(w, h, 0, SDL_RESIZABLE);
+}
+
+void
+Display::flip()
+{
+  SDL_Flip(screen);  
+}
+
+void
+Display::clear()
+{
+  SDL_FillRect(Display::get_screen(), NULL, SDL_MapRGB(Display::get_screen()->format, 0, 0, 0));
+}
 
 /* EOF */

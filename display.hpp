@@ -23,24 +23,33 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_FILESYSTEM_HPP
-#define HEADER_FILESYSTEM_HPP
+#ifndef HEADER_DISPLAY_HPP
+#define HEADER_DISPLAY_HPP
 
-#include <string>
-#include <vector>
+#include "SDL.h"
 
-class Filesystem
+/** */
+class Display
 {
 private:
-  static std::string home_directory;
+  static SDL_Surface* screen;
+  static Uint32 flags;
 
 public:
-  static bool is_directory(const std::string& pathname);
-  static std::vector<std::string> open_directory(const std::string& pathname);
-  static std::string getxattr(const std::string& pathname);
-  static std::string get_home() { return home_directory; }
   static void init();
   static void deinit();
+
+  static void toggle_fullscreen();
+
+  static int get_width()  { return screen->w; }
+  static int get_height() { return screen->h; }
+  static SDL_Surface* get_screen() { return screen; }
+  static void resize(int w, int h);
+  static void flip();
+  static void clear();
+private:
+  Display (const Display&);
+  Display& operator= (const Display&);
 };
 
 #endif

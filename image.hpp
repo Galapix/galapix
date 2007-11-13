@@ -27,6 +27,7 @@
 #define HEADER_IMAGE_HPP
 
 #include <sstream>
+#include "display.hpp"
 #include "loader.hpp"
 #include "griv.hpp"
 
@@ -42,6 +43,7 @@ public:
   static SDL_Surface* loading_1024;
 
   static void init();
+  static void deinit() {}
 
   static SDL_Surface* placeholder(int res)
   {
@@ -109,8 +111,8 @@ public:
   void draw(int x, int y, int res)
   {
     SDL_LockMutex(mutex);
-    if (x > screen->w ||
-        y > screen->h ||
+    if (x > Display::get_width() ||
+        y > Display::get_height() ||
         x < -res || 
         y < -res)
       { // Image out of screen
@@ -136,9 +138,9 @@ public:
         dstrect.x = x;
         dstrect.y = y;
         if (surface)
-          SDL_BlitSurface(surface, NULL, screen, &dstrect);
+          SDL_BlitSurface(surface, NULL, Display::get_screen(), &dstrect);
         else if (image_requested)
-          SDL_BlitSurface(placeholder(res), NULL, screen, &dstrect);        
+          SDL_BlitSurface(placeholder(res), NULL, Display::get_screen(), &dstrect);        
       }
     SDL_UnlockMutex(mutex);
   }

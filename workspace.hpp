@@ -57,8 +57,8 @@ public:
     int w = int(sqrt(4 * images.size() / 3));
     for(int i = 0; i < int(images.size()); ++i)
       {
-        images[i]->draw((i % w) * res + x_offset + screen->w/2,
-                        (i / w) * res + y_offset + screen->h/2,
+        images[i]->draw((i % w) * res + x_offset + Display::get_width()/2,
+                        (i / w) * res + y_offset + Display::get_height()/2,
                         res);
       }
   }
@@ -66,10 +66,10 @@ public:
   void add(const std::string& filename)
   {
     // if directory, do recursion
-    if (is_directory(filename))
+    if (Filesystem::is_directory(filename))
       {
         std::cout << '.' << std::flush;
-        std::vector<std::string> dir_list = open_directory(filename);
+        std::vector<std::string> dir_list = Filesystem::open_directory(filename);
         for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
           {
             add(*i);
@@ -79,7 +79,7 @@ public:
              has_suffix(filename, ".JPG")
              )
       {
-        std::string md5 = getxattr(filename);
+        std::string md5 = Filesystem::getxattr(filename);
         if (!md5.empty())
           {
             images.push_back(new Image(md5));
@@ -94,8 +94,8 @@ public:
   void zoom_in()
   {
     res *= 2;
-    if (res > 1024)
-      res = 1024;
+    if (res > 2048)
+      res = 2048;
     else
       { //300,200 ~ 212, 134 ~ 64, 0
         x_offset *= 2;

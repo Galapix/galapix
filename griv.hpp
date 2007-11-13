@@ -31,9 +31,27 @@
 
 extern int x_offset;
 extern int y_offset;
-extern SDL_Surface* screen;
-extern std::string config_home;
 extern bool force_redraw;
+
+class Workspace;
+
+class Griv
+{
+private:
+  bool drag_n_drop;
+  int old_res;
+  int old_x_offset;
+  int old_y_offset;
+  Uint32 next_redraw;
+  Workspace* workspace;
+
+public:
+  Griv();
+  ~Griv();
+  
+  void process_events();
+  int main(int argc, char** argv);
+};
 
 #endif
 

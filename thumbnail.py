@@ -45,7 +45,7 @@ def get_md5(filename):
         mtime = os.stat(filename)[ST_MTIME]
         xattr.setxattr(filename, "user.griv.md5", md5)
         xattr.setxattr(filename, "user.griv.mtime", "%d" % mtime)
-        xattr.setxattr(filename, "user.griv.filter", "repeated-antialias")
+        xattr.setxattr(filename, "user.griv.filter", "repeated-bicibic")
         
     return md5
 
@@ -60,7 +60,7 @@ def genthumb(orig_filename, guid, img):
                 else:
                     size = (res * img.size[0] / img.size[1], res)
 
-                img = img.resize(size, Image.ANTIALIAS) # BICUBIC) #
+                img = img.resize(size, Image.BICUBIC) #
                 img.save(filename, "JPEG", quality = 75)
 
                 print "%s %4d %s => %s" % (guid, res, orig_filename, filename)
