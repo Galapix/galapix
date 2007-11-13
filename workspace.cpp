@@ -46,8 +46,8 @@ Workspace::draw()
   int w = int(sqrt(4 * images.size() / 3));
   for(int i = 0; i < int(images.size()); ++i)
     {
-      images[i]->draw((i % w) * res + x_offset + Display::get_width()/2,
-                      (i / w) * res + y_offset + Display::get_height()/2,
+      images[i]->draw((i % w) * (res+res/32) + x_offset + Framebuffer::get_width()/2,
+                      (i / w) * (res+res/32) + y_offset + Framebuffer::get_height()/2,
                       res);
     }
 }
@@ -62,7 +62,8 @@ Workspace::add(const std::string& filename)
       std::vector<std::string> dir_list = Filesystem::open_directory(filename);
       for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
         {
-          add(*i);
+          if (*i != ".xvpics")
+            add(*i);
         }
     }
   else if (has_suffix(filename, ".jpg") ||
@@ -78,8 +79,8 @@ void
 Workspace::zoom_in(int x, int y)
 {
   res *= 2;
-  if (res > 2048)
-    res = 2048;
+  if (res > 8192)
+    res = 8192;
   else
     { //300,200 ~ 212, 134 ~ 64, 0
       x_offset *= 2;

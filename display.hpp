@@ -26,10 +26,25 @@
 #ifndef HEADER_DISPLAY_HPP
 #define HEADER_DISPLAY_HPP
 
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <sstream>
+#include <stdexcept>
 #include "SDL.h"
 
+static inline void assert_gl(const char* message)
+{
+  GLenum error = glGetError();
+  if(error != GL_NO_ERROR) {
+    std::ostringstream msg;
+    msg << "OpenGLError while '" << message << "': "
+        << gluErrorString(error);
+    throw std::runtime_error(msg.str());
+  }
+}
+
 /** */
-class Display
+class Framebuffer
 {
 private:
   static SDL_Surface* screen;
@@ -47,9 +62,9 @@ public:
   static void resize(int w, int h);
   static void flip();
   static void clear();
-private:
-  Display (const Display&);
-  Display& operator= (const Display&);
+
+  static void lock();
+  static void unlock();
 };
 
 #endif

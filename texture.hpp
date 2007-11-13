@@ -26,18 +26,27 @@
 #ifndef HEADER_TEXTURE_HPP
 #define HEADER_TEXTURE_HPP
 
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include "SDL.h"
 
 /** */
 class Texture
 {
 private:
+  GLuint handle;
+
+  int width;
+  int height;
+
 public:
   Texture(SDL_Surface* surface);
   ~Texture();
 
   int get_width() const;
   int get_height() const;
+  
+  void bind();
 private:
   Texture (const Texture&);
   Texture& operator= (const Texture&);

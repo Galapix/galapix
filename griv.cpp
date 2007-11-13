@@ -38,7 +38,7 @@ Griv::process_events()
             break;
 
           case SDL_VIDEORESIZE:
-            Display::resize(event.resize.w, event.resize.h);
+            Framebuffer::resize(event.resize.w, event.resize.h);
             force_redraw = true;
             break;
 
@@ -53,7 +53,7 @@ Griv::process_events()
               }
             else if (event.key.keysym.sym == SDLK_F11)
               {
-                Display::toggle_fullscreen();
+                Framebuffer::toggle_fullscreen();
                 force_redraw = true;
               }
             else if (event.key.keysym.sym == SDLK_SPACE)
@@ -85,8 +85,8 @@ Griv::process_events()
                 if (event.button.state == SDL_PRESSED)
                   {
                     //std::cout << "zoom out" << std::endl;
-                    workspace->zoom_out(event.button.x - Display::get_width()/2,
-                                        event.button.y - Display::get_height()/2);
+                    workspace->zoom_out(event.button.x - Framebuffer::get_width()/2,
+                                        event.button.y - Framebuffer::get_height()/2);
                     loader.clear();
                   }
               }
@@ -96,8 +96,8 @@ Griv::process_events()
                 if (event.button.state == SDL_PRESSED)
                   {
                     //std::cout << "zoom in" << std::endl;
-                    workspace->zoom_in(event.button.x - Display::get_width()/2,
-                                       event.button.y - Display::get_height()/2);
+                    workspace->zoom_in(event.button.x - Framebuffer::get_width()/2,
+                                       event.button.y - Framebuffer::get_height()/2);
                     loader.clear();
                   }
               }
@@ -114,7 +114,7 @@ int
 Griv::main(int argc, char** argv)
 {
   Filesystem::init();
-  Display::init();
+  Framebuffer::init();
   Image::init();
 
   workspace = new Workspace();
@@ -149,9 +149,9 @@ Griv::main(int argc, char** argv)
         {
           force_redraw = false;
 
-          Display::clear();
+          Framebuffer::clear();
           workspace->draw();
-          Display::flip();
+          Framebuffer::flip();
 
           old_res = workspace->res;
           old_x_offset = x_offset;
@@ -167,7 +167,7 @@ Griv::main(int argc, char** argv)
   delete workspace;
 
   Image::deinit();
-  Display::deinit();
+  Framebuffer::deinit();
   Filesystem::deinit();
 
   return 0;

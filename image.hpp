@@ -31,6 +31,8 @@
 #include "loader.hpp"
 #include "griv.hpp"
 
+class Texture;
+
 class Image
 {
 public:
@@ -70,6 +72,7 @@ public:
 
   SDL_Surface* surface_16x16;
   SDL_Surface* surface;
+  Texture*     texture;
   int res;
   bool image_requested;
 

@@ -24,7 +24,9 @@
 */
 
 #include <iostream>
+#include <GL/gl.h>
 #include "SDL_image.h"
+#include "texture.hpp"
 #include "image.hpp"
 
 SDL_Surface* Image::loading_16;
@@ -52,6 +54,7 @@ Image::init()
 Image::Image(const std::string& url)
   : url(url), 
     surface(0),
+    texture(0),
     res(0),
     image_requested(false)
 {
@@ -67,6 +70,7 @@ void
 Image::receive(SDL_Surface* new_surface)
 { 
   SDL_LockMutex(mutex);
+  //Framebuffer::lock();
   if (new_surface)
     {
       if (surface)
@@ -74,14 +78,21 @@ Image::receive(SDL_Surface* new_surface)
           SDL_Surface* old_surface = surface;
           surface = new_surface;
           SDL_FreeSurface(old_surface); 
+
+          delete texture;
+          texture = 0;
+
+          //texture = new Texture(surface);
         }
       else
         {
           surface = new_surface;
+          //texture = new Texture(surface);
         }
       force_redraw = true;
     }
   image_requested = false;
+  //Framebuffer::unlock();
   SDL_UnlockMutex(mutex);
 }
 
@@ -89,8 +100,9 @@ void
 Image::draw(int x, int y, int res)
 {
   SDL_LockMutex(mutex);
-  if (x > Display::get_width() ||
-      y > Display::get_height() ||
+  //Framebuffer::lock();
+  if (x > Framebuffer::get_width() ||
+      y > Framebuffer::get_height() ||
       x < -res || 
       y < -res)
     { // Image out of screen
@@ -115,11 +127,29 @@ Image::draw(int x, int y, int res)
       SDL_Rect dstrect;
       dstrect.x = x;
       dstrect.y = y;
-      if (surface)
-        SDL_BlitSurface(surface, NULL, Display::get_screen(), &dstrect);
-      else if (image_requested)
-        SDL_BlitSurface(placeholder(res), NULL, Display::get_screen(), &dstrect);        
+      
+      if (0)
+        {
+          if (surface)
+            SDL_BlitSurface(surface, NULL, Framebuffer::get_screen(), &dstrect);
+          else if (image_requested)
+            SDL_BlitSurface(placeholder(res), NULL, Framebuffer::get_screen(), &dstrect);        
+        }
+      else
+        {
+          if (surface)
+            {
+              glColor3f(1.0f, 1.0f, 1.0f);
+              glBegin(GL_QUADS);
+              glVertex2i(x, y);
+              glVertex2i(x + surface->w, y);
+              glVertex2i(x + surface->w, y + surface->h);
+              glVertex2i(x, y + surface->h);
+              glEnd();
+            }
+        }
     }
+  //Framebuffer::unlock();
   SDL_UnlockMutex(mutex);
 }
 

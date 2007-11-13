@@ -1,6 +1,6 @@
 # -*- python -*-
 
-env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g"], LIBS=['SDL_image', 'mhash'])
+env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g"], LIBS=['SDL_image', 'mhash', 'GL', 'GLU'])
 env.ParseConfig("sdl-config --libs --cflags")
 
 env.Program('griv', ['griv.cpp',
