@@ -29,8 +29,8 @@
 #include "texture.hpp"
 
 Texture::Texture(SDL_Surface* surface)
+  : handle(0)
 {
-  std::cout << "Creating Texture" << std::endl;
   glGenTextures(1, &handle);
 
   width  = surface->w;
@@ -67,9 +67,23 @@ Texture::Texture(SDL_Surface* surface)
 
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->pitch/format->BytesPerPixel);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-               surface->w, surface->h, 0, sdl_format,
-               GL_UNSIGNED_BYTE, surface->pixels);
+
+  {
+    int res = std::max(surface->w, surface->h);
+    std::cout << "Res: " << res << std::endl;
+    unsigned char dummy[res*res*3];
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+                 res,
+                 res,
+                 0,
+                 GL_RGB,
+                 GL_UNSIGNED_BYTE,
+                 dummy);
+  }
+  
+  glTexSubImage2D(GL_TEXTURE_2D, 0, 
+                  0, 0, surface->w, surface->h, sdl_format,
+                  GL_UNSIGNED_BYTE, surface->pixels);
 
   assert_gl("creating texture");
 

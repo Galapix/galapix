@@ -36,6 +36,8 @@ Uint32 Framebuffer::flags = 0;
 void
 Framebuffer::init()
 {
+  XInitThreads();
+ 
   std::cout << "Framebuffer::init()" << std::endl;
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -75,8 +77,6 @@ Framebuffer::init()
     {
       std::cout << "Couldn't get WM info " << std::endl;
     }
-
-  //XInitThreads();
 }
 
 void

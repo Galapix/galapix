@@ -70,7 +70,7 @@ void
 Image::receive(SDL_Surface* new_surface)
 { 
   SDL_LockMutex(mutex);
-  //Framebuffer::lock();
+  Framebuffer::lock();
   if (new_surface)
     {
       if (surface)
@@ -78,21 +78,15 @@ Image::receive(SDL_Surface* new_surface)
           SDL_Surface* old_surface = surface;
           surface = new_surface;
           SDL_FreeSurface(old_surface); 
-
-          delete texture;
-          texture = 0;
-
-          //texture = new Texture(surface);
         }
       else
         {
           surface = new_surface;
-          //texture = new Texture(surface);
         }
       force_redraw = true;
     }
   image_requested = false;
-  //Framebuffer::unlock();
+  Framebuffer::unlock();
   SDL_UnlockMutex(mutex);
 }
 
@@ -100,7 +94,7 @@ void
 Image::draw(int x, int y, int res)
 {
   SDL_LockMutex(mutex);
-  //Framebuffer::lock();
+  Framebuffer::lock();
   if (x > Framebuffer::get_width() ||
       y > Framebuffer::get_height() ||
       x < -res || 
@@ -111,6 +105,9 @@ Image::draw(int x, int y, int res)
           {
             SDL_FreeSurface(surface);
             surface = 0;
+
+            delete texture;
+            texture = 0;
           }
     }
   else
@@ -139,17 +136,33 @@ Image::draw(int x, int y, int res)
         {
           if (surface)
             {
+              if (!texture)
+                {
+                  texture = new Texture(surface);
+                }
+
+              if (texture)
+                {
+                  texture->bind();
+                }
               glColor3f(1.0f, 1.0f, 1.0f);
               glBegin(GL_QUADS);
+              glTexCoord2f(0,0);
               glVertex2i(x, y);
+
+              glTexCoord2f(1,0);
               glVertex2i(x + surface->w, y);
+
+              glTexCoord2f(1,1);
               glVertex2i(x + surface->w, y + surface->h);
+
+              glTexCoord2f(0,1);
               glVertex2i(x, y + surface->h);
               glEnd();
             }
         }
     }
-  //Framebuffer::unlock();
+  Framebuffer::unlock();
   SDL_UnlockMutex(mutex);
 }
 
