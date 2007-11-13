@@ -70,19 +70,7 @@ Workspace::add(const std::string& filename)
            )
     {
       std::string url = "file://" + Filesystem::realpath(filename);
-      images.push_back(new Image(url, ""));
-      if (0)
-        { // old xattr support
-          std::string md5 = Filesystem::getxattr(filename);
-          if (!md5.empty())
-            {
-              images.push_back(new Image(url, md5));
-            }
-          else
-            {
-              std::cout << "Ignoring: " << filename << std::endl;
-            }
-        }
+      images.push_back(new Image(url));
     }
 }
 

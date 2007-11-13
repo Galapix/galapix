@@ -29,7 +29,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <attr/xattr.h>
+//#include <attr/xattr.h>
 
 #include "filesystem.hpp"
 
@@ -77,7 +77,7 @@ Filesystem::open_directory(const std::string& pathname)
 
   return dir_list;
 }
-
+#if 0
 std::string
 Filesystem::getxattr(const std::string& pathname)
 {
@@ -93,7 +93,7 @@ Filesystem::getxattr(const std::string& pathname)
 
   return std::string(buf, len);
 }
-
+#endif
 void
 Filesystem::init()
 {

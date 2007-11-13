@@ -38,11 +38,12 @@ class Image;
 
 struct Job
 {
-  std::string filename;
+  std::string url;
+  int res;
   Image* image;
 
-  Job(const std::string& filename, Image* image)
-    : filename(filename), image(image)
+  Job(const std::string& url, int res, Image* image)
+    : url(url), res(res), image(image)
   {}
 };
 
@@ -63,7 +64,7 @@ public:
 
   void launch_thread();
 
-  void request(const std::string& url, const std::string& uid, int res, Image* receiver);
+  void request(const std::string& url, int res, Image* receiver);
   void process_job();
   void clear();
   bool empty();

@@ -156,7 +156,7 @@ Griv::main(int argc, char** argv)
           old_res = workspace->res;
           old_x_offset = x_offset;
           old_y_offset = y_offset;
-          next_redraw = SDL_GetTicks() + 500;
+          next_redraw = SDL_GetTicks() + 1000;
         }
       else
         {

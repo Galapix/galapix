@@ -67,7 +67,6 @@ public:
   }
 
   std::string url;
-  std::string md5;
 
   SDL_Surface* surface_16x16;
   SDL_Surface* surface;
@@ -76,7 +75,7 @@ public:
 
   SDL_mutex* mutex;
 
-  Image(const std::string& url, const std::string& md5);
+  Image(const std::string& url);
   ~Image();
 
   void receive(SDL_Surface* new_surface);
