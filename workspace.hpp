@@ -45,6 +45,8 @@ public:
 
   void zoom_in(int x, int y);
   void zoom_out(int x, int y);
+
+  int size() { return images.size(); }
 };
 
 #endif

@@ -124,6 +124,12 @@ Griv::main(int argc, char** argv)
       workspace->add(argv[i]);
     }
 
+  {
+    int w = int(sqrt(4 * workspace->size() / 3));
+    x_offset = (-w/2) * 16;
+    y_offset = (-(w*3/4)/2) * 16;
+  }
+  
   drag_n_drop = false;
   old_res = -1;
   old_x_offset = -1;

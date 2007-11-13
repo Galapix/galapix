@@ -69,6 +69,7 @@ public:
   std::string url;
   std::string md5;
 
+  SDL_Surface* surface_16x16;
   SDL_Surface* surface;
   int res;
   bool image_requested;

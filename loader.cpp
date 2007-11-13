@@ -79,7 +79,7 @@ Loader::request(const std::string& url, const std::string& md5, int res, Image* 
       std::string m = this->md5(url);
       out << Filesystem::get_home() << "/.griv/cache/by_url/"
           << res << "/" << m.substr(0,2) << "/" << m.substr(2) << ".jpg";
-      std::cout << "Debug: " << url << " " << this->md5(url) << std::endl;
+      //std::cout << "Debug: " << url << " " << this->md5(url) << std::endl;
     }
 
   SDL_LockMutex(mutex);
