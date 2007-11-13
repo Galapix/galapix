@@ -31,15 +31,6 @@
 #include "griv.hpp"
 #include "image.hpp"
 
-inline bool has_suffix(const std::string& str, const std::string& suffix)
-{
-  if (str.length() >= suffix.length())
-    return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
-  else
-    return false;
-}
-
-
 class Workspace
 {
 public:
@@ -47,73 +38,12 @@ public:
   int res;
   
 public:
-  Workspace()
-  {
-    res = 16;
-  }
+  Workspace();
 
-  void draw()
-  {
-    int w = int(sqrt(4 * images.size() / 3));
-    for(int i = 0; i < int(images.size()); ++i)
-      {
-        images[i]->draw((i % w) * res + x_offset + Display::get_width()/2,
-                        (i / w) * res + y_offset + Display::get_height()/2,
-                        res);
-      }
-  }
-
-  void add(const std::string& filename)
-  {
-    // if directory, do recursion
-    if (Filesystem::is_directory(filename))
-      {
-        std::cout << '.' << std::flush;
-        std::vector<std::string> dir_list = Filesystem::open_directory(filename);
-        for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
-          {
-            add(*i);
-          }
-      }
-    else if (has_suffix(filename, ".jpg") ||
-             has_suffix(filename, ".JPG")
-             )
-      {
-        std::string md5 = Filesystem::getxattr(filename);
-        if (!md5.empty())
-          {
-            images.push_back(new Image(md5));
-          }
-        else
-          {
-            std::cout << "Ignoring: " << filename << std::endl;
-          }
-      }
-  }
-
-  void zoom_in()
-  {
-    res *= 2;
-    if (res > 2048)
-      res = 2048;
-    else
-      { //300,200 ~ 212, 134 ~ 64, 0
-        x_offset *= 2;
-        y_offset *= 2;
-      }
-  }
-
-  void zoom_out()
-  {
-    res /= 2;
-    if (res < 16)
-      res = 16;
-    else
-      {
-        x_offset /= 2;
-        y_offset /= 2;
-      }
-  }
+  void draw();
+  void add(const std::string& filename);
+  void zoom_in();
+  void zoom_out();
 };
 
 #endif

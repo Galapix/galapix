@@ -34,6 +34,7 @@
 class Image
 {
 public:
+  // Place holder images when no other is available
   static SDL_Surface* loading_16;
   static SDL_Surface* loading_32;
   static SDL_Surface* loading_64;
@@ -64,7 +65,7 @@ public:
     else 
       return loading_1024;
   }
-
+
   std::string uid;
   SDL_Surface* surface;
   int res;
@@ -72,78 +73,11 @@ public:
 
   SDL_mutex* mutex;
 
+  Image(const std::string& uid);
+  ~Image();
 
-  Image(const std::string& uid) 
-    : uid(uid),
-      surface(0),
-      res(0),
-      image_requested(false)
-  {
-    mutex = SDL_CreateMutex();
-  }
-
-  ~Image()
-  {
-    SDL_DestroyMutex(mutex);
-  }
-
-  void receive(SDL_Surface* new_surface)
-  { 
-    SDL_LockMutex(mutex);
-    if (new_surface)
-      {
-        if (surface)
-          {
-            SDL_Surface* old_surface = surface;
-            surface = new_surface;
-            SDL_FreeSurface(old_surface); 
-          }
-        else
-          {
-            surface = new_surface;
-          }
-        force_redraw = true;
-      }
-    image_requested = false;
-    SDL_UnlockMutex(mutex);
-  }
-
-  void draw(int x, int y, int res)
-  {
-    SDL_LockMutex(mutex);
-    if (x > Display::get_width() ||
-        y > Display::get_height() ||
-        x < -res || 
-        y < -res)
-      { // Image out of screen
-        if (res >= 512)
-          if (surface)
-            {
-              SDL_FreeSurface(surface);
-              surface = 0;
-            }
-      }
-    else
-      { // image on screen
-        if (!image_requested)
-          if (surface == 0 || res != this->res)
-            {
-              //std::cout << "Requesting" << std::endl;
-              loader.request(uid, res, this);
-              image_requested = true;
-              this->res = res;
-            }
-
-        SDL_Rect dstrect;
-        dstrect.x = x;
-        dstrect.y = y;
-        if (surface)
-          SDL_BlitSurface(surface, NULL, Display::get_screen(), &dstrect);
-        else if (image_requested)
-          SDL_BlitSurface(placeholder(res), NULL, Display::get_screen(), &dstrect);        
-      }
-    SDL_UnlockMutex(mutex);
-  }
+  void receive(SDL_Surface* new_surface);
+  void draw(int x, int y, int res);
 };
 
 #endif
