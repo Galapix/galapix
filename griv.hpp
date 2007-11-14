@@ -45,11 +45,16 @@ private:
   Uint32 next_redraw;
   Workspace* workspace;
   int zoom_mode;
+
+  bool zoom_in_pressed;
+  bool zoom_out_pressed;
+  int  mouse_x;
+  int  mouse_y;
 public:
   Griv();
   ~Griv();
   
-  void process_events();
+  void process_events(float delta);
   int main(int argc, char** argv);
 };
 

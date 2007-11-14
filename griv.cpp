@@ -19,6 +19,8 @@ bool force_redraw = true;
 
 Griv::Griv()
 {
+  zoom_in_pressed = false;
+  zoom_out_pressed = false;
 }
 
 Griv::~Griv()
@@ -26,7 +28,7 @@ Griv::~Griv()
 }
 
 void
-Griv::process_events()
+Griv::process_events(float delta)
 {
   SDL_Event event;
   while (SDL_PollEvent(&event))
@@ -73,6 +75,8 @@ Griv::process_events()
 
 
           case SDL_MOUSEMOTION:
+            mouse_x = event.motion.x;
+            mouse_y = event.motion.y;
             if (drag_n_drop)
               {
                 x_offset += event.motion.xrel*4;
@@ -83,29 +87,33 @@ Griv::process_events()
           case SDL_MOUSEBUTTONDOWN:
           case SDL_MOUSEBUTTONUP:
                 
-            if (event.button.button == 3 ||
-                event.button.button == 5)
+            if (event.button.button == 5)
               {
                 if (event.button.state == SDL_PRESSED)
                   {
-                    //std::cout << "zoom out" << std::endl;
                     workspace->zoom_out(event.button.x - Framebuffer::get_width()/2,
                                         event.button.y - Framebuffer::get_height()/2,
                                         1.1f);
                     loader.clear();
                   }
               }
-            else if (event.button.button == 1 ||
-                     event.button.button == 4)
+            else if (event.button.button == 4)
               {
                 if (event.button.state == SDL_PRESSED)
                   {
-                    //std::cout << "zoom in" << std::endl;
                     workspace->zoom_in(event.button.x - Framebuffer::get_width()/2,
                                        event.button.y - Framebuffer::get_height()/2,
                                        1.1f);
                     loader.clear();
                   }
+              }
+            else if (event.button.button == 1)
+              {
+                zoom_in_pressed = (event.button.state == SDL_PRESSED);
+              }
+            else if (event.button.button == 3)
+              {
+                zoom_out_pressed = (event.button.state == SDL_PRESSED);
               }
             else if (event.button.button == 2)
               {
@@ -114,6 +122,23 @@ Griv::process_events()
             break;
         }
     } 
+
+  float zoom_speed = 3.0f;
+
+  if (zoom_out_pressed && !zoom_in_pressed)
+    {
+      workspace->zoom_out(mouse_x - Framebuffer::get_width()/2,
+                          mouse_y - Framebuffer::get_height()/2,
+                          1.0f + zoom_speed * delta);
+      loader.clear();
+    }
+  else if (!zoom_out_pressed && zoom_in_pressed)
+    {
+      workspace->zoom_in(mouse_x - Framebuffer::get_width()/2,
+                         mouse_y - Framebuffer::get_height()/2,
+                         1.0f + zoom_speed * delta);    
+      loader.clear();
+    }
 }
 
 int
@@ -145,29 +170,36 @@ Griv::main(int argc, char** argv)
 
   loader.launch_thread();
 
+  Uint32 ticks = SDL_GetTicks();
   while(true)
     {
-      process_events();
-
-      if (workspace->res != old_res ||
-          old_x_offset != x_offset ||
-          old_y_offset != y_offset ||
-          (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())))
+      Uint32 cticks = SDL_GetTicks();
+      int delta = cticks - ticks;
+      if (delta > 0)
         {
-          force_redraw = false;
+          ticks = cticks;
+          process_events(delta / 1000.0f);
 
-          Framebuffer::clear();
-          workspace->draw();
-          Framebuffer::flip();
+          if (workspace->res != old_res ||
+              old_x_offset != x_offset ||
+              old_y_offset != y_offset ||
+              (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())))
+            {
+              force_redraw = false;
 
-          old_res = workspace->res;
-          old_x_offset = x_offset;
-          old_y_offset = y_offset;
-          next_redraw = SDL_GetTicks() + 1000;
-        }
-      else
-        {
-          SDL_Delay(5);
+              Framebuffer::clear();
+              workspace->draw();
+              Framebuffer::flip();
+
+              old_res = workspace->res;
+              old_x_offset = x_offset;
+              old_y_offset = y_offset;
+              next_redraw = SDL_GetTicks() + 1000;
+            }
+          else
+            {
+              SDL_Delay(5);
+            }
         }
     }
 
