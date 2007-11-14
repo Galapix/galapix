@@ -156,6 +156,8 @@ Griv::main(int argc, char** argv)
     }
   std::cout << " done" << std::endl;
 
+  std::cout << workspace->size() << " images scanned" << std::endl;
+
   {
     int w = int(sqrt(4 * workspace->size() / 3));
     x_offset = (-w/2) * 4;

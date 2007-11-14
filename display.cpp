@@ -82,22 +82,28 @@ Framebuffer::init()
 void
 Framebuffer::toggle_fullscreen()
 {
-  if (0)
-    {
-      if (flags & SDL_FULLSCREEN)
-        flags = SDL_RESIZABLE;
-      else
-        flags |= SDL_FULLSCREEN;
+  flags |= SDL_OPENGL;
+  if (flags & SDL_FULLSCREEN)
+    flags &= ~SDL_FULLSCREEN;
+  else
+    flags |= SDL_FULLSCREEN;
  
-      // Should use desktop resolution for this instead, but how?
-      screen = SDL_SetVideoMode(1152, 864, 0, flags); 
-    }
+  // Should use desktop resolution for this instead, but how?
+  screen = SDL_SetVideoMode(1152, 864, 0, flags); 
+  glViewport(0, 0, screen->w, screen->h);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0.0, screen->w, screen->h, 0.0, 1000.0, -1000.0);
 }
 
 void
 Framebuffer::resize(int w, int h)
 {
-  //screen = SDL_SetVideoMode(w, h, 0, SDL_RESIZABLE);
+  screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_RESIZABLE);
+  glViewport(0, 0, screen->w, screen->h);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0.0, screen->w, screen->h, 0.0, 1000.0, -1000.0);
 }
 
 void
