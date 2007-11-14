@@ -46,9 +46,9 @@ Workspace::draw()
   int w = int(sqrt(4 * images.size() / 3));
   for(int i = 0; i < int(images.size()); ++i)
     {
-      images[i]->draw((i % w) * (res+res/32) + x_offset + Framebuffer::get_width()/2,
-                      (i / w) * (res+res/32) + y_offset + Framebuffer::get_height()/2,
-                      res);
+      images[i]->draw(int((i % w) * (res+res/32) + x_offset + Framebuffer::get_width()/2),
+                      int((i / w) * (res+res/32) + y_offset + Framebuffer::get_height()/2),
+                      int(res));
     }
 }
 
@@ -76,37 +76,41 @@ Workspace::add(const std::string& filename)
 }
 
 void
-Workspace::zoom_in(int x, int y)
+Workspace::zoom_in(int x, int y, float zoom)
 {
-  res *= 2;
-  if (res > 8192)
-    res = 8192;
-  else
-    { //300,200 ~ 212, 134 ~ 64, 0
-      x_offset *= 2;
-      y_offset *= 2;
-
-      // FIXME: only works for 2x zoom
-      x_offset -= x;
-      y_offset -= y;
+  float old_res = res;
+  res *= zoom;
+  
+  if (res > 1024) // zoom limit, 2048 textures make the thing crash
+    {
+      res = 1024;
+      zoom = res / old_res;
     }
+
+  x_offset *= zoom;
+  y_offset *= zoom;
+
+  x_offset += x - x*zoom;
+  y_offset += y - y*zoom;
 }
 
 void
-Workspace::zoom_out(int x, int y)
+Workspace::zoom_out(int x, int y, float zoom)
 {
-  res /= 2;
-  if (res < 16)
-    res = 16;
-  else
-    {
-      // FIXME: only works for 2x zoom: generic: (-offset*zoom + offset)
-      x_offset += x;
-      y_offset += y;
+  float old_res = res;
+  res /= zoom;
 
-      x_offset /= 2;
-      y_offset /= 2;
+  if (res < 16)
+    {
+      res = 16;
+      zoom = old_res / res;
     }
+
+  x_offset += x * zoom - x;
+  y_offset += y * zoom - y;
+
+  x_offset /= zoom;
+  y_offset /= zoom;
 }
 
 /* EOF */

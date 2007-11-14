@@ -35,7 +35,7 @@ class Workspace
 {
 public:
   std::vector<Image*> images;
-  int res;
+  float res;
   
 public:
   Workspace();
@@ -43,8 +43,8 @@ public:
   void draw();
   void add(const std::string& filename);
 
-  void zoom_in(int x, int y);
-  void zoom_out(int x, int y);
+  void zoom_in(int mouse_x, int mouse_y, float zoom);
+  void zoom_out(int mouse_x, int mouse_y, float zoom);
 
   int size() { return images.size(); }
 };

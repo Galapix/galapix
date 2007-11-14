@@ -64,10 +64,10 @@ Loader::launch_thread()
 }
 
 void
-Loader::request(const std::string& url, int res, Image* receiver)
+Loader::request(Image* receiver)
 {
   SDL_LockMutex(mutex);
-  jobs.push_back(Job(url, res, receiver));
+  jobs.push_back(Job(receiver));
   SDL_UnlockMutex(mutex);
 }
 
@@ -80,26 +80,33 @@ Loader::process_job()
       // Lock
       Job job = jobs.back();
       jobs.pop_back();
-      // Unlock
 
-      std::string m = this->md5(job.url);
-      std::ostringstream out;
-      out << Filesystem::get_home() << "/.griv/cache/by_url/"
-          << job.res << "/" << m.substr(0,2) << "/" << m.substr(2) << ".jpg";
+      int res = job.image->want_res;
 
-      //std::cout << "Loading: " << job.filename << std::endl;
-      SDL_Surface* img = IMG_Load(out.str().c_str());
-      if (img)
+      if (job.image->res != res && res != 0)
         {
-          job.image->receive(img);
-        }
-      else
-        {
-          // No thumbnail, assuming we need the original
-          if (job.res > 1024)
+          // Unlock
+      
+          std::string m = this->md5(job.image->url);
+          std::ostringstream out;
+          out << Filesystem::get_home() << "/.griv/cache/by_url/"
+              << res << "/" << m.substr(0,2) << "/" << m.substr(2) << ".jpg";
+
+          //std::cout << "Loading: " << job.filename << std::endl;
+          //std::cout << out.str() << std::endl;
+          SDL_Surface* img = IMG_Load(out.str().c_str());
+          if (img)
             {
-              img = IMG_Load(job.url.substr(7).c_str()); // cut file:// part
               job.image->receive(img);
+            }
+          else
+            {
+              // No thumbnail, assuming we need the original
+              if (res > 1024)
+                {
+                  img = IMG_Load(job.image->url.substr(7).c_str()); // cut file:// part
+                  job.image->receive(img);
+                }
             }
         }
     }

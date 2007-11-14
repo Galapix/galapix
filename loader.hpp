@@ -38,12 +38,10 @@ class Image;
 
 struct Job
 {
-  std::string url;
-  int res;
   Image* image;
 
-  Job(const std::string& url, int res, Image* image)
-    : url(url), res(res), image(image)
+  Job(Image* image)
+    : image(image)
   {}
 };
 
@@ -64,11 +62,12 @@ public:
 
   void launch_thread();
 
-  void request(const std::string& url, int res, Image* receiver);
+  void request(Image* receiver);
   void process_job();
   void clear();
   bool empty();
   std::string md5(const std::string& str);
+
 private:
   Loader (const Loader&);
   Loader& operator= (const Loader&);

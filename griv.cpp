@@ -12,8 +12,8 @@
 #include "loader.hpp"
 #include "image.hpp"
 
-int x_offset = 0;
-int y_offset = 0;
+float x_offset = 0.0f;
+float y_offset = 0.0f;
 std::string config_home;
 bool force_redraw = true;
 
@@ -35,6 +35,10 @@ Griv::process_events()
         {
           case SDL_QUIT: // FIXME: make this into a GameEvent
             exit(1);
+            break;
+
+          case SDL_VIDEOEXPOSE: // FIXME: make this into a GameEvent
+            force_redraw = true;
             break;
 
           case SDL_VIDEORESIZE:
@@ -86,7 +90,8 @@ Griv::process_events()
                   {
                     //std::cout << "zoom out" << std::endl;
                     workspace->zoom_out(event.button.x - Framebuffer::get_width()/2,
-                                        event.button.y - Framebuffer::get_height()/2);
+                                        event.button.y - Framebuffer::get_height()/2,
+                                        1.1f);
                     loader.clear();
                   }
               }
@@ -97,7 +102,8 @@ Griv::process_events()
                   {
                     //std::cout << "zoom in" << std::endl;
                     workspace->zoom_in(event.button.x - Framebuffer::get_width()/2,
-                                       event.button.y - Framebuffer::get_height()/2);
+                                       event.button.y - Framebuffer::get_height()/2,
+                                       1.1f);
                     loader.clear();
                   }
               }

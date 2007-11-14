@@ -29,8 +29,8 @@
 #include <SDL.h>
 #include <string>
 
-extern int x_offset;
-extern int y_offset;
+extern float x_offset;
+extern float y_offset;
 extern bool force_redraw;
 
 class Workspace;
@@ -38,13 +38,13 @@ class Workspace;
 class Griv
 {
 private:
-  bool drag_n_drop;
-  int old_res;
-  int old_x_offset;
-  int old_y_offset;
+  bool  drag_n_drop;
+  float old_res;
+  float old_x_offset;
+  float old_y_offset;
   Uint32 next_redraw;
   Workspace* workspace;
-
+  int zoom_mode;
 public:
   Griv();
   ~Griv();

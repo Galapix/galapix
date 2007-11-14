@@ -57,6 +57,7 @@ Image::Image(const std::string& url)
     texture(0),
     texture_16x16(0),
     res(0),
+    want_res(0),
     image_requested(false)
 {
   mutex = SDL_CreateMutex();
@@ -83,6 +84,9 @@ Image::receive(SDL_Surface* new_surface)
         {
           surface = new_surface;
         }
+      
+      res = std::max(surface->w, surface->h);
+
       force_redraw = true;
     }
   image_requested = false;
@@ -106,17 +110,21 @@ Image::draw(int x, int y, int res)
 
             delete texture;
             texture = 0;
+
+            want_res  = 0;
+            this->res = 0;
           }
     }
   else
     { // image on screen
+      //std::cout << round_res(res) << " " << this->res << std::endl;
+
       if (!image_requested)
-        if (surface == 0 || res != this->res)
+        if (surface == 0 || round_res(res) != this->res)
           {
-            //std::cout << "Requesting" << std::endl;
-            loader.request(url, res, this);
+            loader.request(this);
+            want_res = round_res(res);
             image_requested = true;
-            this->res = res;
           }
 
       SDL_Rect dstrect;
@@ -144,33 +152,50 @@ Image::draw(int x, int y, int res)
                 }
             }
 
-          if (texture)
+          if (texture || texture_16x16)
             {
-              texture->bind();
+              if (texture)
+                texture->bind();
+              else if (texture_16x16)
+                texture_16x16->bind();
+
+              glColor3f(1.0f, 1.0f, 1.0f);
+              glBegin(GL_QUADS);
+              glTexCoord2f(0,0);
+              glVertex2i(x, y);
+
+              glTexCoord2f(1,0);
+              glVertex2i(x + res, y);
+
+              glTexCoord2f(1,1);
+              glVertex2i(x + res, y + res);
+
+              glTexCoord2f(0,1);
+              glVertex2i(x, y + res);
+              glEnd();
             }
-          else if (texture_16x16)
-            {
-              texture_16x16->bind();
-            }
-
-          glColor3f(1.0f, 1.0f, 1.0f);
-          glBegin(GL_QUADS);
-          glTexCoord2f(0,0);
-          glVertex2i(x, y);
-
-          glTexCoord2f(1,0);
-          glVertex2i(x + res, y);
-
-          glTexCoord2f(1,1);
-          glVertex2i(x + res, y + res);
-
-          glTexCoord2f(0,1);
-          glVertex2i(x, y + res);
-          glEnd();
-            
         }
     }
   SDL_UnlockMutex(mutex);
+}
+
+int
+Image::round_res(int r)
+{
+  if (r <= 16)
+    return 16;
+  else if (r <= 32)
+    return 32;
+  else if (r <= 64)
+    return 64;
+  else if (r <= 128)
+    return 128;
+  else if (r <= 256)
+    return 256;
+  else if (r <= 512)
+    return 512;
+  else // if (r <= 1024)
+    return 1024;
 }
 
 /* EOF */

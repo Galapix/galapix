@@ -50,30 +50,32 @@ public:
 
   static SDL_Surface* placeholder(int res)
   {
-    if (res == 16)
+    if (res < 16)
       return loading_16;
-    else if (res == 32)
+    else if (res < 32)
       return loading_32;
-    else if (res == 64)
+    else if (res < 64)
       return loading_64;
-    else if (res == 128)
+    else if (res < 128)
       return loading_128;
-    else if (res == 256)
+    else if (res < 256)
       return loading_256;
-    else if (res == 512)
+    else if (res < 512)
       return loading_512;
-    else if (res == 1024)
+    else if (res < 1024)
       return loading_1024;
     else 
       return loading_1024;
   }
 
+public:
   std::string url;
-
+  
   SDL_Surface* surface;
   Texture*     texture;
   Texture*     texture_16x16;
   int res;
+  int want_res;
   bool image_requested;
 
   SDL_mutex* mutex;
@@ -83,6 +85,8 @@ public:
 
   void receive(SDL_Surface* new_surface);
   void draw(int x, int y, int res);
+
+  int round_res(int res);
 };
 
 #endif
