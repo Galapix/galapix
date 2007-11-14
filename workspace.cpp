@@ -37,7 +37,7 @@ inline bool has_suffix(const std::string& str, const std::string& suffix)
 
 Workspace::Workspace()
 {
-  res = 16;
+  res = 4;
 }
 
 void
@@ -81,9 +81,9 @@ Workspace::zoom_in(int x, int y, float zoom)
   float old_res = res;
   res *= zoom;
   
-  if (res > 1024) // zoom limit, 2048 textures make the thing crash
+  if (res > 8192) 
     {
-      res = 1024;
+      res = 8192;
       zoom = res / old_res;
     }
 
@@ -100,9 +100,9 @@ Workspace::zoom_out(int x, int y, float zoom)
   float old_res = res;
   res /= zoom;
 
-  if (res < 16)
+  if (res < 4)
     {
-      res = 16;
+      res = 4;
       zoom = old_res / res;
     }
 

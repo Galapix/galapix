@@ -144,11 +144,15 @@ Image::draw(int x, int y, int res)
             {
               if (!texture || texture->surface != surface)
                 {
-                  delete texture;
-                  texture = new Texture(surface);
-
                   if (!texture_16x16)
-                    texture_16x16 = new Texture(surface);
+                    {
+                      texture_16x16 = new Texture(surface);
+                    }
+                  else
+                    {
+                      delete texture;
+                      texture = new Texture(surface);
+                    }
                 }
             }
 
@@ -182,19 +186,19 @@ Image::draw(int x, int y, int res)
 int
 Image::round_res(int r)
 {
-  if (r <= 16)
+  if (r <= 32)
     return 16;
-  else if (r <= 32)
-    return 32;
   else if (r <= 64)
-    return 64;
+    return 32;
   else if (r <= 128)
-    return 128;
+    return 64;
   else if (r <= 256)
-    return 256;
+    return 128;
   else if (r <= 512)
+    return 256;
+  else if (r < 1024)
     return 512;
-  else // if (r <= 1024)
+  else // if (r <= 1024) // zoom limit, 2048 textures make the thing crash
     return 1024;
 }
 
