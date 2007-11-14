@@ -25,11 +25,13 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <string.h>
 #include "display.hpp"
 #include "texture.hpp"
 
 Texture::Texture(SDL_Surface* surface)
-  : handle(0)
+  : surface(surface),
+    handle(0)
 {
   glGenTextures(1, &handle);
 
@@ -70,8 +72,9 @@ Texture::Texture(SDL_Surface* surface)
 
   {
     int res = std::max(surface->w, surface->h);
-    std::cout << "Res: " << res << std::endl;
+    //std::cout << "Res: " << res << std::endl;
     unsigned char dummy[res*res*3];
+    memset(dummy, 0, res*res*3);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  res,
                  res,

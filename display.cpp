@@ -36,7 +36,7 @@ Uint32 Framebuffer::flags = 0;
 void
 Framebuffer::init()
 {
-  XInitThreads();
+  //XInitThreads();
  
   std::cout << "Framebuffer::init()" << std::endl;
   if (SDL_Init(SDL_INIT_VIDEO) != 0)

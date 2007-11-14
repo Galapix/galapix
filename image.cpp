@@ -55,6 +55,7 @@ Image::Image(const std::string& url)
   : url(url), 
     surface(0),
     texture(0),
+    texture_16x16(0),
     res(0),
     image_requested(false)
 {
@@ -70,7 +71,6 @@ void
 Image::receive(SDL_Surface* new_surface)
 { 
   SDL_LockMutex(mutex);
-  Framebuffer::lock();
   if (new_surface)
     {
       if (surface)
@@ -86,7 +86,6 @@ Image::receive(SDL_Surface* new_surface)
       force_redraw = true;
     }
   image_requested = false;
-  Framebuffer::unlock();
   SDL_UnlockMutex(mutex);
 }
 
@@ -94,7 +93,6 @@ void
 Image::draw(int x, int y, int res)
 {
   SDL_LockMutex(mutex);
-  Framebuffer::lock();
   if (x > Framebuffer::get_width() ||
       y > Framebuffer::get_height() ||
       x < -res || 
@@ -136,33 +134,42 @@ Image::draw(int x, int y, int res)
         {
           if (surface)
             {
-              if (!texture)
+              if (!texture || texture->surface != surface)
                 {
+                  delete texture;
                   texture = new Texture(surface);
+
+                  if (!texture_16x16)
+                    texture_16x16 = new Texture(surface);
                 }
-
-              if (texture)
-                {
-                  texture->bind();
-                }
-              glColor3f(1.0f, 1.0f, 1.0f);
-              glBegin(GL_QUADS);
-              glTexCoord2f(0,0);
-              glVertex2i(x, y);
-
-              glTexCoord2f(1,0);
-              glVertex2i(x + surface->w, y);
-
-              glTexCoord2f(1,1);
-              glVertex2i(x + surface->w, y + surface->h);
-
-              glTexCoord2f(0,1);
-              glVertex2i(x, y + surface->h);
-              glEnd();
             }
+
+          if (texture)
+            {
+              texture->bind();
+            }
+          else if (texture_16x16)
+            {
+              texture_16x16->bind();
+            }
+
+          glColor3f(1.0f, 1.0f, 1.0f);
+          glBegin(GL_QUADS);
+          glTexCoord2f(0,0);
+          glVertex2i(x, y);
+
+          glTexCoord2f(1,0);
+          glVertex2i(x + res, y);
+
+          glTexCoord2f(1,1);
+          glVertex2i(x + res, y + res);
+
+          glTexCoord2f(0,1);
+          glVertex2i(x, y + res);
+          glEnd();
+            
         }
     }
-  Framebuffer::unlock();
   SDL_UnlockMutex(mutex);
 }
 

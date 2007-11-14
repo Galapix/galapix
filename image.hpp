@@ -70,9 +70,9 @@ public:
 
   std::string url;
 
-  SDL_Surface* surface_16x16;
   SDL_Surface* surface;
   Texture*     texture;
+  Texture*     texture_16x16;
   int res;
   bool image_requested;
 
