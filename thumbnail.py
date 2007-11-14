@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import xattr
+# import xattr
 import sys
 import os
 import md5
@@ -39,50 +39,27 @@ def md5sum(filename):
     f.close()
     return m.hexdigest()
 
-def get_md5(filename):
-    try:
-        md5 = xattr.getxattr(filename, "user.griv.md5")
-        
-    except IOError, (errno, strerror):
-        md5 = md5sum(filename)
-        mtime = os.stat(filename)[ST_MTIME]
-        xattr.setxattr(filename, "user.griv.md5", md5)
-        xattr.setxattr(filename, "user.griv.mtime", "%d" % mtime)
-        xattr.setxattr(filename, "user.griv.filter", "repeated-bicibic")
-        
-    return md5
-
-def genthumb(orig_filename, guid, img):
+def genthumb(orig_filename, img):
     global config_home
     for res in [2048, 1024, 512, 256, 128, 64, 32, 16]:
-        filename = config_home + "/.griv/cache/by_md5/%d/%s/%s.jpg" % (res, guid[0:2], guid[2:])
+        url = "file://" + os.path.abspath(orig_filename)
+        m = md5.new()
+        m.update(url)
+        url_md5 = m.hexdigest()
 
-        if not os.path.exists(filename):
-            if res < img.size[0] or res < img.size[1]:
-                if (img.size[0] > img.size[1]):
+        url_filename = config_home + "/.griv/cache/by_url/%d/%s/%s.jpg" % (res, url_md5[0:2], url_md5[2:])
+
+        if not os.path.exists(url_filename):
+            if res < img.size[0] or res < img.size[1]: # don't thumbnail if orig is smaller
+                if (img.size[0] > img.size[1]): # preserve aspect ratio
                     size = (res, res * img.size[1] / img.size[0])
                 else:
                     size = (res * img.size[0] / img.size[1], res)
 
                 img = img.resize(size, Image.BICUBIC) #
-                img.save(filename, "JPEG", quality = 75)
+                img.save(url_filename, "JPEG", quality = 75)
 
-                print "%s %4d %s => %s" % (guid, res, orig_filename, filename)
-
-        if os.path.exists(filename):
-            url = "file://" + os.path.abspath(orig_filename)
-            m = md5.new()
-            m.update(url)
-            url_md5 = m.hexdigest()
-            dirs = config_home + "/.griv/cache/by_url/%d/%s" % (res, url_md5[0:2])
-            if not os.access(dirs, os.F_OK):
-                os.makedirs(dirs)
-            url_filename = config_home + "/.griv/cache/by_url/%d/%s/%s.jpg" % (res, url_md5[0:2], url_md5[2:])
-
-            if not os.access(url_filename, os.F_OK):
-                #print "linking: ", filename, url_filename
-                os.link(filename, url_filename)
-                xattr.setxattr(url_filename, "user.griv.url", url)
+                print "%4d %s => %s" % (res, orig_filename, url_filename)
 
 def process_file(pathname):
     if os.path.isdir(pathname): 
@@ -90,9 +67,8 @@ def process_file(pathname):
             process_file(i)        
     elif has_extension(pathname, image_exts):
         try:
-            md5 = get_md5(pathname)
             orig_img = Image.open(pathname)
-            genthumb(pathname, md5, orig_img)
+            genthumb(pathname, orig_img)
 
         except IOError, err:
             print "Image Error:", pathname, err

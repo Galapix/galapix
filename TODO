@@ -3,6 +3,7 @@ Short Term:
 - turn zoom into a float
 - allow smooth zooming
 - add broken-image image or kick them out of the Workspace
+- use epeg for thumb generation
 
 Long Term:
 ==========
