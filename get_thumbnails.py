@@ -21,7 +21,12 @@ def process_file(pathname):
 
 def main(args):
     for pathname in args:
-        process_file(pathname)
+        print pathname
+        if os.path.isdir(pathname): 
+            for i in [os.path.join(pathname, name) for name in os.listdir(pathname)]:
+                main(i)
+        else:
+            process_file(pathname)
 
 res = int(sys.argv[1])
 main(sys.argv[2:])

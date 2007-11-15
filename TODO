@@ -1,3 +1,41 @@
+1920x1080: (64x64) 30x17=510, (32x32) 60x34=2040, (16x16) 120x68=8160, (4x4) 480x270=129600
+~100MB for fullscreen 16x16 Thumbs
+4096 images on 1024x1024 texture at 16x16
+~32 textures for 129600 thumbs
+
+Ideas:
+======
+- store 16x16 thumbnails in a single 1024x1024 jpeg image (easy to use as texture)
+- store filenames in a simple linear list, stuff them into a map/hash on load
+- maybe do the same for 32x32, but that needs benchmarking first
+
+Problems:
+=========
+- initial load is very slow
+- initial thumbnailing is *extremly* slow
+- (!!!!) Fix color format issues
+
+4096 pictures packed in a single JPEG:
+
+  400   /tmp/out-16.jpg
+ 1161   /tmp/out-32.jpg
+ 3704   /tmp/out-64.jpg
+11776   /tmp/out-128.jpg
+37485   /tmp/out-256.jpg
+
+/tmp/out-16.jpg  JPEG   1024x1024 DirectClass  397kb 
+/tmp/out-32.jpg  JPEG   2048x2048 DirectClass  1.1mb
+/tmp/out-64.jpg  JPEG   4096x4096 DirectClass  3.6mb <- use this as pack format, to slow it seems
+/tmp/out-128.jpg JPEG   8192x8192 DirectClass 11.5mb
+/tmp/out-256.jpg JPEG 16384x16384 DirectClass 36.6mb
+
+$ time ./thumbget /tmp/out-64.jpg 128 128 64 64 /tmp/test.jpg
+/tmp/out-64.jpg 128, 128 - 64x64
+
+real    0m1.022s
+user    0m0.876s
+sys     0m0.128s
+
 Short Term:
 ===========
 - add broken-image image or kick them out of the Workspace

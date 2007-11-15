@@ -97,15 +97,18 @@ Loader::process_job()
           SDL_Surface* img = IMG_Load(out.str().c_str());
           if (img)
             {
-              job.image->receive(img);
+              job.image->receive(img, res);
             }
           else
             {
               // No thumbnail, assuming we need the original
-              if (res > 1024)
-                {
+              if (0)
+                { // FIXME: Wonky, gets super slow for some reason
                   img = IMG_Load(job.image->url.substr(7).c_str()); // cut file:// part
-                  job.image->receive(img);
+                  std::cout << "Loading: " << res << " " << img << " " 
+                            << img->w << "x" << img->h << " "
+                            << job.image->url.substr(7) << std::endl;
+                  job.image->receive(img, res);
                 }
             }
         }
@@ -118,7 +121,7 @@ Loader::clear()
 {
   SDL_LockMutex(mutex);
   for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
-      (*i).image->receive(0);
+    (*i).image->receive(0, 0);
 
   jobs.clear();
   SDL_UnlockMutex(mutex);

@@ -50,6 +50,7 @@ private:
   bool zoom_out_pressed;
   int  mouse_x;
   int  mouse_y;
+
 public:
   Griv();
   ~Griv();

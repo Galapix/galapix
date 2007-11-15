@@ -43,21 +43,40 @@ Workspace::Workspace()
 void
 Workspace::draw()
 {
+  glPushMatrix();
+  glRotatef(0.0f, 0.0f, 1.0f, 45.0f);
+
   for(int i = 0; i < int(images.size()); ++i)
     {
       images[i]->draw(x_offset + Framebuffer::get_width()/2,
                       y_offset + Framebuffer::get_height()/2,
                       res);
     }
+  glPopMatrix();
 }
 
 void
 Workspace::update(float delta)
 {
-  for(int i = 0; i < int(images.size()); ++i)
+  if (reorganize)
     {
-      images[i]->update(delta);
-    }  
+      float alpha = (SDL_GetTicks() - reorganize_start) / 500.0f;
+
+      if (alpha < 0)
+        alpha = 0;
+      else if (alpha > 1.0f)
+        {
+          alpha = 1.0f;
+          reorganize = false;
+        }
+
+      //std::cout << alpha << std::endl;
+
+      for(int i = 0; i < int(images.size()); ++i)
+        {
+          images[i]->update(alpha);
+        }
+    }
 }
 
 void
@@ -70,6 +89,9 @@ Workspace::layout(int aspect_w, int aspect_h)
       images[i]->set_pos((i % w) * 1.15f,
                          (i / w) * 1.15f);
     }
+
+  reorganize = true;
+  reorganize_start = SDL_GetTicks();
 }
 
 void
@@ -130,6 +152,12 @@ Workspace::zoom_out(int x, int y, float zoom)
 
   x_offset /= zoom;
   y_offset /= zoom;
+}
+
+void
+Workspace::set_zoom(float zoom)
+{
+  res = zoom;
 }
 
 /* EOF */

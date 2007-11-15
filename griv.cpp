@@ -67,20 +67,44 @@ Griv::process_events(float delta)
                 x_offset = 0;
                 y_offset = 0;
               }
-            else if (event.key.keysym.sym == SDLK_1)
+            else if (event.key.keysym.sym == SDLK_9)
               {
                 workspace->layout(4,3);
                 force_redraw = true;
               }
-            else if (event.key.keysym.sym == SDLK_2)
+            else if (event.key.keysym.sym == SDLK_8)
               {
                 workspace->layout(8,3);
                 force_redraw = true;
               }
-            else if (event.key.keysym.sym == SDLK_3)
+            else if (event.key.keysym.sym == SDLK_7)
               {
                 workspace->layout(16,3);
                 force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_1)
+              {
+                workspace->set_zoom(4.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_2)
+              {
+                workspace->set_zoom(8.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_3)
+              {
+                workspace->set_zoom(16.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_4)
+              {
+                workspace->set_zoom(32.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_5)
+              {
+                workspace->set_zoom(64.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_6)
+              {
+                workspace->set_zoom(128.0f);
               }
             else if (event.key.keysym.sym == SDLK_b)
               {
@@ -191,8 +215,6 @@ Griv::main(int argc, char** argv)
   Uint32 ticks = SDL_GetTicks();
   while(true)
     {
-      force_redraw = true;
-
       Uint32 cticks = SDL_GetTicks();
       int delta = cticks - ticks;
       if (delta > 0)
@@ -203,7 +225,8 @@ Griv::main(int argc, char** argv)
           if (workspace->res != old_res ||
               old_x_offset != x_offset ||
               old_y_offset != y_offset ||
-              (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())))
+              (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())) ||
+              workspace->reorganize)
             {
               force_redraw = false;
 

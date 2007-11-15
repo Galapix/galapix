@@ -36,6 +36,8 @@ class Workspace
 public:
   std::vector<Image*> images;
   float res;
+  bool   reorganize;
+  Uint32 reorganize_start;
   
 public:
   Workspace();
@@ -46,6 +48,8 @@ public:
 
   void zoom_in(int mouse_x, int mouse_y, float zoom);
   void zoom_out(int mouse_x, int mouse_y, float zoom);
+  
+  void set_zoom(float zoom);
 
   int size() { return images.size(); }
   void layout(int w, int h);

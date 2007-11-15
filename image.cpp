@@ -60,7 +60,9 @@ Image::Image(const std::string& url)
     want_res(0),
     image_requested(false),
     x_pos(0),
-    y_pos(0)
+    y_pos(0),
+    last_x_pos(0),
+    last_y_pos(0)
 {
   mutex = SDL_CreateMutex();
 }
@@ -71,7 +73,7 @@ Image::~Image()
 }
 
 void
-Image::receive(SDL_Surface* new_surface)
+Image::receive(SDL_Surface* new_surface, int r)
 { 
   SDL_LockMutex(mutex);
   if (new_surface)
@@ -87,7 +89,7 @@ Image::receive(SDL_Surface* new_surface)
           surface = new_surface;
         }
       
-      res = std::max(surface->w, surface->h);
+      res = r;
 
       force_redraw = true;
     }
@@ -198,17 +200,25 @@ Image::set_pos(float x, float y)
 {
   target_x_pos = x;
   target_y_pos = y;
+  last_x_pos = x_pos;
+  last_y_pos = y_pos;
 }
 
 void
-Image::update(float delta)
+Image::update(float alpha)
 {
-  delta *= 16.0f;
-  if (delta > 1.0f)
-    delta = 1.0f;
-
-  x_pos = (1.0f - delta) * x_pos + delta * target_x_pos;
-  y_pos = (1.0f - delta) * y_pos + delta * target_y_pos;
+  if (alpha == 1.0f)
+    {
+      x_pos = target_x_pos; 
+      y_pos = target_y_pos;
+      last_x_pos = target_x_pos; 
+      last_y_pos = target_y_pos; 
+    }
+  else
+    {
+      x_pos = (alpha) * target_x_pos + (1.0f - alpha) * last_x_pos;
+      y_pos = (alpha) * target_y_pos + (1.0f - alpha) * last_y_pos;
+    }
 }
 
 /* EOF */
