@@ -25,6 +25,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <boost/format.hpp>
 #include <string.h>
 #include "display.hpp"
 #include "texture.hpp"
@@ -33,6 +34,37 @@ Texture::Texture(SDL_Surface* surface)
   : surface(surface),
     handle(0)
 {
+  if (0)
+  std::cout << boost::format(",----------------------------\n"
+                             "| Pointer: 0x%p\n"
+                             "| Size:    %dx%d\n"
+                             "| Pitch:   %d vs %d\n"
+                             "| Rmask:   0x%08x\n"
+                             "| Gmask:   0x%08x\n"
+                             "| Bmask:   0x%08x\n"
+                             "| Amask:   0x%08x\n"
+                             "| Flags:   0x%08x -> %s%s%s%s\n"
+                             "| Palette: 0x%08x\n"
+                             "| BitsPerPixel: %d\n"
+                             "`----------------------------\n"
+                             )
+    % surface
+    % surface->w
+    % surface->h
+    % surface->pitch
+    % (surface->w*3)
+    % surface->format->Rmask
+    % surface->format->Gmask
+    % surface->format->Bmask
+    % surface->format->Amask
+    % surface->flags
+    % ((surface->flags & SDL_HWSURFACE) ? "HWSURFACE " : "")
+    % ((surface->flags & SDL_SWSURFACE) ? "SWSURFACE " : "")
+    % ((surface->flags & SDL_SRCCOLORKEY) ? "SRCCOLORKEY " : "")
+    % ((surface->flags & SDL_SRCALPHA) ? "SRCALPHA " : "")
+    % surface->format->palette
+    % static_cast<int>(surface->format->BitsPerPixel);
+
   glGenTextures(1, &handle);
 
   width  = surface->w;
@@ -67,8 +99,7 @@ Texture::Texture(SDL_Surface* surface)
   glBindTexture(GL_TEXTURE_2D, handle);
   glEnable(GL_TEXTURE_2D);
 
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->pitch/format->BytesPerPixel);
+  glPixelStorei(GL_PACK_ROW_LENGTH, surface->pitch/format->BytesPerPixel);
 
   {
     int res = std::max(surface->w, surface->h);
@@ -84,6 +115,7 @@ Texture::Texture(SDL_Surface* surface)
                  dummy);
   }
   
+  glPixelStorei(GL_PACK_ROW_LENGTH, surface->pitch);
   glTexSubImage2D(GL_TEXTURE_2D, 0, 
                   0, 0, surface->w, surface->h, sdl_format,
                   GL_UNSIGNED_BYTE, surface->pixels);

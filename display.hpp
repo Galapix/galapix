@@ -30,6 +30,7 @@
 #include <GL/glu.h>
 #include <sstream>
 #include <stdexcept>
+#include <math.h>
 #include "SDL.h"
 
 static inline void assert_gl(const char* message)
@@ -58,6 +59,7 @@ public:
 
   static int get_width()  { return screen->w; }
   static int get_height() { return screen->h; }
+  static float get_diagonal() { return sqrt(screen->w*screen->w + screen->h*screen->h); }
   static SDL_Surface* get_screen() { return screen; }
   static void resize(int w, int h);
   static void flip();

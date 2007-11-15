@@ -38,7 +38,8 @@ public:
   float res;
   bool   reorganize;
   Uint32 reorganize_start;
-  
+  float rotation;
+
 public:
   Workspace();
 
@@ -53,6 +54,7 @@ public:
 
   int size() { return images.size(); }
   void layout(int w, int h);
+
 };
 
 #endif

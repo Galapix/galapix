@@ -38,13 +38,23 @@ inline bool has_suffix(const std::string& str, const std::string& suffix)
 Workspace::Workspace()
 {
   res = 4;
+  rotation = 0.0f;
 }
 
 void
 Workspace::draw()
 {
   glPushMatrix();
-  glRotatef(0.0f, 0.0f, 1.0f, 45.0f);
+  if (rotation != 0.0f)
+    {
+      glTranslatef(Framebuffer::get_width()/2, 
+                   Framebuffer::get_height()/2, 
+                   0.0f);
+      glRotatef(rotation, 0.0f, 0.0f, 1.0f);
+      glTranslatef(-Framebuffer::get_width()/2, 
+                   -Framebuffer::get_height()/2,
+                   0.0f);
+    }
 
   for(int i = 0; i < int(images.size()); ++i)
     {

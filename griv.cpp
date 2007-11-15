@@ -106,6 +106,16 @@ Griv::process_events(float delta)
               {
                 workspace->set_zoom(128.0f);
               }
+            else if (event.key.keysym.sym == SDLK_UP)
+              {
+                workspace->rotation = 0.0f;
+                force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_DOWN)
+              {
+                workspace->rotation += 90.0f;
+                force_redraw = true;
+              }
             else if (event.key.keysym.sym == SDLK_b)
               {
                 std::cout << x_offset << ", " << y_offset << std::endl;
@@ -161,6 +171,21 @@ Griv::process_events(float delta)
             break;
         }
     } 
+  
+  int numkeys;
+  Uint8* keys = SDL_GetKeyState(&numkeys);
+
+  if (keys[SDLK_LEFT])
+    {
+      workspace->rotation -= 200.0f * delta;
+      force_redraw = true;
+    }
+  
+  if (keys[SDLK_RIGHT])
+    {
+      workspace->rotation += 200.0f * delta;
+      force_redraw = true;
+    }
 
   float zoom_speed = 3.0f;
 
