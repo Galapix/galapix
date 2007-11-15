@@ -52,14 +52,23 @@ Workspace::draw()
 }
 
 void
+Workspace::update(float delta)
+{
+  for(int i = 0; i < int(images.size()); ++i)
+    {
+      images[i]->update(delta);
+    }  
+}
+
+void
 Workspace::layout(int aspect_w, int aspect_h)
 {
   int w = int(sqrt(aspect_w * images.size() / aspect_h));
 
   for(int i = 0; i < int(images.size()); ++i)
     {
-      images[i]->x_pos = (i % w) * 1.1f;
-      images[i]->y_pos = (i / w) * 1.1f;
+      images[i]->set_pos((i % w) * 1.15f,
+                         (i / w) * 1.15f);
     }
 }
 

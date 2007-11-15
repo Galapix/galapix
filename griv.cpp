@@ -191,6 +191,8 @@ Griv::main(int argc, char** argv)
   Uint32 ticks = SDL_GetTicks();
   while(true)
     {
+      force_redraw = true;
+
       Uint32 cticks = SDL_GetTicks();
       int delta = cticks - ticks;
       if (delta > 0)
@@ -206,6 +208,7 @@ Griv::main(int argc, char** argv)
               force_redraw = false;
 
               Framebuffer::clear();
+              workspace->update(delta / 1000.0f);
               workspace->draw();
               Framebuffer::flip();
 

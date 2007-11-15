@@ -41,6 +41,7 @@ public:
   Workspace();
 
   void draw();
+  void update(float delta);
   void add(const std::string& filename);
 
   void zoom_in(int mouse_x, int mouse_y, float zoom);

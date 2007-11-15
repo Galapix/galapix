@@ -193,4 +193,22 @@ Image::round_res(int r)
     return 1024;
 }
 
+void
+Image::set_pos(float x, float y)
+{
+  target_x_pos = x;
+  target_y_pos = y;
+}
+
+void
+Image::update(float delta)
+{
+  delta *= 16.0f;
+  if (delta > 1.0f)
+    delta = 1.0f;
+
+  x_pos = (1.0f - delta) * x_pos + delta * target_x_pos;
+  y_pos = (1.0f - delta) * y_pos + delta * target_y_pos;
+}
+
 /* EOF */

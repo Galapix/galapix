@@ -80,16 +80,23 @@ public:
 
   SDL_mutex* mutex;
 
+private:
   float x_pos;
   float y_pos;
 
+  float target_x_pos;
+  float target_y_pos;
+
+public:
   Image(const std::string& url);
   ~Image();
 
   void receive(SDL_Surface* new_surface);
   void draw(float x_offset, float y_offset, float res);
+  void update(float delta);
 
   int round_res(int res);
+  void set_pos(float x, float y);
 };
 
 #endif
