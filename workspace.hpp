@@ -47,6 +47,7 @@ public:
   void zoom_out(int mouse_x, int mouse_y, float zoom);
 
   int size() { return images.size(); }
+  void layout(int w, int h);
 };
 
 #endif

@@ -58,7 +58,9 @@ Image::Image(const std::string& url)
     texture_16x16(0),
     res(0),
     want_res(0),
-    image_requested(false)
+    image_requested(false),
+    x_pos(0),
+    y_pos(0)
 {
   mutex = SDL_CreateMutex();
 }
@@ -94,8 +96,11 @@ Image::receive(SDL_Surface* new_surface)
 }
 
 void
-Image::draw(int x, int y, int res)
+Image::draw(float x_offset, float y_offset, float res)
 {
+  float x = x_pos * res + x_offset;
+  float y = y_pos * res + y_offset;
+
   SDL_LockMutex(mutex);
   if (x > Framebuffer::get_width() ||
       y > Framebuffer::get_height() ||
@@ -120,64 +125,50 @@ Image::draw(int x, int y, int res)
       //std::cout << round_res(res) << " " << this->res << std::endl;
 
       if (!image_requested)
-        if (surface == 0 || round_res(res) != this->res)
+        if (surface == 0 || round_res(int(res)) != int(this->res))
           {
             loader.request(this);
-            want_res = round_res(res);
+            want_res = round_res(int(res));
             image_requested = true;
           }
 
-      SDL_Rect dstrect;
-      dstrect.x = x;
-      dstrect.y = y;
-      
-      if (0)
+      if (surface)
         {
-          if (surface)
-            SDL_BlitSurface(surface, NULL, Framebuffer::get_screen(), &dstrect);
-          else if (image_requested)
-            SDL_BlitSurface(placeholder(res), NULL, Framebuffer::get_screen(), &dstrect);        
-        }
-      else
-        {
-          if (surface)
+          if (!texture || texture->surface != surface)
             {
-              if (!texture || texture->surface != surface)
+              if (!texture_16x16)
                 {
-                  if (!texture_16x16)
-                    {
-                      texture_16x16 = new Texture(surface);
-                    }
-                  else
-                    {
-                      delete texture;
-                      texture = new Texture(surface);
-                    }
+                  texture_16x16 = new Texture(surface);
+                }
+              else
+                {
+                  delete texture;
+                  texture = new Texture(surface);
                 }
             }
+        }
 
-          if (texture || texture_16x16)
-            {
-              if (texture)
-                texture->bind();
-              else if (texture_16x16)
-                texture_16x16->bind();
+      if (texture || texture_16x16)
+        {
+          if (texture)
+            texture->bind();
+          else if (texture_16x16)
+            texture_16x16->bind();
 
-              glColor3f(1.0f, 1.0f, 1.0f);
-              glBegin(GL_QUADS);
-              glTexCoord2f(0,0);
-              glVertex2i(x, y);
+          glColor3f(1.0f, 1.0f, 1.0f);
+          glBegin(GL_QUADS);
+          glTexCoord2f(0,0);
+          glVertex2f(x, y);
 
-              glTexCoord2f(1,0);
-              glVertex2i(x + res, y);
+          glTexCoord2f(1,0);
+          glVertex2f(x + res, y);
 
-              glTexCoord2f(1,1);
-              glVertex2i(x + res, y + res);
+          glTexCoord2f(1,1);
+          glVertex2f(x + res, y + res);
 
-              glTexCoord2f(0,1);
-              glVertex2i(x, y + res);
-              glEnd();
-            }
+          glTexCoord2f(0,1);
+          glVertex2f(x, y + res);
+          glEnd();
         }
     }
   SDL_UnlockMutex(mutex);

@@ -67,6 +67,21 @@ Griv::process_events(float delta)
                 x_offset = 0;
                 y_offset = 0;
               }
+            else if (event.key.keysym.sym == SDLK_1)
+              {
+                workspace->layout(4,3);
+                force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_2)
+              {
+                workspace->layout(8,3);
+                force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_3)
+              {
+                workspace->layout(16,3);
+                force_redraw = true;
+              }
             else if (event.key.keysym.sym == SDLK_b)
               {
                 std::cout << x_offset << ", " << y_offset << std::endl;
@@ -154,6 +169,7 @@ Griv::main(int argc, char** argv)
     {
       workspace->add(argv[i]);
     }
+  workspace->layout(4,3);
   std::cout << " done" << std::endl;
 
   std::cout << workspace->size() << " images scanned" << std::endl;

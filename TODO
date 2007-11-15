@@ -12,6 +12,10 @@ FUSER=henry-gail; for i in $(seq 1 67); do wget -c http://flickr.com/photos/${FU
 # Get photo id's
  grep -i "farm[0-9]" * | sed "s/.*http:/http:/" | cut -c 37-46 | sort -n | uniq > /tmp/ids
 
+ or 
+
+ grep -i "farm[0-9]" * | sed "s/.*http:/http:/" | cut -c 37- | sed "s/_.*//" | grep -v dyic | sort -n | uniq
+
 # download photos
  (for i in $(cat ../ids); do wget -U mozilla -e robots=off -c -p -H --exclude-domain yahoo.com,yimg.com -p "http://flickr.com/photo_zoom.gne?id=${i}&size=o" --load-cookies /tmp/cookies.txt; done )
 

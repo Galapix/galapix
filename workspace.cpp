@@ -43,12 +43,23 @@ Workspace::Workspace()
 void
 Workspace::draw()
 {
-  int w = int(sqrt(4 * images.size() / 3));
   for(int i = 0; i < int(images.size()); ++i)
     {
-      images[i]->draw(int((i % w) * (res+res/32) + x_offset + Framebuffer::get_width()/2),
-                      int((i / w) * (res+res/32) + y_offset + Framebuffer::get_height()/2),
-                      int(res));
+      images[i]->draw(x_offset + Framebuffer::get_width()/2,
+                      y_offset + Framebuffer::get_height()/2,
+                      res);
+    }
+}
+
+void
+Workspace::layout(int aspect_w, int aspect_h)
+{
+  int w = int(sqrt(aspect_w * images.size() / aspect_h));
+
+  for(int i = 0; i < int(images.size()); ++i)
+    {
+      images[i]->x_pos = (i % w) * 1.1f;
+      images[i]->y_pos = (i / w) * 1.1f;
     }
 }
 
@@ -67,8 +78,7 @@ Workspace::add(const std::string& filename)
         }
     }
   else if (has_suffix(filename, ".jpg") ||
-           has_suffix(filename, ".JPG")
-           )
+           has_suffix(filename, ".JPG"))
     {
       std::string url = "file://" + Filesystem::realpath(filename);
       images.push_back(new Image(url));

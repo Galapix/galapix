@@ -23,7 +23,7 @@ else:
             for res in [2048, 1024, 512, 256, 128, 64, 32, 16]:
                 dir = config_home + "/.griv/cache/%s/%d/%s" % (org, res, hex)
                 if not os.access(dir, os.F_OK):
-                    os.mkdir(dir)
+                    os.makedirs(dir)
                     print "Created", dir
 
 def has_extension(filename, extensions):
