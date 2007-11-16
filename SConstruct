@@ -1,9 +1,12 @@
 # -*- python -*-
 
-libgriv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g"])
+libgriv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g"])
 libgriv = libgriv_env.StaticLibrary('griv', ['filesystem.cpp', 'md5.cpp'])
 
-griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g"], LIBS=[libgriv, 'SDL_image', 'mhash', 'GL', 'GLU', 'epeg'])
+libepeg_env = Environment(CCFLAGS=["-Wall", "-O2", "-g"])
+libepeg = libepeg_env.StaticLibrary('epeg', ['epeg/epeg_main.c'])
+
+griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g"], LIBS=[libgriv, libepeg, 'SDL_image', 'jpeg', 'mhash', 'GL', 'GLU'])
 griv_env.ParseConfig("sdl-config --libs --cflags")
 
 griv_env.Program('griv', ['griv.cpp',
@@ -14,10 +17,10 @@ griv_env.Program('griv', ['griv.cpp',
                           'texture.cpp', 
                           'workspace.cpp'])
 
-thumbget_env = Environment(CCFLAGS=['-Wall', '-Werror', '-O0', '-g'], LIBS=['epeg'])
+thumbget_env = Environment(CCFLAGS=['-Wall', '-Werror', '-O2', '-g'], LIBS=[libepeg, 'jpeg'])
 thumbget_env.Program('thumbget', ['thumbget.cpp'])
 
-thumbgen_env = Environment(CCFLAGS=['-Wall', '-Werror', '-O0', '-g'], LIBS=[libgriv, 'epeg', 'mhash'])
+thumbgen_env = Environment(CCFLAGS=['-Wall', '-Werror', '-O2', '-g'], LIBS=[libgriv, libepeg, 'jpeg', 'mhash'])
 thumbgen_env.Program('thumbgen', ['thumbgen.cpp'])
 
 # EOF #

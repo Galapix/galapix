@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <iostream>
-#include <Epeg.h>
+#include "epeg/Epeg.h"
 #include <mhash.h>
 #include "filesystem.hpp"
 
@@ -53,7 +53,7 @@ void generate_thumbnails(const std::string& filename)
 
           if (w > sizes[i] || h > sizes[i])
             {
-              epeg_quality_set(img, 75);
+              epeg_quality_set(img, 80);
               epeg_thumbnail_comments_enable(img, 1);
 
               if (w > h)

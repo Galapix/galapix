@@ -1,6 +1,6 @@
 // Little experimental epeg test app
 
-#include <Epeg.h>
+#include "epeg/Epeg.h"
 #include <iostream>
 
 int main(int argc, char** argv)

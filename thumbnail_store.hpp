@@ -33,6 +33,7 @@
 class ThumbnailStore
 {
 private:
+
 public:
   ThumbnailStore();
   ~ThumbnailStore();

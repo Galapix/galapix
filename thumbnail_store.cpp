@@ -23,7 +23,7 @@
 **  02111-1307, USA.
 */
 
-#include <Epeg.h>
+#include "epeg/Epeg.h"
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
@@ -83,7 +83,7 @@ ThumbnailStore::generate(const std::string& filename, const std::string& thumb_l
 
   if (w > thumb_size || h > thumb_size)
     {
-      epeg_quality_set(img, 75);
+      epeg_quality_set(img, 80);
       epeg_thumbnail_comments_enable(img, 1);
 
       if (w > h)
