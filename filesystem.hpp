@@ -37,6 +37,7 @@ private:
 public:
   static bool is_directory(const std::string& pathname);
   static bool exist(const std::string& pathname);
+  static void mkdir(const std::string& pathname);
   static std::vector<std::string> open_directory(const std::string& pathname);
   static std::string getxattr(const std::string& pathname);
   static std::string get_home() { return home_directory; }

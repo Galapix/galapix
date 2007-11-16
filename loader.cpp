@@ -31,6 +31,7 @@
 #include "SDL_image.h"
 #include "image.hpp"
 #include "loader.hpp"
+#include "thumbnail_store.hpp"
 
 Loader loader;
 
@@ -38,6 +39,7 @@ Loader::Loader()
 {
   mutex  = SDL_CreateMutex();
   thread = 0;
+  store  = 0;
 }
 
 Loader::~Loader()
@@ -61,6 +63,10 @@ Loader::thread_func(void*)
 void
 Loader::launch_thread()
 {
+  if (!store)
+    {
+      store = new ThumbnailStore();
+    }
   thread = SDL_CreateThread(&Loader::thread_func, 0);
 }
 
@@ -86,15 +92,7 @@ Loader::process_job()
 
       if (job.image->res != res && res != 0)
         {
-          // Unlock
-          std::string m = MD5::md5_string(job.image->url);
-          std::ostringstream out;
-          out << Filesystem::get_home() << "/.griv/cache/by_url/"
-              << res << "/" << m.substr(0,2) << "/" << m.substr(2) << ".jpg";
-
-          //std::cout << "Loading: " << job.filename << std::endl;
-          //std::cout << out.str() << std::endl;
-          SDL_Surface* img = IMG_Load(out.str().c_str());
+          SDL_Surface* img = store->get_by_url(job.image->url, res);
           if (img)
             {
               job.image->receive(img, res);

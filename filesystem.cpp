@@ -23,12 +23,16 @@
 **  02111-1307, USA.
 */
 
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include <stdexcept>
 #include <iostream>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <boost/format.hpp>
 //#include <attr/xattr.h>
 
 #include "filesystem.hpp"
@@ -105,6 +109,39 @@ Filesystem::init()
   else
     {
       throw std::runtime_error("Couldn't get HOME environment variable");
+    }
+
+  mkdir(home_directory + "/.griv");
+  mkdir(home_directory + "/.griv/cache");
+  mkdir(home_directory + "/.griv/cache/by_url");
+
+  std::string base = home_directory + "/.griv/cache/by_url";
+  std::string hex  = "0123456789abcdef";
+  int res[]  = { 16, 32, 64, 128, 256, 512, 1024 };
+  for(size_t r = 0; r < 7; ++r)
+    {
+      Filesystem::mkdir((boost::format("%s/%d") % base % res[r]).str());
+      for(std::string::iterator i = hex.begin(); i != hex.end(); ++i)
+        for(std::string::iterator j = hex.begin(); j != hex.end(); ++j)
+          {
+            Filesystem::mkdir((boost::format("%s/%d/%c%c") % base % res[r] % *i % *j).str());
+          }
+    }
+}
+
+void
+Filesystem::mkdir(const std::string& pathname)
+{
+  if (!Filesystem::exist(pathname))
+    {
+      if (::mkdir(pathname.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP) != 0)
+	{
+	  throw std::runtime_error("Filesystem::mkdir: " + pathname + ": " + strerror(errno));
+	}
+      else
+	{
+	  std::cout << "Filesystem::mkdir: " << pathname << std::endl;
+	}
     }
 }
 

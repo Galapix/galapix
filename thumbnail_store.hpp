@@ -26,6 +26,9 @@
 #ifndef HEADER_THUMBNAIL_STORE_HPP
 #define HEADER_THUMBNAIL_STORE_HPP
 
+#include "SDL.h"
+#include <string>
+
 /** */
 class ThumbnailStore
 {
@@ -34,9 +37,9 @@ public:
   ThumbnailStore();
   ~ThumbnailStore();
 
-  SDL_Surface* get_by_url(const std::string& url, int res);
+  SDL_Surface* get_by_url(const std::string& url, int thumb_size);
   
-  void generate(const std::string& filename);
+  void generate(const std::string& filename, const std::string& thumb_location, int thumb_size);
 
 private:
   ThumbnailStore (const ThumbnailStore&);

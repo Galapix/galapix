@@ -24,6 +24,11 @@
 */
 
 #include <Epeg.h>
+#include <sstream>
+#include <iostream>
+#include <stdexcept>
+#include "SDL_image.h"
+#include "filesystem.hpp"
 #include "md5.hpp"
 #include "thumbnail_store.hpp"
 
@@ -37,25 +42,27 @@ ThumbnailStore::~ThumbnailStore()
 }
 
 SDL_Surface* 
-ThumbnailStore::get_by_url(const std::string& url, int res) // URL is file://... *not* just a pathname
+ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is file://... *not* just a pathname
 {
   std::string md5 = MD5::md5_string(url);
 
   std::ostringstream out;
   out << Filesystem::get_home() << "/.griv/cache/by_url/"
-      << res << "/" << md5.substr(0,2) << "/" << md5.substr(2) << ".jpg";
+      << thumb_size << "/" << md5.substr(0,2) << "/" << md5.substr(2) << ".jpg";
   
   std::string thumb_filename = out.str();
   SDL_Surface* img = IMG_Load(thumb_filename.c_str());
 
   if (!img)
     {
+      // Try to generate the thumbnail
       try {
-        generate(url.substr(7)); // cut file:// part
+        generate(url.substr(7), thumb_filename, thumb_size); // cut file:// part
       } catch (std::exception& err) {
         std::cout << err.what() << std::endl;
         return 0;
       }
+
       img = IMG_Load(thumb_filename.c_str());
     }
 
@@ -63,7 +70,7 @@ ThumbnailStore::get_by_url(const std::string& url, int res) // URL is file://...
 }
 
 void
-ThumbnailStore::generate(const std::string& filename, int thumb_size)
+ThumbnailStore::generate(const std::string& filename, const std::string& thumb_location, int thumb_size)
 {
   Epeg_Image* img = epeg_file_open(filename.c_str());
   if (!img)
@@ -86,13 +93,10 @@ ThumbnailStore::generate(const std::string& filename, int thumb_size)
   
       epeg_decode_colorspace_set(img, EPEG_RGB8);
 
-      std::ostringstream str;
-      str << Filesystem::get_home() << "/.griv/cache/by_url/"
-          << thumb_size << "/" << m.substr(0,2) << "/" << m.substr(2) << ".jpg";
+      std::cout << "." << std::flush;
+      //std::cout << thumb_size << " - " << filename << " => " << thumb_location << std::endl;
 
-      std::cout << thumb_size << " - " << filename << " => " << str.str() << std::endl;
-
-      epeg_file_output_set(img, str.str().c_str());
+      epeg_file_output_set(img, thumb_location.c_str());
       epeg_encode(img);
     }
       

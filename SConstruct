@@ -3,12 +3,13 @@
 libgriv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g"])
 libgriv = libgriv_env.StaticLibrary('griv', ['filesystem.cpp', 'md5.cpp'])
 
-griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g"], LIBS=[libgriv, 'SDL_image', 'mhash', 'GL', 'GLU'])
+griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g"], LIBS=[libgriv, 'SDL_image', 'mhash', 'GL', 'GLU', 'epeg'])
 griv_env.ParseConfig("sdl-config --libs --cflags")
 
 griv_env.Program('griv', ['griv.cpp',
                           'loader.cpp',
                           'image.cpp',
+                          'thumbnail_store.cpp',
                           'display.cpp', 
                           'texture.cpp', 
                           'workspace.cpp'])

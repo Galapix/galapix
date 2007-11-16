@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 
+class ThumbnailStore;
 class Image;
 
 struct Job
@@ -49,6 +50,7 @@ class Loader
 private:
   typedef std::vector<Job> Jobs;
   Jobs jobs;
+  ThumbnailStore* store;
   SDL_mutex* mutex;
   SDL_Thread* thread;
 
