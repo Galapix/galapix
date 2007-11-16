@@ -23,28 +23,24 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_FILESYSTEM_HPP
-#define HEADER_FILESYSTEM_HPP
+#ifndef HEADER_THUMBNAIL_STORE_HPP
+#define HEADER_THUMBNAIL_STORE_HPP
 
-#include <string>
-#include <vector>
-
-class Filesystem
+/** */
+class ThumbnailStore
 {
 private:
-  static std::string home_directory;
-
 public:
-  static bool is_directory(const std::string& pathname);
-  static bool exist(const std::string& pathname);
-  static std::vector<std::string> open_directory(const std::string& pathname);
-  static std::string getxattr(const std::string& pathname);
-  static std::string get_home() { return home_directory; }
-  static std::string realpath(const std::string& pathname);
-  static bool has_extension(const std::string& pathname, const std::string& ext);
+  ThumbnailStore();
+  ~ThumbnailStore();
+
+  SDL_Surface* get_by_url(const std::string& url, int res);
   
-  static void init();
-  static void deinit();
+  void generate(const std::string& filename);
+
+private:
+  ThumbnailStore (const ThumbnailStore&);
+  ThumbnailStore& operator= (const ThumbnailStore&);
 };
 
 #endif

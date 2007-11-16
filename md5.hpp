@@ -23,28 +23,16 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_FILESYSTEM_HPP
-#define HEADER_FILESYSTEM_HPP
+#ifndef HEADER_MD5_HPP
+#define HEADER_MD5_HPP
 
 #include <string>
-#include <vector>
 
-class Filesystem
+class MD5
 {
-private:
-  static std::string home_directory;
-
 public:
-  static bool is_directory(const std::string& pathname);
-  static bool exist(const std::string& pathname);
-  static std::vector<std::string> open_directory(const std::string& pathname);
-  static std::string getxattr(const std::string& pathname);
-  static std::string get_home() { return home_directory; }
-  static std::string realpath(const std::string& pathname);
-  static bool has_extension(const std::string& pathname, const std::string& ext);
-  
-  static void init();
-  static void deinit();
+  static std::string md5_string(const std::string& str);
+  static std::string md5_file(const std::string& filename);
 };
 
 #endif

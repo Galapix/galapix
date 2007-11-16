@@ -26,6 +26,7 @@
 #include <iostream>
 #include <iomanip>
 #include <stdexcept>
+#include "md5.hpp"
 #include "filesystem.hpp"
 #include "SDL_image.h"
 #include "image.hpp"
@@ -86,8 +87,7 @@ Loader::process_job()
       if (job.image->res != res && res != 0)
         {
           // Unlock
-      
-          std::string m = this->md5(job.image->url);
+          std::string m = MD5::md5_string(job.image->url);
           std::ostringstream out;
           out << Filesystem::get_home() << "/.griv/cache/by_url/"
               << res << "/" << m.substr(0,2) << "/" << m.substr(2) << ".jpg";
@@ -131,25 +131,6 @@ bool
 Loader::empty()
 {
   return jobs.empty();
-}
-
-std::string
-Loader::md5(const std::string& str)
-{
-  unsigned char hash[16]; /* enough size for MD5 */
-  MHASH td = mhash_init(MHASH_MD5);
-  if (td == MHASH_FAILED) 
-    throw std::runtime_error("Failed to init MHash");
-  
-  mhash(td, str.c_str(), str.length());
-  
-  mhash_deinit(td, hash);
-
-  std::ostringstream out;
-  for (int i = 0; i < 16; i++) 
-    out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
-
-  return out.str();
 }
 
 /* EOF */

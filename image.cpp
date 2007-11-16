@@ -179,21 +179,21 @@ Image::draw(float x_offset, float y_offset, float res)
 int
 Image::round_res(int r)
 {
-  if (0)
+  if (1)
     { // low quality
-      if (r <= 32)
+      if (r < 32)
         return 16;
-      else if (r <= 64)
+      else if (r < 64)
         return 32;
-      else if (r <= 128)
+      else if (r < 128)
         return 64;
-      else if (r <= 256)
+      else if (r < 256)
         return 128;
-      else if (r <= 512)
+      else if (r < 512)
         return 256;
       else if (r < 1024)
         return 512;
-      else // if (r <= 1024) // zoom limit, 2048 textures make the thing crash
+      else // if (r < 1024) // zoom limit, 2048 textures make the thing crash
         return 1024;
     }
   else

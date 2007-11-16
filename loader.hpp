@@ -32,8 +32,6 @@
 #include <string>
 #include <vector>
 
-#include <mhash.h>
-
 class Image;
 
 struct Job
@@ -66,7 +64,6 @@ public:
   void process_job();
   void clear();
   bool empty();
-  std::string md5(const std::string& str);
 
 private:
   Loader (const Loader&);

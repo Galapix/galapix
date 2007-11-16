@@ -13,7 +13,6 @@ Problems:
 =========
 - initial load is very slow
 - initial thumbnailing is *extremly* slow
-- (!!!!) Fix color format issues
 
 4096 pictures packed in a single JPEG:
 
@@ -45,7 +44,7 @@ cvs -z3 -d :pserver:anonymous@anoncvs.enlightenment.org:/var/cvs/e export e17/li
 # Flickr Download:
 
 # Download index files
-FUSER=henry-gail; for i in $(seq 1 67); do wget -c http://flickr.com/photos/${FUSER}/page${i}/ -O index-${FUSER}-${i}.html; done
+FUSER=henry-gail for i in $(seq 1 67); do wget -c http://flickr.com/photos/${FUSER}/page${i}/ -O index-${FUSER}-${i}.html; done
 
 # Get photo id's
  grep -i "farm[0-9]" * | sed "s/.*http:/http:/" | cut -c 37-46 | sort -n | uniq > /tmp/ids
@@ -55,7 +54,7 @@ FUSER=henry-gail; for i in $(seq 1 67); do wget -c http://flickr.com/photos/${FU
  grep -i "farm[0-9]" * | sed "s/.*http:/http:/" | cut -c 37- | sed "s/_.*//" | grep -v dyic | sort -n | uniq
 
 # download photos
- (for i in $(cat ../ids); do wget -U mozilla -e robots=off -c -p -H --exclude-domain yahoo.com,yimg.com -p "http://flickr.com/photo_zoom.gne?id=${i}&size=o" --load-cookies /tmp/cookies.txt; done )
+ (for i in $(cat ../ids); do wget -U mozilla -e robots=off -c -p -H   --exclude-domain yahoo.com,yimg.com -p "http://flickr.com/photo_zoom.gne?id=${i}&size=o" --load-cookies /tmp/cookies.txt; done )
 
 - store by md5 and use hardlinks, thus avoid duplicates when files are moved
 
