@@ -32,6 +32,7 @@
 extern float x_offset;
 extern float y_offset;
 extern bool force_redraw;
+extern bool highquality;
 
 class Workspace;
 

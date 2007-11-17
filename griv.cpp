@@ -16,6 +16,7 @@ float x_offset = 0.0f;
 float y_offset = 0.0f;
 std::string config_home;
 bool force_redraw = true;
+bool highquality  = true;
 
 Griv::Griv()
 {
@@ -67,6 +68,12 @@ Griv::process_events(float delta)
                 x_offset = 0;
                 y_offset = 0;
               }
+            else if (event.key.keysym.sym == SDLK_h)
+              {
+                highquality = !highquality;
+                force_redraw = true;
+                std::cout << "Highquality: " << highquality << std::endl;
+              }
             else if (event.key.keysym.sym == SDLK_9)
               {
                 workspace->layout(4,3);
@@ -84,27 +91,27 @@ Griv::process_events(float delta)
               }
             else if (event.key.keysym.sym == SDLK_1)
               {
-                workspace->set_zoom(4.0f);
+                workspace->set_zoom(16.0f);
               }
             else if (event.key.keysym.sym == SDLK_2)
               {
-                workspace->set_zoom(8.0f);
+                workspace->set_zoom(32.0f);
               }
             else if (event.key.keysym.sym == SDLK_3)
               {
-                workspace->set_zoom(16.0f);
+                workspace->set_zoom(64.0f);
               }
             else if (event.key.keysym.sym == SDLK_4)
               {
-                workspace->set_zoom(32.0f);
+                workspace->set_zoom(128.0f);
               }
             else if (event.key.keysym.sym == SDLK_5)
               {
-                workspace->set_zoom(64.0f);
+                workspace->set_zoom(256.0f);
               }
             else if (event.key.keysym.sym == SDLK_6)
               {
-                workspace->set_zoom(128.0f);
+                workspace->set_zoom(512.0f);
               }
             else if (event.key.keysym.sym == SDLK_UP)
               {

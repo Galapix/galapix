@@ -179,7 +179,7 @@ Image::draw(float x_offset, float y_offset, float res)
 int
 Image::round_res(int r)
 {
-  if (1)
+  if (!highquality)
     { // low quality
       if (r < 32)
         return 16;
