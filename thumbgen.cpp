@@ -87,113 +87,147 @@ void parse_number_list(const std::string& str, std::vector<int>& sizes)
 {
   // FIXME: implement me
   // FIXME: add handling for "16,32,64"
-  sizes.push_back(atoi(str.c_str()));
+
+  int begin = 0;
+  for(int i = 1; i <= int(str.size()); ++i)
+    {
+      if (str[i] == ',' || i == int(str.size()))
+        {
+          if (i - begin > 0)
+            {
+              int j;
+              if (sscanf(str.substr(begin, i - begin).c_str(), "%d", &j) == 1)
+                {
+                  if (j < 16)
+                    throw std::runtime_error("thumb size below 16 not supported");
+                  else if (j > 1024)
+                    throw std::runtime_error("thumb size larger then 1024 not supported");
+                  else if ((j & (j - 1)) != 0)
+                    throw std::runtime_error("thumb size must be power of two");
+                  else
+                    sizes.push_back(j);
+                }
+              else
+                throw std::runtime_error("argument not a number");
+            }
+          begin = i + 1;
+        }
+    }
 }
 
 int main(int argc, char** argv)
 {
-  CommandLine argp;
-      
-  argp.add_usage("[OPTION]... [FILE]...");
-  argp.add_doc("A offline thumbnail generator for griv\n");
-  argp.add_option('s', "size", "NUM,...", "Generate thumbnails for the given sizes (default: 16)");
-  argp.add_option('v', "verbose", "", "Print more detailed output on generation");
-  argp.add_option('q', "quality", "NUM", "JPEG quality used for thumbnailing, range 1-100 (default: 80)");
-  argp.add_option('h', "help", "", "Print this help");
-
   try {
-    argp.parse_args(argc, argv);
-  } catch(std::exception& err) {
-    std::cout << "Error: CommandLine: " << err.what() << std::endl;
-    exit(EXIT_FAILURE);
-  }
+    CommandLine argp;
+      
+    argp.add_usage("[OPTION]... [FILE]...");
+    argp.add_doc("A offline thumbnail generator for griv\n");
+    argp.add_option('s', "size", "NUM,...", "Generate thumbnails for the given sizes (default: 16)");
+    argp.add_option('v', "verbose", "", "Print more detailed output on generation");
+    argp.add_option('q', "quality", "NUM", "JPEG quality used for thumbnailing, range 1-100 (default: 80)");
+    argp.add_option('h', "help", "", "Print this help");
 
-  int quality = 80;
-  std::vector<int> sizes;
-  std::vector<std::string> pathnames;
-  while(argp.next())
-    {
-      switch(argp.get_key())
-        {
-          case 's':
-            parse_number_list(argp.get_argument(), sizes);
-            break;
-
-          case 'q':
-            quality = atoi(argp.get_argument().c_str());
-            break;
-
-          case 'v':
-            verbose = true;
-            break;
-
-          case 'h':
-            argp.print_help();
-            exit(EXIT_SUCCESS);
-            break;
-
-          case CommandLine::REST_ARG:
-            pathnames.push_back(argp.get_argument());
-            break;
-
-          default:
-            std::cout << "Unhandled argument: " << argp.get_key() << std::endl;
-            exit(EXIT_FAILURE);
-            break;
-        }
-    };
-  
-  if (sizes.empty())
-    sizes.push_back(16);
-
-  if (pathnames.empty())
-    {
-      argp.print_help();
+    try {
+      argp.parse_args(argc, argv);
+    } catch(std::exception& err) {
+      std::cout << "Error: CommandLine: " << err.what() << std::endl;
+      exit(EXIT_FAILURE);
     }
-  else
-    {
-      Filesystem::init();
 
-      std::cout << "Generating file list... " << std::flush;
-      std::vector<std::string> file_list;
-      for(std::vector<std::string>::iterator i = pathnames.begin(); i != pathnames.end(); ++i)
-        generate_file_list(*i, file_list);
-      std::cout << "done" << std::endl;;
+    int quality = 80;
+    std::vector<int> sizes;
+    std::vector<std::string> pathnames;
+    while(argp.next())
+      {
+        switch(argp.get_key())
+          {
+            case 's':
+              parse_number_list(argp.get_argument(), sizes);
+              break;
 
-      int progress_scale = 70;
-      int progress = 0;
-      int last_progress = 0;
-      std::cout << "Generating thumbnails...\n" << std::flush;
-      for(std::vector<std::string>::iterator i = file_list.begin(); i != file_list.end(); ++i)
-        {
-          try {
-            generate_thumbnails(*i, quality, sizes);
-          } catch(std::exception& err) {
-            std::cout << "Error: " << err.what() << std::endl;
+            case 'q':
+              quality = atoi(argp.get_argument().c_str());
+              break;
+
+            case 'v':
+              verbose = true;
+              break;
+
+            case 'h':
+              argp.print_help();
+              exit(EXIT_SUCCESS);
+              break;
+
+            case CommandLine::REST_ARG:
+              pathnames.push_back(argp.get_argument());
+              break;
+
+            default:
+              std::cout << "Unhandled argument: " << argp.get_key() << std::endl;
+              exit(EXIT_FAILURE);
+              break;
           }
+      };
+  
+    if (sizes.empty())
+      sizes.push_back(16);
 
-          progress = progress_scale * (i - file_list.begin() + 1) / file_list.size();
+    if (pathnames.empty())
+      {
+        argp.print_help();
+      }
+    else
+      {
+        Filesystem::init();
 
-          if (progress != last_progress)
-            {
-              last_progress = progress;
+        std::cout << "Generating file list... " << std::flush;
+        std::vector<std::string> file_list;
+        for(std::vector<std::string>::iterator i = pathnames.begin(); i != pathnames.end(); ++i)
+          generate_file_list(*i, file_list);
+        std::cout << "done" << std::endl;;
 
-              std::cout << "[";
-              for(int i = 0; i < progress_scale; ++i)
-                {
-                  if (i <= progress)
-                    std::cout.put('#');
-                  else
-                    std::cout.put(' ');
-                }
-              std::cout << "]\r" << std::flush;
+        int progress_scale = 70;
+        int progress = 0;
+        int last_progress = 0;
+        std::cout << "Generating thumbnails for " << std::flush;
+
+        for(std::vector<int>::iterator i = sizes.begin(); i != sizes.end(); ++i)
+          std::cout << *i << " " << std::flush;
+
+        std::cout << std::endl;
+
+        for(std::vector<std::string>::iterator i = file_list.begin(); i != file_list.end(); ++i)
+          {
+            try {
+              generate_thumbnails(*i, quality, sizes);
+            } catch(std::exception& err) {
+              std::cout << "Error: " << err.what() << std::endl;
             }
-        }
-      std::cout << "\ndone" << std::endl;;
-    }
 
-  Filesystem::deinit();
+            progress = progress_scale * (i - file_list.begin() + 1) / file_list.size();
 
+            if (progress != last_progress)
+              {
+                last_progress = progress;
+
+                std::cout << "[";
+                for(int i = 0; i < progress_scale; ++i)
+                  {
+                    if (i <= progress)
+                      std::cout.put('#');
+                    else
+                      std::cout.put(' ');
+                  }
+                std::cout << "]\r" << std::flush;
+              }
+          }
+        std::cout << "\ndone" << std::endl;;
+      }
+
+    Filesystem::deinit();
+  } catch(std::exception& err) {
+    std::cout << "Error: " << err.what() << std::endl;
+  }
   return 0;
 }
 
