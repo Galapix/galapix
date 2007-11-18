@@ -23,28 +23,45 @@
 **  02111-1307, USA.
 */
 
+#include <assert.h>
 #include "display.hpp"
 #include "surface.hpp"
 
-Surface::Surface()
-  : surface(0)
+Surface::Surface(SDL_Surface* surface, int res)
+  : surface(surface),
+    res(res)
 {
+  assert(surface);
+  texture = new Texture(surface);
 }
 
 Surface::~Surface()
 {
+  SDL_FreeSurface(surface);
 }
 
 void
-Surface::draw(int x, int y)
+Surface::draw(float x, float y, float w, float h)
 {
   if (surface)
     {
-      SDL_Rect dstrect;
-      dstrect.x = x;
-      dstrect.y = y;
+      texture->bind();
       
-      SDL_BlitSurface(surface, NULL, Display::get_screen(), &dstrect);
+      glColor3f(1.0f, 1.0f, 1.0f);
+
+      glBegin(GL_QUADS);
+      glTexCoord2f(0,0);
+      glVertex2f(x, y);
+
+      glTexCoord2f(1,0);
+      glVertex2f(x + w, y);
+
+      glTexCoord2f(1,1);
+      glVertex2f(x + w, y + h);
+
+      glTexCoord2f(0,1);
+      glVertex2f(x, y + h);
+      glEnd();
     }
 }
 

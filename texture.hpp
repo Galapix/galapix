@@ -33,8 +33,6 @@
 /** */
 class Texture
 {
-public:
-  SDL_Surface* surface;
 private:
   GLuint handle;
 

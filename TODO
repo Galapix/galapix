@@ -1,18 +1,32 @@
+ToDo:
+=====
+
+- store 16x16 thumbnails in a container format, simple uncompressed
+  RGB, store filenames in a simple linear list, stuff them into a
+  map/hash on load
+
+- implement Surface class that handles images larger then the maximum
+  texture size
+
+- added support for ~/.thumbnails/ to get the smaller mipmaps faster
+
+- create a two OpenGL context to allow better multithreading use (any
+  way to do it portable?)
+
+- move over input code from Pingus to support Spacenavigator and such
+
+
+Misc Stuff:
+===========
+
 1920x1080: (64x64) 30x17=510, (32x32) 60x34=2040, (16x16) 120x68=8160, (4x4) 480x270=129600
 ~100MB for fullscreen 16x16 Thumbs
 4096 images on 1024x1024 texture at 16x16
 ~32 textures for 129600 thumbs
 
-Ideas:
-======
-- store 16x16 thumbnails in a single 1024x1024 jpeg image (easy to use as texture)
-- store filenames in a simple linear list, stuff them into a map/hash on load
-- maybe do the same for 32x32, but that needs benchmarking first
-
 Problems:
 =========
 - initial load is very slow
-- initial thumbnailing is *extremly* slow
 
 4096 pictures packed in a single JPEG:
 
@@ -35,10 +49,8 @@ real    0m1.022s
 user    0m0.876s
 sys     0m0.128s
 
-Short Term:
-===========
-- add broken-image image or kick them out of the Workspace
-- use epeg for thumb generation
+Getting pictures for testing from Flickr:
+=========================================
 
 cvs -z3 -d :pserver:anonymous@anoncvs.enlightenment.org:/var/cvs/e export e17/libs/epeg
 # Flickr Download:
@@ -57,11 +69,5 @@ FUSER=henry-gail for i in $(seq 1 67); do wget -c http://flickr.com/photos/${FUS
  (for i in $(cat ../ids); do wget -U mozilla -e robots=off -c -p -H   --exclude-domain yahoo.com,yimg.com -p "http://flickr.com/photo_zoom.gne?id=${i}&size=o" --load-cookies /tmp/cookies.txt; done )
 
 - store by md5 and use hardlinks, thus avoid duplicates when files are moved
-
-Long Term:
-==========
-- move position into Image
-- handle object placement elsewhere
-- added support for ~/.thumbnails/ to get the smaller mipmaps faster
 
 # EOF #

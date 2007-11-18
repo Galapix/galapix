@@ -31,52 +31,21 @@
 #include "loader.hpp"
 #include "griv.hpp"
 
-class Texture;
+class Surface;
 
 class Image
 {
 public:
-  // Place holder images when no other is available
-  static SDL_Surface* loading_16;
-  static SDL_Surface* loading_32;
-  static SDL_Surface* loading_64;
-  static SDL_Surface* loading_128;
-  static SDL_Surface* loading_256;
-  static SDL_Surface* loading_512;
-  static SDL_Surface* loading_1024;
-
-  static void init();
-  static void deinit() {}
-
-  static SDL_Surface* placeholder(int res)
-  {
-    if (res < 16)
-      return loading_16;
-    else if (res < 32)
-      return loading_32;
-    else if (res < 64)
-      return loading_64;
-    else if (res < 128)
-      return loading_128;
-    else if (res < 256)
-      return loading_256;
-    else if (res < 512)
-      return loading_512;
-    else if (res < 1024)
-      return loading_1024;
-    else 
-      return loading_1024;
-  }
-
-public:
   std::string url;
+
+  int  requested_res;
+
+  /** Newly received surface */
+  SDL_Surface* received_surface;
+  int          received_surface_res;
   
-  SDL_Surface* surface;
-  Texture*     texture;
-  Texture*     texture_16x16;
-  int res;
-  int want_res;
-  bool image_requested;
+  Surface*     surface;
+  Surface*     surface_16x16;
 
   SDL_mutex* mutex;
 

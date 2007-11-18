@@ -26,17 +26,26 @@
 #ifndef HEADER_SURFACE_HPP
 #define HEADER_SURFACE_HPP
 
+#include "SDL.h"
+#include "texture.hpp"
+
 /** */
 class Surface
 {
 private:
+  /** Software backstore for the image */
   SDL_Surface* surface;
+  int res;
+  
+  Texture* texture;
 
 public:
-  Surface();
+  Surface(SDL_Surface* surface, int res);
   ~Surface();
 
-  void draw(int x, int y);
+  void draw(float x, float y, float w, float h);
+
+  int get_resolution() const { return res; }
 private:
   Surface (const Surface&);
   Surface& operator= (const Surface&);

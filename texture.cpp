@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <assert.h>
 #include <iostream>
 #include <stdexcept>
 #include <boost/format.hpp>
@@ -31,9 +32,10 @@
 #include "texture.hpp"
 
 Texture::Texture(SDL_Surface* surface)
-  : surface(surface),
-    handle(0)
+ : handle(0)
 {
+  assert(surface);
+
   if (0)
   std::cout << boost::format(",----------------------------\n"
                              "| Pointer: 0x%p\n"

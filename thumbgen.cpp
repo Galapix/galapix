@@ -123,6 +123,7 @@ int main(int argc, char** argv)
     argp.add_usage("[OPTION]... [FILE]...");
     argp.add_doc("A offline thumbnail generator for griv\n");
     argp.add_option('s', "size", "NUM,...", "Generate thumbnails for the given sizes (default: 16)");
+    argp.add_option('a', "all", "", "Generate thumbnails for all sizes");
     argp.add_option('v', "verbose", "", "Print more detailed output on generation");
     argp.add_option('q', "quality", "NUM", "JPEG quality used for thumbnailing, range 1-100 (default: 80)");
     argp.add_option('h', "help", "", "Print this help");
@@ -151,6 +152,16 @@ int main(int argc, char** argv)
 
             case 'v':
               verbose = true;
+              break;
+
+            case 'a':
+              sizes.push_back(16);
+              sizes.push_back(32);
+              sizes.push_back(64);
+              sizes.push_back(128);
+              sizes.push_back(256);
+              sizes.push_back(512);
+              sizes.push_back(1024);
               break;
 
             case 'h':
@@ -184,7 +195,7 @@ int main(int argc, char** argv)
         std::vector<std::string> file_list;
         for(std::vector<std::string>::iterator i = pathnames.begin(); i != pathnames.end(); ++i)
           generate_file_list(*i, file_list);
-        std::cout << "done" << std::endl;;
+        std::cout << file_list.size() << " files found" << std::endl;;
 
         int progress_scale = 70;
         int progress = 0;

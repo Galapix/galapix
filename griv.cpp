@@ -217,8 +217,7 @@ Griv::main(int argc, char** argv)
 {
   Filesystem::init();
   Framebuffer::init();
-  Image::init();
-
+  
   workspace = new Workspace();
 
   for(int i = 1; i < argc; ++i)
@@ -281,7 +280,6 @@ Griv::main(int argc, char** argv)
 
   delete workspace;
 
-  Image::deinit();
   Framebuffer::deinit();
   Filesystem::deinit();
 

@@ -28,37 +28,18 @@
 #include "SDL_image.h"
 #include "texture.hpp"
 #include "image.hpp"
-
-SDL_Surface* Image::loading_16;
-SDL_Surface* Image::loading_32;
-SDL_Surface* Image::loading_64;
-SDL_Surface* Image::loading_128;
-SDL_Surface* Image::loading_256;
-SDL_Surface* Image::loading_512;
-SDL_Surface* Image::loading_1024;
-
-void 
-Image::init()
-{
-  std::cout << "Image" << std::endl;
-
-  loading_1024 = IMG_Load("loading_1024.jpg");
-  loading_512  = IMG_Load("loading_512.jpg");
-  loading_256  = IMG_Load("loading_256.jpg");
-  loading_128  = IMG_Load("loading_128.jpg");
-  loading_64   = IMG_Load("loading_64.jpg");
-  loading_32   = IMG_Load("loading_32.jpg");
-  loading_16   = IMG_Load("loading_16.jpg");
-}
+#include "surface.hpp"
 
 Image::Image(const std::string& url)
   : url(url), 
+    requested_res(0),
+
+    received_surface(0),
+    received_surface_res(0),
+
     surface(0),
-    texture(0),
-    texture_16x16(0),
-    res(0),
-    want_res(0),
-    image_requested(false),
+    surface_16x16(0),
+
     x_pos(0),
     y_pos(0),
     last_x_pos(0),
@@ -76,24 +57,15 @@ void
 Image::receive(SDL_Surface* new_surface, int r)
 { 
   SDL_LockMutex(mutex);
+  
   if (new_surface)
     {
-      if (surface)
-        {
-          SDL_Surface* old_surface = surface;
-          surface = new_surface;
-          SDL_FreeSurface(old_surface); 
-        }
-      else
-        {
-          surface = new_surface;
-        }
-      
-      res = r;
-
-      force_redraw = true;
+      received_surface     = new_surface;
+      received_surface_res = r;
+      force_redraw         = true;
     }
-  image_requested = false;
+  requested_res        = 0; 
+ 
   SDL_UnlockMutex(mutex);
 }
 
@@ -109,69 +81,49 @@ Image::draw(float x_offset, float y_offset, float res)
       x < -res || 
       y < -res)
     { // Image out of screen
-      if (res >= 512)
-        if (surface)
-          {
-            SDL_FreeSurface(surface);
-            surface = 0;
-
-            delete texture;
-            texture = 0;
-
-            want_res  = 0;
-            this->res = 0;
-          }
+      if (surface && surface->get_resolution() >= 512) // keep small images around a while longer
+        {
+          delete surface;
+          surface = 0;
+        }
     }
   else
     { // image on screen
-      //std::cout << round_res(res) << " " << this->res << std::endl;
 
-      if (!image_requested)
-        if (surface == 0 || round_res(int(res)) != int(this->res))
-          {
-            loader.request(this);
-            want_res = round_res(int(res));
-            image_requested = true;
-          }
-
-      if (surface)
+      // Handle loading when resolution changed
+      if (surface == 0 || 
+          round_res(int(res)) != surface->get_resolution())
         {
-          if (!texture || texture->surface != surface)
-            {
-              if (!texture_16x16)
-                {
-                  texture_16x16 = new Texture(surface);
-                }
-              else
-                {
-                  delete texture;
-                  texture = new Texture(surface);
-                }
+          if (round_res(int(res)) != requested_res)
+            {    
+              loader.request(this);
+              requested_res = round_res(int(res));
             }
         }
-
-      if (texture || texture_16x16)
+      
+      // Handle OpenGL Texture creation when new surface was received
+      if (received_surface)
         {
-          if (texture)
-            texture->bind();
-          else if (texture_16x16)
-            texture_16x16->bind();
+          if (!surface_16x16)
+            { // Use surface as the smallest possible surface
+              // FIXME: When somebody is fast this could mean a non 16x16 surface
+              surface_16x16 = new Surface(received_surface, received_surface_res);
+            }
+          else
+            { // Replace the current surface
+              delete surface;
+              surface = new Surface(received_surface, received_surface_res);
+            }
 
-          glColor3f(1.0f, 1.0f, 1.0f);
-          glBegin(GL_QUADS);
-          glTexCoord2f(0,0);
-          glVertex2f(x, y);
-
-          glTexCoord2f(1,0);
-          glVertex2f(x + res, y);
-
-          glTexCoord2f(1,1);
-          glVertex2f(x + res, y + res);
-
-          glTexCoord2f(0,1);
-          glVertex2f(x, y + res);
-          glEnd();
+          received_surface     = 0;
+          received_surface_res = 0;
         }
+
+      // Handle drawing
+      if (surface)
+        surface->draw(x, y, res, res);
+      else if (surface_16x16)
+        surface_16x16->draw(x, y, res, res);
     }
   SDL_UnlockMutex(mutex);
 }

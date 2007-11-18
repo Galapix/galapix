@@ -14,6 +14,7 @@ griv_env.ParseConfig("sdl-config --libs --cflags")
 griv_env.Program('griv', ['griv.cpp',
                           'loader.cpp',
                           'image.cpp',
+                          'surface.cpp',
                           'thumbnail_store.cpp',
                           'display.cpp', 
                           'texture.cpp', 

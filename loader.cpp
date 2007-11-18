@@ -31,6 +31,7 @@
 #include "SDL_image.h"
 #include "image.hpp"
 #include "loader.hpp"
+#include "surface.hpp"
 #include "thumbnail_store.hpp"
 
 Loader loader;
@@ -84,18 +85,18 @@ Loader::process_job()
   SDL_LockMutex(mutex);
   if (!jobs.empty())
     {
+      std::cout << "process_job: " << jobs.size() << std::endl;
       // Lock
       Job job = jobs.back();
       jobs.pop_back();
 
-      int res = job.image->want_res;
-
-      if (job.image->res != res && res != 0)
+      if (!job.image->surface ||
+          job.image->surface->get_resolution() != job.image->requested_res)
         {
-          SDL_Surface* img = store->get_by_url(job.image->url, res);
+          SDL_Surface* img = store->get_by_url(job.image->url, job.image->requested_res);
           if (img)
             {
-              job.image->receive(img, res);
+              job.image->receive(img, job.image->requested_res);
             }
           else
             {
@@ -103,10 +104,10 @@ Loader::process_job()
               if (0)
                 { // FIXME: Wonky, gets super slow for some reason
                   img = IMG_Load(job.image->url.substr(7).c_str()); // cut file:// part
-                  std::cout << "Loading: " << res << " " << img << " " 
+                  std::cout << "Loading: " << job.image->requested_res << " " << img << " " 
                             << img->w << "x" << img->h << " "
                             << job.image->url.substr(7) << std::endl;
-                  job.image->receive(img, res);
+                  job.image->receive(img, job.image->requested_res);
                 }
             }
         }
