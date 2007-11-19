@@ -40,7 +40,7 @@ private:
   int height;
 
 public:
-  Texture(SDL_Surface* surface);
+  Texture(int w, int h, SDL_Surface* surface, int s_x, int s_y, int s_w, int s_h);
   ~Texture();
 
   int get_width() const;

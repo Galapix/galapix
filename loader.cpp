@@ -85,7 +85,7 @@ Loader::process_job()
   SDL_LockMutex(mutex);
   if (!jobs.empty())
     {
-      std::cout << "process_job: " << jobs.size() << std::endl;
+      //std::cout << "process_job: " << jobs.size() << std::endl;
       // Lock
       Job job = jobs.back();
       jobs.pop_back();

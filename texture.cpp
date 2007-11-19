@@ -31,46 +31,46 @@
 #include "display.hpp"
 #include "texture.hpp"
 
-Texture::Texture(SDL_Surface* surface)
- : handle(0)
+Texture::Texture(int width, int height, 
+                 SDL_Surface* surface, int s_x, int s_y, int s_w, int s_h)
+  : handle(0),
+    width(width),
+    height(height)
 {
   assert(surface);
 
   if (0)
-  std::cout << boost::format(",----------------------------\n"
-                             "| Pointer: 0x%p\n"
-                             "| Size:    %dx%d\n"
-                             "| Pitch:   %d vs %d\n"
-                             "| Rmask:   0x%08x\n"
-                             "| Gmask:   0x%08x\n"
-                             "| Bmask:   0x%08x\n"
-                             "| Amask:   0x%08x\n"
-                             "| Flags:   0x%08x -> %s%s%s%s\n"
-                             "| Palette: 0x%08x\n"
-                             "| BitsPerPixel: %d\n"
-                             "`----------------------------\n"
-                             )
-    % surface
-    % surface->w
-    % surface->h
-    % surface->pitch
-    % (surface->w*3)
-    % surface->format->Rmask
-    % surface->format->Gmask
-    % surface->format->Bmask
-    % surface->format->Amask
-    % surface->flags
-    % ((surface->flags & SDL_HWSURFACE) ? "HWSURFACE " : "")
-    % ((surface->flags & SDL_SWSURFACE) ? "SWSURFACE " : "")
-    % ((surface->flags & SDL_SRCCOLORKEY) ? "SRCCOLORKEY " : "")
-    % ((surface->flags & SDL_SRCALPHA) ? "SRCALPHA " : "")
-    % surface->format->palette
-    % static_cast<int>(surface->format->BitsPerPixel);
+    std::cout << boost::format(",----------------------------\n"
+                               "| Pointer: 0x%p\n"
+                               "| Size:    %dx%d\n"
+                               "| Pitch:   %d vs %d\n"
+                               "| Rmask:   0x%08x\n"
+                               "| Gmask:   0x%08x\n"
+                               "| Bmask:   0x%08x\n"
+                               "| Amask:   0x%08x\n"
+                               "| Flags:   0x%08x -> %s%s%s%s\n"
+                               "| Palette: 0x%08x\n"
+                               "| BitsPerPixel: %d\n"
+                               "`----------------------------\n"
+                               )
+      % surface
+      % surface->w
+      % surface->h
+      % surface->pitch
+      % (surface->w*3)
+      % surface->format->Rmask
+      % surface->format->Gmask
+      % surface->format->Bmask
+      % surface->format->Amask
+      % surface->flags
+      % ((surface->flags & SDL_HWSURFACE) ? "HWSURFACE " : "")
+      % ((surface->flags & SDL_SWSURFACE) ? "SWSURFACE " : "")
+      % ((surface->flags & SDL_SRCCOLORKEY) ? "SRCCOLORKEY " : "")
+      % ((surface->flags & SDL_SRCALPHA) ? "SRCALPHA " : "")
+      % surface->format->palette
+      % static_cast<int>(surface->format->BitsPerPixel);
 
   glGenTextures(1, &handle);
-
-  width  = surface->w;
-  height = surface->h;
 
   const SDL_PixelFormat* format = surface->format;
 
@@ -79,7 +79,7 @@ Texture::Texture(SDL_Surface* surface)
   
   GLint maxt;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxt);
-  if(surface->w > maxt || surface->h > maxt)
+  if(width > maxt || height > maxt)
     {
       throw std::runtime_error("Texture size not supported");
     }
@@ -103,14 +103,12 @@ Texture::Texture(SDL_Surface* surface)
 
   glPixelStorei(GL_PACK_ROW_LENGTH, surface->pitch/format->BytesPerPixel);
 
-  {
-    int res = std::max(surface->w, surface->h);
-    //std::cout << "Res: " << res << std::endl;
-    unsigned char dummy[res*res*3];
-    memset(dummy, 0, res*res*3);
+  { // Create the texture
+    unsigned char dummy[width*height*3];
+    memset(dummy, 0, width*height*3);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 res,
-                 res,
+                 width,
+                 height,
                  0,
                  GL_RGB,
                  GL_UNSIGNED_BYTE,
@@ -118,9 +116,13 @@ Texture::Texture(SDL_Surface* surface)
   }
   
   glPixelStorei(GL_PACK_ROW_LENGTH, surface->pitch);
+  // Upload the subimage
   glTexSubImage2D(GL_TEXTURE_2D, 0, 
-                  0, 0, surface->w, surface->h, sdl_format,
-                  GL_UNSIGNED_BYTE, surface->pixels);
+                  0, 0, s_w, s_h, sdl_format,
+                  GL_UNSIGNED_BYTE, 
+                  static_cast<Uint8*>(surface->pixels) 
+                  + (surface->pitch * s_y)
+                  + (s_x * surface->format->BytesPerPixel));
 
   assert_gl("creating texture");
 
@@ -142,6 +144,18 @@ void
 Texture::bind()
 {
   glBindTexture(GL_TEXTURE_2D, handle);
+}
+
+int
+Texture::get_width() const
+{
+  return width;
+}
+
+int
+Texture::get_height() const
+{
+  return height;
 }
 
 /* EOF */

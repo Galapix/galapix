@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <iostream>
 #include <assert.h>
 #include "display.hpp"
 #include "surface.hpp"
@@ -32,11 +33,14 @@ Surface::Surface(SDL_Surface* surface, int res)
     res(res)
 {
   assert(surface);
-  texture = new Texture(surface);
+  texture = new Texture(res, res, 
+                        surface, 
+                        0, 0, surface->w, surface->h);
 }
 
 Surface::~Surface()
 {
+  delete texture;
   SDL_FreeSurface(surface);
 }
 

@@ -60,6 +60,9 @@ Image::receive(SDL_Surface* new_surface, int r)
   
   if (new_surface)
     {
+      if (received_surface)
+        SDL_FreeSurface(received_surface);
+
       received_surface     = new_surface;
       received_surface_res = r;
       force_redraw         = true;
