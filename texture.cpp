@@ -101,11 +101,12 @@ Texture::Texture(int width, int height,
   glBindTexture(GL_TEXTURE_2D, handle);
   glEnable(GL_TEXTURE_2D);
 
-  glPixelStorei(GL_PACK_ROW_LENGTH, surface->pitch/format->BytesPerPixel);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
 
   { // Create the texture
     unsigned char dummy[width*height*3];
-    memset(dummy, 0, width*height*3);
+    memset(dummy, 100, width*height*3);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  width,
                  height,
@@ -114,8 +115,16 @@ Texture::Texture(int width, int height,
                  GL_UNSIGNED_BYTE,
                  dummy);
   }
-  
-  glPixelStorei(GL_PACK_ROW_LENGTH, surface->pitch);
+
+  assert_gl("packing image texture");
+
+  if (surface->pitch != (surface->w * surface->format->BytesPerPixel))
+    std::cout  << surface->pitch << " " << (surface->w * surface->format->BytesPerPixel) << std::endl;
+
+  //std::cout << surface->pitch << " " << s_w << " " << s_h << std::endl;
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->w);
+  glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
+
   // Upload the subimage
   glTexSubImage2D(GL_TEXTURE_2D, 0, 
                   0, 0, s_w, s_h, sdl_format,
