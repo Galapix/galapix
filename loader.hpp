@@ -53,6 +53,7 @@ private:
   ThumbnailStore* store;
   SDL_mutex* mutex;
   SDL_Thread* thread;
+  bool keep_thread_running;
 
 public:
   static int thread_func(void*);
@@ -60,7 +61,8 @@ public:
   Loader();
   ~Loader();
 
-  void launch_thread();
+  void start_thread();
+  void stop_thread();
 
   void request(Image* receiver);
   void process_job();

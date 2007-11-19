@@ -37,6 +37,8 @@
 Loader loader;
 
 Loader::Loader()
+  : thread(0), 
+    keep_thread_running(true)    
 {
   mutex  = SDL_CreateMutex();
   thread = 0;
@@ -51,7 +53,7 @@ Loader::~Loader()
 int
 Loader::thread_func(void*)
 {
-  while(1)
+  while(loader.keep_thread_running)
     {
       loader.process_job();
 
@@ -62,13 +64,26 @@ Loader::thread_func(void*)
 }
 
 void
-Loader::launch_thread()
+Loader::start_thread()
 {
   if (!store)
     {
       store = new ThumbnailStore();
     }
-  thread = SDL_CreateThread(&Loader::thread_func, 0);
+
+  if (!thread)
+    {
+      keep_thread_running = true;
+      thread = SDL_CreateThread(&Loader::thread_func, 0);
+    }
+}
+
+void
+Loader::stop_thread()
+{
+  keep_thread_running = false;
+  SDL_WaitThread(thread, NULL);
+  thread = 0;
 }
 
 void

@@ -241,7 +241,7 @@ Griv::main(int argc, char** argv)
   old_y_offset = -1;
   next_redraw = 0;
 
-  loader.launch_thread();
+  loader.start_thread();
 
   Uint32 ticks = SDL_GetTicks();
   while(true)
@@ -277,6 +277,8 @@ Griv::main(int argc, char** argv)
             }
         }
     }
+
+  loader.stop_thread();
 
   delete workspace;
 
