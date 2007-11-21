@@ -11,9 +11,10 @@
 bool verbose = false;
 
 void
-generate_thumbnails(const std::string& filename, int quality, const std::vector<int>& sizes)
+generate_thumbnails(const std::string& url, int quality, const std::vector<int>& sizes)
 {
-  std::string m = MD5::md5_string("file://" + filename);
+  std::string filename = url.substr(7);
+  std::string m = MD5::md5_string(url);
       
   for(int i = 0; i < int(sizes.size()); ++i)
     {
@@ -54,31 +55,6 @@ generate_thumbnails(const std::string& filename, int quality, const std::vector<
             }
       
           epeg_close(img);
-        }
-    }
-}
-
-void
-generate_file_list(const std::string& pathname, std::vector<std::string>& file_list)
-{
-  if (Filesystem::is_directory(pathname))
-    {
-      std::vector<std::string> dir_list = Filesystem::open_directory(pathname);
-      for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
-        {
-          generate_file_list(*i, file_list);
-        }
-    }
-  else
-    {
-      if (Filesystem::has_extension(pathname, ".jpg")  ||
-          Filesystem::has_extension(pathname, ".JPG")  ||
-          Filesystem::has_extension(pathname, ".jpe")  ||
-          Filesystem::has_extension(pathname, ".JPE")  ||
-          Filesystem::has_extension(pathname, ".JPEG") ||
-          Filesystem::has_extension(pathname, ".jpeg"))
-        {
-          file_list.push_back(Filesystem::realpath(pathname));
         }
     }
 }
@@ -194,7 +170,7 @@ int main(int argc, char** argv)
         std::cout << "Generating file list... " << std::flush;
         std::vector<std::string> file_list;
         for(std::vector<std::string>::iterator i = pathnames.begin(); i != pathnames.end(); ++i)
-          generate_file_list(*i, file_list);
+          Filesystem::generate_jpeg_file_list(*i, file_list);
         std::cout << file_list.size() << " files found" << std::endl;;
 
         int progress_scale = 70;

@@ -22,10 +22,42 @@ Griv::Griv()
 {
   zoom_in_pressed = false;
   zoom_out_pressed = false;
+  grid_size = 2;
+  draw_grid = false;
+  grid_color = true;
+  drag_toggle = false;
+  gamma = 1.0f;
 }
 
 Griv::~Griv()
 {
+}
+
+void
+Griv::gl_draw_grid(int grid_size)
+{
+  glBindTexture(GL_TEXTURE_2D, 0);
+  glBegin(GL_LINES);
+  if (grid_color)
+    glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+  else
+    glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+
+  for(int x = Framebuffer::get_width()/grid_size;
+      x < Framebuffer::get_width(); 
+      x += Framebuffer::get_width()/grid_size)
+    {
+      glVertex2f(x, 0);
+      glVertex2f(x, Framebuffer::get_height());
+    }
+
+  for(int y = Framebuffer::get_height()/grid_size;
+      y < Framebuffer::get_height(); y += Framebuffer::get_height()/grid_size)
+    {
+      glVertex2f(0, y);
+      glVertex2f(Framebuffer::get_width(), y);
+    }
+  glEnd();
 }
 
 void
@@ -68,11 +100,44 @@ Griv::process_events(float delta)
                 x_offset = 0;
                 y_offset = 0;
               }
+            else if (event.key.keysym.sym == SDLK_s)
+              {
+                grid_size *= 2;
+                if (grid_size > 128)
+                  grid_size = 2;
+                force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_g)
+              {
+                draw_grid = !draw_grid;
+                std::cout << "Drawing grid: " << draw_grid << " " << grid_size << std::endl;
+                force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_p)
+              {
+                grid_color = !grid_color;
+                force_redraw = true;
+              }
             else if (event.key.keysym.sym == SDLK_h)
               {
                 highquality = !highquality;
                 force_redraw = true;
                 std::cout << "Highquality: " << highquality << std::endl;
+              }
+            else if (event.key.keysym.sym == SDLK_PAGEUP)
+              {
+                gamma *= 1.1f;
+                SDL_SetGamma(gamma, gamma, gamma);
+              }
+            else if (event.key.keysym.sym == SDLK_PAGEDOWN)
+              {
+                gamma /= 1.1f;
+                SDL_SetGamma(gamma, gamma, gamma);
+              }
+            else if (event.key.keysym.sym == SDLK_END)
+              {
+                gamma = 1.0f;
+                SDL_SetGamma(gamma, gamma, gamma);
               }
             else if (event.key.keysym.sym == SDLK_9)
               {
@@ -123,6 +188,15 @@ Griv::process_events(float delta)
                 workspace->rotation += 90.0f;
                 force_redraw = true;
               }
+            else if (event.key.keysym.sym == SDLK_d)
+              {
+                drag_toggle = !drag_toggle;
+                if (!drag_toggle)
+                  {
+                    SDL_ShowCursor(SDL_ENABLE);
+                    SDL_WM_GrabInput(SDL_GRAB_OFF);
+                  }
+              }
             else if (event.key.keysym.sym == SDLK_b)
               {
                 std::cout << x_offset << ", " << y_offset << std::endl;
@@ -138,6 +212,10 @@ Griv::process_events(float delta)
                 x_offset += event.motion.xrel*4;
                 y_offset += event.motion.yrel*4;
               }
+            if (0)
+            std::cout << event.motion.xrel << " " << event.motion.yrel  << " "
+                      << x_offset << " " << y_offset 
+                      << std::endl;
             break;
 
           case SDL_MOUSEBUTTONDOWN:
@@ -173,7 +251,24 @@ Griv::process_events(float delta)
               }
             else if (event.button.button == 2)
               {
-                drag_n_drop = event.button.state;
+                if (!drag_toggle)
+                  {
+                    drag_n_drop = event.button.state;
+                  }
+                else if (event.button.state == SDL_PRESSED)
+                  {
+                    drag_n_drop = !drag_n_drop;
+                    if (drag_n_drop)
+                      {
+                        SDL_ShowCursor(SDL_DISABLE);
+                        SDL_WM_GrabInput(SDL_GRAB_ON);
+                      }
+                    else
+                      {
+                        SDL_ShowCursor(SDL_ENABLE);
+                        SDL_WM_GrabInput(SDL_GRAB_OFF);
+                      }
+                  }
               }
             break;
         }
@@ -198,32 +293,57 @@ Griv::process_events(float delta)
 
   if (zoom_out_pressed && !zoom_in_pressed)
     {
-      workspace->zoom_out(mouse_x - Framebuffer::get_width()/2,
-                          mouse_y - Framebuffer::get_height()/2,
-                          1.0f + zoom_speed * delta);
+      if (drag_toggle && drag_n_drop)
+        workspace->zoom_out(0,
+                            0,
+                            1.0f + zoom_speed * delta);
+      else
+        workspace->zoom_out(mouse_x - Framebuffer::get_width()/2,
+                            mouse_y - Framebuffer::get_height()/2,
+                            1.0f + zoom_speed * delta);
       loader.clear();
     }
   else if (!zoom_out_pressed && zoom_in_pressed)
     {
-      workspace->zoom_in(mouse_x - Framebuffer::get_width()/2,
-                         mouse_y - Framebuffer::get_height()/2,
-                         1.0f + zoom_speed * delta);    
+      if (drag_toggle && drag_n_drop)
+        workspace->zoom_in(0,
+                            0,
+                            1.0f + zoom_speed * delta);
+      else
+        workspace->zoom_in(mouse_x - Framebuffer::get_width()/2,
+                           mouse_y - Framebuffer::get_height()/2,
+                           1.0f + zoom_speed * delta);    
       loader.clear();
     }
 }
+
+
 
 int
 Griv::main(int argc, char** argv)
 {
   Filesystem::init();
+
+  std::cout << "Generating file list... " << std::flush;
+  std::vector<std::string> file_list;
+  for(int i = 1; i < argc; ++i)
+      Filesystem::generate_jpeg_file_list(argv[i], file_list);
+  std::cout << "done" << std::endl;
+
   Framebuffer::init();
   
   workspace = new Workspace();
 
-  for(int i = 1; i < argc; ++i)
+  for(std::vector<std::string>::iterator i = file_list.begin(); i != file_list.end(); ++i)
     {
-      workspace->add(argv[i]);
+      workspace->add(*i);
+      if ((i - file_list.begin() + 1) % 13 == 0)
+        std::cout << "Adding images to workspace... " 
+                  << (i - file_list.begin() + 1) << "/" << file_list.size() 
+                  << "\r" << std::flush;
     }
+  std::cout << "done" << std::endl;
+      
   workspace->layout(4,3);
   std::cout << " done" << std::endl;
 
@@ -264,6 +384,10 @@ Griv::main(int argc, char** argv)
               Framebuffer::clear();
               workspace->update(delta / 1000.0f);
               workspace->draw();
+              
+              if (draw_grid)
+                gl_draw_grid(grid_size);
+
               Framebuffer::flip();
 
               old_res = workspace->res;

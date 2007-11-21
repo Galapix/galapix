@@ -105,25 +105,9 @@ Workspace::layout(int aspect_w, int aspect_h)
 }
 
 void
-Workspace::add(const std::string& filename)
+Workspace::add(const std::string& url)
 {
-  // if directory, do recursion
-  if (Filesystem::is_directory(filename))
-    {
-      std::cout << '.' << std::flush;
-      std::vector<std::string> dir_list = Filesystem::open_directory(filename);
-      for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
-        {
-          if (*i != ".xvpics")
-            add(*i);
-        }
-    }
-  else if (has_suffix(filename, ".jpg") ||
-           has_suffix(filename, ".JPG"))
-    {
-      std::string url = "file://" + Filesystem::realpath(filename);
-      images.push_back(new Image(url));
-    }
+  images.push_back(new Image(url));
 }
 
 void
@@ -132,9 +116,9 @@ Workspace::zoom_in(int x, int y, float zoom)
   float old_res = res;
   res *= zoom;
   
-  if (res > 8192) 
+  if (res > 8192*4) // zoom limit
     {
-      res = 8192;
+      res = 8192*4;
       zoom = res / old_res;
     }
 

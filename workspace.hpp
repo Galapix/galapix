@@ -45,7 +45,7 @@ public:
 
   void draw();
   void update(float delta);
-  void add(const std::string& filename);
+  void add(const std::string& url);
 
   void zoom_in(int mouse_x, int mouse_y, float zoom);
   void zoom_out(int mouse_x, int mouse_y, float zoom);

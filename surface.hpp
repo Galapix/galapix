@@ -38,6 +38,13 @@ private:
   int res;
   
   Texture* texture;
+  int tex_w;
+  int tex_h;
+
+  float u;
+  float v;
+
+  float aspect;
 
 public:
   Surface(SDL_Surface* surface, int res);

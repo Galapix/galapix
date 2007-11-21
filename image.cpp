@@ -25,13 +25,17 @@
 
 #include <iostream>
 #include <GL/gl.h>
+#include "filesystem.hpp"
 #include "SDL_image.h"
 #include "texture.hpp"
 #include "image.hpp"
+#include "jpeg.hpp"
 #include "surface.hpp"
 
 Image::Image(const std::string& url)
   : url(url), 
+    original_width(0),
+    original_height(0),
     requested_res(0),
 
     received_surface(0),
@@ -45,6 +49,12 @@ Image::Image(const std::string& url)
     last_x_pos(0),
     last_y_pos(0)
 {
+  // FIXME: Slow, make this in a seperate thread
+  JPEG::get_size(url.substr(7), original_width, original_height);
+  original_mtime = Filesystem::get_mtime(url.substr(7));
+
+  //std::cout << url << " " << original_width << "x" << original_height << std::endl;
+  
   mutex = SDL_CreateMutex();
 }
 

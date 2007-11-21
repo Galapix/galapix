@@ -1,7 +1,9 @@
 griv 
 =====
 
-griv is a image viewer that allows you to directly zoom into thumbnails.
+griv is a image viewer that allows you to directly zoom into
+thumbnails. Its goal is to allow its viewer to view 100'000 images
+fluently.
 
 Usage:
 ======

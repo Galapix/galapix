@@ -37,6 +37,9 @@ class Image
 {
 public:
   std::string url;
+  int original_width;
+  int original_height;
+  unsigned int original_mtime;
 
   int  requested_res;
 

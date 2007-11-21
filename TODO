@@ -8,12 +8,19 @@ ToDo:
 - implement Surface class that handles images larger then the maximum
   texture size
 
+- remove round_res(), replace it with something else to allow images
+  in original size
+
 - added support for ~/.thumbnails/ to get the smaller mipmaps faster
 
-- create a two OpenGL context to allow better multithreading use (any
+- create two OpenGL context to allow better multithreading use (any
   way to do it portable?)
 
 - move over input code from Pingus to support Spacenavigator and such
+
+- implement faster realpath(), i.e. no link resolution
+
+- cache file sets
 
 
 Misc Stuff:

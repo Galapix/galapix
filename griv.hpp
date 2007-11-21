@@ -51,11 +51,16 @@ private:
   bool zoom_out_pressed;
   int  mouse_x;
   int  mouse_y;
-
+  int  grid_size;
+  bool draw_grid;
+  bool grid_color;
+  bool drag_toggle;
+  float gamma;
 public:
   Griv();
   ~Griv();
-  
+
+  void gl_draw_grid(int grid_size);
   void process_events(float delta);
   int main(int argc, char** argv);
 };

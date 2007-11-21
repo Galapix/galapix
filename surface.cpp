@@ -26,16 +26,34 @@
 #include <iostream>
 #include <assert.h>
 #include "display.hpp"
+#include "math.hpp"
 #include "surface.hpp"
 
 Surface::Surface(SDL_Surface* surface, int res)
   : surface(surface),
-    res(res)
+    res(res),
+    texture(0)
 {
   assert(surface);
-  texture = new Texture(res, res, 
-                        surface, 
-                        0, 0, surface->w, surface->h);
+
+  tex_w = Math::round_to_power_of_two(surface->w);
+  tex_h = Math::round_to_power_of_two(surface->h);
+
+  if (tex_w <= 1024 && tex_h <= 1024)
+    {
+      texture = new Texture(tex_w, tex_h, 
+                            surface, 
+                            0, 0, surface->w, surface->h);
+    
+      u = float(surface->w) / tex_w;
+      v = float(surface->h) / tex_h;
+
+      aspect = float(surface->w) / surface->h;
+    }
+  else
+    {
+      std::cout << "Image violates maximum texture size: " << surface->w << "x" << surface->h << std::endl;
+    }
 }
 
 Surface::~Surface()
@@ -45,25 +63,40 @@ Surface::~Surface()
 }
 
 void
-Surface::draw(float x, float y, float w, float h)
+Surface::draw(float x, float y, float orig_w, float orig_h)
 {
-  if (surface)
+  if (texture)
     {
       texture->bind();
       
       glColor3f(1.0f, 1.0f, 1.0f);
 
+      float w, h;
+      if (aspect > 1.0f)
+        { // FIXME: This only works as long as w == h
+          w = orig_w;
+          h = orig_h / aspect;
+        }
+      else
+        {
+          w = orig_w * aspect;
+          h = orig_h;
+        }
+
+      x += (orig_w - w)/2;
+      y += (orig_h - h)/2;
+     
       glBegin(GL_QUADS);
       glTexCoord2f(0,0);
       glVertex2f(x, y);
 
-      glTexCoord2f(1,0);
+      glTexCoord2f(u,0);
       glVertex2f(x + w, y);
 
-      glTexCoord2f(1,1);
+      glTexCoord2f(u,v);
       glVertex2f(x + w, y + h);
 
-      glTexCoord2f(0,1);
+      glTexCoord2f(0,v);
       glVertex2f(x, y + h);
       glEnd();
     }

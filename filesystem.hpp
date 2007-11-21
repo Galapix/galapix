@@ -43,7 +43,12 @@ public:
   static std::string get_home() { return home_directory; }
   static std::string realpath(const std::string& pathname);
   static bool has_extension(const std::string& pathname, const std::string& ext);
+  static void copy_mtime(const std::string& from_filename, const std::string& to_filename);
+  static unsigned int get_mtime(const std::string& filename);
   
+  /** Generate a recursive list of all JPEGs in pathname */
+  static void generate_jpeg_file_list(const std::string& pathname, std::vector<std::string>& file_list);
+
   static void init();
   static void deinit();
 };

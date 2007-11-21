@@ -118,12 +118,14 @@ Texture::Texture(int width, int height,
 
   assert_gl("packing image texture");
 
-  if (surface->pitch != (surface->w * surface->format->BytesPerPixel))
-    std::cout  << surface->pitch << " " << (surface->w * surface->format->BytesPerPixel) << std::endl;
+  // if (surface->pitch != (surface->w * surface->format->BytesPerPixel))
+  //   std::cout  << surface->pitch << " " << (surface->w * surface->format->BytesPerPixel) << std::endl;
 
   //std::cout << surface->pitch << " " << s_w << " " << s_h << std::endl;
   glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->w);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
+  glPixelStorei(GL_UNPACK_ALIGNMENT,  4); // FIXME: This alignment is
+                                          // guessed, we better should
+                                          // check it
 
   // Upload the subimage
   glTexSubImage2D(GL_TEXTURE_2D, 0, 

@@ -23,15 +23,16 @@
 **  02111-1307, USA.
 */
 
-#include <errno.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <stdexcept>
-#include <iostream>
 #include <dirent.h>
+#include <errno.h>
+#include <iostream>
+#include <stdexcept>
+#include <sys/stat.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/time.h>
+#include <utime.h>
 #include <boost/format.hpp>
 //#include <attr/xattr.h>
 
@@ -167,6 +168,61 @@ Filesystem::has_extension(const std::string& str, const std::string& suffix)
     return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
   else
     return false;
+}
+
+void
+Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_filename)
+{
+  struct stat stat_buf;
+  if (stat(from_filename.c_str(), &stat_buf) != 0)
+    {
+      throw std::runtime_error(from_filename + ": " + strerror(errno));
+    }
+
+  struct utimbuf time_buf; 
+  time_buf.actime  = stat_buf.st_atime;
+  time_buf.modtime = stat_buf.st_mtime;
+
+  if (utime(to_filename.c_str(), &time_buf) != 0)
+    {
+      std::cout << "Filesystem:copy_mtime: " << to_filename << ": " << strerror(errno) << std::endl;
+    }
+}
+
+unsigned int
+Filesystem::get_mtime(const std::string& filename)
+{
+  struct stat stat_buf;
+  if (stat(filename.c_str(), &stat_buf) != 0)
+    {
+      throw std::runtime_error(filename + ": " + strerror(errno));
+    } 
+  return stat_buf.st_mtime;
+}
+
+void
+Filesystem::generate_jpeg_file_list(const std::string& pathname, std::vector<std::string>& file_list)
+{
+  if (Filesystem::is_directory(pathname))
+    {
+      std::vector<std::string> dir_list = Filesystem::open_directory(pathname);
+      for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
+        {
+          generate_jpeg_file_list(*i, file_list);
+        }
+    }
+  else
+    {
+      if (Filesystem::has_extension(pathname, ".jpg")  ||
+          Filesystem::has_extension(pathname, ".JPG")  ||
+          Filesystem::has_extension(pathname, ".jpe")  ||
+          Filesystem::has_extension(pathname, ".JPE")  ||
+          Filesystem::has_extension(pathname, ".JPEG") ||
+          Filesystem::has_extension(pathname, ".jpeg"))
+        {
+          file_list.push_back("file://" + Filesystem::realpath(pathname));
+        }
+    }
 }
 
 /* EOF */

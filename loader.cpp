@@ -116,8 +116,8 @@ Loader::process_job()
           else
             {
               // No thumbnail, assuming we need the original
-              if (0)
-                { // FIXME: Wonky, gets super slow for some reason
+              std::cout << "Loading original: " << job.image->url << std::endl;
+                { 
                   img = IMG_Load(job.image->url.substr(7).c_str()); // cut file:// part
                   std::cout << "Loading: " << job.image->requested_res << " " << img << " " 
                             << img->w << "x" << img->h << " "
