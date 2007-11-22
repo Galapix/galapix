@@ -74,7 +74,7 @@ Filesystem::open_directory_recursivly(const std::string& pathname, std::vector<s
               if (de->d_type == DT_DIR)
                 { // Avoid stat'ing on file systems that don't need it
                   open_directory_recursivly(pathname + "/" + de->d_name, lst);
-                }
+                } // FIXME: Check for DT_UNKNOWN, DT_FILE, etc.
               else
                 {
                   std::string new_path = pathname + "/" + de->d_name;
@@ -234,7 +234,10 @@ void
 Filesystem::generate_jpeg_file_list(const std::string& pathname, std::vector<std::string>& file_list)
 {
   std::vector<std::string> lst;
-  open_directory_recursivly(pathname, lst);
+  if (is_directory(pathname))
+    open_directory_recursivly(pathname, lst);
+  else
+    lst.push_back(pathname);
   
   for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
     {
