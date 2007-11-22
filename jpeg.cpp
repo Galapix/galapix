@@ -23,9 +23,15 @@
 **  02111-1307, USA.
 */
 
+#include <iostream>
 #include <stdexcept>
 #include <jpeglib.h>
 #include "jpeg.hpp"
+
+void fatal_error_handler(j_common_ptr cinfo)
+{
+  std::cout << "Some jpeg error" << std::endl;
+}
 
 void
 JPEG::get_size(const std::string& filename, int& w, int& h)
@@ -36,9 +42,11 @@ JPEG::get_size(const std::string& filename, int& w, int& h)
 
   struct jpeg_decompress_struct  jinfo;
   struct jpeg_error_mgr jerr;
-        
-  jpeg_create_decompress(&jinfo);
+
   jinfo.err = jpeg_std_error(&jerr);
+  jinfo.err->error_exit = &fatal_error_handler;
+
+  jpeg_create_decompress(&jinfo);
   jpeg_stdio_src(&jinfo, in);
   jpeg_read_header(&jinfo, FALSE);
 

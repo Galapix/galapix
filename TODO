@@ -21,6 +21,10 @@ ToDo:
 - implement faster realpath(), i.e. no link resolution
 
 - cache file sets
+
+- write fast file system routines, use readdir(), d_type instead of
+  stat to check for a directory
+
 
 Cache Files:
 ============

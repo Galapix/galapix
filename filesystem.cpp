@@ -54,6 +54,46 @@ Filesystem::is_directory(const std::string& pathname)
   return S_ISDIR(buf.st_mode);
 }
 
+void
+Filesystem::open_directory_recursivly(const std::string& pathname, std::vector<std::string>& lst)
+{
+  DIR* dp = ::opendir(pathname.c_str());
+
+  if (dp == 0)
+    {
+      std::cout << "System: Couldn't open: " << pathname << std::endl;
+    }
+  else
+    {
+      dirent* de = 0;
+      while ((de = ::readdir(dp)) != 0)
+        {
+          if (strcmp(de->d_name, ".")  != 0 &&
+              strcmp(de->d_name, "..") != 0)
+            {
+              if (de->d_type == DT_DIR)
+                { // Avoid stat'ing on file systems that don't need it
+                  open_directory_recursivly(pathname + "/" + de->d_name, lst);
+                }
+              else
+                {
+                  std::string new_path = pathname + "/" + de->d_name;
+                  if (is_directory(new_path))
+                    {
+                      open_directory_recursivly(pathname + "/" + de->d_name, lst);
+                    }
+                  else
+                    {
+                      lst.push_back(new_path);
+                    }
+                }
+            }
+        }
+
+      closedir(dp);
+    }
+}
+
 std::vector<std::string>
 Filesystem::open_directory(const std::string& pathname)
 {
@@ -151,16 +191,6 @@ Filesystem::deinit()
 {
 }
 
-std::string
-Filesystem::realpath(const std::string& pathname)
-{
-  char* result = ::realpath(pathname.c_str(), NULL);
-  std::string res = result;
-  free(result);
-  
-  return res;
-}
-
 bool
 Filesystem::has_extension(const std::string& str, const std::string& suffix)
 {
@@ -203,26 +233,110 @@ Filesystem::get_mtime(const std::string& filename)
 void
 Filesystem::generate_jpeg_file_list(const std::string& pathname, std::vector<std::string>& file_list)
 {
-  if (Filesystem::is_directory(pathname))
+  std::vector<std::string> lst;
+  open_directory_recursivly(pathname, lst);
+  
+  for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
     {
-      std::vector<std::string> dir_list = Filesystem::open_directory(pathname);
-      for(std::vector<std::string>::iterator i = dir_list.begin(); i != dir_list.end(); ++i)
+      if (Filesystem::has_extension(*i, ".jpg")  ||
+          Filesystem::has_extension(*i, ".JPG")  ||
+          Filesystem::has_extension(*i, ".jpe")  ||
+          Filesystem::has_extension(*i, ".JPE")  ||
+          Filesystem::has_extension(*i, ".JPEG") ||
+          Filesystem::has_extension(*i, ".jpeg"))
         {
-          generate_jpeg_file_list(*i, file_list);
+          file_list.push_back("file://" + Filesystem::realpath(*i)); // realpath slow?
         }
     }
+}
+
+std::string
+Filesystem::realpath_system(const std::string& pathname)
+{
+  char* result = ::realpath(pathname.c_str(), NULL);
+  std::string res = result;
+  free(result);
+  
+  return res;
+}
+
+std::string
+Filesystem::realpath_fast(const std::string& pathname)
+{
+  std::string fullpath;
+  std::string drive;
+  
+  if (pathname.size() > 0 && pathname[0] == '/')
+    {
+      fullpath = pathname;
+    }
+#ifdef WIN32
+  else if (pathname.size() > 2 && pathname[1] == ':' && pathname[2] == '/')
+    {
+      drive = pathname.substr(0, 2);
+      fullpath = pathname;
+    }
+#endif
   else
     {
-      if (Filesystem::has_extension(pathname, ".jpg")  ||
-          Filesystem::has_extension(pathname, ".JPG")  ||
-          Filesystem::has_extension(pathname, ".jpe")  ||
-          Filesystem::has_extension(pathname, ".JPE")  ||
-          Filesystem::has_extension(pathname, ".JPEG") ||
-          Filesystem::has_extension(pathname, ".jpeg"))
+      char buf[PATH_MAX];
+      if (getcwd(buf, PATH_MAX) == 0)
         {
-          file_list.push_back("file://" + Filesystem::realpath(pathname));
+          std::cout << "System::realpath: Error: couldn't getcwd()" << std::endl;
+          return pathname;
+        }
+#ifdef WIN32
+      for (char *p = buf; *p; ++p)
+        {
+          if (*p == '\\')
+            *p = '/';
+        }
+      drive.assign(buf, 2);
+#endif
+      
+      fullpath = fullpath + buf + "/" + pathname;
+    }
+  
+  std::string result;
+  std::string::reverse_iterator last_slash = fullpath.rbegin();
+  int skip = 0;
+  // /foo/bar/../../bar/baz/
+  //std::cout << "fullpath: '" << fullpath << "'" << std::endl;
+  for(std::string::reverse_iterator i = fullpath.rbegin(); i != fullpath.rend(); ++i)
+    { // FIXME: Little crude and hackish
+      if (*i == '/')
+        {
+          std::string dir(last_slash, i); 
+          //std::cout << "'" << dir << "'" << std::endl;
+          if (dir == ".." || dir == "/..")
+            {
+              skip += 1;
+            }
+          else if (dir == "." || dir == "/." || dir.empty() || dir == "/")
+            {
+              // pass
+            }
+          else
+            {
+              if (skip == 0)
+                {
+                  result += dir;
+                }
+              else
+                skip -= 1;
+            }
+
+          last_slash = i;
         }
     }
+  
+  return drive + "/" + std::string(result.rbegin(), result.rend());
+}
+
+std::string
+Filesystem::realpath(const std::string& pathname)
+{
+  return realpath_fast(pathname);
 }
 
 /* EOF */

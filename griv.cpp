@@ -11,12 +11,14 @@
 #include "workspace.hpp"
 #include "loader.hpp"
 #include "image.hpp"
+#include "cache.hpp"
 
 float x_offset = 0.0f;
 float y_offset = 0.0f;
 std::string config_home;
 bool force_redraw = true;
-bool highquality  = true;
+bool highquality  = false;
+Cache* cache;
 
 Griv::Griv()
 {
@@ -324,6 +326,10 @@ Griv::main(int argc, char** argv)
 {
   Filesystem::init();
 
+  std::cout << "Loading cache... " << std::flush;
+  cache = new Cache(Filesystem::get_home() + "/.griv/cache/file.cache");
+    std::cout << "done" << std::endl;
+
   std::cout << "Generating file list... " << std::flush;
   std::vector<std::string> file_list;
   for(int i = 1; i < argc; ++i)
@@ -343,7 +349,10 @@ Griv::main(int argc, char** argv)
                   << "\r" << std::flush;
     }
   std::cout << "done" << std::endl;
-      
+  
+  std::cout << "Saving cache" << std::endl;
+  cache->save(Filesystem::get_home() + "/.griv/cache/file.cache");
+
   workspace->layout(4,3);
   std::cout << " done" << std::endl;
 

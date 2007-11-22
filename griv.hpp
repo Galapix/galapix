@@ -29,10 +29,13 @@
 #include <SDL.h>
 #include <string>
 
+class Cache;
+
 extern float x_offset;
 extern float y_offset;
 extern bool force_redraw;
 extern bool highquality;
+extern Cache* cache;
 
 class Workspace;
 

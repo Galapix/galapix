@@ -26,6 +26,8 @@
 #ifndef HEADER_JPEG_HPP
 #define HEADER_JPEG_HPP
 
+#include <string>
+
 /** */
 class JPEG
 {

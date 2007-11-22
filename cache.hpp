@@ -30,7 +30,7 @@
 #include <map>
 
 struct FileEntry {
-  char filename_md5[33];
+  char url_md5[33];
   char md5[33];
   int  mtime;  // mtime at which the thumbnail was done
   int  thumbnail_id; // offset into the thumbnail database
@@ -48,7 +48,10 @@ private:
 
 public:
   Cache(const std::string& filename);
-  const FileEntry* get_entry(const std::string& url) const;
+
+  void save(const std::string& filename) const;
+
+  const FileEntry* get_entry(const std::string& url);
 };
 
 #endif

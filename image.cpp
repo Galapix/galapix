@@ -30,6 +30,7 @@
 #include "texture.hpp"
 #include "image.hpp"
 #include "jpeg.hpp"
+#include "cache.hpp"
 #include "surface.hpp"
 
 Image::Image(const std::string& url)
@@ -50,8 +51,17 @@ Image::Image(const std::string& url)
     last_y_pos(0)
 {
   // FIXME: Slow, make this in a seperate thread
-  JPEG::get_size(url.substr(7), original_width, original_height);
-  original_mtime = Filesystem::get_mtime(url.substr(7));
+  const FileEntry* entry = cache->get_entry(url);
+  
+  if (entry)
+    {
+      original_width  = entry->width;
+      original_height = entry->height;
+      original_mtime  = entry->mtime;
+    }
+
+  //JPEG::get_size(url.substr(7), original_width, original_height);
+  //original_mtime = Filesystem::get_mtime(url.substr(7));
 
   //std::cout << url << " " << original_width << "x" << original_height << std::endl;
   

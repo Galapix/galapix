@@ -23,35 +23,87 @@
 **  02111-1307, USA.
 */
 
+#include <iostream>
+#include "filesystem.hpp"
+#include "jpeg.hpp"
+#include "md5.hpp"
 #include <fstream>
 #include "cache.hpp"
 
 Cache::Cache(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
-
-  while(!in.eof())
+  if (!in)
     {
-      FileEntry entry;
+      // do nothing, since empty cache is ok
+    }
+  else
+    {
+      while(!in.eof())
+        {
+          FileEntry entry;
       
-      in.read(entry.filename_md5,  sizeof(char) * 33);
-      in.read(entry.md5,           sizeof(char) * 33);
-      in.read((char*)(&entry.mtime),        sizeof(unsigned int));
-      in.read((char*)(&entry.thumbnail_id), sizeof(unsigned int));
-      in.read((char*)(&entry.width),        sizeof(unsigned int));
-      in.read((char*)(&entry.height),       sizeof(unsigned int));
-      
-      entries[entry.filename_md5] = entry;
+          in.read(entry.url_md5,  sizeof(char) * 33);
+          in.read(entry.md5,           sizeof(char) * 33);
+          in.read((char*)(&entry.mtime),        sizeof(unsigned int));
+          in.read((char*)(&entry.thumbnail_id), sizeof(unsigned int));
+          in.read((char*)(&entry.width),        sizeof(unsigned int));
+          in.read((char*)(&entry.height),       sizeof(unsigned int));
+
+          // FIXME: Do error checking to avoid adding incomplete entries
+          entries[entry.url_md5] = entry;
+        }
+    }
+}
+
+void
+Cache::save(const std::string& filename) const
+{
+  std::ofstream out(filename.c_str(), std::ios::out | std::ios::binary);
+
+  if (!out)
+    {
+      std::cout << "Couldn't save cache" << std::endl;
+    }
+  else
+    {
+      for(Entries::const_iterator i = entries.begin();
+          i != entries.end(); ++i)
+        {
+          const FileEntry& entry = i->second;
+          out.write(entry.url_md5,  sizeof(char) * 33);
+          out.write(entry.md5,      sizeof(char) * 33);
+          out.write((char*)(&entry.mtime),        sizeof(unsigned int));
+          out.write((char*)(&entry.thumbnail_id), sizeof(unsigned int));
+          out.write((char*)(&entry.width),        sizeof(unsigned int));
+          out.write((char*)(&entry.height),       sizeof(unsigned int));
+        }
     }
 }
 
 const FileEntry*
-Cache::get_entry(const std::string& url) const
+Cache::get_entry(const std::string& url)
 {
-  Entries::const_iterator i = entries.find(url);
+  std::string url_md5 = MD5::md5_string(url);
+
+  Entries::const_iterator i = entries.find(url_md5);
   if (i == entries.end())
     {
-      return 0;
+      FileEntry entry;
+      try { 
+        strcpy(entry.url_md5, url_md5.c_str());
+        strcpy(entry.md5, "<empty>");
+        entry.mtime = Filesystem::get_mtime(url.substr(7));
+        entry.thumbnail_id = 0;
+        JPEG::get_size(url.substr(7), entry.width, entry.height);
+      } catch (std::exception& err) {
+        std::cout << url << ": " << err.what() << std::endl;
+        return 0;
+      }
+      
+      entries[url_md5] = entry;
+
+      return &entries[url_md5];
     }
   else
     {
