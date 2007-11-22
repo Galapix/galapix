@@ -4,6 +4,7 @@ libgriv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g"])
 libgriv = libgriv_env.StaticLibrary('griv', ['filesystem.cpp', 
                                              'command_line.cpp',
                                              'jpeg.cpp',
+                                             'cache.cpp',
                                              'md5.cpp'])
 
 libepeg_env = Environment(CCFLAGS=["-Wall", "-O2", "-g"])
@@ -24,5 +25,9 @@ griv_env.Program('griv', ['griv.cpp',
 thumbgen_env = Environment(CCFLAGS=['-Wall', '-Werror', '-O2', '-g'], 
                            LIBS=[libgriv, libepeg, 'jpeg', 'mhash'])
 thumbgen_env.Program('thumbgen', ['thumbgen.cpp'])
+
+#packer_env = Environment(CCFLAGS=['-Wall', '-Werror', '-O2', '-g'], 
+#                           LIBS=[libgriv, libepeg, 'jpeg', 'mhash'])
+#packer_env.Program('packer', ['packer.cpp'])
 
 # EOF #

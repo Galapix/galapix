@@ -21,6 +21,24 @@ ToDo:
 - implement faster realpath(), i.e. no link resolution
 
 - cache file sets
+
+Cache Files:
+============
+
+
+
+struct FileEntry {
+       std::string filename_md5;
+       std::string md5;
+       int mtime;  // mtime at which the thumbnail was done
+       int thumbnail_id; // offset into the thumbnail database
+       int width;  // image width
+       int height; // image height
+};
+
+struct ThumbnailEntry {
+       char        rgb[16*16*3];
+};
 
 
 Misc Stuff:
