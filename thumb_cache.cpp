@@ -23,61 +23,33 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#include "thumb_cache.hpp"
 
-#include <sstream>
-#include "display.hpp"
-#include "loader.hpp"
-#include "griv.hpp"
-
-class Surface;
-
-class Image
+ThumbCache::ThumbCache(const std::string& filename)
 {
-public:
-  std::string url;
-  int original_width;
-  int original_height;
-  unsigned int original_mtime;
+  in = std::ifstream(filename.c_str(), std::ios::in | std::ios::binary);
+}
 
-  int  requested_res;
+ThumbCache::~ThumbCache()
+{
+}
 
-  /** Newly received surface */
-  SDL_Surface* received_surface;
-  int          received_surface_res;
+SDL_Surface*
+ThumbCache::get(int offset)
+{
   
-  Surface*     surface;
-  Surface*     surface_16x16;
+}
 
-  SDL_mutex* mutex;
+void
+ThumbCache::add(SDL_Surface* surface)
+{
+  
+}
 
-private:
-  float x_pos;
-  float y_pos;
-
-  float last_x_pos;
-  float last_y_pos;
-
-  float target_x_pos;
-  float target_y_pos;
-
-  bool visible;
-
-public:
-  Image(const std::string& url);
-  ~Image();
-
-  void receive(SDL_Surface* new_surface, int r);
-  void draw(float x_offset, float y_offset, float res);
-  void update(float delta);
-
-  int round_res(int res);
-  void set_pos(float x, float y);
-
-  bool is_visible() const { return visible; }
-};
-
-#endif
+void
+ThumbCache::save(const std::string& filename)
+{
+  
+}
 
 /* EOF */

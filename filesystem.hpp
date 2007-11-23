@@ -42,6 +42,8 @@ public:
 
   static void open_directory_recursivly(const std::string& pathname, std::vector<std::string>& lst);
 
+  static void readlines_from_file(const std::string& pathname, std::vector<std::string>& lst);
+
   static std::string getxattr(const std::string& pathname);
   static std::string get_home() { return home_directory; }
 

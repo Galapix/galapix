@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <fstream>
 #include <dirent.h>
 #include <errno.h>
 #include <iostream>
@@ -340,6 +341,22 @@ std::string
 Filesystem::realpath(const std::string& pathname)
 {
   return realpath_fast(pathname);
+}
+
+void
+Filesystem::readlines_from_file(const std::string& pathname, std::vector<std::string>& lst)
+{
+  std::ifstream in(pathname.c_str());
+
+  if (!in)
+    throw std::runtime_error("Couldn't open file: " + pathname);
+  
+  std::string line;
+  while(std::getline(in, line))
+   {
+     lst.push_back(line);
+   }
+  in.close();
 }
 
 /* EOF */

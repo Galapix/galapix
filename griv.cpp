@@ -11,6 +11,7 @@
 #include "workspace.hpp"
 #include "loader.hpp"
 #include "image.hpp"
+#include "command_line.hpp"
 #include "cache.hpp"
 
 float x_offset = 0.0f;
@@ -115,10 +116,20 @@ Griv::process_events(float delta)
                 std::cout << "Drawing grid: " << draw_grid << " " << grid_size << std::endl;
                 force_redraw = true;
               }
-            else if (event.key.keysym.sym == SDLK_p)
+            else if (event.key.keysym.sym == SDLK_t)
               {
                 grid_color = !grid_color;
                 force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_p)
+              {
+                std::cout << "---------------------------------------------------------" << std::endl;
+                for(int i = 0; i < int(workspace->images.size()); ++i)
+                  {
+                    if (workspace->images[i]->is_visible())
+                      std::cout << workspace->images[i]->url << std::endl;
+                  }
+                std::cout << "---------------------------------------------------------" << std::endl;
               }
             else if (event.key.keysym.sym == SDLK_h)
               {
@@ -324,99 +335,146 @@ Griv::process_events(float delta)
 int
 Griv::main(int argc, char** argv)
 {
-  Filesystem::init();
+  try {
+    std::cout << "Processing command line arguments... " << std::flush;
+    CommandLine argp;
+      
+    argp.add_usage("[OPTION]... [FILE]...");
+    argp.add_doc("Griv - A ZUI image viewer\n");
+    argp.add_option('f', "file", "FILE", "Load URL list from FILE");
+    argp.add_option('h', "help", "", "Print this help");
 
-  std::cout << "Loading cache... " << std::flush;
-  cache = new Cache(Filesystem::get_home() + "/.griv/cache/file.cache");
+    try {
+      argp.parse_args(argc, argv);
+    } catch(std::exception& err) {
+      std::cout << "Error: CommandLine: " << err.what() << std::endl;
+      exit(EXIT_FAILURE);
+    }
+
+    std::vector<std::string> url_list;
+    std::vector<std::string> pathnames;
+    while(argp.next())
+      {
+        switch(argp.get_key())
+          {
+            case 'h':
+              argp.print_help();
+              exit(EXIT_SUCCESS);
+              break;
+
+            case 'f':
+              Filesystem::readlines_from_file(argp.get_argument(), url_list);
+              break;
+
+            case CommandLine::REST_ARG:
+              pathnames.push_back(argp.get_argument());
+              break;
+
+            default:
+              std::cout << "Unhandled argument: " << argp.get_key() << std::endl;
+              exit(EXIT_FAILURE);
+              break;
+          }
+      };
+    std::cout << "done" << std::endl;    
+
+    std::cout << "Init filesystem... " << std::flush;
+    Filesystem::init();
     std::cout << "done" << std::endl;
 
-  std::cout << "Generating file list... " << std::flush;
-  std::vector<std::string> file_list;
-  for(int i = 1; i < argc; ++i)
-      Filesystem::generate_jpeg_file_list(argv[i], file_list);
-  std::cout << "done" << std::endl;
+    std::cout << "Loading cache... " << std::flush;
+    cache = new Cache(Filesystem::get_home() + "/.griv/cache/file.cache");
+    std::cout << "done" << std::endl;
 
-  Framebuffer::init();
+    std::cout << "Generating url list... " << std::flush;
+    for(std::vector<std::string>::iterator i = pathnames.begin(); i != pathnames.end(); ++i)
+      Filesystem::generate_jpeg_file_list(*i, url_list);
+    std::cout << "done" << std::endl;
+
+    Framebuffer::init();
   
-  workspace = new Workspace();
+    workspace = new Workspace();
 
-  for(std::vector<std::string>::iterator i = file_list.begin(); i != file_list.end(); ++i)
+    for(std::vector<std::string>::iterator i = url_list.begin(); i != url_list.end(); ++i)
+      {
+        workspace->add(*i);
+        if ((i - url_list.begin() + 1) % 29 == 0)
+          std::cout << "Adding images to workspace... " 
+                    << (i - url_list.begin() + 1) << "/" << url_list.size() 
+                    << "\r" << std::flush;
+      }
+    std::cout << "done" << std::endl;
+  
+    std::cout << "Saving cache" << std::endl;
+    cache->save(Filesystem::get_home() + "/.griv/cache/file.cache");
+
+    workspace->layout(4,3);
+    std::cout << " done" << std::endl;
+
+    std::cout << workspace->size() << " images scanned" << std::endl;
+
     {
-      workspace->add(*i);
-      if ((i - file_list.begin() + 1) % 13 == 0)
-        std::cout << "Adding images to workspace... " 
-                  << (i - file_list.begin() + 1) << "/" << file_list.size() 
-                  << "\r" << std::flush;
+      int w = int(sqrt(4 * workspace->size() / 3));
+      x_offset = (-w/2) * 4;
+      y_offset = (-(w*3/4)/2) * 4;
     }
-  std::cout << "done" << std::endl;
   
-  std::cout << "Saving cache" << std::endl;
-  cache->save(Filesystem::get_home() + "/.griv/cache/file.cache");
+    drag_n_drop = false;
+    old_res = -1;
+    old_x_offset = -1;
+    old_y_offset = -1;
+    next_redraw = 0;
 
-  workspace->layout(4,3);
-  std::cout << " done" << std::endl;
+    loader.start_thread();
 
-  std::cout << workspace->size() << " images scanned" << std::endl;
+    Uint32 ticks = SDL_GetTicks();
+    while(true)
+      {
+        Uint32 cticks = SDL_GetTicks();
+        int delta = cticks - ticks;
+        if (delta > 0)
+          {
+            ticks = cticks;
+            process_events(delta / 1000.0f);
 
-  {
-    int w = int(sqrt(4 * workspace->size() / 3));
-    x_offset = (-w/2) * 4;
-    y_offset = (-(w*3/4)/2) * 4;
-  }
-  
-  drag_n_drop = false;
-  old_res = -1;
-  old_x_offset = -1;
-  old_y_offset = -1;
-  next_redraw = 0;
+            if (workspace->res != old_res ||
+                old_x_offset != x_offset ||
+                old_y_offset != y_offset ||
+                (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())) ||
+                workspace->reorganize)
+              {
+                force_redraw = false;
 
-  loader.start_thread();
-
-  Uint32 ticks = SDL_GetTicks();
-  while(true)
-    {
-      Uint32 cticks = SDL_GetTicks();
-      int delta = cticks - ticks;
-      if (delta > 0)
-        {
-          ticks = cticks;
-          process_events(delta / 1000.0f);
-
-          if (workspace->res != old_res ||
-              old_x_offset != x_offset ||
-              old_y_offset != y_offset ||
-              (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())) ||
-              workspace->reorganize)
-            {
-              force_redraw = false;
-
-              Framebuffer::clear();
-              workspace->update(delta / 1000.0f);
-              workspace->draw();
+                Framebuffer::clear();
+                workspace->update(delta / 1000.0f);
+                workspace->draw();
               
-              if (draw_grid)
-                gl_draw_grid(grid_size);
+                if (draw_grid)
+                  gl_draw_grid(grid_size);
 
-              Framebuffer::flip();
+                Framebuffer::flip();
 
-              old_res = workspace->res;
-              old_x_offset = x_offset;
-              old_y_offset = y_offset;
-              next_redraw = SDL_GetTicks() + 1000;
-            }
-          else
-            {
-              SDL_Delay(5);
-            }
-        }
-    }
+                old_res = workspace->res;
+                old_x_offset = x_offset;
+                old_y_offset = y_offset;
+                next_redraw = SDL_GetTicks() + 1000;
+              }
+            else
+              {
+                SDL_Delay(5);
+              }
+          }
+      }
 
-  loader.stop_thread();
+    loader.stop_thread();
 
-  delete workspace;
+    delete workspace;
 
-  Framebuffer::deinit();
-  Filesystem::deinit();
+    Framebuffer::deinit();
+    Filesystem::deinit();
+  } catch(std::exception& err) {
+    std::cout << "ERROR: " << err.what() << std::endl;
+  }
 
   return 0;
 }

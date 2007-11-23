@@ -25,11 +25,11 @@ ToDo:
 - write fast file system routines, use readdir(), d_type instead of
   stat to check for a directory
 
+- add support for filesets, i.e. files that contain a list of urls
+
 
 Cache Files:
 ============
-
-
 
 struct FileEntry {
        std::string filename_md5;
@@ -43,7 +43,6 @@ struct FileEntry {
 struct ThumbnailEntry {
        char        rgb[16*16*3];
 };
-
 
 Misc Stuff:
 ===========

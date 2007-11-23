@@ -23,59 +23,29 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#ifndef HEADER_THUMB_CACHE_HPP
+#define HEADER_THUMB_CACHE_HPP
 
-#include <sstream>
-#include "display.hpp"
-#include "loader.hpp"
-#include "griv.hpp"
+#include <fstream>
 
-class Surface;
-
-class Image
+/** */
+class ThumbCache
 {
-public:
-  std::string url;
-  int original_width;
-  int original_height;
-  unsigned int original_mtime;
-
-  int  requested_res;
-
-  /** Newly received surface */
-  SDL_Surface* received_surface;
-  int          received_surface_res;
+private:
+  std::ifstream in;
   
-  Surface*     surface;
-  Surface*     surface_16x16;
+public:
+  ThumbCache(const std::string& filename);
+  ~ThumbCache();
 
-  SDL_mutex* mutex;
+  SDL_Surface* get(int offset);
+  void add(SDL_Surface* surface);
+  
+  void save(const std::string& filename);
 
 private:
-  float x_pos;
-  float y_pos;
-
-  float last_x_pos;
-  float last_y_pos;
-
-  float target_x_pos;
-  float target_y_pos;
-
-  bool visible;
-
-public:
-  Image(const std::string& url);
-  ~Image();
-
-  void receive(SDL_Surface* new_surface, int r);
-  void draw(float x_offset, float y_offset, float res);
-  void update(float delta);
-
-  int round_res(int res);
-  void set_pos(float x, float y);
-
-  bool is_visible() const { return visible; }
+  ThumbCache (const ThumbCache&);
+  ThumbCache& operator= (const ThumbCache&);
 };
 
 #endif

@@ -48,7 +48,8 @@ Image::Image(const std::string& url)
     x_pos(0),
     y_pos(0),
     last_x_pos(0),
-    last_y_pos(0)
+    last_y_pos(0),
+    visible(false)
 {
   // FIXME: Slow, make this in a seperate thread
   const FileEntry* entry = cache->get_entry(url);
@@ -104,6 +105,7 @@ Image::draw(float x_offset, float y_offset, float res)
       x < -res || 
       y < -res)
     { // Image out of screen
+      visible = false;
       if (surface && surface->get_resolution() >= 512) // keep small images around a while longer
         {
           delete surface;
@@ -112,7 +114,7 @@ Image::draw(float x_offset, float y_offset, float res)
     }
   else
     { // image on screen
-
+      visible = true;
       // Handle loading when resolution changed
       if (surface == 0 || 
           round_res(int(res)) != surface->get_resolution())
