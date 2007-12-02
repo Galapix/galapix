@@ -32,6 +32,7 @@
 #include "jpeg.hpp"
 #include "cache.hpp"
 #include "surface.hpp"
+#include "large_surface.hpp"
 
 Image::Image(const std::string& url)
   : url(url), 
@@ -138,7 +139,7 @@ Image::draw(float x_offset, float y_offset, float res)
           else
             { // Replace the current surface
               delete surface;
-              surface = new Surface(received_surface);
+              surface = new LargeSurface(received_surface);
               surface_resolution = received_surface_res;
             }
 

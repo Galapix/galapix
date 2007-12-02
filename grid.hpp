@@ -23,61 +23,50 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#ifndef HEADER_GRID_HPP
+#define HEADER_GRID_HPP
 
-#include <sstream>
-#include "display.hpp"
-#include "loader.hpp"
-#include "griv.hpp"
+#include <vector>
 
-class Surface;
-class LargeSurface;
-
-class Image
+/** */
+template<typename T>
+class Grid
 {
-public:
-  std::string url;
-  int original_width;
-  int original_height;
-  unsigned int original_mtime;
-
-  int  requested_res;
-
-  /** Newly received surface */
-  SDL_Surface* received_surface;
-  int          received_surface_res;
-  
-  int          surface_resolution;
-  LargeSurface*     surface;
-  Surface*    surface_16x16;
-
-  SDL_mutex* mutex;
-
 private:
-  float x_pos;
-  float y_pos;
+  typedef std::vector<T> Columns;
+  typedef std::vector<Columns> Rows;
 
-  float last_x_pos;
-  float last_y_pos;
-
-  float target_x_pos;
-  float target_y_pos;
-
-  bool visible;
+  int width;
+  int height;
+  Rows rows;
 
 public:
-  Image(const std::string& url);
-  ~Image();
+  Grid(int w, int h) 
+    : width(w),
+      height(h)
+  {
+    for(int y = 0; y < height; ++y)
+      rows.push_back(Columns(width));
+  }
+  
+  int get_width()  const { return width; }
+  int get_height() const { return height; }
 
-  void receive(SDL_Surface* new_surface, int r);
-  void draw(float x_offset, float y_offset, float res);
-  void update(float delta);
+  const T& operator()(int x, int y) const {
+    return rows[y][x];
+  }
 
-  int round_res(int res);
-  void set_pos(float x, float y);
+  T& operator()(int x, int y) {
+    return rows[y][x];
+  }
 
-  bool is_visible() const { return visible; }
+  void resize(int w, int h)
+  {
+    rows.resize(h);
+
+    width  = w;
+    height = h;
+  }
 };
 
 #endif

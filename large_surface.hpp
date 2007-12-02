@@ -23,61 +23,28 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#ifndef HEADER_LARGE_SURFACE_HPP
+#define HEADER_LARGE_SURFACE_HPP
 
-#include <sstream>
-#include "display.hpp"
-#include "loader.hpp"
-#include "griv.hpp"
+#include "grid.hpp"
 
 class Surface;
-class LargeSurface;
 
-class Image
+/** A LargeSurface is build out of multiple smaller ones */
+class LargeSurface
 {
+private:
+  Grid<Surface*> grid;
+
 public:
-  std::string url;
-  int original_width;
-  int original_height;
-  unsigned int original_mtime;
+  LargeSurface(SDL_Surface* surface);
+  ~LargeSurface();
 
-  int  requested_res;
-
-  /** Newly received surface */
-  SDL_Surface* received_surface;
-  int          received_surface_res;
-  
-  int          surface_resolution;
-  LargeSurface*     surface;
-  Surface*    surface_16x16;
-
-  SDL_mutex* mutex;
+  void draw(float x, float y, float w, float h);  
 
 private:
-  float x_pos;
-  float y_pos;
-
-  float last_x_pos;
-  float last_y_pos;
-
-  float target_x_pos;
-  float target_y_pos;
-
-  bool visible;
-
-public:
-  Image(const std::string& url);
-  ~Image();
-
-  void receive(SDL_Surface* new_surface, int r);
-  void draw(float x_offset, float y_offset, float res);
-  void update(float delta);
-
-  int round_res(int res);
-  void set_pos(float x, float y);
-
-  bool is_visible() const { return visible; }
+  LargeSurface (const LargeSurface&);
+  LargeSurface& operator= (const LargeSurface&);
 };
 
 #endif

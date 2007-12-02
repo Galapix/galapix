@@ -23,63 +23,26 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#include "surface.hpp"
+#include "large_surface.hpp"
 
-#include <sstream>
-#include "display.hpp"
-#include "loader.hpp"
-#include "griv.hpp"
-
-class Surface;
-class LargeSurface;
-
-class Image
+LargeSurface::LargeSurface(SDL_Surface* surface)
+  : grid(1,1)
 {
-public:
-  std::string url;
-  int original_width;
-  int original_height;
-  unsigned int original_mtime;
+  grid(0,0) = new Surface(surface);
+}
 
-  int  requested_res;
+LargeSurface::~LargeSurface()
+{
+  for(int y = 0; y < grid.get_height(); ++y)
+    for(int x = 0; x < grid.get_width(); ++x)
+      delete grid(x,y);
+}
 
-  /** Newly received surface */
-  SDL_Surface* received_surface;
-  int          received_surface_res;
-  
-  int          surface_resolution;
-  LargeSurface*     surface;
-  Surface*    surface_16x16;
-
-  SDL_mutex* mutex;
-
-private:
-  float x_pos;
-  float y_pos;
-
-  float last_x_pos;
-  float last_y_pos;
-
-  float target_x_pos;
-  float target_y_pos;
-
-  bool visible;
-
-public:
-  Image(const std::string& url);
-  ~Image();
-
-  void receive(SDL_Surface* new_surface, int r);
-  void draw(float x_offset, float y_offset, float res);
-  void update(float delta);
-
-  int round_res(int res);
-  void set_pos(float x, float y);
-
-  bool is_visible() const { return visible; }
-};
-
-#endif
+void
+LargeSurface::draw(float x, float y, float w, float h)
+{
+  grid(0,0)->draw(x, y, w, h);
+}
 
 /* EOF */
