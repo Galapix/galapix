@@ -28,6 +28,7 @@
 #include "filesystem.hpp"
 #include "SDL_image.h"
 #include "texture.hpp"
+#include "software_surface.hpp"
 #include "image.hpp"
 #include "jpeg.hpp"
 #include "cache.hpp"
@@ -134,12 +135,12 @@ Image::draw(float x_offset, float y_offset, float res)
           if (!surface_16x16)
             { // Use surface as the smallest possible surface
               // FIXME: When somebody is fast this could mean a non 16x16 surface
-              surface_16x16 = new Surface(received_surface);
+              surface_16x16 = new Surface(boost::shared_ptr<SoftwareSurface>(new SoftwareSurface(received_surface)));
             }
           else
             { // Replace the current surface
               delete surface;
-              surface = new LargeSurface(received_surface);
+              surface = new LargeSurface(boost::shared_ptr<SoftwareSurface>(new SoftwareSurface(received_surface)));
               surface_resolution = received_surface_res;
             }
 

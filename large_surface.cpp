@@ -26,7 +26,7 @@
 #include "surface.hpp"
 #include "large_surface.hpp"
 
-LargeSurface::LargeSurface(SDL_Surface* surface)
+LargeSurface::LargeSurface(boost::shared_ptr<SoftwareSurface> surface)
   : grid(1,1)
 {
   grid(0,0) = new Surface(surface);

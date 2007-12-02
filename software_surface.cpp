@@ -23,42 +23,27 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SURFACE_HPP
-#define HEADER_SURFACE_HPP
+#include <stdexcept>
+#include "SDL_image.h"
+#include "software_surface.hpp"
 
-#include "SDL.h"
-#include <boost/smart_ptr.hpp>
-#include "texture.hpp"
-
-class SoftwareSurface;
-
-/** */
-class Surface
+SoftwareSurface::SoftwareSurface(const std::string& name)
 {
-private:
-  /** Software backstore for the image */
-  boost::shared_ptr<SoftwareSurface> surface;
-  
-  Texture* texture;
-  int tex_w;
-  int tex_h;
+  surface = IMG_Load(name.c_str());
+  if (!surface)
+    throw std::runtime_error("SoftwareSurface: Couldn't load " + name);
+}
 
-  float u;
-  float v;
+SoftwareSurface::SoftwareSurface(SDL_Surface* swsurface)
+{
+  surface = swsurface;
+  if (!surface)
+    throw std::runtime_error("SoftwareSurface: SoftwareSurface() called with a NULL pointer");
+}
 
-  float aspect;
-
-public:
-  Surface(boost::shared_ptr<SoftwareSurface>);
-  ~Surface();
-
-  void draw(float x, float y, float w, float h);
-  
-private:
-  Surface (const Surface&);
-  Surface& operator= (const Surface&);
-};
-
-#endif
+SoftwareSurface::~SoftwareSurface()
+{
+  SDL_FreeSurface(surface);
+}
 
 /* EOF */

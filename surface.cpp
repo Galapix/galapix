@@ -27,38 +27,39 @@
 #include <assert.h>
 #include "display.hpp"
 #include "math.hpp"
+#include "software_surface.hpp"
 #include "surface.hpp"
 
-Surface::Surface(SDL_Surface* surface)
+Surface::Surface(boost::shared_ptr<SoftwareSurface> surface)
   : surface(surface),
     texture(0)
 {
   assert(surface);
 
-  tex_w = Math::round_to_power_of_two(surface->w);
-  tex_h = Math::round_to_power_of_two(surface->h);
+  tex_w = Math::round_to_power_of_two(surface->get_width());
+  tex_h = Math::round_to_power_of_two(surface->get_height());
 
   if (tex_w <= 1024 && tex_h <= 1024)
     {
       texture = new Texture(tex_w, tex_h, 
-                            surface, 
-                            0, 0, surface->w, surface->h);
+                            surface->get_surface(), 
+                            0, 0, surface->get_width(), surface->get_height());
     
-      u = float(surface->w) / tex_w;
-      v = float(surface->h) / tex_h;
+      u = float(surface->get_width()) / tex_w;
+      v = float(surface->get_height()) / tex_h;
 
-      aspect = float(surface->w) / surface->h;
+      aspect = float(surface->get_width()) / surface->get_height();
     }
   else
     {
-      std::cout << "Image violates maximum texture size: " << surface->w << "x" << surface->h << std::endl;
+      std::cout << "Image violates maximum texture size: "
+                << surface->get_width() << "x" << surface->get_height() << std::endl;
     }
 }
 
 Surface::~Surface()
 {
   delete texture;
-  SDL_FreeSurface(surface);
 }
 
 void

@@ -23,40 +23,30 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SURFACE_HPP
-#define HEADER_SURFACE_HPP
+#ifndef HEADER_SOFTWARE_SURFACE_HPP
+#define HEADER_SOFTWARE_SURFACE_HPP
 
 #include "SDL.h"
-#include <boost/smart_ptr.hpp>
-#include "texture.hpp"
-
-class SoftwareSurface;
+#include <string>
 
 /** */
-class Surface
+class SoftwareSurface
 {
 private:
-  /** Software backstore for the image */
-  boost::shared_ptr<SoftwareSurface> surface;
+  SDL_Surface* surface;
   
-  Texture* texture;
-  int tex_w;
-  int tex_h;
-
-  float u;
-  float v;
-
-  float aspect;
-
 public:
-  Surface(boost::shared_ptr<SoftwareSurface>);
-  ~Surface();
+  SoftwareSurface(const std::string& name);
+  SoftwareSurface(SDL_Surface* swsurface);
+  ~SoftwareSurface();
 
-  void draw(float x, float y, float w, float h);
-  
+  int get_width() const { return surface->w; }
+  int get_height() const { return surface->h; }
+ 
+  SDL_Surface* get_surface() const { return surface; }
 private:
-  Surface (const Surface&);
-  Surface& operator= (const Surface&);
+  SoftwareSurface(const SoftwareSurface&);
+  SoftwareSurface& operator= (const SoftwareSurface&);
 };
 
 #endif
