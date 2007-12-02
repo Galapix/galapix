@@ -32,6 +32,7 @@
 #include "griv.hpp"
 
 class Surface;
+class SoftwareSurface;
 class LargeSurface;
 
 class Image
@@ -45,8 +46,8 @@ public:
   int  requested_res;
 
   /** Newly received surface */
-  SDL_Surface* received_surface;
-  int          received_surface_res;
+  SoftwareSurface* received_surface;
+  int              received_surface_res;
   
   int          surface_resolution;
   LargeSurface*     surface;
@@ -70,7 +71,7 @@ public:
   Image(const std::string& url);
   ~Image();
 
-  void receive(SDL_Surface* new_surface, int r);
+  void receive(SoftwareSurface* new_surface, int r);
   void draw(float x_offset, float y_offset, float res);
   void update(float delta);
 

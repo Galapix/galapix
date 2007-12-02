@@ -29,15 +29,14 @@
 #include "SDL.h"
 #include <boost/smart_ptr.hpp>
 #include "texture.hpp"
-
-class SoftwareSurface;
+#include "software_surface.hpp"
 
 /** */
 class Surface
 {
 private:
   /** Software backstore for the image */
-  boost::shared_ptr<SoftwareSurface> surface;
+  SWSurfaceHandle surface;
   
   Texture* texture;
   int tex_w;
@@ -49,7 +48,7 @@ private:
   float aspect;
 
 public:
-  Surface(boost::shared_ptr<SoftwareSurface>);
+  Surface(SWSurfaceHandle surface);
   ~Surface();
 
   void draw(float x, float y, float w, float h);

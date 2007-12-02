@@ -30,6 +30,7 @@
 #include "SDL_image.h"
 #include "filesystem.hpp"
 #include "md5.hpp"
+#include "software_surface.hpp"
 #include "thumbnail_store.hpp"
 
 ThumbnailStore::ThumbnailStore()
@@ -41,7 +42,7 @@ ThumbnailStore::~ThumbnailStore()
 {
 }
 
-SDL_Surface* 
+SoftwareSurface* 
 ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is file://... *not* just a pathname
 {
   std::string md5 = MD5::md5_string(url);
@@ -51,9 +52,12 @@ ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is fil
       << thumb_size << "/" << md5.substr(0,2) << "/" << md5.substr(2) << ".jpg";
   
   std::string thumb_filename = out.str();
-  SDL_Surface* img = IMG_Load(thumb_filename.c_str());
-
-  if (!img)
+  
+  try 
+    {
+      return new SoftwareSurface(thumb_filename);
+    }
+  catch(std::exception& err) 
     {
       // Try to generate the thumbnail
       try {
@@ -63,10 +67,8 @@ ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is fil
         return 0;
       }
 
-      img = IMG_Load(thumb_filename.c_str());
+      return new SoftwareSurface(thumb_filename.c_str());
     }
-
-  return img;
 }
 
 void

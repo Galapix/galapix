@@ -108,7 +108,7 @@ Loader::process_job()
       if (!job.image->surface ||
           job.image->surface_resolution != job.image->requested_res)
         {
-          SDL_Surface* img = store->get_by_url(job.image->url, job.image->requested_res);
+          SoftwareSurface* img = store->get_by_url(job.image->url, job.image->requested_res);
           if (img)
             {
               job.image->receive(img, job.image->requested_res);
@@ -117,13 +117,16 @@ Loader::process_job()
             {
               // No thumbnail, assuming we need the original
               std::cout << "Loading original: " << job.image->url << std::endl;
-                { 
-                  img = IMG_Load(job.image->url.substr(7).c_str()); // cut file:// part
-                  std::cout << "Loading: " << job.image->requested_res << " " << img << " " 
-                            << img->w << "x" << img->h << " "
-                            << job.image->url.substr(7) << std::endl;
-                  job.image->receive(img, job.image->requested_res);
-                }
+              try { 
+                img = new SoftwareSurface(job.image->url.substr(7)); // cut file:// part
+                std::cout << "Loading: " << job.image->requested_res << " " << img << " " 
+                          << img->get_width() << "x" << img->get_height() << " "
+                          << job.image->url.substr(7) << std::endl;
+              } catch(std::exception& err) {
+                std::cout << "Loader: " << err.what() << std::endl;
+                img = 0;
+              }
+              job.image->receive(img, job.image->requested_res);
             }
         }
     }

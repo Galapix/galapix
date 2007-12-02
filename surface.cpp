@@ -30,7 +30,7 @@
 #include "software_surface.hpp"
 #include "surface.hpp"
 
-Surface::Surface(boost::shared_ptr<SoftwareSurface> surface)
+Surface::Surface(SWSurfaceHandle surface)
   : surface(surface),
     texture(0)
 {

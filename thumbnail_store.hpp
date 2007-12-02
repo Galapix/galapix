@@ -29,6 +29,8 @@
 #include "SDL.h"
 #include <string>
 
+class SoftwareSurface;
+
 /** */
 class ThumbnailStore
 {
@@ -38,7 +40,7 @@ public:
   ThumbnailStore();
   ~ThumbnailStore();
 
-  SDL_Surface* get_by_url(const std::string& url, int thumb_size);
+  SoftwareSurface* get_by_url(const std::string& url, int thumb_size);
   
   void generate(const std::string& filename, const std::string& thumb_location, int thumb_size);
 

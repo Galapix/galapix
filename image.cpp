@@ -78,14 +78,17 @@ Image::~Image()
 }
 
 void
-Image::receive(SDL_Surface* new_surface, int r)
+Image::receive(SoftwareSurface* new_surface, int r)
 {
   SDL_LockMutex(mutex);
   
   if (new_surface)
     {
       if (received_surface)
-        SDL_FreeSurface(received_surface);
+        {
+          delete received_surface;
+          received_surface = 0;
+        }
 
       received_surface     = new_surface;
       received_surface_res = r;
@@ -135,12 +138,12 @@ Image::draw(float x_offset, float y_offset, float res)
           if (!surface_16x16)
             { // Use surface as the smallest possible surface
               // FIXME: When somebody is fast this could mean a non 16x16 surface
-              surface_16x16 = new Surface(boost::shared_ptr<SoftwareSurface>(new SoftwareSurface(received_surface)));
+              surface_16x16 = new Surface(SWSurfaceHandle(received_surface));
             }
           else
             { // Replace the current surface
               delete surface;
-              surface = new LargeSurface(boost::shared_ptr<SoftwareSurface>(new SoftwareSurface(received_surface)));
+              surface = new LargeSurface(SWSurfaceHandle(received_surface));
               surface_resolution = received_surface_res;
             }
 

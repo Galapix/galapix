@@ -28,6 +28,7 @@
 
 #include "SDL.h"
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 /** */
 class SoftwareSurface
@@ -48,6 +49,8 @@ private:
   SoftwareSurface(const SoftwareSurface&);
   SoftwareSurface& operator= (const SoftwareSurface&);
 };
+
+typedef boost::shared_ptr<SoftwareSurface> SWSurfaceHandle;
 
 #endif
 

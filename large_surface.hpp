@@ -37,7 +37,7 @@ private:
   Grid<Surface*> grid;
 
 public:
-  LargeSurface(boost::shared_ptr<SoftwareSurface> surface);
+  LargeSurface(SWSurfaceHandle surface);
   ~LargeSurface();
 
   void draw(float x, float y, float w, float h);  
