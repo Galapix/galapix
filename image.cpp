@@ -100,16 +100,16 @@ Image::receive(SoftwareSurface* new_surface, int r)
 }
 
 void
-Image::draw(float x_offset, float y_offset, float res)
+Image::draw(float x_offset, float y_offset, float zoom)
 {
-  float x = x_pos * res + x_offset;
-  float y = y_pos * res + y_offset;
+  float x = x_pos * zoom + x_offset;
+  float y = y_pos * zoom + y_offset;
 
   SDL_LockMutex(mutex);
   if (x > Framebuffer::get_width() ||
       y > Framebuffer::get_height() ||
-      x < -res || 
-      y < -res)
+      x < -zoom || 
+      y < -zoom)
     { // Image out of screen
       visible = false;
       if (surface && surface_resolution >= 512) // keep small images around a while longer
@@ -122,13 +122,12 @@ Image::draw(float x_offset, float y_offset, float res)
     { // image on screen
       visible = true;
       // Handle loading when resolution changed
-      if (surface == 0 || 
-          round_res(int(res)) != surface_resolution)
+      if (surface == 0 || zoom2res(zoom) != surface_resolution)
         {
-          if (round_res(int(res)) != requested_res)
+          if (zoom2res(zoom) != requested_res)
             {    
               loader.request(this);
-              requested_res = round_res(int(res));
+              requested_res = zoom2res(zoom);
             }
         }
       
@@ -138,7 +137,7 @@ Image::draw(float x_offset, float y_offset, float res)
           if (!surface_16x16)
             { // Use surface as the smallest possible surface
               // FIXME: When somebody is fast this could mean a non 16x16 surface
-              surface_16x16 = new Surface(SWSurfaceHandle(received_surface));
+              surface_16x16 = new LargeSurface(SWSurfaceHandle(received_surface)); // FIXME: could use Surface instead
             }
           else
             { // Replace the current surface
@@ -153,49 +152,53 @@ Image::draw(float x_offset, float y_offset, float res)
 
       // Handle drawing
       if (surface)
-        surface->draw(x, y, res, res);
+        surface->draw(x, y, zoom, zoom);
       else if (surface_16x16)
-        surface_16x16->draw(x, y, res, res);
+        surface_16x16->draw(x, y, zoom, zoom);
     }
   SDL_UnlockMutex(mutex);
 }
 
 int
-Image::round_res(int r)
+Image::zoom2res(float z)
 {
   if (!highquality)
     { // low quality
-      if (r < 32)
+      if (z < 32)
         return 16;
-      else if (r < 64)
+      else if (z < 64)
         return 32;
-      else if (r < 128)
+      else if (z < 128)
         return 64;
-      else if (r < 256)
+      else if (z < 256)
         return 128;
-      else if (r < 512)
+      else if (z < 512)
         return 256;
-      else if (r < 1024)
+      else if (z < 1024)
         return 512;
-      else // if (r < 1024) // zoom limit, 2048 textures make the thing crash
+      else if (z < 1024)
         return 1024;
+      else
+        return -1;
     }
   else
     { // high quality
-      if (r <= 16)
+      if (z <= 16)
         return 16;
-      else if (r <= 32)
+      else if (z <= 32)
         return 32;
-      else if (r <= 64)
+      else if (z <= 64)
         return 64;
-      else if (r <= 128)
+      else if (z <= 128)
         return 128;
-      else if (r <= 256)
+      else if (z <= 256)
         return 256;
-      else if (r < 512)
+      else if (z < 512)
         return 512;
-      else // if (r <= 1024) // zoom limit, 2048 textures make the thing crash
+      else if (z <= 1024)
         return 1024;      
+      else
+        return -1;
     }
 }
 

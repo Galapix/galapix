@@ -50,8 +50,8 @@ public:
   int              received_surface_res;
   
   int          surface_resolution;
-  LargeSurface*     surface;
-  Surface*    surface_16x16;
+  LargeSurface* surface;
+  LargeSurface* surface_16x16;
 
   SDL_mutex* mutex;
 
@@ -75,7 +75,7 @@ public:
   void draw(float x_offset, float y_offset, float res);
   void update(float delta);
 
-  int round_res(int res);
+  int  zoom2res(float res);
   void set_pos(float x, float y);
 
   bool is_visible() const { return visible; }

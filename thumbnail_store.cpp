@@ -45,29 +45,45 @@ ThumbnailStore::~ThumbnailStore()
 SoftwareSurface* 
 ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is file://... *not* just a pathname
 {
-  std::string md5 = MD5::md5_string(url);
-
-  std::ostringstream out;
-  out << Filesystem::get_home() << "/.griv/cache/by_url/"
-      << thumb_size << "/" << md5.substr(0,2) << "/" << md5.substr(2) << ".jpg";
-  
-  std::string thumb_filename = out.str();
-  
-  try 
+  if (thumb_size == -1) // load original
     {
-      return new SoftwareSurface(thumb_filename);
+      std::cout << "Loading original: " << url << std::endl;
+      try 
+        { 
+          return  new SoftwareSurface(url.substr(7)); // cut file:// part
+        }
+      catch(std::exception& err) 
+        {
+          std::cout << "Loader: " << err.what() << std::endl;
+          return 0;
+        }
     }
-  catch(std::exception& err) 
+  else
     {
-      // Try to generate the thumbnail
-      try {
-        generate(url.substr(7), thumb_filename, thumb_size); // cut file:// part
-      } catch (std::exception& err) {
-        std::cout << err.what() << std::endl;
-        return 0;
-      }
+      std::string md5 = MD5::md5_string(url);
 
-      return new SoftwareSurface(thumb_filename.c_str());
+      std::ostringstream out;
+      out << Filesystem::get_home() << "/.griv/cache/by_url/"
+          << thumb_size << "/" << md5.substr(0,2) << "/" << md5.substr(2) << ".jpg";
+  
+      std::string thumb_filename = out.str();
+  
+      try 
+        {
+          return new SoftwareSurface(thumb_filename);
+        }
+      catch(std::exception& err) 
+        {
+          // Try to generate the thumbnail
+          try {
+            generate(url.substr(7), thumb_filename, thumb_size); // cut file:// part
+          } catch (std::exception& err) {
+            std::cout << err.what() << std::endl;
+            return 0;
+          }
+
+          return new SoftwareSurface(thumb_filename.c_str());
+        }
     }
 }
 

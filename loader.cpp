@@ -108,25 +108,16 @@ Loader::process_job()
       if (!job.image->surface ||
           job.image->surface_resolution != job.image->requested_res)
         {
-          SoftwareSurface* img = store->get_by_url(job.image->url, job.image->requested_res);
-          if (img)
+          if (job.image->original_width  <= job.image->requested_res ||
+              job.image->original_height <= job.image->requested_res)
             {
-              job.image->receive(img, job.image->requested_res);
+              job.image->receive(store->get_by_url(job.image->url, -1),
+                                 -1);
             }
           else
             {
-              // No thumbnail, assuming we need the original
-              std::cout << "Loading original: " << job.image->url << std::endl;
-              try { 
-                img = new SoftwareSurface(job.image->url.substr(7)); // cut file:// part
-                std::cout << "Loading: " << job.image->requested_res << " " << img << " " 
-                          << img->get_width() << "x" << img->get_height() << " "
-                          << job.image->url.substr(7) << std::endl;
-              } catch(std::exception& err) {
-                std::cout << "Loader: " << err.what() << std::endl;
-                img = 0;
-              }
-              job.image->receive(img, job.image->requested_res);
+              job.image->receive(store->get_by_url(job.image->url, job.image->requested_res),
+                                 job.image->requested_res);
             }
         }
     }

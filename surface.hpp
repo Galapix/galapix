@@ -48,7 +48,7 @@ private:
   float aspect;
 
 public:
-  Surface(SWSurfaceHandle surface);
+  Surface(SWSurfaceHandle surface, int x, int y, int w, int h);
   ~Surface();
 
   void draw(float x, float y, float w, float h);

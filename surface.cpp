@@ -30,20 +30,20 @@
 #include "software_surface.hpp"
 #include "surface.hpp"
 
-Surface::Surface(SWSurfaceHandle surface)
+Surface::Surface(SWSurfaceHandle surface, int x, int y, int w, int h)
   : surface(surface),
     texture(0)
 {
   assert(surface);
 
-  tex_w = Math::round_to_power_of_two(surface->get_width());
-  tex_h = Math::round_to_power_of_two(surface->get_height());
+  tex_w = Math::round_to_power_of_two(w);
+  tex_h = Math::round_to_power_of_two(h);
 
   if (tex_w <= 1024 && tex_h <= 1024)
     {
       texture = new Texture(tex_w, tex_h, 
                             surface->get_surface(), 
-                            0, 0, surface->get_width(), surface->get_height());
+                            x, y, w, h);
     
       u = float(surface->get_width()) / tex_w;
       v = float(surface->get_height()) / tex_h;

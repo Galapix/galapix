@@ -26,10 +26,12 @@
 #include "surface.hpp"
 #include "large_surface.hpp"
 
-LargeSurface::LargeSurface(boost::shared_ptr<SoftwareSurface> surface)
+LargeSurface::LargeSurface(SWSurfaceHandle surface)
   : grid(1,1)
 {
-  grid(0,0) = new Surface(surface);
+  grid(0,0) = new Surface(surface, 0, 0, 
+                          std::min(1024, surface->get_width()), 
+                          std::min(1024, surface->get_height()));
 }
 
 LargeSurface::~LargeSurface()
