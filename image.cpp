@@ -42,6 +42,7 @@ Image::Image(const std::string& url)
     received_surface(0),
     received_surface_res(0),
 
+    surface_resolution(0),
     surface(0),
     surface_16x16(0),
 
@@ -76,7 +77,7 @@ Image::~Image()
 
 void
 Image::receive(SDL_Surface* new_surface, int r)
-{ 
+{
   SDL_LockMutex(mutex);
   
   if (new_surface)
@@ -106,7 +107,7 @@ Image::draw(float x_offset, float y_offset, float res)
       y < -res)
     { // Image out of screen
       visible = false;
-      if (surface && surface->get_resolution() >= 512) // keep small images around a while longer
+      if (surface && surface_resolution >= 512) // keep small images around a while longer
         {
           delete surface;
           surface = 0;
@@ -117,7 +118,7 @@ Image::draw(float x_offset, float y_offset, float res)
       visible = true;
       // Handle loading when resolution changed
       if (surface == 0 || 
-          round_res(int(res)) != surface->get_resolution())
+          round_res(int(res)) != surface_resolution)
         {
           if (round_res(int(res)) != requested_res)
             {    
@@ -132,12 +133,13 @@ Image::draw(float x_offset, float y_offset, float res)
           if (!surface_16x16)
             { // Use surface as the smallest possible surface
               // FIXME: When somebody is fast this could mean a non 16x16 surface
-              surface_16x16 = new Surface(received_surface, received_surface_res);
+              surface_16x16 = new Surface(received_surface);
             }
           else
             { // Replace the current surface
               delete surface;
-              surface = new Surface(received_surface, received_surface_res);
+              surface = new Surface(received_surface);
+              surface_resolution = received_surface_res;
             }
 
           received_surface     = 0;

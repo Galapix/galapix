@@ -44,7 +44,6 @@ Cache::Cache(const std::string& filename)
           FileEntry entry;
       
           in.read(entry.url_md5,  sizeof(char) * 33);
-          in.read(entry.md5,           sizeof(char) * 33);
           in.read((char*)(&entry.mtime),        sizeof(unsigned int));
           in.read((char*)(&entry.thumbnail_id), sizeof(unsigned int));
           in.read((char*)(&entry.width),        sizeof(unsigned int));
@@ -72,7 +71,6 @@ Cache::save(const std::string& filename) const
         {
           const FileEntry& entry = i->second;
           out.write(entry.url_md5,  sizeof(char) * 33);
-          out.write(entry.md5,      sizeof(char) * 33);
           out.write((char*)(&entry.mtime),        sizeof(unsigned int));
           out.write((char*)(&entry.thumbnail_id), sizeof(unsigned int));
           out.write((char*)(&entry.width),        sizeof(unsigned int));
@@ -92,7 +90,6 @@ Cache::get_entry(const std::string& url)
       FileEntry entry;
       try { 
         strcpy(entry.url_md5, url_md5.c_str());
-        strcpy(entry.md5, "<empty>");
         entry.mtime = Filesystem::get_mtime(url.substr(7));
         entry.thumbnail_id = 0;
         JPEG::get_size(url.substr(7), entry.width, entry.height);

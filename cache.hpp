@@ -31,7 +31,6 @@
 
 struct FileEntry {
   char url_md5[33];
-  char md5[33];
   int  mtime;  // mtime at which the thumbnail was done
   int  thumbnail_id; // offset into the thumbnail database
   int  width;  // image width

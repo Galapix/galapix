@@ -106,7 +106,7 @@ Loader::process_job()
       jobs.pop_back();
 
       if (!job.image->surface ||
-          job.image->surface->get_resolution() != job.image->requested_res)
+          job.image->surface_resolution != job.image->requested_res)
         {
           SDL_Surface* img = store->get_by_url(job.image->url, job.image->requested_res);
           if (img)

@@ -29,9 +29,8 @@
 #include "math.hpp"
 #include "surface.hpp"
 
-Surface::Surface(SDL_Surface* surface, int res)
+Surface::Surface(SDL_Surface* surface)
   : surface(surface),
-    res(res),
     texture(0)
 {
   assert(surface);

@@ -127,7 +127,12 @@ Griv::process_events(float delta)
                 for(int i = 0; i < int(workspace->images.size()); ++i)
                   {
                     if (workspace->images[i]->is_visible())
-                      std::cout << workspace->images[i]->url << std::endl;
+                      {
+                        std::cout << workspace->images[i]->url << "\t"
+                                  << workspace->images[i]->original_width << "x"
+                                  << workspace->images[i]->original_height
+                                  << std::endl;
+                      }
                   }
                 std::cout << "---------------------------------------------------------" << std::endl;
               }

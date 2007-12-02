@@ -47,6 +47,7 @@ public:
   SDL_Surface* received_surface;
   int          received_surface_res;
   
+  int          surface_resolution;
   Surface*     surface;
   Surface*     surface_16x16;
 

@@ -2,19 +2,31 @@ griv
 =====
 
 griv is a image viewer that allows you to directly zoom into
-thumbnails. Its goal is to allow its viewer to view 100'000 images
-fluently.
+thumbnails. Its goal is to allow its viewer to view 100'000 images at
+once fluently without any noticable load times.
 
 Usage:
 ======
 
 You can view any collectino of files in a directory by:
 
- ./griv [PATHNAME]...
+ $ ./griv [PATHNAME]...
 
 Optionally you can pre-generate the thumbnails, which results in
 a smoother experience by calling:
 
- ./thumbgen -s 16,32,64,128,256,512,1024 [PATHNAME]...
+ $ ./thumbgen -s 16,32,64,128,256,512,1024 [PATHNAME]...
+
+For very large image collections it is recomment that you pregenerate
+the URL list to avoid slow startup due to file-io:
+
+ $ find  PATH -type f -name "*.jpg" | sed "s/^/file:\/\//" > /tmp/url.lst
+ $ ./griv -f /tmp/url.lst
+
+Things you shouldn't do:
+========================
+
+Avoid running two instances at once, griv doesn't do any filelocking,
+so you my end up trashing your cache.
 
 # EOF #

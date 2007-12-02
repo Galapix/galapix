@@ -1,9 +1,7 @@
 ToDo:
 =====
 
-- store 16x16 thumbnails in a container format, simple uncompressed
-  RGB, store filenames in a simple linear list, stuff them into a
-  map/hash on load
+- store all thumbnails in a container format
 
 - implement Surface class that handles images larger then the maximum
   texture size
@@ -11,22 +9,23 @@ ToDo:
 - remove round_res(), replace it with something else to allow images
   in original size
 
-- added support for ~/.thumbnails/ to get the smaller mipmaps faster
-
 - create two OpenGL context to allow better multithreading use (any
-  way to do it portable?)
+  way to do it portable?) or move loading out of draw() and into
+  load(), only call load() till a time slice has run out, so that
+  drawing can take place again without interruption
 
 - move over input code from Pingus to support Spacenavigator and such
 
-- implement faster realpath(), i.e. no link resolution
+- Way to speed thumbnail directory creation up? -> use Thumbcache
+  for all files
 
-- cache file sets
+Less Important:
+===============
+
+- added support for ~/.thumbnails/ to get the smaller mipmaps faster
 
 - write fast file system routines, use readdir(), d_type instead of
-  stat to check for a directory
-
-- add support for filesets, i.e. files that contain a list of urls
-
+  stat to check for a directory -> only works on EXT3
 
 Cache Files:
 ============

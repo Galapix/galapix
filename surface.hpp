@@ -35,7 +35,6 @@ class Surface
 private:
   /** Software backstore for the image */
   SDL_Surface* surface;
-  int res;
   
   Texture* texture;
   int tex_w;
@@ -47,12 +46,11 @@ private:
   float aspect;
 
 public:
-  Surface(SDL_Surface* surface, int res);
+  Surface(SDL_Surface* surface);
   ~Surface();
 
   void draw(float x, float y, float w, float h);
-
-  int get_resolution() const { return res; }
+  
 private:
   Surface (const Surface&);
   Surface& operator= (const Surface&);
