@@ -72,7 +72,8 @@ public:
   ~Image();
 
   void receive(SoftwareSurface* new_surface, int r);
-  void draw(float x_offset, float y_offset, float res);
+  void draw(float x_offset, float y_offset, float zoom);
+  bool update_resources(float x_offset, float y_offset, float zoom);
   void update(float delta);
 
   int  zoom2res(float res);

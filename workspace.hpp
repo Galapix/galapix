@@ -44,6 +44,7 @@ public:
   Workspace();
 
   void draw();
+  bool update_resources();
   void update(float delta);
   void add(const std::string& url);
 

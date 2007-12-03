@@ -3,24 +3,18 @@ ToDo:
 
 - store all thumbnails in a container format
 
-- implement Surface class that handles images larger then the maximum
-  texture size
+- Way to speed thumbnail directory creation up? -> use Thumbcache
+  for all files
 
-- remove round_res(), replace it with something else to allow images
-  in original size
+- move over input code from Pingus to support Spacenavigator and such
+
+Less Important:
+===============
 
 - create two OpenGL context to allow better multithreading use (any
   way to do it portable?) or move loading out of draw() and into
   load(), only call load() till a time slice has run out, so that
   drawing can take place again without interruption
-
-- move over input code from Pingus to support Spacenavigator and such
-
-- Way to speed thumbnail directory creation up? -> use Thumbcache
-  for all files
-
-Less Important:
-===============
 
 - added support for ~/.thumbnails/ to get the smaller mipmaps faster
 
@@ -32,6 +26,16 @@ Bugs:
 
  - Ctrl-C doesn't work in all situations (i.e. initial loading)
 
+ - LargeSurface isn't seamless, seams visible only at very close zoom (see bottom/right)
+
+ - ThumbnailStore: FIXME: This shouldn't happen: SoftwareSurface:
+   Couldn't load /home/ingo/.griv/cache/by_url/1024/d0/116169afb9a1b3d395aa212f9744de.jpg
+
+ - sometimes SDL gets confused and the mouse isn't properly locked to the window
+
+ - ...images to workspace... 8033/8047 doesn't display 100% when done
+
+ - not handled properly by epeg: /share/photos/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
 
 Cache Files:
 ============

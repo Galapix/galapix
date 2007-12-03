@@ -62,7 +62,30 @@ Workspace::draw()
                       y_offset + Framebuffer::get_height()/2,
                       res);
     }
+
   glPopMatrix();
+}
+
+bool
+Workspace::update_resources()
+{
+  bool need_redraw = false;
+  Uint32 t = SDL_GetTicks();
+  for(int i = 0; i < int(images.size()); ++i)
+    {
+      if (images[i]->update_resources(x_offset + Framebuffer::get_width()/2,
+                                  y_offset + Framebuffer::get_height()/2,
+                                      res))
+        need_redraw = true;
+
+      Uint32 v = SDL_GetTicks() - t;
+      if (v > 50) // 50ms spend updating, so stop it
+        {
+          //std::cout << "Break away" << std::endl;
+          return need_redraw;
+        }
+    }
+  return need_redraw;
 }
 
 void
@@ -83,9 +106,7 @@ Workspace::update(float delta)
       //std::cout << alpha << std::endl;
 
       for(int i = 0; i < int(images.size()); ++i)
-        {
-          images[i]->update(alpha);
-        }
+        images[i]->update(alpha);
     }
 }
 

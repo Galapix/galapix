@@ -105,50 +105,16 @@ Image::draw(float x_offset, float y_offset, float zoom)
   float x = x_pos * zoom + x_offset;
   float y = y_pos * zoom + y_offset;
 
-  SDL_LockMutex(mutex);
   if (x > Framebuffer::get_width() ||
       y > Framebuffer::get_height() ||
       x < -zoom || 
       y < -zoom)
     { // Image out of screen
       visible = false;
-      if (surface && surface_resolution >= 512) // keep small images around a while longer
-        {
-          delete surface;
-          surface = 0;
-        }
     }
   else
     { // image on screen
       visible = true;
-      // Handle loading when resolution changed
-      if (surface == 0 || zoom2res(zoom) != surface_resolution)
-        {
-          if (zoom2res(zoom) != requested_res)
-            {    
-              loader.request(this);
-              requested_res = zoom2res(zoom);
-            }
-        }
-      
-      // Handle OpenGL Texture creation when new surface was received
-      if (received_surface)
-        {
-          if (!surface_16x16)
-            { // Use surface as the smallest possible surface
-              // FIXME: When somebody is fast this could mean a non 16x16 surface
-              surface_16x16 = new LargeSurface(SWSurfaceHandle(received_surface)); // FIXME: could use Surface instead
-            }
-          else
-            { // Replace the current surface
-              delete surface;
-              surface = new LargeSurface(SWSurfaceHandle(received_surface));
-              surface_resolution = received_surface_res;
-            }
-
-          received_surface     = 0;
-          received_surface_res = 0;
-        }
 
       // Detect aspect ration
       float aspect = float(original_width)/float(original_height);
@@ -167,6 +133,7 @@ Image::draw(float x_offset, float y_offset, float zoom)
       x += (zoom - dw)/2;
       y += (zoom - dh)/2;
 
+      SDL_LockMutex(mutex);
       // Handle drawing
       if (surface)
         {
@@ -176,8 +143,8 @@ Image::draw(float x_offset, float y_offset, float zoom)
         {
           surface_16x16->draw(x, y, dw, dh);
         }
+      SDL_UnlockMutex(mutex);
     }
-  SDL_UnlockMutex(mutex);
 }
 
 int
@@ -197,8 +164,6 @@ Image::zoom2res(float z)
         return 256;
       else if (z < 1024)
         return 512;
-      else if (z < 1024)
-        return 1024;
       else
         {
           if (z > original_width || z > original_height)
@@ -239,7 +204,7 @@ Image::set_pos(float x, float y)
 
 void
 Image::update(float alpha)
-{
+{ // Move image to its new position
   if (alpha == 1.0f)
     {
       x_pos = target_x_pos; 
@@ -252,6 +217,64 @@ Image::update(float alpha)
       x_pos = (alpha) * target_x_pos + (1.0f - alpha) * last_x_pos;
       y_pos = (alpha) * target_y_pos + (1.0f - alpha) * last_y_pos;
     }
+}
+
+bool
+Image::update_resources(float x_offset, float y_offset, float zoom)
+{
+  float x = x_pos * zoom + x_offset;
+  float y = y_pos * zoom + y_offset;
+
+  bool need_redraw = false;
+
+  SDL_LockMutex(mutex);
+  if (x > Framebuffer::get_width() ||
+      y > Framebuffer::get_height() ||
+      x < -zoom || 
+      y < -zoom)
+    { // Image out of screen
+      if (surface && surface_resolution >= 512) // keep small images around a while longer
+        {
+          delete surface;
+          surface = 0;
+        }
+    }
+  else
+    { // image on screen
+      // Handle loading when resolution changed
+      if (surface == 0 || zoom2res(zoom) != surface_resolution)
+        {
+          if (zoom2res(zoom) != requested_res)
+            {    
+              loader.request(this);
+              requested_res = zoom2res(zoom);
+            }
+        }
+      
+      // Handle OpenGL Texture creation when new surface was received
+      if (received_surface)
+        {
+          need_redraw = true;
+
+          if (!surface_16x16)
+            { // Use surface as the smallest possible surface
+              // FIXME: When somebody is fast this could mean a non 16x16 surface
+              surface_16x16 = new LargeSurface(SWSurfaceHandle(received_surface)); // FIXME: could use Surface instead
+            }
+          else
+            { // Replace the current surface
+              delete surface;
+              surface = new LargeSurface(SWSurfaceHandle(received_surface));
+              surface_resolution = received_surface_res;
+            }
+
+          received_surface     = 0;
+          received_surface_res = 0;
+        }
+    }
+  SDL_UnlockMutex(mutex); 
+
+  return need_redraw;
 }
 
 /* EOF */

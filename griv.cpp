@@ -445,7 +445,7 @@ Griv::main(int argc, char** argv)
             if (workspace->res != old_res ||
                 old_x_offset != x_offset ||
                 old_y_offset != y_offset ||
-                (force_redraw && (next_redraw < SDL_GetTicks() || loader.empty())) ||
+                (force_redraw && (next_redraw < SDL_GetTicks())) ||
                 workspace->reorganize)
               {
                 force_redraw = false;
@@ -466,7 +466,10 @@ Griv::main(int argc, char** argv)
               }
             else
               {
-                SDL_Delay(5);
+                if (workspace->update_resources())
+                  force_redraw = true;
+                else
+                  SDL_Delay(30); // nothing to do, so sleep
               }
           }
       }

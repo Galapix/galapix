@@ -85,7 +85,9 @@ ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is fil
           try {
             return new SoftwareSurface(thumb_filename.c_str());
           } catch(std::exception& err) {
-            std::cout << "ThumbnailStore: FIXME: This shouldn't happen: " << err.what() << std::endl;
+            std::cout << "ThumbnailStore: FIXME: This shouldn't happen: " << err.what() << "\n"
+                      << "  - for " << url
+                      << std::endl;
             return 0;
           }
         }
