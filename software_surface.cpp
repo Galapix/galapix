@@ -43,7 +43,8 @@ SoftwareSurface::SoftwareSurface(SDL_Surface* swsurface)
 
 SoftwareSurface::~SoftwareSurface()
 {
-  SDL_FreeSurface(surface);
+  if (surface)
+    SDL_FreeSurface(surface);
 }
 
 /* EOF */

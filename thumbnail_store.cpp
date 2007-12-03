@@ -47,10 +47,9 @@ ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is fil
 {
   if (thumb_size == -1) // load original
     {
-      std::cout << "Loading original: " << url << std::endl;
       try 
         { 
-          return  new SoftwareSurface(url.substr(7)); // cut file:// part
+          return new SoftwareSurface(url.substr(7)); // cut file:// part
         }
       catch(std::exception& err) 
         {
@@ -82,7 +81,13 @@ ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is fil
             return 0;
           }
 
-          return new SoftwareSurface(thumb_filename.c_str());
+          // FIXME: This will fail for some images, which ones?
+          try {
+            return new SoftwareSurface(thumb_filename.c_str());
+          } catch(std::exception& err) {
+            std::cout << "ThumbnailStore: FIXME: This shouldn't happen: " << err.what() << std::endl;
+            return 0;
+          }
         }
     }
 }

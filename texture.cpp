@@ -106,7 +106,7 @@ Texture::Texture(int width, int height,
 
   { // Create the texture
     unsigned char dummy[width*height*3];
-    memset(dummy, 100, width*height*3);
+    memset(dummy, 150, width*height*3);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  width,
                  height,

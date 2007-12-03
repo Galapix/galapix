@@ -53,16 +53,32 @@ public:
   int get_height() const { return height; }
 
   const T& operator()(int x, int y) const {
+    assert(y >= 0 && y < rows.size());
+    assert(x >= 0 && x < rows[y].size());
     return rows[y][x];
   }
 
   T& operator()(int x, int y) {
+    assert(y >= 0 && y < int(rows.size()));
+    assert(x >= 0 && x < int(rows[y].size()));
     return rows[y][x];
   }
 
-  void resize(int w, int h)
+  void resize(int w, int h, const T& t = T())
   {
-    rows.resize(h);
+    for(typename Rows::iterator i = rows.begin(); i != rows.end(); ++i)
+      i->resize(w);
+    rows.resize(h, Columns(w, t));
+
+    if (0)
+      {
+        std::cout << "Resize: " << w << "x" << h << std::endl;
+        std::cout << "Rows: " << rows.size() << std::endl;
+        for(int y = 0; y < int(rows.size()); ++y)
+          {
+            std::cout << "Column: " << y << " -> " << rows[y].size() << std::endl;
+          }
+      }
 
     width  = w;
     height = h;

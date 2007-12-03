@@ -45,10 +45,13 @@ Surface::Surface(SWSurfaceHandle surface, int x, int y, int w, int h)
                             surface->get_surface(), 
                             x, y, w, h);
     
-      u = float(surface->get_width()) / tex_w;
-      v = float(surface->get_height()) / tex_h;
+      u = float(w) / tex_w;
+      v = float(h) / tex_h;
 
-      aspect = float(surface->get_width()) / surface->get_height();
+      aspect = float(w) / h;
+
+      width  = w;
+      height = h;
     }
   else
     {
@@ -71,21 +74,26 @@ Surface::draw(float x, float y, float orig_w, float orig_h)
       
       glColor3f(1.0f, 1.0f, 1.0f);
 
-      float w, h;
-      if (aspect > 1.0f)
-        { // FIXME: This only works as long as w == h
-          w = orig_w;
-          h = orig_h / aspect;
-        }
-      else
+      if (0)
         {
-          w = orig_w * aspect;
-          h = orig_h;
-        }
+          float w, h;
+          if (aspect > 1.0f)
+            { // FIXME: This only works as long as w == h
+              w = orig_w;
+              h = orig_h / aspect;
+            }
+          else
+            {
+              w = orig_w * aspect;
+              h = orig_h;
+            }
 
-      x += (orig_w - w)/2;
-      y += (orig_h - h)/2;
-     
+          x += (orig_w - w)/2;
+          y += (orig_h - h)/2;
+        }
+      float w = orig_w;
+      float h = orig_h;
+
       glBegin(GL_QUADS);
       glTexCoord2f(0,0);
       glVertex2f(x, y);

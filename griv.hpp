@@ -59,6 +59,7 @@ private:
   bool grid_color;
   bool drag_toggle;
   float gamma;
+
 public:
   Griv();
   ~Griv();

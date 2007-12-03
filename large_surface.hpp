@@ -35,12 +35,17 @@ class LargeSurface
 {
 private:
   Grid<Surface*> grid;
+  int width;
+  int height;
 
 public:
   LargeSurface(SWSurfaceHandle surface);
   ~LargeSurface();
 
   void draw(float x, float y, float w, float h);  
+
+  int get_width()  const { return width; }
+  int get_height() const { return height; }
 
 private:
   LargeSurface (const LargeSurface&);

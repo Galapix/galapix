@@ -150,11 +150,32 @@ Image::draw(float x_offset, float y_offset, float zoom)
           received_surface_res = 0;
         }
 
+      // Detect aspect ration
+      float aspect = float(original_width)/float(original_height);
+      float dw, dh;
+      if (aspect > 1.0f)
+        {
+          dw = zoom;
+          dh = zoom / aspect;
+        }
+      else
+        {
+          dw = zoom * aspect;
+          dh = zoom;
+        }
+
+      x += (zoom - dw)/2;
+      y += (zoom - dh)/2;
+
       // Handle drawing
       if (surface)
-        surface->draw(x, y, zoom, zoom);
+        {
+          surface->draw(x, y, dw, dh);
+        }
       else if (surface_16x16)
-        surface_16x16->draw(x, y, zoom, zoom);
+        {
+          surface_16x16->draw(x, y, dw, dh);
+        }
     }
   SDL_UnlockMutex(mutex);
 }

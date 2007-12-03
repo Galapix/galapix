@@ -53,13 +53,18 @@ Loader::~Loader()
 int
 Loader::thread_func(void*)
 {
-  while(loader.keep_thread_running)
-    {
-      loader.process_job();
+  try {
+    while(loader.keep_thread_running)
+      {
+        loader.process_job();
 
-      if (loader.empty())
-        SDL_Delay(100);
-    }
+        if (loader.empty())
+          SDL_Delay(100);
+      }
+  } catch(std::exception& err) {
+    std::cout << "Loader Thread error: " << err.what() << std::endl;
+    exit(1);
+  }
   return 0;
 }
 
@@ -108,9 +113,13 @@ Loader::process_job()
       if (!job.image->surface ||
           job.image->surface_resolution != job.image->requested_res)
         {
-          if (job.image->original_width  <= job.image->requested_res ||
-              job.image->original_height <= job.image->requested_res)
+          if (job.image->requested_res == -1)
             {
+              if (0)
+                std::cout << "Loading original: "
+                          << job.image->original_width  << "x"
+                          << job.image->original_height << " " 
+                          << job.image->url << std::endl;
               job.image->receive(store->get_by_url(job.image->url, -1),
                                  -1);
             }

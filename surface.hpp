@@ -47,12 +47,18 @@ private:
 
   float aspect;
 
+  int width;
+  int height;
+  
 public:
   Surface(SWSurfaceHandle surface, int x, int y, int w, int h);
   ~Surface();
 
   void draw(float x, float y, float w, float h);
-  
+
+  int get_width()  const { return width; }
+  int get_height() const { return height; }
+
 private:
   Surface (const Surface&);
   Surface& operator= (const Surface&);

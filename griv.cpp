@@ -486,8 +486,13 @@ Griv::main(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-  Griv griv;
-  return griv.main(argc, argv);
+  try {
+    Griv griv;
+    return griv.main(argc, argv);
+  } catch(std::exception& err) {
+    std::cout << "Griv: uncatched exception: " << err.what() << std::endl;
+    return EXIT_FAILURE;
+  }
 }
 
 /* EOF */
