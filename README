@@ -3,7 +3,7 @@ griv
 
 griv is a image viewer that allows you to directly zoom into
 thumbnails. Its goal is to allow its viewer to view 100'000 images at
-once fluently without any noticable load times.
+once, fluently without any noticable load times.
 
 Usage:
 ======
@@ -13,9 +13,9 @@ You can view any collectino of files in a directory by:
  $ ./griv [PATHNAME]...
 
 Optionally you can pre-generate the thumbnails, which results in
-a smoother experience by calling:
+a smoother experience by calling (strongly recomment):
 
- $ ./thumbgen -s 16,32,64,128,256,512,1024 [PATHNAME]...
+ $ ./thumbgen -a [PATHNAME]...
 
 For very large image collections it is recomment that you pregenerate
 the URL list to avoid slow startup due to file-io:

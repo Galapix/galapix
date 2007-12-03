@@ -40,92 +40,17 @@ ThumbnailStore::ThumbnailStore()
 
 ThumbnailStore::~ThumbnailStore()
 {
-}
-
-SoftwareSurface* 
-ThumbnailStore::get_by_url(const std::string& url, int thumb_size) // URL is file://... *not* just a pathname
-{
-  if (thumb_size == -1) // load original
-    {
-      try 
-        { 
-          return new SoftwareSurface(url.substr(7)); // cut file:// part
-        }
-      catch(std::exception& err) 
-        {
-          std::cout << "Loader: " << err.what() << std::endl;
-          return 0;
-        }
-    }
-  else
-    {
-      std::string md5 = MD5::md5_string(url);
-
-      std::ostringstream out;
-      out << Filesystem::get_home() << "/.griv/cache/by_url/"
-          << thumb_size << "/" << md5.substr(0,2) << "/" << md5.substr(2) << ".jpg";
-  
-      std::string thumb_filename = out.str();
-  
-      try 
-        {
-          return new SoftwareSurface(thumb_filename);
-        }
-      catch(std::exception& err) 
-        {
-          // Try to generate the thumbnail
-          try {
-            generate(url.substr(7), thumb_filename, thumb_size); // cut file:// part
-          } catch (std::exception& err) {
-            std::cout << err.what() << std::endl;
-            return 0;
-          }
-
-          // FIXME: This will fail for some images, which ones?
-          try {
-            return new SoftwareSurface(thumb_filename.c_str());
-          } catch(std::exception& err) {
-            std::cout << "ThumbnailStore: FIXME: This shouldn't happen: " << err.what() << "\n"
-                      << "  - for " << url
-                      << std::endl;
-            return 0;
-          }
-        }
-    }
+  std::cout << "destroying ThumbnailStore" << std::endl;
 }
 
 void
-ThumbnailStore::generate(const std::string& filename, const std::string& thumb_location, int thumb_size)
+ThumbnailStore::store()
 {
-  Epeg_Image* img = epeg_file_open(filename.c_str());
-  if (!img)
-    {
-      throw std::runtime_error("ThumbnailStore::generate: Cannot open " + filename);
-    }
-  
-  int w, h;
-  epeg_size_get(img, &w, &h);
+}
 
-  if (w > thumb_size || h > thumb_size)
-    {
-      epeg_quality_set(img, 80);
-      epeg_thumbnail_comments_enable(img, 1);
-
-      if (w > h)
-        epeg_decode_size_set(img, thumb_size, thumb_size * h / w);
-      else
-        epeg_decode_size_set(img, thumb_size * w / h, thumb_size);
-  
-      epeg_decode_colorspace_set(img, EPEG_RGB8);
-
-      std::cout << "." << std::flush;
-      //std::cout << thumb_size << " - " << filename << " => " << thumb_location << std::endl;
-
-      epeg_file_output_set(img, thumb_location.c_str());
-      epeg_encode(img);
-    }
-      
-  epeg_close(img);
+void
+ThumbnailStore::retrieve()
+{
 }
 
 /* EOF */

@@ -8,6 +8,10 @@ ToDo:
 
 - move over input code from Pingus to support Spacenavigator and such
 
+- need a way to cleanly shut down the whole thing instead of just exit()
+
+- don't store MD5 as string, but as raw bits/bytes
+
 Less Important:
 ===============
 

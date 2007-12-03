@@ -78,7 +78,6 @@ MD5::md5_file(const std::string& filename)
   std::ostringstream out;
   for (int i = 0; i < 16; i++)
     out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
-
   return out.str();  
 }
 

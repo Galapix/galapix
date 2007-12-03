@@ -23,29 +23,34 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_THUMB_CACHE_HPP
-#define HEADER_THUMB_CACHE_HPP
+#ifndef HEADER_THUMBNAIL_STORE_HPP
+#define HEADER_THUMBNAIL_STORE_HPP
 
+#include "SDL.h"
 #include <fstream>
+#include <string>
+#include <map>
+
+class SoftwareSurface;
 
 /** */
-class ThumbCache
+class ThumbnailManager
 {
 private:
-  std::ifstream in;
-  
-public:
-  ThumbCache(const std::string& filename);
-  ~ThumbCache();
+  typedef std::map<int, std::ofstream*> Ofstreams;
+  Ofstreams ofstreams;
 
-  SDL_Surface* get(int offset);
-  void add(SDL_Surface* surface);
+public:
+  ThumbnailManager();
+  ~ThumbnailManager();
+
+  SoftwareSurface* get_by_url(const std::string& url, int thumb_size);
   
-  void save(const std::string& filename);
+  void generate(const std::string& filename, const std::string& thumb_location, int thumb_size);
 
 private:
-  ThumbCache (const ThumbCache&);
-  ThumbCache& operator= (const ThumbCache&);
+  ThumbnailManager (const ThumbnailManager&);
+  ThumbnailManager& operator= (const ThumbnailManager&);
 };
 
 #endif

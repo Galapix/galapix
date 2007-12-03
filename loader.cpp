@@ -32,7 +32,7 @@
 #include "image.hpp"
 #include "loader.hpp"
 #include "surface.hpp"
-#include "thumbnail_store.hpp"
+#include "thumbnail_manager.hpp"
 
 Loader loader;
 
@@ -73,7 +73,7 @@ Loader::start_thread()
 {
   if (!store)
     {
-      store = new ThumbnailStore();
+      store = new ThumbnailManager();
     }
 
   if (!thread)

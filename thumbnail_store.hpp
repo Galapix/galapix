@@ -27,7 +27,9 @@
 #define HEADER_THUMBNAIL_STORE_HPP
 
 #include "SDL.h"
+#include <fstream>
 #include <string>
+#include <map>
 
 class SoftwareSurface;
 
@@ -35,14 +37,14 @@ class SoftwareSurface;
 class ThumbnailStore
 {
 private:
+  std::ofstream out;
 
 public:
   ThumbnailStore();
   ~ThumbnailStore();
 
-  SoftwareSurface* get_by_url(const std::string& url, int thumb_size);
-  
-  void generate(const std::string& filename, const std::string& thumb_location, int thumb_size);
+  void store();
+  void retrieve();
 
 private:
   ThumbnailStore (const ThumbnailStore&);

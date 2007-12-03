@@ -20,6 +20,7 @@ griv_env.Program('griv', ['griv.cpp',
                           'large_surface.cpp',
                           'software_surface.cpp',
                           'thumbnail_store.cpp',
+                          'thumbnail_manager.cpp',
                           'display.cpp', 
                           'texture.cpp', 
                           'workspace.cpp'])
