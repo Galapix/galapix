@@ -26,6 +26,12 @@ Less Important:
 
 - write fast file system routines, use readdir(), d_type instead of
   stat to check for a directory -> only works on EXT3
+
+Bugs:
+=====
+
+ - Ctrl-C doesn't work in all situations (i.e. initial loading)
+
 
 Cache Files:
 ============

@@ -200,7 +200,12 @@ Image::zoom2res(float z)
       else if (z < 1024)
         return 1024;
       else
-        return -1;
+        {
+          if (z > original_width || z > original_height)
+            return -1;
+          else
+            return 1024;
+        }
     }
   else
     { // high quality
