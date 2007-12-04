@@ -64,7 +64,12 @@ FileEntryCache::FileEntryCache(const std::string& filename)
         {
           FileEntry entry;
       
-          in.read(entry.url_md5,  sizeof(char) * 33);
+          uint16_t url_len;
+          in.read((char*)(&url_len), sizeof(uint16_t));
+          char url[url_len];
+          in.read(url,  url_len);
+          entry.url = url;
+
           in.read((char*)(&entry.mtime),        sizeof(entry.mtime));
           in.read((char*)(&entry.width),        sizeof(entry.width));
           in.read((char*)(&entry.height),       sizeof(entry.height));
@@ -80,7 +85,7 @@ FileEntryCache::FileEntryCache(const std::string& filename)
             }
           
           // FIXME: Do error checking to avoid adding incomplete entries
-          entries[entry.url_md5] = entry;
+          entries[entry.url] = entry;
         }
     }
 }
@@ -101,7 +106,7 @@ FileEntryCache::save(const std::string& filename) const
         {
           const FileEntry& entry = i->second;
 
-          out.write(entry.url_md5,  sizeof(char) * 33);
+          out.write(entry.url.c_str(),  entry.url.length()+1);
           out.write((char*)(&entry.mtime),        sizeof(entry.mtime));
           out.write((char*)(&entry.width),        sizeof(entry.width));
           out.write((char*)(&entry.height),       sizeof(entry.height));
@@ -121,14 +126,12 @@ FileEntryCache::save(const std::string& filename) const
 const FileEntry*
 FileEntryCache::get_entry(const std::string& url)
 {
-  std::string url_md5 = MD5::md5_string(url);
-
-  Entries::const_iterator i = entries.find(url_md5);
+  Entries::const_iterator i = entries.find(url);
   if (i == entries.end())
     {
       FileEntry entry;
       try { 
-        strcpy(entry.url_md5, url_md5.c_str());
+        entry.url = url;
         entry.mtime = Filesystem::get_mtime(url.substr(7));
         JPEG::get_size(url.substr(7), entry.width, entry.height);
       } catch (std::exception& err) {
@@ -136,8 +139,8 @@ FileEntryCache::get_entry(const std::string& url)
         return 0;
       }
       
-      entries[url_md5] = entry;
-      return &entries[url_md5];
+      entries[url] = entry;
+      return &entries[url];
     }
   else
     {

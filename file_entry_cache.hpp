@@ -38,7 +38,7 @@ struct ThumbnailEntry
 
 struct FileEntry 
 {
-  char     url_md5[33]; // FIXME: Could save raw MD5 instead of string version
+  std::string url; // FIXME: Could save raw MD5 instead of string version
   uint32_t mtime;  // mtime of the file
   int      width;  // image width
   int      height; // image height
