@@ -157,21 +157,6 @@ Griv::process_events(float delta)
                 gamma = 1.0f;
                 SDL_SetGamma(gamma, gamma, gamma);
               }
-            else if (event.key.keysym.sym == SDLK_9)
-              {
-                workspace->layout(4,3);
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_8)
-              {
-                workspace->layout(8,3);
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_7)
-              {
-                workspace->layout(16,3);
-                force_redraw = true;
-              }
             else if (event.key.keysym.sym == SDLK_1)
               {
                 workspace->set_zoom(16.0f);
@@ -195,6 +180,29 @@ Griv::process_events(float delta)
             else if (event.key.keysym.sym == SDLK_6)
               {
                 workspace->set_zoom(512.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_7)
+              {
+                workspace->set_zoom(1024.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_8)
+              {
+                workspace->set_zoom(2048.0f);
+              }
+            else if (event.key.keysym.sym == SDLK_9)
+              {
+                workspace->layout_sort(true);
+                force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_0)
+              {
+                workspace->layout_sort(false);
+                force_redraw = true;
+              }
+            else if (event.key.keysym.sym == SDLK_r)
+              {
+                workspace->layout_random();
+                force_redraw = true;
               }
             else if (event.key.keysym.sym == SDLK_UP)
               {

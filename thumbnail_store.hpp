@@ -37,8 +37,8 @@ class SoftwareSurface;
 class ThumbnailStore
 {
 private:
-  std::ofstream out;
-  
+  std::string filename;
+
 public:
   ThumbnailStore(const std::string& filename);
   ~ThumbnailStore();

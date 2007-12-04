@@ -12,6 +12,16 @@ ToDo:
 
 - don't store MD5 as string, but as raw bits/bytes
 
+- addd linear/nearest filtering toggle
+
+- make set_zoom() not change the current viewpoint
+
+- prioritize loader jobs:
+  
+  1) images currently displayed
+  2) images without any thumbnails
+  3) images close to the current view
+
 Less Important:
 ===============
 
@@ -24,6 +34,7 @@ Less Important:
 
 - write fast file system routines, use readdir(), d_type instead of
   stat to check for a directory -> only works on EXT3
+
 
 Bugs:
 =====
@@ -40,6 +51,7 @@ Bugs:
  - ...images to workspace... 8033/8047 doesn't display 100% when done
 
  - not handled properly by epeg: /share/photos/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
+
 
 Cache Files:
 ============

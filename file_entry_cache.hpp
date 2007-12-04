@@ -29,12 +29,26 @@
 #include <string>
 #include <map>
 
-struct FileEntry {
-  char url_md5[33];
-  int  mtime;  // mtime at which the thumbnail was done
-  int  thumbnail_id; // offset into the thumbnail database
-  int  width;  // image width
-  int  height; // image height
+struct ThumbnailEntry
+{
+  uint64_t offset;
+  uint32_t len;
+};
+
+struct FileEntry 
+{
+  char     url_md5[33]; // FIXME: Could save raw MD5 instead of string version
+  uint32_t mtime;  // mtime of the file
+  int      width;  // image width
+  int      height; // image height
+  
+  /** 
+      thumbnails[0] -> 16x16
+      thumbnails[1] -> 32x32
+      ...
+      thumbnails[N] -> (16 + 2^N)x(16 + 2^N)
+   */
+  std::vector<ThumbnailEntry> thumbnails;
 };
 
 /** */

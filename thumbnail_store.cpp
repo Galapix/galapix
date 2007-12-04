@@ -34,23 +34,25 @@
 #include "thumbnail_store.hpp"
 
 ThumbnailStore::ThumbnailStore(const std::string& filename)
+  : filename(filename)
 {
-  out.open();
 }
 
 ThumbnailStore::~ThumbnailStore()
 {
-  std::cout << "destroying ThumbnailStore" << std::endl;
 }
 
 void
 ThumbnailStore::store()
 {
+  //  std::ofstream out((filename + ".dat").c_str());
+  
 }
 
 void
 ThumbnailStore::retrieve()
 {
+  
 }
 
 /* EOF */

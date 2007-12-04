@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <assert.h>
 #include <iostream>
 #include "filesystem.hpp"
 #include "jpeg.hpp"
@@ -44,11 +45,20 @@ FileEntryCache::FileEntryCache(const std::string& filename)
           FileEntry entry;
       
           in.read(entry.url_md5,  sizeof(char) * 33);
-          in.read((char*)(&entry.mtime),        sizeof(unsigned int));
-          in.read((char*)(&entry.thumbnail_id), sizeof(unsigned int));
-          in.read((char*)(&entry.width),        sizeof(unsigned int));
-          in.read((char*)(&entry.height),       sizeof(unsigned int));
+          in.read((char*)(&entry.mtime),        sizeof(entry.mtime));
+          in.read((char*)(&entry.width),        sizeof(entry.width));
+          in.read((char*)(&entry.height),       sizeof(entry.height));
 
+          uint8_t num_thumbnails = 0;
+          in.read((char*)(&num_thumbnails), sizeof(num_thumbnails));
+          for(int i = 0; i < num_thumbnails; ++i)
+            {
+              ThumbnailEntry thumb_entry;
+              in.read((char*)(&thumb_entry.offset), sizeof(thumb_entry.offset));
+              in.read((char*)(&thumb_entry.len),    sizeof(thumb_entry.len));
+              entry.thumbnails.push_back(thumb_entry);
+            }
+          
           // FIXME: Do error checking to avoid adding incomplete entries
           entries[entry.url_md5] = entry;
         }
@@ -70,11 +80,20 @@ FileEntryCache::save(const std::string& filename) const
           i != entries.end(); ++i)
         {
           const FileEntry& entry = i->second;
+
           out.write(entry.url_md5,  sizeof(char) * 33);
-          out.write((char*)(&entry.mtime),        sizeof(unsigned int));
-          out.write((char*)(&entry.thumbnail_id), sizeof(unsigned int));
-          out.write((char*)(&entry.width),        sizeof(unsigned int));
-          out.write((char*)(&entry.height),       sizeof(unsigned int));
+          out.write((char*)(&entry.mtime),        sizeof(entry.mtime));
+          out.write((char*)(&entry.width),        sizeof(entry.width));
+          out.write((char*)(&entry.height),       sizeof(entry.height));
+
+          assert(entry.thumbnails.size() < 256);
+          uint8_t num_thumbnails = entry.thumbnails.size();
+          out.write((char*)(&num_thumbnails), sizeof(num_thumbnails));
+          for(int i = 0; i < num_thumbnails; ++i)
+            {
+              out.write((char*)(&entry.thumbnails[i].offset), sizeof(entry.thumbnails[i].offset));
+              out.write((char*)(&entry.thumbnails[i].len),    sizeof(entry.thumbnails[i].len));
+            }        
         }
     }
 }
@@ -91,7 +110,6 @@ FileEntryCache::get_entry(const std::string& url)
       try { 
         strcpy(entry.url_md5, url_md5.c_str());
         entry.mtime = Filesystem::get_mtime(url.substr(7));
-        entry.thumbnail_id = 0;
         JPEG::get_size(url.substr(7), entry.width, entry.height);
       } catch (std::exception& err) {
         std::cout << url << ": " << err.what() << std::endl;

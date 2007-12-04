@@ -55,7 +55,8 @@ public:
 
   int size() { return images.size(); }
   void layout(int w, int h);
-
+  void layout_random();
+  void layout_sort(bool reverse);
 };
 
 #endif

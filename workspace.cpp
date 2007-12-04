@@ -110,6 +110,31 @@ Workspace::update(float delta)
     }
 }
 
+void 
+Workspace::layout_random()
+{
+  std::random_shuffle(images.begin(), images.end());
+  layout(4,3);
+}
+
+struct ImageSorter
+{
+  bool operator()(const Image* a, const Image* b) {
+    return a->url < b->url;
+  }
+};
+
+void
+Workspace::layout_sort(bool reverse)
+{
+  std::sort(images.begin(), images.end(), ImageSorter());
+  
+  if (reverse)
+    std::reverse(images.begin(), images.end());
+
+  layout(4,3);
+}
+
 void
 Workspace::layout(int aspect_w, int aspect_h)
 {
