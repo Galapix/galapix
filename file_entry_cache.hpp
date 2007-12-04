@@ -28,6 +28,7 @@
 
 #include <string>
 #include <map>
+#include "software_surface.hpp"
 
 struct ThumbnailEntry
 {
@@ -49,6 +50,9 @@ struct FileEntry
       thumbnails[N] -> (16 + 2^N)x(16 + 2^N)
    */
   std::vector<ThumbnailEntry> thumbnails;
+
+  SWSurfaceHandle get_thumbnail(int res);
+  SWSurfaceHandle get_original();
 };
 
 /** */
@@ -64,6 +68,8 @@ public:
   
   void save(const std::string& filename) const;
 
+  /** returns NULL if the FileEntry isn't obtainable (file missing,
+      etc.) */
   const FileEntry* get_entry(const std::string& url);
 };
 

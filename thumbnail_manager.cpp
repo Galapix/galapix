@@ -107,9 +107,9 @@ ThumbnailManager::generate(const std::string& filename, const std::string& thumb
   int w, h;
   unsigned char* data = 0;
   int   data_len = 0;
-  epeg_size_get(img, &w, &h);
+  epeg_size_get(img, &w, &h); // FIXME: Should use FileEntryCache instead
 
-  if (w > thumb_size || h > thumb_size)
+  if (w > thumb_size || h > thumb_size) 
     {
       epeg_quality_set(img, 80);
       epeg_thumbnail_comments_enable(img, 1);
@@ -122,7 +122,7 @@ ThumbnailManager::generate(const std::string& filename, const std::string& thumb
       epeg_decode_colorspace_set(img, EPEG_RGB8);
 
       std::cout << "." << std::flush;
-      //std::cout << thumb_size << " - " << filename << " => " << thumb_location << std::endl;
+      std::cout << thumb_size << " - " << filename << " => " << thumb_location << std::endl;
 
       epeg_file_output_set(img, thumb_location.c_str());
       epeg_memory_output_set(img, &data, &data_len);

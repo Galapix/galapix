@@ -30,7 +30,27 @@
 #include "md5.hpp"
 #include <fstream>
 #include "file_entry_cache.hpp"
+
+SWSurfaceHandle
+FileEntry::get_thumbnail(int res)
+{
+  if (res == 0)
+    { // Load original
+      // Doesn't now URL!
+    }
+  else
+    { // Load Thumbnail
+    }
+  
+  return SWSurfaceHandle();
+}
 
+SWSurfaceHandle
+FileEntry::get_original()
+{
+  return SWSurfaceHandle();
+}
+
 FileEntryCache::FileEntryCache(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
@@ -117,7 +137,6 @@ FileEntryCache::get_entry(const std::string& url)
       }
       
       entries[url_md5] = entry;
-
       return &entries[url_md5];
     }
   else
