@@ -31,7 +31,7 @@
 #include "software_surface.hpp"
 #include "image.hpp"
 #include "jpeg.hpp"
-#include "cache.hpp"
+#include "file_entry_cache.hpp"
 #include "surface.hpp"
 #include "large_surface.hpp"
 

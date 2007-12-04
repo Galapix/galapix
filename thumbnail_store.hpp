@@ -38,9 +38,9 @@ class ThumbnailStore
 {
 private:
   std::ofstream out;
-
+  
 public:
-  ThumbnailStore();
+  ThumbnailStore(const std::string& filename);
   ~ThumbnailStore();
 
   void store();

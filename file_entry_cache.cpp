@@ -28,7 +28,7 @@
 #include "jpeg.hpp"
 #include "md5.hpp"
 #include <fstream>
-#include "cache.hpp"
+#include "file_entry_cache.hpp"
 
 FileEntryCache::FileEntryCache(const std::string& filename)
 {

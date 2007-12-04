@@ -33,9 +33,9 @@
 #include "software_surface.hpp"
 #include "thumbnail_store.hpp"
 
-ThumbnailStore::ThumbnailStore()
+ThumbnailStore::ThumbnailStore(const std::string& filename)
 {
-  
+  out.open();
 }
 
 ThumbnailStore::~ThumbnailStore()

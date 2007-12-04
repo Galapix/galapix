@@ -12,7 +12,7 @@
 #include "loader.hpp"
 #include "image.hpp"
 #include "command_line.hpp"
-#include "cache.hpp"
+#include "file_entry_cache.hpp"
 
 float x_offset = 0.0f;
 float y_offset = 0.0f;

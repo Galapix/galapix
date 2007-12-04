@@ -1,6 +1,6 @@
 #include "filesystem.hpp"
 #include "md5.hpp"
-#include "cache.hpp"
+#include "file_entry_cache.hpp"
 #include <iostream>
 
 int main(int argc, char** argv)
