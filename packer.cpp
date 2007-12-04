@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv)
 {
-  Cache cache("/tmp/test.cache");
+  FileEntryCache cache("/tmp/test.cache");
 
   std::cout << "Generating file list... " << std::flush;
   std::vector<std::string> file_list;

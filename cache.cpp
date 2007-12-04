@@ -30,7 +30,7 @@
 #include <fstream>
 #include "cache.hpp"
 
-Cache::Cache(const std::string& filename)
+FileEntryCache::FileEntryCache(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
   if (!in)
@@ -56,7 +56,7 @@ Cache::Cache(const std::string& filename)
 }
 
 void
-Cache::save(const std::string& filename) const
+FileEntryCache::save(const std::string& filename) const
 {
   std::ofstream out(filename.c_str(), std::ios::out | std::ios::binary);
 
@@ -80,7 +80,7 @@ Cache::save(const std::string& filename) const
 }
 
 const FileEntry*
-Cache::get_entry(const std::string& url)
+FileEntryCache::get_entry(const std::string& url)
 {
   std::string url_md5 = MD5::md5_string(url);
 

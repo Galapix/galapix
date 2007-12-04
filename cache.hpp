@@ -38,7 +38,7 @@ struct FileEntry {
 };
 
 /** */
-class Cache
+class FileEntryCache
 {
 
 private:
@@ -46,8 +46,8 @@ private:
   Entries entries;
 
 public:
-  Cache(const std::string& filename);
-
+  FileEntryCache(const std::string& filename);
+  
   void save(const std::string& filename) const;
 
   const FileEntry* get_entry(const std::string& url);

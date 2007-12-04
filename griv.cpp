@@ -19,7 +19,7 @@ float y_offset = 0.0f;
 std::string config_home;
 bool force_redraw = true;
 bool highquality  = false;
-Cache* cache;
+FileEntryCache* cache;
 
 Griv::Griv()
 {
@@ -388,7 +388,7 @@ Griv::main(int argc, char** argv)
     std::cout << "done" << std::endl;
 
     std::cout << "Loading cache... " << std::flush;
-    cache = new Cache(Filesystem::get_home() + "/.griv/cache/file.cache");
+    cache = new FileEntryCache(Filesystem::get_home() + "/.griv/cache/file.cache");
     std::cout << "done" << std::endl;
 
     std::cout << "Generating url list... " << std::flush;

@@ -4,7 +4,7 @@ libgriv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g"])
 libgriv = libgriv_env.StaticLibrary('griv', ['filesystem.cpp', 
                                              'command_line.cpp',
                                              'jpeg.cpp',
-                                             'cache.cpp',
+                                             'file_entry_cache.cpp',
                                              'md5.cpp'])
 
 libepeg_env = Environment(CCFLAGS=["-Wall", "-O2", "-g"])
