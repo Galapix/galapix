@@ -46,6 +46,7 @@ private:
   float old_res;
   float old_x_offset;
   float old_y_offset;
+  float old_rotation;
   Uint32 next_redraw;
   Workspace* workspace;
   int zoom_mode;

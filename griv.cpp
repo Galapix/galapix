@@ -440,6 +440,7 @@ Griv::main(int argc, char** argv)
     old_res = -1;
     old_x_offset = -1;
     old_y_offset = -1;
+    old_rotation = 0;
     next_redraw = 0;
 
     loader.start_thread();
@@ -457,9 +458,12 @@ Griv::main(int argc, char** argv)
             if (workspace->res != old_res ||
                 old_x_offset != x_offset ||
                 old_y_offset != y_offset ||
+                old_rotation != workspace->rotation ||
                 (force_redraw && (next_redraw < SDL_GetTicks())) ||
                 workspace->reorganize)
               {
+                workspace->update_resources();
+
                 force_redraw = false;
 
                 Framebuffer::clear();
@@ -474,6 +478,7 @@ Griv::main(int argc, char** argv)
                 old_res = workspace->res;
                 old_x_offset = x_offset;
                 old_y_offset = y_offset;
+                old_rotation = workspace->rotation;
                 next_redraw = SDL_GetTicks() + 1000;
               }
             else

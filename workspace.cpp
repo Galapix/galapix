@@ -79,7 +79,7 @@ Workspace::update_resources()
         need_redraw = true;
 
       Uint32 v = SDL_GetTicks() - t;
-      if (v > 50) // 50ms spend updating, so stop it
+      if (v > 30) // 30ms spend updating, so stop it
         {
           //std::cout << "Break away" << std::endl;
           return need_redraw;
