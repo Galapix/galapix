@@ -35,11 +35,8 @@ SWSurfaceHandle
 FileEntry::get_thumbnail(int res)
 {
   if (res == 0)
-    { // Load original
-      // Doesn't now URL!
-    }
-  else
     { // Load Thumbnail
+      
     }
   
   return SWSurfaceHandle();
@@ -48,7 +45,7 @@ FileEntry::get_thumbnail(int res)
 SWSurfaceHandle
 FileEntry::get_original()
 {
-  return SWSurfaceHandle();
+  return SWSurfaceHandle(new SoftwareSurface(url.substr(7)));
 }
 
 FileEntryCache::FileEntryCache(const std::string& filename)
@@ -106,7 +103,9 @@ FileEntryCache::save(const std::string& filename) const
         {
           const FileEntry& entry = i->second;
 
-          out.write(entry.url.c_str(),  entry.url.length()+1);
+          uint16_t url_len = entry.url.length()+1;
+          out.write((char*)(&url_len),  sizeof(url_len));
+          out.write(entry.url.c_str(),  url_len);
           out.write((char*)(&entry.mtime),        sizeof(entry.mtime));
           out.write((char*)(&entry.width),        sizeof(entry.width));
           out.write((char*)(&entry.height),       sizeof(entry.height));
