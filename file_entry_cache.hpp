@@ -71,6 +71,8 @@ public:
   /** returns NULL if the FileEntry isn't obtainable (file missing,
       etc.) */
   const FileEntry* get_entry(const std::string& url);
+
+  void print();
 };
 
 #endif

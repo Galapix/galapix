@@ -93,6 +93,10 @@ Griv::process_events(float delta)
               {
                 loader.process_job();
               }
+            else if (event.key.keysym.sym == SDLK_F10)
+              {
+                cache->print();
+              }
             else if (event.key.keysym.sym == SDLK_F11)
               {
                 Framebuffer::toggle_fullscreen();

@@ -81,8 +81,9 @@ FileEntryCache::FileEntryCache(const std::string& filename)
               entry.thumbnails.push_back(thumb_entry);
             }
           
-          // FIXME: Do error checking to avoid adding incomplete entries
-          entries[entry.url] = entry;
+          // FIXME: Do more error checking to avoid adding incomplete entries
+          if (!in.eof())
+            entries[entry.url] = entry;
         }
     }
 }
@@ -117,7 +118,7 @@ FileEntryCache::save(const std::string& filename) const
             {
               out.write((char*)(&entry.thumbnails[i].offset), sizeof(entry.thumbnails[i].offset));
               out.write((char*)(&entry.thumbnails[i].len),    sizeof(entry.thumbnails[i].len));
-            }        
+            }
         }
     }
 }
@@ -144,6 +145,19 @@ FileEntryCache::get_entry(const std::string& url)
   else
     {
       return &i->second;
+    }
+}
+
+void
+FileEntryCache::print()
+{
+  for(Entries::iterator i = entries.begin(); i != entries.end(); ++i)
+    {
+      std::cout << "  url: " << i->second.url << std::endl;
+      std::cout << "  mtime: " << i->second.mtime << std::endl;
+      std::cout << "  size: " << i->second.width << "x" << i->second.height << std::endl;
+      std::cout << "  thumbnails: " << i->second.thumbnails.size() << std::endl;
+      std::cout << "------------------------------------" << std::endl;
     }
 }
 
