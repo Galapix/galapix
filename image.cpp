@@ -152,7 +152,9 @@ Image::zoom2res(float z)
 {
   if (!highquality)
     { // low quality
-      if (z < 32)
+      if (z >= original_width || z >= original_height)
+        return -1;
+      else if (z < 32)
         return 16;
       else if (z < 64)
         return 32;
@@ -165,16 +167,13 @@ Image::zoom2res(float z)
       else if (z < 1024)
         return 512;
       else
-        {
-          if (z > original_width || z > original_height)
-            return -1;
-          else
-            return 1024;
-        }
+        return 1024;
     }
   else
     { // high quality
-      if (z <= 16)
+      if (z >= original_width || z >= original_height)
+        return -1;
+      else if (z <= 16)
         return 16;
       else if (z <= 32)
         return 32;

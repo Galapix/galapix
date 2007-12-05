@@ -105,8 +105,6 @@ ThumbnailManager::generate(const std::string& filename, const std::string& thumb
     }
   
   int w, h;
-  unsigned char* data = 0;
-  int   data_len = 0;
   epeg_size_get(img, &w, &h); // FIXME: Should use FileEntryCache instead
 
   if (w > thumb_size || h > thumb_size) 
@@ -125,30 +123,14 @@ ThumbnailManager::generate(const std::string& filename, const std::string& thumb
       std::cout << thumb_size << " - " << filename << " => " << thumb_location << std::endl;
 
       epeg_file_output_set(img, thumb_location.c_str());
-      epeg_memory_output_set(img, &data, &data_len);
       epeg_encode(img);
-    }
-      
-  epeg_close(img);
-
-  if (!data)
-    {
-      std::cout << "ThumbnailManager: generate: failed: " << filename << std::endl;
     }
   else
     {
-      Ofstreams::iterator i = ofstreams.find(thumb_size);
-      if (i == ofstreams.end())
-        {
-          std::cout << "ThumbnailManager: Don't have cache store for " << thumb_size << std::endl;
-        }
-      else
-        {
-          
-        }
       
-      free(data);
     }
+      
+  epeg_close(img);
 }
 
 /* EOF */
