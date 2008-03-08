@@ -140,10 +140,29 @@ Workspace::layout(int aspect_w, int aspect_h)
 {
   int w = int(sqrt(aspect_w * images.size() / aspect_h));
 
-  for(int i = 0; i < int(images.size()); ++i)
+  if (1) // zick zag
+    { 
+      for(int i = 0; i < int(images.size()); ++i)
+        {
+          if ((i/w) % 2 == 0)
+            {
+              images[i]->set_pos((i % w) * 1.03f,
+                                 (i / w) * 1.03f);
+            }
+          else
+            {
+              images[i]->set_pos((w - (i % w)-1) * 1.03f,
+                                 (i / w) * 1.03f);
+            }
+        }
+    }
+  else
     {
-      images[i]->set_pos((i % w) * 1.15f,
-                         (i / w) * 1.15f);
+      for(int i = 0; i < int(images.size()); ++i)
+        {
+          images[i]->set_pos((i % w) * 1.03f,
+                             (i / w) * 1.03f);
+        }
     }
 
   reorganize = true;

@@ -1,0 +1,27 @@
+CREATE TABLE files (
+       -- rowid is automatically generated
+       filename  BLOB,
+       md5       TEXT,
+       filesize  INTEGER,
+       width     INTEGER,
+       height    INTEGER,
+       mtime     INTEGER
+);
+
+CREATE TABLE tiles (
+       tilesize   INTEGER, -- tile size in pixel (full size, i.e. "256", even if the tile might be truncated)
+       zoom       INTEGER, -- zoom level
+       fileid     INTEGER, -- link to to files.rowid
+       x          INTEGER, -- x position in tiles
+       y          INTEGER, -- Y position in tiles
+       width      INTEGER, -- width of the tile
+       height     INTEGER, -- height of the tile
+       bloblength INTEGER, -- length of the imagedata BLOB
+       blob       BLOB     -- the image data (JPEG)
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename, md5, mtime );
+CREATE UNIQUE INDEX IF NOT EXISTS tiles_index ON tiles ( tilesize, zoom, fileid, x, y )
+
+/* EOF */
+

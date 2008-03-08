@@ -27,6 +27,8 @@ ToDo:
 Less Important:
 ===============
 
+- implement proper mipmapping for better rendering quality
+
 - create two OpenGL context to allow better multithreading use (any
   way to do it portable?) or move loading out of draw() and into
   load(), only call load() till a time slice has run out, so that
