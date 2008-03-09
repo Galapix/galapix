@@ -4,4 +4,8 @@ sqlite_test_env = Environment(CXX="g++-4.2", CCFLAGS=["-Wall", "-O2", "-g"])
 sqlite_test_env.ParseConfig("pkg-config sqlite3 --libs --cflags")
 sqlite_test = sqlite_test_env.Program('sqlite_test', ['sqlite_test.cpp'])
 
+fill_file_table_env = Environment(CXX="g++-4.2", CCFLAGS=["-Wall", "-O2", "-g"])
+fill_file_table_env.ParseConfig("pkg-config sqlite3 --libs --cflags")
+fill_file_table = fill_file_table_env.Program('fill_file_table', ['fill_file_table.cpp'])
+
 # EOF #
