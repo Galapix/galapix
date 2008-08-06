@@ -38,15 +38,18 @@
 #include "software_surface.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
+#include "filesystem.hpp"
 #include "griv.hpp"
 
 Griv::Griv()
 {
   FreeImage_Initialise();
+  Filesystem::init();
 }
 
 Griv::~Griv()
 {
+  Filesystem::deinit();
   FreeImage_DeInitialise();
 }
 
