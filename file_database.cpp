@@ -24,83 +24,76 @@
 */
 
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
 #include "file_database.hpp"
 
-FileDatabase::FileDatabase(sqlite3* db)
-  : db(db)
+std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
-  if (sqlite3_prepare_v2(db,
-                         "INSERT OR REPLACE INTO files (filename, md5, filesize, width, height, mtime)"
-                         "           VALUES (      ?1,  ?2,       ?3,    ?4,     ?5,    ?6);", -1, &store_stmt,  0)
-      != SQLITE_OK)
-    {
-      fprintf(stderr, "Something went wrong2: %s\n", sqlite3_errmsg(db));
-    }
-  
-  if (sqlite3_prepare_v2(db, "SELECT * FROM files WHERE filename = ?1", -1, &get_by_file_id_stmt,  0))
-    {
-      fprintf(stderr, "Something went wrong2: %s\n", sqlite3_errmsg(db));      
-    }
+  return os << "filename: " << entry.filename << " size: "<< entry.width << "x" << entry.height;
+}
+
+FileDatabase::FileDatabase(SQLiteConnection* db)
+  : db(db),
+    store_stmt(db),
+    get_by_filename_stmt(db),
+    get_by_file_id_stmt(db)
+{
+  db->exec("CREATE TABLE IF NOT EXISTS files ("
+           "filename  TEXT UNIQUE, "
+           "md5       TEXT, "
+           "filesize  INTEGER, "
+           "width     INTEGER, "
+           "height    INTEGER, "
+           "mtime     INTEGER);");
 
-  if (sqlite3_prepare_v2(db, "SELECT * FROM files WHERE rowid = ?1",  -1, &get_by_file_id_stmt,  0))
-    {
-      fprintf(stderr, "Something went wrong2: %s\n", sqlite3_errmsg(db));      
-    }
+  //db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename, md5 );");
+
+  store_stmt.prepare("INSERT INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
+  get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
+  get_by_file_id_stmt.prepare("SELECT * FROM files WHERE rowid = ?1;");
+}
+ 
+FileDatabase::~FileDatabase()
+{
 
 }
-  
+ 
 int
 FileDatabase::store_file_entry(const std::string& filename, const std::string& md5, size_t filesize, int width, int height, int mtime)
 {
-  sqlite3_bind_blob(store_stmt, 1, filename.c_str(), filename.size(), SQLITE_STATIC);
-  sqlite3_bind_text(store_stmt, 2, md5.c_str(), -1, SQLITE_STATIC); 
-  sqlite3_bind_int (store_stmt, 3, filesize); // filesize
-  sqlite3_bind_int (store_stmt, 4, width);    // width
-  sqlite3_bind_int (store_stmt, 5, height);   // height
-  sqlite3_bind_int (store_stmt, 6, 0);        // mtime
+  store_stmt.bind_text(1, filename);
+  store_stmt.bind_text(2, md5);
+  store_stmt.bind_int (3, filesize); // filesize
+  store_stmt.bind_int (4, width);    // width
+  store_stmt.bind_int (5, height);   // height
+  store_stmt.bind_int (6, 0);        // mtime
 
-  // execute
-  int rc = sqlite3_step(store_stmt);
-  if (rc != SQLITE_DONE)
-    {
-      std::cout << "Something went wrong: " << sqlite3_errmsg(db) << std::endl;
-    }
-  else
-    {
-      std::cout << "added " << filename << std::endl;
-    }
+  store_stmt.execute();
 
-  sqlite3_reset(store_stmt);
-  sqlite3_clear_bindings(store_stmt);  
-
-  return 0; // row_id
+  return sqlite3_last_insert_rowid(db->get_db());
 }
 
 FileEntry
 FileDatabase::get_file_entry(const std::string& filename)
 {
-  sqlite3_bind_text(get_by_filename_stmt, 1, filename.c_str(), -1, SQLITE_STATIC);
+  std::cout << "Trying to retrieve: " << filename << std::endl;
+  get_by_filename_stmt.bind_text(1, filename);
+  get_by_filename_stmt.execute_query();
+  
+  // If nothing is found, query the file system and store the results
 
-  // execute
-  int rc = sqlite3_step(get_by_filename_stmt);
-  if (rc != SQLITE_DONE)
-    {
-      std::cout << "Something went wrong: " << sqlite3_errmsg(db) << std::endl;
-    }
-  else
-    {
-      std::cout << "added " << filename << std::endl;
-    }
-
-  sqlite3_reset(get_by_filename_stmt);
-  sqlite3_clear_bindings(get_by_filename_stmt);  
   return FileEntry();
 }
 
 FileEntry
 FileDatabase::get_file_entry(uint32_t file_id)
 {
-  sqlite3_bind_int(get_by_file_id_stmt, 1, file_id);
+  get_by_file_id_stmt.bind_int(1, file_id);
+  get_by_file_id_stmt.execute_query();
+
+  // If nothing is found, query the file system and store the results
+
   return FileEntry();
 }
 

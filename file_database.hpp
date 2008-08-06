@@ -28,6 +28,7 @@
 
 #include <sqlite3.h>
 #include <string>
+#include "sqlite.hpp"
 
 struct FileEntry 
 {
@@ -37,20 +38,23 @@ struct FileEntry
   int         height;   // image height
 };
 
+std::ostream& operator<<(std::ostream& os, const FileEntry& entry);
+
 /** */
 class FileDatabase
 {
 private:
-  sqlite3* db;
-  sqlite3_stmt* store_stmt;
-  sqlite3_stmt* get_by_filename_stmt;
-  sqlite3_stmt* get_by_file_id_stmt;
-  
-public:
-  FileDatabase(sqlite3* db);
-  
-  int store_file_entry(const std::string& filename, const std::string& md5, size_t filesize, int width, int height, int mtime);
+  SQLiteConnection* db;
+  SQLiteStatement store_stmt;
+  SQLiteStatement get_by_filename_stmt;
+  SQLiteStatement get_by_file_id_stmt;
 
+  int store_file_entry(const std::string& filename, const std::string& md5, size_t filesize, int width, int height, int mtime);
+ 
+public:
+  FileDatabase(SQLiteConnection* db);
+  ~FileDatabase();
+  
   FileEntry get_file_entry(const std::string& filename);
   FileEntry get_file_entry(uint32_t file_id);
 
