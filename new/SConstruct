@@ -12,6 +12,7 @@ griv_env.Program('griv', [
         'software_surface.cpp',
         'url.cpp',
         'sqlite.cpp',
+        'filesystem.cpp',
         'file_database.cpp',
         'tile_database.cpp',
         'griv.cpp'])
