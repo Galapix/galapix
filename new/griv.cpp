@@ -34,8 +34,10 @@
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 #include "url.hpp"
+#include "sqlite.hpp"
 #include "software_surface.hpp"
 #include "griv.hpp"
+#include "file_database.hpp"
 
 Griv::Griv()
 {
@@ -64,35 +66,47 @@ Griv::main(int argc, char** argv)
         }
     }
 
+  SQLiteConnection db("test.sqlite");
+
+  FileDatabase file_db(&db);
+
   for(std::vector<std::string>::size_type i = 0; i < rest.size(); ++i)
     {
-      // Generate Image Tiles
-      SoftwareSurface surface(rest[i]);
-      
-      int scale = 0;
-
-      do
+      if (0) // Tile Generation
         {
-          if (scale != 0)
+          // Generate Image Tiles
+          SoftwareSurface surface(rest[i]);
+      
+          int scale = 0;
+
+          do
             {
-              surface = surface.scale(Size(surface.get_width()/2, 
-                                           surface.get_height()/2));
-            }
+              if (scale != 0)
+                {
+                  surface = surface.scale(Size(surface.get_width()/2, 
+                                               surface.get_height()/2));
+                }
 
-          for(int y = 0; y <= surface.get_height()/256; ++y)
-            for(int x = 0; x <= surface.get_width()/256; ++x)
-              {
-                std::ostringstream out;
-                out << "/tmp/out/tile-" << scale << "-" << y << "+" << x << ".jpg";
+              for(int y = 0; y <= surface.get_height()/256; ++y)
+                for(int x = 0; x <= surface.get_width()/256; ++x)
+                  {
+                    std::ostringstream out;
+                    out << "/tmp/out/tile-" << scale << "-" << y << "+" << x << ".jpg";
 
-                SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
-                                                                   Size(256, 256)));
-                croped_surface.save(out.str());
-              }
+                    SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
+                                                                       Size(256, 256)));
+                    croped_surface.save(out.str());
+                  }
 
-          scale += 1;
-        } while (surface.get_width() > 32 ||
-                 surface.get_height() > 32);
+              scale += 1;
+            } while (surface.get_width() > 32 ||
+                     surface.get_height() > 32);
+        }
+      else  // Data base test
+        {
+          FileEntry entry = file_db.get_file_entry(rest[i]);
+          std::cout << entry << std::endl;
+        }
     }
 
   return 0;
@@ -103,7 +117,8 @@ int main(int argc, char** argv)
   try 
     {
       Griv app;
-      return app.main(argc, argv);
+      int ret = app.main(argc, argv);
+      return ret;
     }
   catch(std::exception& err) 
     {

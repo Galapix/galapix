@@ -60,17 +60,22 @@ class SQLiteStatement
 private:
   SQLiteConnection* db;
   sqlite3_stmt*   stmt;
+
+  void reset();
   
 public:
+  SQLiteStatement(SQLiteConnection* db);
   SQLiteStatement(SQLiteConnection* db, const std::string& sqlstmt);
   ~SQLiteStatement();
+
+  void prepare(const std::string& sqlstmt);
 
   void bind_int(int n, int i);
   void bind_text(int n, const std::string&);
   void bind_blob(int n, const std::string&);
 
-  void reset();
-  void step();
+  void execute();
+  void execute_query();
 };
 
 #endif
