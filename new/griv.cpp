@@ -36,8 +36,9 @@
 #include "url.hpp"
 #include "sqlite.hpp"
 #include "software_surface.hpp"
-#include "griv.hpp"
 #include "file_database.hpp"
+#include "tile_database.hpp"
+#include "griv.hpp"
 
 Griv::Griv()
 {
@@ -69,6 +70,7 @@ Griv::main(int argc, char** argv)
   SQLiteConnection db("test.sqlite");
 
   FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
 
   for(std::vector<std::string>::size_type i = 0; i < rest.size(); ++i)
     {
@@ -104,8 +106,11 @@ Griv::main(int argc, char** argv)
         }
       else  // Data base test
         {
-          FileEntry entry = file_db.get_file_entry(rest[i]);
-          std::cout << entry << std::endl;
+          FileEntry entry;
+          if (file_db.get_file_entry(rest[i], entry))
+            std::cout << entry << std::endl;
+          else
+            std::cout << "Couldn't find entry for " << rest[i] << std::endl;
         }
     }
 

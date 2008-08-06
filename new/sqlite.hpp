@@ -55,6 +55,25 @@ public:
   sqlite3* get_db() const { return db; }
 };
 
+class SQLiteReader
+{
+private:
+  SQLiteConnection* db;
+  sqlite3_stmt*   stmt;
+  
+public:
+  SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt);
+  ~SQLiteReader();
+
+  bool next();
+
+  int         get_int(int column);
+  std::string get_text(int column);
+  std::string get_blob(int column);
+
+  std::string get_column_name(int column);
+};
+
 class SQLiteStatement
 {
 private:
@@ -75,7 +94,7 @@ public:
   void bind_blob(int n, const std::string&);
 
   void execute();
-  void execute_query();
+  SQLiteReader execute_query();
 };
 
 #endif

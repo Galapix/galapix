@@ -52,7 +52,7 @@ SQLiteConnection::exec(const std::string& sqlstmt)
 {
   char* errmsg;
 
-  std::cout << "SQLiteConnection::exec: " << sqlstmt << std::endl;
+  //std::cout << "SQLiteConnection::exec: " << sqlstmt << std::endl;
 
   if (sqlite3_exec(db, sqlstmt.c_str(), 0, 0, &errmsg) != SQLITE_OK)
     {
@@ -96,7 +96,7 @@ SQLiteStatement::prepare(const std::string& sqlstmt)
       != SQLITE_OK)
     {
       std::ostringstream str;
-      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+      str << "SQLiteStatement::prepare: " << sqlite3_errmsg(db->get_db()) << ":\n" << sqlstmt;
       throw SQLiteError(str.str());
     }
 }
@@ -160,37 +160,84 @@ SQLiteStatement::execute()
   reset();
 }
 
-void
+SQLiteReader
 SQLiteStatement::execute_query()
+{
+  return SQLiteReader(db, stmt);
+}
+
+SQLiteReader::SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt)
+  : db(db),
+    stmt(stmt)
+{
+}
+
+SQLiteReader::~SQLiteReader()
+{  
+  // FIXME: Not good, we likely clean up twice
+  
+  sqlite3_clear_bindings(stmt);  
+
+  if (sqlite3_reset(stmt) != SQLITE_OK)
+    {
+      std::ostringstream str;
+      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+      throw SQLiteError(str.str());
+    }
+}
+
+bool
+SQLiteReader::next()
 {
   switch(sqlite3_step(stmt))
     {
       case SQLITE_DONE:
-        // No results
-        break;
+        // cleanup here or in the destructor?!
+        return false;
 
       case SQLITE_ROW:
-        // Some results
-        do
-          {
-            std::cout << "Result: " << sqlite3_column_text(stmt, 0) << std::endl;
-          }
-        while (sqlite3_step(stmt) == SQLITE_ROW);
-        break;
+        return true;
 
       case SQLITE_BUSY:
         throw SQLiteError("BUSY");
-        break;
+        return false;
 
       default:
         {
           std::ostringstream str;
           str << "SQLiteStatement::execute_query: " << sqlite3_errmsg(db->get_db());
           throw SQLiteError(str.str());     
+          return false;
         }
     }
+}
 
-  reset();
+int
+SQLiteReader::get_int(int column)
+{
+  return sqlite3_column_int(stmt, column);
+}
+
+std::string
+SQLiteReader::get_text(int column)
+{
+  const void* data = sqlite3_column_text(stmt, column);
+  int len = sqlite3_column_bytes(stmt, column);
+  return std::string(static_cast<const char*>(data), len);
+}
+
+std::string
+SQLiteReader::get_blob(int column)
+{
+  const void* data = sqlite3_column_blob(stmt, column);
+  int len = sqlite3_column_bytes(stmt, column);
+  return std::string(static_cast<const char*>(data), len);
+}
+
+std::string
+SQLiteReader::get_column_name(int column)
+{
+  return sqlite3_column_name(stmt, column);
 }
 
 /* EOF */

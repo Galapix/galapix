@@ -160,6 +160,24 @@ SoftwareSurface::save(const std::string& filename) const
     }
 }
 
+std::string
+SoftwareSurface::get_data() const
+{
+  FIMEMORY* mem = FreeImage_OpenMemory();
+  FreeImage_SaveToMemory(FIF_JPEG, impl->bitmap, mem, 0);
+
+  BYTE* data;
+  DWORD len;
+
+  FreeImage_AcquireMemory(mem, &data, &len);
+
+  std::string data_str(reinterpret_cast<char*>(data), len);
+
+  FreeImage_CloseMemory(mem);
+
+  return data_str;
+}
+
 // FreeImage_OpenMemory(BYTE *data FI_DEFAULT(0), DWORD size_in_bytes FI_DEFAULT(0));
 // hmem = FreeImage_OpenMemory();
 // FreeImage_SaveToMemory(fif, dib, hmem, 0);

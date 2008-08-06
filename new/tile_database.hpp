@@ -26,20 +26,22 @@
 #ifndef HEADER_TILE_DATABASE_HPP
 #define HEADER_TILE_DATABASE_HPP
 
-#include <sqlite3.h>
+#include "sqlite.hpp"
 #include "software_surface.hpp"
 
 /** */
 class TileDatabase
 {
 private:
-  
+  SQLiteConnection* db;
+  SQLiteStatement store_stmt;
+  SQLiteStatement get_stmt;
 
 public:
-  TileDatabase();
+  TileDatabase(SQLiteConnection* db);
   
-  SoftwareSurface get_tile(uint32_t file_id, int tile_size, int scale, int x, int y);
-  void store_tile(uint32_t file_id, int tile_size, int scale, int x, int y, const SoftwareSurface& surface);
+  SoftwareSurface get_tile(uint32_t file_id, int scale, int x, int y);
+  void store_tile(uint32_t file_id, int scale, int x, int y, const SoftwareSurface& surface);
   
 private:
   TileDatabase (const TileDatabase&);
