@@ -74,27 +74,44 @@ FileDatabase::store_file_entry(const std::string& filename, const std::string& m
   return sqlite3_last_insert_rowid(db->get_db());
 }
 
-FileEntry
-FileDatabase::get_file_entry(const std::string& filename)
+bool
+FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
 {
-  std::cout << "Trying to retrieve: " << filename << std::endl;
+  //std::cout << "Trying to retrieve: " << filename << std::endl;
   get_by_filename_stmt.bind_text(1, filename);
-  get_by_filename_stmt.execute_query();
-  
-  // If nothing is found, query the file system and store the results
+  SQLiteReader reader = get_by_filename_stmt.execute_query();
 
-  return FileEntry();
+  if (reader.next())
+    {
+      if (0)
+        std::cout << "Row: " 
+                  << reader.get_column_name(0) << " "
+                  << reader.get_text(0)
+                  << std::endl;
+
+      entry.filename = reader.get_text(0);
+      entry.md5      = reader.get_text(1);
+      entry.filesize = reader.get_int(2);
+      entry.width    = reader.get_int(3);
+      entry.height   = reader.get_int(4);
+
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
-FileEntry
-FileDatabase::get_file_entry(uint32_t file_id)
+bool
+FileDatabase::get_file_entry(uint32_t file_id, FileEntry& entry)
 {
   get_by_file_id_stmt.bind_int(1, file_id);
   get_by_file_id_stmt.execute_query();
 
   // If nothing is found, query the file system and store the results
 
-  return FileEntry();
+  return false;
 }
 
 /* EOF */

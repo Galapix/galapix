@@ -25,21 +25,57 @@
 
 #include "tile_database.hpp"
 
-TileDatabase::TileDatabase()
+TileDatabase::TileDatabase(SQLiteConnection* db)
+  : db(db),
+    store_stmt(db),
+    get_stmt(db)
 {
-  
+  db->exec("CREATE TABLE IF NOT EXISTS tiles ("
+           "fileid  INTEGER, " // link to to files.rowid
+           "scale   INTEGER, " // zoom level
+           "x       INTEGER, " // X position in tiles
+           "y       INTEGER, " // Y position in tiles
+           "data    BLOB     " // the image data, JPEG
+           ");");
+
+  store_stmt.prepare("INSERT into tiles (fileid, zoom, x, y, width, height, data) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);");
+  get_stmt.prepare("SELECT (data) FROM tiles WHERE fileid = ?1 AND zoom = ?2 AND x = ?3 AND y = ?4;");
 }
 
 SoftwareSurface
-TileDatabase::get_tile(uint32_t file_id, int tile_size, int scale, int x, int y)
+TileDatabase::get_tile(uint32_t file_id, int scale, int x, int y)
 {
-  return SoftwareSurface();
+  get_stmt.bind_int(1, file_id);
+  get_stmt.bind_int(2, scale);
+  get_stmt.bind_int(3, x);
+  get_stmt.bind_int(4, y);
+
+  SQLiteReader reader = get_stmt.execute_query();
+
+  if (reader.next())
+    {
+      reader.get_blob(0);
+      // create surface from blob and return it
+      return SoftwareSurface();
+    }
+  else
+    {
+      return SoftwareSurface();
+    }
 }
 
 void
-TileDatabase::store_tile(uint32_t file_id, int tile_size, int scale, int x, int y, const SoftwareSurface& surface)
+TileDatabase::store_tile(uint32_t file_id, int scale, int x, int y, const SoftwareSurface& surface)
 {
-  
+  store_stmt.bind_int(1, file_id);
+  store_stmt.bind_int(2, scale);
+  store_stmt.bind_int(3, x);
+  store_stmt.bind_int(4, y);
+  //store_stmt.bind_int(5, surface.get_width());
+  //store_stmt.bind_int(6, surface.get_height());
+  store_stmt.bind_blob(5, surface.get_data());
+
+  store_stmt.execute();
 }
-
+  
 /* EOF */

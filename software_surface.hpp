@@ -51,6 +51,8 @@ public:
 
   void save(const std::string& filename) const;
 
+  std::string get_data() const;
+
 private:
   boost::shared_ptr<SoftwareSurfaceImpl> impl;
 };

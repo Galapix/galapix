@@ -33,6 +33,8 @@
 struct FileEntry 
 {
   std::string filename; // 
+  std::string md5;      //
+  int         filesize; //
   uint32_t    mtime;    // mtime of the file
   int         width;    // image width
   int         height;   // image height
@@ -55,8 +57,8 @@ public:
   FileDatabase(SQLiteConnection* db);
   ~FileDatabase();
   
-  FileEntry get_file_entry(const std::string& filename);
-  FileEntry get_file_entry(uint32_t file_id);
+  bool get_file_entry(const std::string& filename, FileEntry& entry);
+  bool get_file_entry(uint32_t file_id, FileEntry& entry);
 
 private:
   FileDatabase (const FileDatabase&);
