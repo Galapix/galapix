@@ -23,40 +23,52 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_TILE_DATABASE_HPP
-#define HEADER_TILE_DATABASE_HPP
+#include <iostream>
+#include <stdexcept>
+#include <jpeglib.h>
+#include <setjmp.h>
+#include "jpeg.hpp"
 
-#include "sqlite.hpp"
-#include "software_surface.hpp"
-
-struct Tile
+jmp_buf setjmp_buffer;
+
+void fatal_error_handler(j_common_ptr cinfo)
 {
-  int file_id;
-  int scale;
-  int x;
-  int y;
-  SoftwareSurface surface;
-};
+  std::cout << "Some jpeg error" << std::endl;
+  longjmp(setjmp_buffer, 1);
+}
 
-/** */
-class TileDatabase
+bool
+JPEG::get_size(const std::string& filename, int& w, int& h)
 {
-private:
-  SQLiteConnection* db;
-  SQLiteStatement store_stmt;
-  SQLiteStatement get_stmt;
+  std::cout << "JPEG: " << filename << std::endl;
 
-public:
-  TileDatabase(SQLiteConnection* db);
-  
-  Tile get_tile(uint32_t file_id, int scale, int x, int y);
-  void store_tile(const Tile& tile);
-  
-private:
-  TileDatabase (const TileDatabase&);
-  TileDatabase& operator= (const TileDatabase&);
-};
-
-#endif
+  FILE* in = fopen(filename.c_str(), "rb");
+  if (!in)
+    throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
+
+  struct jpeg_decompress_struct  jinfo;
+  struct jpeg_error_mgr jerr;
+
+  jinfo.err = jpeg_std_error(&jerr);
+  jinfo.err->error_exit = &fatal_error_handler;
+  jpeg_create_decompress(&jinfo);
+  jpeg_stdio_src(&jinfo, in);
+
+  if (setjmp(setjmp_buffer))
+    {
+      throw std::runtime_error("JPEG::get_size: ERROR: Couldn't setjmp for " + filename);
+    }
+
+  jpeg_read_header(&jinfo, FALSE);
+
+  w = jinfo.image_width;
+  h = jinfo.image_height;
+
+  jpeg_destroy_decompress(&jinfo);
+
+  fclose(in);
+
+  return true;
+}
 
 /* EOF */

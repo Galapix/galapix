@@ -1,6 +1,10 @@
 # Zoomable Image Viewer
 griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g"], 
-                       LIBS=['freeimage', 'jpeg', 'mhash', 'GL', 'GLU'])
+                       LIBS=['jpeg', # must link jpeg before freeimage, else we get a crash
+                             'freeimage', 
+                             'mhash', 
+                             'GL', 
+                             'GLU'])
 griv_env.ParseConfig("sdl-config --libs --cflags")
 griv_env.ParseConfig("pkg-config sqlite3 --libs --cflags")
 griv_env.Program('griv', [
@@ -12,6 +16,7 @@ griv_env.Program('griv', [
         'software_surface.cpp',
         'url.cpp',
         'md5.cpp',
+        'jpeg.cpp',
         'sqlite.cpp',
         'filesystem.cpp',
         'file_database.cpp',

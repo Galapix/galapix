@@ -27,6 +27,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "jpeg.hpp"
 #include "md5.hpp"
 #include "filesystem.hpp"
 #include "file_database.hpp"
@@ -106,8 +107,11 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
       entry.md5      = MD5::md5_file(filename);
       entry.filesize = Filesystem::get_size(filename);
       entry.mtime    = Filesystem::get_mtime(filename);
-      entry.width    = 0;
-      entry.height   = 0;
+      
+      entry.width    = -1;
+      entry.height   = -1;
+
+      JPEG::get_size(entry.filename, entry.width, entry.height);
 
       store_file_entry(entry);
       

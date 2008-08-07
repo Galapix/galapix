@@ -39,10 +39,10 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
            ");");
 
   store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data) VALUES (?1, ?2, ?3, ?4, ?5);");
-  get_stmt.prepare("SELECT (data) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
+  get_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
 }
 
-SoftwareSurface
+Tile
 TileDatabase::get_tile(uint32_t file_id, int scale, int x, int y)
 {
   get_stmt.bind_int(1, file_id);
@@ -54,26 +54,29 @@ TileDatabase::get_tile(uint32_t file_id, int scale, int x, int y)
 
   if (reader.next())
     {
-      reader.get_blob(0);
-      // create surface from blob and return it
-      return SoftwareSurface();
+      Tile tile;
+      tile.file_id = reader.get_int (0);
+      tile.scale   = reader.get_int (1);
+      tile.x       = reader.get_int (2);
+      tile.y       = reader.get_int (3);
+      tile.surface = reader.get_blob(4);
+
+      return tile;
     }
   else
     {
-      return SoftwareSurface();
+      return Tile();
     }
 }
 
 void
-TileDatabase::store_tile(uint32_t file_id, int scale, int x, int y, const SoftwareSurface& surface)
+TileDatabase::store_tile(const Tile& tile)
 {
-  store_stmt.bind_int(1, file_id);
-  store_stmt.bind_int(2, scale);
-  store_stmt.bind_int(3, x);
-  store_stmt.bind_int(4, y);
-  //store_stmt.bind_int(5, surface.get_width());
-  //store_stmt.bind_int(6, surface.get_height());
-  store_stmt.bind_blob(5, surface.get_data());
+  store_stmt.bind_int (1, tile.file_id);
+  store_stmt.bind_int (2, tile.scale);
+  store_stmt.bind_int (3, tile.x);
+  store_stmt.bind_int (4, tile.y);
+  store_stmt.bind_blob(5, tile.surface.get_data());
 
   store_stmt.execute();
 }
