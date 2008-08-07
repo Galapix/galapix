@@ -34,10 +34,7 @@
 /** */
 class Surface
 {
-private:
-  /** Software backstore for the image */
-  SWSurfaceHandle surface;
-  
+private: 
   Texture* texture;
   int tex_w;
   int tex_h;
@@ -51,7 +48,7 @@ private:
   int height;
   
 public:
-  Surface(SWSurfaceHandle surface, int x, int y, int w, int h);
+  Surface(const SoftwareSurface& surface, int x, int y, int w, int h);
   ~Surface();
 
   void draw(float x, float y, float w, float h);

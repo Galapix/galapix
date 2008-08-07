@@ -57,6 +57,7 @@ public:
   static SoftwareSurface from_data(const Blob& blob);
   static void get_size(const std::string& filename, Size& size);
 
+  operator bool() const { return impl.get(); }
 private:
   boost::shared_ptr<SoftwareSurfaceImpl> impl;
 };

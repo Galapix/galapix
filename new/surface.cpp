@@ -25,14 +25,13 @@
 
 #include <iostream>
 #include <assert.h>
-#include "display.hpp"
+#include "framebuffer.hpp"
 #include "math.hpp"
 #include "software_surface.hpp"
 #include "surface.hpp"
 
-Surface::Surface(SWSurfaceHandle surface, int x, int y, int w, int h)
-  : surface(surface),
-    texture(0)
+Surface::Surface(const SoftwareSurface& surface, int x, int y, int w, int h)
+  : texture(0)
 {
   assert(surface);
 
@@ -42,7 +41,7 @@ Surface::Surface(SWSurfaceHandle surface, int x, int y, int w, int h)
   if (tex_w <= 1024 && tex_h <= 1024)
     {
       texture = new Texture(tex_w, tex_h, 
-                            surface->get_surface(), 
+                            surface,
                             x, y, w, h);
     
       u = float(w) / tex_w;
@@ -56,7 +55,7 @@ Surface::Surface(SWSurfaceHandle surface, int x, int y, int w, int h)
   else
     {
       std::cout << "Image violates maximum texture size: "
-                << surface->get_width() << "x" << surface->get_height() << std::endl;
+                << surface.get_width() << "x" << surface.get_height() << std::endl;
     }
 }
 
