@@ -30,7 +30,8 @@
 #include <GL/glu.h>
 #include "SDL.h"
 
-/** */
+class SoftwareSurface;
+
 class Texture
 {
 private:
@@ -40,7 +41,7 @@ private:
   int height;
 
 public:
-  Texture(int w, int h, SDL_Surface* surface, int s_x, int s_y, int s_w, int s_h);
+  Texture(int w, int h, const SoftwareSurface& surface, int s_x, int s_y, int s_w, int s_h);
   ~Texture();
 
   int get_width() const;
@@ -51,7 +52,7 @@ private:
   Texture (const Texture&);
   Texture& operator= (const Texture&);
 };
-
+
 #endif
 
 /* EOF */

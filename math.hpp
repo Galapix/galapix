@@ -98,6 +98,26 @@ std::string float2string(float value);
 /** Restore the raw bits of a float from a string */
 float string2float(const std::string& str);
 
+inline int round_to_power_of_two(int n)
+{
+  n = n - 1;
+
+  n = n | (n >> 1);
+  n = n | (n >> 2);
+  n = n | (n >> 4);
+  n = n | (n >> 8);
+  n = n | (n >> 16);
+  
+  n = n + 1;
+  
+  return n;
+}
+
+inline bool is_power_of_two(int n)
+{
+  return (n > 0) && ((n & (n - 1)) == 0);
+}
+
 } // namespace Math
 
 #endif

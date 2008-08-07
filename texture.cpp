@@ -28,47 +28,17 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 #include <string.h>
-#include "display.hpp"
+#include "framebuffer.hpp"
 #include "texture.hpp"
 
 Texture::Texture(int width, int height, 
-                 SDL_Surface* surface, int s_x, int s_y, int s_w, int s_h)
+                 const SoftwareSurface& surface, int s_x, int s_y, int s_w, int s_h)
   : handle(0),
     width(width),
     height(height)
 {
+#if 0
   assert(surface);
-
-  if (0)
-    std::cout << boost::format(",----------------------------\n"
-                               "| Pointer: 0x%p\n"
-                               "| Size:    %dx%d\n"
-                               "| Pitch:   %d vs %d\n"
-                               "| Rmask:   0x%08x\n"
-                               "| Gmask:   0x%08x\n"
-                               "| Bmask:   0x%08x\n"
-                               "| Amask:   0x%08x\n"
-                               "| Flags:   0x%08x -> %s%s%s%s\n"
-                               "| Palette: 0x%08x\n"
-                               "| BitsPerPixel: %d\n"
-                               "`----------------------------\n"
-                               )
-      % surface
-      % surface->w
-      % surface->h
-      % surface->pitch
-      % (surface->w*3)
-      % surface->format->Rmask
-      % surface->format->Gmask
-      % surface->format->Bmask
-      % surface->format->Amask
-      % surface->flags
-      % ((surface->flags & SDL_HWSURFACE) ? "HWSURFACE " : "")
-      % ((surface->flags & SDL_SWSURFACE) ? "SWSURFACE " : "")
-      % ((surface->flags & SDL_SRCCOLORKEY) ? "SRCCOLORKEY " : "")
-      % ((surface->flags & SDL_SRCALPHA) ? "SRCALPHA " : "")
-      % surface->format->palette
-      % static_cast<int>(surface->format->BitsPerPixel);
 
   glGenTextures(1, &handle);
 
@@ -118,10 +88,6 @@ Texture::Texture(int width, int height,
 
   assert_gl("packing image texture");
 
-  // if (surface->pitch != (surface->w * surface->format->BytesPerPixel))
-  //   std::cout  << surface->pitch << " " << (surface->w * surface->format->BytesPerPixel) << std::endl;
-
-  //std::cout << surface->pitch << " " << s_w << " " << s_h << std::endl;
   glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->w);
   glPixelStorei(GL_UNPACK_ALIGNMENT,  4); // FIXME: This alignment is
                                           // guessed, we better should
@@ -144,6 +110,7 @@ Texture::Texture(int width, int height,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP);
 
   assert_gl("setting texture parameters");
+#endif
 }
 
 Texture::~Texture()
