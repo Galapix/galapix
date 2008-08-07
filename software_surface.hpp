@@ -28,6 +28,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include "FreeImage.h"
+#include "blob.hpp"
 
 class URL;
 class Rect;
@@ -50,10 +51,12 @@ public:
   SoftwareSurface crop(const Rect& rect) const;
 
   void save(const std::string& filename) const;
-
-  std::string get_jpeg_data() const;
   
-  static SoftwareSurface from_data(const std::string& data);
+  Blob get_jpeg_data() const;
+  
+  static SoftwareSurface from_data(const Blob& blob);
+  static void get_size(const std::string& filename, Size& size);
+
 private:
   boost::shared_ptr<SoftwareSurfaceImpl> impl;
 };

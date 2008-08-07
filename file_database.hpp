@@ -28,7 +28,9 @@
 
 #include <sqlite3.h>
 #include <string>
+
 #include "sqlite.hpp"
+#include "math/size.hpp"
 
 struct FileEntry 
 {
@@ -37,8 +39,7 @@ struct FileEntry
   std::string md5;      //
   int         filesize; //
   uint32_t    mtime;    // mtime of the file
-  int         width;    // image width
-  int         height;   // image height
+  Size        size;
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);

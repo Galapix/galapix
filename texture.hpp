@@ -23,62 +23,35 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_BLOB_HPP
-#define HEADER_BLOB_HPP
+#ifndef HEADER_TEXTURE_HPP
+#define HEADER_TEXTURE_HPP
 
-#include <boost/smart_ptr.hpp>
-#include <vector>
-
-class BlobImpl
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "SDL.h"
+
+/** */
+class Texture
 {
+private:
+  GLuint handle;
+
+  int width;
+  int height;
+
 public:
-  char* data;
-  int len;
+  Texture(int w, int h, SDL_Surface* surface, int s_x, int s_y, int s_w, int s_h);
+  ~Texture();
 
-  BlobImpl(const void* data_, int len_)
-  {
-    data = new char[len_];
-    len  = len_;
-
-    memcpy(data, data_, sizeof(char) * len);
-  }
-
-  ~BlobImpl()
-  {
-    delete[] data;
-  }
+  int get_width() const;
+  int get_height() const;
+  
+  void bind();
+private:
+  Texture (const Texture&);
+  Texture& operator= (const Texture&);
 };
-
-class Blob
-{
-public:
-  Blob(const void* data, int len)
-    : impl(new BlobImpl(data, len))
-  {}
 
-  Blob()
-  {}
-
-  int size() const 
-  {
-    if (impl.get())
-      return impl->len; 
-    else
-      return 0;
-  }
-
-  void* get_data() const 
-  {
-    if (impl.get())
-      return impl->data; 
-    else
-      return 0;
-  }
-
-private: 
-  boost::shared_ptr<BlobImpl> impl;
-};
-
 #endif
 
 /* EOF */

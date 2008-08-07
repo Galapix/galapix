@@ -54,44 +54,27 @@ Griv::~Griv()
   FreeImage_DeInitialise();
 }
 
-int
-Griv::main(int argc, char** argv)
+void
+Griv::generate_tiles(const std::vector<std::string>& filenames)
 {
-  std::vector<std::string> rest;
-
-  for(int i = 1; i < argc; ++i)
-    {
-      if (argv[i][0] == '-')
-        { // option
-          
-        }
-      else
-        { // rest
-          rest.push_back(argv[i]);
-        }
-    }
-
   SQLiteConnection db("test.sqlite");
 
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
 
-  std::transform(rest.begin(), rest.end(), rest.begin(), &Filesystem::realpath);
-
-  for(std::vector<std::string>::size_type i = 0; i < rest.size(); ++i)
+  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
       FileEntry entry;
-      if (!file_db.get_file_entry(rest[i], entry))
+      std::cout << "Getting file entry..." << std::endl;
+      if (!file_db.get_file_entry(filenames[i], entry))
         {
-          std::cout << "Couldn't find entry for " << rest[i] << std::endl;
+          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
         }
       else
         {
-          std::cout << entry << std::endl;
-
           // Generate Image Tiles
-          std::cout << "Generating tiles... " << rest[i]  << std::endl;
-          SoftwareSurface surface(rest[i]);
+          std::cout << "Generating tiles... " << filenames[i]  << std::endl;
+          SoftwareSurface surface(filenames[i]);
           std::cout << "Image loading" << std::endl;      
 
           int scale = 0;
@@ -104,8 +87,8 @@ Griv::main(int argc, char** argv)
                                                surface.get_height()/2));
                 }
 
-              for(int y = 0; y <= surface.get_height()/256; ++y)
-                for(int x = 0; x <= surface.get_width()/256; ++x)
+              for(int y = 0; 256*y < surface.get_height(); ++y)
+                for(int x = 0; 256*x < surface.get_width(); ++x)
                   {
                     SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
                                                                        Size(256, 256)));
@@ -123,6 +106,73 @@ Griv::main(int argc, char** argv)
               scale += 1;
             } while (surface.get_width() > 32 ||
                      surface.get_height() > 32);
+        }
+    }
+}
+
+void
+Griv::view(const std::vector<std::string>& filenames)
+{
+  SQLiteConnection db("test.sqlite");
+
+  FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
+
+  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+    {
+      FileEntry entry;
+      std::cout << "Getting file entry..." << std::endl;
+      if (!file_db.get_file_entry(filenames[i], entry))
+        {
+          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
+        }
+      else
+        {
+          std::cout << entry << std::endl;
+
+          for(int y = 0; y*256 < entry.size.height/2; ++y)
+            for(int x = 0; x*256 < entry.size.width/2; ++x)
+              {
+                Tile tile;
+                if (tile_db.get_tile(entry.fileid, 1/*scale*/, x, y, tile))
+                  {
+                    std::cout << "Have tile: " << x << ", " << y << std::endl;
+                  }                
+                else
+                  {                     
+                    
+                  }
+              }
+        }
+    }
+}
+
+int
+Griv::main(int argc, char** argv)
+{
+  if (argc < 2)
+    {
+      std::cout << "Usage: " << argv[0] << " view [FILES]...\n"
+                << "       " << argv[0] << " prepare [FILES]...\n";
+    }
+  else
+    {
+      std::vector<std::string> filenames;
+      for(int i = 2; i < argc; ++i)
+        filenames.push_back(Filesystem::realpath(argv[i]));
+
+      if (strcmp(argv[1], "view") == 0)
+        {
+          view(filenames);
+        }
+      else if (strcmp(argv[1], "prepare") == 0)
+        {
+          generate_tiles(filenames);
+        }
+      else
+        {
+          std::cout << "Usage: " << argv[0] << " view [FILES]...\n"
+                    << "       " << argv[0] << " prepare [FILES]...\n";
         }
     }
 

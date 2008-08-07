@@ -208,7 +208,12 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
 unsigned int
 Filesystem::get_size(const std::string& filename)
 {
-  return 0;
+  struct stat stat_buf;
+  if (stat(filename.c_str(), &stat_buf) != 0)
+    {
+      throw std::runtime_error(filename + ": " + strerror(errno));
+    } 
+  return stat_buf.st_size; // Is this reliable? or should be use fopen() and ftell()?
 }
 
 unsigned int

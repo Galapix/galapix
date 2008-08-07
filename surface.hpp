@@ -23,62 +23,47 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_BLOB_HPP
-#define HEADER_BLOB_HPP
+#ifndef HEADER_SURFACE_HPP
+#define HEADER_SURFACE_HPP
 
+#include "SDL.h"
 #include <boost/smart_ptr.hpp>
-#include <vector>
-
-class BlobImpl
+#include "texture.hpp"
+#include "software_surface.hpp"
+
+/** */
+class Surface
 {
+private:
+  /** Software backstore for the image */
+  SWSurfaceHandle surface;
+  
+  Texture* texture;
+  int tex_w;
+  int tex_h;
+
+  float u;
+  float v;
+
+  float aspect;
+
+  int width;
+  int height;
+  
 public:
-  char* data;
-  int len;
+  Surface(SWSurfaceHandle surface, int x, int y, int w, int h);
+  ~Surface();
 
-  BlobImpl(const void* data_, int len_)
-  {
-    data = new char[len_];
-    len  = len_;
+  void draw(float x, float y, float w, float h);
 
-    memcpy(data, data_, sizeof(char) * len);
-  }
+  int get_width()  const { return width; }
+  int get_height() const { return height; }
 
-  ~BlobImpl()
-  {
-    delete[] data;
-  }
+private:
+  Surface (const Surface&);
+  Surface& operator= (const Surface&);
 };
-
-class Blob
-{
-public:
-  Blob(const void* data, int len)
-    : impl(new BlobImpl(data, len))
-  {}
 
-  Blob()
-  {}
-
-  int size() const 
-  {
-    if (impl.get())
-      return impl->len; 
-    else
-      return 0;
-  }
-
-  void* get_data() const 
-  {
-    if (impl.get())
-      return impl->data; 
-    else
-      return 0;
-  }
-
-private: 
-  boost::shared_ptr<BlobImpl> impl;
-};
-
 #endif
 
 /* EOF */
