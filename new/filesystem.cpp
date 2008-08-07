@@ -206,6 +206,12 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
 }
 
 unsigned int
+Filesystem::get_size(const std::string& filename)
+{
+  return 0;
+}
+
+unsigned int
 Filesystem::get_mtime(const std::string& filename)
 {
   struct stat stat_buf;

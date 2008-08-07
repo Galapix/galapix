@@ -38,8 +38,8 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
            "data    BLOB     " // the image data, JPEG
            ");");
 
-  store_stmt.prepare("INSERT into tiles (fileid, zoom, x, y, width, height, data) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);");
-  get_stmt.prepare("SELECT (data) FROM tiles WHERE fileid = ?1 AND zoom = ?2 AND x = ?3 AND y = ?4;");
+  store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data) VALUES (?1, ?2, ?3, ?4, ?5);");
+  get_stmt.prepare("SELECT (data) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
 }
 
 SoftwareSurface

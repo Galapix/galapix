@@ -11,6 +11,7 @@ griv_env.Program('griv', [
         'math/vector2f.cpp',
         'software_surface.cpp',
         'url.cpp',
+        'md5.cpp',
         'sqlite.cpp',
         'filesystem.cpp',
         'file_database.cpp',
