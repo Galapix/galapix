@@ -45,11 +45,6 @@ Framebuffer::init()
       exit(1);
     }
   atexit(SDL_Quit); 
- 
-  //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1); 
-  //SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   5);
-  //SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-  //SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  5);
   
   flags = SDL_RESIZABLE | SDL_OPENGL;
   screen = SDL_SetVideoMode(800, 600, 0, flags);
@@ -60,7 +55,7 @@ Framebuffer::init()
       exit(1);
     }
 
-  SDL_WM_SetCaption("Griv 0.0.1", 0 /* icon */);
+  SDL_WM_SetCaption("Griv 0.0.2", 0 /* icon */);
   SDL_EnableUNICODE(1);
 
   glViewport(0, 0, screen->w, screen->h);
@@ -77,6 +72,12 @@ Framebuffer::init()
     {
       std::cout << "Couldn't get WM info " << std::endl;
     }
+}
+
+void
+Framebuffer::deinit()
+{
+  
 }
 
 void

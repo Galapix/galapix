@@ -31,6 +31,7 @@
 #include <vector>
 #include "FreeImage.h"
 
+#include "framebuffer.hpp"
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
@@ -40,6 +41,7 @@
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "filesystem.hpp"
+#include "workspace.hpp"
 #include "griv.hpp"
 
 Griv::Griv()
@@ -113,6 +115,10 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
 void
 Griv::view(const std::vector<std::string>& filenames)
 {
+  Framebuffer::init();
+
+  Workspace workspace;
+
   SQLiteConnection db("test.sqlite");
 
   FileDatabase file_db(&db);
@@ -128,23 +134,39 @@ Griv::view(const std::vector<std::string>& filenames)
         }
       else
         {
-          std::cout << entry << std::endl;
-
-          for(int y = 0; y*256 < entry.size.height/2; ++y)
-            for(int x = 0; x*256 < entry.size.width/2; ++x)
-              {
-                Tile tile;
-                if (tile_db.get_tile(entry.fileid, 1/*scale*/, x, y, tile))
-                  {
-                    std::cout << "Have tile: " << x << ", " << y << std::endl;
-                  }                
-                else
-                  {                     
-                    
-                  }
-              }
+          workspace.add_image(entry.filename, entry.size);
         }
     }
+
+  bool force_redraw = false;
+  bool quit = false;
+  while(!quit)
+    {
+      SDL_Event event;
+      while (SDL_PollEvent(&event))
+        {
+          switch(event.type)
+            {
+              case SDL_QUIT: // FIXME: make this into a GameEvent
+                quit = true;
+                break;
+
+              case SDL_VIDEOEXPOSE: // FIXME: make this into a GameEvent
+                force_redraw = true;
+                break;
+
+              case SDL_VIDEORESIZE:
+                Framebuffer::resize(event.resize.w, event.resize.h);
+                force_redraw = true;
+                break;
+
+              default:
+                break;
+            }
+        }
+    }
+
+  Framebuffer::deinit();
 }
 
 int

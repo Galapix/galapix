@@ -18,6 +18,8 @@ griv_env.Program('griv', [
         'sqlite.cpp',
         'surface.cpp',
         'texture.cpp',
+        'image.cpp',
+        'workspace.cpp',
         'framebuffer.cpp',
         'filesystem.cpp',
         'file_database.cpp',

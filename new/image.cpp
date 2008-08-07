@@ -23,52 +23,31 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_DISPLAY_HPP
-#define HEADER_DISPLAY_HPP
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <sstream>
-#include <stdexcept>
-#include <math.h>
-#include "SDL.h"
-
-static inline void assert_gl(const char* message)
+#include "image.hpp"
+
+Image::Image(const std::string& filename, const Size& size)
+  : tiles(size.width/256 + 1, size.height/256 + 1)
 {
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
-  }
 }
 
-/** */
-class Framebuffer
+void
+Image::draw()
 {
-private:
-  static SDL_Surface* screen;
-  static Uint32 flags;
-
-public:
-  static void init();
-  static void deinit();
-
-  static void toggle_fullscreen();
-
-  static int get_width()  { return screen->w; }
-  static int get_height() { return screen->h; }
-
-  static SDL_Surface* get_screen() { return screen; }
-  static void resize(int w, int h);
-  static void flip();
-  static void clear();
-
-  static void lock();
-  static void unlock();
-};
-
+#if 0
+  for(int y = 0; y*256 < entry.size.height/2; ++y)
+    for(int x = 0; x*256 < entry.size.width/2; ++x)
+      {
+        Tile tile;
+        if (tile_db.get_tile(entry.fileid, 1/*scale*/, x, y, tile))
+          {
+            std::cout << "Have tile: " << x << ", " << y << std::endl;
+          }                
+        else
+          {                     
+                    
+          }
+      }
 #endif
-
+}
+
 /* EOF */

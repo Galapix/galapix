@@ -37,6 +37,7 @@ Texture::Texture(int width, int height,
     width(width),
     height(height)
 {
+  assert(!"Not implemented");
 #if 0
   assert(surface);
 
