@@ -32,6 +32,7 @@
 
 struct FileEntry 
 {
+  int         fileid;
   std::string filename; // 
   std::string md5;      //
   int         filesize; //
@@ -51,7 +52,7 @@ private:
   SQLiteStatement get_by_filename_stmt;
   SQLiteStatement get_by_file_id_stmt;
 
-  int store_file_entry(const FileEntry& entry);
+  int store_file_entry(FileEntry& entry);
  
 public:
   FileDatabase(SQLiteConnection* db);

@@ -4,5 +4,16 @@
 * SoftwareSurface: load from memory, save to memory
 * all GL stuff
 
+Image Library Requirements:
+===========================
+
+* fast JPEG thumbnailing would be a plus (FreeImage, EPEG)
+
+* fast width/height reading from file header (libjpeg, libpng)
+
+* support for PNG, JPEG, etc.
+
+* generation of subregion images without a copy
+
 
 # EOF #

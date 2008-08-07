@@ -42,10 +42,10 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
   get_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
 }
 
-Tile
-TileDatabase::get_tile(uint32_t file_id, int scale, int x, int y)
+bool
+TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
 {
-  get_stmt.bind_int(1, file_id);
+  get_stmt.bind_int(1, fileid);
   get_stmt.bind_int(2, scale);
   get_stmt.bind_int(3, x);
   get_stmt.bind_int(4, y);
@@ -54,29 +54,30 @@ TileDatabase::get_tile(uint32_t file_id, int scale, int x, int y)
 
   if (reader.next())
     {
-      Tile tile;
-      tile.file_id = reader.get_int (0);
+      tile.fileid  = reader.get_int (0);
       tile.scale   = reader.get_int (1);
       tile.x       = reader.get_int (2);
       tile.y       = reader.get_int (3);
-      tile.surface = reader.get_blob(4);
+      tile.surface = SoftwareSurface::from_data(reader.get_blob(4));
 
-      return tile;
+      return true;
     }
   else
     {
-      return Tile();
+      return false;
     }
 }
 
 void
 TileDatabase::store_tile(const Tile& tile)
 {
-  store_stmt.bind_int (1, tile.file_id);
+  // Insert some checking for uniqueness, or can the database handle that?
+
+  store_stmt.bind_int (1, tile.fileid);
   store_stmt.bind_int (2, tile.scale);
   store_stmt.bind_int (3, tile.x);
   store_stmt.bind_int (4, tile.y);
-  store_stmt.bind_blob(5, tile.surface.get_data());
+  store_stmt.bind_blob(5, tile.surface.get_jpeg_data());
 
   store_stmt.execute();
 }
