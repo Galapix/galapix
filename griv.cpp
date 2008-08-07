@@ -113,10 +113,14 @@ Griv::main(int argc, char** argv)
       else  // Data base test
         {
           FileEntry entry;
-          if (file_db.get_file_entry(rest[i], entry))
-            std::cout << entry << std::endl;
+          if (!file_db.get_file_entry(rest[i], entry))
+            {
+              std::cout << "Couldn't find entry for " << rest[i] << std::endl;
+            }
           else
-            std::cout << "Couldn't find entry for " << rest[i] << std::endl;
+            {
+              std::cout << entry << std::endl;
+            }
         }
     }
 

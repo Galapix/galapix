@@ -23,40 +23,19 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_TILE_DATABASE_HPP
-#define HEADER_TILE_DATABASE_HPP
+#ifndef HEADER_JPEG_HPP
+#define HEADER_JPEG_HPP
 
-#include "sqlite.hpp"
-#include "software_surface.hpp"
-
-struct Tile
-{
-  int file_id;
-  int scale;
-  int x;
-  int y;
-  SoftwareSurface surface;
-};
+#include <string>
 
 /** */
-class TileDatabase
+class JPEG
 {
 private:
-  SQLiteConnection* db;
-  SQLiteStatement store_stmt;
-  SQLiteStatement get_stmt;
-
 public:
-  TileDatabase(SQLiteConnection* db);
-  
-  Tile get_tile(uint32_t file_id, int scale, int x, int y);
-  void store_tile(const Tile& tile);
-  
-private:
-  TileDatabase (const TileDatabase&);
-  TileDatabase& operator= (const TileDatabase&);
+  static bool get_size(const std::string& filename, int& w, int& h);
 };
-
+
 #endif
 
 /* EOF */
