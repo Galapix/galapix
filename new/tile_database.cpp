@@ -58,6 +58,7 @@ TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
       tile.scale   = reader.get_int (1);
       tile.x       = reader.get_int (2);
       tile.y       = reader.get_int (3);
+      // FIXME: Blob generation causes unneeded copy
       tile.surface = SoftwareSurface::from_data(reader.get_blob(4));
 
       return true;

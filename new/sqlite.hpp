@@ -71,7 +71,7 @@ public:
 
   int         get_int(int column);
   std::string get_text(int column);
-  std::string get_blob(int column);
+  Blob        get_blob(int column);
 
   std::string get_column_name(int column);
 };
@@ -93,7 +93,7 @@ public:
 
   void bind_int(int n, int i);
   void bind_text(int n, const std::string&);
-  void bind_blob(int n, const std::string&);
+  void bind_blob(int n, const Blob&);
 
   void execute();
   SQLiteReader execute_query();

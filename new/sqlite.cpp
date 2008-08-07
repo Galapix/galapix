@@ -124,9 +124,9 @@ SQLiteStatement::bind_text(int n, const std::string& text)
 }
 
 void
-SQLiteStatement::bind_blob(int n, const std::string& blob)
+SQLiteStatement::bind_blob(int n, const Blob& blob)
 {
-  if (sqlite3_bind_blob(stmt, n, blob.c_str(), blob.size(), SQLITE_TRANSIENT) != SQLITE_OK)
+  if (sqlite3_bind_blob(stmt, n, blob.get_data(), blob.size(), SQLITE_TRANSIENT) != SQLITE_OK)
     {
       std::ostringstream str;
       str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
@@ -226,12 +226,11 @@ SQLiteReader::get_text(int column)
   return std::string(static_cast<const char*>(data), len);
 }
 
-std::string
+Blob
 SQLiteReader::get_blob(int column)
 {
-  const void* data = sqlite3_column_blob(stmt, column);
-  int len = sqlite3_column_bytes(stmt, column);
-  return std::string(static_cast<const char*>(data), len);
+  return Blob(sqlite3_column_blob(stmt, column),
+              sqlite3_column_bytes(stmt, column));
 }
 
 std::string

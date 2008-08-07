@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include "FreeImage.h"
 
+#include "blob.hpp"
 #include "math.hpp"
 #include "math/rect.hpp"
 #include "math/size.hpp"
@@ -160,7 +161,7 @@ SoftwareSurface::save(const std::string& filename) const
     }
 }
 
-std::string
+Blob
 SoftwareSurface::get_jpeg_data() const
 {
   FIMEMORY* mem = FreeImage_OpenMemory();
@@ -171,21 +172,32 @@ SoftwareSurface::get_jpeg_data() const
 
   FreeImage_AcquireMemory(mem, &data, &len);
 
-  std::string data_str(reinterpret_cast<char*>(data), len);
+  Blob blob(data, len);
 
   FreeImage_CloseMemory(mem);
 
-  return data_str;
+  return blob;
 }
 
 SoftwareSurface
-SoftwareSurface::from_data(const std::string& data)
+SoftwareSurface::from_data(const Blob& blob)
 {
-  FIMEMORY* mem    = FreeImage_OpenMemory(reinterpret_cast<BYTE*>(const_cast<char*>(data.c_str())),
-                                          data.size());
+  FIMEMORY* mem    = FreeImage_OpenMemory(static_cast<BYTE*>(blob.get_data()), blob.size());
   FIBITMAP* bitmap = FreeImage_LoadFromMemory(FIF_JPEG, mem, 0);
   FreeImage_CloseMemory(mem);
   return SoftwareSurface(bitmap);
+}
+
+void
+SoftwareSurface::get_size(const std::string& filename, Size& size)
+{
+  FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filename.c_str(), 0);
+  FIBITMAP* bitmap = FreeImage_Load(format, filename.c_str());
+
+  size.width  = FreeImage_GetWidth(bitmap); 
+  size.height = FreeImage_GetHeight(bitmap); 
+  
+  FreeImage_Unload(bitmap);  
 }
 
 // FreeImage_OpenMemory(BYTE *data FI_DEFAULT(0), DWORD size_in_bytes FI_DEFAULT(0));
