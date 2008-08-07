@@ -28,6 +28,8 @@
 
 #include <stdexcept>
 #include <sqlite3.h>
+
+#include "blob.hpp"
 
 class SQLiteError : public std::exception
 {

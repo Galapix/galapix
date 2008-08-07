@@ -1,7 +1,6 @@
 # Zoomable Image Viewer
 griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g"], 
-                       LIBS=['jpeg', # must link jpeg before freeimage, else we get a crash
-                             'freeimage', 
+                       LIBS=['freeimage', 
                              'mhash', 
                              'GL', 
                              'GLU'])

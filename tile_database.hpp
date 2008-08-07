@@ -31,7 +31,7 @@
 
 struct Tile
 {
-  int file_id;
+  int fileid;
   int scale;
   int x;
   int y;
@@ -49,7 +49,7 @@ private:
 public:
   TileDatabase(SQLiteConnection* db);
   
-  Tile get_tile(uint32_t file_id, int scale, int x, int y);
+  bool get_tile(uint32_t file_id, int scale, int x, int y, Tile& tile);
   void store_tile(const Tile& tile);
   
 private:

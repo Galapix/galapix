@@ -38,7 +38,7 @@ class SoftwareSurface
 {
 public:
   SoftwareSurface();
-  SoftwareSurface(const std::string& filename);
+  explicit SoftwareSurface(const std::string& filename);
   SoftwareSurface(FIBITMAP* bitmap);
   ~SoftwareSurface();
 
@@ -51,8 +51,9 @@ public:
 
   void save(const std::string& filename) const;
 
-  std::string get_data() const;
-
+  std::string get_jpeg_data() const;
+  
+  static SoftwareSurface from_data(const std::string& data);
 private:
   boost::shared_ptr<SoftwareSurfaceImpl> impl;
 };

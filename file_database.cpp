@@ -27,6 +27,7 @@
 #include <sstream>
 #include <stdexcept>
 
+#include <assert.h>
 #include "jpeg.hpp"
 #include "md5.hpp"
 #include "filesystem.hpp"
@@ -44,6 +45,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
     get_by_file_id_stmt(db)
 {
   db->exec("CREATE TABLE IF NOT EXISTS files ("
+           "fileid    INTEGER PRIMARY KEY AUTOINCREMENT,"
            "filename  TEXT UNIQUE, "
            "md5       TEXT, "
            "filesize  INTEGER, "
@@ -64,8 +66,10 @@ FileDatabase::~FileDatabase()
 }
  
 int
-FileDatabase::store_file_entry(const FileEntry& entry)
+FileDatabase::store_file_entry(FileEntry& entry)
 {
+  assert(entry.fileid == -1);
+
   store_stmt.bind_text(1, entry.filename);
   store_stmt.bind_text(2, entry.md5);
   store_stmt.bind_int (3, entry.filesize); // filesize
@@ -74,8 +78,10 @@ FileDatabase::store_file_entry(const FileEntry& entry)
   store_stmt.bind_int (6, entry.mtime);        // mtime
 
   store_stmt.execute();
+  
+  entry.fileid = sqlite3_last_insert_rowid(db->get_db());
 
-  return sqlite3_last_insert_rowid(db->get_db());
+  return entry.fileid;
 }
 
 bool
@@ -93,16 +99,18 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
                   << reader.get_text(0)
                   << std::endl;
 
-      entry.filename = reader.get_text(0);
-      entry.md5      = reader.get_text(1);
-      entry.filesize = reader.get_int(2);
-      entry.width    = reader.get_int(3);
-      entry.height   = reader.get_int(4);
+      entry.fileid   = reader.get_int (0);
+      entry.filename = reader.get_text(1);
+      entry.md5      = reader.get_text(2);
+      entry.filesize = reader.get_int (3);
+      entry.width    = reader.get_int (4);
+      entry.height   = reader.get_int (5);
 
       return true;
     }
   else
     {
+      entry.fileid   = -1;
       entry.filename = filename;
       entry.md5      = MD5::md5_file(filename);
       entry.filesize = Filesystem::get_size(filename);
@@ -110,8 +118,9 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
       
       entry.width    = -1;
       entry.height   = -1;
-
-      JPEG::get_size(entry.filename, entry.width, entry.height);
+      
+      // Doesn't work due to linking issues
+      // JPEG::get_size(entry.filename, entry.width, entry.height);
 
       store_file_entry(entry);
       

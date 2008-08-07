@@ -80,11 +80,20 @@ Griv::main(int argc, char** argv)
 
   for(std::vector<std::string>::size_type i = 0; i < rest.size(); ++i)
     {
-      if (0) // Tile Generation
+      FileEntry entry;
+      if (!file_db.get_file_entry(rest[i], entry))
         {
+          std::cout << "Couldn't find entry for " << rest[i] << std::endl;
+        }
+      else
+        {
+          std::cout << entry << std::endl;
+
           // Generate Image Tiles
+          std::cout << "Generating tiles... " << rest[i]  << std::endl;
           SoftwareSurface surface(rest[i]);
-      
+          std::cout << "Image loading" << std::endl;      
+
           int scale = 0;
 
           do
@@ -98,29 +107,22 @@ Griv::main(int argc, char** argv)
               for(int y = 0; y <= surface.get_height()/256; ++y)
                 for(int x = 0; x <= surface.get_width()/256; ++x)
                   {
-                    std::ostringstream out;
-                    out << "/tmp/out/tile-" << scale << "-" << y << "+" << x << ".jpg";
-
                     SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
                                                                        Size(256, 256)));
-                    croped_surface.save(out.str());
+
+                    Tile tile;
+                    tile.fileid = entry.fileid;
+                    tile.scale  = scale;
+                    tile.x = x;
+                    tile.y = y;
+                    tile.surface = croped_surface;
+          
+                    tile_db.store_tile(tile);
                   }
 
               scale += 1;
             } while (surface.get_width() > 32 ||
                      surface.get_height() > 32);
-        }
-      else  // Data base test
-        {
-          FileEntry entry;
-          if (!file_db.get_file_entry(rest[i], entry))
-            {
-              std::cout << "Couldn't find entry for " << rest[i] << std::endl;
-            }
-          else
-            {
-              std::cout << entry << std::endl;
-            }
         }
     }
 
