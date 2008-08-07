@@ -23,48 +23,18 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_FILE_DATABASE_HPP
-#define HEADER_FILE_DATABASE_HPP
+#ifndef HEADER_MD5_HPP
+#define HEADER_MD5_HPP
 
-#include <sqlite3.h>
 #include <string>
-#include "sqlite.hpp"
-
-struct FileEntry 
+
+class MD5
 {
-  std::string filename; // 
-  std::string md5;      //
-  int         filesize; //
-  uint32_t    mtime;    // mtime of the file
-  int         width;    // image width
-  int         height;   // image height
-};
-
-std::ostream& operator<<(std::ostream& os, const FileEntry& entry);
-
-/** */
-class FileDatabase
-{
-private:
-  SQLiteConnection* db;
-  SQLiteStatement store_stmt;
-  SQLiteStatement get_by_filename_stmt;
-  SQLiteStatement get_by_file_id_stmt;
-
-  int store_file_entry(const FileEntry& entry);
- 
 public:
-  FileDatabase(SQLiteConnection* db);
-  ~FileDatabase();
-  
-  bool get_file_entry(const std::string& filename, FileEntry& entry);
-  bool get_file_entry(uint32_t file_id, FileEntry& entry);
-
-private:
-  FileDatabase (const FileDatabase&);
-  FileDatabase& operator= (const FileDatabase&);
+  static std::string md5_string(const std::string& str);
+  static std::string md5_file(const std::string& filename);
 };
-
+
 #endif
 
 /* EOF */

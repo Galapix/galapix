@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
@@ -74,6 +75,8 @@ Griv::main(int argc, char** argv)
 
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
+
+  std::transform(rest.begin(), rest.end(), rest.begin(), &Filesystem::realpath);
 
   for(std::vector<std::string>::size_type i = 0; i < rest.size(); ++i)
     {

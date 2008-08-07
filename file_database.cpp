@@ -26,6 +26,9 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+
+#include "md5.hpp"
+#include "filesystem.hpp"
 #include "file_database.hpp"
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
@@ -60,14 +63,14 @@ FileDatabase::~FileDatabase()
 }
  
 int
-FileDatabase::store_file_entry(const std::string& filename, const std::string& md5, size_t filesize, int width, int height, int mtime)
+FileDatabase::store_file_entry(const FileEntry& entry)
 {
-  store_stmt.bind_text(1, filename);
-  store_stmt.bind_text(2, md5);
-  store_stmt.bind_int (3, filesize); // filesize
-  store_stmt.bind_int (4, width);    // width
-  store_stmt.bind_int (5, height);   // height
-  store_stmt.bind_int (6, 0);        // mtime
+  store_stmt.bind_text(1, entry.filename);
+  store_stmt.bind_text(2, entry.md5);
+  store_stmt.bind_int (3, entry.filesize); // filesize
+  store_stmt.bind_int (4, entry.width);    // width
+  store_stmt.bind_int (5, entry.height);   // height
+  store_stmt.bind_int (6, entry.mtime);        // mtime
 
   store_stmt.execute();
 
@@ -99,7 +102,16 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
     }
   else
     {
-      return false;
+      entry.filename = filename;
+      entry.md5      = MD5::md5_file(filename);
+      entry.filesize = Filesystem::get_size(filename);
+      entry.mtime    = Filesystem::get_mtime(filename);
+      entry.width    = 0;
+      entry.height   = 0;
+
+      store_file_entry(entry);
+      
+      return true;
     }
 }
 
