@@ -23,52 +23,16 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_DISPLAY_HPP
-#define HEADER_DISPLAY_HPP
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <sstream>
-#include <stdexcept>
-#include <math.h>
-#include "SDL.h"
-
-static inline void assert_gl(const char* message)
+#include "workspace.hpp"
+
+Workspace::Workspace()
 {
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
-  }
 }
 
-/** */
-class Framebuffer
+void
+Workspace::add_image(const std::string& filename, const Size& size)
 {
-private:
-  static SDL_Surface* screen;
-  static Uint32 flags;
-
-public:
-  static void init();
-  static void deinit();
-
-  static void toggle_fullscreen();
-
-  static int get_width()  { return screen->w; }
-  static int get_height() { return screen->h; }
-
-  static SDL_Surface* get_screen() { return screen; }
-  static void resize(int w, int h);
-  static void flip();
-  static void clear();
-
-  static void lock();
-  static void unlock();
-};
-
-#endif
-
+  images.push_back(Image(filename, size));
+}
+
 /* EOF */

@@ -23,52 +23,32 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_DISPLAY_HPP
-#define HEADER_DISPLAY_HPP
+#ifndef HEADER_IMAGE_HPP
+#define HEADER_IMAGE_HPP
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <sstream>
-#include <stdexcept>
-#include <math.h>
-#include "SDL.h"
+#include <string>
+#include "math/vector2f.hpp"
+#include "math/size.hpp"
+#include "grid.hpp"
 
-static inline void assert_gl(const char* message)
-{
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
-  }
-}
-
-/** */
-class Framebuffer
+class Surface;
+
+class Image
 {
 private:
-  static SDL_Surface* screen;
-  static Uint32 flags;
+  std::string filename;
+  Size size;
+
+  Vector2f pos;
+
+  Grid<Surface*> tiles;
 
 public:
-  static void init();
-  static void deinit();
-
-  static void toggle_fullscreen();
-
-  static int get_width()  { return screen->w; }
-  static int get_height() { return screen->h; }
-
-  static SDL_Surface* get_screen() { return screen; }
-  static void resize(int w, int h);
-  static void flip();
-  static void clear();
-
-  static void lock();
-  static void unlock();
+  Image(const std::string& filename, const Size& size);
+  
+  void draw();
 };
-
+
 #endif
 
 /* EOF */
