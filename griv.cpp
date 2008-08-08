@@ -147,11 +147,11 @@ Griv::view(const std::vector<std::string>& filenames)
         {
           switch(event.type)
             {
-              case SDL_QUIT: // FIXME: make this into a GameEvent
+              case SDL_QUIT:
                 quit = true;
                 break;
 
-              case SDL_VIDEOEXPOSE: // FIXME: make this into a GameEvent
+              case SDL_VIDEOEXPOSE:
                 force_redraw = true;
                 break;
 
@@ -164,6 +164,8 @@ Griv::view(const std::vector<std::string>& filenames)
                 break;
             }
         }
+
+      workspace.draw();
     }
 
   Framebuffer::deinit();

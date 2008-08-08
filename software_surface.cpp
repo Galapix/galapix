@@ -61,23 +61,6 @@ public:
         assert(FreeImage_GetBPP(bitmap) == 24);
  
         // FIXME: Insert some assert() for colormask here
-
-#if 0
-        SDL_Surface* surface = SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32,
-                                                    FI_RGBA_RED_MASK,
-                                                    FI_RGBA_GREEN_MASK,
-                                                    FI_RGBA_BLUE_MASK,
-                                                    FI_RGBA_ALPHA_MASK);
-      
-        SDL_LockSurface(surface);
-        uint8_t* src = FreeImage_GetBits(img);
-        uint8_t* dst = static_cast<uint8_t*>(surface->pixels);
-        for(int y = 0; y < height; ++y)
-          {
-            memcpy(dst + surface->pitch*y, src + pitch*y, width*4);
-          }
-        SDL_UnlockSurface(surface);
-#endif 
       }
   }
 
@@ -198,6 +181,13 @@ SoftwareSurface::get_size(const std::string& filename, Size& size)
   size.height = FreeImage_GetHeight(bitmap); 
   
   FreeImage_Unload(bitmap);  
+}
+
+void*
+SoftwareSurface::get_data() const
+{
+  // 16 byte alignment !
+  return FreeImage_GetBits(impl->bitmap);
 }
 
 // FreeImage_OpenMemory(BYTE *data FI_DEFAULT(0), DWORD size_in_bytes FI_DEFAULT(0));

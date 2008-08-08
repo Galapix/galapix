@@ -58,6 +58,8 @@ public:
   static void get_size(const std::string& filename, Size& size);
 
   operator bool() const { return impl.get(); }
+
+  void* get_data() const;
 private:
   boost::shared_ptr<SoftwareSurfaceImpl> impl;
 };

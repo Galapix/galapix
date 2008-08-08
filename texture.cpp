@@ -29,6 +29,7 @@
 #include <boost/format.hpp>
 #include <string.h>
 #include "framebuffer.hpp"
+#include "software_surface.hpp"
 #include "texture.hpp"
 
 Texture::Texture(int width, int height, 
@@ -37,16 +38,9 @@ Texture::Texture(int width, int height,
     width(width),
     height(height)
 {
-  assert(!"Not implemented");
-#if 0
   assert(surface);
 
   glGenTextures(1, &handle);
-
-  const SDL_PixelFormat* format = surface->format;
-
-  if(format->BitsPerPixel != 24 && format->BitsPerPixel != 32)
-    throw std::runtime_error("image has not 24 or 32 bit color depth");
   
   GLint maxt;
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxt);
@@ -55,25 +49,16 @@ Texture::Texture(int width, int height,
       throw std::runtime_error("Texture size not supported");
     }
 
-  GLint sdl_format;
-  if (format->BytesPerPixel == 3)
-    {
-      sdl_format = GL_RGB;
-    }
-  else if (format->BytesPerPixel == 4)
-    {
-      sdl_format = GL_RGBA;
-    }
-  else
-    {
-      throw std::runtime_error("Texture: Image format not supported");
-    }
-
+  GLint sdl_format = GL_RGB;
+    
   glBindTexture(GL_TEXTURE_2D, handle);
   glEnable(GL_TEXTURE_2D);
 
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
+
+  // FIXME: By setting the right glPixelStorei parameter we should be
+  // able to get this done without dummy
 
   { // Create the texture
     unsigned char dummy[width*height*3];
@@ -89,18 +74,16 @@ Texture::Texture(int width, int height,
 
   assert_gl("packing image texture");
 
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->w);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,  4); // FIXME: This alignment is
-                                          // guessed, we better should
-                                          // check it
-
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, surface.get_width());
+  glPixelStorei(GL_UNPACK_ALIGNMENT,  16);
+    
   // Upload the subimage
   glTexSubImage2D(GL_TEXTURE_2D, 0, 
                   0, 0, s_w, s_h, sdl_format,
                   GL_UNSIGNED_BYTE, 
-                  static_cast<Uint8*>(surface->pixels) 
-                  + (surface->pitch * s_y)
-                  + (s_x * surface->format->BytesPerPixel));
+                  (Uint8*)surface.get_data()
+                  + (surface.get_pitch() * s_y)
+                  + (s_x * 3));
 
   assert_gl("creating texture");
 
@@ -111,7 +94,6 @@ Texture::Texture(int width, int height,
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP);
 
   assert_gl("setting texture parameters");
-#endif
 }
 
 Texture::~Texture()

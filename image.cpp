@@ -23,16 +23,28 @@
 **  02111-1307, USA.
 */
 
+#include "surface.hpp"
 #include "image.hpp"
 
 Image::Image(const std::string& filename, const Size& size)
-  : tiles(size.width/256 + 1, size.height/256 + 1)
+  : tiles((size.width  + 255) / 256, 
+          (size.height + 255) / 256)
 {
 }
 
 void
 Image::draw()
 {
+  for(int y = 0; y < tiles.get_height(); ++y)
+    for(int x = 0; x < tiles.get_width(); ++x)
+      {
+        Surface* tile = tiles(x,y);
+        if (tile)
+          {
+            tile->draw(x*256, y*256);
+          }
+      }
+
 #if 0
   for(int y = 0; y*256 < entry.size.height/2; ++y)
     for(int x = 0; x*256 < entry.size.width/2; ++x)

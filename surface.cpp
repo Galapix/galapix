@@ -65,6 +65,12 @@ Surface::~Surface()
 }
 
 void
+Surface::draw(float x, float y)
+{
+  draw(x, y, width, height);
+}
+
+void
 Surface::draw(float x, float y, float orig_w, float orig_h)
 {
   if (texture)

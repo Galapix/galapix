@@ -34,5 +34,14 @@ Workspace::add_image(const std::string& filename, const Size& size)
 {
   images.push_back(Image(filename, size));
 }
+
+void
+Workspace::draw()
+{
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      i->draw();
+    }  
+}
 
 /* EOF */
