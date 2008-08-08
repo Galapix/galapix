@@ -71,16 +71,16 @@ public:
         glColor3f(1.0f, 1.0f, 1.0f);
         
         glBegin(GL_QUADS);
-        glTexCoord2f(      0,        0);
+        glTexCoord2f(      0, uv.height);
         glVertex2f(rect.left, rect.top);
 
-        glTexCoord2f(uv.width,        0);
+        glTexCoord2f(uv.width, uv.height);
         glVertex2f(rect.right, rect.top);
 
-        glTexCoord2f(uv.width, uv.height);
+        glTexCoord2f(uv.width, 0);
         glVertex2f(rect.right, rect.bottom);
 
-        glTexCoord2f(      0, uv.height);
+        glTexCoord2f(      0,  0);
         glVertex2f(rect.left, rect.bottom);
         glEnd();
       }   
