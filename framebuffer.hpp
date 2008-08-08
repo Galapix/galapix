@@ -33,6 +33,8 @@
 #include <math.h>
 #include "SDL.h"
 
+class Rectf;
+
 static inline void assert_gl(const char* message)
 {
   GLenum error = glGetError();
@@ -65,8 +67,7 @@ public:
   static void flip();
   static void clear();
 
-  static void lock();
-  static void unlock();
+  static void draw_rect(const Rectf& rect);
 };
 
 #endif

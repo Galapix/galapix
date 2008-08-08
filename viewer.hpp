@@ -30,6 +30,8 @@
 #include "surface.hpp"
 #include "math/vector2i.hpp"
 
+class Workspace;
+
 class ViewerState
 {
 private:
@@ -66,7 +68,7 @@ private:
 public:
   Viewer();
 
-  void draw();
+  void draw(Workspace& workspace);
   void update(float delta);
   void process_event(const SDL_Event& event);
   bool done() const { return quit; }

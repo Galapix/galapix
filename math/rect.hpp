@@ -31,6 +31,7 @@
 #define __MATH_RECT_HPP__
 
 #include <iosfwd>
+#include "../math.hpp"
 #include "origin.hpp"
 #include "vector3f.hpp"
 #include "size.hpp"
@@ -344,6 +345,14 @@ public:
                  right  + f,
                  bottom + f);
   }
+
+  Rectf clip_to(const Rectf& cliprect) const 
+  {
+    return Rectf(Math::max(left,   cliprect.left),
+                 Math::max(top,    cliprect.top),
+                 Math::min(right,  cliprect.right),
+                 Math::min(bottom, cliprect.bottom));
+  }
 };
 
 inline Rect::Rect(const Rectf& rect)
@@ -354,6 +363,7 @@ inline Rect::Rect(const Rectf& rect)
 {}
 
 std::ostream& operator<<(std::ostream& s, const Rect& r);
+std::ostream& operator<<(std::ostream& s, const Rectf& r);
 
 #endif
 

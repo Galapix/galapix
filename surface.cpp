@@ -67,7 +67,7 @@ public:
     if (texture)
       {
         texture.bind();
-      
+        glEnable(GL_TEXTURE_2D);
         glColor3f(1.0f, 1.0f, 1.0f);
         
         glBegin(GL_QUADS);

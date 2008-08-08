@@ -81,11 +81,11 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
           SoftwareSurface surface(filenames[i]);
           std::cout << "Image loading" << std::endl;      
 
-          int scale = 0;
+          int scale = 1;
 
           do
             {
-              if (scale != 0)
+              if (scale != 1)
                 {
                   surface = surface.scale(Size(surface.get_width()/2, 
                                                surface.get_height()/2));
@@ -140,6 +140,8 @@ Griv::view(const std::vector<std::string>& filenames)
         }
     }
 
+  workspace.layout();
+
   Viewer viewer;
 
   Uint32 ticks = SDL_GetTicks();
@@ -156,7 +158,7 @@ Griv::view(const std::vector<std::string>& filenames)
       viewer.update(delta);
 
       Framebuffer::clear();
-      viewer.draw();
+      viewer.draw(workspace);
       Framebuffer::flip();
 
       SDL_Delay(10);

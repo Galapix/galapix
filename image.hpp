@@ -30,8 +30,11 @@
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "grid.hpp"
-
+
 class Surface;
+class Size;
+class Rectf;
+class Vector2f;
 
 class Image
 {
@@ -45,8 +48,13 @@ private:
 
 public:
   Image(const std::string& filename, const Size& size);
+
+  void set_pos(const Vector2f& pos);
+  void draw(const Rectf& cliprect, float scale);
   
-  void draw();
+  Vector2f get_pos() const;
+  float get_width() const;
+  float get_height() const;
 };
 
 #endif

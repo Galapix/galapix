@@ -42,6 +42,8 @@ public:
   void add_image(const std::string& filename, const Size& size);
   void draw(const Rectf& cliprect, float scale);
 
+  void layout();
+
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);
