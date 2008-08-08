@@ -51,6 +51,7 @@ public:
   Surface(const SoftwareSurface& surface, int x, int y, int w, int h);
   ~Surface();
 
+  void draw(float x, float y);
   void draw(float x, float y, float w, float h);
 
   int get_width()  const { return width; }

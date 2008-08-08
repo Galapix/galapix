@@ -123,23 +123,7 @@ Filesystem::open_directory(const std::string& pathname)
 
   return dir_list;
 }
-#if 0
-std::string
-Filesystem::getxattr(const std::string& pathname)
-{
-  char buf[2048];
-  int len;
-  if ((len = ::getxattr(pathname.c_str(), "user.griv.md5", buf, 2048)) < 0)
-    {
-      if (errno == ENOATTR)
-        return "";
-      else
-        throw std::runtime_error("Couldn't get xattr for " + pathname);
-    }
 
-  return std::string(buf, len);
-}
-#endif
 void
 Filesystem::init()
 {

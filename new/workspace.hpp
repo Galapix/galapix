@@ -31,12 +31,14 @@
 class Workspace
 {
 private:
-  std::vector<Image> images;
+  typedef std::vector<Image> Images;
+  Images images;
 
 public:
   Workspace();
 
   void add_image(const std::string& filename, const Size& size);
+  void draw();
 
 private:
   Workspace (const Workspace&);
