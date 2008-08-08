@@ -43,6 +43,7 @@
 #include "tile_database.hpp"
 #include "filesystem.hpp"
 #include "workspace.hpp"
+#include "viewer.hpp"
 #include "griv.hpp"
 
 Griv::Griv()
@@ -139,46 +140,26 @@ Griv::view(const std::vector<std::string>& filenames)
         }
     }
 
-  Surface surface(SoftwareSurface("test.jpg"));
+  Viewer viewer;
 
-  bool force_redraw = false;
-  bool quit = false;
-  while(!quit)
+  Uint32 ticks = SDL_GetTicks();
+  while(!viewer.done())
     {
       SDL_Event event;
       while (SDL_PollEvent(&event))
-        {
-          switch(event.type)
-            {
-              case SDL_QUIT:
-                quit = true;
-                break;
+        viewer.process_event(event);
 
-              case SDL_VIDEOEXPOSE:
-                force_redraw = true;
-                break;
+      Uint32 cticks = SDL_GetTicks();
+      float delta = (cticks - ticks) / 1000.0f;
+      ticks = cticks;
 
-              case SDL_VIDEORESIZE:
-                Framebuffer::resize(event.resize.w, event.resize.h);
-                force_redraw = true;
-                break;
-
-              case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE)
-                  {
-                    quit = true;
-                  }
-                break;
-
-              default:
-                break;
-            }
-        }
+      viewer.update(delta);
 
       Framebuffer::clear();
-      surface.draw(Vector2f(0, 0));
-      workspace.draw();
+      viewer.draw();
       Framebuffer::flip();
+
+      SDL_Delay(10);
     }
 
   Framebuffer::deinit();
@@ -215,7 +196,7 @@ Griv::main(int argc, char** argv)
 
   return 0;
 }
-
+  
 int main(int argc, char** argv)
 {
   try 
@@ -229,5 +210,5 @@ int main(int argc, char** argv)
       std::cout << "Exception: " << err.what() << std::endl;
     }
 }
-
+  
 /* EOF */

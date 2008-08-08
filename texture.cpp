@@ -61,7 +61,8 @@ public:
 
     assert_gl("packing image texture");
 
-    assert(src.get_pitch() % src.get_width() == 0);
+    //std::cout << "pitch: " << src.get_pitch() << " width: " << src.get_width() << std::endl;
+    assert(src.get_pitch() % 3 == 0);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_pitch()/3);
