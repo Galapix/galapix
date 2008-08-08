@@ -68,7 +68,7 @@ public:
     
     // Upload the subimage
     glTexSubImage2D(GL_TEXTURE_2D, 0, 
-                    0, 0, srcrect.get_width(), srcrect.get_height(), GL_RGB,
+                    0, 0, srcrect.get_width(), srcrect.get_height(), GL_BGR,
                     GL_UNSIGNED_BYTE, 
                     (Uint8*)src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * 3));
 
