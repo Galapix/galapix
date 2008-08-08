@@ -116,6 +116,13 @@ SoftwareSurface::crop(const Rect& rect) const
     return SoftwareSurface(img);
 }
 
+Size
+SoftwareSurface::get_size()  const
+{
+  return Size(FreeImage_GetWidth(impl->bitmap),
+              FreeImage_GetHeight(impl->bitmap));
+}
+
 int
 SoftwareSurface::get_width()  const
 {

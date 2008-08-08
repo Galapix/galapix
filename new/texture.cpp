@@ -28,95 +28,97 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 #include <string.h>
+
+#include "math/size.hpp"
+#include "math/rect.hpp"
 #include "framebuffer.hpp"
 #include "software_surface.hpp"
 #include "texture.hpp"
-
-Texture::Texture(int width, int height, 
-                 const SoftwareSurface& surface, int s_x, int s_y, int s_w, int s_h)
-  : handle(0),
-    width(width),
-    height(height)
+
+class TextureImpl
 {
-  assert(surface);
+public:
+  GLuint handle;
+  Size   size;
 
-  glGenTextures(1, &handle);
+  TextureImpl(const Size& size_,
+              const SoftwareSurface& src, const Rect& srcrect)
+    : size(size_)
+  {
+    glGenTextures(1, &handle);
   
-  GLint maxt;
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxt);
-  if(width > maxt || height > maxt)
-    {
-      throw std::runtime_error("Texture size not supported");
-    }
-
-  GLint sdl_format = GL_RGB;
+    assert(src);
     
-  glBindTexture(GL_TEXTURE_2D, handle);
-  glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, handle);
+    glEnable(GL_TEXTURE_2D);
 
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
-
-  // FIXME: By setting the right glPixelStorei parameter we should be
-  // able to get this done without dummy
-
-  { // Create the texture
-    unsigned char dummy[width*height*3];
-    memset(dummy, 150, width*height*3);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 width,
-                 height,
-                 0,
+                 size.width, size.height,
+                 0, /* border */
                  GL_RGB,
                  GL_UNSIGNED_BYTE,
-                 dummy);
+                 0 /* pixels */);
+
+    assert_gl("packing image texture");
+
+    assert(src.get_pitch() % src.get_width() == 0);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_pitch()/3);
+    
+    // Upload the subimage
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 
+                    0, 0, srcrect.get_width(), srcrect.get_height(), GL_RGB,
+                    GL_UNSIGNED_BYTE, 
+                    (Uint8*)src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * 3));
+
+    assert_gl("creating texture");
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R,     GL_CLAMP);
+
+    assert_gl("setting texture parameters");
   }
 
-  assert_gl("packing image texture");
+  ~TextureImpl()
+  {
+    glDeleteTextures(1, &handle);    
+  }
+};
+
+Texture::Texture()
+{
+}
 
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, surface.get_width());
-  glPixelStorei(GL_UNPACK_ALIGNMENT,  16);
-    
-  // Upload the subimage
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 
-                  0, 0, s_w, s_h, sdl_format,
-                  GL_UNSIGNED_BYTE, 
-                  (Uint8*)surface.get_data()
-                  + (surface.get_pitch() * s_y)
-                  + (s_x * 3));
-
-  assert_gl("creating texture");
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP);
-
-  assert_gl("setting texture parameters");
+Texture::Texture(const Size& size,
+                 const SoftwareSurface& src, const Rect& srcrect)
+  : impl(new TextureImpl(size, src, srcrect))
+{
 }
 
 Texture::~Texture()
 {
-  glDeleteTextures(1, &handle);
 }
 
 void
 Texture::bind()
 {
-  glBindTexture(GL_TEXTURE_2D, handle);
+  glBindTexture(GL_TEXTURE_2D, impl->handle);
 }
 
 int
 Texture::get_width() const
 {
-  return width;
+  return impl->size.width;
 }
 
 int
 Texture::get_height() const
 {
-  return height;
+  return impl->size.height;
 }
-
+
 /* EOF */

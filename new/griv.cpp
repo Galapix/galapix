@@ -31,6 +31,7 @@
 #include <vector>
 #include "FreeImage.h"
 
+#include "surface.hpp"
 #include "framebuffer.hpp"
 #include "math/size.hpp"
 #include "math/rect.hpp"
@@ -138,6 +139,8 @@ Griv::view(const std::vector<std::string>& filenames)
         }
     }
 
+  Surface surface(SoftwareSurface("test.jpg"));
+
   bool force_redraw = false;
   bool quit = false;
   while(!quit)
@@ -160,12 +163,22 @@ Griv::view(const std::vector<std::string>& filenames)
                 force_redraw = true;
                 break;
 
+              case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_ESCAPE)
+                  {
+                    quit = true;
+                  }
+                break;
+
               default:
                 break;
             }
         }
 
+      Framebuffer::clear();
+      surface.draw(Vector2f(0, 0));
       workspace.draw();
+      Framebuffer::flip();
     }
 
   Framebuffer::deinit();

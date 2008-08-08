@@ -30,38 +30,29 @@
 #include <boost/smart_ptr.hpp>
 #include "texture.hpp"
 #include "software_surface.hpp"
-
-/** */
+
+class SurfaceImpl;
+class Rect;
+class Rectf;
+class Vector2f;
+
 class Surface
 {
-private: 
-  Texture* texture;
-  int tex_w;
-  int tex_h;
-
-  float u;
-  float v;
-
-  float aspect;
-
-  int width;
-  int height;
-  
 public:
-  Surface(const SoftwareSurface& surface, int x, int y, int w, int h);
+  Surface(const SoftwareSurface& src, const Rect& srcrect);
+  Surface(const SoftwareSurface& src);
   ~Surface();
 
-  void draw(float x, float y);
-  void draw(float x, float y, float w, float h);
+  void draw(const Vector2f& pos);
+  void draw(const Rectf& rect);
 
-  int get_width()  const { return width; }
-  int get_height() const { return height; }
+  int get_width()  const;
+  int get_height() const;
 
 private:
-  Surface (const Surface&);
-  Surface& operator= (const Surface&);
+  boost::shared_ptr<SurfaceImpl> impl;
 };
-
+
 #endif
 
 /* EOF */

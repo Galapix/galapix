@@ -12,6 +12,7 @@ griv_env.Program('griv', [
         'math/rect.cpp',
         'math/vector2i.cpp',
         'math/vector2f.cpp',
+        'math/vector3f.cpp',
         'software_surface.cpp',
         'url.cpp',
         'md5.cpp',
