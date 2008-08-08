@@ -43,6 +43,7 @@ public:
   SoftwareSurface(FIBITMAP* bitmap);
   ~SoftwareSurface();
 
+  Size get_size()  const;
   int get_width()  const;
   int get_height() const;
   int get_pitch()  const;

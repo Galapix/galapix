@@ -26,31 +26,32 @@
 #ifndef HEADER_TEXTURE_HPP
 #define HEADER_TEXTURE_HPP
 
+#include <boost/shared_ptr.hpp>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "SDL.h"
 
+class Rect;
+class Size;
 class SoftwareSurface;
+class TextureImpl;
 
 class Texture
 {
-private:
-  GLuint handle;
-
-  int width;
-  int height;
-
 public:
-  Texture(int w, int h, const SoftwareSurface& surface, int s_x, int s_y, int s_w, int s_h);
+  Texture();
+  Texture(const Size& size, const SoftwareSurface& src, const Rect& srcrect);
   ~Texture();
 
   int get_width() const;
   int get_height() const;
   
   void bind();
+
+  operator bool() const { return impl.get(); }
+
 private:
-  Texture (const Texture&);
-  Texture& operator= (const Texture&);
+  boost::shared_ptr<TextureImpl> impl;
 };
 
 #endif

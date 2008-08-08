@@ -27,92 +27,107 @@
 #include <assert.h>
 #include "framebuffer.hpp"
 #include "math.hpp"
+#include "math/vector2i.hpp"
+#include "math/vector2f.hpp"
+#include "math/size.hpp"
+#include "math/rect.hpp"
 #include "software_surface.hpp"
 #include "surface.hpp"
-
-Surface::Surface(const SoftwareSurface& surface, int x, int y, int w, int h)
-  : texture(0)
+
+class SurfaceImpl
 {
-  assert(surface);
+public:
+  Texture texture;
+  Size    texture_size;
+  Sizef   uv;
 
-  tex_w = Math::round_to_power_of_two(w);
-  tex_h = Math::round_to_power_of_two(h);
+  Size size;
+  
+  SurfaceImpl(const SoftwareSurface& src, const Rect& srcrect)
+  {
+    assert(src);
 
-  if (tex_w <= 1024 && tex_h <= 1024)
-    {
-      texture = new Texture(tex_w, tex_h, 
-                            surface,
-                            x, y, w, h);
+    texture_size = Size(Math::round_to_power_of_two(srcrect.get_width()),
+                        Math::round_to_power_of_two(srcrect.get_height()));
+
+    texture = Texture(texture_size, src, srcrect);
     
-      u = float(w) / tex_w;
-      v = float(h) / tex_h;
+    uv = Sizef(float(srcrect.get_width())  / texture_size.width,
+               float(srcrect.get_height()) / texture_size.height);
 
-      aspect = float(w) / h;
+    size = Size(srcrect.get_size());
+  }
+  
+  ~SurfaceImpl()
+  {
+  }
 
-      width  = w;
-      height = h;
-    }
-  else
-    {
-      std::cout << "Image violates maximum texture size: "
-                << surface.get_width() << "x" << surface.get_height() << std::endl;
-    }
+  void draw(const Rectf& rect)
+  {
+    if (texture)
+      {
+        texture.bind();
+      
+        glColor3f(1.0f, 1.0f, 1.0f);
+        
+        glBegin(GL_QUADS);
+        glTexCoord2f(      0,        0);
+        glVertex2f(rect.left, rect.top);
+
+        glTexCoord2f(uv.width,        0);
+        glVertex2f(rect.right, rect.top);
+
+        glTexCoord2f(uv.width, uv.height);
+        glVertex2f(rect.right, rect.bottom);
+
+        glTexCoord2f(      0, uv.height);
+        glVertex2f(rect.left, rect.bottom);
+        glEnd();
+      }   
+  }
+
+  void draw(const Vector2f& pos)
+  {
+    draw(Rectf(pos, size));
+  }
+};
+
+Surface::Surface(const SoftwareSurface& src)
+  : impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src.get_size())))
+{
+}
+
+Surface::Surface(const SoftwareSurface& src, const Rect& srcrect)
+  : impl(new SurfaceImpl(src, srcrect))
+{
 }
 
 Surface::~Surface()
 {
-  delete texture;
 }
 
 void
-Surface::draw(float x, float y)
+Surface::draw(const Vector2f& pos)
 {
-  draw(x, y, width, height);
+  impl->draw(pos);
 }
 
 void
-Surface::draw(float x, float y, float orig_w, float orig_h)
+Surface::draw(const Rectf& rect)
 {
-  if (texture)
-    {
-      texture->bind();
-      
-      glColor3f(1.0f, 1.0f, 1.0f);
-
-      if (0)
-        {
-          float w, h;
-          if (aspect > 1.0f)
-            { // FIXME: This only works as long as w == h
-              w = orig_w;
-              h = orig_h / aspect;
-            }
-          else
-            {
-              w = orig_w * aspect;
-              h = orig_h;
-            }
-
-          x += (orig_w - w)/2;
-          y += (orig_h - h)/2;
-        }
-      float w = orig_w;
-      float h = orig_h;
-
-      glBegin(GL_QUADS);
-      glTexCoord2f(0,0);
-      glVertex2f(x, y);
-
-      glTexCoord2f(u,0);
-      glVertex2f(x + w, y);
-
-      glTexCoord2f(u,v);
-      glVertex2f(x + w, y + h);
-
-      glTexCoord2f(0,v);
-      glVertex2f(x, y + h);
-      glEnd();
-    }
+  impl->draw(rect);
 }
 
+int
+Surface::get_width() const 
+{
+  return impl->size.width; 
+}
+
+int
+Surface::get_height() const
+{
+  return impl->size.height; 
+}
+
 /* EOF */

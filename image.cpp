@@ -41,7 +41,7 @@ Image::draw()
         Surface* tile = tiles(x,y);
         if (tile)
           {
-            tile->draw(x*256, y*256);
+            tile->draw(Vector2f(x*256, y*256));
           }
       }
 
