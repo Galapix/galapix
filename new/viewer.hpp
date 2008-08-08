@@ -23,25 +23,59 @@
 **  02111-1307, USA.
 */
 
-#include "workspace.hpp"
-
-Workspace::Workspace()
-{
-}
+#ifndef HEADER_VIEWER_HPP
+#define HEADER_VIEWER_HPP
 
-void
-Workspace::add_image(const std::string& filename, const Size& size)
-{
-  images.push_back(Image(filename, size));
-}
-
-void
-Workspace::draw(const Rectf& cliprect, float scale)
-{
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
-    {
-      i->draw();
-    }  
-}
+#include "SDL.h"
+#include "surface.hpp"
+#include "math/vector2i.hpp"
 
+class ViewerState
+{
+private:
+  float    scale;
+  Vector2f offset;
+  
+public:
+  ViewerState();
+
+  void zoom(float factor, const Vector2i& pos);
+  void move(const Vector2i& pos);
+
+  Vector2f screen2world(const Vector2i&) const;
+  Rectf    screen2world(const Rect&) const;
+
+  Vector2f get_offset() const { return offset; }
+  float    get_scale()  const { return scale; }
+};
+
+class Viewer
+{
+private:
+  bool quit;
+  bool force_redraw;
+  bool drag_n_drop;
+  int  zoom_button;
+
+  Vector2i mouse_pos;
+
+  ViewerState state;
+
+  Surface surface;
+  
+public:
+  Viewer();
+
+  void draw();
+  void update(float delta);
+  void process_event(const SDL_Event& event);
+  bool done() const { return quit; }
+
+private:
+  Viewer (const Viewer&);
+  Viewer& operator= (const Viewer&);
+};
+
+#endif
+
 /* EOF */

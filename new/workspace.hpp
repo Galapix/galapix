@@ -28,6 +28,8 @@
 
 #include "image.hpp"
 
+class Rectf;
+
 class Workspace
 {
 private:
@@ -38,7 +40,7 @@ public:
   Workspace();
 
   void add_image(const std::string& filename, const Size& size);
-  void draw();
+  void draw(const Rectf& cliprect, float scale);
 
 private:
   Workspace (const Workspace&);
