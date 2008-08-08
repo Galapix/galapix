@@ -27,6 +27,7 @@
 #include <X11/Xlib.h>
 #include <GL/gl.h>
 #include "SDL_syswm.h"
+#include "math/rect.hpp"
 #include "framebuffer.hpp"
 
 SDL_SysWMinfo syswm;
@@ -123,19 +124,30 @@ Framebuffer::clear()
 }
 
 void
-Framebuffer::lock()
+Framebuffer::draw_rect(const Rectf& rect)
 {
-  syswm.info.x11.lock_func();
-  XLockDisplay(syswm.info.x11.display);
-  syswm.info.x11.unlock_func();
-}
+  glEnable(GL_BLEND);
+  glDisable(GL_TEXTURE_2D);
+  glColor4f(1.0f, 0.0f, 1.0f, 0.25f);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        
+  glBegin(GL_QUADS);
+  glVertex2f(rect.left,  rect.top);
+  glVertex2f(rect.right, rect.top);
+  glVertex2f(rect.right, rect.bottom);
+  glVertex2f(rect.left,  rect.bottom);
+  glEnd();
 
-void
-Framebuffer::unlock()
-{
-  syswm.info.x11.lock_func();
-  XUnlockDisplay(syswm.info.x11.display);
-  syswm.info.x11.unlock_func();
+  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+
+  glBegin(GL_LINE_LOOP);
+  glVertex2f(rect.left,  rect.top);
+  glVertex2f(rect.right, rect.top);
+  glVertex2f(rect.right, rect.bottom);
+  glVertex2f(rect.left,  rect.bottom);
+  glEnd();
+
+  glDisable(GL_BLEND);
 }
 
 /* EOF */

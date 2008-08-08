@@ -36,11 +36,25 @@ Workspace::add_image(const std::string& filename, const Size& size)
 }
 
 void
+Workspace::layout()
+{
+  if (!images.empty())
+    {
+      float x_pos = 0;
+      for(Images::iterator i = images.begin(); i != images.end(); ++i)
+        {
+          i->set_pos(Vector2f(x_pos, 0.0f));
+          x_pos += i->get_width() + 20/*spacing*/;
+        }
+    }
+}
+
+void
 Workspace::draw(const Rectf& cliprect, float scale)
 {
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      i->draw();
+      i->draw(cliprect, scale);
     }  
 }
 

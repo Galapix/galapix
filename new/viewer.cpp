@@ -28,6 +28,7 @@
 #include "software_surface.hpp"
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
+#include "workspace.hpp"
 #include "viewer.hpp"
 
 ViewerState::ViewerState()
@@ -58,9 +59,12 @@ ViewerState::screen2world(const Vector2i& pos) const
 }
 
 Rectf
-ViewerState::screen2world(const Rect&) const
+ViewerState::screen2world(const Rect& rect) const
 {
-  return Rectf();
+  return Rectf((rect.left   - offset.x) / scale,
+               (rect.top    - offset.y) / scale,
+               (rect.right  - offset.x) / scale,
+               (rect.bottom - offset.y) / scale);
 }
 
 Viewer::Viewer()
@@ -146,7 +150,7 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDL_BUTTON_MIDDLE:
-              std::cout << state.screen2world(mouse_pos) << std::endl;
+              //std::cout << state.screen2world(mouse_pos) << std::endl;
 
               drag_n_drop = event.button.state;
               break;
@@ -159,12 +163,29 @@ Viewer::process_event(const SDL_Event& event)
 }
 
 void
-Viewer::draw()
+Viewer::draw(Workspace& workspace)
 {
+  bool clip_debug = true;
+
   glPushMatrix();
-  
+
+  if (clip_debug)
+    {
+      glTranslatef(Framebuffer::get_width()/2, Framebuffer::get_height()/2, 0.0f);
+      glScalef(0.5f, 0.5f, 1.0f);
+      glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
+    }
+
   glTranslatef(state.get_offset().x, state.get_offset().y, 0.0f);
   glScalef(state.get_scale(), state.get_scale(), 1.0f);
+
+  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
+
+  if (clip_debug)
+    Framebuffer::draw_rect(cliprect);
+  
+  workspace.draw(cliprect,
+                 state.get_scale());
 
   surface.draw(Vector2f(0, 0));
 
@@ -176,11 +197,11 @@ Viewer::update(float delta)
 {
   if (zoom_button == -1)
     {
-      state.zoom(1.0f / (1.0f + 2.0f * delta), mouse_pos);
+      state.zoom(1.0f / (1.0f + 4.0f * delta), mouse_pos);
     }
   else if (zoom_button == 1)
     {
-      state.zoom(1.0f + 2.0f * delta, mouse_pos);
+      state.zoom(1.0f + 4.0f * delta, mouse_pos);
     }
 }
 
