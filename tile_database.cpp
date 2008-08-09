@@ -42,6 +42,8 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
            "data    BLOB     " // the image data, JPEG
            ");");
 
+  db->exec("CREATE UNIQUE INDEX IF NOT EXISTS tiles_index ON tiles ( fileid, x, y, scale );");
+
   store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data) VALUES (?1, ?2, ?3, ?4, ?5);");
   get_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
 }
