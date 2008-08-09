@@ -53,7 +53,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
            "height    INTEGER, "
            "mtime     INTEGER);");
 
-  //db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename, md5 );");
+  db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename );");
 
   store_stmt.prepare("INSERT INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
   get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
