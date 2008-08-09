@@ -117,14 +117,12 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
 void
 Griv::view(const std::vector<std::string>& filenames)
 {
-  Framebuffer::init();
-
-  Workspace workspace;
-
   SQLiteConnection db("test.sqlite");
 
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
+
+  Workspace workspace;
 
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
@@ -138,7 +136,12 @@ Griv::view(const std::vector<std::string>& filenames)
         {
           workspace.add_image(entry.fileid, entry.filename, entry.size);
         }
+
+      std::cout << "Adding images to workspace " << i+1 << "/" << filenames.size() << "\r" << std::flush;
     }
+  std::cout << std::endl;
+
+  Framebuffer::init();
 
   workspace.layout(4,3);
 
