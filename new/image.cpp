@@ -40,7 +40,7 @@ Image::Image(int fileid, const std::string& filename, const Size& size)
     filename(filename),
     size(size)    
 {
-  int scale = 1;
+  int scale = 0;
   Size tmpsize = size;
   do {
     tmpsize.width /= 2;
@@ -75,6 +75,32 @@ Image::get_height() const
   return size.height;
 }
 
+Surface
+Image::get_tile(int x, int y, int tile_scale)
+{
+  uint32_t cache_id = make_cache_id(x, y, tile_scale);
+  Cache::iterator i = cache.find(cache_id);
+
+  if (i == cache.end())
+    {
+      Tile tile;
+      if (TileDatabase::current()->get_tile(fileid, tile_scale, x, y, tile))
+        {                   
+          Surface surface(tile.surface);
+          cache[cache_id] = surface;
+          return surface;
+        }
+      else
+        {
+          return Surface();
+        }
+    }
+  else
+    {
+      return i->second;
+    }
+}
+
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
@@ -87,37 +113,16 @@ Image::draw(const Rectf& cliprect, float fscale)
   if (cliprect.is_overlapped(image_rect))
     {
       // scale factor for requesting the tile from the TileDatabase
-      int tile_scale = Math::clamp(1, static_cast<int>(1 / fscale), max_scale);
-      int scale_factor = (1 << (tile_scale-1));
+      int tile_scale = Math::clamp(0, static_cast<int>(1.0f / Math::sqrt(fscale)), max_scale);
+      int scale_factor = (1 << (tile_scale));
 
       int scaled_width  = size.width  / scale_factor;
       int scaled_height = size.height / scale_factor;
 
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn
-          Framebuffer::draw_rect(Rectf(pos, size));
-
-          uint32_t cache_id = make_cache_id(0, 0, tile_scale);
-          Cache::iterator i = cache.find(cache_id);
-
-          if (i == cache.end())
-            {
-              Tile tile;
-              if (TileDatabase::current()->get_tile(fileid, tile_scale, 0, 0, tile))
-                {                   
-                  Surface surface(tile.surface);
-                  cache[cache_id] = surface;
-                  surface.draw(Rectf(pos, size));
-                }
-              else
-                {
-                  cache[cache_id] = Surface();
-                }
-            }
-          else
-            {
-              i->second.draw(Rectf(pos, size));
-            }
+          //Framebuffer::draw_rect(Rectf(pos, size));
+          get_tile(0, 0, tile_scale).draw(Rectf(pos, size));
         }
       else
         {
@@ -132,35 +137,14 @@ Image::draw(const Rectf& cliprect, float fscale)
           for(int y = start_y; y < end_y; y += 1)
             for(int x = start_x; x < end_x; x += 1)
               {
-                uint32_t cache_id = make_cache_id(x, y, tile_scale);
-                Cache::iterator i = cache.find(cache_id);
+                Surface surface = get_tile(x, y, tile_scale);
 
-                if (i == cache.end())
-                  {
-                    Tile tile;
-                    if (TileDatabase::current()->get_tile(fileid, tile_scale, x, y, tile))
-                      {                   
-                        Surface surface(tile.surface);
-                        cache[cache_id] = surface;
-                        surface.draw(Rectf(pos + Vector2f(x*tilesize, y*tilesize), 
-                                           surface.get_size() * tile_scale));
-                      }
-                    else
-                      {
-                        // Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
-                        // Sizef(tilesize, tilesize)));
-                      }
-                  }
-                else
-                  {
-                    i->second.draw(Rectf(pos + Vector2f(x*tilesize, y*tilesize), 
-                                         i->second.get_size() * scale_factor));
-                    // Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
-                    //                             Sizef(tilesize, tilesize)));
-                  }
+                // FIXME: Causes visible rounding errors
+                surface.draw(Rectf(pos + Vector2f(x*tilesize, y*tilesize), 
+                                   surface.get_size() * scale_factor));
+                Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
+                                             Sizef(tilesize, tilesize)));
               }
-
-          
         }
     }
   else

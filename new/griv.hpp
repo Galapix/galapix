@@ -1,11 +1,6 @@
-/*  $Id$
-**   __      __ __             ___        __   __ __   __
-**  /  \    /  \__| ____    __| _/_______/  |_|__|  | |  |   ____
-**  \   \/\/   /  |/    \  / __ |/  ___/\   __\  |  | |  | _/ __ \
-**   \        /|  |   |  \/ /_/ |\___ \  |  | |  |  |_|  |_\  ___/
-**    \__/\  / |__|___|  /\____ /____  > |__| |__|____/____/\___  >
-**         \/          \/      \/    \/                         \/
-**  Copyright (C) 2007 Ingo Ruhnke <grumbel@gmx.de>
+/*
+**  Griv - Grumbel's Image Viewer
+**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software; you can redistribute it and/or
 **  modify it under the terms of the GNU General Public License

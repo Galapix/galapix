@@ -62,13 +62,13 @@ public:
     assert_gl("packing image texture");
 
     
-    if (0 && src.get_pitch() % 3 != 0)
-      {
-        std::cout << "pitch: " << src.get_pitch() << " width: " << src.get_width() << std::endl;
-        assert(!"Align issue");
-      }
+    //if (src.get_pitch() % 3 != 0)
+    //{
+    //std::cout << "pitch: " << src.get_pitch() << " width: " << src.get_width() << std::endl;
+    ////assert(!"Align issue");
+    //}
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT,  8);
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_pitch()/3);
     
     // Upload the subimage
@@ -79,8 +79,8 @@ public:
 
     assert_gl("creating texture");
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); //GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); //GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); // GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R,     GL_CLAMP);

@@ -81,11 +81,11 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
           SoftwareSurface surface(filenames[i]);
           std::cout << "Image loading" << std::endl;      
 
-          int scale = 1;
+          int scale = 0;
 
           do
             {
-              if (scale != 1)
+              if (scale != 0)
                 {
                   surface = surface.scale(Size(surface.get_width()/2, 
                                                surface.get_height()/2));
@@ -129,7 +129,7 @@ Griv::view(const std::vector<std::string>& filenames)
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
       FileEntry entry;
-      std::cout << "Getting file entry..." << std::endl;
+      //std::cout << "Getting file entry..." << std::endl;
       if (!file_db.get_file_entry(filenames[i], entry))
         {
           std::cout << "Couldn't find entry for " << filenames[i] << std::endl;

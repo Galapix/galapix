@@ -69,6 +69,8 @@ Workspace::layout(float aspect_w, float aspect_h)
 void
 Workspace::draw(const Rectf& cliprect, float scale)
 {
+  //std::cout << Math::clamp(1, static_cast<int>(1.0f / scale), 32) << " -> " << scale << std::endl;
+
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       i->draw(cliprect, scale);
