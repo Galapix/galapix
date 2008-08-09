@@ -74,7 +74,8 @@ SQLiteStatement::SQLiteStatement(SQLiteConnection* db)
 }
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection* db, const std::string& sqlstmt)
-  : db(db)
+  : db(db),
+    stmt(0)
 {
   prepare(sqlstmt);
 }

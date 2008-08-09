@@ -165,7 +165,7 @@ Viewer::process_event(const SDL_Event& event)
 void
 Viewer::draw(Workspace& workspace)
 {
-  bool clip_debug = true;
+  bool clip_debug = false;
 
   glPushMatrix();
 
@@ -187,7 +187,7 @@ Viewer::draw(Workspace& workspace)
   workspace.draw(cliprect,
                  state.get_scale());
 
-  surface.draw(Vector2f(0, 0));
+  //surface.draw(Vector2f(0, 0));
 
   glPopMatrix();
 }

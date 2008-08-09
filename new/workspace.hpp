@@ -39,10 +39,10 @@ private:
 public:
   Workspace();
 
-  void add_image(const std::string& filename, const Size& size);
+  void add_image(int fileid, const std::string& filename, const Size& size);
   void draw(const Rectf& cliprect, float scale);
 
-  void layout();
+  void layout(float aspect_w, float aspect_h);
 
 private:
   Workspace (const Workspace&);

@@ -25,11 +25,15 @@
 
 #include "tile_database.hpp"
 
+TileDatabase* TileDatabase::current_ = 0;
+
 TileDatabase::TileDatabase(SQLiteConnection* db)
   : db(db),
     store_stmt(db),
     get_stmt(db)
 {
+  current_ = this;
+  
   db->exec("CREATE TABLE IF NOT EXISTS tiles ("
            "fileid  INTEGER, " // link to to files.rowid
            "scale   INTEGER, " // zoom level

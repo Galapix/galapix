@@ -26,10 +26,12 @@
 #ifndef HEADER_IMAGE_HPP
 #define HEADER_IMAGE_HPP
 
+#include <map>
 #include <string>
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "grid.hpp"
+#include "surface.hpp"
 
 class Surface;
 class Size;
@@ -39,15 +41,18 @@ class Vector2f;
 class Image
 {
 private:
+  int fileid;
   std::string filename;
   Size size;
+  int max_scale;
 
   Vector2f pos;
 
-  Grid<Surface*> tiles;
+  typedef std::map<uint32_t, Surface> Cache; 
+  Cache cache;
 
 public:
-  Image(const std::string& filename, const Size& size);
+  Image(int fileid, const std::string& filename, const Size& size);
 
   void set_pos(const Vector2f& pos);
   void draw(const Rectf& cliprect, float scale);
