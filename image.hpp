@@ -51,6 +51,7 @@ private:
   typedef std::map<uint32_t, Surface> Cache; 
   Cache cache;
 
+  Surface get_tile(int x, int y, int tile_scale);
 public:
   Image(int fileid, const std::string& filename, const Size& size);
 

@@ -49,7 +49,7 @@ void
 ViewerState::move(const Vector2i& pos)
 {
   offset.x += pos.x;
-    offset.y += pos.y;
+  offset.y += pos.y;
 }
 
 Vector2f
@@ -112,7 +112,8 @@ Viewer::process_event(const SDL_Event& event)
         
         if (drag_n_drop)
           {
-            state.move(Vector2i(event.motion.xrel, event.motion.yrel));
+            state.move(Vector2i(event.motion.xrel * 4,
+                                event.motion.yrel * 4));
           }
         break;
 
