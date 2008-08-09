@@ -38,17 +38,18 @@ uint32_t make_cache_id(int x, int y, int tile_scale)
 Image::Image(int fileid, const std::string& filename, const Size& size)
   : fileid(fileid),
     filename(filename),
-    size(size)    
+    size(size),
+    scale(1.0f)
 {
-  int scale = 0;
+  int tiledb_scale = 0;
   Size tmpsize = size;
   do {
-    tmpsize.width /= 2;
+    tmpsize.width  /= 2;
     tmpsize.height /= 2;
-    scale += 1;
-  } while (tmpsize.width > 32 ||
+    tiledb_scale += 1;
+  } while (tmpsize.width  > 32 ||
            tmpsize.height > 32);
-  max_scale = scale;
+  max_tiledb_scale = tiledb_scale;
 }
 
 void
@@ -61,6 +62,18 @@ Vector2f
 Image::get_pos() const
 {
   return pos;
+}
+
+void
+Image::set_scale(float f)
+{
+  scale = f;
+}
+
+float
+Image::get_scale() const
+{
+  return scale;
 }
 
 float
@@ -104,25 +117,26 @@ Image::get_tile(int x, int y, int tile_scale)
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
-  Rectf image_rect(pos, Sizef(size));
-  Rectf image_region = image_rect.clip_to(cliprect);
+  Rectf image_rect(pos, Sizef(size * scale)); // in world coordinates
 
   //Framebuffer::draw_rect(image_rect);
   //Framebuffer::draw_rect(image_region);
 
   if (cliprect.is_overlapped(image_rect))
     {
-      // scale factor for requesting the tile from the TileDatabase
-      int tile_scale = Math::clamp(0, static_cast<int>(1.0f / Math::sqrt(fscale)), max_scale);
-      int scale_factor = (1 << (tile_scale));
+      Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
 
-      int scaled_width  = size.width  / scale_factor;
-      int scaled_height = size.height / scale_factor;
+      // scale factor for requesting the tile from the TileDatabase
+      int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale)) / log(2)));
+      int scale_factor = Math::pow2(tiledb_scale);
+
+      int scaled_width  = image_rect.get_width()  / scale_factor;
+      int scaled_height = image_rect.get_height() / scale_factor;
 
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn
           //Framebuffer::draw_rect(Rectf(pos, size));
-          get_tile(0, 0, tile_scale).draw(Rectf(pos, size));
+          get_tile(0, 0, Math::min(max_tiledb_scale, tiledb_scale)).draw(image_rect);
         }
       else
         {
@@ -137,18 +151,21 @@ Image::draw(const Rectf& cliprect, float fscale)
           for(int y = start_y; y < end_y; y += 1)
             for(int x = start_x; x < end_x; x += 1)
               {
-                Surface surface = get_tile(x, y, tile_scale);
+                Surface surface = get_tile(x, y, tiledb_scale);
+                surface.draw(Rectf(pos.x + (x * tilesize), 
+                                   pos.y + (y * tilesize), 
+                                   pos.x + ((x * tilesize) + (surface.get_width()  * scale_factor)),
+                                   pos.y + ((y * tilesize) + (surface.get_height() * scale_factor))));
 
-                // FIXME: Causes visible rounding errors
-                surface.draw(Rectf(pos + Vector2f(x*tilesize, y*tilesize), 
-                                   surface.get_size() * scale_factor));
-                //Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
-                //                             Sizef(tilesize, tilesize)));
+                Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
+                                             Sizef(tilesize, tilesize)));
               }
         }
     }
   else
     {
+      // Image is not visible so clear the cache
+      // FIXME: We should keep at least some tiles or wait with the cache purge a bit longer
       cache.clear();
     }
 }

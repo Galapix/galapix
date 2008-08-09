@@ -44,21 +44,27 @@ private:
   int fileid;
   std::string filename;
   Size size;
-  int max_scale;
+  float scale;
 
+  int max_tiledb_scale;
   Vector2f pos;
 
   typedef std::map<uint32_t, Surface> Cache; 
   Cache cache;
 
   Surface get_tile(int x, int y, int tile_scale);
+
 public:
   Image(int fileid, const std::string& filename, const Size& size);
 
-  void set_pos(const Vector2f& pos);
   void draw(const Rectf& cliprect, float scale);
-  
+
+  void set_pos(const Vector2f& pos);
   Vector2f get_pos() const;
+
+  void  set_scale(float f);
+  float get_scale() const;
+
   float get_width() const;
   float get_height() const;
 };

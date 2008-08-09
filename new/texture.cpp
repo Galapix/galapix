@@ -52,15 +52,23 @@ public:
     glBindTexture(GL_TEXTURE_2D, handle);
     glEnable(GL_TEXTURE_2D);
 
+    char* pixels = 0;
+    if (size.width  != srcrect.get_height() || 
+        size.height != srcrect.get_height())
+      {
+        pixels = new char[size.get_area() * 3];
+        memset(pixels, 0, size.get_area() * 3);
+      }
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
                  size.width, size.height,
                  0, /* border */
                  GL_RGB,
                  GL_UNSIGNED_BYTE,
-                 0 /* pixels */);
+                 pixels);
+    delete[] pixels;
 
     assert_gl("packing image texture");
-
     
     //if (src.get_pitch() % 3 != 0)
     //{
@@ -73,7 +81,8 @@ public:
     
     // Upload the subimage
     glTexSubImage2D(GL_TEXTURE_2D, 0, 
-                    0, 0, srcrect.get_width(), srcrect.get_height(), GL_BGR,
+                    0, size.height-srcrect.get_height(),
+                    srcrect.get_width(), srcrect.get_height(), GL_BGR,
                     GL_UNSIGNED_BYTE, 
                     (Uint8*)src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * 3));
 
@@ -83,7 +92,6 @@ public:
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R,     GL_CLAMP);
 
     assert_gl("setting texture parameters");
   }
