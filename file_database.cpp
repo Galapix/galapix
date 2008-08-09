@@ -71,7 +71,10 @@ FileDatabase::store_file_entry(FileEntry& entry)
   assert(entry.fileid == -1);
 
   store_stmt.bind_text(1, entry.filename);
-  store_stmt.bind_text(2, entry.md5);
+  if (entry.md5.empty())
+    store_stmt.bind_null(2);
+  else
+    store_stmt.bind_text(2, entry.md5);
   store_stmt.bind_int (3, entry.filesize); 
   store_stmt.bind_int (4, entry.size.width); 
   store_stmt.bind_int (5, entry.size.height);
@@ -112,7 +115,7 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
     {
       entry.fileid   = -1;
       entry.filename = filename;
-      entry.md5      = MD5::md5_file(filename);
+      //entry.md5      = MD5::md5_file(filename);
       entry.filesize = Filesystem::get_size(filename);
       entry.mtime    = Filesystem::get_mtime(filename);
       

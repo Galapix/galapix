@@ -126,12 +126,11 @@ Framebuffer::clear()
 void
 Framebuffer::draw_rect(const Rectf& rect)
 {
-  glEnable(GL_BLEND);
+  //glEnable(GL_BLEND);
   glDisable(GL_TEXTURE_2D);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-        
-
-  if (0)
+  //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    
+  if (1)
     {
       glColor4f(1.0f, 0.0f, 1.0f, 0.25f);
       glBegin(GL_QUADS);
@@ -142,16 +141,19 @@ Framebuffer::draw_rect(const Rectf& rect)
       glEnd();
     }
 
-  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+  if (0)
+    {
+      glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
 
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(rect.left,  rect.top);
-  glVertex2f(rect.right, rect.top);
-  glVertex2f(rect.right, rect.bottom);
-  glVertex2f(rect.left,  rect.bottom);
-  glEnd();
+      glBegin(GL_LINE_LOOP);
+      glVertex2f(rect.left,  rect.top);
+      glVertex2f(rect.right, rect.top);
+      glVertex2f(rect.right, rect.bottom);
+      glVertex2f(rect.left,  rect.bottom);
+      glEnd();
+    }
 
-  glDisable(GL_BLEND);
+  //glDisable(GL_BLEND);
 }
 
 /* EOF */
