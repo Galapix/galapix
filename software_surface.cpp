@@ -173,7 +173,7 @@ SoftwareSurface
 SoftwareSurface::from_data(const Blob& blob)
 {
   FIMEMORY* mem    = FreeImage_OpenMemory(static_cast<BYTE*>(blob.get_data()), blob.size());
-  FIBITMAP* bitmap = FreeImage_LoadFromMemory(FIF_JPEG, mem, JPEG_QUALITYSUPERB);
+  FIBITMAP* bitmap = FreeImage_LoadFromMemory(FIF_JPEG, mem, 0);
   FreeImage_CloseMemory(mem);
   return SoftwareSurface(bitmap);
 }
