@@ -135,8 +135,14 @@ Image::draw(const Rectf& cliprect, float fscale)
         { // So small that only one tile is to be drawn
           //Framebuffer::draw_rect(Rectf(pos, size));
           Surface surface = get_tile(0, 0, Math::min(max_tiledb_scale, tiledb_scale));
-
-          surface.draw(image_rect);
+          if (surface)
+            {
+              surface.draw(image_rect);
+            }
+          else
+            {
+              Framebuffer::draw_rect(image_rect);
+            }
 
           //std::cout << surface.get_size() << " " << scaled_width << "x" << scaled_height << std::endl;
 
@@ -161,16 +167,26 @@ Image::draw(const Rectf& cliprect, float fscale)
           int start_y = (image_region.top   ) / itilesize;
           int end_y   = (image_region.bottom) / itilesize + 1;
 
+          bool draw_placeholder = false;
           for(int y = start_y; y < end_y; y += 1)
             for(int x = start_x; x < end_x; x += 1)
               {
                 Surface surface = get_tile(x, y, tiledb_scale);
-                surface.draw(Rectf(pos + Vector2f(x,y) * tilesize,
-                                   Sizef((surface.get_size() * scale_factor * scale))));
-
-                  // Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
-                  // Sizef(tilesize, tilesize)));
+                if (surface)
+                  {
+                    surface.draw(Rectf(pos + Vector2f(x,y) * tilesize,
+                                       Sizef((surface.get_size() * scale_factor * scale))));
+                  }
+                else
+                  {
+                    draw_placeholder = true;
+                      //Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
+                      //                         Sizef(tilesize, tilesize)));
+                  }
               }
+          
+          if (draw_placeholder)
+            Framebuffer::draw_rect(image_rect);
         }
     }
   else
