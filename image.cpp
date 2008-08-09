@@ -120,45 +120,56 @@ Image::draw(const Rectf& cliprect, float fscale)
   Rectf image_rect(pos, Sizef(size * scale)); // in world coordinates
 
   //Framebuffer::draw_rect(image_rect);
-  //Framebuffer::draw_rect(image_region);
 
   if (cliprect.is_overlapped(image_rect))
     {
-      Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
-
       // scale factor for requesting the tile from the TileDatabase
-      int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale)) / log(2)));
+      int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale*scale)) /
+                                                       log(2)));
       int scale_factor = Math::pow2(tiledb_scale);
 
-      int scaled_width  = image_rect.get_width()  / scale_factor;
-      int scaled_height = image_rect.get_height() / scale_factor;
+      int scaled_width  = size.width  / scale_factor;
+      int scaled_height = size.height / scale_factor;
 
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn
           //Framebuffer::draw_rect(Rectf(pos, size));
-          get_tile(0, 0, Math::min(max_tiledb_scale, tiledb_scale)).draw(image_rect);
+          Surface surface = get_tile(0, 0, Math::min(max_tiledb_scale, tiledb_scale));
+
+          surface.draw(image_rect);
+
+          //std::cout << surface.get_size() << " " << scaled_width << "x" << scaled_height << std::endl;
+
+          assert(surface.get_width() < 256 &&
+                 surface.get_height() < 256);
         }
       else
         {
-          int tilesize = 256 * scale_factor;
+          Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
 
-          int start_x = (image_region.left  - pos.x)/tilesize;
-          int end_x   = (image_region.right - pos.x)/tilesize + 1;
+          image_region.left   = (image_region.left   - pos.x) / scale;
+          image_region.right  = (image_region.right  - pos.x) / scale;
+          image_region.top    = (image_region.top    - pos.y) / scale;
+          image_region.bottom = (image_region.bottom - pos.y) / scale;
 
-          int start_y = (image_region.top    - pos.y)/tilesize;
-          int end_y   = (image_region.bottom - pos.y)/tilesize + 1;
+          int   itilesize = 256 * scale_factor;
+          float tilesize  = 256.0f * scale_factor * scale;
+
+          int start_x = (image_region.left)  / itilesize;
+          int end_x   = (image_region.right) / itilesize + 1;
+
+          int start_y = (image_region.top   ) / itilesize;
+          int end_y   = (image_region.bottom) / itilesize + 1;
 
           for(int y = start_y; y < end_y; y += 1)
             for(int x = start_x; x < end_x; x += 1)
               {
                 Surface surface = get_tile(x, y, tiledb_scale);
-                surface.draw(Rectf(pos.x + (x * tilesize), 
-                                   pos.y + (y * tilesize), 
-                                   pos.x + ((x * tilesize) + (surface.get_width()  * scale_factor)),
-                                   pos.y + ((y * tilesize) + (surface.get_height() * scale_factor))));
+                surface.draw(Rectf(pos + Vector2f(x,y) * tilesize,
+                                   Sizef((surface.get_size() * scale_factor * scale))));
 
-                Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
-                                             Sizef(tilesize, tilesize)));
+                  // Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
+                  // Sizef(tilesize, tilesize)));
               }
         }
     }
