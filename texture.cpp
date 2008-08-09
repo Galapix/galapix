@@ -61,10 +61,14 @@ public:
 
     assert_gl("packing image texture");
 
-    //std::cout << "pitch: " << src.get_pitch() << " width: " << src.get_width() << std::endl;
-    assert(src.get_pitch() % 3 == 0);
+    
+    if (0 && src.get_pitch() % 3 != 0)
+      {
+        std::cout << "pitch: " << src.get_pitch() << " width: " << src.get_width() << std::endl;
+        assert(!"Align issue");
+      }
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  8);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_pitch()/3);
     
     // Upload the subimage

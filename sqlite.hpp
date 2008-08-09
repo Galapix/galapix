@@ -97,6 +97,10 @@ public:
 
   void execute();
   SQLiteReader execute_query();
+
+private:
+  SQLiteStatement(const SQLiteStatement&);
+  SQLiteStatement();
 };
 
 #endif

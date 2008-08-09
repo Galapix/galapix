@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include "math.hpp"
 #include "workspace.hpp"
 
 Workspace::Workspace()
@@ -30,21 +31,37 @@ Workspace::Workspace()
 }
 
 void
-Workspace::add_image(const std::string& filename, const Size& size)
+Workspace::add_image(int fileid, const std::string& filename, const Size& size)
 {
-  images.push_back(Image(filename, size));
+  images.push_back(Image(fileid, filename, size));
 }
 
 void
-Workspace::layout()
+Workspace::layout(float aspect_w, float aspect_h)
 {
   if (!images.empty())
     {
-      float x_pos = 0;
-      for(Images::iterator i = images.begin(); i != images.end(); ++i)
+      //       float x_pos = 0;
+      //       for(Images::iterator i = images.begin(); i != images.end(); ++i)
+      //         {
+      //           i->set_pos(Vector2f(x_pos, 0.0f));
+      //           x_pos += i->get_width() + 128/*spacing*/;
+      //         }    
+      
+      int w = int(Math::sqrt(aspect_w * images.size() / aspect_h));
+
+      for(int i = 0; i < int(images.size()); ++i)
         {
-          i->set_pos(Vector2f(x_pos, 0.0f));
-          x_pos += i->get_width() + 20/*spacing*/;
+          if ((i/w) % 2 == 0)
+            {
+              images[i].set_pos(Vector2f((i % w) * 3500.0f,
+                                         (i / w) * 3500.0f));
+            }
+          else
+            {
+              images[i].set_pos(Vector2f((w - (i % w)-1) * 3500.0f,
+                                         (i / w) * 3500.0f));
+            }
         }
     }
 }

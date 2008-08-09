@@ -92,6 +92,10 @@ public:
   }
 };
 
+Surface::Surface()
+{
+}
+
 Surface::Surface(const SoftwareSurface& src)
   : impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src.get_size())))
 {
@@ -109,25 +113,42 @@ Surface::~Surface()
 void
 Surface::draw(const Vector2f& pos)
 {
-  impl->draw(pos);
+  if (impl.get())
+    impl->draw(pos);
 }
 
 void
 Surface::draw(const Rectf& rect)
 {
-  impl->draw(rect);
+  if (impl.get())
+    impl->draw(rect);
 }
 
 int
 Surface::get_width() const 
 {
-  return impl->size.width; 
+  if (impl.get())
+    return impl->size.width; 
+  else
+    return 0;
 }
 
 int
 Surface::get_height() const
 {
-  return impl->size.height; 
+  if (impl.get())
+    return impl->size.height; 
+  else
+    return 0;
+}
+
+Size
+Surface::get_size() const
+{
+  if (impl.get())
+    return impl->size;
+  else
+    return Size();
 }
 
 /* EOF */

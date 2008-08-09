@@ -42,6 +42,12 @@ struct Tile
 class TileDatabase
 {
 private:
+  static TileDatabase* current_;
+
+public:
+  static TileDatabase* current() { return current_; };
+
+private:
   SQLiteConnection* db;
   SQLiteStatement store_stmt;
   SQLiteStatement get_stmt;

@@ -29,6 +29,7 @@
 #include "SDL.h"
 #include <boost/smart_ptr.hpp>
 #include "texture.hpp"
+#include "math/size.hpp"
 #include "software_surface.hpp"
 
 class SurfaceImpl;
@@ -39,6 +40,7 @@ class Vector2f;
 class Surface
 {
 public:
+  Surface();
   Surface(const SoftwareSurface& src, const Rect& srcrect);
   Surface(const SoftwareSurface& src);
   ~Surface();
@@ -48,6 +50,9 @@ public:
 
   int get_width()  const;
   int get_height() const;
+  Size get_size() const;
+
+  operator bool() const { return impl.get(); }
 
 private:
   boost::shared_ptr<SurfaceImpl> impl;

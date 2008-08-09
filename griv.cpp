@@ -136,11 +136,11 @@ Griv::view(const std::vector<std::string>& filenames)
         }
       else
         {
-          workspace.add_image(entry.filename, entry.size);
+          workspace.add_image(entry.fileid, entry.filename, entry.size);
         }
     }
 
-  workspace.layout();
+  workspace.layout(4,3);
 
   Viewer viewer;
 

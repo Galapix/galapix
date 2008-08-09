@@ -161,6 +161,11 @@ inline Size::Size(const Sizef& s)
 	  height(static_cast<int>(s.height))
 {}
 
+inline Sizef operator*(const Sizef& s, float f)
+{
+  return Sizef(s.width * f, s.height * f);
+}
+
 std::ostream& operator<<(std::ostream& os, const Size& size);
 
 #endif
