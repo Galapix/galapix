@@ -1,9 +1,11 @@
 [[ Griv ToDo ]]
 
-* SQLite Backend
-* SoftwareSurface: load from memory, save to memory
-* all GL stuff
-
+* multi threading
+* faster image handling, FreeImage is not good enough
+* do something about the seams on tile borders
+* proper handling of locked DB
+* faster incremental tile generation
+
 Image Library Requirements:
 ===========================
 
