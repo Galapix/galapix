@@ -91,6 +91,7 @@ public:
 
   void prepare(const std::string& sqlstmt);
 
+  void bind_null(int n);
   void bind_int(int n, int i);
   void bind_text(int n, const std::string&);
   void bind_blob(int n, const Blob&);

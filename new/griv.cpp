@@ -108,6 +108,8 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
                   }
 
               scale += 1;
+
+              std::cout << "Scale: " << scale << " - " << surface.get_size() << std::endl;
             } while (surface.get_width() > 32 ||
                      surface.get_height() > 32);
         }
@@ -160,11 +162,14 @@ Griv::view(const std::vector<std::string>& filenames)
 
       viewer.update(delta);
 
+      if (1) // if something has changed, redraw
+        {
       Framebuffer::clear();
       viewer.draw(workspace);
       Framebuffer::flip();
+        }
 
-      SDL_Delay(10);
+      SDL_Delay(30);
     }
 
   Framebuffer::deinit();
@@ -210,7 +215,7 @@ int main(int argc, char** argv)
       int ret = app.main(argc, argv);
       return ret;
     }
-  catch(std::exception& err) 
+  catch(const std::exception& err) 
     {
       std::cout << "Exception: " << err.what() << std::endl;
     }

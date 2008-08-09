@@ -23,9 +23,17 @@
 **  02111-1307, USA.
 */
 
+#include "SDL.h"
+
 #include <iostream>
 #include <sstream>
 #include "sqlite.hpp"
+
+int busy_callback(void* , int n)
+{
+  SDL_Delay(10);
+  return 1;
+}
 
 SQLiteError::SQLiteError(const std::string& err_)
   : err(err_)
@@ -40,6 +48,8 @@ SQLiteConnection::SQLiteConnection(const std::string& filename)
       str << "SQLiteConnection: can't open database: " << sqlite3_errmsg(db);
       throw SQLiteError(str.str());
     }
+
+  sqlite3_busy_handler(db, busy_callback, 0);
 }
 
 SQLiteConnection::~SQLiteConnection()
@@ -82,11 +92,26 @@ SQLiteStatement::SQLiteStatement(SQLiteConnection* db, const std::string& sqlstm
 
 SQLiteStatement::~SQLiteStatement()
 {
-  if (sqlite3_finalize(stmt) != SQLITE_OK)
+ retry: 
+
+  switch (sqlite3_finalize(stmt))
     {
-      std::ostringstream str;
-      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
-      throw SQLiteError(str.str());
+      case SQLITE_OK:
+        break;
+
+      case SQLITE_LOCKED:
+        goto retry;
+
+      case SQLITE_BUSY:
+        goto retry;
+
+      default:
+        {
+          std::ostringstream str;
+          str << "SQLiteStatement::~SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+          throw SQLiteError(str.str());
+        }
+
     }
 }
 
@@ -108,7 +133,7 @@ SQLiteStatement::bind_int(int n, int i)
   if (sqlite3_bind_int(stmt, n, i) != SQLITE_OK)
     {
       std::ostringstream str;
-      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+      str << "SQLiteStatement::bind_int: " << sqlite3_errmsg(db->get_db());
       throw SQLiteError(str.str());
     }
 }
@@ -119,9 +144,20 @@ SQLiteStatement::bind_text(int n, const std::string& text)
   if (sqlite3_bind_text(stmt, n, text.c_str(), text.size(), SQLITE_TRANSIENT) != SQLITE_OK)
     {
       std::ostringstream str;
-      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+      str << "SQLiteStatement::bind_text: " << sqlite3_errmsg(db->get_db());
       throw SQLiteError(str.str());      
     }
+}
+
+void
+SQLiteStatement::bind_null(int n)
+{
+  if (sqlite3_bind_null(stmt, n) != SQLITE_OK)
+    {
+      std::ostringstream str;
+      str << "SQLiteStatement::bind_text: " << sqlite3_errmsg(db->get_db());
+      throw SQLiteError(str.str());      
+    }  
 }
 
 void
@@ -130,7 +166,7 @@ SQLiteStatement::bind_blob(int n, const Blob& blob)
   if (sqlite3_bind_blob(stmt, n, blob.get_data(), blob.size(), SQLITE_TRANSIENT) != SQLITE_OK)
     {
       std::ostringstream str;
-      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+      str << "SQLiteStatement::bind_blob: " << sqlite3_errmsg(db->get_db());
       throw SQLiteError(str.str());
     }
 }
@@ -143,7 +179,7 @@ SQLiteStatement::reset()
   if (sqlite3_reset(stmt) != SQLITE_OK)
     {
       std::ostringstream str;
-      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+      str << "SQLiteStatement::reset: " << sqlite3_errmsg(db->get_db());
       throw SQLiteError(str.str());
     }
 }
@@ -182,7 +218,7 @@ SQLiteReader::~SQLiteReader()
   if (sqlite3_reset(stmt) != SQLITE_OK)
     {
       std::ostringstream str;
-      str << "SQLiteStatement: " << sqlite3_errmsg(db->get_db());
+      str << "SQLiteReader::~SQLiteReader:" << sqlite3_errmsg(db->get_db());
       throw SQLiteError(str.str());
     }
 }
@@ -190,6 +226,8 @@ SQLiteReader::~SQLiteReader()
 bool
 SQLiteReader::next()
 {
+ retry:
+
   switch(sqlite3_step(stmt))
     {
       case SQLITE_DONE:
@@ -200,9 +238,10 @@ SQLiteReader::next()
         return true;
 
       case SQLITE_BUSY:
-        throw SQLiteError("BUSY");
-        return false;
-
+        goto retry;        
+        
+      case SQLITE_ERROR:
+      case SQLITE_MISUSE:
       default:
         {
           std::ostringstream str;

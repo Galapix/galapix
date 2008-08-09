@@ -65,8 +65,13 @@ public:
   void  set_scale(float f);
   float get_scale() const;
 
-  float get_width() const;
-  float get_height() const;
+  float get_scaled_width() const;
+  float get_scaled_height() const;
+
+  int get_original_width() const;
+  int get_original_height() const;
+
+  void receive_tile(int x, int y, int tiledb_scale, const Surface& surface);
 };
 
 #endif

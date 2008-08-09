@@ -77,13 +77,25 @@ Image::get_scale() const
 }
 
 float
-Image::get_width() const
+Image::get_scaled_width() const
+{
+  return size.width * scale;
+}
+
+float
+Image::get_scaled_height() const
+{
+  return size.height * scale;
+}
+
+int
+Image::get_original_width() const
 {
   return size.width;
 }
 
-float
-Image::get_height() const
+int
+Image::get_original_height() const
 {
   return size.height;
 }
@@ -167,7 +179,7 @@ Image::draw(const Rectf& cliprect, float fscale)
           int start_y = (image_region.top   ) / itilesize;
           int end_y   = (image_region.bottom) / itilesize + 1;
 
-          bool draw_placeholder = false;
+          bool draw_placeholder = true;
           for(int y = start_y; y < end_y; y += 1)
             for(int x = start_x; x < end_x; x += 1)
               {
@@ -176,12 +188,12 @@ Image::draw(const Rectf& cliprect, float fscale)
                   {
                     surface.draw(Rectf(pos + Vector2f(x,y) * tilesize,
                                        Sizef((surface.get_size() * scale_factor * scale))));
+                    draw_placeholder = false;
                   }
                 else
                   {
-                    draw_placeholder = true;
-                      //Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
-                      //                         Sizef(tilesize, tilesize)));
+                    //Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
+                    //                         Sizef(tilesize, tilesize)));
                   }
               }
           
@@ -195,6 +207,13 @@ Image::draw(const Rectf& cliprect, float fscale)
       // FIXME: We should keep at least some tiles or wait with the cache purge a bit longer
       cache.clear();
     }
+}
+
+void
+Image::receive_tile(int x, int y, int tiledb_scale, const Surface& surface)
+{
+  int tile_id = make_cache_id(x, y, tiledb_scale);
+  cache[tile_id] = surface;
 }
 
 /* EOF */
