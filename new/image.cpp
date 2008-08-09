@@ -142,8 +142,8 @@ Image::draw(const Rectf& cliprect, float fscale)
                 // FIXME: Causes visible rounding errors
                 surface.draw(Rectf(pos + Vector2f(x*tilesize, y*tilesize), 
                                    surface.get_size() * scale_factor));
-                Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
-                                             Sizef(tilesize, tilesize)));
+                //Framebuffer::draw_rect(Rectf(pos + Vector2f(x*tilesize, y*tilesize),
+                //                             Sizef(tilesize, tilesize)));
               }
         }
     }
