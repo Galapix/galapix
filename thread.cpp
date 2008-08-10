@@ -30,7 +30,30 @@
   SDL_mutex* mutex;
   SDL_CreateMutex();
   SDL_DestroyMutex(mutex);
- */
+*/
+
+Mutex::Mutex()
+{
+  mutex = SDL_CreateMutex();
+}
+
+Mutex::~Mutex()
+{
+  SDL_DestroyMutex(mutex);
+}
+
+void
+Mutex::lock()
+{
+  SDL_LockMutex(mutex);
+}
+
+void
+Mutex::unlock()
+{
+  SDL_UnlockMutex(mutex);
+}
+
 
 int launch_thread(void* thread_ptr)
 {

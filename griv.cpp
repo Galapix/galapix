@@ -42,6 +42,7 @@
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "filesystem.hpp"
+#include "tile_generator.hpp"
 #include "workspace.hpp"
 #include "viewer.hpp"
 #include "griv.hpp"
@@ -66,6 +67,8 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
 
+  TileGenerator tile_generator;
+
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
       FileEntry entry;
@@ -80,38 +83,8 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
           std::cout << "Generating tiles... " << filenames[i]  << std::endl;
           SoftwareSurface surface(filenames[i]);
           std::cout << "Image loading" << std::endl;      
-
-          int scale = 0;
-
-          do
-            {
-              if (scale != 0)
-                {
-                  surface = surface.scale(Size(surface.get_width()/2, 
-                                               surface.get_height()/2));
-                }
-
-              for(int y = 0; 256*y < surface.get_height(); ++y)
-                for(int x = 0; 256*x < surface.get_width(); ++x)
-                  {
-                    SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
-                                                                       Size(256, 256)));
-
-                    Tile tile;
-                    tile.fileid = entry.fileid;
-                    tile.scale  = scale;
-                    tile.x = x;
-                    tile.y = y;
-                    tile.surface = croped_surface;
           
-                    tile_db.store_tile(tile);
-                  }
-
-              scale += 1;
-
-              std::cout << "Scale: " << scale << " - " << surface.get_size() << std::endl;
-            } while (surface.get_width() > 32 ||
-                     surface.get_height() > 32);
+          tile_generator.generate(entry.fileid, surface, tile_db);
         }
     }
 }
