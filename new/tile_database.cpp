@@ -79,14 +79,21 @@ void
 TileDatabase::store_tile(const Tile& tile)
 {
   // Insert some checking for uniqueness, or can the database handle that?
+  Tile outtile;
+  if (get_tile(tile.fileid, tile.scale, tile.x, tile.y, outtile))
+    {
+      // Tile already in the database
+    }
+  else
+    {
+      store_stmt.bind_int (1, tile.fileid);
+      store_stmt.bind_int (2, tile.scale);
+      store_stmt.bind_int (3, tile.x);
+      store_stmt.bind_int (4, tile.y);
+      store_stmt.bind_blob(5, tile.surface.get_jpeg_data());
 
-  store_stmt.bind_int (1, tile.fileid);
-  store_stmt.bind_int (2, tile.scale);
-  store_stmt.bind_int (3, tile.x);
-  store_stmt.bind_int (4, tile.y);
-  store_stmt.bind_blob(5, tile.surface.get_jpeg_data());
-
-  store_stmt.execute();
+      store_stmt.execute();
+    }
 }
   
 /* EOF */

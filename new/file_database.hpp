@@ -26,6 +26,7 @@
 #ifndef HEADER_FILE_DATABASE_HPP
 #define HEADER_FILE_DATABASE_HPP
 
+#include <stdint.h>
 #include <sqlite3.h>
 #include <string>
 
@@ -43,8 +44,15 @@ struct FileEntry
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);
-
-/** */
+
+/** The FileDatabase keeps a record of all files that have been
+    view. It keeps information on the last modification time and
+    filesize to detect a need to regenerate the tiles and also handles
+    the mapping from filename to fileid, which is used for loookup of
+    tiles in the TileDatabase. The FileDatabase also stores the size
+    of an image, so that the image file itself doesn't need to be
+    touched.
+ */
 class FileDatabase
 {
 private:
@@ -53,14 +61,26 @@ private:
   SQLiteStatement get_by_filename_stmt;
   SQLiteStatement get_by_file_id_stmt;
 
-  int store_file_entry(FileEntry& entry);
+  int  store_file_entry(FileEntry& entry);
+  void delete_file_entry(uint32_t fileid);
+  void update_file_entry(FileEntry& entry);
  
 public:
   FileDatabase(SQLiteConnection* db);
   ~FileDatabase();
   
+  /** Lookup a FileEntry by its filename. If there is no corresponding
+      filename, then the file will be looked up in the filesystem and
+      then stored in the DB and returned. If the file can't be found
+      in either the DB or the filesystem false will be returned, else
+      true
+      
+      @param[in] filename The absolute path of the file
+      @param[out] entry   Lokation where the file information will be stored 
+      @return true if lookup was successful, false otherwise, in which case entry stays untouched
+  */
   bool get_file_entry(const std::string& filename, FileEntry& entry);
-  bool get_file_entry(uint32_t file_id, FileEntry& entry);
+  bool get_file_entry(uint32_t file_d, FileEntry& entry);
 
 private:
   FileDatabase (const FileDatabase&);

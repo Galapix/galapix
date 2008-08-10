@@ -139,5 +139,17 @@ FileDatabase::get_file_entry(uint32_t file_id, FileEntry& entry)
 
   return false;
 }
+
+void
+FileDatabase::delete_file_entry(uint32_t fileid)
+{
+  // DELETE FROM files WHERE fileid = ?fileid
+}
+
+void
+FileDatabase::update_file_entry(FileEntry& entry)
+{
+  // UPDATE files SET mtime = ?entry.get_mtime() WHERE fileid = ?entry.fileid
+}
 
 /* EOF */

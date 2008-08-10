@@ -28,6 +28,19 @@
 
 #include "SDL.h"
 
+class Mutex 
+{
+private:
+  SDL_mutex* mutex;
+
+public:
+  Mutex();
+  ~Mutex();
+
+  void lock();
+  void unlock();
+};
+
 /** */
 class Thread
 {

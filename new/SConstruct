@@ -25,6 +25,7 @@ griv_env.Program('griv', [
         'texture.cpp',
         'thread.cpp',
         'tile_database.cpp',
+        'tile_generator.cpp',
         'url.cpp',
         'viewer.cpp',
         'workspace.cpp',
