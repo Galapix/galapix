@@ -27,21 +27,50 @@
 #include "framebuffer.hpp"
 #include "surface.hpp"
 #include "math.hpp"
-#include "tile_database.hpp"
+#include "database_thread.hpp"
+#include "viewer_thread.hpp"
 #include "image.hpp"
-
+
 uint32_t make_cache_id(int x, int y, int tile_scale)
 {
   return x | (y << 8) | (tile_scale << 16);
 }
 
-Image::Image(int fileid, const std::string& filename, const Size& size)
-  : fileid(fileid),
-    filename(filename),
-    size(size),
-    scale(1.0f)
+class ImageImpl
 {
-  int tiledb_scale = 0;
+public:
+  int fileid;
+  std::string filename;
+  Size size;
+  float scale;
+
+  int max_tiledb_scale;
+  Vector2f pos;
+
+  Image::Cache cache;
+  
+  ImageImpl() 
+  {
+  }
+
+  ~ImageImpl()
+  {
+  }
+};
+
+Image::Image()
+{
+}
+
+Image::Image(int fileid, const std::string& filename, const Size& size)
+  : impl(new ImageImpl())
+{
+  impl->fileid   = fileid;
+  impl->filename = filename;
+  impl->size     = size;
+  impl->scale    = 1.0f;
+  
+  int  tiledb_scale = 0;
   Size tmpsize = size;
   do {
     tmpsize.width  /= 2;
@@ -49,76 +78,70 @@ Image::Image(int fileid, const std::string& filename, const Size& size)
     tiledb_scale += 1;
   } while (tmpsize.width  > 32 ||
            tmpsize.height > 32);
-  max_tiledb_scale = tiledb_scale;
+
+  impl->max_tiledb_scale = tiledb_scale;
 }
 
 void
 Image::set_pos(const Vector2f& pos_)
 {
-  pos = pos_;
+  impl->pos = pos_;
 }
 
 Vector2f
 Image::get_pos() const
 {
-  return pos;
+  return impl->pos;
 }
 
 void
 Image::set_scale(float f)
 {
-  scale = f;
+  impl->scale = f;
 }
 
 float
 Image::get_scale() const
 {
-  return scale;
+  return impl->scale;
 }
 
 float
 Image::get_scaled_width() const
 {
-  return size.width * scale;
+  return impl->size.width * impl->scale;
 }
 
 float
 Image::get_scaled_height() const
 {
-  return size.height * scale;
+  return impl->size.height * impl->scale;
 }
 
 int
 Image::get_original_width() const
 {
-  return size.width;
+  return impl->size.width;
 }
 
 int
 Image::get_original_height() const
 {
-  return size.height;
+  return impl->size.height;
 }
 
 Surface
 Image::get_tile(int x, int y, int tile_scale)
 {
   uint32_t cache_id = make_cache_id(x, y, tile_scale);
-  Cache::iterator i = cache.find(cache_id);
+  Cache::iterator i = impl->cache.find(cache_id);
 
-  if (i == cache.end())
+  if (i == impl->cache.end())
     {
-      Tile tile;
-      if (TileDatabase::current()->get_tile(fileid, tile_scale, x, y, tile))
-        {                   
-          Surface surface(tile.surface);
-          cache[cache_id] = surface;
-          return surface;
-        }
-      else
-        {
-          return Surface();
-        }
+      ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this);
+
+      // FIXME: Insert code here to find the next best tile
+      return Surface();
     }
   else
     {
@@ -129,24 +152,24 @@ Image::get_tile(int x, int y, int tile_scale)
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
-  Rectf image_rect(pos, Sizef(size * scale)); // in world coordinates
+  Rectf image_rect(impl->pos, Sizef(impl->size * impl->scale)); // in world coordinates
 
   //Framebuffer::draw_rect(image_rect);
 
   if (cliprect.is_overlapped(image_rect))
     {
       // scale factor for requesting the tile from the TileDatabase
-      int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale*scale)) /
+      int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale*impl->scale)) /
                                                        log(2)));
       int scale_factor = Math::pow2(tiledb_scale);
 
-      int scaled_width  = size.width  / scale_factor;
-      int scaled_height = size.height / scale_factor;
+      int scaled_width  = impl->size.width  / scale_factor;
+      int scaled_height = impl->size.height / scale_factor;
 
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn
           //Framebuffer::draw_rect(Rectf(pos, size));
-          Surface surface = get_tile(0, 0, Math::min(max_tiledb_scale, tiledb_scale));
+          Surface surface = get_tile(0, 0, Math::min(impl->max_tiledb_scale, tiledb_scale));
           if (surface)
             {
               surface.draw(image_rect);
@@ -165,13 +188,13 @@ Image::draw(const Rectf& cliprect, float fscale)
         {
           Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
 
-          image_region.left   = (image_region.left   - pos.x) / scale;
-          image_region.right  = (image_region.right  - pos.x) / scale;
-          image_region.top    = (image_region.top    - pos.y) / scale;
-          image_region.bottom = (image_region.bottom - pos.y) / scale;
+          image_region.left   = (image_region.left   - impl->pos.x) / impl->scale;
+          image_region.right  = (image_region.right  - impl->pos.x) / impl->scale;
+          image_region.top    = (image_region.top    - impl->pos.y) / impl->scale;
+          image_region.bottom = (image_region.bottom - impl->pos.y) / impl->scale;
 
           int   itilesize = 256 * scale_factor;
-          float tilesize  = 256.0f * scale_factor * scale;
+          float tilesize  = 256.0f * scale_factor * impl->scale;
 
           int start_x = (image_region.left)  / itilesize;
           int end_x   = (image_region.right) / itilesize + 1;
@@ -186,8 +209,8 @@ Image::draw(const Rectf& cliprect, float fscale)
                 Surface surface = get_tile(x, y, tiledb_scale);
                 if (surface)
                   {
-                    surface.draw(Rectf(pos + Vector2f(x,y) * tilesize,
-                                       Sizef((surface.get_size() * scale_factor * scale))));
+                    surface.draw(Rectf(impl->pos + Vector2f(x,y) * tilesize,
+                                       Sizef((surface.get_size() * scale_factor * impl->scale))));
                     draw_placeholder = false;
                   }
                 else
@@ -204,8 +227,13 @@ Image::draw(const Rectf& cliprect, float fscale)
   else
     {
       // Image is not visible so clear the cache
-      // FIXME: We should keep at least some tiles or wait with the cache purge a bit longer
-      cache.clear();
+      
+      // FIXME: We should keep at least some tiles or wait with the
+      // cache purge a bit longer
+
+      // FIXME: We also need to purge the cache more often, since with
+      // big images we would end up never clearing it
+      impl->cache.clear();
     }
 }
 
@@ -213,7 +241,7 @@ void
 Image::receive_tile(int x, int y, int tiledb_scale, const Surface& surface)
 {
   int tile_id = make_cache_id(x, y, tiledb_scale);
-  cache[tile_id] = surface;
+  impl->cache[tile_id] = surface;
 }
 
 /* EOF */

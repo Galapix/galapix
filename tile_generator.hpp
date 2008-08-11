@@ -23,54 +23,25 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
-
-#include <boost/shared_ptr.hpp>
-#include <map>
-#include <string>
-#include "math/vector2f.hpp"
-#include "math/size.hpp"
-#include "grid.hpp"
-#include "surface.hpp"
+#ifndef HEADER_TILE_GENERATOR_HPP
+#define HEADER_TILE_GENERATOR_HPP
 
-class Surface;
-class Size;
-class Rectf;
-class Vector2f;
-class ImageImpl;
-
-class Image
+/** */
+class TileGenerator
 {
-public:
-  typedef std::map<uint32_t, Surface> Cache; 
-
 private:
-  Surface get_tile(int x, int y, int tile_scale);
 
 public:
-  Image();
-  Image(int fileid, const std::string& filename, const Size& size);
+  TileGenerator();
+  ~TileGenerator();
 
-  void draw(const Rectf& cliprect, float scale);
+  /** Slow brute force approach to generate tiles, works with all
+      image formats */
+  void generate(int fileid, const SoftwareSurface& surface, TileDatabase& tiledb);
 
-  void set_pos(const Vector2f& pos);
-  Vector2f get_pos() const;
-
-  void  set_scale(float f);
-  float get_scale() const;
-
-  float get_scaled_width() const;
-  float get_scaled_height() const;
-
-  int get_original_width() const;
-  int get_original_height() const;
-
-  void receive_tile(int x, int y, int tiledb_scale, const Surface& surface);
-
-  operator bool() const { return impl.get(); }
 private:
-  boost::shared_ptr<ImageImpl> impl;
+  TileGenerator (const TileGenerator&);
+  TileGenerator& operator= (const TileGenerator&);
 };
 
 #endif

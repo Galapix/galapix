@@ -23,12 +23,14 @@
 **  02111-1307, USA.
 */
 
+#include <boost/bind.hpp>
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
 #include <string>
 #include <vector>
+#include <sqlite3.h>
 #include "FreeImage.h"
 
 #include "surface.hpp"
@@ -41,9 +43,11 @@
 #include "software_surface.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
+#include "database_thread.hpp"
 #include "filesystem.hpp"
 #include "tile_generator.hpp"
 #include "workspace.hpp"
+#include "viewer_thread.hpp"
 #include "viewer.hpp"
 #include "griv.hpp"
 
@@ -73,7 +77,7 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
     {
       FileEntry entry;
       std::cout << "Getting file entry..." << std::endl;
-      if (!file_db.get_file_entry(filenames[i], entry))
+      if (!file_db.get_file_entry(filenames[i], &entry))
         {
           std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
         }
@@ -92,65 +96,27 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
 void
 Griv::view(const std::vector<std::string>& filenames)
 {
-  SQLiteConnection db("test.sqlite");
+  DatabaseThread database_thread("test.sqlite");
+  ViewerThread viewer_thread;
 
-  FileDatabase file_db(&db);
-  TileDatabase tile_db(&db);
-
-  Workspace workspace;
+  database_thread.start();
+  viewer_thread.start();
 
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
-    {
-      FileEntry entry;
-      //std::cout << "Getting file entry..." << std::endl;
-      if (!file_db.get_file_entry(filenames[i], entry))
-        {
-          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
-        }
-      else
-        {
-          workspace.add_image(entry.fileid, entry.filename, entry.size);
-        }
+    database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
 
-      std::cout << "Adding images to workspace " << i+1 << "/" << filenames.size() << "\r" << std::flush;
-    }
-  std::cout << std::endl;
-
-  Framebuffer::init();
-
-  workspace.layout(4,3);
-
-  Viewer viewer;
-
-  Uint32 ticks = SDL_GetTicks();
-  while(!viewer.done())
-    {
-      SDL_Event event;
-      while (SDL_PollEvent(&event))
-        viewer.process_event(event);
-
-      Uint32 cticks = SDL_GetTicks();
-      float delta = (cticks - ticks) / 1000.0f;
-      ticks = cticks;
-
-      viewer.update(delta);
-
-      if (1) // if something has changed, redraw
-        {
-      Framebuffer::clear();
-      viewer.draw(workspace);
-      Framebuffer::flip();
-        }
-
-      SDL_Delay(30);
-    }
-
-  Framebuffer::deinit();
+  viewer_thread.join();
+  database_thread.stop();
+  database_thread.join();
 }
 
 int
 Griv::main(int argc, char** argv)
 {
+  // FIXME: Function doesn't seem to be available in 3.4.2
+  // if (!sqlite3_threadsafe())
+  //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
+  
   if (argc < 2)
     {
       std::cout << "Usage: " << argv[0] << " view [FILES]...\n"

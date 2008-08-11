@@ -1,5 +1,5 @@
 # Zoomable Image Viewer
-griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g"], 
+griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g", "-Wnon-virtual-dtor"], 
                        LIBS=['freeimage', 
                              'mhash', 
                              'GL', 
@@ -26,6 +26,8 @@ griv_env.Program('griv', [
         'thread.cpp',
         'tile_database.cpp',
         'tile_generator.cpp',
+        'database_thread.cpp',
+        'viewer_thread.cpp',
         'url.cpp',
         'viewer.cpp',
         'workspace.cpp',

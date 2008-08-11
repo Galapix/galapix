@@ -23,56 +23,48 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#include <iostream>
+#include <stdexcept>
+#include <jpeglib.h>
+#include <setjmp.h>
+#include "jpeg.hpp"
 
-#include <boost/shared_ptr.hpp>
-#include <map>
-#include <string>
-#include "math/vector2f.hpp"
-#include "math/size.hpp"
-#include "grid.hpp"
-#include "surface.hpp"
-
-class Surface;
-class Size;
-class Rectf;
-class Vector2f;
-class ImageImpl;
-
-class Image
+jmp_buf setjmp_buffer;
+
+void fatal_error_handler(j_common_ptr cinfo)
 {
-public:
-  typedef std::map<uint32_t, Surface> Cache; 
+  std::cout << "Some jpeg error: " << std::endl;
+  longjmp(setjmp_buffer, 1);
+}
 
-private:
-  Surface get_tile(int x, int y, int tile_scale);
+void
+JPEG::get_size(const std::string& filename, int& w, int& h)
+{
+  FILE* in = fopen(filename.c_str(), "rb");
+  if (!in)
+    throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
 
-public:
-  Image();
-  Image(int fileid, const std::string& filename, const Size& size);
+  struct jpeg_decompress_struct  jinfo;
+  struct jpeg_error_mgr jerr;
 
-  void draw(const Rectf& cliprect, float scale);
+  jinfo.err = jpeg_std_error(&jerr);
+  jinfo.err->error_exit = &fatal_error_handler;
+  jpeg_create_decompress(&jinfo);
+  jpeg_stdio_src(&jinfo, in);
 
-  void set_pos(const Vector2f& pos);
-  Vector2f get_pos() const;
+  if (setjmp(setjmp_buffer))
+    {
+      throw std::runtime_error("JPEG::get_size: ERROR: Couldn't open " + filename);
+    }
 
-  void  set_scale(float f);
-  float get_scale() const;
+  jpeg_read_header(&jinfo, FALSE);
 
-  float get_scaled_width() const;
-  float get_scaled_height() const;
+  w = jinfo.image_width;
+  h = jinfo.image_height;
 
-  int get_original_width() const;
-  int get_original_height() const;
+  jpeg_destroy_decompress(&jinfo);
 
-  void receive_tile(int x, int y, int tiledb_scale, const Surface& surface);
-
-  operator bool() const { return impl.get(); }
-private:
-  boost::shared_ptr<ImageImpl> impl;
-};
-
-#endif
+  fclose(in);
+}
 
 /* EOF */
