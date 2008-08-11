@@ -64,9 +64,9 @@ Griv::~Griv()
 }
 
 void
-Griv::generate_tiles(const std::vector<std::string>& filenames)
+Griv::generate_tiles(const std::string& database, const std::vector<std::string>& filenames)
 {
-  SQLiteConnection db("test.sqlite");
+  SQLiteConnection db(database);
 
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
@@ -94,9 +94,9 @@ Griv::generate_tiles(const std::vector<std::string>& filenames)
 }
 
 void
-Griv::view(const std::vector<std::string>& filenames)
+Griv::view(const std::string& database, const std::vector<std::string>& filenames)
 {
-  DatabaseThread database_thread("test.sqlite");
+  DatabaseThread database_thread(database);
   ViewerThread viewer_thread;
 
   database_thread.start();
@@ -116,25 +116,44 @@ Griv::main(int argc, char** argv)
   // FIXME: Function doesn't seem to be available in 3.4.2
   // if (!sqlite3_threadsafe())
   //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
+
+  std::string database = "test.sqlite";
   
   if (argc < 2)
     {
-      std::cout << "Usage: " << argv[0] << " view [FILES]...\n"
-                << "       " << argv[0] << " prepare [FILES]...\n";
+      std::cout << "Usage: " << argv[0] << " view [OPTIONS]... [FILES]...\n"
+                << "       " << argv[0] << " prepare [OPTIONS]... [FILES]...\n";
     }
   else
     {
       std::vector<std::string> filenames;
       for(int i = 2; i < argc; ++i)
-        filenames.push_back(Filesystem::realpath(argv[i]));
+        {
+          if (strcmp(argv[i], "--database") == 0)
+            {
+              ++i;
+              if (i < argc)
+                {
+                  database = argv[i];
+                }
+              else
+                {
+                  throw std::runtime_error("--database requires an argument");
+                }
+            }
+          else
+            {
+              filenames.push_back(Filesystem::realpath(argv[i]));
+            }
+        }
 
       if (strcmp(argv[1], "view") == 0)
         {
-          view(filenames);
+          view(database, filenames);
         }
       else if (strcmp(argv[1], "prepare") == 0)
         {
-          generate_tiles(filenames);
+          generate_tiles(database, filenames);
         }
       else
         {

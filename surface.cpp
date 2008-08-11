@@ -38,8 +38,7 @@ class SurfaceImpl
 {
 public:
   Texture texture;
-  Size    texture_size;
-  Sizef   uv;
+  Rectf   uv;
 
   Size size;
   
@@ -47,13 +46,14 @@ public:
   {
     assert(src);
 
-    texture_size = Size(Math::round_to_power_of_two(srcrect.get_width()),
-                        Math::round_to_power_of_two(srcrect.get_height()));
+    Size texture_size(Math::round_to_power_of_two(srcrect.get_width()),
+                      Math::round_to_power_of_two(srcrect.get_height()));
 
     texture = Texture(texture_size, src, srcrect);
     
-    uv = Sizef(float(srcrect.get_width())  / texture_size.width,
-               float(srcrect.get_height()) / texture_size.height);
+    uv = Rectf(Vector2f(0, 0),
+               Sizef(float(srcrect.get_width())  / texture_size.width,
+                     float(srcrect.get_height()) / texture_size.height));
 
     size = Size(srcrect.get_size());
   }
@@ -77,13 +77,13 @@ public:
         glTexCoord2f(      0, 1.0f);
         glVertex2f(rect.left, rect.top);
 
-        glTexCoord2f(uv.width, 1.0f);
+        glTexCoord2f(uv.get_width(), 1.0f);
         glVertex2f(rect.right, rect.top);
 
-        glTexCoord2f(uv.width, 1.0f - uv.height);
+        glTexCoord2f(uv.get_width(), 1.0f - uv.get_height());
         glVertex2f(rect.right, rect.bottom);
 
-        glTexCoord2f(      0,  1.0f - uv.height);
+        glTexCoord2f(      0,  1.0f - uv.get_height());
         glVertex2f(rect.left, rect.bottom);
         glEnd();
       }   
@@ -96,6 +96,11 @@ public:
 };
 
 Surface::Surface()
+{
+}
+
+Surface::Surface(boost::shared_ptr<SurfaceImpl> impl_)
+  : impl(impl_)
 {
 }
 
@@ -152,6 +157,18 @@ Surface::get_size() const
     return impl->size;
   else
     return Size();
+}
+
+Surface
+Surface::get_section(const Rect& rect) const
+{
+  boost::shared_ptr<SurfaceImpl> surface_impl;
+
+  surface_impl->texture = impl->texture;
+  surface_impl->uv      = impl->uv; assert(!"FIXME: Insert code here");
+  surface_impl->size    = rect.get_size();
+
+  return Surface(impl);
 }
 
 /* EOF */

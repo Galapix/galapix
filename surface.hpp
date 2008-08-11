@@ -41,15 +41,18 @@ class Surface
 {
 public:
   Surface();
+  Surface(boost::shared_ptr<SurfaceImpl> impl);
   Surface(const SoftwareSurface& src, const Rect& srcrect);
   Surface(const SoftwareSurface& src);
   ~Surface();
 
+  Surface get_section(const Rect& rect) const;
+
   void draw(const Vector2f& pos);
   void draw(const Rectf& rect);
 
-  int get_width()  const;
-  int get_height() const;
+  int  get_width()  const;
+  int  get_height() const;
   Size get_size() const;
 
   operator bool() const { return impl.get(); }

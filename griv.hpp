@@ -30,8 +30,10 @@ public:
 
   int main(int argc, char** argv);
 
-  void generate_tiles(const std::vector<std::string>& filenames);
-  void view(const std::vector<std::string>& filenames);
+  void generate_tiles(const std::string& database, 
+                      const std::vector<std::string>& filenames);
+  void view(const std::string& database, 
+            const std::vector<std::string>& filenames);
 };
 
 #endif
