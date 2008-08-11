@@ -33,8 +33,8 @@ template<class C>
 class ThreadMessageQueue
 {
 private:
-  Mutex mutex;
-  std::list<C> values;
+  mutable Mutex mutex;
+  std::queue<C> values;
 
 public:
   ThreadMessageQueue()
@@ -49,7 +49,7 @@ public:
   push(const C& value)
   {
     mutex.lock();
-    values.push_back(value);
+    values.push(value);
     mutex.unlock();
   }
 
@@ -57,7 +57,7 @@ public:
   pop()
   {
     mutex.lock();
-    values.pop_front();
+    values.pop();
     mutex.unlock();
   }
 
@@ -86,6 +86,12 @@ public:
     bool e = values.empty();
     mutex.unlock();
     return e;
+  }
+
+  void wait()
+  {
+    // FIXME: implement me properly
+    SDL_Delay(100);
   }
 };
 

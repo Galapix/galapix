@@ -23,54 +23,45 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#ifndef HEADER_DATABASE_THREAD_HPP
+#define HEADER_DATABASE_THREAD_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <map>
+#include <boost/function.hpp>
 #include <string>
-#include "math/vector2f.hpp"
-#include "math/size.hpp"
-#include "grid.hpp"
-#include "surface.hpp"
+#include "thread_message_queue.hpp"
+#include "file_database.hpp"
+#include "tile_database.hpp"
+#include "thread.hpp"
 
-class Surface;
-class Size;
-class Rectf;
-class Vector2f;
-class ImageImpl;
+class DatabaseMessage;
 
-class Image
+/** */
+class DatabaseThread : public Thread
 {
+private:
+  static DatabaseThread* current_;
 public:
-  typedef std::map<uint32_t, Surface> Cache; 
+  static DatabaseThread* current() { return current_; }
+  
+private:
+  std::string database_filename;
+  bool quit;
+  
+  ThreadMessageQueue<DatabaseMessage*> queue;
+
+public:
+  DatabaseThread(const std::string&);
+  virtual ~DatabaseThread();
+  
+  int run();
+
+  void stop();
+  void request_tile(int fileid, int tilescale, int x, int y, boost::function<void (Tile)> callback);
+  void request_file(const std::string& filename, boost::function<void (FileEntry)> callback);
 
 private:
-  Surface get_tile(int x, int y, int tile_scale);
-
-public:
-  Image();
-  Image(int fileid, const std::string& filename, const Size& size);
-
-  void draw(const Rectf& cliprect, float scale);
-
-  void set_pos(const Vector2f& pos);
-  Vector2f get_pos() const;
-
-  void  set_scale(float f);
-  float get_scale() const;
-
-  float get_scaled_width() const;
-  float get_scaled_height() const;
-
-  int get_original_width() const;
-  int get_original_height() const;
-
-  void receive_tile(int x, int y, int tiledb_scale, const Surface& surface);
-
-  operator bool() const { return impl.get(); }
-private:
-  boost::shared_ptr<ImageImpl> impl;
+  DatabaseThread (const DatabaseThread&);
+  DatabaseThread& operator= (const DatabaseThread&);
 };
 
 #endif

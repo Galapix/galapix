@@ -53,7 +53,28 @@ Mutex::unlock()
 {
   SDL_UnlockMutex(mutex);
 }
+
+Condition::Condition()
+{
+  condition = SDL_CreateCond();
+}
 
+Condition::~Condition()
+{
+  SDL_DestroyCond(condition);
+}
+
+void
+Condition::wait(Mutex& mutex)
+{
+  SDL_CondWait(condition, mutex.mutex);
+}
+
+void
+Condition::broadcast()
+{
+  SDL_CondBroadcast(condition);
+}
 
 int launch_thread(void* thread_ptr)
 {
@@ -82,6 +103,12 @@ Uint32
 Thread::get_id()
 {
   return SDL_GetThreadID(thread);
+}
+
+Uint32
+Thread::get_thread_id()
+{
+  return SDL_ThreadID();
 }
 
 void

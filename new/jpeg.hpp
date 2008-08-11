@@ -23,54 +23,33 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#ifndef HEADER_JPEG_HPP
+#define HEADER_JPEG_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <map>
 #include <string>
-#include "math/vector2f.hpp"
-#include "math/size.hpp"
-#include "grid.hpp"
-#include "surface.hpp"
 
-class Surface;
-class Size;
-class Rectf;
-class Vector2f;
-class ImageImpl;
-
-class Image
+class JPEGImage
 {
 public:
-  typedef std::map<uint32_t, Surface> Cache; 
+  JPEGImage();
 
+  /** Crops the JPEG, rect coordinates must be aligned to 8px */
+  JPEGImage crop(const Rect& rect);
+
+  /** Return the compressed JPEG data */
+  Blob get_data() const;
+
+  /** */
+  SoftwareSurface create_thumbnail(int scale);
+};
+
+/** */
+class JPEG
+{
 private:
-  Surface get_tile(int x, int y, int tile_scale);
-
 public:
-  Image();
-  Image(int fileid, const std::string& filename, const Size& size);
-
-  void draw(const Rectf& cliprect, float scale);
-
-  void set_pos(const Vector2f& pos);
-  Vector2f get_pos() const;
-
-  void  set_scale(float f);
-  float get_scale() const;
-
-  float get_scaled_width() const;
-  float get_scaled_height() const;
-
-  int get_original_width() const;
-  int get_original_height() const;
-
-  void receive_tile(int x, int y, int tiledb_scale, const Surface& surface);
-
-  operator bool() const { return impl.get(); }
-private:
-  boost::shared_ptr<ImageImpl> impl;
+  static void get_size(const std::string& filename, int& w, int& h);
+  static 
 };
 
 #endif

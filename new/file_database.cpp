@@ -88,9 +88,8 @@ FileDatabase::store_file_entry(FileEntry& entry)
 }
 
 bool
-FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
+FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
 {
-  //std::cout << "Trying to retrieve: " << filename << std::endl;
   get_by_filename_stmt.bind_text(1, filename);
   SQLiteReader reader = get_by_filename_stmt.execute_query();
 
@@ -102,42 +101,31 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry& entry)
                   << reader.get_text(0)
                   << std::endl;
 
-      entry.fileid      = reader.get_int (0);
-      entry.filename    = reader.get_text(1);
-      entry.md5         = reader.get_text(2);
-      entry.filesize    = reader.get_int (3);
-      entry.size.width  = reader.get_int (4);
-      entry.size.height = reader.get_int (5);
+      entry->fileid      = reader.get_int (0);
+      entry->filename    = reader.get_text(1);
+      entry->md5         = reader.get_text(2);
+      entry->filesize    = reader.get_int (3);
+      entry->size.width  = reader.get_int (4);
+      entry->size.height = reader.get_int (5);
 
       return true;
     }
   else
     {
-      entry.fileid   = -1;
-      entry.filename = filename;
-      //entry.md5      = MD5::md5_file(filename);
-      entry.filesize = Filesystem::get_size(filename);
-      entry.mtime    = Filesystem::get_mtime(filename);
+      entry->fileid   = -1;
+      entry->filename = filename;
+      //entry->md5      = MD5::md5_file(filename);
+      entry->filesize = Filesystem::get_size(filename);
+      entry->mtime    = Filesystem::get_mtime(filename);
       
-      entry.size = Size(-1, -1);
+      entry->size = Size(-1, -1);
       
-      SoftwareSurface::get_size(entry.filename, entry.size);
+      SoftwareSurface::get_size(entry->filename, entry->size);
 
-      store_file_entry(entry);
+      store_file_entry(*entry);
       
       return true;
     }
-}
-
-bool
-FileDatabase::get_file_entry(uint32_t file_id, FileEntry& entry)
-{
-  get_by_file_id_stmt.bind_int(1, file_id);
-  get_by_file_id_stmt.execute_query();
-
-  // If nothing is found, query the file system and store the results
-
-  return false;
 }
 
 void

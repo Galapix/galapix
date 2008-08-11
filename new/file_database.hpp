@@ -79,8 +79,7 @@ public:
       @param[out] entry   Lokation where the file information will be stored 
       @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
-  bool get_file_entry(const std::string& filename, FileEntry& entry);
-  bool get_file_entry(uint32_t file_d, FileEntry& entry);
+  bool get_file_entry(const std::string& filename, FileEntry* entry);
 
 private:
   FileDatabase (const FileDatabase&);

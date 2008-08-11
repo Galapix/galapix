@@ -81,6 +81,7 @@ Viewer::process_event(const SDL_Event& event)
   switch(event.type)
     {
       case SDL_QUIT:
+        std::cout << "Viewer: SDL_QUIT received" << std::endl;
         quit = true;
         break;
 

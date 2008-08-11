@@ -23,54 +23,49 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
+#ifndef HEADER_VIEWER_THREAD_HPP
+#define HEADER_VIEWER_THREAD_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <map>
-#include <string>
-#include "math/vector2f.hpp"
-#include "math/size.hpp"
-#include "grid.hpp"
-#include "surface.hpp"
+#include "thread.hpp"
+#include "thread_message_queue.hpp"
+
+#include "image.hpp"
+#include "tile_database.hpp"
 
-class Surface;
-class Size;
-class Rectf;
-class Vector2f;
-class ImageImpl;
-
-class Image
+class FileEntry;
+class Image;
+class Tile;
+
+struct TileMessage
 {
-public:
-  typedef std::map<uint32_t, Surface> Cache; 
-
+  Image image;
+  Tile  tile;
+};
+
+class ViewerThread : public Thread
+{
 private:
-  Surface get_tile(int x, int y, int tile_scale);
+  static ViewerThread* current_;
+public:
+  static ViewerThread* current() { return current_; }
+  
+private:
+  ThreadMessageQueue<FileEntry> file_queue;
+  ThreadMessageQueue<TileMessage>      tile_queue;
 
 public:
-  Image();
-  Image(int fileid, const std::string& filename, const Size& size);
+  ViewerThread();
+  virtual ~ViewerThread();
 
-  void draw(const Rectf& cliprect, float scale);
+  int run();
 
-  void set_pos(const Vector2f& pos);
-  Vector2f get_pos() const;
+  void receive_file(const FileEntry& entry);
+  void receive_tile(const Image& image, const Tile& tile);
 
-  void  set_scale(float f);
-  float get_scale() const;
-
-  float get_scaled_width() const;
-  float get_scaled_height() const;
-
-  int get_original_width() const;
-  int get_original_height() const;
-
-  void receive_tile(int x, int y, int tiledb_scale, const Surface& surface);
-
-  operator bool() const { return impl.get(); }
+  void request_tile(int fileid, int tilescale, int x, int y, const Image& image);
 private:
-  boost::shared_ptr<ImageImpl> impl;
+  ViewerThread (const ViewerThread&);
+  ViewerThread& operator= (const ViewerThread&);
 };
 
 #endif
