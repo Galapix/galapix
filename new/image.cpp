@@ -141,7 +141,7 @@ Image::get_tile(int x, int y, int tile_scale)
       ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this);
 
       // FIXME: Insert code here to find the next best tile
-      return Surface();
+      return impl->cache[cache_id] = Surface(); // We add an empty surface, so we don't do duplicate requests
     }
   else
     {

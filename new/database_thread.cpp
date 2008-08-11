@@ -131,8 +131,6 @@ DatabaseThread::run()
       // do things
       while(!queue.empty())
         {
-          //std::cout << "Queue: " << queue.size() << std::endl;
-          
           DatabaseMessage* msg = queue.front();
           queue.pop();
 
