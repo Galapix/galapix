@@ -33,9 +33,10 @@ Workspace::Workspace()
 void
 Workspace::add_image(int fileid, const std::string& filename, const Size& size)
 {
-  images.push_back(Image(fileid, filename, size));
-  images.back().set_scale(Math::min(1000.0f / size.width,
-                                    1000.0f / size.height));
+  Image image(fileid, filename, size);
+  images.push_back(image);
+  image.set_scale(Math::min(1000.0f / size.width,
+                            1000.0f / size.height));
   layout(4.0f, 3.0f);
 }
 
@@ -65,6 +66,9 @@ Workspace::layout(float aspect_w, float aspect_h)
               images[i].set_pos(Vector2f((w - (i % w)-1) * 1024.0f,
                                          (i / w)         * 1024.0f));
             }
+
+          images[i].set_pos(images[i].get_pos() + Vector2f((1000.0f - images[i].get_scaled_width()) / 2,
+                                                           (1000.0f - images[i].get_scaled_height()) / 2));
         }
     }
 }
