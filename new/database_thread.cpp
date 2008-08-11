@@ -141,10 +141,10 @@ DatabaseThread::run()
                   FileDatabaseMessage* file_msg = static_cast<FileDatabaseMessage*>(msg);
                   FileEntry entry;
 
-                  std::cout << "Lookup for: " << file_msg->filename << std::endl;
+                  //std::cout << "Lookup for: " << file_msg->filename << std::endl;
                     if (file_db.get_file_entry(file_msg->filename, &entry))
                       {
-                        std::cout << entry.filename << " -> " << entry.fileid << std::endl;
+                        //std::cout << entry.filename << " -> " << entry.fileid << std::endl;
                         file_msg->callback(entry);
                       }
                     else

@@ -35,7 +35,7 @@ class Workspace
 private:
   typedef std::vector<Image> Images;
   Images images;
-
+  
 public:
   Workspace();
 

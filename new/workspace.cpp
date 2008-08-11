@@ -36,6 +36,7 @@ Workspace::add_image(int fileid, const std::string& filename, const Size& size)
   images.push_back(Image(fileid, filename, size));
   images.back().set_scale(Math::min(1000.0f / size.width,
                                     1000.0f / size.height));
+  layout(4.0f, 3.0f);
 }
 
 void
