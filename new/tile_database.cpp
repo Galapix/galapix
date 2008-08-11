@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include "SDL.h"
 #include "tile_database.hpp"
 
 TileDatabase::TileDatabase(SQLiteConnection* db)
@@ -62,6 +63,8 @@ TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
       tile.y       = reader.get_int (3);
       // FIXME: Blob generation causes unneeded copy
       tile.surface = SoftwareSurface::from_data(reader.get_blob(4));
+
+      //SDL_Delay(1000);
 
       return true;
     }

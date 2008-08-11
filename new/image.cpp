@@ -142,10 +142,32 @@ Image::get_tile(int x, int y, int tile_scale)
 
       // FIXME: Insert code here to find the next best tile
       return impl->cache[cache_id] = Surface(); // We add an empty surface, so we don't do duplicate requests
+      //return get_next_best_tile(x, y, tile_scale);
     }
   else
     {
       return i->second;
+    }
+}
+
+Surface
+Image::get_next_best_tile(int x, int y, int tile_scale)
+{
+  uint32_t cache_id = make_cache_id(x/2, y/2, tile_scale+1);
+  Cache::iterator i = impl->cache.find(cache_id);
+  
+  if (i == impl->cache.end() || !i->second)
+    {
+      // No tile at smaller zoom level found, so give up
+      return Surface();
+    }
+  else
+    {
+      // FIXME: This can't handle tiles, which aren't dim sized this
+      // way, need to do something with the image width to figure out
+      // how large the tile should really be
+      return i->second.get_section(Rect(Vector2i((x % 2), (y % 2)) * 128,
+                                        Size(128, 128)));
     }
 }
 

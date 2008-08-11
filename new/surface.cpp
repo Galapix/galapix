@@ -39,9 +39,16 @@ class SurfaceImpl
 public:
   Texture texture;
   Rectf   uv;
-
-  Size size;
+  Size    size;
   
+  SurfaceImpl(const Texture& texture_, const Rectf& uv_, const Size& size_)
+    : texture(texture_),
+      uv(uv_),
+      size(size_)
+  {
+    //std::cout << uv << std::endl;
+  }
+
   SurfaceImpl(const SoftwareSurface& src, const Rect& srcrect)
   {
     assert(src);
@@ -72,21 +79,22 @@ public:
         
         // Since FreeImage is giving us the images upside down, we
         // place them at the bottom of the texture instead of the top
-        // to avoid blending artifacts
+        // to avoid blending artifacts, so we have "1.0f - " stuff in
+        // the UV coordinates
         glBegin(GL_QUADS);
-        glTexCoord2f(      0, 1.0f);
+        glTexCoord2f(uv.left, 1.0f - uv.top);
         glVertex2f(rect.left, rect.top);
 
-        glTexCoord2f(uv.get_width(), 1.0f);
+        glTexCoord2f(uv.right, 1.0f - uv.top);
         glVertex2f(rect.right, rect.top);
 
-        glTexCoord2f(uv.get_width(), 1.0f - uv.get_height());
+        glTexCoord2f(uv.right, 1.0f - uv.bottom);
         glVertex2f(rect.right, rect.bottom);
 
-        glTexCoord2f(      0,  1.0f - uv.get_height());
+        glTexCoord2f(uv.left, 1.0f - uv.bottom);
         glVertex2f(rect.left, rect.bottom);
         glEnd();
-      }   
+      }
   }
 
   void draw(const Vector2f& pos)
@@ -162,13 +170,24 @@ Surface::get_size() const
 Surface
 Surface::get_section(const Rect& rect) const
 {
-  boost::shared_ptr<SurfaceImpl> surface_impl;
+  //std::cout << "Section: " << rect << " " << impl->size << std::endl;
+  
+  if (impl.get())
+    {
+      boost::shared_ptr<SurfaceImpl> surface_impl
+        (new SurfaceImpl(impl->texture,
+                         Rectf(impl->uv.left + (rect.left   * impl->uv.get_width()  / impl->size.width),
+                               impl->uv.top  + (rect.top    * impl->uv.get_height() / impl->size.height),
+                               impl->uv.left + (rect.right  * impl->uv.get_width()  / impl->size.width),
+                               impl->uv.top  + (rect.bottom * impl->uv.get_height() / impl->size.height)),
+                         impl->size)); // rect.get_size()
 
-  surface_impl->texture = impl->texture;
-  surface_impl->uv      = impl->uv; assert(!"FIXME: Insert code here");
-  surface_impl->size    = rect.get_size();
-
-  return Surface(impl);
+      return Surface(surface_impl);
+    }
+  else
+    {
+      return Surface();
+    }
 }
 
 /* EOF */
