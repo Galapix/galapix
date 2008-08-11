@@ -70,8 +70,7 @@ ViewerState::screen2world(const Rect& rect) const
 Viewer::Viewer()
   : quit(false),
     force_redraw(false),
-    drag_n_drop(false),
-    surface(SoftwareSurface("test.jpg"))
+    drag_n_drop(false)
 {
 }
 
@@ -188,8 +187,6 @@ Viewer::draw(Workspace& workspace)
   
   workspace.draw(cliprect,
                  state.get_scale());
-
-  //surface.draw(Vector2f(0, 0));
 
   glPopMatrix();
 }

@@ -63,8 +63,6 @@ private:
 
   ViewerState state;
 
-  Surface surface;
-  
 public:
   Viewer();
 
