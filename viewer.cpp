@@ -70,7 +70,8 @@ ViewerState::screen2world(const Rect& rect) const
 Viewer::Viewer()
   : quit(false),
     force_redraw(false),
-    drag_n_drop(false)
+    drag_n_drop(false),
+    zoom_button(0)
 {
 }
 
