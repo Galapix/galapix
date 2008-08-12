@@ -28,6 +28,7 @@ public:
   Griv();
   ~Griv();
 
+  void print_usage();
   int main(int argc, char** argv);
 
   void generate_tiles(const std::string& database, 

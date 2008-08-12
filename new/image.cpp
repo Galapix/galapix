@@ -141,8 +141,8 @@ Image::get_tile(int x, int y, int tile_scale)
       ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this);
 
       // FIXME: Insert code here to find the next best tile
-      return impl->cache[cache_id] = Surface(); // We add an empty surface, so we don't do duplicate requests
-      //return get_next_best_tile(x, y, tile_scale);
+      //return impl->cache[cache_id] = Surface(); // We add an empty surface, so we don't do duplicate requests
+      return impl->cache[cache_id] = get_next_best_tile(x, y, tile_scale);
     }
   else
     {
@@ -166,8 +166,7 @@ Image::get_next_best_tile(int x, int y, int tile_scale)
       // FIXME: This can't handle tiles, which aren't dim sized this
       // way, need to do something with the image width to figure out
       // how large the tile should really be
-      return i->second.get_section(Rect(Vector2i((x % 2), (y % 2)) * 128,
-                                        Size(128, 128)));
+      return Surface(); //return i->second.get_quadrant(x % 2, y % 2);
     }
 }
 
@@ -231,6 +230,7 @@ Image::draw(const Rectf& cliprect, float fscale)
                 Surface surface = get_tile(x, y, tiledb_scale);
                 if (surface)
                   {
+                    // FIXME: Make surface itself big, so we dont need this scaling here
                     surface.draw(Rectf(impl->pos + Vector2f(x,y) * tilesize,
                                        Sizef((surface.get_size() * scale_factor * impl->scale))));
                     draw_placeholder = false;

@@ -61,6 +61,7 @@ public:
   operator bool() const { return impl.get(); }
 
   void* get_data() const;
+
 private:
   boost::shared_ptr<SoftwareSurfaceImpl> impl;
 };

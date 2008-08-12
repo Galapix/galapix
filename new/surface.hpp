@@ -46,8 +46,6 @@ public:
   Surface(const SoftwareSurface& src);
   ~Surface();
 
-  Surface get_section(const Rect& rect) const;
-
   void draw(const Vector2f& pos);
   void draw(const Rectf& rect);
 

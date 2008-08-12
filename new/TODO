@@ -1,6 +1,5 @@
 [[ Griv ToDo ]]
 
-* multi-threading for the interface
 * multi-threading in the tile generator for multicore
 * faster image handling, FreeImage is not good enough
 * do something about the seams on tile borders (hard, need to save a 1px border, but that screws up the JPEG compression)
@@ -11,6 +10,10 @@
   Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig
 
 * How to avoid duplicate entries in the queue?
+* figure out why the thing crashes
+
+* File stuff should really be seperate from Tile getting -> Seperate worker thread?
+* need to display the thread status graphically somehow
 
 Image Library Requirements:
 ===========================

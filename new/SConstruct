@@ -1,5 +1,5 @@
 # Zoomable Image Viewer
-griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g", "-Wnon-virtual-dtor"], 
+griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g3", "-Wnon-virtual-dtor"], 
                        LIBS=['freeimage', 
                              'mhash', 
                              'GL', 

@@ -32,9 +32,10 @@
 #include <stdexcept>
 #include <math.h>
 #include "SDL.h"
-
+
+class Size;
 class Rectf;
-
+
 static inline void assert_gl(const char* message)
 {
   GLenum error = glGetError();
@@ -45,8 +46,7 @@ static inline void assert_gl(const char* message)
     throw std::runtime_error(msg.str());
   }
 }
-
-/** */
+
 class Framebuffer
 {
 private:
@@ -54,8 +54,7 @@ private:
   static Uint32 flags;
 
 public:
-  static void init();
-  static void deinit();
+  static void set_video_mode(const Size& size);
 
   static void toggle_fullscreen();
 
@@ -69,7 +68,7 @@ public:
 
   static void draw_rect(const Rectf& rect);
 };
-
+
 #endif
 
 /* EOF */

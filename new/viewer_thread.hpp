@@ -50,14 +50,15 @@ public:
   static ViewerThread* current() { return current_; }
   
 private:
-  ThreadMessageQueue<FileEntry> file_queue;
-  ThreadMessageQueue<TileMessage>      tile_queue;
+  ThreadMessageQueue<FileEntry>   file_queue;
+  ThreadMessageQueue<TileMessage> tile_queue;
+
+protected:
+  int run();
 
 public:
   ViewerThread();
   virtual ~ViewerThread();
-
-  int run();
 
   void receive_file(const FileEntry& entry);
   void receive_tile(const Image& image, const Tile& tile);
