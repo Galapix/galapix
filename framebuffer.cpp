@@ -35,18 +35,8 @@ SDL_Surface* Framebuffer::screen = 0;
 Uint32 Framebuffer::flags = 0;
 
 void
-Framebuffer::init()
-{
-  //XInitThreads();
- 
-  std::cout << "Framebuffer::init()" << std::endl;
-  if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
-      std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
-      exit(1);
-    }
-  atexit(SDL_Quit); 
-  
+Framebuffer::set_video_mode(const Size& size)
+{    
   flags = SDL_RESIZABLE | SDL_OPENGL;
   screen = SDL_SetVideoMode(800, 600, 0, flags);
 
@@ -73,12 +63,6 @@ Framebuffer::init()
     {
       std::cout << "Couldn't get WM info " << std::endl;
     }
-}
-
-void
-Framebuffer::deinit()
-{
-  
 }
 
 void

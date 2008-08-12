@@ -120,16 +120,18 @@ DatabaseThread::run()
 {
   quit = false;
 
+  std::cout << "Connecting to the database..." << std::endl;
   SQLiteConnection db(database_filename);
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
+  std::cout << "Connecting to the database... done" << std::endl;
 
   while(!quit)
     {
       //std::cout << "DatabaseThread: looping" << std::endl;
       
       // do things
-      while(!queue.empty())
+      while(!queue.empty() && !quit)
         {
           DatabaseMessage* msg = queue.front();
           queue.pop();

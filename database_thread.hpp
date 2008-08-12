@@ -49,12 +49,13 @@ private:
   
   ThreadMessageQueue<DatabaseMessage*> queue;
 
+protected: 
+  int run();
+
 public:
   DatabaseThread(const std::string&);
   virtual ~DatabaseThread();
   
-  int run();
-
   void stop();
   void request_tile(int fileid, int tilescale, int x, int y, boost::function<void (Tile)> callback);
   void request_file(const std::string& filename, boost::function<void (FileEntry)> callback);

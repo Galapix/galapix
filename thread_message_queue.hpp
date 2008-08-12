@@ -33,7 +33,7 @@ template<class C>
 class ThreadMessageQueue
 {
 private:
-  mutable Mutex mutex;
+  Mutex mutex;
   std::queue<C> values;
 
 public:
@@ -45,24 +45,21 @@ public:
   {
   }
 
-  void
-  push(const C& value)
+  void push(const C& value)
   {
     mutex.lock();
     values.push(value);
     mutex.unlock();
   }
 
-  void
-  pop()
+  void pop()
   {
     mutex.lock();
     values.pop();
     mutex.unlock();
   }
 
-  C
-  front()
+  C front()
   {
     mutex.lock();
     C c(values.front());
@@ -70,8 +67,7 @@ public:
     return c;
   }
 
-  int
-  size() const
+  int size()
   {
     mutex.lock();
     int s = values.size();
@@ -79,8 +75,7 @@ public:
     return s;
   }
 
-  bool
-  empty() const
+  bool empty() 
   {
     mutex.lock();
     bool e = values.empty();

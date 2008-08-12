@@ -166,28 +166,5 @@ Surface::get_size() const
   else
     return Size();
 }
-
-Surface
-Surface::get_section(const Rect& rect) const
-{
-  //std::cout << "Section: " << rect << " " << impl->size << std::endl;
-  
-  if (impl.get())
-    {
-      boost::shared_ptr<SurfaceImpl> surface_impl
-        (new SurfaceImpl(impl->texture,
-                         Rectf(impl->uv.left + (rect.left   * impl->uv.get_width()  / impl->size.width),
-                               impl->uv.top  + (rect.top    * impl->uv.get_height() / impl->size.height),
-                               impl->uv.left + (rect.right  * impl->uv.get_width()  / impl->size.width),
-                               impl->uv.top  + (rect.bottom * impl->uv.get_height() / impl->size.height)),
-                         impl->size)); // rect.get_size()
-
-      return Surface(surface_impl);
-    }
-  else
-    {
-      return Surface();
-    }
-}
 
 /* EOF */

@@ -64,8 +64,6 @@ TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
       // FIXME: Blob generation causes unneeded copy
       tile.surface = SoftwareSurface::from_data(reader.get_blob(4));
 
-      //SDL_Delay(1000);
-
       return true;
     }
   else

@@ -49,7 +49,7 @@ class JPEG
 private:
 public:
   static void get_size(const std::string& filename, int& w, int& h);
-  static 
+  static void load(const std::string& filename);
 };
 
 #endif

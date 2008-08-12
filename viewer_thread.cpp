@@ -65,13 +65,13 @@ ViewerThread::request_tile(int fileid, int tilescale, int x, int y, const Image&
   DatabaseThread::current()->request_tile(fileid, tilescale, x, y,
                                           boost::bind(&ViewerThread::receive_tile, this, image, _1));
 }
-
+
 int
 ViewerThread::run()
 {
   Workspace workspace;
 
-  Framebuffer::init();
+  Framebuffer::set_video_mode(Size(800, 600));
 
   workspace.layout(4,3);
 
@@ -79,28 +79,27 @@ ViewerThread::run()
 
   Uint32 ticks = SDL_GetTicks();
   while(!viewer.done())
-    {
-      SDL_Event event;
-      while (SDL_PollEvent(&event))
-        viewer.process_event(event);
-      
+    {     
       while (!file_queue.empty())
         {
           const FileEntry& entry = file_queue.front();
-
           workspace.add_image(entry.fileid, entry.filename, entry.size);
           file_queue.pop();
         }
 
-      while (!tile_queue.empty())
+      while (!tile_queue.empty()) // FIXME: Crash happens somewhere here!
         {
           TileMessage msg = tile_queue.front();
 
           msg.image.receive_tile(msg.tile.x, msg.tile.y, 
                                  msg.tile.scale, msg.tile.surface);
 
-          tile_queue.pop() ;
+          tile_queue.pop();
         }
+
+      SDL_Event event;
+      while (SDL_PollEvent(&event))
+        viewer.process_event(event);
 
       Uint32 cticks = SDL_GetTicks();
       float delta = (cticks - ticks) / 1000.0f;
@@ -117,8 +116,6 @@ ViewerThread::run()
 
       SDL_Delay(30);
     }
-
-  Framebuffer::deinit();
 
   std::cout << "ViewerThread: done" << std::endl;
 

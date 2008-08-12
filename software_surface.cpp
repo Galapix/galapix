@@ -196,12 +196,5 @@ SoftwareSurface::get_data() const
   // 16 byte alignment !
   return FreeImage_GetBits(impl->bitmap);
 }
-
-// FreeImage_OpenMemory(BYTE *data FI_DEFAULT(0), DWORD size_in_bytes FI_DEFAULT(0));
-// hmem = FreeImage_OpenMemory();
-// FreeImage_SaveToMemory(fif, dib, hmem, 0);
-// FreeImage_CloseMemory(hmem);
-// FreeImage_AcquireMemory(FIMEMORY *stream, BYTE **data, DWORD* size_in_bytes);
-
   
 /* EOF */

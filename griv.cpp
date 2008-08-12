@@ -96,6 +96,13 @@ Griv::generate_tiles(const std::string& database, const std::vector<std::string>
 void
 Griv::view(const std::string& database, const std::vector<std::string>& filenames)
 {
+  if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+      std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
+      exit(1);
+    }
+  atexit(SDL_Quit); 
+
   DatabaseThread database_thread(database);
   ViewerThread viewer_thread;
 
@@ -110,6 +117,17 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
   database_thread.join();
 }
 
+void
+Griv::print_usage()
+{
+      std::cout << "Usage: griv view    [OPTIONS]... [FILES]...\n"
+                << "       griv prepare [OPTIONS]... [FILES]...\n"
+                << "\n"
+                << "Options:\n"
+                << "  -d, --database FILE    Use FILE has database (default: test.sqlite)\n"
+                << std::endl;
+}
+
 int
 Griv::main(int argc, char** argv)
 {
@@ -121,24 +139,37 @@ Griv::main(int argc, char** argv)
   
   if (argc < 2)
     {
-      std::cout << "Usage: " << argv[0] << " view [OPTIONS]... [FILES]...\n"
-                << "       " << argv[0] << " prepare [OPTIONS]... [FILES]...\n";
+      print_usage();
     }
   else
     {
       std::vector<std::string> filenames;
       for(int i = 2; i < argc; ++i)
         {
-          if (strcmp(argv[i], "--database") == 0)
+          if (argv[i][0] == '-')
             {
-              ++i;
-              if (i < argc)
+              if (strcmp(argv[i], "--help") == 0 ||
+                  strcmp(argv[i], "-h") == 0)
                 {
-                  database = argv[i];
+                  print_usage();
+                  exit(0);
+                }
+              else if (strcmp(argv[i], "--database") == 0 ||
+                  strcmp(argv[i], "-d") == 0)
+                {
+                  ++i;
+                  if (i < argc)
+                    {
+                      database = argv[i];
+                    }
+                  else
+                    {
+                      throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+                    }
                 }
               else
                 {
-                  throw std::runtime_error("--database requires an argument");
+                  throw std::runtime_error("Unknown option " + std::string(argv[i]));
                 }
             }
           else
@@ -157,8 +188,7 @@ Griv::main(int argc, char** argv)
         }
       else
         {
-          std::cout << "Usage: " << argv[0] << " view [FILES]...\n"
-                    << "       " << argv[0] << " prepare [FILES]...\n";
+          print_usage();
         }
     }
 
