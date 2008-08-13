@@ -23,58 +23,71 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_IMAGE_HPP
-#define HEADER_IMAGE_HPP
-
-#include <boost/shared_ptr.hpp>
-#include <map>
-#include <string>
-#include "math/vector2f.hpp"
-#include "math/size.hpp"
-#include "grid.hpp"
-#include "surface.hpp"
+#include <fstream>
+#include "blob.hpp"
 
-class Surface;
-class Size;
-class Rectf;
-class Vector2f;
-class ImageImpl;
-
-class Image
+class BlobImpl
 {
 public:
-  typedef std::map<uint32_t, Surface> Cache; 
+  uint8_t* data;
+  int      len;
 
-private:
-  Surface get_tile(int x, int y, int tile_scale);
-  Surface get_next_best_tile(int x, int y, int tile_scale);
+  BlobImpl(const void* data_, int len_)
+  {
+    data = new uint8_t[len_];
+    len  = len_;
 
-public:
-  Image();
-  Image(int fileid, const std::string& filename, const Size& size);
+    memcpy(data, data_, len);
+  }
 
-  void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
-  void draw(const Rectf& cliprect, float scale);
+  BlobImpl(const std::vector<uint8_t>& data_in)
+  {
+    data = new uint8_t[data_in.size()];
+    len  = data_in.size();
 
-  void set_pos(const Vector2f& pos);
-  Vector2f get_pos() const;
+    memcpy(data, &*data_in.begin(), len);
+  }
 
-  void  set_scale(float f);
-  float get_scale() const;
-
-  float get_scaled_width() const;
-  float get_scaled_height() const;
-
-  int get_original_width() const;
-  int get_original_height() const;
-
-  void receive_tile(int x, int y, int tiledb_scale, const SoftwareSurface& surface);
-
-  operator bool() const { return impl.get(); }
-private:
-  boost::shared_ptr<ImageImpl> impl;
+  ~BlobImpl()
+  {
+    delete[] data;
+  }
 };
 
-#endif
+Blob::Blob(const std::vector<uint8_t>& data)
+  : impl(new BlobImpl(data))
+{}
 
+Blob::Blob(const void* data, int len)
+  : impl(new BlobImpl(data, len))
+{}
+
+Blob::Blob()
+{}
+
+int
+Blob::size() const 
+{
+  if (impl.get())
+    return impl->len; 
+  else
+    return 0;
+}
+
+uint8_t* 
+Blob::get_data() const 
+{
+  if (impl.get())
+    return impl->data; 
+  else
+    return 0;
+}
+
+void
+Blob::write_to_file(const std::string& filename)
+{
+  std::ofstream out(filename.c_str(), std::ios::binary);
+  out.write(reinterpret_cast<char*>(impl->data), impl->len);
+}
+
 /* EOF */

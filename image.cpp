@@ -171,6 +171,22 @@ Image::get_next_best_tile(int x, int y, int tile_scale)
 }
 
 void
+Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scale)
+{
+  Surface surface = get_tile(x, y, tiledb_scale);
+  if (surface)
+    {
+      surface.draw(Rectf(pos, surface.get_size() * scale));
+
+    }
+  else
+    {
+      //Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
+      //                         Sizef(tilesize, tilesize)));
+    }
+}
+
+void
 Image::draw(const Rectf& cliprect, float fscale)
 {
   Rectf image_rect(impl->pos, Sizef(impl->size * impl->scale)); // in world coordinates
@@ -189,21 +205,9 @@ Image::draw(const Rectf& cliprect, float fscale)
 
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn
-          //Framebuffer::draw_rect(Rectf(pos, size));
-          Surface surface = get_tile(0, 0, Math::min(impl->max_tiledb_scale, tiledb_scale));
-          if (surface)
-            {
-              surface.draw(image_rect);
-            }
-          else
-            {
-              Framebuffer::draw_rect(image_rect);
-            }
-
-          //std::cout << surface.get_size() << " " << scaled_width << "x" << scaled_height << std::endl;
-
-          assert(surface.get_width() < 256 &&
-                 surface.get_height() < 256);
+          draw_tile(0, 0, tiledb_scale, 
+                    impl->pos,
+                    scale_factor * impl->scale);
         }
       else
         {
@@ -223,27 +227,13 @@ Image::draw(const Rectf& cliprect, float fscale)
           int start_y = (image_region.top   ) / itilesize;
           int end_y   = (image_region.bottom) / itilesize + 1;
 
-          bool draw_placeholder = true;
           for(int y = start_y; y < end_y; y += 1)
             for(int x = start_x; x < end_x; x += 1)
               {
-                Surface surface = get_tile(x, y, tiledb_scale);
-                if (surface)
-                  {
-                    // FIXME: Make surface itself big, so we dont need this scaling here
-                    surface.draw(Rectf(impl->pos + Vector2f(x,y) * tilesize,
-                                       Sizef((surface.get_size() * scale_factor * impl->scale))));
-                    draw_placeholder = false;
-                  }
-                else
-                  {
-                    //Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
-                    //                         Sizef(tilesize, tilesize)));
-                  }
+                draw_tile(x, y, tiledb_scale, 
+                          impl->pos + Vector2f(x,y) * tilesize,
+                          scale_factor * impl->scale);
               }
-          
-          if (draw_placeholder)
-            Framebuffer::draw_rect(image_rect);
         }
     }
   else
