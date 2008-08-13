@@ -47,7 +47,6 @@ public:
 
 private:
   Surface get_tile(int x, int y, int tile_scale);
-  Surface get_next_best_tile(int x, int y, int tile_scale);
 
 public:
   Image();

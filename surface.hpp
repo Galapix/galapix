@@ -46,7 +46,8 @@ public:
   ~Surface();
 
   void draw(const Vector2f& pos);
-  void draw(const Rectf& rect);
+  void draw(const Rectf& dstrect);
+  void draw(const Rectf& srcrect, const Rectf& dstrect);
 
   int  get_width()  const;
   int  get_height() const;
