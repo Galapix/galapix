@@ -157,5 +157,12 @@ Surface::get_size() const
   else
     return Size();
 }
+
+void
+Surface::set_size(const Size& size)
+{
+  if (impl.get())
+    impl->size = size;
+}
 
 /* EOF */
