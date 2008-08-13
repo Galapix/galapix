@@ -104,12 +104,12 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
   ViewerThread viewer_thread;
 
   database_thread.start();
-  viewer_thread.start();
 
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
 
-  viewer_thread.join();
+  viewer_thread.run();
+
   database_thread.stop();
   database_thread.join();
 }

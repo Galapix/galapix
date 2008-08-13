@@ -239,7 +239,9 @@ Image::draw(const Rectf& cliprect, float fscale)
 
       // FIXME: We also need to purge the cache more often, since with
       // big images we would end up never clearing it
-      //impl->cache.clear();
+      
+      // Do not clear everything, keep a minimal tile there
+      impl->cache.clear();
     }
 }
 
