@@ -41,8 +41,8 @@ class DatabaseMessage
 public:
   DatabaseMessageType type;
 
-  DatabaseMessage(DatabaseMessageType type)
-    : type(type)
+  DatabaseMessage(DatabaseMessageType type_)
+    : type(type_)
   {}
 
   virtual ~DatabaseMessage()
@@ -59,7 +59,7 @@ public:
   boost::function<void (Tile)> callback;
 
   TileDatabaseMessage(int fileid, int tilescale, int x, int y,
-                      boost::function<void (Tile)> callback)
+                      const boost::function<void (Tile)>& callback)
     : DatabaseMessage(DATABASE_TILE_MESSAGE),
       fileid(fileid),
       tilescale(tilescale),
@@ -76,7 +76,7 @@ public:
   boost::function<void (FileEntry)> callback;
 
   FileDatabaseMessage(const std::string& filename,
-                      boost::function<void (FileEntry)> callback)
+                      const boost::function<void (FileEntry)>& callback)
     : DatabaseMessage(DATABASE_FILE_MESSAGE),
       filename(filename),
       callback(callback)
@@ -98,13 +98,13 @@ DatabaseThread::~DatabaseThread()
 }
 
 void
-DatabaseThread::request_tile(int fileid, int tilescale, int x, int y, boost::function<void (Tile)> callback)
+DatabaseThread::request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (Tile)>& callback)
 {
   queue.push(new TileDatabaseMessage(fileid, tilescale, x, y, callback));
 }
 
 void
-DatabaseThread::request_file(const std::string& filename, boost::function<void (FileEntry)> callback)
+DatabaseThread::request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback)
 {
   queue.push(new FileDatabaseMessage(filename, callback));
 }
@@ -126,6 +126,7 @@ DatabaseThread::run()
   TileDatabase tile_db(&db);
   std::cout << "Connecting to the database... done" << std::endl;
 
+  std::vector<DatabaseMessage*> messages;
   while(!quit)
     {
       //std::cout << "DatabaseThread: looping" << std::endl;
@@ -133,8 +134,14 @@ DatabaseThread::run()
       // do things
       while(!queue.empty() && !quit)
         {
-          DatabaseMessage* msg = queue.front();
+          messages.push_back(queue.front());
           queue.pop();
+        }
+
+      if (!messages.empty())
+        {
+          DatabaseMessage* msg = messages.back();
+          messages.pop_back();
 
           switch(msg->type)
             {
@@ -144,35 +151,35 @@ DatabaseThread::run()
                   FileEntry entry;
 
                   //std::cout << "Lookup for: " << file_msg->filename << std::endl;
-                    if (file_db.get_file_entry(file_msg->filename, &entry))
-                      {
-                        //std::cout << entry.filename << " -> " << entry.fileid << std::endl;
-                        file_msg->callback(entry);
-                      }
-                    else
-                      {
-                        std::cout << "Error: Couldn't get FileEntry for " << file_msg->filename << std::endl;
-                      }
+                  if (file_db.get_file_entry(file_msg->filename, &entry))
+                    {
+                      //std::cout << entry.filename << " -> " << entry.fileid << std::endl;
+                      file_msg->callback(entry);
+                    }
+                  else
+                    {
+                      std::cout << "Error: Couldn't get FileEntry for " << file_msg->filename << std::endl;
+                    }
                 }
                 break;
 
               case DATABASE_TILE_MESSAGE:
                 {
-                   TileDatabaseMessage* tile_msg = static_cast<TileDatabaseMessage*>(msg);
-                   Tile tile;
-                   if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->x, tile_msg->y, tile))
-                     {
-                       tile_msg->callback(tile);
-                     }
-                   else
-                     {
-                       std::cout << "Error: Couldn't get tile: " 
-                                 << tile_msg->fileid << " "
-                                 << tile_msg->x << " "
-                                 << tile_msg->y << " "
-                                 << tile_msg->tilescale
-                                 << std::endl;
-                     }
+                  TileDatabaseMessage* tile_msg = static_cast<TileDatabaseMessage*>(msg);
+                  Tile tile;
+                  if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->x, tile_msg->y, tile))
+                    {
+                      tile_msg->callback(tile);
+                    }
+                  else
+                    {
+                      std::cout << "Error: Couldn't get tile: " 
+                                << tile_msg->fileid << " "
+                                << tile_msg->x << " "
+                                << tile_msg->y << " "
+                                << tile_msg->tilescale
+                                << std::endl;
+                    }
                 }
                 break;
 
@@ -182,8 +189,10 @@ DatabaseThread::run()
 
           delete msg;
         }
-      
-      queue.wait();
+      else
+        {
+          queue.wait();
+        }
     }
 
   return 0;
