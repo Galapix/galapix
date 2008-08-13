@@ -23,8 +23,8 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_JPEG_MEMORY_SRC_HPP
-#define HEADER_JPEG_MEMORY_SRC_HPP
+#ifndef HEADER_JPEG_MEMORY_DEST_HPP
+#define HEADER_JPEG_MEMORY_DEST_HPP
 
 #include <vector>
 #include <stdint.h>

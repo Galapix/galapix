@@ -24,12 +24,14 @@
 */
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <jpeglib.h>
 #include <setjmp.h>
 #include "math/size.hpp"
 #include "jpeg_memory_src.hpp"
+#include "jpeg_memory_dest.hpp"
 #include "jpeg.hpp"
 
 jmp_buf setjmp_buffer;
@@ -73,6 +75,8 @@ JPEG::get_size(const std::string& filename, Size& size)
 SoftwareSurface
 JPEG::load(const std::string& filename)
 {
+  //std::cout << "-- JPEG::load(" << filename << ")" << std::endl;
+
   FILE* in = fopen(filename.c_str(), "rb");
   if (!in)
     throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
@@ -102,13 +106,14 @@ JPEG::load(const std::string& filename)
     { // RGB Image
       JSAMPLE* scanlines[cinfo.image_height];
 
-      uint8_t* pixels = static_cast<uint8_t*>(surface.get_data());
-      int      pitch  = surface.get_pitch();
-
       for(JDIMENSION y = 0; y < cinfo.image_height; ++y)
-        scanlines[y] = &pixels[y * pitch];
+        scanlines[y] = surface.get_row_data(y);
 
-      jpeg_read_scanlines(&cinfo, scanlines, cinfo.image_height);
+      while (cinfo.output_scanline < cinfo.output_height) 
+        {
+          jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
+                              cinfo.image_height - cinfo.output_scanline);
+        }
     }
   else if (cinfo.output_components == 1)
     { // Greyscale Image
@@ -124,6 +129,8 @@ JPEG::load(const std::string& filename)
   jpeg_destroy_decompress(&cinfo);
 
   fclose(in); 
+
+  //std::cout << "-- done" << std::endl;
 
   return surface;
 }
@@ -189,8 +196,10 @@ JPEG::load(uint8_t* mem, int len)
 }
 
 void
-JPEG::save(SoftwareSurface& surface, int quality, const std::string& filename)
+JPEG::save(const SoftwareSurface& surface, int quality, const std::string& filename)
 {
+  assert(!"Unfinished: JPEG::save(SoftwareSurface& surface, int quality, const std::string& filename)");
+
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
 
@@ -225,5 +234,50 @@ JPEG::save(SoftwareSurface& surface, int quality, const std::string& filename)
   
   jpeg_destroy_compress(&cinfo);
 }  
+
+Blob
+JPEG::save(const SoftwareSurface& surface, int quality)
+{
+  // std::cout << "JPEG::save(const SoftwareSurface& surface, int quality)" << std::endl;
+
+  struct jpeg_compress_struct cinfo;
+  struct jpeg_error_mgr jerr;
+
+  cinfo.err = jpeg_std_error(&jerr);
+
+  jpeg_create_compress(&cinfo);
+
+  std::vector<uint8_t> data;
+  jpeg_memory_dest(&cinfo, &data);
+
+  cinfo.image_width  = surface.get_width();
+  cinfo.image_height = surface.get_height();
+
+  cinfo.input_components = 3;		/* # of color components per pixel */
+  cinfo.in_color_space   = JCS_RGB; 	/* colorspace of input image */
+
+  jpeg_set_defaults(&cinfo);
+  jpeg_set_quality(&cinfo, quality, TRUE /* limit to baseline-JPEG values */);
+ 
+  jpeg_start_compress(&cinfo, TRUE);
+
+  JSAMPROW row_pointer[surface.get_height()];
+  
+  for(int y = 0; y < surface.get_height(); ++y)
+    row_pointer[y] = static_cast<JSAMPLE*>(surface.get_row_data(y));
+
+  while(cinfo.next_scanline < cinfo.image_height)
+    {
+      jpeg_write_scanlines(&cinfo, &row_pointer[cinfo.next_scanline], 
+                           surface.get_height() - cinfo.next_scanline);
+    }
+  
+  jpeg_finish_compress(&cinfo);
+  
+  jpeg_destroy_compress(&cinfo);
+
+  // FIXME: This causes an unnecessary copy, should have a BlobImpl that is based on std::vector<>
+  return Blob(data);
+}
 
 /* EOF */

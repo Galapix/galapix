@@ -69,16 +69,69 @@ SoftwareSurface::~SoftwareSurface()
 {
 }
 
-SoftwareSurface
-SoftwareSurface::scale(const Size& size) const
+void
+SoftwareSurface::put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
 {
-  return SoftwareSurface();
+  assert(x >= 0 && x < impl->size.width &&
+         y >= 0 && y < impl->size.height);
+
+  impl->pixels[y * impl->pitch + x*3 + 0] = r;
+  impl->pixels[y * impl->pitch + x*3 + 1] = g;
+  impl->pixels[y * impl->pitch + x*3 + 2] = b;
+}
+
+void
+SoftwareSurface::get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
+{
+  assert(x >= 0 && x < impl->size.width &&
+         y >= 0 && y < impl->size.height);
+
+  *r = impl->pixels[y * impl->pitch + x*3 + 0];
+  *g = impl->pixels[y * impl->pitch + x*3 + 1];
+  *b = impl->pixels[y * impl->pitch + x*3 + 2];
 }
 
 SoftwareSurface
-SoftwareSurface::crop(const Rect& rect) const
+SoftwareSurface::scale(const Size& size) const
 {
-  return SoftwareSurface();
+  SoftwareSurface surface(size);
+  // Very much non-fast, needs replacement with proper
+
+  uint8_t r,g,b;
+  for(int y = 0; y < surface.get_height(); ++y)
+    for(int x = 0; x < surface.get_width(); ++x)
+      {
+        get_pixel(x * impl->size.width  / surface.impl->size.width,
+                  y * impl->size.height / surface.impl->size.height,
+                  &r, &g, &b);
+
+        surface.put_pixel(x, y, r, g, b);
+      }
+
+  return surface;
+}
+
+SoftwareSurface
+SoftwareSurface::crop(const Rect& rect_in) const
+{
+  assert(rect_in.is_normal());
+ 
+  // Clip the rectangle to the image
+  Rect rect(Math::max(0, rect_in.left),
+            Math::max(0, rect_in.top),
+            Math::min(get_width(),  rect_in.right), 
+            Math::min(get_height(), rect_in.bottom));
+
+  SoftwareSurface surface(rect.get_size());
+
+  for(int y = rect.top; y < rect.bottom; ++y)
+    {
+      memcpy(surface.get_row_data(y - rect.top), 
+             get_row_data(y) + rect.left*3,
+             rect.get_width() * 3);
+    }
+
+  return surface;
 }
 
 Size
@@ -114,8 +167,13 @@ SoftwareSurface::save(const std::string& filename) const
 Blob
 SoftwareSurface::get_jpeg_data() const
 {
-  assert(!"SoftwareSurface::get_jpeg_data() const");
-  return Blob();
+  return JPEG::save(*this, 75);
+}
+
+SoftwareSurface
+SoftwareSurface::from_file(const std::string& filename)
+{
+  return JPEG::load(filename);
 }
 
 SoftwareSurface

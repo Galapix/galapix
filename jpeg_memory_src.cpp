@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <assert.h>
 #include <iostream>
 #include <jerror.h>
 #include "jpeg_memory_src.hpp"
@@ -36,8 +37,6 @@ struct jpeg_memory_source_mgr {
 
 void jpeg_memory_init_source(j_decompress_ptr cinfo)
 {
-  //std::cout << "jpeg_memory_init_source" << std::endl;
-
   cinfo->src->next_input_byte = NULL;
   cinfo->src->bytes_in_buffer = 0;
 }

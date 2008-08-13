@@ -29,51 +29,19 @@
 #include <boost/smart_ptr.hpp>
 #include <vector>
 
-class BlobImpl
-{
-public:
-  uint8_t* data;
-  int      len;
-
-  BlobImpl(const void* data_, int len_)
-  {
-    data = new uint8_t[len_];
-    len  = len_;
-
-    memcpy(data, data_, sizeof(char) * len);
-  }
-
-  ~BlobImpl()
-  {
-    delete[] data;
-  }
-};
+class BlobImpl;
 
 class Blob
 {
 public:
-  Blob(const void* data, int len)
-    : impl(new BlobImpl(data, len))
-  {}
+  Blob();
+  Blob(const std::vector<uint8_t>& data);
+  Blob(const void* data, int len);
 
-  Blob()
-  {}
+  int size() const;
+  uint8_t* get_data() const;
 
-  int size() const 
-  {
-    if (impl.get())
-      return impl->len; 
-    else
-      return 0;
-  }
-
-  uint8_t* get_data() const 
-  {
-    if (impl.get())
-      return impl->data; 
-    else
-      return 0;
-  }
+  void write_to_file(const std::string& filename);
 
 private: 
   boost::shared_ptr<BlobImpl> impl;

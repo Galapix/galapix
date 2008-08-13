@@ -9,6 +9,7 @@ griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g3"],
 griv_env.ParseConfig("sdl-config --libs --cflags")
 griv_env.ParseConfig("pkg-config sqlite3 --libs --cflags")
 griv_env.Program('griv', [
+        'blob.cpp',
         'math.cpp',
         'math/size.cpp',
         'math/rect.cpp',

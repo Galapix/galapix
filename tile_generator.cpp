@@ -70,7 +70,7 @@ TileGenerator::generate(int fileid, const SoftwareSurface& surface_, TileDatabas
 
       scale += 1;
 
-      std::cout << "Scale: " << scale << " - " << surface.get_size() << std::endl;
+      //std::cout << "Scale: " << scale << " - " << surface.get_size() << std::endl;
     } while (surface.get_width() > 32 ||
              surface.get_height() > 32);
 }

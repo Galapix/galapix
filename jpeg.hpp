@@ -40,8 +40,8 @@ public:
   static SoftwareSurface load(const std::string& filename);
   static SoftwareSurface load(uint8_t* mem, int len);
 
-  static void save(SoftwareSurface& surface, int quality, const std::string& filename);
-  static Blob save(SoftwareSurface& surface, int quality);
+  static void save(const SoftwareSurface& surface, int quality, const std::string& filename);
+  static Blob save(const SoftwareSurface& surface, int quality);
 };
 
 #endif

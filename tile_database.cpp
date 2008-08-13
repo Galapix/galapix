@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <sstream>
 #include "SDL.h"
 #include "tile_database.hpp"
 
@@ -75,22 +76,21 @@ TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
 void
 TileDatabase::store_tile(const Tile& tile)
 {
-  // Insert some checking for uniqueness, or can the database handle that?
-  Tile outtile;
-  if (get_tile(tile.fileid, tile.scale, tile.x, tile.y, outtile))
-    {
-      // Tile already in the database
-    }
-  else
-    {
-      store_stmt.bind_int (1, tile.fileid);
-      store_stmt.bind_int (2, tile.scale);
-      store_stmt.bind_int (3, tile.x);
-      store_stmt.bind_int (4, tile.y);
-      store_stmt.bind_blob(5, tile.surface.get_jpeg_data());
+  Blob blob = tile.surface.get_jpeg_data();
 
-      store_stmt.execute();
-    }
+  // FIXME: We need to update a already existing record, instead of
+  // just storing a duplicate
+  store_stmt.bind_int (1, tile.fileid);
+  store_stmt.bind_int (2, tile.scale);
+  store_stmt.bind_int (3, tile.x);
+  store_stmt.bind_int (4, tile.y);
+  store_stmt.bind_blob(5, blob);
+
+  std::ostringstream str;
+  str << "/tmp/out-" << tile.fileid << "-" << tile.scale << "-" << tile.x << "-" << tile.y << ".jpg";
+  blob.write_to_file(str.str());
+
+  store_stmt.execute();
 }
   
 /* EOF */
