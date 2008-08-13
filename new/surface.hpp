@@ -26,7 +26,6 @@
 #ifndef HEADER_SURFACE_HPP
 #define HEADER_SURFACE_HPP
 
-#include "SDL.h"
 #include <boost/smart_ptr.hpp>
 #include "texture.hpp"
 #include "math/size.hpp"

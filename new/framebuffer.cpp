@@ -24,7 +24,7 @@
 */
 
 #include <iostream>
-#include <X11/Xlib.h>
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include "SDL_syswm.h"
 #include "math/rect.hpp"
@@ -36,7 +36,9 @@ Uint32 Framebuffer::flags = 0;
 
 void
 Framebuffer::set_video_mode(const Size& size)
-{    
+{
+  assert(screen == 0);
+
   flags = SDL_RESIZABLE | SDL_OPENGL;
   screen = SDL_SetVideoMode(800, 600, 0, flags);
 
@@ -44,6 +46,19 @@ Framebuffer::set_video_mode(const Size& size)
     {
       std::cout << "Unable to set video mode: " << SDL_GetError() << std::endl;
       exit(1);
+    }
+
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
+    {
+      std::ostringstream str;
+      str << "Error: " << glewGetErrorString(err) << std::endl;
+      throw std::runtime_error(str.str());
+    }
+  
+  if (!GLEW_ARB_texture_rectangle)
+    {
+      throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
     }
 
   SDL_WM_SetCaption("Griv 0.0.2", 0 /* icon */);
@@ -111,7 +126,7 @@ void
 Framebuffer::draw_rect(const Rectf& rect)
 {
   //glEnable(GL_BLEND);
-  glDisable(GL_TEXTURE_2D);
+  glDisable(GL_TEXTURE_RECTANGLE_ARB);
   //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     
   if (1)

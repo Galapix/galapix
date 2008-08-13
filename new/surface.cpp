@@ -53,14 +53,9 @@ public:
   {
     assert(src);
 
-    Size texture_size(Math::round_to_power_of_two(srcrect.get_width()),
-                      Math::round_to_power_of_two(srcrect.get_height()));
-
-    texture = Texture(texture_size, src, srcrect);
+    texture = Texture(srcrect.get_size(), src, srcrect);
     
-    uv = Rectf(Vector2f(0, 0),
-               Sizef(float(srcrect.get_width())  / texture_size.width,
-                     float(srcrect.get_height()) / texture_size.height));
+    uv = Rectf(Vector2f(0, 0), srcrect.get_size());
 
     size = Size(srcrect.get_size());
   }
@@ -74,20 +69,20 @@ public:
     if (texture)
       {
         texture.bind();
-        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_TEXTURE_RECTANGLE_ARB);
         glColor3f(1.0f, 1.0f, 1.0f);       
 
         glBegin(GL_QUADS);
-        glTexCoord2f(uv.left, 1.0f - uv.bottom);
+        glTexCoord2f(uv.left, uv.top);
         glVertex2f(rect.left, rect.top);
 
-        glTexCoord2f(uv.right, 1.0f - uv.bottom);
+        glTexCoord2f(uv.right, uv.top);
         glVertex2f(rect.right, rect.top);
 
-        glTexCoord2f(uv.right, 1.0f - uv.top);
+        glTexCoord2f(uv.right, uv.bottom);
         glVertex2f(rect.right, rect.bottom);
 
-        glTexCoord2f(uv.left, 1.0f - uv.top);
+        glTexCoord2f(uv.left, uv.bottom);
         glVertex2f(rect.left, rect.bottom);
         glEnd();
       }
