@@ -49,6 +49,8 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
 bool
 TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
 {
+  //SDL_Delay(100);
+
   get_stmt.bind_int(1, fileid);
   get_stmt.bind_int(2, scale);
   get_stmt.bind_int(3, x);

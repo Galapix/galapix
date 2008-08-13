@@ -140,33 +140,11 @@ Image::get_tile(int x, int y, int tile_scale)
     {
       ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this);
 
-      // FIXME: Insert code here to find the next best tile
-      //return impl->cache[cache_id] = Surface(); // We add an empty surface, so we don't do duplicate requests
-      return impl->cache[cache_id] = get_next_best_tile(x, y, tile_scale);
+      return impl->cache[cache_id] = Surface(); // We add an empty surface, so we don't do duplicate requests
     }
   else
     {
       return i->second;
-    }
-}
-
-Surface
-Image::get_next_best_tile(int x, int y, int tile_scale)
-{
-  uint32_t cache_id = make_cache_id(x/2, y/2, tile_scale+1);
-  Cache::iterator i = impl->cache.find(cache_id);
-  
-  if (i == impl->cache.end() || !i->second)
-    {
-      // No tile at smaller zoom level found, so give up
-      return Surface();
-    }
-  else
-    {
-      // FIXME: This can't handle tiles, which aren't dim sized this
-      // way, need to do something with the image width to figure out
-      // how large the tile should really be
-      return Surface(); //return i->second.get_quadrant(x % 2, y % 2);
     }
 }
 
@@ -177,12 +155,28 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
   if (surface)
     {
       surface.draw(Rectf(pos, surface.get_size() * scale));
-
     }
   else
     {
-      //Framebuffer::draw_rect(Rectf(pos + Vector2f(x, y) * tilesize,
-      //                         Sizef(tilesize, tilesize)));
+      // Look for the next smaller tile
+      // FIXME: Rewrite this to work all smaller tiles, not just the next
+      uint32_t cache_id = make_cache_id(x/2, y/2, tiledb_scale+1);
+      Cache::iterator i = impl->cache.find(cache_id);
+  
+      if (i != impl->cache.end() && i->second)
+        { // Must only draw relevant section!
+          Size s((x%2) ? (i->second.get_width()  - 128) : 128,
+                 (y%2) ? (i->second.get_height() - 128) : 128);
+
+          s.width  = Math::min(i->second.get_width(),  s.width);
+          s.height = Math::min(i->second.get_height(), s.height);
+          
+          //std::cout << x%2 << ":" << y%2 << " " << i->second.get_size() << " -> " << s << std::endl;
+
+          i->second.draw(Rectf(Vector2f(x%2, y%2) * 128, 
+                               s),
+                         Rectf(pos, s * scale * 2));
+        }
     }
 }
 
@@ -245,7 +239,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 
       // FIXME: We also need to purge the cache more often, since with
       // big images we would end up never clearing it
-      impl->cache.clear();
+      //impl->cache.clear();
     }
 }
 

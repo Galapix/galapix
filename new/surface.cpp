@@ -64,6 +64,30 @@ public:
   {
   }
 
+  void draw(const Rectf& srcrect, const Rectf& dstrect)
+  {
+    if (texture)
+      {
+        texture.bind();
+        glEnable(GL_TEXTURE_RECTANGLE_ARB);
+        glColor3f(1.0f, 1.0f, 1.0f);       
+
+        glBegin(GL_QUADS);
+        glTexCoord2f(srcrect.left, srcrect.top);
+        glVertex2f(dstrect.left, dstrect.top);
+
+        glTexCoord2f(srcrect.right, srcrect.top);
+        glVertex2f(dstrect.right, dstrect.top);
+
+        glTexCoord2f(srcrect.right, srcrect.bottom);
+        glVertex2f(dstrect.right, dstrect.bottom);
+
+        glTexCoord2f(srcrect.left, srcrect.bottom);
+        glVertex2f(dstrect.left, dstrect.bottom);
+        glEnd();
+      }    
+  }
+
   void draw(const Rectf& rect)
   {
     if (texture)
@@ -122,6 +146,13 @@ Surface::draw(const Vector2f& pos)
 {
   if (impl.get())
     impl->draw(pos);
+}
+
+void
+Surface::draw(const Rectf& srcrect, const Rectf& dstrect)
+{
+  if (impl.get())
+    impl->draw(srcrect, dstrect);  
 }
 
 void
