@@ -31,8 +31,6 @@
 class Mutex 
 {
 private:
-  friend class Condition;
-
   SDL_mutex* mutex;
 
 public:
@@ -45,23 +43,6 @@ public:
 private:
   Mutex (const Mutex&);
   Mutex& operator= (const Mutex&);
-};
-
-class Condition
-{
-private:
-  SDL_cond* condition;
-
-public:
-  Condition();
-  ~Condition();
-
-  void wait(Mutex& mutex);
-  void broadcast();
-
-private:
-  Condition (const Condition&);
-  Condition& operator= (const Condition&);
 };
 
 /** */
@@ -81,6 +62,7 @@ public:
   virtual int run() =0;
 
   static Uint32 get_thread_id();
+
 private:
   Thread (const Thread&);
   Thread& operator= (const Thread&);

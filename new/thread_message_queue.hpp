@@ -88,6 +88,10 @@ public:
     // FIXME: implement me properly
     SDL_Delay(100);
   }
+
+private:
+  ThreadMessageQueue (const ThreadMessageQueue&);
+  ThreadMessageQueue& operator= (const ThreadMessageQueue&);
 };
 
 #endif
