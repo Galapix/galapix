@@ -28,6 +28,10 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 #include <string.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "SDL.h"
 
 #include "math/size.hpp"
 #include "math/rect.hpp"
@@ -49,8 +53,8 @@ public:
   
     assert(src);
     
-    glBindTexture(GL_TEXTURE_2D, handle);
-    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, handle);
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
 
     char* pixels = 0;
     if (size.width  != srcrect.get_height() || 
@@ -60,7 +64,7 @@ public:
         memset(pixels, 0, size.get_area() * 3);
       }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
+    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB,
                  size.width, size.height,
                  0, /* border */
                  GL_RGB,
@@ -80,18 +84,18 @@ public:
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_pitch()/3);
     
     // Upload the subimage
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 
+    glTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 
                     0, size.height-srcrect.get_height(),
                     srcrect.get_width(), srcrect.get_height(), GL_RGB,
                     GL_UNSIGNED_BYTE, 
-                    (Uint8*)src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * 3));
+                    src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * 3));
 
     assert_gl("creating texture");
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,     GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,     GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S,     GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T,     GL_CLAMP);
 
     assert_gl("setting texture parameters");
   }
@@ -119,7 +123,7 @@ Texture::~Texture()
 void
 Texture::bind()
 {
-  glBindTexture(GL_TEXTURE_2D, impl->handle);
+  glBindTexture(GL_TEXTURE_RECTANGLE_ARB, impl->handle);
 }
 
 int

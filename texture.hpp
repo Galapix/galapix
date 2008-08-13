@@ -27,9 +27,6 @@
 #define HEADER_TEXTURE_HPP
 
 #include <boost/shared_ptr.hpp>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include "SDL.h"
 
 class Rect;
 class Size;
