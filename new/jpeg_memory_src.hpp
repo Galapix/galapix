@@ -23,47 +23,15 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_JPEG_MEMORY_SRC_HPP
+#define HEADER_JPEG_MEMORY_SRC_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include <stdint.h>
+#include <stdio.h>
+#include <jpeglib.h>
 
-class SoftwareSurface
-{
-public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
-
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
- 
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
-private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
-};
+/** Setup IO handling so that a JPEG can be read from memory */
+void jpeg_memory_src(j_decompress_ptr cinfo, uint8_t* mem, int len);
 
 #endif
 

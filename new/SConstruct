@@ -1,6 +1,7 @@
 # Zoomable Image Viewer
-griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g3", "-Wnon-virtual-dtor"], 
-                       LIBS=['freeimage', 
+griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g3"], 
+                       CXXFLAGS=["-Wall", "-Werror", "-O0", "-g3", "-Wnon-virtual-dtor"], 
+                       LIBS=['jpeg',
                              'mhash', 
                              'GL', 
                              'GLU'])
@@ -16,6 +17,10 @@ griv_env.Program('griv', [
         'file_database.cpp',
         'filesystem.cpp',
         'framebuffer.cpp',
+        'jpeg.cpp',
+        'jpeg_image.cpp',
+        'jpeg_memory_src.cpp',
+        'jpeg_memory_dest.cpp',
         'griv.cpp',
         'image.cpp',
         'md5.cpp',

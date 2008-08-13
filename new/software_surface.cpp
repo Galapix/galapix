@@ -26,10 +26,10 @@
 #include <assert.h>
 #include <iostream>
 #include <stdexcept>
-#include "FreeImage.h"
 
 #include "blob.hpp"
 #include "math.hpp"
+#include "jpeg.hpp"
 #include "math/rect.hpp"
 #include "math/size.hpp"
 
@@ -39,39 +39,20 @@
 class SoftwareSurfaceImpl
 {
 public:
-  FIBITMAP* bitmap;
+  Size     size;
+  int      pitch;
+  uint8_t* pixels;
   
-  SoftwareSurfaceImpl(const std::string& filename)
+  SoftwareSurfaceImpl(const Size& size)
+    : size(size),
+      pitch(size.width * 3),
+      pixels(new uint8_t[pitch * size.height])
   {
-    FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filename.c_str(), 0);
-    FIBITMAP* tmpimg = FreeImage_Load(format, filename.c_str());
-
-    if (!tmpimg)
-      {
-        throw std::runtime_error("SoftwareSurface: Couldn't load " + filename);
-      }
-    else
-      {
-        { // Convert to 24bit
-          bitmap = FreeImage_ConvertTo24Bits(tmpimg);
-          FreeImage_Unload(tmpimg);
-        }
-
-        assert(FreeImage_GetImageType(bitmap) == FIT_BITMAP);
-        assert(FreeImage_GetBPP(bitmap) == 24);
- 
-        // FIXME: Insert some assert() for colormask here
-      }
-  }
-
-  SoftwareSurfaceImpl(FIBITMAP* bitmap_)
-    : bitmap(bitmap_)
-  {    
   }
 
   ~SoftwareSurfaceImpl() 
   {
-    FreeImage_Unload(bitmap);
+    delete[] pixels;
   }
 };
 
@@ -79,13 +60,8 @@ SoftwareSurface::SoftwareSurface()
 {
 }
 
-SoftwareSurface::SoftwareSurface(FIBITMAP* bitmap)
-  : impl(new SoftwareSurfaceImpl(bitmap))
-{  
-}
-
-SoftwareSurface::SoftwareSurface(const std::string& filename)
- : impl(new SoftwareSurfaceImpl(filename))
+SoftwareSurface::SoftwareSurface(const Size& size)
+ : impl(new SoftwareSurfaceImpl(size))
 {
 }
 
@@ -96,105 +72,69 @@ SoftwareSurface::~SoftwareSurface()
 SoftwareSurface
 SoftwareSurface::scale(const Size& size) const
 {
-  FIBITMAP* img = FreeImage_Rescale(impl->bitmap, size.width, size.height, FILTER_BOX);
-  if (!img)
-    throw std::runtime_error("SoftwareSurface: Couldn't scale image");
-  else
-    return SoftwareSurface(img);
+  return SoftwareSurface();
 }
 
 SoftwareSurface
 SoftwareSurface::crop(const Rect& rect) const
 {
-  FIBITMAP* img = FreeImage_Copy(impl->bitmap, 
-                                 rect.left,  rect.top, 
-                                 Math::min(rect.right,  get_width()),
-                                 Math::min(rect.bottom, get_height()));
-  if (!img)
-    throw std::runtime_error("SoftwareSurface: Couldn't crop image");
-  else
-    return SoftwareSurface(img);
+  return SoftwareSurface();
 }
 
 Size
 SoftwareSurface::get_size()  const
 {
-  return Size(FreeImage_GetWidth(impl->bitmap),
-              FreeImage_GetHeight(impl->bitmap));
+  return impl->size;
 }
 
 int
 SoftwareSurface::get_width()  const
 {
-  return FreeImage_GetWidth(impl->bitmap); 
+  return impl->size.width;
 }
 
 int
 SoftwareSurface::get_height() const
 {
-  return FreeImage_GetHeight(impl->bitmap);    
+  return impl->size.height;
 }
 
 int
 SoftwareSurface::get_pitch()  const
 {
-  return FreeImage_GetPitch(impl->bitmap);  
+  return impl->pitch;
 }
 
 void
 SoftwareSurface::save(const std::string& filename) const
 {
-  std::cout << "Saving " << impl->bitmap << " " << get_width() << "x" << get_height() << " to " << filename << std::endl;
-  if (!FreeImage_Save(FIF_JPEG, impl->bitmap, filename.c_str(), 0))
-    {
-      throw std::runtime_error("SoftwareSurface: Couldn't save image to " + filename);
-    }
+  assert(!"SoftwareSurface::save(const std::string& filename) const");
 }
 
 Blob
 SoftwareSurface::get_jpeg_data() const
 {
-  FIMEMORY* mem = FreeImage_OpenMemory();
-  FreeImage_SaveToMemory(FIF_JPEG, impl->bitmap, mem, 0);
-
-  BYTE* data;
-  DWORD len;
-
-  FreeImage_AcquireMemory(mem, &data, &len);
-
-  Blob blob(data, len);
-
-  FreeImage_CloseMemory(mem);
-
-  return blob;
+  assert(!"SoftwareSurface::get_jpeg_data() const");
+  return Blob();
 }
 
 SoftwareSurface
 SoftwareSurface::from_data(const Blob& blob)
 {
-  FIMEMORY* mem    = FreeImage_OpenMemory(static_cast<BYTE*>(blob.get_data()), blob.size());
-  FIBITMAP* bitmap = FreeImage_LoadFromMemory(FIF_JPEG, mem, 0);
-  FreeImage_CloseMemory(mem);
-  return SoftwareSurface(bitmap);
+  return JPEG::load(blob.get_data(), blob.size());
 }
 
-void
-SoftwareSurface::get_size(const std::string& filename, Size& size)
-{
-  FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filename.c_str(), 0);
-  FIBITMAP* bitmap = FreeImage_Load(format, filename.c_str());
-
-  size.width  = FreeImage_GetWidth(bitmap); 
-  size.height = FreeImage_GetHeight(bitmap); 
-  
-  FreeImage_Unload(bitmap);  
-}
-
-void*
+uint8_t*
 SoftwareSurface::get_data() const
 {
-  // 16 byte alignment !
-  return FreeImage_GetBits(impl->bitmap);
+  return impl->pixels;
+}
+
+uint8_t*
+SoftwareSurface::get_row_data(int y) const
+{
+  return impl->pixels + (y * impl->pitch);
+  
 }
   
 /* EOF */

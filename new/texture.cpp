@@ -76,13 +76,13 @@ public:
     ////assert(!"Align issue");
     //}
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_pitch()/3);
     
     // Upload the subimage
     glTexSubImage2D(GL_TEXTURE_2D, 0, 
                     0, size.height-srcrect.get_height(),
-                    srcrect.get_width(), srcrect.get_height(), GL_BGR,
+                    srcrect.get_width(), srcrect.get_height(), GL_RGB,
                     GL_UNSIGNED_BYTE, 
                     (Uint8*)src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * 3));
 
