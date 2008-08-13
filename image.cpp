@@ -260,10 +260,10 @@ Image::draw(const Rectf& cliprect, float fscale)
 }
 
 void
-Image::receive_tile(int x, int y, int tiledb_scale, const Surface& surface)
+Image::receive_tile(int x, int y, int tiledb_scale, const SoftwareSurface& surface)
 {
   int tile_id = make_cache_id(x, y, tiledb_scale);
-  impl->cache[tile_id] = surface;
+  impl->cache[tile_id] = Surface(surface);
 }
 
 /* EOF */

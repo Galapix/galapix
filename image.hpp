@@ -67,7 +67,7 @@ public:
   int get_original_width() const;
   int get_original_height() const;
 
-  void receive_tile(int x, int y, int tiledb_scale, const Surface& surface);
+  void receive_tile(int x, int y, int tiledb_scale, const SoftwareSurface& surface);
 
   operator bool() const { return impl.get(); }
 private:
