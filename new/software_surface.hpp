@@ -55,7 +55,11 @@ public:
   Blob get_jpeg_data() const;
   
   static SoftwareSurface from_data(const Blob& blob);
+  static SoftwareSurface from_file(const std::string& filename);
  
+  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
+  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
+
   uint8_t* get_data() const;
   uint8_t* get_row_data(int y) const;
 

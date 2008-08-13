@@ -1,5 +1,9 @@
 [[ Griv ToDo ]]
 
+* implement SoftwareSurface::get_jpeg_data()
+* implement crop
+* implement scale
+
 * multi-threading in the tile generator for multicore
 * faster image handling, FreeImage is not good enough
 * do something about the seams on tile borders (hard, need to save a 1px border, but that screws up the JPEG compression)

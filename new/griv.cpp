@@ -83,8 +83,7 @@ Griv::generate_tiles(const std::string& database, const std::vector<std::string>
         {
           // Generate Image Tiles
           std::cout << "Generating tiles... " << filenames[i]  << std::endl;
-          SoftwareSurface surface = JPEG::load(filenames[i]);
-          std::cout << "Image loading" << std::endl;      
+          SoftwareSurface surface = SoftwareSurface::from_file(filenames[i]);
           
           tile_generator.generate(entry.fileid, surface, tile_db);
         }
