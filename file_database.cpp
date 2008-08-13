@@ -28,7 +28,7 @@
 #include <stdexcept>
 
 #include <assert.h>
-#include "md5.hpp"
+#include "jpeg.hpp"
 #include "filesystem.hpp"
 #include "software_surface.hpp"
 #include "file_database.hpp"
@@ -114,13 +114,12 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
     {
       entry->fileid   = -1;
       entry->filename = filename;
-      //entry->md5      = MD5::md5_file(filename);
       entry->filesize = Filesystem::get_size(filename);
       entry->mtime    = Filesystem::get_mtime(filename);
       
       entry->size = Size(-1, -1);
       
-      SoftwareSurface::get_size(entry->filename, entry->size);
+      JPEG::get_size(entry->filename, entry->size);
 
       store_file_entry(*entry);
       

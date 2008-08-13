@@ -75,23 +75,19 @@ public:
       {
         texture.bind();
         glEnable(GL_TEXTURE_2D);
-        glColor3f(1.0f, 1.0f, 1.0f);
-        
-        // Since FreeImage is giving us the images upside down, we
-        // place them at the bottom of the texture instead of the top
-        // to avoid blending artifacts, so we have "1.0f - " stuff in
-        // the UV coordinates
+        glColor3f(1.0f, 1.0f, 1.0f);       
+
         glBegin(GL_QUADS);
-        glTexCoord2f(uv.left, 1.0f - uv.top);
+        glTexCoord2f(uv.left, 1.0f - uv.bottom);
         glVertex2f(rect.left, rect.top);
 
-        glTexCoord2f(uv.right, 1.0f - uv.top);
+        glTexCoord2f(uv.right, 1.0f - uv.bottom);
         glVertex2f(rect.right, rect.top);
 
-        glTexCoord2f(uv.right, 1.0f - uv.bottom);
+        glTexCoord2f(uv.right, 1.0f - uv.top);
         glVertex2f(rect.right, rect.bottom);
 
-        glTexCoord2f(uv.left, 1.0f - uv.bottom);
+        glTexCoord2f(uv.left, 1.0f - uv.top);
         glVertex2f(rect.left, rect.bottom);
         glEnd();
       }

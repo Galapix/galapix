@@ -23,46 +23,38 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_JPEG_IMAGE_HPP
+#define HEADER_JPEG_IMAGE_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <string>
+#include "math/size.hpp"
+#include "math/rect.hpp"
+#include "software_surface.hpp"
 #include "blob.hpp"
 
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+class JPEGImageImpl;
 
-class SoftwareSurface
+class JPEGImage
 {
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  JPEGImage();
+  JPEGImage(void* data, int len);
+  JPEGImage(const std::string& filename);
 
-  ~SoftwareSurface();
+  /** Crops the JPEG, rect coordinates must be aligned to 8px */
+  JPEGImage crop(const Rect& rect);
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
+  /** Return the compressed JPEG data */
+  Blob get_data() const;
 
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
+  int  get_width()  const;
+  int  get_height() const;
+  Size get_size()   const;
 
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
- 
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
+  SoftwareSurface create_thumbnail(int scale);
 
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  boost::shared_ptr<JPEGImageImpl> impl;
 };
 
 #endif

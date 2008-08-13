@@ -32,12 +32,12 @@
 class BlobImpl
 {
 public:
-  char* data;
-  int len;
+  uint8_t* data;
+  int      len;
 
   BlobImpl(const void* data_, int len_)
   {
-    data = new char[len_];
+    data = new uint8_t[len_];
     len  = len_;
 
     memcpy(data, data_, sizeof(char) * len);
@@ -67,7 +67,7 @@ public:
       return 0;
   }
 
-  void* get_data() const 
+  uint8_t* get_data() const 
   {
     if (impl.get())
       return impl->data; 

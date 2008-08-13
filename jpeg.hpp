@@ -27,29 +27,21 @@
 #define HEADER_JPEG_HPP
 
 #include <string>
+#include "software_surface.hpp"
 
-class JPEGImage
-{
-public:
-  JPEGImage();
-
-  /** Crops the JPEG, rect coordinates must be aligned to 8px */
-  JPEGImage crop(const Rect& rect);
-
-  /** Return the compressed JPEG data */
-  Blob get_data() const;
-
-  /** */
-  SoftwareSurface create_thumbnail(int scale);
-};
-
-/** */
 class JPEG
 {
 private:
+
+
 public:
-  static void get_size(const std::string& filename, int& w, int& h);
-  static void load(const std::string& filename);
+  static void get_size(const std::string& filename, Size& size);
+
+  static SoftwareSurface load(const std::string& filename);
+  static SoftwareSurface load(uint8_t* mem, int len);
+
+  static void save(SoftwareSurface& surface, int quality, const std::string& filename);
+  static Blob save(SoftwareSurface& surface, int quality);
 };
 
 #endif

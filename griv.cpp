@@ -31,8 +31,8 @@
 #include <string>
 #include <vector>
 #include <sqlite3.h>
-#include "FreeImage.h"
 
+#include "jpeg.hpp"
 #include "surface.hpp"
 #include "framebuffer.hpp"
 #include "math/size.hpp"
@@ -53,14 +53,12 @@
 
 Griv::Griv()
 {
-  FreeImage_Initialise();
   Filesystem::init();
 }
 
 Griv::~Griv()
 {
   Filesystem::deinit();
-  FreeImage_DeInitialise();
 }
 
 void
@@ -85,7 +83,7 @@ Griv::generate_tiles(const std::string& database, const std::vector<std::string>
         {
           // Generate Image Tiles
           std::cout << "Generating tiles... " << filenames[i]  << std::endl;
-          SoftwareSurface surface(filenames[i]);
+          SoftwareSurface surface = JPEG::load(filenames[i]);
           std::cout << "Image loading" << std::endl;      
           
           tile_generator.generate(entry.fileid, surface, tile_db);
