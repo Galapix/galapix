@@ -54,6 +54,11 @@ public:
 
   void exec(const std::string& sqlstmt);
 
+  /** Do a VACCUM on the database to clean up collected garbage, this
+      call can take quite a while (~1min) for larger databases, since
+      the whole database gets copied in the process */
+  void vacuum();
+
   sqlite3* get_db() const { return db; }
 };
 

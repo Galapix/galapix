@@ -76,6 +76,14 @@ SQLiteConnection::exec(const std::string& sqlstmt)
       throw SQLiteError(out.str());
     }
 }
+
+void
+SQLiteConnection::vacuum()
+{
+  SQLiteStatement stmt(this);
+  stmt.prepare("VACUUM;");
+  stmt.execute();
+}
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection* db)
   : db(db), 

@@ -31,6 +31,8 @@ public:
   void print_usage();
   int main(int argc, char** argv);
 
+  void cleanup(const std::string& database);
+  void check(const std::string& database);
   void generate_tiles(const std::string& database, 
                       const std::vector<std::string>& filenames);
   void view(const std::string& database, 

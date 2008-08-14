@@ -164,8 +164,34 @@ FileDatabase::update_file_entry(FileEntry& entry)
 void
 FileDatabase::check()
 {
-  //SQLiteStatement file_exist_stmt;
-  //file_exist.prepare("SELECT INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
+  std::vector<FileEntry> entries;
+  get_file_entries(entries);
+
+  std::cout << "Checking File Existance:" << std::endl;
+  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+    {
+      if (!Filesystem::exist(i->filename))
+        {
+          std::cout << i->filename << ": does not exist" << std::endl;
+        }
+      else
+        {
+          std::cout << i->filename << ": ok" << std::endl;
+        }
+    } 
+
+  /* FIXME: Do magic to detect duplicate file entries and other potential damage to the database (are missing tiles an error?) 
+
+    SQLiteStatement duplicates_stmt(db);
+    duplicates_stmt.prepare("SELECT * IN files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
+    SELECT filename,
+    COUNT(filename) AS NumOccurrences
+    FROM files
+    GROUP BY filename
+    HAVING ( COUNT(filename) > 1 )
+    
+    SQLiteReader reader = duplicates_stmt.execute_query();
+  */
 }
 
 /* EOF */
