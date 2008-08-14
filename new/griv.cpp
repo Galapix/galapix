@@ -63,6 +63,25 @@ Griv::~Griv()
 }
 
 void
+Griv::cleanup(const std::string& database)
+{
+  SQLiteConnection db(database);
+  db.vacuum();
+}
+
+void
+Griv::check(const std::string& database)
+{
+  SQLiteConnection db(database);
+
+  FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
+
+  file_db.check();
+  tile_db.check();
+}
+
+void
 Griv::generate_tiles(const std::string& database, const std::vector<std::string>& filenames)
 {
   SQLiteConnection db(database);
@@ -135,6 +154,8 @@ void
 Griv::print_usage()
 {
       std::cout << "Usage: griv view    [OPTIONS]... [FILES]...\n"
+                << "       griv check   [OPTIONS]... [FILES]...\n"
+                << "       griv cleanup [OPTIONS]... [FILES]...\n"
                 << "       griv prepare [OPTIONS]... [FILES]...\n"
                 << "\n"
                 << "Options:\n"
@@ -195,6 +216,14 @@ Griv::main(int argc, char** argv)
       if (strcmp(argv[1], "view") == 0)
         {
           view(database, filenames);
+        }
+      else if (strcmp(argv[1], "check") == 0)
+        {
+          check(database);
+        }
+      else if (strcmp(argv[1], "cleanup") == 0)
+        {
+          cleanup(database);
         }
       else if (strcmp(argv[1], "prepare") == 0)
         {
