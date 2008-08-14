@@ -23,52 +23,23 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_DISPLAY_HPP
-#define HEADER_DISPLAY_HPP
-
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <sstream>
-#include <stdexcept>
-#include <math.h>
-#include "SDL.h"
+#ifndef HEADER_MATH_RGB_HPP
+#define HEADER_MATH_RGB_HPP
 
-class RGB;
-class Size;
-class Rectf;
-
-static inline void assert_gl(const char* message)
+class RGB
 {
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
-  }
-}
-
-class Framebuffer
-{
-private:
-  static SDL_Surface* screen;
-  static Uint32 flags;
-
 public:
-  static void set_video_mode(const Size& size);
+  uint8_t r;
+  uint8_t g; 
+  uint8_t b;
 
-  static void toggle_fullscreen();
+  RGB()
+    : r(0), g(0), b(0)
+  {}
 
-  static int get_width()  { return screen->w; }
-  static int get_height() { return screen->h; }
-
-  static SDL_Surface* get_screen() { return screen; }
-  static void resize(int w, int h);
-  static void flip();
-  static void clear();
-
-  static void draw_rect(const Rectf& rect);
-  static void fill_rect(const Rectf& rect, const RGB& rgb);
+  RGB(uint8_t r, uint8_t g, uint8_t b)
+    : r(r), g(g), b(b)
+  {}
 };
 
 #endif
