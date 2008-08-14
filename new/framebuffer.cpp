@@ -26,6 +26,7 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include "math/rgb.hpp"
 #include "SDL_syswm.h"
 #include "math/rect.hpp"
 #include "framebuffer.hpp"
@@ -153,6 +154,20 @@ Framebuffer::draw_rect(const Rectf& rect)
     }
 
   //glDisable(GL_BLEND);
+}
+
+void
+Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
+{
+  glDisable(GL_TEXTURE_RECTANGLE_ARB);
+
+  glColor3ub(rgb.r, rgb.g, rgb.b);
+  glBegin(GL_QUADS);
+  glVertex2f(rect.left,  rect.top);
+  glVertex2f(rect.right, rect.top);
+  glVertex2f(rect.right, rect.bottom);
+  glVertex2f(rect.left,  rect.bottom);
+  glEnd();
 }
 
 /* EOF */
