@@ -59,6 +59,7 @@ private:
   SQLiteConnection* db;
   SQLiteStatement store_stmt;
   SQLiteStatement get_by_filename_stmt;
+  SQLiteStatement get_all_stmt;
   SQLiteStatement get_by_file_id_stmt;
 
   int  store_file_entry(FileEntry& entry);
@@ -80,6 +81,9 @@ public:
       @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
   bool get_file_entry(const std::string& filename, FileEntry* entry);
+  void get_file_entries(std::vector<FileEntry>& entries);
+
+  void check();
 
 private:
   FileDatabase (const FileDatabase&);

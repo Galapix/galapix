@@ -33,6 +33,7 @@
 
 enum DatabaseMessageType 
 {
+  DATABASE_ALL_FILES_MESSAGE,
   DATABASE_FILE_MESSAGE,
   DATABASE_TILE_MESSAGE,
   DATABASE_STORE_TILE_MESSAGE
@@ -84,7 +85,18 @@ public:
       callback(callback)
   {}
 };
+
+class AllFilesDatabaseMessage : public DatabaseMessage
+{
+public:
+  boost::function<void (FileEntry)> callback;
 
+  AllFilesDatabaseMessage(const boost::function<void (FileEntry)>& callback)
+    : DatabaseMessage(DATABASE_ALL_FILES_MESSAGE),
+      callback(callback)
+  {
+  }
+};
 
 class StoreTileDatabaseMessage : public DatabaseMessage
 {
@@ -121,6 +133,12 @@ void
 DatabaseThread::request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback)
 {
   queue.push(new FileDatabaseMessage(filename, callback));
+}
+
+void
+DatabaseThread::request_all_files(const boost::function<void (FileEntry)>& callback)
+{
+  queue.push(new AllFilesDatabaseMessage(callback));
 }
 
 void
@@ -186,6 +204,18 @@ DatabaseThread::run()
                   else
                     {
                       std::cout << "Error: Couldn't get FileEntry for " << file_msg->filename << std::endl;
+                    }
+                }
+                break;
+
+              case DATABASE_ALL_FILES_MESSAGE:
+                {
+                  AllFilesDatabaseMessage* all_files_msg = static_cast<AllFilesDatabaseMessage*>(msg);
+                  std::vector<FileEntry> entries;
+                  file_db.get_file_entries(entries);
+                  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+                    {
+                      all_files_msg->callback(*i);
                     }
                 }
                 break;
