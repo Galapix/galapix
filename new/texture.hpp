@@ -37,7 +37,7 @@ class Texture
 {
 public:
   Texture();
-  Texture(const Size& size, const SoftwareSurface& src, const Rect& srcrect);
+  Texture(const SoftwareSurface& src, const Rect& srcrect);
   ~Texture();
 
   int get_width() const;

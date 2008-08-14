@@ -45,9 +45,8 @@ public:
   GLuint handle;
   Size   size;
 
-  TextureImpl(const Size& size_,
-              const SoftwareSurface& src, const Rect& srcrect)
-    : size(size_)
+  TextureImpl(const SoftwareSurface& src, const Rect& srcrect)
+    : size(srcrect.get_size())
   {
     glGenTextures(1, &handle);
   
@@ -56,42 +55,18 @@ public:
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, handle);
     glEnable(GL_TEXTURE_RECTANGLE_ARB);
 
-    char* pixels = 0;
-    if (size.width  != srcrect.get_height() || 
-        size.height != srcrect.get_height())
-      {
-        pixels = new char[size.get_area() * 3];
-        memset(pixels, 0, size.get_area() * 3);
-      }
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
 
     glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB,
                  size.width, size.height,
                  0, /* border */
                  GL_RGB,
                  GL_UNSIGNED_BYTE,
-                 pixels);
-    delete[] pixels;
+                 src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left*3));
 
     assert_gl("packing image texture");
     
-    //if (src.get_pitch() % 3 != 0)
-    //{
-    //std::cout << "pitch: " << src.get_pitch() << " width: " << src.get_width() << std::endl;
-    ////assert(!"Align issue");
-    //}
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_pitch()/3);
-    
-    // Upload the subimage
-    glTexSubImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, 
-                    0, size.height-srcrect.get_height(),
-                    srcrect.get_width(), srcrect.get_height(), GL_RGB,
-                    GL_UNSIGNED_BYTE, 
-                    src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * 3));
-
-    assert_gl("creating texture");
-
     glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S,     GL_CLAMP);
@@ -110,9 +85,8 @@ Texture::Texture()
 {
 }
 
-Texture::Texture(const Size& size,
-                 const SoftwareSurface& src, const Rect& srcrect)
-  : impl(new TextureImpl(size, src, srcrect))
+Texture::Texture(const SoftwareSurface& src, const Rect& srcrect)
+  : impl(new TextureImpl(src, srcrect))
 {
 }
 

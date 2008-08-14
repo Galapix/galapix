@@ -53,7 +53,7 @@ public:
   {
     assert(src);
 
-    texture = Texture(srcrect.get_size(), src, srcrect);
+    texture = Texture(src, srcrect);
     
     uv = Rectf(Vector2f(0, 0), srcrect.get_size());
 
