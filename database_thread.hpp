@@ -57,8 +57,11 @@ public:
   virtual ~DatabaseThread();
   
   void stop();
+  
   void request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (Tile)>& callback);
   void request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
+
+  void store_tile(const Tile& tile);
 
 private:
   DatabaseThread (const DatabaseThread&);

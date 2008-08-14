@@ -28,12 +28,14 @@
 #include "sqlite.h"
 #include "file_database.hpp"
 #include "tile_database.hpp"
+#include "tile_generator_thread.hpp"
 #include "database_thread.hpp"
 
 enum DatabaseMessageType 
 {
   DATABASE_FILE_MESSAGE,
   DATABASE_TILE_MESSAGE,
+  DATABASE_STORE_TILE_MESSAGE
 };
 
 class DatabaseMessage
@@ -82,6 +84,18 @@ public:
       callback(callback)
   {}
 };
+
+
+class StoreTileDatabaseMessage : public DatabaseMessage
+{
+public:
+  Tile tile;
+
+  StoreTileDatabaseMessage(const Tile& tile)
+    : DatabaseMessage(DATABASE_STORE_TILE_MESSAGE),
+      tile(tile)
+  {}
+};
 
 DatabaseThread* DatabaseThread::current_ = 0;
 
@@ -107,6 +121,12 @@ void
 DatabaseThread::request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback)
 {
   queue.push(new FileDatabaseMessage(filename, callback));
+}
+
+void
+DatabaseThread::store_tile(const Tile& tile)
+{
+  queue.push(new StoreTileDatabaseMessage(tile));
 }
 
 void
@@ -145,6 +165,13 @@ DatabaseThread::run()
 
           switch(msg->type)
             {
+              case DATABASE_STORE_TILE_MESSAGE:
+                {
+                  StoreTileDatabaseMessage* tile_msg = static_cast<StoreTileDatabaseMessage*>(msg);
+                  tile_db.store_tile(tile_msg->tile);
+                }
+                break;
+
               case DATABASE_FILE_MESSAGE:
                 {
                   FileDatabaseMessage* file_msg = static_cast<FileDatabaseMessage*>(msg);
@@ -179,6 +206,7 @@ DatabaseThread::run()
                                 << tile_msg->y << " "
                                 << tile_msg->tilescale
                                 << std::endl;
+                      
                     }
                 }
                 break;

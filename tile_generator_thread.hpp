@@ -23,33 +23,43 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_TILE_GENERATOR_HPP
-#define HEADER_TILE_GENERATOR_HPP
+#ifndef HEADER_TILE_GENERATOR_THREAD_HPP
+#define HEADER_TILE_GENERATOR_THREAD_HPP
 
-#include <boost/function.hpp>
-#include <string>
-#include "software_surface.hpp"
-#include "tile_database.hpp"
+#include "thread.hpp"
+#include "thread_message_queue.hpp"
 
-class TileGenerator
+struct TileGeneratorMessage
+{
+  int fileid;
+  std::string filename;
+};
+
+class TileGeneratorThread : public Thread
 {
 private:
-
+  static TileGeneratorThread* current_; 
 public:
-  TileGenerator();
-  ~TileGenerator();
-
-  /** Slow brute force approach to generate tiles, works with all
-      image formats */
-  void generate_all(int fileid, const SoftwareSurface& surface,
-                    const boost::function<void (Tile)>& callback);
-
-  void generate_all(int fileid, const std::string& filename,
-                    const boost::function<void (Tile)>& callback);
+  static TileGeneratorThread* current() { return current_; }
 
 private:
-  TileGenerator (const TileGenerator&);
-  TileGenerator& operator= (const TileGenerator&);
+  bool quit;
+  ThreadMessageQueue<TileGeneratorMessage> msg_queue;
+
+protected:
+  int run();
+  
+public:
+  TileGeneratorThread();
+  ~TileGeneratorThread();
+
+  void stop();
+  void request_tiles(int fileid, const std::string& filename);
+  void receive_tile(const Tile& tile);
+  
+private:
+  TileGeneratorThread (const TileGeneratorThread&);
+  TileGeneratorThread& operator= (const TileGeneratorThread&);
 };
 
 #endif

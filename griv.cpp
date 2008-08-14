@@ -46,6 +46,7 @@
 #include "database_thread.hpp"
 #include "filesystem.hpp"
 #include "tile_generator.hpp"
+#include "tile_generator_thread.hpp"
 #include "workspace.hpp"
 #include "viewer_thread.hpp"
 #include "viewer.hpp"
@@ -85,7 +86,8 @@ Griv::generate_tiles(const std::string& database, const std::vector<std::string>
           std::cout << "Generating tiles... " << filenames[i]  << std::endl;
           SoftwareSurface surface = SoftwareSurface::from_file(filenames[i]);
           
-          tile_generator.generate(entry.fileid, surface, tile_db);
+          tile_generator.generate_all(entry.fileid, surface, 
+                                      boost::bind(&TileDatabase::store_tile, &tile_db, _1));
         }
     }
 }
@@ -101,14 +103,21 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
   atexit(SDL_Quit); 
 
   DatabaseThread database_thread(database);
+  TileGeneratorThread tile_generator_thread;
   ViewerThread viewer_thread;
 
   database_thread.start();
+  tile_generator_thread.start();
 
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
-    database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+    {
+      database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+    }
 
   viewer_thread.run();
+
+  tile_generator_thread.stop();
+  tile_generator_thread.join();
 
   database_thread.stop();
   database_thread.join();

@@ -29,6 +29,7 @@
 #include "framebuffer.hpp"
 #include "viewer.hpp"
 #include "viewer_thread.hpp"
+#include "tile_generator_thread.hpp"
 #include "database_thread.hpp"
 
 ViewerThread* ViewerThread::current_ = 0;
@@ -46,6 +47,7 @@ void
 ViewerThread::receive_file(const FileEntry& entry)
 {
   file_queue.push(entry);
+  //TileGeneratorThread::current()->request_tiles(entry.fileid, entry.filename);
 }
 
 void
