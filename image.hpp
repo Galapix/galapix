@@ -43,7 +43,16 @@ class ImageImpl;
 class Image
 {
 public:
-  typedef std::map<uint32_t, Surface> Cache; 
+  struct SurfaceStruct {
+    enum Status { SURFACE_OK,
+                  SURFACE_REQUESTED,
+                  SURFACE_FAILED };
+
+    Status  status;
+    Surface surface;
+  };
+
+  typedef std::map<uint32_t, SurfaceStruct> Cache; 
 
 private:
   Surface get_tile(int x, int y, int tile_scale);
