@@ -42,6 +42,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
   : db(db),
     store_stmt(db),
     get_by_filename_stmt(db),
+    get_all_stmt(db),
     get_by_file_id_stmt(db)
 {
   db->exec("CREATE TABLE IF NOT EXISTS files ("
@@ -58,6 +59,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
   store_stmt.prepare("INSERT INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
   get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
   get_by_file_id_stmt.prepare("SELECT * FROM files WHERE rowid = ?1;");
+  get_all_stmt.prepare("SELECT * FROM files");
 }
  
 FileDatabase::~FileDatabase()
@@ -128,6 +130,26 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
 }
 
 void
+FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
+{
+  SQLiteReader reader = get_all_stmt.execute_query();
+
+  while (reader.next())  
+    {
+      FileEntry entry;
+      entry.fileid      = reader.get_int (0);
+      entry.filename    = reader.get_text(1);
+      entry.md5         = reader.get_text(2);
+      entry.filesize    = reader.get_int (3);
+      entry.size.width  = reader.get_int (4);
+      entry.size.height = reader.get_int (5);
+      entry.mtime       = reader.get_int (6);
+
+      entries.push_back(entry);
+    }
+}
+
+void
 FileDatabase::delete_file_entry(uint32_t fileid)
 {
   // DELETE FROM files WHERE fileid = ?fileid
@@ -137,6 +159,13 @@ void
 FileDatabase::update_file_entry(FileEntry& entry)
 {
   // UPDATE files SET mtime = ?entry.get_mtime() WHERE fileid = ?entry.fileid
+}
+
+void
+FileDatabase::check()
+{
+  //SQLiteStatement file_exist_stmt;
+  //file_exist.prepare("SELECT INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
 }
 
 /* EOF */

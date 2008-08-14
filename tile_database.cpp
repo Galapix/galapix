@@ -93,5 +93,11 @@ TileDatabase::store_tile(const Tile& tile)
 
   store_stmt.execute();
 }
+
+void
+TileDatabase::check()
+{
+  
+}
   
 /* EOF */

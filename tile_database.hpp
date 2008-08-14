@@ -51,7 +51,7 @@ public:
   
   bool get_tile(uint32_t file_id, int scale, int x, int y, Tile& tile);
   void store_tile(const Tile& tile);
-  
+  void check();
 private:
   TileDatabase (const TileDatabase&);
   TileDatabase& operator= (const TileDatabase&);

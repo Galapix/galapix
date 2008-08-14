@@ -109,9 +109,17 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
   database_thread.start();
   tile_generator_thread.start();
 
-  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+  if (filenames.empty())
     {
-      database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+      // When no files are given, display everything in the database
+      database_thread.request_all_files(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+    }
+  else
+    {
+      for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+        {
+          database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+        }
     }
 
   viewer_thread.run();
