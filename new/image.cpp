@@ -263,8 +263,26 @@ Image::draw(const Rectf& cliprect, float fscale)
       // FIXME: We also need to purge the cache more often, since with
       // big images we would end up never clearing it
       
-      // Do not clear everything, keep a minimal tile there
+      // Clear the cache, but keep the smallest tile (Wonky hack)
+      int max_tiledb_scale = 0;
+      SurfaceStruct s;
+      int tileid;
+      for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
+        {
+          int tiledb_scale = (i->first >> 16);
+          if (tiledb_scale > max_tiledb_scale)
+            {
+              max_tiledb_scale = tiledb_scale;
+              tileid = i->first;
+              s      = i->second;
+            }
+        }
       impl->cache.clear();
+
+      if (max_tiledb_scale != 0)
+        {
+          impl->cache[tileid] = s;
+        }
     }
 }
 
