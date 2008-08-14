@@ -167,15 +167,19 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
     {
       // Look for the next smaller tile
       // FIXME: Rewrite this to work all smaller tiles, not just the next
-      int downscale = Math::pow2(1);
+      
+      int downscale_factor = 1;
 
-      uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+1);
+    retry:
+      int downscale = Math::pow2(downscale_factor);
+
+      uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+downscale_factor);
       Cache::iterator i = impl->cache.find(cache_id);
   
       if (i != impl->cache.end() && i->second.surface)
         { // Must only draw relevant section!
-          Size s((x%downscale) ? (i->second.surface.get_width()  - 256/downscale) : 256/downscale,
-                 (y%downscale) ? (i->second.surface.get_height() - 256/downscale) : 256/downscale);
+          Size s((x%downscale) ? (i->second.surface.get_width()  - 256/downscale * (x%downscale)) : 256/downscale,
+                 (y%downscale) ? (i->second.surface.get_height() - 256/downscale * (y%downscale)) : 256/downscale);
 
           s.width  = Math::min(i->second.surface.get_width(),  s.width);
           s.height = Math::min(i->second.surface.get_height(), s.height);
@@ -183,6 +187,18 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
           i->second.surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
                                        s),
                                  Rectf(pos, s * scale * downscale));
+        }
+      else
+        {
+          if (downscale_factor < 6) // Make this 'max_scale' instead of random number
+            {
+              downscale_factor += 1;
+              goto retry;
+            }
+          else
+            {
+              // give up, no lower resolution found
+            }
         }
     }
 }

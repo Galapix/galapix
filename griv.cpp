@@ -66,7 +66,9 @@ void
 Griv::cleanup(const std::string& database)
 {
   SQLiteConnection db(database);
+  std::cout << "Running database cleanup routines, this process can multiple minutes" << std::endl;
   db.vacuum();
+  std::cout << "Running database cleanup routines done" << std::endl;
 }
 
 void
