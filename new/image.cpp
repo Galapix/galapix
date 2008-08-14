@@ -140,11 +140,18 @@ Image::get_tile(int x, int y, int tile_scale)
     {
       ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this);
 
-      return impl->cache[cache_id] = Surface(); // We add an empty surface, so we don't do duplicate requests
+      SurfaceStruct s;
+      
+      s.surface = Surface();
+      s.status  = SurfaceStruct::SURFACE_REQUESTED;
+
+      impl->cache[cache_id] = s;
+
+      return Surface();
     }
   else
     {
-      return i->second;
+      return i->second.surface;
     }
 }
 
@@ -160,22 +167,22 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
     {
       // Look for the next smaller tile
       // FIXME: Rewrite this to work all smaller tiles, not just the next
-      uint32_t cache_id = make_cache_id(x/2, y/2, tiledb_scale+1);
+      int downscale = Math::pow2(1);
+
+      uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+1);
       Cache::iterator i = impl->cache.find(cache_id);
   
-      if (i != impl->cache.end() && i->second)
+      if (i != impl->cache.end() && i->second.surface)
         { // Must only draw relevant section!
-          Size s((x%2) ? (i->second.get_width()  - 128) : 128,
-                 (y%2) ? (i->second.get_height() - 128) : 128);
+          Size s((x%downscale) ? (i->second.surface.get_width()  - 256/downscale) : 256/downscale,
+                 (y%downscale) ? (i->second.surface.get_height() - 256/downscale) : 256/downscale);
 
-          s.width  = Math::min(i->second.get_width(),  s.width);
-          s.height = Math::min(i->second.get_height(), s.height);
+          s.width  = Math::min(i->second.surface.get_width(),  s.width);
+          s.height = Math::min(i->second.surface.get_height(), s.height);
           
-          //std::cout << x%2 << ":" << y%2 << " " << i->second.get_size() << " -> " << s << std::endl;
-
-          i->second.draw(Rectf(Vector2f(x%2, y%2) * 128, 
-                               s),
-                         Rectf(pos, s * scale * 2));
+          i->second.surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
+                                       s),
+                                 Rectf(pos, s * scale * downscale));
         }
     }
 }
@@ -249,7 +256,13 @@ void
 Image::receive_tile(int x, int y, int tiledb_scale, const SoftwareSurface& surface)
 {
   int tile_id = make_cache_id(x, y, tiledb_scale);
-  impl->cache[tile_id] = Surface(surface);
+
+  SurfaceStruct s;
+  
+  s.surface = Surface(surface);
+  s.status  = SurfaceStruct::SURFACE_OK;
+
+  impl->cache[tile_id] = s;
 }
 
 /* EOF */
