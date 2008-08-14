@@ -38,7 +38,8 @@ TileGenerator::~TileGenerator()
 }
 
 void
-TileGenerator::generate(int fileid, const SoftwareSurface& surface_, TileDatabase& tile_db)
+TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_, 
+                            const boost::function<void (Tile)>& callback)
 {
   int scale = 0;
 
@@ -65,7 +66,7 @@ TileGenerator::generate(int fileid, const SoftwareSurface& surface_, TileDatabas
             tile.y = y;
             tile.surface = croped_surface;
           
-            tile_db.store_tile(tile);
+            callback(tile);
           }
 
       scale += 1;
@@ -73,6 +74,13 @@ TileGenerator::generate(int fileid, const SoftwareSurface& surface_, TileDatabas
       //std::cout << "Scale: " << scale << " - " << surface.get_size() << std::endl;
     } while (surface.get_width() > 32 ||
              surface.get_height() > 32);
+}
+
+void
+TileGenerator::generate_all(int fileid, const std::string& filename,
+                            const boost::function<void (Tile)>& callback)
+{
+  generate_all(fileid, SoftwareSurface::from_file(filename), callback);
 }
 
 /* EOF */

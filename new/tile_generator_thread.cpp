@@ -23,35 +23,69 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_TILE_GENERATOR_HPP
-#define HEADER_TILE_GENERATOR_HPP
-
-#include <boost/function.hpp>
-#include <string>
-#include "software_surface.hpp"
-#include "tile_database.hpp"
+#include <iostream>
+#include <boost/bind.hpp>
+#include "tile_generator.hpp"
+#include "database_thread.hpp"
+#include "tile_generator_thread.hpp"
+ 
+TileGeneratorThread* TileGeneratorThread::current_ = 0; 
 
-class TileGenerator
+TileGeneratorThread::TileGeneratorThread()
+  : quit(false)
 {
-private:
+  current_ = this;
+}
 
-public:
-  TileGenerator();
-  ~TileGenerator();
+TileGeneratorThread::~TileGeneratorThread()
+{
+}
 
-  /** Slow brute force approach to generate tiles, works with all
-      image formats */
-  void generate_all(int fileid, const SoftwareSurface& surface,
-                    const boost::function<void (Tile)>& callback);
+void
+TileGeneratorThread::request_tiles(int fileid, const std::string& filename)
+{
+  TileGeneratorMessage msg;
 
-  void generate_all(int fileid, const std::string& filename,
-                    const boost::function<void (Tile)>& callback);
+  msg.fileid   = fileid;
+  msg.filename = filename;
 
-private:
-  TileGenerator (const TileGenerator&);
-  TileGenerator& operator= (const TileGenerator&);
-};
+  msg_queue.push(msg);
+}
+
+void
+TileGeneratorThread::stop()
+{
+  quit = true;
+}
 
-#endif
+void
+TileGeneratorThread::receive_tile(const Tile& tile)
+{
+  DatabaseThread::current()->store_tile(tile);
+}
+
+int
+TileGeneratorThread::run()
+{
+  quit = false;
 
+  TileGenerator generator;
+
+  while(!quit)
+    {
+      while(!msg_queue.empty())
+        {
+          TileGeneratorMessage msg = msg_queue.front();
+          msg_queue.pop();
+
+          std::cout << "Generating tiles for: " << msg.filename << std::endl;
+          generator.generate_all(msg.fileid, msg.filename,
+                                 boost::bind(&TileGeneratorThread::receive_tile, this, _1));
+        }
+      msg_queue.wait();
+    }
+
+  return 0;
+}
+
 /* EOF */
