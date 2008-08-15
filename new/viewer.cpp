@@ -72,7 +72,8 @@ Viewer::Viewer()
   : quit(false),
     force_redraw(false),
     drag_n_drop(false),
-    zoom_button(0)
+    zoom_button(0),
+    gamma(1.0f)
 {
 }
 
@@ -101,6 +102,21 @@ Viewer::process_event(const SDL_Event& event)
             case SDLK_ESCAPE:
               quit = true;
               break;
+
+            case SDLK_PAGEUP:
+                gamma *= 1.1f;
+                SDL_SetGamma(gamma, gamma, gamma);
+              break;
+
+            case SDLK_PAGEDOWN:
+                gamma /= 1.1f;
+                SDL_SetGamma(gamma, gamma, gamma);
+                break;
+                
+            case SDLK_END:
+                gamma = 1.0f;
+                SDL_SetGamma(gamma, gamma, gamma);
+                break;
 
             default:
               // ignore all other keypresses
