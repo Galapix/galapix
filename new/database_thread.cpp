@@ -55,15 +55,19 @@ public:
 class TileDatabaseMessage : public DatabaseMessage
 {
 public:
+  JobHandle job_handle;
+
   int fileid;
   int tilescale;
   int x;
   int y;
   boost::function<void (Tile)> callback;
 
-  TileDatabaseMessage(int fileid, int tilescale, int x, int y,
+  TileDatabaseMessage(const JobHandle& job_handle,
+                      int fileid, int tilescale, int x, int y,
                       const boost::function<void (Tile)>& callback)
     : DatabaseMessage(DATABASE_TILE_MESSAGE),
+      job_handle(job_handle),
       fileid(fileid),
       tilescale(tilescale),
       x(x),
@@ -123,10 +127,12 @@ DatabaseThread::~DatabaseThread()
 {
 }
 
-void
+JobHandle
 DatabaseThread::request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (Tile)>& callback)
 {
-  queue.push(new TileDatabaseMessage(fileid, tilescale, x, y, callback));
+  JobHandle job_handle;
+  queue.push(new TileDatabaseMessage(job_handle, fileid, tilescale, x, y, callback));
+  return job_handle;
 }
 
 void
@@ -223,22 +229,29 @@ DatabaseThread::run()
               case DATABASE_TILE_MESSAGE:
                 {
                   TileDatabaseMessage* tile_msg = static_cast<TileDatabaseMessage*>(msg);
-                  Tile tile;
-                  if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->x, tile_msg->y, tile))
-                    {
-                      tile_msg->callback(tile);
-                    }
-                  else
-                    {
-                      if (0)
-                        std::cout << "Error: Couldn't get tile: " 
-                                  << tile_msg->fileid << " "
-                                  << tile_msg->x << " "
-                                  << tile_msg->y << " "
-                                  << tile_msg->tilescale
-                                  << std::endl;
 
-                      // TileGeneratorThread::request_tile(fileid, x, y, tilescale);
+                  if (!tile_msg->job_handle.is_aborted())
+                    {
+                      Tile tile;
+                      if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->x, tile_msg->y, tile))
+                        {
+                          tile_msg->callback(tile);
+                          tile_msg->job_handle.finish();
+                        }
+                      else
+                        {
+                          if (0)
+                            std::cout << "Error: Couldn't get tile: " 
+                                      << tile_msg->fileid << " "
+                                      << tile_msg->x << " "
+                                      << tile_msg->y << " "
+                                      << tile_msg->tilescale
+                                      << std::endl;
+
+                          tile_msg->job_handle.finish();
+                          // Need to send error back
+                          // TileGeneratorThread::request_tile(fileid, x, y, tilescale);
+                        }
                     }
                 }
                 break;

@@ -61,11 +61,11 @@ ViewerThread::receive_tile(const Image& image, const Tile& tile)
   tile_queue.push(msg);
 }
 
-void 
+JobHandle 
 ViewerThread::request_tile(int fileid, int tilescale, int x, int y, const Image& image)
 {
-  DatabaseThread::current()->request_tile(fileid, tilescale, x, y,
-                                          boost::bind(&ViewerThread::receive_tile, this, image, _1));
+  return DatabaseThread::current()->request_tile(fileid, tilescale, x, y,
+                                                 boost::bind(&ViewerThread::receive_tile, this, image, _1));
 }
 
 int

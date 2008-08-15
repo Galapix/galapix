@@ -24,6 +24,7 @@ griv_env.Program('griv', [
         'jpeg_memory_src.cpp',
         'jpeg_memory_dest.cpp',
         'jpeg_decoder_thread.cpp',
+        'job_handle.cpp',
         'griv.cpp',
         'image.cpp',
         'md5.cpp',
