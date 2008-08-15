@@ -41,6 +41,7 @@
 #include "url.hpp"
 #include "sqlite.hpp"
 #include "software_surface.hpp"
+#include "jpeg_decoder_thread.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "database_thread.hpp"
@@ -123,10 +124,12 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
     }
   atexit(SDL_Quit); 
 
-  DatabaseThread database_thread(database);
+  JPEGDecoderThread   jpeg_thread;
+  DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;
-  ViewerThread viewer_thread;
+  ViewerThread        viewer_thread;
 
+  jpeg_thread.start();
   database_thread.start();
   tile_generator_thread.start();
 
