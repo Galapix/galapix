@@ -229,7 +229,7 @@ Filesystem::generate_jpeg_file_list(const std::string& pathname, std::vector<std
           Filesystem::has_extension(*i, ".JPEG") ||
           Filesystem::has_extension(*i, ".jpeg"))
         {
-          file_list.push_back("file://" + Filesystem::realpath(*i)); // realpath slow?
+          file_list.push_back(Filesystem::realpath(*i)); // realpath slow?
         }
     }
 }
