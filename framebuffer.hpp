@@ -67,7 +67,7 @@ public:
   static void flip();
   static void clear();
 
-  static void draw_rect(const Rectf& rect);
+  static void draw_rect(const Rectf& rect, const RGB& rgb);
   static void fill_rect(const Rectf& rect, const RGB& rgb);
 };
 

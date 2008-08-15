@@ -25,6 +25,8 @@
 
 #ifndef HEADER_MATH_RGB_HPP
 #define HEADER_MATH_RGB_HPP
+
+#include <stdint.h>
 
 class RGB
 {
