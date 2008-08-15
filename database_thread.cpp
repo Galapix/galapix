@@ -230,13 +230,15 @@ DatabaseThread::run()
                     }
                   else
                     {
-                      std::cout << "Error: Couldn't get tile: " 
-                                << tile_msg->fileid << " "
-                                << tile_msg->x << " "
-                                << tile_msg->y << " "
-                                << tile_msg->tilescale
-                                << std::endl;
-                      
+                      if (0)
+                        std::cout << "Error: Couldn't get tile: " 
+                                  << tile_msg->fileid << " "
+                                  << tile_msg->x << " "
+                                  << tile_msg->y << " "
+                                  << tile_msg->tilescale
+                                  << std::endl;
+
+                      // TileGeneratorThread::request_tile(fileid, x, y, tilescale);
                     }
                 }
                 break;

@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include "math/rgb.hpp"
 #include "math/rect.hpp"
 #include "framebuffer.hpp"
 #include "surface.hpp"
@@ -140,6 +141,14 @@ Image::get_tile(int x, int y, int tile_scale)
     {
       ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this);
 
+      // Request the next smaller tile too, so we get a lower quality
+      // image fast and a higher quality one soon after FIXME: Its
+      // unclear if this actually improves things, also the order of
+      // request gets mungled in the DatabaseThread, we should request
+      // the whole group of lower res tiles at once, instead of one by
+      // one, since that eats up the possible speed up
+      ViewerThread::current()->request_tile(impl->fileid, tile_scale+1, x, y, *this);
+
       SurfaceStruct s;
       
       s.surface = Surface();
@@ -162,6 +171,7 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
   if (surface)
     {
       surface.draw(Rectf(pos, surface.get_size() * scale));
+      //Framebuffer::draw_rect(Rectf(pos, surface.get_size() * scale), RGB(100, 100, 100));
     }
   else
     {
@@ -187,6 +197,7 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
           i->second.surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
                                        s),
                                  Rectf(pos, s * scale * downscale));
+          //Framebuffer::draw_rect(Rectf(pos, s * scale * downscale), RGB(255, 255, 255));
         }
       else
         {
@@ -264,24 +275,31 @@ Image::draw(const Rectf& cliprect, float fscale)
       // big images we would end up never clearing it
       
       // Clear the cache, but keep the smallest tile (Wonky hack)
-      int max_tiledb_scale = 0;
-      SurfaceStruct s;
-      int tileid;
-      for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
+      if (0)
         {
-          int tiledb_scale = (i->first >> 16);
-          if (tiledb_scale > max_tiledb_scale)
-            {
-              max_tiledb_scale = tiledb_scale;
-              tileid = i->first;
-              s      = i->second;
-            }
+          impl->cache.clear();
         }
-      impl->cache.clear();
-
-      if (max_tiledb_scale != 0)
+      else
         {
-          impl->cache[tileid] = s;
+          int max_tiledb_scale = 0;
+          SurfaceStruct s;
+          int tileid;
+          for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
+            {
+              int tiledb_scale = (i->first >> 16);
+              if (tiledb_scale > max_tiledb_scale)
+                {
+                  max_tiledb_scale = tiledb_scale;
+                  tileid = i->first;
+                  s      = i->second;
+                }
+            }
+          impl->cache.clear();
+
+          if (max_tiledb_scale != 0)
+            {
+              impl->cache[tileid] = s;
+            }
         }
     }
 }

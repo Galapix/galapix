@@ -23,72 +23,46 @@
 **  02111-1307, USA.
 */
 
-#include <iostream>
-#include <boost/bind.hpp>
-#include "tile_generator.hpp"
-#include "database_thread.hpp"
-#include "tile_generator_thread.hpp"
- 
-TileGeneratorThread* TileGeneratorThread::current_ = 0; 
+#include "software_surface.hpp"
+#include "jpeg_decoder_thread.hpp"
 
-TileGeneratorThread::TileGeneratorThread()
+JPEGDecoderThread* JPEGDecoderThread::current_ = 0;
+
+JPEGDecoderThread::JPEGDecoderThread()
   : quit(false)
 {
-  current_ = this;
-}
-
-TileGeneratorThread::~TileGeneratorThread()
-{
+  current_ = 0;
 }
 
 void
-TileGeneratorThread::request_tiles(int fileid, const std::string& filename)
+JPEGDecoderThread::request_decode(const Blob& blob,
+                                  const boost::function<void (const SoftwareSurface&)>& callback)
 {
-  TileGeneratorMessage msg;
-
-  msg.fileid   = fileid;
-  msg.filename = filename;
-
-  msg_queue.push(msg);
+  JPEGDecoderThreadMessage msg;
+  msg.blob     = blob;
+  msg.callback = callback;
+  queue.push(msg);
 }
 
-void
-TileGeneratorThread::request_tile(int fileid, const std::string& filename, int x, int y)
-{
-  
-}
-
-void
-TileGeneratorThread::stop()
+void 
+JPEGDecoderThread::stop()
 {
   quit = true;
 }
-
-void
-TileGeneratorThread::receive_tile(const Tile& tile)
-{
-  DatabaseThread::current()->store_tile(tile);
-}
-
+
 int
-TileGeneratorThread::run()
+JPEGDecoderThread::run()
 {
   quit = false;
-
-  TileGenerator generator;
-
-  while(!quit)
+  while (!quit)
     {
-      while(!msg_queue.empty())
+      while(!queue.empty())
         {
-          TileGeneratorMessage msg = msg_queue.front();
-          msg_queue.pop();
-
-          std::cout << "Generating tiles for: " << msg.filename << std::endl;
-          generator.generate_all(msg.fileid, msg.filename,
-                                 boost::bind(&TileGeneratorThread::receive_tile, this, _1));
+          JPEGDecoderThreadMessage msg = queue.front();
+          queue.pop();
+          msg.callback(SoftwareSurface::from_data(msg.blob));
         }
-      msg_queue.wait();
+      queue.wait();
     }
 
   return 0;

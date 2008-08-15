@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include "math/rgb.hpp"
 #include "framebuffer.hpp"
 #include "software_surface.hpp"
 #include "math/vector2f.hpp"
@@ -184,7 +185,7 @@ Viewer::draw(Workspace& workspace)
   Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
 
   if (clip_debug)
-    Framebuffer::draw_rect(cliprect);
+    Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));
   
   workspace.draw(cliprect,
                  state.get_scale());

@@ -23,6 +23,7 @@ griv_env.Program('griv', [
         'jpeg_image.cpp',
         'jpeg_memory_src.cpp',
         'jpeg_memory_dest.cpp',
+        'jpeg_decoder_thread.cpp',
         'griv.cpp',
         'image.cpp',
         'md5.cpp',

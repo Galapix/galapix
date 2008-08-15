@@ -23,46 +23,47 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_TILE_GENERATOR_THREAD_HPP
-#define HEADER_TILE_GENERATOR_THREAD_HPP
+#ifndef HEADER_JPEG_DECODER_THREAD_HPP
+#define HEADER_JPEG_DECODER_THREAD_HPP
 
-#include "thread.hpp"
+#include <boost/function.hpp>
 #include "thread_message_queue.hpp"
+#include "blob.hpp"
+#include "thread.hpp"
+
+class SoftwareSurface;
 
-struct TileGeneratorMessage
-{
-  int fileid;
-  std::string filename;
-};
-
-class TileGeneratorThread : public Thread
+/** Simple thread that takes a binary blob and decodes it to a
+    SoftwareSurface */
+class JPEGDecoderThread : public Thread
 {
 private:
-  static TileGeneratorThread* current_; 
+  static JPEGDecoderThread* current_;
+
 public:
-  static TileGeneratorThread* current() { return current_; }
+  static JPEGDecoderThread* current() { return current_; } 
 
 private:
+  struct JPEGDecoderThreadMessage 
+  {
+    Blob blob;
+    boost::function<void (const SoftwareSurface&)> callback;
+  };
+
+  ThreadMessageQueue<JPEGDecoderThreadMessage> queue;
   bool quit;
-  ThreadMessageQueue<TileGeneratorMessage> msg_queue;
 
 protected:
   int run();
-  
 public:
-  TileGeneratorThread();
-  ~TileGeneratorThread();
+  JPEGDecoderThread();
 
+  void request_decode(const Blob& blob, const boost::function<void (const SoftwareSurface&)>& callback);
   void stop();
 
-  void request_tiles(int fileid, const std::string& filename);
-  void request_tile(int fileid, const std::string& filename, int x, int y);
-
-  void receive_tile(const Tile& tile);
-  
 private:
-  TileGeneratorThread (const TileGeneratorThread&);
-  TileGeneratorThread& operator= (const TileGeneratorThread&);
+  JPEGDecoderThread (const JPEGDecoderThread&);
+  JPEGDecoderThread& operator= (const JPEGDecoderThread&);
 };
 
 #endif
