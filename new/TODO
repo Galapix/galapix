@@ -1,8 +1,11 @@
 [[ Griv ToDo ]]
 
-* implement SoftwareSurface::get_jpeg_data()
-* implement crop
-* implement scale
+* implement fast crop
+* implement linear blending scale
+* move recursive directory code over
+* move image sorting code on workspace over
+* request lower res tiles, before requesting highres tiles
+* move JPEG decoding in a seperate thread so that the database thread can run free with database stuff 
 
 * multi-threading in the tile generator for multicore
 * faster image handling, FreeImage is not good enough
