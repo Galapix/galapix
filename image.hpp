@@ -29,6 +29,7 @@
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <string>
+#include "job_handle.hpp"
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "grid.hpp"
@@ -53,6 +54,7 @@ public:
   };
 
   typedef std::map<uint32_t, SurfaceStruct> Cache; 
+  typedef std::vector<JobHandle> Jobs;
 
 private:
   Surface get_tile(int x, int y, int tile_scale);

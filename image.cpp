@@ -49,6 +49,7 @@ public:
   Vector2f pos;
 
   Image::Cache cache;
+  Image::Jobs jobs;  
   
   ImageImpl() 
   {
@@ -139,7 +140,7 @@ Image::get_tile(int x, int y, int tile_scale)
 
   if (i == impl->cache.end())
     {
-      ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this);
+      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this));
 
       // Request the next smaller tile too, so we get a lower quality
       // image fast and a higher quality one soon after FIXME: Its
@@ -147,7 +148,7 @@ Image::get_tile(int x, int y, int tile_scale)
       // request gets mungled in the DatabaseThread, we should request
       // the whole group of lower res tiles at once, instead of one by
       // one, since that eats up the possible speed up
-      ViewerThread::current()->request_tile(impl->fileid, tile_scale+1, x, y, *this);
+      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->fileid, tile_scale+1, x, y, *this));
 
       SurfaceStruct s;
       
@@ -217,6 +218,14 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
+  // Cancel all old jobs (FIXME: Stupid brute force hack)
+  if (0)
+    {
+      for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
+        i->abort();
+      impl->jobs.clear();
+    }
+
   Rectf image_rect(impl->pos, Sizef(impl->size * impl->scale)); // in world coordinates
 
   //Framebuffer::draw_rect(image_rect);

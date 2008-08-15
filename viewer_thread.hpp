@@ -30,6 +30,7 @@
 #include "thread_message_queue.hpp"
 
 #include "image.hpp"
+#include "job_handle.hpp"
 #include "tile_database.hpp"
 
 class FileEntry;
@@ -62,7 +63,7 @@ public:
   void receive_file(const FileEntry& entry);
   void receive_tile(const Image& image, const Tile& tile);
 
-  void request_tile(int fileid, int tilescale, int x, int y, const Image& image);
+  JobHandle request_tile(int fileid, int tilescale, int x, int y, const Image& image);
 private:
   ViewerThread (const ViewerThread&);
   ViewerThread& operator= (const ViewerThread&);
