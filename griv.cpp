@@ -149,19 +149,21 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
   viewer_thread.run();
 
   tile_generator_thread.stop();
-  tile_generator_thread.join();
-
   database_thread.stop();
+  jpeg_thread.stop();
+
+  tile_generator_thread.join(); 
   database_thread.join();
+  jpeg_thread.join();
 }
 
 void
 Griv::print_usage()
 {
       std::cout << "Usage: griv view    [OPTIONS]... [FILES]...\n"
-                << "       griv check   [OPTIONS]... [FILES]...\n"
-                << "       griv cleanup [OPTIONS]... [FILES]...\n"
                 << "       griv prepare [OPTIONS]... [FILES]...\n"
+                << "       griv check   [OPTIONS]...\n"
+                << "       griv cleanup [OPTIONS]...\n"
                 << "\n"
                 << "Options:\n"
                 << "  -d, --database FILE    Use FILE has database (default: test.sqlite)\n"
@@ -183,7 +185,7 @@ Griv::main(int argc, char** argv)
     }
   else
     {
-      std::vector<std::string> filenames;
+      std::vector<std::string> argument_filenames;
       for(int i = 2; i < argc; ++i)
         {
           if (argv[i][0] == '-')
@@ -214,9 +216,15 @@ Griv::main(int argc, char** argv)
             }
           else
             {
-              filenames.push_back(Filesystem::realpath(argv[i]));
+              argument_filenames.push_back(Filesystem::realpath(argv[i]));
             }
         }
+
+      std::vector<std::string> filenames;
+      for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
+        Filesystem::generate_jpeg_file_list(*i, filenames);
+
+      std::sort(filenames.begin(), filenames.end());
 
       if (strcmp(argv[1], "view") == 0)
         {
