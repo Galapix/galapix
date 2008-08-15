@@ -58,6 +58,7 @@ private:
   bool force_redraw;
   bool drag_n_drop;
   int  zoom_button;
+  float gamma;
 
   Vector2i mouse_pos;
 
