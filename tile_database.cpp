@@ -89,10 +89,6 @@ TileDatabase::store_tile(const Tile& tile)
   store_stmt.bind_int (4, tile.y);
   store_stmt.bind_blob(5, blob);
 
-  std::ostringstream str;
-  str << "/tmp/out-" << tile.fileid << "-" << tile.scale << "-" << tile.x << "-" << tile.y << ".jpg";
-  blob.write_to_file(str.str());
-
   store_stmt.execute();
 }
 
