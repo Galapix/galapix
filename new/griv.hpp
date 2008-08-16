@@ -33,6 +33,7 @@ public:
 
   void cleanup(const std::string& database);
   void check(const std::string& database);
+  void list(const std::string& database);
   void generate_tiles(const std::string& database, 
                       const std::vector<std::string>& filenames);
   void view(const std::string& database, 

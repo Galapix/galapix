@@ -25,7 +25,6 @@
 
 #include <iostream>
 #include <assert.h>
-#include "sqlite.h"
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "tile_generator_thread.hpp"
@@ -249,8 +248,8 @@ DatabaseThread::run()
                                       << std::endl;
 
                           tile_msg->job_handle.finish();
-                          // Need to send error back
-                          // TileGeneratorThread::request_tile(fileid, x, y, tilescale);
+                          // Need to send loading command back
+                          //TileGeneratorThread::request_tile(fileid, x, y, tilescale);
                         }
                     }
                 }

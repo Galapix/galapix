@@ -12,11 +12,16 @@ original image data.
 Required Libraries:
 ===================
 
-libmhash-dev
-libglew1.5-dev
-libjpeg62-dev
+On Ubuntu you have to do a:
+
+apt-get install \
+libsqlite3-dev \
+libmhash-dev \
+libglew1.5-dev \
+libjpeg62-dev \
 scons
-OpenGL
+
+And make sure you have OpenGL installed. For other distributions library names might be a little different.
 
 
 Bugs:
