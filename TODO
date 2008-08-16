@@ -6,11 +6,19 @@
 * move image sorting code on workspace over
 * request lower res tiles, before requesting highres tiles
 * move JPEG decoding in a seperate thread so that the database thread can run free with database stuff 
+
+JPEG Functions:
+===============
+
+* get_size(JpegImage) -> (w, h)
+* crop(JpegImage)  -> JpegImage -> Blob
+* scale(JpegImage) -> JpegImage -> Blob
+* Filename -> JpegImage
+
 
 * multi-threading in the tile generator for multicore
 * faster image handling, FreeImage is not good enough
 * do something about the seams on tile borders (hard, need to save a 1px border, but that screws up the JPEG compression)
-* proper handling of locked DB
 * faster incremental tile generation
 * griv name is already taken
 

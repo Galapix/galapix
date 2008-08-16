@@ -73,15 +73,32 @@ Griv::cleanup(const std::string& database)
 }
 
 void
-Griv::check(const std::string& database)
+Griv::list(const std::string& database)
 {
   SQLiteConnection db(database);
 
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
+  
+  
+}
+
+void
+Griv::check(const std::string& database)
+{
+  SQLiteConnection db(database);
+
+  FileDatabase file_db(&db);
 
   file_db.check();
-  tile_db.check();
+
+  std::vector<FileEntry> entries;
+  file_db.get_file_entries(entries);
+
+  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+    {
+      std::cout << i->filename << std::endl;
+    }
 }
 
 void
@@ -163,6 +180,7 @@ Griv::print_usage()
       std::cout << "Usage: griv view    [OPTIONS]... [FILES]...\n"
                 << "       griv prepare [OPTIONS]... [FILES]...\n"
                 << "       griv check   [OPTIONS]...\n"
+                << "       griv list    [OPTIONS]...\n"
                 << "       griv cleanup [OPTIONS]...\n"
                 << "\n"
                 << "Options:\n"
@@ -233,6 +251,10 @@ Griv::main(int argc, char** argv)
       else if (strcmp(argv[1], "check") == 0)
         {
           check(database);
+        }
+      else if (strcmp(argv[1], "list") == 0)
+        {
+          list(database);
         }
       else if (strcmp(argv[1], "cleanup") == 0)
         {
