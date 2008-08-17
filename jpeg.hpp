@@ -37,7 +37,7 @@ private:
 public:
   static void get_size(const std::string& filename, Size& size);
 
-  static SoftwareSurface load(const std::string& filename);
+  static SoftwareSurface load(const std::string& filename, int scale = 1);
   static SoftwareSurface load(uint8_t* mem, int len);
 
   static void save(const SoftwareSurface& surface, int quality, const std::string& filename);

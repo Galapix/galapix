@@ -73,7 +73,7 @@ JPEG::get_size(const std::string& filename, Size& size)
 }
 
 SoftwareSurface
-JPEG::load(const std::string& filename)
+JPEG::load(const std::string& filename, int scale)
 {
   //std::cout << "-- JPEG::load(" << filename << ")" << std::endl;
 
@@ -97,10 +97,21 @@ JPEG::load(const std::string& filename)
 
   jpeg_read_header(&cinfo, FALSE);
 
+  if (scale != 1)
+    { // scale the image down by scale
+
+      // by default all those values below are on 1
+      cinfo.scale_num           = 1;
+      cinfo.scale_denom         = scale;
+   
+      cinfo.do_fancy_upsampling = FALSE; /* TRUE=apply fancy upsampling */
+      cinfo.do_block_smoothing  = FALSE; /* TRUE=apply interblock smoothing */
+    }
+
   jpeg_start_decompress(&cinfo);
 
-  SoftwareSurface surface(Size(cinfo.image_width, 
-                               cinfo.image_height));
+  SoftwareSurface surface(Size(cinfo.image_width  / scale, 
+                               cinfo.image_height / scale));
   
   if (cinfo.output_components == 3)
     { // RGB Image
