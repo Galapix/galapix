@@ -31,6 +31,8 @@ public:
   void print_usage();
   int main(int argc, char** argv);
 
+  void info(const std::vector<std::string>& filenames);
+  void downscale(const std::vector<std::string>& filenames);
   void cleanup(const std::string& database);
   void check(const std::string& database);
   void list(const std::string& database);

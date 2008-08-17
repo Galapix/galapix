@@ -6,13 +6,14 @@
 * move image sorting code on workspace over
 * request lower res tiles, before requesting highres tiles
 * move JPEG decoding in a seperate thread so that the database thread can run free with database stuff 
+* jpegtran *can't* do crop of large scale JPEGs in small amount of
+  space, so cropping with libjpeg likely won't work
 
 JPEG Functions:
 ===============
 
 * get_size(JpegImage) -> (w, h)
 * crop(JpegImage)  -> JpegImage -> Blob
-* scale(JpegImage) -> JpegImage -> Blob
 * Filename -> JpegImage
 
 

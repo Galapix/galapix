@@ -290,5 +290,111 @@ JPEG::save(const SoftwareSurface& surface, int quality)
   // FIXME: This causes an unnecessary copy, should have a BlobImpl that is based on std::vector<>
   return Blob(data);
 }
+
+#if 0 
+void 
+JPEG::crop()
+{
+  struct jpeg_decompress_struct srcinfo;
+  struct jpeg_compress_struct dstinfo;
+  struct jpeg_error_mgr jsrcerr, jdsterr;
+
+  jvirt_barray_ptr * src_coef_arrays;
+  jvirt_barray_ptr * dst_coef_arrays;
+
+  /* Initialize the JPEG decompression object with default error handling. */
+  srcinfo.err = jpeg_std_error(&jsrcerr);
+  jpeg_create_decompress(&srcinfo);
+
+  /* Initialize the JPEG compression object with default error handling. */
+  dstinfo.err = jpeg_std_error(&jdsterr);
+  jpeg_create_compress(&dstinfo);
+
+  jsrcerr.trace_level = jdsterr.trace_level;
+  srcinfo.mem->max_memory_to_use = dstinfo.mem->max_memory_to_use;
+
+  /* Specify data source for decompression */
+  jpeg_stdio_src(&srcinfo, fp);
+
+  /* Enable saving of extra markers that we want to copy */
+  // jcopy_markers_setup(&srcinfo, copyoption);
+
+  /* Read file header */
+  jpeg_read_header(&srcinfo, TRUE);
+
+  /* Any space needed by a transform option must be requested before
+   * jpeg_read_coefficients so that memory allocation will be done right.
+   */
+  jtransform_request_workspace(&srcinfo, &transformoption);
+
+  /* Read source file as DCT coefficients */
+  src_coef_arrays = jpeg_read_coefficients(&srcinfo);
+
+  /* Initialize destination compression parameters from source values */
+  jpeg_copy_critical_parameters(&srcinfo, &dstinfo);
+
+  /* Adjust destination parameters if required by transform options;
+   * also find out which set of coefficient arrays will hold the output.
+   */
+  dstinfo->image_width = info->output_width;
+  dstinfo->image_height = info->output_height;
+
+  dst_coef_arrays = src_coef_arrays;
+
+  jpeg_stdio_dest(&dstinfo, fp);
+
+  /* Start compressor (note no image data is actually written here) */
+  jpeg_write_coefficients(&dstinfo, dst_coef_arrays);
+
+  /* Copy to the output file any extra markers that we want to preserve */
+  jcopy_markers_execute(&srcinfo, &dstinfo, copyoption);
+
+  // JDIMENSION x_crop_offset, JDIMENSION y_crop_offset,
+   
+  { // Crop
+    JBLOCKARRAY src_buffer, dst_buffer;
+    jpeg_component_info *compptr;
+
+    /* We simply have to copy the right amount of data (the destination's
+     * image size) starting at the given X and Y offsets in the source.
+     */
+    for (int ci = 0; ci < dstinfo->num_components; ci++)
+      {
+        compptr = dstinfo->comp_info + ci;
+        JDIMENSION x_crop_blocks = x_crop_offset * compptr->h_samp_factor;
+        JDIMENSION y_crop_blocks = y_crop_offset * compptr->v_samp_factor;
+
+        for (JDIMENSION dst_blk_y = 0; dst_blk_y < compptr->height_in_blocks; dst_blk_y += compptr->v_samp_factor) 
+          {
+            dst_buffer = (*srcinfo->mem->access_virt_barray)
+              ((j_common_ptr) srcinfo, dst_coef_arrays[ci], dst_blk_y,
+               (JDIMENSION) compptr->v_samp_factor, TRUE);
+
+            src_buffer = (*srcinfo->mem->access_virt_barray)
+              ((j_common_ptr) srcinfo, src_coef_arrays[ci],
+               dst_blk_y + y_crop_blocks,
+               (JDIMENSION) compptr->v_samp_factor, FALSE);
+
+            for (int offset_y = 0; offset_y < compptr->v_samp_factor; offset_y++) 
+              {
+                jcopy_block_row(src_buffer[offset_y] + x_crop_blocks,
+                                dst_buffer[offset_y],
+                                compptr->width_in_blocks);
+              }
+          }
+      }
+  }
+
+  { // Cleanup
+    /* Finish compression and release memory */
+    jpeg_finish_compress(&dstinfo);
+    jpeg_destroy_compress(&dstinfo);
+    jpeg_finish_decompress(&srcinfo);
+    jpeg_destroy_decompress(&srcinfo);
+
+  }
+}
+#endif
+
 
 /* EOF */

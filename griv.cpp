@@ -64,6 +64,35 @@ Griv::~Griv()
 }
 
 void
+Griv::info(const std::vector<std::string>& filenames)
+{
+  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
+    {
+      Size size;
+      JPEG::get_size(*i, size);
+      std::cout << *i << " " << size.width << "x" << size.height << std::endl;
+    }
+}
+
+void
+Griv::downscale(const std::vector<std::string>& filenames)
+{
+  int num = 0;
+  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i, ++num)
+    {
+      std::cout << *i << std::endl;
+      SoftwareSurface surface = JPEG::load(*i, 8);
+
+      std::ostringstream out;
+      out << "/tmp/out-" << num << ".jpg";
+      Blob blob = JPEG::save(surface, 75);
+      blob.write_to_file(out.str());
+
+      std::cout << "Wrote: " << out.str() << std::endl;
+    }  
+}
+
+void
 Griv::cleanup(const std::string& database)
 {
   SQLiteConnection db(database);
@@ -259,6 +288,14 @@ Griv::main(int argc, char** argv)
       else if (strcmp(argv[1], "cleanup") == 0)
         {
           cleanup(database);
+        }
+      else if (strcmp(argv[1], "info") == 0)
+        {
+          info(filenames);
+        }
+      else if (strcmp(argv[1], "downscale") == 0)
+        {
+          downscale(filenames);
         }
       else if (strcmp(argv[1], "prepare") == 0)
         {
