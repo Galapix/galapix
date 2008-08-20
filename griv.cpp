@@ -95,8 +95,9 @@ Griv::downscale(const std::vector<std::string>& filenames)
 void
 Griv::cleanup(const std::string& database)
 {
-  SQLiteConnection db(database);
-  std::cout << "Running database cleanup routines, this process can multiple minutes" << std::endl;
+  SQLiteConnection db(database); 
+  std::cout << "Running database cleanup routines, this process can take multiple minutes." << std::endl;
+   std::cout << "You can interrupt it via Ctrl-c, which won't do harm, but will throw away all the cleanup work done till that point" << std::endl;
   db.vacuum();
   std::cout << "Running database cleanup routines done" << std::endl;
 }
@@ -107,9 +108,14 @@ Griv::list(const std::string& database)
   SQLiteConnection db(database);
 
   FileDatabase file_db(&db);
-  TileDatabase tile_db(&db);
-  
-  
+
+  std::vector<FileEntry> entries;
+  file_db.get_file_entries(entries);
+
+  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+    {
+      std::cout << i->filename << std::endl;
+    }  
 }
 
 void
@@ -120,14 +126,6 @@ Griv::check(const std::string& database)
   FileDatabase file_db(&db);
 
   file_db.check();
-
-  std::vector<FileEntry> entries;
-  file_db.get_file_entries(entries);
-
-  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
-    {
-      std::cout << i->filename << std::endl;
-    }
 }
 
 void
@@ -212,8 +210,17 @@ Griv::print_usage()
                 << "       griv list    [OPTIONS]...\n"
                 << "       griv cleanup [OPTIONS]...\n"
                 << "\n"
+                << "Commands:\n"
+                << "  view      Display the given files\n"
+                << "  prepare   Generate thumbnails for all given images, makes view command faster\n"
+                << "  list      Lists all files in the database\n"
+                << "  check     Checks the database for consistency\n"
+                << "  cleanup   Runs garbage collection on the database\n"
+                << "\n"
                 << "Options:\n"
                 << "  -d, --database FILE    Use FILE has database (default: test.sqlite)\n"
+                << "\n"
+                << "If you do not supply any files, the whole content of the given database will be displayed."
                 << std::endl;
 }
 
