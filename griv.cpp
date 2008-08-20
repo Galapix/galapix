@@ -1,518 +1,327 @@
-#include <vector>
-#include <math.h>
+/*  $Id$
+**   __      __ __             ___        __   __ __   __
+**  /  \    /  \__| ____    __| _/_______/  |_|__|  | |  |   ____
+**  \   \/\/   /  |/    \  / __ |/  ___/\   __\  |  | |  | _/ __ \
+**   \        /|  |   |  \/ /_/ |\___ \  |  | |  |  |_|  |_\  ___/
+**    \__/\  / |__|___|  /\____ /____  > |__| |__|____/____/\___  >
+**         \/          \/      \/    \/                         \/
+**  Copyright (C) 2007 Ingo Ruhnke <grumbel@gmx.de>
+**
+**  This program is free software; you can redistribute it and/or
+**  modify it under the terms of the GNU General Public License
+**  as published by the Free Software Foundation; either version 2
+**  of the License, or (at your option) any later version.
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU General Public License for more details.
+** 
+**  You should have received a copy of the GNU General Public License
+**  along with this program; if not, write to the Free Software
+**  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+**  02111-1307, USA.
+*/
+
+#include <boost/bind.hpp>
+#include <algorithm>
 #include <sstream>
-#include <sys/types.h>
 #include <stdexcept>
 #include <iostream>
-#include "SDL.h"
-#include "SDL_image.h"
+#include <string>
+#include <vector>
+#include <sqlite3.h>
 
-#include "display.hpp"
+#include "jpeg.hpp"
+#include "surface.hpp"
+#include "framebuffer.hpp"
+#include "math/size.hpp"
+#include "math/rect.hpp"
+#include "math/vector2i.hpp"
+#include "url.hpp"
+#include "sqlite.hpp"
+#include "software_surface.hpp"
+#include "jpeg_decoder_thread.hpp"
+#include "file_database.hpp"
+#include "tile_database.hpp"
+#include "database_thread.hpp"
+#include "filesystem.hpp"
+#include "tile_generator.hpp"
+#include "tile_generator_thread.hpp"
 #include "workspace.hpp"
-#include "loader.hpp"
-#include "image.hpp"
-#include "command_line.hpp"
-#include "file_entry_cache.hpp"
-
-float x_offset = 0.0f;
-float y_offset = 0.0f;
-std::string config_home;
-bool force_redraw = true;
-bool highquality  = false;
-FileEntryCache* cache;
-
+#include "viewer_thread.hpp"
+#include "viewer.hpp"
+#include "griv.hpp"
+
 Griv::Griv()
 {
-  zoom_in_pressed = false;
-  zoom_out_pressed = false;
-  grid_size = 2;
-  draw_grid = false;
-  grid_color = true;
-  drag_toggle = false;
-  gamma = 1.0f;
+  Filesystem::init();
 }
 
 Griv::~Griv()
 {
+  Filesystem::deinit();
 }
 
 void
-Griv::gl_draw_grid(int grid_size)
+Griv::info(const std::vector<std::string>& filenames)
 {
-  glBindTexture(GL_TEXTURE_2D, 0);
-  glBegin(GL_LINES);
-  if (grid_color)
-    glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-  else
-    glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-
-  for(int x = Framebuffer::get_width()/grid_size;
-      x < Framebuffer::get_width(); 
-      x += Framebuffer::get_width()/grid_size)
+  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
-      glVertex2f(x, 0);
-      glVertex2f(x, Framebuffer::get_height());
+      Size size;
+      JPEG::get_size(*i, size);
+      std::cout << *i << " " << size.width << "x" << size.height << std::endl;
     }
-
-  for(int y = Framebuffer::get_height()/grid_size;
-      y < Framebuffer::get_height(); y += Framebuffer::get_height()/grid_size)
-    {
-      glVertex2f(0, y);
-      glVertex2f(Framebuffer::get_width(), y);
-    }
-  glEnd();
 }
 
 void
-Griv::process_events(float delta)
+Griv::downscale(const std::vector<std::string>& filenames)
 {
-  SDL_Event event;
-  while (SDL_PollEvent(&event))
+  int num = 0;
+  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i, ++num)
     {
-      switch(event.type)
+      std::cout << *i << std::endl;
+      SoftwareSurface surface = JPEG::load(*i, 8);
+
+      std::ostringstream out;
+      out << "/tmp/out-" << num << ".jpg";
+      Blob blob = JPEG::save(surface, 75);
+      blob.write_to_file(out.str());
+
+      std::cout << "Wrote: " << out.str() << std::endl;
+    }  
+}
+
+void
+Griv::cleanup(const std::string& database)
+{
+  SQLiteConnection db(database);
+  std::cout << "Running database cleanup routines, this process can multiple minutes" << std::endl;
+  db.vacuum();
+  std::cout << "Running database cleanup routines done" << std::endl;
+}
+
+void
+Griv::list(const std::string& database)
+{
+  SQLiteConnection db(database);
+
+  FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
+  
+  
+}
+
+void
+Griv::check(const std::string& database)
+{
+  SQLiteConnection db(database);
+
+  FileDatabase file_db(&db);
+
+  file_db.check();
+
+  std::vector<FileEntry> entries;
+  file_db.get_file_entries(entries);
+
+  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+    {
+      std::cout << i->filename << std::endl;
+    }
+}
+
+void
+Griv::generate_tiles(const std::string& database, const std::vector<std::string>& filenames)
+{
+  SQLiteConnection db(database);
+
+  FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
+
+  TileGenerator tile_generator;
+
+  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+    {
+      FileEntry entry;
+      std::cout << "Getting file entry..." << std::endl;
+      if (!file_db.get_file_entry(filenames[i], &entry))
         {
-          case SDL_QUIT: // FIXME: make this into a GameEvent
-            exit(1);
-            break;
-
-          case SDL_VIDEOEXPOSE: // FIXME: make this into a GameEvent
-            force_redraw = true;
-            break;
-
-          case SDL_VIDEORESIZE:
-            Framebuffer::resize(event.resize.w, event.resize.h);
-            force_redraw = true;
-            break;
-
-          case SDL_KEYDOWN:
-            if (event.key.keysym.sym == SDLK_ESCAPE)
-              {
-                exit(1);
-              }
-            else if (event.key.keysym.sym == SDLK_RETURN)
-              {
-                loader.process_job();
-              }
-            else if (event.key.keysym.sym == SDLK_F10)
-              {
-                cache->print();
-              }
-            else if (event.key.keysym.sym == SDLK_F11)
-              {
-                Framebuffer::toggle_fullscreen();
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_SPACE)
-              {
-                x_offset = 0;
-                y_offset = 0;
-              }
-            else if (event.key.keysym.sym == SDLK_s)
-              {
-                grid_size *= 2;
-                if (grid_size > 128)
-                  grid_size = 2;
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_g)
-              {
-                draw_grid = !draw_grid;
-                std::cout << "Drawing grid: " << draw_grid << " " << grid_size << std::endl;
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_t)
-              {
-                grid_color = !grid_color;
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_p)
-              {
-                std::cout << "---------------------------------------------------------" << std::endl;
-                for(int i = 0; i < int(workspace->images.size()); ++i)
-                  {
-                    if (workspace->images[i]->is_visible())
-                      {
-                        std::cout << workspace->images[i]->url << "\t"
-                                  << workspace->images[i]->original_width << "x"
-                                  << workspace->images[i]->original_height
-                                  << std::endl;
-                      }
-                  }
-                std::cout << "---------------------------------------------------------" << std::endl;
-              }
-            else if (event.key.keysym.sym == SDLK_h)
-              {
-                highquality = !highquality;
-                force_redraw = true;
-                std::cout << "Highquality: " << highquality << std::endl;
-              }
-            else if (event.key.keysym.sym == SDLK_PAGEUP)
-              {
-                gamma *= 1.1f;
-                SDL_SetGamma(gamma, gamma, gamma);
-              }
-            else if (event.key.keysym.sym == SDLK_PAGEDOWN)
-              {
-                gamma /= 1.1f;
-                SDL_SetGamma(gamma, gamma, gamma);
-              }
-            else if (event.key.keysym.sym == SDLK_END)
-              {
-                gamma = 1.0f;
-                SDL_SetGamma(gamma, gamma, gamma);
-              }
-            else if (event.key.keysym.sym == SDLK_1)
-              {
-                workspace->set_zoom(16.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_2)
-              {
-                workspace->set_zoom(32.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_3)
-              {
-                workspace->set_zoom(64.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_4)
-              {
-                workspace->set_zoom(128.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_5)
-              {
-                workspace->set_zoom(256.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_6)
-              {
-                workspace->set_zoom(512.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_7)
-              {
-                workspace->set_zoom(1024.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_8)
-              {
-                workspace->set_zoom(2048.0f);
-              }
-            else if (event.key.keysym.sym == SDLK_9)
-              {
-                workspace->layout_sort(true);
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_0)
-              {
-                workspace->layout_sort(false);
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_r)
-              {
-                workspace->layout_random();
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_UP)
-              {
-                workspace->rotation = 0.0f;
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_DOWN)
-              {
-                workspace->rotation += 90.0f;
-                force_redraw = true;
-              }
-            else if (event.key.keysym.sym == SDLK_d)
-              {
-                drag_toggle = !drag_toggle;
-                if (!drag_toggle)
-                  {
-                    SDL_ShowCursor(SDL_ENABLE);
-                    SDL_WM_GrabInput(SDL_GRAB_OFF);
-                  }
-              }
-            else if (event.key.keysym.sym == SDLK_b)
-              {
-                std::cout << x_offset << ", " << y_offset << std::endl;
-              }
-            break;
-
-
-          case SDL_MOUSEMOTION:
-            mouse_x = event.motion.x;
-            mouse_y = event.motion.y;
-            if (drag_n_drop)
-              {
-                x_offset += event.motion.xrel*4;
-                y_offset += event.motion.yrel*4;
-              }
-            if (0)
-            std::cout << event.motion.xrel << " " << event.motion.yrel  << " "
-                      << x_offset << " " << y_offset 
-                      << std::endl;
-            break;
-
-          case SDL_MOUSEBUTTONDOWN:
-          case SDL_MOUSEBUTTONUP:
-                
-            if (event.button.button == 5)
-              {
-                if (event.button.state == SDL_PRESSED)
-                  {
-                    workspace->zoom_out(event.button.x - Framebuffer::get_width()/2,
-                                        event.button.y - Framebuffer::get_height()/2,
-                                        1.1f);
-                    loader.clear();
-                  }
-              }
-            else if (event.button.button == 4)
-              {
-                if (event.button.state == SDL_PRESSED)
-                  {
-                    workspace->zoom_in(event.button.x - Framebuffer::get_width()/2,
-                                       event.button.y - Framebuffer::get_height()/2,
-                                       1.1f);
-                    loader.clear();
-                  }
-              }
-            else if (event.button.button == 1)
-              {
-                zoom_in_pressed = (event.button.state == SDL_PRESSED);
-              }
-            else if (event.button.button == 3)
-              {
-                zoom_out_pressed = (event.button.state == SDL_PRESSED);
-              }
-            else if (event.button.button == 2)
-              {
-                if (!drag_toggle)
-                  {
-                    drag_n_drop = event.button.state;
-                  }
-                else if (event.button.state == SDL_PRESSED)
-                  {
-                    drag_n_drop = !drag_n_drop;
-                    if (drag_n_drop)
-                      {
-                        SDL_ShowCursor(SDL_DISABLE);
-                        SDL_WM_GrabInput(SDL_GRAB_ON);
-                      }
-                    else
-                      {
-                        SDL_ShowCursor(SDL_ENABLE);
-                        SDL_WM_GrabInput(SDL_GRAB_OFF);
-                      }
-                  }
-              }
-            break;
+          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
         }
-    } 
-  
-  int numkeys;
-  Uint8* keys = SDL_GetKeyState(&numkeys);
-
-  if (keys[SDLK_LEFT])
-    {
-      workspace->rotation -= 200.0f * delta;
-      force_redraw = true;
-    }
-  
-  if (keys[SDLK_RIGHT])
-    {
-      workspace->rotation += 200.0f * delta;
-      force_redraw = true;
-    }
-
-  float zoom_speed = 3.0f;
-
-  if (zoom_out_pressed && !zoom_in_pressed)
-    {
-      if (drag_toggle && drag_n_drop)
-        workspace->zoom_out(0,
-                            0,
-                            1.0f + zoom_speed * delta);
       else
-        workspace->zoom_out(mouse_x - Framebuffer::get_width()/2,
-                            mouse_y - Framebuffer::get_height()/2,
-                            1.0f + zoom_speed * delta);
-      loader.clear();
-    }
-  else if (!zoom_out_pressed && zoom_in_pressed)
-    {
-      if (drag_toggle && drag_n_drop)
-        workspace->zoom_in(0,
-                            0,
-                            1.0f + zoom_speed * delta);
-      else
-        workspace->zoom_in(mouse_x - Framebuffer::get_width()/2,
-                           mouse_y - Framebuffer::get_height()/2,
-                           1.0f + zoom_speed * delta);    
-      loader.clear();
+        {
+          // Generate Image Tiles
+          std::cout << "Generating tiles... " << filenames[i]  << std::endl;
+          SoftwareSurface surface = SoftwareSurface::from_file(filenames[i]);
+          
+          tile_generator.generate_all(entry.fileid, surface, 
+                                      boost::bind(&TileDatabase::store_tile, &tile_db, _1));
+        }
     }
 }
 
+void
+Griv::view(const std::string& database, const std::vector<std::string>& filenames)
+{
+  if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+      std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
+      exit(1);
+    }
+  atexit(SDL_Quit); 
 
+  JPEGDecoderThread   jpeg_thread;
+  DatabaseThread      database_thread(database);
+  TileGeneratorThread tile_generator_thread;
+  ViewerThread        viewer_thread;
+
+  jpeg_thread.start();
+  database_thread.start();
+  tile_generator_thread.start();
+
+  if (filenames.empty())
+    {
+      // When no files are given, display everything in the database
+      database_thread.request_all_files(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+    }
+  else
+    {
+      for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+        {
+          database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+        }
+    }
+
+  viewer_thread.run();
+
+  tile_generator_thread.stop();
+  database_thread.stop();
+  jpeg_thread.stop();
+
+  tile_generator_thread.join(); 
+  database_thread.join();
+  jpeg_thread.join();
+}
+
+void
+Griv::print_usage()
+{
+      std::cout << "Usage: griv view    [OPTIONS]... [FILES]...\n"
+                << "       griv prepare [OPTIONS]... [FILES]...\n"
+                << "       griv check   [OPTIONS]...\n"
+                << "       griv list    [OPTIONS]...\n"
+                << "       griv cleanup [OPTIONS]...\n"
+                << "\n"
+                << "Options:\n"
+                << "  -d, --database FILE    Use FILE has database (default: test.sqlite)\n"
+                << std::endl;
+}
 
 int
 Griv::main(int argc, char** argv)
 {
-  try {
-    std::cout << "Processing command line arguments... " << std::flush;
-    CommandLine argp;
-      
-    argp.add_usage("[OPTION]... [FILE]...");
-    argp.add_doc("Griv - A ZUI image viewer\n");
-    argp.add_option('f', "file", "FILE", "Load URL list from FILE");
-    argp.add_option('h', "help", "", "Print this help");
+  // FIXME: Function doesn't seem to be available in 3.4.2
+  // if (!sqlite3_threadsafe())
+  //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
-    try {
-      argp.parse_args(argc, argv);
-    } catch(std::exception& err) {
-      std::cout << "Error: CommandLine: " << err.what() << std::endl;
-      exit(EXIT_FAILURE);
-    }
-
-    std::vector<std::string> url_list;
-    std::vector<std::string> pathnames;
-    while(argp.next())
-      {
-        switch(argp.get_key())
-          {
-            case 'h':
-              argp.print_help();
-              exit(EXIT_SUCCESS);
-              break;
-
-            case 'f':
-              Filesystem::readlines_from_file(argp.get_argument(), url_list);
-              break;
-
-            case CommandLine::REST_ARG:
-              pathnames.push_back(argp.get_argument());
-              break;
-
-            default:
-              std::cout << "Unhandled argument: " << argp.get_key() << std::endl;
-              exit(EXIT_FAILURE);
-              break;
-          }
-      };
-    std::cout << "done" << std::endl;    
-
-    std::cout << "Init filesystem... " << std::flush;
-    Filesystem::init();
-    std::cout << "done" << std::endl;
-
-    std::cout << "Loading cache... " << std::flush;
-    cache = new FileEntryCache(Filesystem::get_home() + "/.griv/cache/file.cache");
-    std::cout << "done" << std::endl;
-
-    std::cout << "Generating url list... " << std::flush;
-    for(std::vector<std::string>::iterator i = pathnames.begin(); i != pathnames.end(); ++i)
-      Filesystem::generate_jpeg_file_list(*i, url_list);
-    std::cout << "done" << std::endl;
-
-    Framebuffer::init();
+  std::string database = "test.sqlite";
   
-    workspace = new Workspace();
-
-    for(std::vector<std::string>::iterator i = url_list.begin(); i != url_list.end(); ++i)
-      {
-        workspace->add(*i);
-        if ((i - url_list.begin() + 1) % 29 == 0)
-          std::cout << "Adding images to workspace... " 
-                    << (i - url_list.begin() + 1) << "/" << url_list.size() 
-                    << "\r" << std::flush;
-      }
-    std::cout << "done" << std::endl;
-  
-    std::cout << "Saving cache" << std::endl;
-    cache->save(Filesystem::get_home() + "/.griv/cache/file.cache");
-
-    workspace->layout(4,3);
-    std::cout << " done" << std::endl;
-
-    std::cout << workspace->size() << " images scanned" << std::endl;
-
+  if (argc < 2)
     {
-      int w = int(sqrt(4 * workspace->size() / 3));
-      x_offset = (-w/2) * 4;
-      y_offset = (-(w*3/4)/2) * 4;
+      print_usage();
     }
-  
-    drag_n_drop = false;
-    old_res = -1;
-    old_x_offset = -1;
-    old_y_offset = -1;
-    old_rotation = 0;
-    next_redraw = 0;
+  else
+    {
+      std::vector<std::string> argument_filenames;
+      for(int i = 2; i < argc; ++i)
+        {
+          if (argv[i][0] == '-')
+            {
+              if (strcmp(argv[i], "--help") == 0 ||
+                  strcmp(argv[i], "-h") == 0)
+                {
+                  print_usage();
+                  exit(0);
+                }
+              else if (strcmp(argv[i], "--database") == 0 ||
+                  strcmp(argv[i], "-d") == 0)
+                {
+                  ++i;
+                  if (i < argc)
+                    {
+                      database = argv[i];
+                    }
+                  else
+                    {
+                      throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+                    }
+                }
+              else
+                {
+                  throw std::runtime_error("Unknown option " + std::string(argv[i]));
+                }
+            }
+          else
+            {
+              argument_filenames.push_back(Filesystem::realpath(argv[i]));
+            }
+        }
 
-    loader.start_thread();
+      std::vector<std::string> filenames;
+      for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
+        Filesystem::generate_jpeg_file_list(*i, filenames);
 
-    Uint32 ticks = SDL_GetTicks();
-    while(true)
-      {
-        Uint32 cticks = SDL_GetTicks();
-        int delta = cticks - ticks;
-        if (delta > 0)
-          {
-            ticks = cticks;
-            process_events(delta / 1000.0f);
+      std::sort(filenames.begin(), filenames.end());
 
-            if (workspace->res != old_res ||
-                old_x_offset != x_offset ||
-                old_y_offset != y_offset ||
-                old_rotation != workspace->rotation ||
-                (force_redraw && (next_redraw < SDL_GetTicks())) ||
-                workspace->reorganize)
-              {
-                workspace->update_resources();
-
-                force_redraw = false;
-
-                Framebuffer::clear();
-                workspace->update(delta / 1000.0f);
-                workspace->draw();
-              
-                if (draw_grid)
-                  gl_draw_grid(grid_size);
-
-                Framebuffer::flip();
-
-                old_res = workspace->res;
-                old_x_offset = x_offset;
-                old_y_offset = y_offset;
-                old_rotation = workspace->rotation;
-                next_redraw = SDL_GetTicks() + 1000;
-              }
-            else
-              {
-                if (workspace->update_resources())
-                  force_redraw = true;
-                else
-                  SDL_Delay(30); // nothing to do, so sleep
-              }
-          }
-      }
-
-    loader.stop_thread();
-
-    delete workspace;
-
-    Framebuffer::deinit();
-    Filesystem::deinit();
-  } catch(std::exception& err) {
-    std::cout << "ERROR: " << err.what() << std::endl;
-  }
+      if (strcmp(argv[1], "view") == 0)
+        {
+          view(database, filenames);
+        }
+      else if (strcmp(argv[1], "check") == 0)
+        {
+          check(database);
+        }
+      else if (strcmp(argv[1], "list") == 0)
+        {
+          list(database);
+        }
+      else if (strcmp(argv[1], "cleanup") == 0)
+        {
+          cleanup(database);
+        }
+      else if (strcmp(argv[1], "info") == 0)
+        {
+          info(filenames);
+        }
+      else if (strcmp(argv[1], "downscale") == 0)
+        {
+          downscale(filenames);
+        }
+      else if (strcmp(argv[1], "prepare") == 0)
+        {
+          generate_tiles(database, filenames);
+        }
+      else
+        {
+          print_usage();
+        }
+    }
 
   return 0;
 }
-
+  
 int main(int argc, char** argv)
 {
-  try {
-    Griv griv;
-    return griv.main(argc, argv);
-  } catch(std::exception& err) {
-    std::cout << "Griv: uncatched exception: " << err.what() << std::endl;
-    return EXIT_FAILURE;
-  }
+  try 
+    {
+      Griv app;
+      int ret = app.main(argc, argv);
+      return ret;
+    }
+  catch(const std::exception& err) 
+    {
+      std::cout << "Exception: " << err.what() << std::endl;
+    }
 }
-
+  
 /* EOF */

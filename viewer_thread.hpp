@@ -23,50 +23,50 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_VIEWER_THREAD_HPP
+#define HEADER_VIEWER_THREAD_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
+#include "thread.hpp"
+#include "thread_message_queue.hpp"
 
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include "image.hpp"
+#include "job_handle.hpp"
+#include "tile_database.hpp"
 
-class SoftwareSurface
+class FileEntry;
+class Image;
+class Tile;
+
+struct TileMessage
 {
-public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
-
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
+  Image image;
+  Tile  tile;
+};
+
+class ViewerThread
+{
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  static ViewerThread* current_;
+public:
+  static ViewerThread* current() { return current_; }
+  
+private:
+  ThreadMessageQueue<FileEntry>   file_queue;
+  ThreadMessageQueue<TileMessage> tile_queue;
+
+public:
+  ViewerThread();
+  virtual ~ViewerThread();
+
+  int run();
+
+  void receive_file(const FileEntry& entry);
+  void receive_tile(const Image& image, const Tile& tile);
+
+  JobHandle request_tile(int fileid, int tilescale, int x, int y, const Image& image);
+private:
+  ViewerThread (const ViewerThread&);
+  ViewerThread& operator= (const ViewerThread&);
 };
 
 #endif

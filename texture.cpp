@@ -28,145 +28,88 @@
 #include <stdexcept>
 #include <boost/format.hpp>
 #include <string.h>
-#include "display.hpp"
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include "SDL.h"
+
+#include "math/size.hpp"
+#include "math/rect.hpp"
+#include "framebuffer.hpp"
+#include "software_surface.hpp"
 #include "texture.hpp"
-
-Texture::Texture(int width, int height, 
-                 SDL_Surface* surface, int s_x, int s_y, int s_w, int s_h)
-  : handle(0),
-    width(width),
-    height(height)
+
+class TextureImpl
 {
-  assert(surface);
+public:
+  GLuint handle;
+  Size   size;
 
-  if (0)
-    std::cout << boost::format(",----------------------------\n"
-                               "| Pointer: 0x%p\n"
-                               "| Size:    %dx%d\n"
-                               "| Pitch:   %d vs %d\n"
-                               "| Rmask:   0x%08x\n"
-                               "| Gmask:   0x%08x\n"
-                               "| Bmask:   0x%08x\n"
-                               "| Amask:   0x%08x\n"
-                               "| Flags:   0x%08x -> %s%s%s%s\n"
-                               "| Palette: 0x%08x\n"
-                               "| BitsPerPixel: %d\n"
-                               "`----------------------------\n"
-                               )
-      % surface
-      % surface->w
-      % surface->h
-      % surface->pitch
-      % (surface->w*3)
-      % surface->format->Rmask
-      % surface->format->Gmask
-      % surface->format->Bmask
-      % surface->format->Amask
-      % surface->flags
-      % ((surface->flags & SDL_HWSURFACE) ? "HWSURFACE " : "")
-      % ((surface->flags & SDL_SWSURFACE) ? "SWSURFACE " : "")
-      % ((surface->flags & SDL_SRCCOLORKEY) ? "SRCCOLORKEY " : "")
-      % ((surface->flags & SDL_SRCALPHA) ? "SRCALPHA " : "")
-      % surface->format->palette
-      % static_cast<int>(surface->format->BitsPerPixel);
-
-  glGenTextures(1, &handle);
-
-  const SDL_PixelFormat* format = surface->format;
-
-  if(format->BitsPerPixel != 24 && format->BitsPerPixel != 32)
-    throw std::runtime_error("image has not 24 or 32 bit color depth");
+  TextureImpl(const SoftwareSurface& src, const Rect& srcrect)
+    : size(srcrect.get_size())
+  {
+    glGenTextures(1, &handle);
   
-  GLint maxt;
-  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxt);
-  if(width > maxt || height > maxt)
-    {
-      throw std::runtime_error("Texture size not supported");
-    }
+    assert(src);
+    
+    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, handle);
+    glEnable(GL_TEXTURE_RECTANGLE_ARB);
 
-  GLint sdl_format;
-  if (format->BytesPerPixel == 3)
-    {
-      sdl_format = GL_RGB;
-    }
-  else if (format->BytesPerPixel == 4)
-    {
-      sdl_format = GL_RGBA;
-    }
-  else
-    {
-      throw std::runtime_error("Texture: Image format not supported");
-    }
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
 
-  glBindTexture(GL_TEXTURE_2D, handle);
-  glEnable(GL_TEXTURE_2D);
-
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,  4);
-
-  { // Create the texture
-    unsigned char dummy[width*height*3];
-    memset(dummy, 150, width*height*3);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB,
-                 width,
-                 height,
-                 0,
+    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGB,
+                 size.width, size.height,
+                 0, /* border */
                  GL_RGB,
                  GL_UNSIGNED_BYTE,
-                 dummy);
+                 src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left*3));
+
+    assert_gl("packing image texture");
+    
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S,     GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T,     GL_CLAMP);
+
+    assert_gl("setting texture parameters");
   }
 
-  assert_gl("packing image texture");
+  ~TextureImpl()
+  {
+    glDeleteTextures(1, &handle);    
+  }
+};
+
+Texture::Texture()
+{
+}
 
-  // if (surface->pitch != (surface->w * surface->format->BytesPerPixel))
-  //   std::cout  << surface->pitch << " " << (surface->w * surface->format->BytesPerPixel) << std::endl;
-
-  //std::cout << surface->pitch << " " << s_w << " " << s_h << std::endl;
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, surface->w);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,  4); // FIXME: This alignment is
-                                          // guessed, we better should
-                                          // check it
-
-  // Upload the subimage
-  glTexSubImage2D(GL_TEXTURE_2D, 0, 
-                  0, 0, s_w, s_h, sdl_format,
-                  GL_UNSIGNED_BYTE, 
-                  static_cast<Uint8*>(surface->pixels) 
-                  + (surface->pitch * s_y)
-                  + (s_x * surface->format->BytesPerPixel));
-
-  assert_gl("creating texture");
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP);
-
-  assert_gl("setting texture parameters");
+Texture::Texture(const SoftwareSurface& src, const Rect& srcrect)
+  : impl(new TextureImpl(src, srcrect))
+{
 }
 
 Texture::~Texture()
 {
-  glDeleteTextures(1, &handle);
 }
 
 void
 Texture::bind()
 {
-  glBindTexture(GL_TEXTURE_2D, handle);
+  glBindTexture(GL_TEXTURE_RECTANGLE_ARB, impl->handle);
 }
 
 int
 Texture::get_width() const
 {
-  return width;
+  return impl->size.width;
 }
 
 int
 Texture::get_height() const
 {
-  return height;
+  return impl->size.height;
 }
-
+
 /* EOF */

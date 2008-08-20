@@ -26,62 +26,65 @@
 #ifndef HEADER_IMAGE_HPP
 #define HEADER_IMAGE_HPP
 
-#include <sstream>
-#include "display.hpp"
-#include "loader.hpp"
-#include "griv.hpp"
-
+#include <boost/shared_ptr.hpp>
+#include <map>
+#include <string>
+#include "job_handle.hpp"
+#include "math/vector2f.hpp"
+#include "math/size.hpp"
+#include "grid.hpp"
+#include "surface.hpp"
+
 class Surface;
-class SoftwareSurface;
-class LargeSurface;
-
+class Size;
+class Rectf;
+class Vector2f;
+class ImageImpl;
+
 class Image
 {
 public:
-  std::string url;
-  int original_width;
-  int original_height;
-  unsigned int original_mtime;
+  struct SurfaceStruct {
+    enum Status { SURFACE_OK,
+                  SURFACE_REQUESTED,
+                  SURFACE_FAILED };
 
-  int  requested_res;
+    Status  status;
+    Surface surface;
+  };
 
-  /** Newly received surface */
-  SoftwareSurface* received_surface;
-  int              received_surface_res;
-  
-  int          surface_resolution;
-  LargeSurface* surface;
-  LargeSurface* surface_16x16;
-
-  SDL_mutex* mutex;
+  typedef std::map<uint32_t, SurfaceStruct> Cache; 
+  typedef std::vector<JobHandle> Jobs;
 
 private:
-  float x_pos;
-  float y_pos;
-
-  float last_x_pos;
-  float last_y_pos;
-
-  float target_x_pos;
-  float target_y_pos;
-
-  bool visible;
+  Surface get_tile(int x, int y, int tile_scale);
 
 public:
-  Image(const std::string& url);
-  ~Image();
+  Image();
+  Image(int fileid, const std::string& filename, const Size& size);
 
-  void receive(SoftwareSurface* new_surface, int r);
-  void draw(float x_offset, float y_offset, float zoom);
-  bool update_resources(float x_offset, float y_offset, float zoom);
-  void update(float delta);
+  void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
+  void draw(const Rectf& cliprect, float scale);
 
-  int  zoom2res(float res);
-  void set_pos(float x, float y);
+  void set_pos(const Vector2f& pos);
+  Vector2f get_pos() const;
 
-  bool is_visible() const { return visible; }
+  void  set_scale(float f);
+  float get_scale() const;
+
+  float get_scaled_width() const;
+  float get_scaled_height() const;
+
+  int get_original_width() const;
+  int get_original_height() const;
+
+  void receive_tile(int x, int y, int tiledb_scale, const SoftwareSurface& surface);
+
+  operator bool() const { return impl.get(); }
+private:
+  boost::shared_ptr<ImageImpl> impl;
 };
-
+
 #endif
 
 /* EOF */

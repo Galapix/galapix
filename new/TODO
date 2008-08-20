@@ -1,27 +1,0 @@
-[[ Griv ToDo ]]
-
-* multi-threading for the interface
-* multi-threading in the tile generator for multicore
-* faster image handling, FreeImage is not good enough
-* do something about the seams on tile borders (hard, need to save a 1px border, but that screws up the JPEG compression)
-* proper handling of locked DB
-* faster incremental tile generation
-* griv name is already taken
-
-  Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig
-
-* How to avoid duplicate entries in the queue?
-
-Image Library Requirements:
-===========================
-
-* fast JPEG thumbnailing would be a plus (FreeImage, EPEG -> See jpeglib tools, transup.c)
-
-* fast width/height reading from file header (libjpeg, libpng)
-
-* support for PNG, JPEG, XCF, etc.
-
-* generation of subregion images without a copy
-
-
-# EOF #

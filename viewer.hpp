@@ -23,50 +23,58 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_VIEWER_HPP
+#define HEADER_VIEWER_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include "SDL.h"
+#include "surface.hpp"
+#include "math/vector2i.hpp"
 
-class SoftwareSurface
+class Workspace;
+
+class ViewerState
 {
+private:
+  float    scale;
+  Vector2f offset;
+  
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  ViewerState();
 
-  ~SoftwareSurface();
+  void zoom(float factor, const Vector2i& pos);
+  void move(const Vector2i& pos);
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
+  Vector2f screen2world(const Vector2i&) const;
+  Rectf    screen2world(const Rect&) const;
 
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
+  Vector2f get_offset() const { return offset; }
+  float    get_scale()  const { return scale; }
+};
+
+class Viewer
+{
+private:
+  bool quit;
+  bool force_redraw;
+  bool drag_n_drop;
+  int  zoom_button;
+  float gamma;
 
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
+  Vector2i mouse_pos;
 
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
+  ViewerState state;
 
-  operator bool() const { return impl.get(); }
+public:
+  Viewer();
+
+  void draw(Workspace& workspace);
+  void update(float delta);
+  void process_event(const SDL_Event& event);
+  bool done() const { return quit; }
 
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  Viewer (const Viewer&);
+  Viewer& operator= (const Viewer&);
 };
 
 #endif

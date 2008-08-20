@@ -27,15 +27,23 @@
 #define HEADER_JPEG_HPP
 
 #include <string>
-
-/** */
+#include "software_surface.hpp"
+
 class JPEG
 {
 private:
-public:
-  static void get_size(const std::string& filename, int& w, int& h);
-};
 
+
+public:
+  static void get_size(const std::string& filename, Size& size);
+
+  static SoftwareSurface load(const std::string& filename, int scale = 1);
+  static SoftwareSurface load(uint8_t* mem, int len);
+
+  static void save(const SoftwareSurface& surface, int quality, const std::string& filename);
+  static Blob save(const SoftwareSurface& surface, int quality);
+};
+
 #endif
 
 /* EOF */

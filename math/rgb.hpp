@@ -23,50 +23,25 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_MATH_RGB_HPP
+#define HEADER_MATH_RGB_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include <stdint.h>
 
-class SoftwareSurface
+class RGB
 {
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  uint8_t r;
+  uint8_t g; 
+  uint8_t b;
 
-  ~SoftwareSurface();
+  RGB()
+    : r(0), g(0), b(0)
+  {}
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
-private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  RGB(uint8_t r, uint8_t g, uint8_t b)
+    : r(r), g(g), b(b)
+  {}
 };
 
 #endif

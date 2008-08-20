@@ -23,50 +23,52 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_DISPLAY_HPP
+#define HEADER_DISPLAY_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <sstream>
+#include <stdexcept>
+#include <math.h>
+#include "SDL.h"
 
-class SoftwareSurface
+class RGB;
+class Size;
+class Rectf;
+
+static inline void assert_gl(const char* message)
 {
-public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
-
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
+  GLenum error = glGetError();
+  if(error != GL_NO_ERROR) {
+    std::ostringstream msg;
+    msg << "OpenGLError while '" << message << "': "
+        << gluErrorString(error);
+    throw std::runtime_error(msg.str());
+  }
+}
+
+class Framebuffer
+{
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  static SDL_Surface* screen;
+  static Uint32 flags;
+
+public:
+  static void set_video_mode(const Size& size);
+
+  static void toggle_fullscreen();
+
+  static int get_width()  { return screen->w; }
+  static int get_height() { return screen->h; }
+
+  static SDL_Surface* get_screen() { return screen; }
+  static void resize(int w, int h);
+  static void flip();
+  static void clear();
+
+  static void draw_rect(const Rectf& rect, const RGB& rgb);
+  static void fill_rect(const Rectf& rect, const RGB& rgb);
 };
 
 #endif

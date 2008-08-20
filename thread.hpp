@@ -23,50 +23,49 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_THREAD_HPP
+#define HEADER_THREAD_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include "SDL.h"
 
-class SoftwareSurface
+class Mutex 
 {
+private:
+  SDL_mutex* mutex;
+
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  Mutex();
+  ~Mutex();
 
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
+  void lock();
+  void unlock();
 
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  Mutex (const Mutex&);
+  Mutex& operator= (const Mutex&);
+};
+
+/** */
+class Thread
+{
+private:
+  SDL_Thread* thread;
+
+public:
+  Thread();
+  virtual ~Thread();
+
+  void start();
+  int  join();
+  Uint32 get_id();
+  
+  virtual int run() =0;
+
+  static Uint32 get_thread_id();
+
+private:
+  Thread (const Thread&);
+  Thread& operator= (const Thread&);
 };
 
 #endif

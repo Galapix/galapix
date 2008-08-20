@@ -1,130 +1,46 @@
-ToDo:
-=====
+[[ Griv ToDo ]]
+
+* implement fast crop
+* implement linear blending scale
+* move recursive directory code over
+* move image sorting code on workspace over
+* request lower res tiles, before requesting highres tiles
+* move JPEG decoding in a seperate thread so that the database thread can run free with database stuff 
+* jpegtran *can't* do crop of large scale JPEGs in small amount of
+  space, so cropping with libjpeg likely won't work
 
-- store all thumbnails in a container format
-
-- Way to speed thumbnail directory creation up? -> use Thumbcache
-  for all files
-
-- move over input code from Pingus to support Spacenavigator and such
-
-- need a way to cleanly shut down the whole thing instead of just exit()
-
-- don't store MD5 as string, but as raw bits/bytes
-
-- addd linear/nearest filtering toggle
-
-- make set_zoom() not change the current viewpoint
-
-- prioritize loader jobs:
-  
-  1) images currently displayed
-  2) images without any thumbnails
-  3) images close to the current view
-
-- rename thumbgen or make it part of griv
-
-Less Important:
+JPEG Functions:
 ===============
 
-- implement proper mipmapping for better rendering quality
-
-- create two OpenGL context to allow better multithreading use (any
-  way to do it portable?) or move loading out of draw() and into
-  load(), only call load() till a time slice has run out, so that
-  drawing can take place again without interruption
-
-- added support for ~/.thumbnails/ to get the smaller mipmaps faster
-
-- write fast file system routines, use readdir(), d_type instead of
-  stat to check for a directory -> only works on EXT3
-
-
-Bugs:
-=====
-
- - Ctrl-C doesn't work in all situations (i.e. initial loading)
-
- - LargeSurface isn't seamless, seams visible only at very close zoom (see bottom/right)
-
- - ThumbnailStore: FIXME: This shouldn't happen: SoftwareSurface:
-   Couldn't load /home/ingo/.griv/cache/by_url/1024/d0/116169afb9a1b3d395aa212f9744de.jpg
-
- - sometimes SDL gets confused and the mouse isn't properly locked to the window
-
- - ...images to workspace... 8033/8047 doesn't display 100% when done
-
- - not handled properly by epeg: /share/photos/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
+* get_size(JpegImage) -> (w, h)
+* crop(JpegImage)  -> JpegImage -> Blob
+* Filename -> JpegImage
 
 
-Cache Files:
-============
+* multi-threading in the tile generator for multicore
+* faster image handling, FreeImage is not good enough
+* do something about the seams on tile borders (hard, need to save a 1px border, but that screws up the JPEG compression)
+* faster incremental tile generation
+* griv name is already taken
 
-struct FileEntry {
-       std::string filename_md5;
-       std::string md5;
-       int mtime;  // mtime at which the thumbnail was done
-       int thumbnail_id; // offset into the thumbnail database
-       int width;  // image width
-       int height; // image height
-};
+  Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview
 
-struct ThumbnailEntry {
-       char        rgb[16*16*3];
-};
+* How to avoid duplicate entries in the queue?
+* figure out why the thing crashes -> move viewer thread into main thread
+
+* File stuff should really be seperate from Tile getting -> Seperate worker thread?
+* need to display the thread status graphically somehow
 
-Misc Stuff:
-===========
+Image Library Requirements:
+===========================
 
-1920x1080: (64x64) 30x17=510, (32x32) 60x34=2040, (16x16) 120x68=8160, (4x4) 480x270=129600
-~100MB for fullscreen 16x16 Thumbs
-4096 images on 1024x1024 texture at 16x16
-~32 textures for 129600 thumbs
+* fast JPEG thumbnailing would be a plus (FreeImage, EPEG -> See jpeglib tools, transup.c)
 
-Problems:
-=========
-- initial load is very slow
+* fast width/height reading from file header (libjpeg, libpng)
 
-4096 pictures packed in a single JPEG:
+* support for PNG, JPEG, XCF, etc.
 
-  400   /tmp/out-16.jpg
- 1161   /tmp/out-32.jpg
- 3704   /tmp/out-64.jpg
-11776   /tmp/out-128.jpg
-37485   /tmp/out-256.jpg
+* generation of subregion images without a copy
 
-/tmp/out-16.jpg  JPEG   1024x1024 DirectClass  397kb 
-/tmp/out-32.jpg  JPEG   2048x2048 DirectClass  1.1mb
-/tmp/out-64.jpg  JPEG   4096x4096 DirectClass  3.6mb <- use this as pack format, to slow it seems
-/tmp/out-128.jpg JPEG   8192x8192 DirectClass 11.5mb
-/tmp/out-256.jpg JPEG 16384x16384 DirectClass 36.6mb
-
-$ time ./thumbget /tmp/out-64.jpg 128 128 64 64 /tmp/test.jpg
-/tmp/out-64.jpg 128, 128 - 64x64
-
-real    0m1.022s
-user    0m0.876s
-sys     0m0.128s
-
-Getting pictures for testing from Flickr:
-=========================================
-
-cvs -z3 -d :pserver:anonymous@anoncvs.enlightenment.org:/var/cvs/e export e17/libs/epeg
-# Flickr Download:
-
-# Download index files
-FUSER=henry-gail for i in $(seq 1 67); do wget -c http://flickr.com/photos/${FUSER}/page${i}/ -O index-${FUSER}-${i}.html; done
-
-# Get photo id's
- grep -i "farm[0-9]" * | sed "s/.*http:/http:/" | cut -c 37-46 | sort -n | uniq > /tmp/ids
-
- or 
-
- grep -i "farm[0-9]" * | sed "s/.*http:/http:/" | cut -c 37- | sed "s/_.*//" | grep -v dyic | sort -n | uniq
-
-# download photos
- (for i in $(cat ../ids); do wget -U mozilla -e robots=off -c -p -H   --exclude-domain yahoo.com,yimg.com -p "http://flickr.com/photo_zoom.gne?id=${i}&size=o" --load-cookies /tmp/cookies.txt; done )
-
-- store by md5 and use hardlinks, thus avoid duplicates when files are moved
-
+
 # EOF #

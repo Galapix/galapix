@@ -23,52 +23,77 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
-
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include <assert.h>
+#include "thread.hpp"
 
-class SoftwareSurface
+/*
+  SDL_mutex* mutex;
+  SDL_CreateMutex();
+  SDL_DestroyMutex(mutex);
+*/
+
+Mutex::Mutex()
 {
-public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  mutex = SDL_CreateMutex();
+}
 
-  ~SoftwareSurface();
+Mutex::~Mutex()
+{
+  SDL_DestroyMutex(mutex);
+}
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
+void
+Mutex::lock()
+{
+  SDL_LockMutex(mutex);
+}
 
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
-private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
-};
+void
+Mutex::unlock()
+{
+  SDL_UnlockMutex(mutex);
+}
 
-#endif
+int launch_thread(void* thread_ptr)
+{
+  Thread* thread = static_cast<Thread*>(thread_ptr);
+  return thread->run();
+}
+
+Thread::Thread()
+  : thread(0)
+{
+}
 
+Thread::~Thread()
+{
+}
+
+int
+Thread::join()
+{
+  int ret = 0;
+  SDL_WaitThread(thread, &ret);
+  return ret;
+}
+
+Uint32
+Thread::get_id()
+{
+  return SDL_GetThreadID(thread);
+}
+
+Uint32
+Thread::get_thread_id()
+{
+  return SDL_ThreadID();
+}
+
+void
+Thread::start()
+{
+  assert(thread == 0);
+  thread = SDL_CreateThread(launch_thread, this);
+}
+
 /* EOF */

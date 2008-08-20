@@ -23,50 +23,51 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_DATABASE_THREAD_HPP
+#define HEADER_DATABASE_THREAD_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include <boost/function.hpp>
+#include <string>
+#include "thread_message_queue.hpp"
+#include "file_database.hpp"
+#include "tile_database.hpp"
+#include "job_handle.hpp"
+#include "thread.hpp"
 
-class SoftwareSurface
+class DatabaseMessage;
+
+/** */
+class DatabaseThread : public Thread
 {
+private:
+  static DatabaseThread* current_;
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
-
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
+  static DatabaseThread* current() { return current_; }
   
-  Blob get_jpeg_data() const;
+private:
+  std::string database_filename;
+  bool quit;
   
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
+  ThreadMessageQueue<DatabaseMessage*> queue;
 
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
+protected: 
+  int run();
 
-  operator bool() const { return impl.get(); }
+public:
+  DatabaseThread(const std::string&);
+  virtual ~DatabaseThread();
+  
+  void stop();
+  
+  JobHandle request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (Tile)>& callback);
+  void request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
+  void request_all_files(const boost::function<void (FileEntry)>& callback);
+
+  void store_tile(const Tile& tile);
 
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  DatabaseThread (const DatabaseThread&);
+  DatabaseThread& operator= (const DatabaseThread&);
 };
 
 #endif

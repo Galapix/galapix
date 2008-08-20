@@ -26,6 +26,8 @@
 #ifndef HEADER_GRID_HPP
 #define HEADER_GRID_HPP
 
+#include <iostream>
+#include <assert.h>
 #include <vector>
 
 /** */

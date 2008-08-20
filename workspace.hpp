@@ -26,39 +26,29 @@
 #ifndef HEADER_WORKSPACE_HPP
 #define HEADER_WORKSPACE_HPP
 
-#include <vector>
-#include "filesystem.hpp"
-#include "griv.hpp"
 #include "image.hpp"
-
+
+class Rectf;
+
 class Workspace
 {
-public:
-  std::vector<Image*> images;
-  float res;
-  bool   reorganize;
-  Uint32 reorganize_start;
-  float rotation;
-
+private:
+  typedef std::vector<Image> Images;
+  Images images;
+  
 public:
   Workspace();
 
-  void draw();
-  bool update_resources();
-  void update(float delta);
-  void add(const std::string& url);
+  void add_image(int fileid, const std::string& filename, const Size& size);
+  void draw(const Rectf& cliprect, float scale);
 
-  void zoom_in(int mouse_x, int mouse_y, float zoom);
-  void zoom_out(int mouse_x, int mouse_y, float zoom);
-  
-  void set_zoom(float zoom);
+  void layout(float aspect_w, float aspect_h);
 
-  int size() { return images.size(); }
-  void layout(int w, int h);
-  void layout_random();
-  void layout_sort(bool reverse);
+private:
+  Workspace (const Workspace&);
+  Workspace& operator= (const Workspace&);
 };
-
+
 #endif
 
 /* EOF */

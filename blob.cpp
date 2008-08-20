@@ -23,52 +23,71 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
-
-#include <boost/shared_ptr.hpp>
+#include <fstream>
 #include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
 
-class SoftwareSurface
+class BlobImpl
 {
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  uint8_t* data;
+  int      len;
 
-  ~SoftwareSurface();
+  BlobImpl(const void* data_, int len_)
+  {
+    data = new uint8_t[len_];
+    len  = len_;
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
+    memcpy(data, data_, len);
+  }
 
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
+  BlobImpl(const std::vector<uint8_t>& data_in)
+  {
+    data = new uint8_t[data_in.size()];
+    len  = data_in.size();
 
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
+    memcpy(data, &*data_in.begin(), len);
+  }
 
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
-private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  ~BlobImpl()
+  {
+    delete[] data;
+  }
 };
 
-#endif
+Blob::Blob(const std::vector<uint8_t>& data)
+  : impl(new BlobImpl(data))
+{}
 
+Blob::Blob(const void* data, int len)
+  : impl(new BlobImpl(data, len))
+{}
+
+Blob::Blob()
+{}
+
+int
+Blob::size() const 
+{
+  if (impl.get())
+    return impl->len; 
+  else
+    return 0;
+}
+
+uint8_t* 
+Blob::get_data() const 
+{
+  if (impl.get())
+    return impl->data; 
+  else
+    return 0;
+}
+
+void
+Blob::write_to_file(const std::string& filename)
+{
+  std::ofstream out(filename.c_str(), std::ios::binary);
+  out.write(reinterpret_cast<char*>(impl->data), impl->len);
+}
+
 /* EOF */

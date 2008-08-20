@@ -23,52 +23,49 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
-
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include "software_surface.hpp"
+#include "jpeg_decoder_thread.hpp"
 
-class SoftwareSurface
+JPEGDecoderThread* JPEGDecoderThread::current_ = 0;
+
+JPEGDecoderThread::JPEGDecoderThread()
+  : quit(false)
 {
-public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  current_ = 0;
+}
 
-  ~SoftwareSurface();
+void
+JPEGDecoderThread::request_decode(const Blob& blob,
+                                  const boost::function<void (const SoftwareSurface&)>& callback)
+{
+  JPEGDecoderThreadMessage msg;
+  msg.blob     = blob;
+  msg.callback = callback;
+  queue.push(msg);
+}
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
+void 
+JPEGDecoderThread::stop()
+{
+  quit = true;
+}
 
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
+int
+JPEGDecoderThread::run()
+{
+  quit = false;
+  while (!quit)
+    {
+      while(!queue.empty())
+        {
+          JPEGDecoderThreadMessage msg = queue.front();
+          queue.pop();
+          msg.callback(SoftwareSurface::from_data(msg.blob));
+        }
+      queue.wait();
+    }
 
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
-private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
-};
+  return 0;
+}
 
-#endif
-
 /* EOF */

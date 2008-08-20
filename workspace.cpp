@@ -23,200 +23,65 @@
 **  02111-1307, USA.
 */
 
-#include <iostream>
-#include <math.h>
+#include "math.hpp"
 #include "workspace.hpp"
-
-inline bool has_suffix(const std::string& str, const std::string& suffix)
-{
-  if (str.length() >= suffix.length())
-    return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
-  else
-    return false;
-}
-
+
 Workspace::Workspace()
 {
-  res = 4;
-  rotation = 0.0f;
 }
 
 void
-Workspace::draw()
+Workspace::add_image(int fileid, const std::string& filename, const Size& size)
 {
-  glPushMatrix();
-  if (rotation != 0.0f)
-    {
-      glTranslatef(Framebuffer::get_width()/2, 
-                   Framebuffer::get_height()/2, 
-                   0.0f);
-      glRotatef(rotation, 0.0f, 0.0f, 1.0f);
-      glTranslatef(-Framebuffer::get_width()/2, 
-                   -Framebuffer::get_height()/2,
-                   0.0f);
-    }
-
-  for(int i = 0; i < int(images.size()); ++i)
-    {
-      images[i]->draw(x_offset + Framebuffer::get_width()/2,
-                      y_offset + Framebuffer::get_height()/2,
-                      res);
-    }
-
-  glPopMatrix();
-}
-
-bool
-Workspace::update_resources()
-{
-  bool need_redraw = false;
-  Uint32 t = SDL_GetTicks();
-  for(int i = 0; i < int(images.size()); ++i)
-    {
-      if (images[i]->update_resources(x_offset + Framebuffer::get_width()/2,
-                                  y_offset + Framebuffer::get_height()/2,
-                                      res))
-        need_redraw = true;
-
-      Uint32 v = SDL_GetTicks() - t;
-      if (v > 30) // 30ms spend updating, so stop it
-        {
-          //std::cout << "Break away" << std::endl;
-          return need_redraw;
-        }
-    }
-  return need_redraw;
+  Image image(fileid, filename, size);
+  images.push_back(image);
+  image.set_scale(Math::min(1000.0f / size.width,
+                            1000.0f / size.height));
+  layout(4.0f, 3.0f);
 }
 
 void
-Workspace::update(float delta)
+Workspace::layout(float aspect_w, float aspect_h)
 {
-  if (reorganize)
+  if (!images.empty())
     {
-      float alpha = (SDL_GetTicks() - reorganize_start) / 500.0f;
+      //       float x_pos = 0;
+      //       for(Images::iterator i = images.begin(); i != images.end(); ++i)
+      //         {
+      //           i->set_pos(Vector2f(x_pos, 0.0f));
+      //           x_pos += i->get_width() + 128/*spacing*/;
+      //         }    
+      
+      int w = int(Math::sqrt(aspect_w * images.size() / aspect_h));
 
-      if (alpha < 0)
-        alpha = 0;
-      else if (alpha > 1.0f)
-        {
-          alpha = 1.0f;
-          reorganize = false;
-        }
-
-      //std::cout << alpha << std::endl;
-
-      for(int i = 0; i < int(images.size()); ++i)
-        images[i]->update(alpha);
-    }
-}
-
-void 
-Workspace::layout_random()
-{
-  std::random_shuffle(images.begin(), images.end());
-  layout(4,3);
-}
-
-struct ImageSorter
-{
-  bool operator()(const Image* a, const Image* b) {
-    return a->url < b->url;
-  }
-};
-
-void
-Workspace::layout_sort(bool reverse)
-{
-  std::sort(images.begin(), images.end(), ImageSorter());
-  
-  if (reverse)
-    std::reverse(images.begin(), images.end());
-
-  layout(4,3);
-}
-
-void
-Workspace::layout(int aspect_w, int aspect_h)
-{
-  int w = int(sqrt(aspect_w * images.size() / aspect_h));
-
-  if (1) // zick zag
-    { 
       for(int i = 0; i < int(images.size()); ++i)
         {
           if ((i/w) % 2 == 0)
             {
-              images[i]->set_pos((i % w) * 1.03f,
-                                 (i / w) * 1.03f);
+              images[i].set_pos(Vector2f((i % w) * 1024.0f,
+                                         (i / w) * 1024.0f));
             }
           else
             {
-              images[i]->set_pos((w - (i % w)-1) * 1.03f,
-                                 (i / w) * 1.03f);
+              images[i].set_pos(Vector2f((w - (i % w)-1) * 1024.0f,
+                                         (i / w)         * 1024.0f));
             }
+
+          images[i].set_pos(images[i].get_pos() + Vector2f((1000.0f - images[i].get_scaled_width()) / 2,
+                                                           (1000.0f - images[i].get_scaled_height()) / 2));
         }
     }
-  else
+}
+
+void
+Workspace::draw(const Rectf& cliprect, float scale)
+{
+  //std::cout << Math::clamp(1, static_cast<int>(1.0f / scale), 32) << " -> " << scale << std::endl;
+
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      for(int i = 0; i < int(images.size()); ++i)
-        {
-          images[i]->set_pos((i % w) * 1.03f,
-                             (i / w) * 1.03f);
-        }
-    }
-
-  reorganize = true;
-  reorganize_start = SDL_GetTicks();
+      i->draw(cliprect, scale);
+    }  
 }
-
-void
-Workspace::add(const std::string& url)
-{
-  images.push_back(new Image(url));
-}
-
-void
-Workspace::zoom_in(int x, int y, float zoom)
-{
-  float old_res = res;
-  res *= zoom;
-  
-  if (res > 8192*4) // zoom limit
-    {
-      res = 8192*4;
-      zoom = res / old_res;
-    }
-
-  x_offset *= zoom;
-  y_offset *= zoom;
-
-  x_offset += x - x*zoom;
-  y_offset += y - y*zoom;
-}
-
-void
-Workspace::zoom_out(int x, int y, float zoom)
-{
-  float old_res = res;
-  res /= zoom;
-
-  if (res < 4)
-    {
-      res = 4;
-      zoom = old_res / res;
-    }
-
-  x_offset += x * zoom - x;
-  y_offset += y * zoom - y;
-
-  x_offset /= zoom;
-  y_offset /= zoom;
-}
-
-void
-Workspace::set_zoom(float zoom)
-{
-  res = zoom;
-}
-
+
 /* EOF */

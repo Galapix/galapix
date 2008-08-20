@@ -26,44 +26,41 @@
 #ifndef HEADER_SURFACE_HPP
 #define HEADER_SURFACE_HPP
 
-#include "SDL.h"
 #include <boost/smart_ptr.hpp>
 #include "texture.hpp"
+#include "math/size.hpp"
 #include "software_surface.hpp"
-
-/** */
+
+class SurfaceImpl;
+class Rect;
+class Rectf;
+class Vector2f;
+
 class Surface
 {
-private:
-  /** Software backstore for the image */
-  SWSurfaceHandle surface;
-  
-  Texture* texture;
-  int tex_w;
-  int tex_h;
-
-  float u;
-  float v;
-
-  float aspect;
-
-  int width;
-  int height;
-  
 public:
-  Surface(SWSurfaceHandle surface, int x, int y, int w, int h);
+  Surface();
+  explicit Surface(boost::shared_ptr<SurfaceImpl> impl);
+  explicit Surface(const SoftwareSurface& src, const Rect& srcrect);
+  explicit Surface(const SoftwareSurface& src);
   ~Surface();
 
-  void draw(float x, float y, float w, float h);
+  void draw(const Vector2f& pos);
+  void draw(const Rectf& dstrect);
+  void draw(const Rectf& srcrect, const Rectf& dstrect);
 
-  int get_width()  const { return width; }
-  int get_height() const { return height; }
+  int  get_width()  const;
+  int  get_height() const;
+  Size get_size() const;
+
+  void set_size(const Size& size);
+
+  operator bool() const { return impl.get(); }
 
 private:
-  Surface (const Surface&);
-  Surface& operator= (const Surface&);
+  boost::shared_ptr<SurfaceImpl> impl;
 };
-
+
 #endif
 
 /* EOF */

@@ -23,50 +23,28 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_BLOB_HPP
+#define HEADER_BLOB_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include <boost/smart_ptr.hpp>
+#include <vector>
 
-class SoftwareSurface
+class BlobImpl;
+
+class Blob
 {
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  Blob();
+  Blob(const std::vector<uint8_t>& data);
+  Blob(const void* data, int len);
 
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
+  int size() const;
   uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
 
-  operator bool() const { return impl.get(); }
+  void write_to_file(const std::string& filename);
 
-private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+private: 
+  boost::shared_ptr<BlobImpl> impl;
 };
 
 #endif

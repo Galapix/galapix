@@ -23,50 +23,75 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_THREAD_MESSAGE_QUEUE_HPP
+#define HEADER_THREAD_MESSAGE_QUEUE_HPP
 
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include <queue>
+#include "thread.hpp"
 
-class SoftwareSurface
+template<class C>
+class ThreadMessageQueue
 {
+private:
+  Mutex mutex;
+  std::queue<C> values;
+
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  ThreadMessageQueue()
+  {
+  }
 
-  ~SoftwareSurface();
+  ~ThreadMessageQueue()
+  {
+  }
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
+  void push(const C& value)
+  {
+    mutex.lock();
+    values.push(value);
+    mutex.unlock();
+  }
 
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
+  void pop()
+  {
+    mutex.lock();
+    values.pop();
+    mutex.unlock();
+  }
 
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
+  C front()
+  {
+    mutex.lock();
+    C c(values.front());
+    mutex.unlock();
+    return c;
+  }
 
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
+  int size()
+  {
+    mutex.lock();
+    int s = values.size();
+    mutex.unlock();
+    return s;
+  }
 
-  operator bool() const { return impl.get(); }
+  bool empty() 
+  {
+    mutex.lock();
+    bool e = values.empty();
+    mutex.unlock();
+    return e;
+  }
+
+  void wait()
+  {
+    // FIXME: implement me properly
+    SDL_Delay(100);
+  }
 
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  ThreadMessageQueue (const ThreadMessageQueue&);
+  ThreadMessageQueue& operator= (const ThreadMessageQueue&);
 };
 
 #endif

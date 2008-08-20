@@ -28,7 +28,7 @@
 
 #include <string>
 #include <vector>
-
+
 class Filesystem
 {
 private:
@@ -55,6 +55,7 @@ public:
   static bool has_extension(const std::string& pathname, const std::string& ext);
   static void copy_mtime(const std::string& from_filename, const std::string& to_filename);
   static unsigned int get_mtime(const std::string& filename);
+  static unsigned int get_size(const std::string& filename);
   
   /** Generate a recursive list of all JPEGs in pathname */
   static void generate_jpeg_file_list(const std::string& pathname, std::vector<std::string>& file_list);
@@ -62,7 +63,7 @@ public:
   static void init();
   static void deinit();
 };
-
+
 #endif
 
 /* EOF */

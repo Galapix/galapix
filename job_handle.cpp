@@ -23,52 +23,51 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
-
-#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
-
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+#include "job_handle.hpp"
 
-class SoftwareSurface
+class JobHandleImpl
 {
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  JobHandleImpl()
+    : aborted(false),
+      finished(false)
+  {}
 
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
-
-private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  bool aborted;
+  bool finished;
 };
 
-#endif
+JobHandle::JobHandle()
+  : impl(new JobHandleImpl())
+{
+}
 
+JobHandle::~JobHandle()
+{
+}
+
+void
+JobHandle::abort()
+{
+  impl->aborted = true;
+}
+
+bool
+JobHandle::is_aborted() const
+{
+  return impl->aborted;
+}
+
+void
+JobHandle::finish()
+{
+  impl->finished = true;
+}
+
+bool
+JobHandle::is_finished() const
+{
+  return impl->finished;
+}
+
 /* EOF */

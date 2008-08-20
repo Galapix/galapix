@@ -1,11 +1,6 @@
-/*  $Id$
-**   __      __ __             ___        __   __ __   __
-**  /  \    /  \__| ____    __| _/_______/  |_|__|  | |  |   ____
-**  \   \/\/   /  |/    \  / __ |/  ___/\   __\  |  | |  | _/ __ \
-**   \        /|  |   |  \/ /_/ |\___ \  |  | |  |  |_|  |_\  ___/
-**    \__/\  / |__|___|  /\____ /____  > |__| |__|____/____/\___  >
-**         \/          \/      \/    \/                         \/
-**  Copyright (C) 2007 Ingo Ruhnke <grumbel@gmx.de>
+/*
+**  Griv - Grumbel's Image Viewer
+**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software; you can redistribute it and/or
 **  modify it under the terms of the GNU General Public License
@@ -25,51 +20,28 @@
 
 #ifndef HEADER_GRIV_HPP
 #define HEADER_GRIV_HPP
-
-#include <SDL.h>
-#include <string>
-
-class FileEntryCache;
-
-extern float x_offset;
-extern float y_offset;
-extern bool force_redraw;
-extern bool highquality;
-extern FileEntryCache* cache;
-
-class Workspace;
-
+
 class Griv
 {
 private:
-  bool  drag_n_drop;
-  float old_res;
-  float old_x_offset;
-  float old_y_offset;
-  float old_rotation;
-  Uint32 next_redraw;
-  Workspace* workspace;
-  int zoom_mode;
-
-  bool zoom_in_pressed;
-  bool zoom_out_pressed;
-  int  mouse_x;
-  int  mouse_y;
-  int  grid_size;
-  bool draw_grid;
-  bool grid_color;
-  bool drag_toggle;
-  float gamma;
-
 public:
   Griv();
   ~Griv();
 
-  void gl_draw_grid(int grid_size);
-  void process_events(float delta);
+  void print_usage();
   int main(int argc, char** argv);
-};
 
+  void info(const std::vector<std::string>& filenames);
+  void downscale(const std::vector<std::string>& filenames);
+  void cleanup(const std::string& database);
+  void check(const std::string& database);
+  void list(const std::string& database);
+  void generate_tiles(const std::string& database, 
+                      const std::vector<std::string>& filenames);
+  void view(const std::string& database, 
+            const std::vector<std::string>& filenames);
+};
+
 #endif
 
 /* EOF */

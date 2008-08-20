@@ -40,7 +40,7 @@
 #include "filesystem.hpp"
 
 std::string Filesystem::home_directory;
-
+
 bool
 Filesystem::exist(const std::string& pathname)
 {
@@ -123,23 +123,7 @@ Filesystem::open_directory(const std::string& pathname)
 
   return dir_list;
 }
-#if 0
-std::string
-Filesystem::getxattr(const std::string& pathname)
-{
-  char buf[2048];
-  int len;
-  if ((len = ::getxattr(pathname.c_str(), "user.griv.md5", buf, 2048)) < 0)
-    {
-      if (errno == ENOATTR)
-        return "";
-      else
-        throw std::runtime_error("Couldn't get xattr for " + pathname);
-    }
 
-  return std::string(buf, len);
-}
-#endif
 void
 Filesystem::init()
 {
@@ -154,21 +138,6 @@ Filesystem::init()
     }
 
   mkdir(home_directory + "/.griv");
-  mkdir(home_directory + "/.griv/cache");
-  mkdir(home_directory + "/.griv/cache/by_url");
-
-  std::string base = home_directory + "/.griv/cache/by_url";
-  std::string hex  = "0123456789abcdef";
-  int res[]  = { 16, 32, 64, 128, 256, 512, 1024 };
-  for(size_t r = 0; r < 7; ++r)
-    {
-      Filesystem::mkdir((boost::format("%s/%d") % base % res[r]).str());
-      for(std::string::iterator i = hex.begin(); i != hex.end(); ++i)
-        for(std::string::iterator j = hex.begin(); j != hex.end(); ++j)
-          {
-            Filesystem::mkdir((boost::format("%s/%d/%c%c") % base % res[r] % *i % *j).str());
-          }
-    }
 }
 
 void
@@ -221,6 +190,17 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
 }
 
 unsigned int
+Filesystem::get_size(const std::string& filename)
+{
+  struct stat stat_buf;
+  if (stat(filename.c_str(), &stat_buf) != 0)
+    {
+      throw std::runtime_error(filename + ": " + strerror(errno));
+    } 
+  return stat_buf.st_size; // Is this reliable? or should be use fopen() and ftell()?
+}
+
+unsigned int
 Filesystem::get_mtime(const std::string& filename)
 {
   struct stat stat_buf;
@@ -249,7 +229,7 @@ Filesystem::generate_jpeg_file_list(const std::string& pathname, std::vector<std
           Filesystem::has_extension(*i, ".JPEG") ||
           Filesystem::has_extension(*i, ".jpeg"))
         {
-          file_list.push_back("file://" + Filesystem::realpath(*i)); // realpath slow?
+          file_list.push_back(Filesystem::realpath(*i)); // realpath slow?
         }
     }
 }
@@ -358,5 +338,5 @@ Filesystem::readlines_from_file(const std::string& pathname, std::vector<std::st
    }
   in.close();
 }
-
+
 /* EOF */

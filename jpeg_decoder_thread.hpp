@@ -23,50 +23,47 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_SOFTWARE_SURFACE_HPP
-#define HEADER_SOFTWARE_SURFACE_HPP
+#ifndef HEADER_JPEG_DECODER_THREAD_HPP
+#define HEADER_JPEG_DECODER_THREAD_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
+#include "thread_message_queue.hpp"
 #include "blob.hpp"
+#include "thread.hpp"
 
-class URL;
-class Rect;
-class Size;
-class SoftwareSurfaceImpl;
+class SoftwareSurface;
 
-class SoftwareSurface
+/** Simple thread that takes a binary blob and decodes it to a
+    SoftwareSurface */
+class JPEGDecoderThread : public Thread
 {
+private:
+  static JPEGDecoderThread* current_;
+
 public:
-  SoftwareSurface();
-  SoftwareSurface(const Size& size);
-
-  ~SoftwareSurface();
-
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
-
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-
-  void save(const std::string& filename) const;
-  
-  Blob get_jpeg_data() const;
-  
-  static SoftwareSurface from_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
-
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
-
-  operator bool() const { return impl.get(); }
+  static JPEGDecoderThread* current() { return current_; } 
 
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  struct JPEGDecoderThreadMessage 
+  {
+    Blob blob;
+    boost::function<void (const SoftwareSurface&)> callback;
+  };
+
+  ThreadMessageQueue<JPEGDecoderThreadMessage> queue;
+  bool quit;
+
+protected:
+  int run();
+public:
+  JPEGDecoderThread();
+
+  void request_decode(const Blob& blob, const boost::function<void (const SoftwareSurface&)>& callback);
+  void stop();
+
+private:
+  JPEGDecoderThread (const JPEGDecoderThread&);
+  JPEGDecoderThread& operator= (const JPEGDecoderThread&);
 };
 
 #endif
