@@ -73,7 +73,7 @@ JPEG::get_size(const std::string& filename, Size& size)
 }
 
 SoftwareSurface
-JPEG::load(const std::string& filename, int scale)
+JPEG::load_from_file(const std::string& filename, int scale)
 {
   //std::cout << "-- JPEG::load(" << filename << ")" << std::endl;
 
@@ -110,20 +110,20 @@ JPEG::load(const std::string& filename, int scale)
 
   jpeg_start_decompress(&cinfo);
 
-  SoftwareSurface surface(Size(cinfo.image_width  / scale, 
-                               cinfo.image_height / scale));
+  SoftwareSurface surface(Size(cinfo.output_width,
+                               cinfo.output_height));
   
   if (cinfo.output_components == 3)
     { // RGB Image
-      JSAMPLE* scanlines[cinfo.image_height];
+      JSAMPLE* scanlines[cinfo.output_height];
 
-      for(JDIMENSION y = 0; y < cinfo.image_height; ++y)
+      for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
         scanlines[y] = surface.get_row_data(y);
 
       while (cinfo.output_scanline < cinfo.output_height) 
         {
           jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
-                              cinfo.image_height - cinfo.output_scanline);
+                              cinfo.output_height - cinfo.output_scanline);
         }
     }
   else if (cinfo.output_components == 1)
@@ -147,7 +147,7 @@ JPEG::load(const std::string& filename, int scale)
 }
 
 SoftwareSurface
-JPEG::load(uint8_t* mem, int len)
+JPEG::load_from_mem(uint8_t* mem, int len)
 {
   //std::cout << "JPEG::load(" << static_cast<void*>(mem) << ", " << len << ")" << std::endl;
   

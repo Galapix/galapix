@@ -81,7 +81,7 @@ Griv::downscale(const std::vector<std::string>& filenames)
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i, ++num)
     {
       std::cout << *i << std::endl;
-      SoftwareSurface surface = JPEG::load(*i, 8);
+      SoftwareSurface surface = JPEG::load_from_file(*i, 8);
 
       std::ostringstream out;
       out << "/tmp/out-" << num << ".jpg";
@@ -129,7 +129,37 @@ Griv::check(const std::string& database)
 }
 
 void
-Griv::generate_tiles(const std::string& database, const std::vector<std::string>& filenames)
+Griv::thumbgen(const std::string& database, 
+               const std::vector<std::string>& filenames)
+{
+  SQLiteConnection db(database);
+
+  FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
+
+  TileGenerator tile_generator;
+
+  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+    {
+      FileEntry entry;
+      std::cout << "Getting file entry..." << std::endl;
+      if (!file_db.get_file_entry(filenames[i], &entry))
+        {
+          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
+        }
+      else
+        {
+          // Generate Image Tiles
+          std::cout << "Generating tiles... " << filenames[i]  << std::endl;         
+          tile_generator.generate_quick(entry,
+                                        boost::bind(&TileDatabase::store_tile, &tile_db, _1));
+        }
+    }
+}
+
+void
+Griv::generate_tiles(const std::string& database, 
+                     const std::vector<std::string>& filenames)
 {
   SQLiteConnection db(database);
 
@@ -204,15 +234,17 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
 void
 Griv::print_usage()
 {
-      std::cout << "Usage: griv view    [OPTIONS]... [FILES]...\n"
-                << "       griv prepare [OPTIONS]... [FILES]...\n"
-                << "       griv check   [OPTIONS]...\n"
-                << "       griv list    [OPTIONS]...\n"
-                << "       griv cleanup [OPTIONS]...\n"
+      std::cout << "Usage: griv view     [OPTIONS]... [FILES]...\n"
+                << "       griv prepare  [OPTIONS]... [FILES]...\n"
+                << "       griv thumbgen [OPTIONS]... [FILES]...\n"
+                << "       griv check    [OPTIONS]...\n"
+                << "       griv list     [OPTIONS]...\n"
+                << "       griv cleanup  [OPTIONS]...\n"
                 << "\n"
                 << "Commands:\n"
                 << "  view      Display the given files\n"
-                << "  prepare   Generate thumbnails for all given images, makes view command faster\n"
+                << "  prepare   Generate all thumbnail tiles for all given images, makes view command faster\n"
+                << "  thumbgen  Generate only small thumbnails for all given images\n"
                 << "  list      Lists all files in the database\n"
                 << "  check     Checks the database for consistency\n"
                 << "  cleanup   Runs garbage collection on the database\n"
@@ -307,6 +339,10 @@ Griv::main(int argc, char** argv)
       else if (strcmp(argv[1], "prepare") == 0)
         {
           generate_tiles(database, filenames);
+        }
+      else if (strcmp(argv[1], "thumbgen") == 0)
+        {
+          thumbgen(database, filenames);
         }
       else
         {

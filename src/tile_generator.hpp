@@ -31,6 +31,8 @@
 #include "software_surface.hpp"
 #include "tile_database.hpp"
 
+class FileEntry;
+
 class TileGenerator
 {
 private:
@@ -46,6 +48,9 @@ public:
 
   void generate_all(int fileid, const std::string& filename,
                     const boost::function<void (Tile)>& callback);
+
+  void generate_quick(const FileEntry& entry,
+                      const boost::function<void (Tile)>& callback);
 
 private:
   TileGenerator (const TileGenerator&);

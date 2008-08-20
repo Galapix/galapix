@@ -92,6 +92,12 @@ SoftwareSurface::get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) con
 }
 
 SoftwareSurface
+SoftwareSurface::halve() const
+{
+  return scale(Size(get_width()/2, get_height()/2));
+}
+
+SoftwareSurface
 SoftwareSurface::scale(const Size& size) const
 {
   SoftwareSurface surface(size);
@@ -173,13 +179,13 @@ SoftwareSurface::get_jpeg_data() const
 SoftwareSurface
 SoftwareSurface::from_file(const std::string& filename)
 {
-  return JPEG::load(filename);
+  return JPEG::load_from_file(filename);
 }
 
 SoftwareSurface
 SoftwareSurface::from_data(const Blob& blob)
 {
-  return JPEG::load(blob.get_data(), blob.size());
+  return JPEG::load_from_mem(blob.get_data(), blob.size());
 }
 
 uint8_t*

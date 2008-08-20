@@ -37,8 +37,8 @@ private:
 public:
   static void get_size(const std::string& filename, Size& size);
 
-  static SoftwareSurface load(const std::string& filename, int scale = 1);
-  static SoftwareSurface load(uint8_t* mem, int len);
+  static SoftwareSurface load_from_file(const std::string& filename, int scale = 1);
+  static SoftwareSurface load_from_mem(uint8_t* mem, int len);
 
   static void save(const SoftwareSurface& surface, int quality, const std::string& filename);
   static Blob save(const SoftwareSurface& surface, int quality);

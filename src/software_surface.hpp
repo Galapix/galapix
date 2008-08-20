@@ -47,6 +47,7 @@ public:
   int get_height() const;
   int get_pitch()  const;
 
+  SoftwareSurface halve() const;
   SoftwareSurface scale(const Size& size) const;
   SoftwareSurface crop(const Rect& rect) const;
 

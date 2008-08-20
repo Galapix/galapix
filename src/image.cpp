@@ -208,8 +208,9 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
               goto retry;
             }
           else
-            {
+            {         
               // give up, no lower resolution found
+              // FIXME: Draw placeholder instead
             }
         }
     }

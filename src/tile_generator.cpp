@@ -26,6 +26,8 @@
 #include <iostream>
 #include "math/size.hpp"
 #include "math/rect.hpp"
+#include "jpeg.hpp"
+#include "file_database.hpp"
 #include "tile_database.hpp"
 #include "tile_generator.hpp"
 
@@ -81,6 +83,59 @@ TileGenerator::generate_all(int fileid, const std::string& filename,
                             const boost::function<void (Tile)>& callback)
 {
   generate_all(fileid, SoftwareSurface::from_file(filename), callback);
+}
+
+void
+TileGenerator::generate_quick(const FileEntry& entry,
+                              const boost::function<void (Tile)>& callback)
+{
+  // Find scale at which the image fits on one tile
+  int width  = entry.size.width;
+  int height = entry.size.height;
+  int scale  = 0;
+  while (width  / Math::pow2(scale) > 256 || 
+         height / Math::pow2(scale) > 256)
+    scale += 1;
+
+  //std::cout << "Loading with scale: 2^" << scale << " = " << Math::pow2(scale) << " " << entry.size << std::endl;
+
+  // Load the largest scale at which the image fits on a single tile 
+  SoftwareSurface surface = JPEG::load_from_file(entry.filename, Math::pow2(scale));
+
+  // The result of JPEG::load_from_file might be larger then the requested size, so scale it down
+  // FIXME: We should not throw this data away, now that we already have loaded it! Instead we should crop it
+  if (surface.get_width()  > 256 ||
+      surface.get_height() > 256)
+    {
+      surface = surface.scale(Size(width  / Math::pow2(scale),
+                                   height / Math::pow2(scale)));
+    }
+
+  //std::cout << " => " << surface.get_size() << std::endl;
+
+  while (true)
+    {
+      //std::cout << scale << " size: " << surface.get_size() << std::endl;
+
+      Tile tile;
+      tile.fileid  = entry.fileid;
+      tile.scale   = scale;
+      tile.x       = 0;
+      tile.y       = 0;
+      tile.surface = surface;
+          
+      callback(tile);
+
+      // FIXME: Might barf if width/height get == 0
+      if (surface.get_width()  < 32 &&
+          surface.get_height() < 32)
+        {
+          break;
+        }
+
+      surface = surface.halve();
+      scale += 1;
+    }
 }
 
 /* EOF */
