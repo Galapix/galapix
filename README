@@ -4,9 +4,9 @@ griv - A Zoomable Image Viewer zoomview
 griv is a image viewer that allows you to directly zoom into large
 collection of thumbnails down to the images original size. Its goal is
 to allow its viewer to view 100'000 images at once, fluently without
-any noticable load times. griv requires currently a tile cache to make
-this work, which require around 1.5 times as much diskspace as the
-original image data.
+any noticable load times. griv requires a tile cache to make this
+work, which require around 1.5x times as much diskspace as the original
+image data. 
 
 
 Required Libraries:
@@ -15,13 +15,14 @@ Required Libraries:
 On Ubuntu you have to do a:
 
 apt-get install \
-libsqlite3-dev \
-libmhash-dev \
-libglew1.5-dev \
-libjpeg62-dev \
-scons
+  libsqlite3-dev \
+  libmhash-dev \
+  libglew1.5-dev \
+  libjpeg62-dev \
+  scons
 
-And make sure you have OpenGL installed. For other distributions library names might be a little different.
+And make sure you have OpenGL installed. For other distributions
+library names might be a little different.
 
 
 Bugs:
@@ -29,8 +30,8 @@ Bugs:
 
 When zooming into an images one will see noticable seams at the areas
 where the tiles meet. A possible fix for this would be to add a 1px
-width border to the tiles, but that would screw up the tile generation
-process from JPEG data.
+width border to the tiles, but that would slow down the tile
+generation process from JPEG data, so it might never get implemented.
 
 
 # EOF #

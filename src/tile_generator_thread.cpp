@@ -53,7 +53,7 @@ TileGeneratorThread::request_tiles(int fileid, const std::string& filename)
 }
 
 void
-TileGeneratorThread::request_tile(int fileid, const std::string& filename, int x, int y)
+TileGeneratorThread::request_tile(int fileid, const std::string& filename, int x, int y, int scale)
 {
   // Do some magic to group tile request for the same fileid
 }

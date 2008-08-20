@@ -56,7 +56,7 @@ public:
   void stop();
 
   void request_tiles(int fileid, const std::string& filename);
-  void request_tile(int fileid, const std::string& filename, int x, int y);
+  void request_tile (int fileid, const std::string& filename, int x, int y, int scale);
 
   void receive_tile(const Tile& tile);
   
