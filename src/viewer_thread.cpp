@@ -51,7 +51,7 @@ ViewerThread::receive_file(const FileEntry& entry)
 }
 
 void
-ViewerThread::receive_tile(const Image& image, const Tile& tile)
+ViewerThread::receive_tile(const Image& image, const TileEntry& tile)
 {
   TileMessage msg;
   

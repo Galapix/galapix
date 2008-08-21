@@ -25,12 +25,14 @@
 
 #include <sstream>
 #include "SDL.h"
+#include "tile_entry.hpp"
 #include "tile_database.hpp"
 
 TileDatabase::TileDatabase(SQLiteConnection* db)
   : db(db),
     store_stmt(db),
-    get_stmt(db)
+    get_stmt(db),
+    has_stmt(db)
 {
   db->exec("CREATE TABLE IF NOT EXISTS tiles ("
            "fileid  INTEGER, " // link to to files.rowid
@@ -42,12 +44,35 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
 
   db->exec("CREATE INDEX IF NOT EXISTS tiles_index ON tiles ( fileid, x, y, scale );");
 
+  // FIXME: This is brute force and doesn't handle collisions
   store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data) VALUES (?1, ?2, ?3, ?4, ?5);");
+
   get_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
+  has_stmt.prepare("SELECT (rowid) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
 }
 
 bool
-TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
+TileDatabase::has_tile(uint32_t fileid, Vector2i& pos, int scale)
+{
+  has_stmt.bind_int(1, fileid);
+  has_stmt.bind_int(2, scale);
+  has_stmt.bind_int(3, pos.x);
+  has_stmt.bind_int(4, pos.y);
+
+  SQLiteReader reader = has_stmt.execute_query();
+
+  if (reader.next())
+    {
+      return true;
+    }  
+  else
+    {
+      return false;
+    }
+}
+
+bool
+TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, TileEntry& tile)
 {
   //SDL_Delay(100);
 
@@ -72,12 +97,14 @@ TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, Tile& tile)
     }
   else
     {
+      // Tile missing
+
       return false;
     }
 }
 
 void
-TileDatabase::store_tile(const Tile& tile)
+TileDatabase::store_tile(const TileEntry& tile)
 {
   Blob blob = tile.surface.get_jpeg_data();
 

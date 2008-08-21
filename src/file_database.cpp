@@ -31,12 +31,8 @@
 #include "jpeg.hpp"
 #include "filesystem.hpp"
 #include "software_surface.hpp"
+#include "file_entry.hpp"
 #include "file_database.hpp"
-
-std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
-{
-  return os << "filename: " << entry.filename << " size: "<< entry.size;
-}
 
 FileDatabase::FileDatabase(SQLiteConnection* db)
   : db(db),

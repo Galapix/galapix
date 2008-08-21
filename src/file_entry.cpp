@@ -23,35 +23,12 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_TILE_DATABASE_HPP
-#define HEADER_TILE_DATABASE_HPP
-
-#include "sqlite.hpp"
-#include "math/vector2i.hpp"
-#include "software_surface.hpp"
+#include <iostream>
+#include "file_entry.hpp"
 
-class TileEntry;
-
-class TileDatabase
+std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
-private:
-  SQLiteConnection* db;
-  SQLiteStatement store_stmt;
-  SQLiteStatement get_stmt;
-  SQLiteStatement has_stmt;
-
-public:
-  TileDatabase(SQLiteConnection* db);
-  
-  bool has_tile(uint32_t file_id, Vector2i& pos, int scale);
-  bool get_tile(uint32_t file_id, int scale, int x, int y, TileEntry& tile);
-  void store_tile(const TileEntry& tile);
-  void check();
-private:
-  TileDatabase (const TileDatabase&);
-  TileDatabase& operator= (const TileDatabase&);
-};
+  return os << "filename: " << entry.filename << " size: "<< entry.size;
+}
 
-#endif
-
 /* EOF */

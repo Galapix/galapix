@@ -29,8 +29,8 @@
 #include <boost/function.hpp>
 #include <string>
 #include "thread_message_queue.hpp"
-#include "file_database.hpp"
-#include "tile_database.hpp"
+#include "file_entry.hpp"
+#include "tile_entry.hpp"
 #include "job_handle.hpp"
 #include "thread.hpp"
 
@@ -59,11 +59,11 @@ public:
   
   void stop();
   
-  JobHandle request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (Tile)>& callback);
+  JobHandle request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (TileEntry)>& callback);
   void request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
   void request_all_files(const boost::function<void (FileEntry)>& callback);
 
-  void store_tile(const Tile& tile);
+  void store_tile(const TileEntry& tile);
 
 private:
   DatabaseThread (const DatabaseThread&);

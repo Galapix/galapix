@@ -169,10 +169,16 @@ Griv::thumbgen(const std::string& database,
         }
       else
         {
+          // FIXME: Insert some checks if the tile already exist
+
           // Generate Image Tiles
-          std::cout << "Generating tiles for " << filenames[i]  << std::endl;         
-          tile_generator.generate_quick(entry,
-                                        boost::bind(&TileDatabase::store_tile, &tile_db, _1));
+          std::cout << "Generating tiles for " << filenames[i]  << std::endl;
+          try {
+            tile_generator.generate_quick(entry,
+                                          boost::bind(&TileDatabase::store_tile, &tile_db, _1));
+          } catch(std::exception& err) {
+            std::cout << err.what() << std::endl;
+          }
         }
     }
 }

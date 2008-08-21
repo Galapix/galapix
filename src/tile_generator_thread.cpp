@@ -53,7 +53,7 @@ TileGeneratorThread::request_tiles(int fileid, const std::string& filename)
 }
 
 void
-TileGeneratorThread::request_tile(int fileid, const std::string& filename, int x, int y, int scale)
+TileGeneratorThread::request_tile(int fileid, const std::string& filename, const Vector2i& pos, int scale)
 {
   // Do some magic to group tile request for the same fileid
 }
@@ -65,7 +65,7 @@ TileGeneratorThread::stop()
 }
 
 void
-TileGeneratorThread::receive_tile(const Tile& tile)
+TileGeneratorThread::receive_tile(const TileEntry& tile)
 {
   DatabaseThread::current()->store_tile(tile);
 }

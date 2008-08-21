@@ -33,17 +33,7 @@
 #include "sqlite.hpp"
 #include "math/size.hpp"
 
-struct FileEntry 
-{
-  int         fileid;
-  std::string filename; // 
-  std::string md5;      //
-  int         filesize; //
-  uint32_t    mtime;    // mtime of the file
-  Size        size;
-};
-
-std::ostream& operator<<(std::ostream& os, const FileEntry& entry);
+class FileEntry;
 
 /** The FileDatabase keeps a record of all files that have been
     view. It keeps information on the last modification time and

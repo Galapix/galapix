@@ -60,11 +60,11 @@ public:
   int tilescale;
   int x;
   int y;
-  boost::function<void (Tile)> callback;
+  boost::function<void (TileEntry)> callback;
 
   TileDatabaseMessage(const JobHandle& job_handle,
                       int fileid, int tilescale, int x, int y,
-                      const boost::function<void (Tile)>& callback)
+                      const boost::function<void (TileEntry)>& callback)
     : DatabaseMessage(DATABASE_TILE_MESSAGE),
       job_handle(job_handle),
       fileid(fileid),
@@ -104,9 +104,9 @@ public:
 class StoreTileDatabaseMessage : public DatabaseMessage
 {
 public:
-  Tile tile;
+  TileEntry tile;
 
-  StoreTileDatabaseMessage(const Tile& tile)
+  StoreTileDatabaseMessage(const TileEntry& tile)
     : DatabaseMessage(DATABASE_STORE_TILE_MESSAGE),
       tile(tile)
   {}
@@ -127,7 +127,7 @@ DatabaseThread::~DatabaseThread()
 }
 
 JobHandle
-DatabaseThread::request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (Tile)>& callback)
+DatabaseThread::request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (TileEntry)>& callback)
 {
   JobHandle job_handle;
   queue.push(new TileDatabaseMessage(job_handle, fileid, tilescale, x, y, callback));
@@ -147,7 +147,7 @@ DatabaseThread::request_all_files(const boost::function<void (FileEntry)>& callb
 }
 
 void
-DatabaseThread::store_tile(const Tile& tile)
+DatabaseThread::store_tile(const TileEntry& tile)
 {
   queue.push(new StoreTileDatabaseMessage(tile));
 }
@@ -231,7 +231,7 @@ DatabaseThread::run()
 
                   if (!tile_msg->job_handle.is_aborted())
                     {
-                      Tile tile;
+                      TileEntry tile;
                       if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->x, tile_msg->y, tile))
                         {
                           tile_msg->callback(tile);
@@ -249,7 +249,9 @@ DatabaseThread::run()
 
                           tile_msg->job_handle.finish();
                           // Need to send loading command back
-                          //TileGeneratorThread::request_tile(fileid, x, y, tilescale);
+                          //TileGeneratorThread::request_tile(tile_msg->fileid, tile_msg->x, tile_msg->y, tile_msg->tilescale, 
+                          //                                  tile_msg->job_handle, 
+                          //                                  tile_msg->callback);
                         }
                     }
                 }

@@ -56,9 +56,9 @@ public:
   void stop();
 
   void request_tiles(int fileid, const std::string& filename);
-  void request_tile (int fileid, const std::string& filename, int x, int y, int scale);
+  void request_tile (int fileid, const std::string& filename, const Vector2i& pos, int scale);
 
-  void receive_tile(const Tile& tile);
+  void receive_tile(const TileEntry& tile);
   
 private:
   TileGeneratorThread (const TileGeneratorThread&);

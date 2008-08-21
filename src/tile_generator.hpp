@@ -44,13 +44,13 @@ public:
   /** Slow brute force approach to generate tiles, works with all
       image formats */
   void generate_all(int fileid, const SoftwareSurface& surface,
-                    const boost::function<void (Tile)>& callback);
+                    const boost::function<void (TileEntry)>& callback);
 
   void generate_all(int fileid, const std::string& filename,
-                    const boost::function<void (Tile)>& callback);
+                    const boost::function<void (TileEntry)>& callback);
 
   void generate_quick(const FileEntry& entry,
-                      const boost::function<void (Tile)>& callback);
+                      const boost::function<void (TileEntry)>& callback);
 
 private:
   TileGenerator (const TileGenerator&);

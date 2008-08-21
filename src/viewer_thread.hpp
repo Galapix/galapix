@@ -31,16 +31,16 @@
 
 #include "image.hpp"
 #include "job_handle.hpp"
-#include "tile_database.hpp"
+#include "tile_entry.hpp"
 
 class FileEntry;
 class Image;
-class Tile;
+class TileEntry;
 
 struct TileMessage
 {
-  Image image;
-  Tile  tile;
+  Image     image;
+  TileEntry tile;
 };
 
 class ViewerThread
@@ -61,7 +61,7 @@ public:
   int run();
 
   void receive_file(const FileEntry& entry);
-  void receive_tile(const Image& image, const Tile& tile);
+  void receive_tile(const Image& image, const TileEntry& tile);
 
   JobHandle request_tile(int fileid, int tilescale, int x, int y, const Image& image);
 private:

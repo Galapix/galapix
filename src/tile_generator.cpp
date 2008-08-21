@@ -27,8 +27,8 @@
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "jpeg.hpp"
-#include "file_database.hpp"
-#include "tile_database.hpp"
+#include "file_entry.hpp"
+#include "tile_entry.hpp"
 #include "tile_generator.hpp"
 
 TileGenerator::TileGenerator()
@@ -41,7 +41,7 @@ TileGenerator::~TileGenerator()
 
 void
 TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_, 
-                            const boost::function<void (Tile)>& callback)
+                            const boost::function<void (TileEntry)>& callback)
 {
   int scale = 0;
 
@@ -61,7 +61,7 @@ TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_,
             SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
                                                                Size(256, 256)));
 
-            Tile tile;
+            TileEntry tile;
             tile.fileid = fileid;
             tile.scale  = scale;
             tile.x = x;
@@ -80,14 +80,14 @@ TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_,
 
 void
 TileGenerator::generate_all(int fileid, const std::string& filename,
-                            const boost::function<void (Tile)>& callback)
+                            const boost::function<void (TileEntry)>& callback)
 {
   generate_all(fileid, SoftwareSurface::from_file(filename), callback);
 }
 
 void
 TileGenerator::generate_quick(const FileEntry& entry,
-                              const boost::function<void (Tile)>& callback)
+                              const boost::function<void (TileEntry)>& callback)
 {
   // Find scale at which the image fits on one tile
   int width  = entry.size.width;
@@ -121,7 +121,7 @@ TileGenerator::generate_quick(const FileEntry& entry,
     {
       //std::cout << scale << " size: " << surface.get_size() << std::endl;
 
-      Tile tile;
+      TileEntry tile;
       tile.fileid  = entry.fileid;
       tile.scale   = scale;
       tile.x       = 0;
