@@ -24,7 +24,7 @@
 */
 
 #include <boost/bind.hpp>
-#include "file_database.hpp"
+#include "file_entry.hpp"
 #include "workspace.hpp"
 #include "framebuffer.hpp"
 #include "viewer.hpp"

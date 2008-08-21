@@ -29,7 +29,7 @@
 #include <boost/function.hpp>
 #include <string>
 #include "software_surface.hpp"
-#include "tile_database.hpp"
+#include "tile_entry.hpp"
 
 class FileEntry;
 
