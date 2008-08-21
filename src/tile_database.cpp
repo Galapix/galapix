@@ -87,8 +87,8 @@ TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, TileEntry& tile
     {
       tile.fileid  = reader.get_int (0);
       tile.scale   = reader.get_int (1);
-      tile.x       = reader.get_int (2);
-      tile.y       = reader.get_int (3);
+      tile.pos.x   = reader.get_int (2);
+      tile.pos.y   = reader.get_int (3);
 
       // FIXME: Do this in the JPEGDecoderThread
       tile.surface = SoftwareSurface::from_data(reader.get_blob(4));
@@ -112,8 +112,8 @@ TileDatabase::store_tile(const TileEntry& tile)
   // just storing a duplicate
   store_stmt.bind_int (1, tile.fileid);
   store_stmt.bind_int (2, tile.scale);
-  store_stmt.bind_int (3, tile.x);
-  store_stmt.bind_int (4, tile.y);
+  store_stmt.bind_int (3, tile.pos.x);
+  store_stmt.bind_int (4, tile.pos.y);
   store_stmt.bind_blob(5, blob);
 
   store_stmt.execute();

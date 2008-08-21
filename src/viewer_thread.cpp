@@ -93,7 +93,7 @@ ViewerThread::run()
         {
           TileMessage msg = tile_queue.front();
 
-          msg.image.receive_tile(msg.tile.x, msg.tile.y, 
+          msg.image.receive_tile(msg.tile.pos.x, msg.tile.pos.y, 
                                  msg.tile.scale, msg.tile.surface);
 
           tile_queue.pop();

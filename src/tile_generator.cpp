@@ -64,8 +64,8 @@ TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_,
             TileEntry tile;
             tile.fileid = fileid;
             tile.scale  = scale;
-            tile.x = x;
-            tile.y = y;
+            tile.pos.x = x;
+            tile.pos.y = y;
             tile.surface = croped_surface;
           
             callback(tile);
@@ -124,8 +124,8 @@ TileGenerator::generate_quick(const FileEntry& entry,
       TileEntry tile;
       tile.fileid  = entry.fileid;
       tile.scale   = scale;
-      tile.x       = 0;
-      tile.y       = 0;
+      tile.pos.x   = 0;
+      tile.pos.y   = 0;
       tile.surface = surface;
           
       callback(tile);

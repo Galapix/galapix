@@ -32,9 +32,9 @@
 class TileEntry
 {
 public:
-  int fileid;
-  int scale;
-  int x, y;
+  int      fileid; // FIXME: Can we replace this with a FileEntry object?!
+  int      scale;
+  Vector2i pos;
   SoftwareSurface surface;
 
   TileEntry()
