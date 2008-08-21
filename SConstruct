@@ -17,6 +17,7 @@ griv_env.Program('griv', [
         'src/math/vector2f.cpp',
         'src/math/vector3f.cpp',
         'src/file_database.cpp',
+        'src/file_entry.cpp',
         'src/filesystem.cpp',
         'src/framebuffer.cpp',
         'src/jpeg.cpp',
