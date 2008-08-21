@@ -47,7 +47,6 @@ void
 ViewerThread::receive_file(const FileEntry& entry)
 {
   file_queue.push(entry);
-  //TileGeneratorThread::current()->request_tiles(entry.fileid, entry.filename);
 }
 
 void
@@ -85,7 +84,7 @@ ViewerThread::run()
       while (!file_queue.empty())
         {
           const FileEntry& entry = file_queue.front();
-          workspace.add_image(entry.fileid, entry.filename, entry.size);
+          workspace.add_image(entry);
           file_queue.pop();
         }
 

@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include "file_entry.hpp"
 #include "math.hpp"
 #include "workspace.hpp"
 
@@ -32,12 +33,12 @@ Workspace::Workspace()
 }
 
 void
-Workspace::add_image(int fileid, const std::string& filename, const Size& size)
+Workspace::add_image(const FileEntry& file_entry)
 {
-  Image image(fileid, filename, size);
+  Image image(file_entry);
   images.push_back(image);
-  image.set_scale(Math::min(1000.0f / size.width,
-                            1000.0f / size.height));
+  image.set_scale(Math::min(1000.0f / file_entry.size.width,
+                            1000.0f / file_entry.size.height));
 
   image.set_pos(next_pos * 1024.0f);
                    

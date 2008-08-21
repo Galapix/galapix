@@ -28,6 +28,7 @@
 #include "framebuffer.hpp"
 #include "surface.hpp"
 #include "math.hpp"
+#include "file_entry.hpp"
 #include "database_thread.hpp"
 #include "viewer_thread.hpp"
 #include "image.hpp"
@@ -40,9 +41,7 @@ uint32_t make_cache_id(int x, int y, int tile_scale)
 class ImageImpl
 {
 public:
-  int fileid;
-  std::string filename;
-  Size size;
+  FileEntry file_entry;
   float scale;
 
   int max_tiledb_scale;
@@ -64,16 +63,15 @@ Image::Image()
 {
 }
 
-Image::Image(int fileid, const std::string& filename, const Size& size)
+Image::Image(const FileEntry& file_entry)
   : impl(new ImageImpl())
 {
-  impl->fileid   = fileid;
-  impl->filename = filename;
-  impl->size     = size;
-  impl->scale    = 1.0f;
+  impl->file_entry = file_entry;
+  impl->scale      = 1.0f;
   
   int  tiledb_scale = 0;
-  Size tmpsize = size;
+  Size tmpsize = file_entry.size;
+
   do {
     tmpsize.width  /= 2;
     tmpsize.height /= 2;
@@ -111,25 +109,25 @@ Image::get_scale() const
 float
 Image::get_scaled_width() const
 {
-  return impl->size.width * impl->scale;
+  return impl->file_entry.size.width * impl->scale;
 }
 
 float
 Image::get_scaled_height() const
 {
-  return impl->size.height * impl->scale;
+  return impl->file_entry.size.height * impl->scale;
 }
 
 int
 Image::get_original_width() const
 {
-  return impl->size.width;
+  return impl->file_entry.size.width;
 }
 
 int
 Image::get_original_height() const
 {
-  return impl->size.height;
+  return impl->file_entry.size.height;
 }
 
 Surface
@@ -140,7 +138,7 @@ Image::get_tile(int x, int y, int tile_scale)
 
   if (i == impl->cache.end())
     {
-      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->fileid, tile_scale, x, y, *this));
+      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->file_entry.fileid, tile_scale, x, y, *this));
 
       // Request the next smaller tile too, so we get a lower quality
       // image fast and a higher quality one soon after FIXME: Its
@@ -148,7 +146,7 @@ Image::get_tile(int x, int y, int tile_scale)
       // request gets mungled in the DatabaseThread, we should request
       // the whole group of lower res tiles at once, instead of one by
       // one, since that eats up the possible speed up
-      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->fileid, tile_scale+1, x, y, *this));
+      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->file_entry.fileid, tile_scale+1, x, y, *this));
 
       SurfaceStruct s;
       
@@ -212,8 +210,8 @@ Image::draw_tile(int x, int y, int tiledb_scale,
             {         
               // give up, no lower resolution found
 
-              Size s(Math::min(256, (impl->size.width  / Math::pow2(tiledb_scale)) - 256 * x),
-                     Math::min(256, (impl->size.height / Math::pow2(tiledb_scale)) - 256 * y));
+              Size s(Math::min(256, (impl->file_entry.size.width  / Math::pow2(tiledb_scale)) - 256 * x),
+                     Math::min(256, (impl->file_entry.size.height / Math::pow2(tiledb_scale)) - 256 * y));
 
               Framebuffer::fill_rect(Rectf(pos, s*scale),
                                      RGB(255, 0, 255));
@@ -233,7 +231,7 @@ Image::draw(const Rectf& cliprect, float fscale)
       impl->jobs.clear();
     }
 
-  Rectf image_rect(impl->pos, Sizef(impl->size * impl->scale)); // in world coordinates
+  Rectf image_rect(impl->pos, Sizef(impl->file_entry.size * impl->scale)); // in world coordinates
 
   //Framebuffer::draw_rect(image_rect);
 
@@ -244,8 +242,8 @@ Image::draw(const Rectf& cliprect, float fscale)
                                                        log(2)));
       int scale_factor = Math::pow2(tiledb_scale);
 
-      int scaled_width  = impl->size.width  / scale_factor;
-      int scaled_height = impl->size.height / scale_factor;
+      int scaled_width  = impl->file_entry.size.width  / scale_factor;
+      int scaled_height = impl->file_entry.size.height / scale_factor;
 
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn

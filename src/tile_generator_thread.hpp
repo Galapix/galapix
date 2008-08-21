@@ -26,8 +26,12 @@
 #ifndef HEADER_TILE_GENERATOR_THREAD_HPP
 #define HEADER_TILE_GENERATOR_THREAD_HPP
 
+#include <boost/function.hpp>
 #include "thread.hpp"
 #include "thread_message_queue.hpp"
+#include "tile_entry.hpp"
+
+class FileEntry;
 
 struct TileGeneratorMessage
 {
@@ -55,8 +59,9 @@ public:
 
   void stop();
 
-  void request_tiles(int fileid, const std::string& filename);
-  void request_tile (int fileid, const std::string& filename, const Vector2i& pos, int scale);
+  void request_tile(const FileEntry& file_entry, 
+                    const Vector2i& pos, int scale,
+                    const boost::function<void (TileEntry)>& callback);
 
   void receive_tile(const TileEntry& tile);
   

@@ -42,18 +42,9 @@ TileGeneratorThread::~TileGeneratorThread()
 }
 
 void
-TileGeneratorThread::request_tiles(int fileid, const std::string& filename)
-{
-  TileGeneratorMessage msg;
-
-  msg.fileid   = fileid;
-  msg.filename = filename;
-
-  msg_queue.push(msg);
-}
-
-void
-TileGeneratorThread::request_tile(int fileid, const std::string& filename, const Vector2i& pos, int scale)
+TileGeneratorThread::request_tile(const FileEntry& file_entry, 
+                                  const Vector2i& pos, int scale,
+                                  const boost::function<void (TileEntry)>& callback)
 {
   // Do some magic to group tile request for the same fileid
 }

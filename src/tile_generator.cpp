@@ -99,6 +99,7 @@ TileGenerator::generate_quick(const FileEntry& entry,
 
   //std::cout << "Loading with scale: 2^" << scale << " = " << Math::pow2(scale) << " " << entry.size << std::endl;
 
+  // The JPEG class can only scale down by factor 2,4,8, so we have to limit things
   int jpeg_scale = Math::min(8, Math::pow2(scale));
 
   // Load the largest scale at which the image fits on a single tile 

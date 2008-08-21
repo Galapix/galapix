@@ -247,10 +247,7 @@ DatabaseThread::run()
                                       << tile_msg->tilescale
                                       << std::endl;
 
-                          tile_msg->job_handle.finish();
-                          // Need to send loading command back
-                          //TileGeneratorThread::request_tile(tile_msg->fileid, tile_msg->x, tile_msg->y, tile_msg->tilescale, 
-                          //                                  tile_msg->job_handle, 
+                          //TileGeneratorThread::request_tile(tile_msg->fileid, tile_msg->pos, tile_msg->tilescale, 
                           //                                  tile_msg->callback);
                         }
                     }

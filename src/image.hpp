@@ -40,6 +40,7 @@ class Size;
 class Rectf;
 class Vector2f;
 class ImageImpl;
+class FileEntry;
 
 class Image
 {
@@ -61,7 +62,7 @@ private:
 
 public:
   Image();
-  Image(int fileid, const std::string& filename, const Size& size);
+  Image(const FileEntry& file_entry);
 
   void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
   void draw(const Rectf& cliprect, float scale);
