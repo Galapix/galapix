@@ -101,7 +101,9 @@ ViewerThread::run()
 
       SDL_Event event;
       while (SDL_PollEvent(&event))
-        viewer.process_event(event);
+        {
+          viewer.process_event(workspace, event);
+        }
 
       Uint32 cticks = SDL_GetTicks();
       float delta = (cticks - ticks) / 1000.0f;

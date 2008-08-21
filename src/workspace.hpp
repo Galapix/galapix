@@ -35,6 +35,7 @@ class Workspace
 private:
   typedef std::vector<Image> Images;
   Images images;
+  Vector2i next_pos;
   
 public:
   Workspace();

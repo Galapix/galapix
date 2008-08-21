@@ -99,11 +99,15 @@ TileGenerator::generate_quick(const FileEntry& entry,
 
   //std::cout << "Loading with scale: 2^" << scale << " = " << Math::pow2(scale) << " " << entry.size << std::endl;
 
+  int jpeg_scale = Math::min(8, Math::pow2(scale));
+
   // Load the largest scale at which the image fits on a single tile 
-  SoftwareSurface surface = JPEG::load_from_file(entry.filename, Math::pow2(scale));
+  SoftwareSurface surface = JPEG::load_from_file(entry.filename, jpeg_scale);
 
   // The result of JPEG::load_from_file might be larger then the requested size, so scale it down
-  // FIXME: We should not throw this data away, now that we already have loaded it! Instead we should crop it
+  // FIXME: We should not throw this data away, now that we already
+  // have loaded it! Instead we should crop it and place it in the
+  // tile cache
   if (surface.get_width()  > 256 ||
       surface.get_height() > 256)
     {

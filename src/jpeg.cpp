@@ -42,39 +42,53 @@ void fatal_error_handler(j_common_ptr cinfo)
   longjmp(setjmp_buffer, 1);
 }
 
-void
+bool
 JPEG::get_size(const std::string& filename, Size& size)
 {
   FILE* in = fopen(filename.c_str(), "rb");
   if (!in)
-    throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
-
-  struct jpeg_decompress_struct  cinfo;
-  struct jpeg_error_mgr jerr;
-
-  cinfo.err = jpeg_std_error(&jerr);
-  cinfo.err->error_exit = &fatal_error_handler;
-  jpeg_create_decompress(&cinfo);
-  jpeg_stdio_src(&cinfo, in);
-
-  if (setjmp(setjmp_buffer))
     {
-      throw std::runtime_error("JPEG::get_size: ERROR: Couldn't open " + filename);
+      // throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
+      return false;
     }
+  else
+    {
+      struct jpeg_decompress_struct  cinfo;
+      struct jpeg_error_mgr jerr;
 
-  jpeg_read_header(&cinfo, FALSE);
+      cinfo.err = jpeg_std_error(&jerr);
+      cinfo.err->error_exit = &fatal_error_handler;
+      jpeg_create_decompress(&cinfo);
+      jpeg_stdio_src(&cinfo, in);
 
-  size.width  = cinfo.image_width;
-  size.height = cinfo.image_height;
+      if (setjmp(setjmp_buffer))
+        {
+          return false;
+        }
+      else
+        {
+          jpeg_read_header(&cinfo, FALSE);
 
-  jpeg_destroy_decompress(&cinfo);
+          size.width  = cinfo.image_width;
+          size.height = cinfo.image_height;
 
-  fclose(in);
+          jpeg_destroy_decompress(&cinfo);
+
+          fclose(in);
+
+          return true;
+        }
+    }
 }
 
 SoftwareSurface
 JPEG::load_from_file(const std::string& filename, int scale)
 {
+  assert(scale == 1 ||
+         scale == 2 ||
+         scale == 4 ||
+         scale == 8);
+
   //std::cout << "-- JPEG::load(" << filename << ")" << std::endl;
 
   FILE* in = fopen(filename.c_str(), "rb");
@@ -396,5 +410,5 @@ JPEG::crop()
 }
 #endif
 
-
+  
 /* EOF */

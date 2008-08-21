@@ -35,9 +35,20 @@ private:
 
 
 public:
-  static void get_size(const std::string& filename, Size& size);
+  static bool get_size(const std::string& filename, Size& size);
 
+  /** Load a SoftwareSurface from a JPEG file
+      
+      @param filename   Filename of the file to load
+      @param scale      Scale the image by 1/scale (only 1,2,4,8 allowed)
+   */
   static SoftwareSurface load_from_file(const std::string& filename, int scale = 1);
+
+  /** Load a JPEG from memory 
+      
+      @param mem   Address of the JPEG data
+      @param len   Length of the JPEG data
+   */
   static SoftwareSurface load_from_mem(uint8_t* mem, int len);
 
   static void save(const SoftwareSurface& surface, int quality, const std::string& filename);

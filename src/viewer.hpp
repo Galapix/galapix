@@ -69,7 +69,7 @@ public:
 
   void draw(Workspace& workspace);
   void update(float delta);
-  void process_event(const SDL_Event& event);
+  void process_event(Workspace& workspace, const SDL_Event& event);
   bool done() const { return quit; }
 
 private:

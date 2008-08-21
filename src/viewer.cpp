@@ -78,7 +78,7 @@ Viewer::Viewer()
 }
 
 void
-Viewer::process_event(const SDL_Event& event)
+Viewer::process_event(Workspace& workspace, const SDL_Event& event)
 {
   switch(event.type)
     {
@@ -113,13 +113,11 @@ Viewer::process_event(const SDL_Event& event)
                 SDL_SetGamma(gamma, gamma, gamma);
                 break;
                 
-            case SDLK_END:
-                gamma = 1.0f;
-                SDL_SetGamma(gamma, gamma, gamma);
-                break;
+            case SDLK_1:
+              workspace.layout(4, 3);
+              break;
 
             default:
-              // ignore all other keypresses
               break;
           }
         break;
@@ -167,7 +165,7 @@ Viewer::process_event(const SDL_Event& event)
               else
                   zoom_button = 0;
               break;
-
+  
             case SDL_BUTTON_MIDDLE:
               //std::cout << state.screen2world(mouse_pos) << std::endl;
 

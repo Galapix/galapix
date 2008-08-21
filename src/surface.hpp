@@ -53,8 +53,6 @@ public:
   int  get_height() const;
   Size get_size() const;
 
-  void set_size(const Size& size);
-
   operator bool() const { return impl.get(); }
 
 private:

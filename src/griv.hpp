@@ -38,6 +38,8 @@ public:
   void list(const std::string& database);
   void thumbgen(const std::string& database, 
                 const std::vector<std::string>& filenames);
+  void filegen(const std::string& database, 
+                const std::vector<std::string>& filenames);
   void generate_tiles(const std::string& database, 
                       const std::vector<std::string>& filenames);
   void view(const std::string& database, 

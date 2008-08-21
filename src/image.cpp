@@ -166,7 +166,8 @@ Image::get_tile(int x, int y, int tile_scale)
 }
 
 void
-Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scale)
+Image::draw_tile(int x, int y, int tiledb_scale, 
+                 const Vector2f& pos, float scale)
 {
   Surface surface = get_tile(x, y, tiledb_scale);
   if (surface)
@@ -210,7 +211,12 @@ Image::draw_tile(int x, int y, int tiledb_scale, const Vector2f& pos, float scal
           else
             {         
               // give up, no lower resolution found
-              // FIXME: Draw placeholder instead
+
+              Size s(Math::min(256, (impl->size.width  / Math::pow2(tiledb_scale)) - 256 * x),
+                     Math::min(256, (impl->size.height / Math::pow2(tiledb_scale)) - 256 * y));
+
+              Framebuffer::fill_rect(Rectf(pos, s*scale),
+                                     RGB(255, 0, 255));
             }
         }
     }

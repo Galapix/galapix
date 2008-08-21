@@ -28,6 +28,7 @@
 
 Workspace::Workspace()
 {
+  next_pos = Vector2i(0, 0);
 }
 
 void
@@ -37,7 +38,12 @@ Workspace::add_image(int fileid, const std::string& filename, const Size& size)
   images.push_back(image);
   image.set_scale(Math::min(1000.0f / size.width,
                             1000.0f / size.height));
-  layout(4.0f, 3.0f);
+
+  image.set_pos(next_pos * 1024.0f);
+                   
+  next_pos.x += 1;
+
+  //layout(4.0f, 3.0f);
 }
 
 void

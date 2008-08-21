@@ -121,11 +121,15 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
       
       entry->size = Size(-1, -1);
       
-      JPEG::get_size(entry->filename, entry->size);
-
-      store_file_entry(*entry);
-      
-      return true;
+      if (JPEG::get_size(entry->filename, entry->size))
+        {
+          store_file_entry(*entry);
+          return true;
+        }
+      else
+        {
+          return false;
+        }
     }
 }
 

@@ -1,21 +1,24 @@
 [[ Griv ToDo ]]
 
+* add 8x8 JPEG is larger then RAW, else JPEG always wins
+
+1920x1080: (64x64) 30x17=510, (32x32) 60x34=2040, (16x16) 120x68=8160, (4x4) 480x270=129600
+~100MB for fullscreen 16x16 Thumbs
+~32 textures for 129600 thumbs
+
+16x16 -> 1KB
+1000 thumbnails -> 1MB
+10'000 thumbnails -> 10MB
+100'000 thumbnails -> 100MB (graphic card gets full) -> Solution: smaller thumbnails, also unload from GFX card, but keep software backstore
+
+* need to properly check for collisions in the database
 * implement fast crop
 * implement linear blending scale
-* move recursive directory code over
 * move image sorting code on workspace over
 * request lower res tiles, before requesting highres tiles
 * move JPEG decoding in a seperate thread so that the database thread can run free with database stuff 
 * jpegtran *can't* do crop of large scale JPEGs in small amount of
   space, so cropping with libjpeg likely won't work
-
-JPEG Functions:
-===============
-
-* get_size(JpegImage) -> (w, h)
-* crop(JpegImage)  -> JpegImage -> Blob
-* Filename -> JpegImage
-
 
 * multi-threading in the tile generator for multicore
 * faster image handling, FreeImage is not good enough
@@ -30,17 +33,5 @@ JPEG Functions:
 
 * File stuff should really be seperate from Tile getting -> Seperate worker thread?
 * need to display the thread status graphically somehow
-
-Image Library Requirements:
-===========================
-
-* fast JPEG thumbnailing would be a plus (FreeImage, EPEG -> See jpeglib tools, transup.c)
-
-* fast width/height reading from file header (libjpeg, libpng)
-
-* support for PNG, JPEG, XCF, etc.
-
-* generation of subregion images without a copy
-
 
 # EOF #

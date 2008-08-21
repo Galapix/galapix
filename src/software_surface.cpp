@@ -120,6 +120,9 @@ SoftwareSurface::scale(const Size& size) const
 SoftwareSurface
 SoftwareSurface::crop(const Rect& rect_in) const
 {
+  // FIXME: We could do a crop without copying contain, simply
+  // reference the old SoftwareSurfaceImpl and have a different pitch
+  // and pixel offset
   assert(rect_in.is_normal());
  
   // Clip the rectangle to the image
