@@ -35,7 +35,8 @@ enum DatabaseMessageType
   DATABASE_ALL_FILES_MESSAGE,
   DATABASE_FILE_MESSAGE,
   DATABASE_TILE_MESSAGE,
-  DATABASE_STORE_TILE_MESSAGE
+  DATABASE_STORE_TILE_MESSAGE,
+  DATABASE_THREAD_DONE_MESSAGE
 };
 
 class DatabaseMessage
@@ -58,19 +59,17 @@ public:
 
   int fileid;
   int tilescale;
-  int x;
-  int y;
+  Vector2i pos;
   boost::function<void (TileEntry)> callback;
 
   TileDatabaseMessage(const JobHandle& job_handle,
-                      int fileid, int tilescale, int x, int y,
+                      int fileid, int tilescale, const Vector2i& pos,
                       const boost::function<void (TileEntry)>& callback)
     : DatabaseMessage(DATABASE_TILE_MESSAGE),
       job_handle(job_handle),
       fileid(fileid),
       tilescale(tilescale),
-      x(x),
-      y(y),
+      pos(pos),
       callback(callback)
   {}
 };
@@ -101,6 +100,18 @@ public:
   }
 };
 
+class ThreadDoneDatabaseMessage : public DatabaseMessage
+{
+public: 
+  int threadid;
+
+  ThreadDoneDatabaseMessage(int threadid)
+    : DatabaseMessage(DATABASE_THREAD_DONE_MESSAGE),
+      threadid(threadid)
+  {
+  }
+};
+
 class StoreTileDatabaseMessage : public DatabaseMessage
 {
 public:
@@ -125,12 +136,12 @@ DatabaseThread::DatabaseThread(const std::string& filename_)
 DatabaseThread::~DatabaseThread()
 {
 }
-
+
 JobHandle
-DatabaseThread::request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (TileEntry)>& callback)
+DatabaseThread::request_tile(int fileid, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback)
 {
   JobHandle job_handle;
-  queue.push(new TileDatabaseMessage(job_handle, fileid, tilescale, x, y, callback));
+  queue.push(new TileDatabaseMessage(job_handle, fileid, tilescale, pos, callback));
   return job_handle;
 }
 
@@ -147,9 +158,15 @@ DatabaseThread::request_all_files(const boost::function<void (FileEntry)>& callb
 }
 
 void
-DatabaseThread::store_tile(const TileEntry& tile)
+DatabaseThread::receive_tile(const TileEntry& tile)
 {
   queue.push(new StoreTileDatabaseMessage(tile));
+}
+
+void
+DatabaseThread::receive_job_finished(int threadid)
+{
+  
 }
 
 void
@@ -158,6 +175,34 @@ DatabaseThread::stop()
   quit = true;
 }
 
+void
+DatabaseThread::process_tile_generation(int fileid, const Vector2i& pos, int scale,
+                                        const boost::function<void (TileEntry)>& callback)
+{
+#if 0
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    {
+      Thread& thread = *i;
+
+      // Find a thread that is processing the tiles we need and add ourself to the callback list of that thread
+      if (thread.get_fileid() == fileid)
+        {
+          if (scale >= thread.get_min_scale() ||
+              scale <= thread.get_max_scale())
+            {
+              thread.add_callback(pos, scale, callback);
+              return;
+            }
+        }
+    }
+
+  // No fitting thread found, so launch a new one, don't launch more then max_thread threads
+
+  Thread thread(fileid, scale);
+  thread.add_callback(pos, scale, callback);
+#endif
+}
+
 int
 DatabaseThread::run()
 {
@@ -191,7 +236,22 @@ DatabaseThread::run()
               case DATABASE_STORE_TILE_MESSAGE:
                 {
                   StoreTileDatabaseMessage* tile_msg = static_cast<StoreTileDatabaseMessage*>(msg);
+                  
+                  // FIXME: Check all threads for callbacks that might
+                  // want the tile, then call those callbacks
+
                   tile_db.store_tile(tile_msg->tile);
+                }
+                break;
+
+              case DATABASE_THREAD_DONE_MESSAGE:
+                {
+                  //ThreadDoneDatabaseMessage* thread_msg = static_cast<ThreadDoneDatabaseMessage*>(msg);
+
+                  // get thread this message is refering too and mark it
+                  // as ready to take new jobs, or join() it to clean up
+
+                  // Also check if new jobs are in the queue to be given to the thread
                 }
                 break;
 
@@ -232,7 +292,7 @@ DatabaseThread::run()
                   if (!tile_msg->job_handle.is_aborted())
                     {
                       TileEntry tile;
-                      if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->x, tile_msg->y, tile))
+                      if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->pos, tile))
                         {
                           tile_msg->callback(tile);
                           tile_msg->job_handle.finish();
@@ -242,13 +302,13 @@ DatabaseThread::run()
                           if (0)
                             std::cout << "Error: Couldn't get tile: " 
                                       << tile_msg->fileid << " "
-                                      << tile_msg->x << " "
-                                      << tile_msg->y << " "
+                                      << tile_msg->pos.x << " "
+                                      << tile_msg->pos.y << " "
                                       << tile_msg->tilescale
                                       << std::endl;
-
-                          //TileGeneratorThread::request_tile(tile_msg->fileid, tile_msg->pos, tile_msg->tilescale, 
-                          //                                  tile_msg->callback);
+                          
+                          process_tile_generation(tile_msg->fileid, tile_msg->pos, tile_msg->tilescale, 
+                                                  tile_msg->callback);
                         }
                     }
                 }

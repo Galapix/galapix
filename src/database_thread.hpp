@@ -50,6 +50,9 @@ private:
   
   ThreadMessageQueue<DatabaseMessage*> queue;
 
+  void process_tile_generation(int fileid, const Vector2i& pos, int scale,
+                               const boost::function<void (TileEntry)>& callback);
+
 protected: 
   int run();
 
@@ -59,11 +62,22 @@ public:
   
   void stop();
   
-  JobHandle request_tile(int fileid, int tilescale, int x, int y, const boost::function<void (TileEntry)>& callback);
-  void request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
-  void request_all_files(const boost::function<void (FileEntry)>& callback);
+  /* @{ */ // syncronized functions to be used by other threads
+  /** Request the tile for file \a tileid */
+  JobHandle request_tile(int fileid, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
 
-  void store_tile(const TileEntry& tile);
+  /** Request the FileEntry for \a filename */
+  void      request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
+
+  /** Request all FileEntrys available in the database */
+  void      request_all_files(const boost::function<void (FileEntry)>& callback);
+
+  /** Place tile into the database */
+  void      receive_tile(const TileEntry& tile);
+
+  /** A Worker Thread reports that it is done and ready to accept new jobs */
+  void      receive_job_finished(int threadid);
+  /* @} */
 
 private:
   DatabaseThread (const DatabaseThread&);

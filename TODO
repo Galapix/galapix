@@ -1,5 +1,19 @@
 [[ Griv ToDo ]]
 
+Toolpalette: Select picture, scale picture, move pictures, align
+selected picture into a group, maybe have a box into which one can
+drop pictures.
+
+Generating tiles for /resources/flickr/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
+Exception: JPEG: Unsupported color depth: 4
+
+* Support for multiple databases at once would be good 
+
+* Loading JPEG file can throw exception and that isn't handled
+
+* Displaying 75'000 images gets really slow, OpenGL bottleneck,
+  texture packing might help, sending vertex array instead of glBegin/glEnd of course too
+
 * add 8x8 JPEG is larger then RAW, else JPEG always wins
 
 1920x1080: (64x64) 30x17=510, (32x32) 60x34=2040, (16x16) 120x68=8160, (4x4) 480x270=129600
@@ -11,27 +25,41 @@
 10'000 thumbnails -> 10MB
 100'000 thumbnails -> 100MB (graphic card gets full) -> Solution: smaller thumbnails, also unload from GFX card, but keep software backstore
 
-* need to properly check for collisions in the database
+* need to properly check for collisions in the database and update
+  entries instead of just inserting a duplicate
+
 * implement fast crop
-* implement linear blending scale
+
+* implement smooth scale in SoftwareSurface (like LINEAR instead of NEAREST),
+
 * move image sorting code on workspace over
+
 * request lower res tiles, before requesting highres tiles
-* move JPEG decoding in a seperate thread so that the database thread can run free with database stuff 
+
+* move JPEG decoding in a seperate thread so that the database thread
+  can run free with database stuff
+
 * jpegtran *can't* do crop of large scale JPEGs in small amount of
   space, so cropping with libjpeg likely won't work
-
+
 * multi-threading in the tile generator for multicore
+
 * faster image handling, FreeImage is not good enough
+
 * do something about the seams on tile borders (hard, need to save a 1px border, but that screws up the JPEG compression)
+
 * faster incremental tile generation
+
 * griv name is already taken
 
   Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview
 
 * How to avoid duplicate entries in the queue?
+
 * figure out why the thing crashes -> move viewer thread into main thread
 
 * File stuff should really be seperate from Tile getting -> Seperate worker thread?
+
 * need to display the thread status graphically somehow
 
 # EOF #

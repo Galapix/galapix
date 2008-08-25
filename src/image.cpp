@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <boost/bind.hpp>
 #include "math/rgb.hpp"
 #include "math/rect.hpp"
 #include "framebuffer.hpp"
@@ -31,6 +32,7 @@
 #include "file_entry.hpp"
 #include "database_thread.hpp"
 #include "viewer_thread.hpp"
+#include "thread_message_queue.hpp"
 #include "image.hpp"
 
 uint32_t make_cache_id(int x, int y, int tile_scale)
@@ -49,6 +51,8 @@ public:
 
   Image::Cache cache;
   Image::Jobs jobs;  
+
+  ThreadMessageQueue<TileEntry> tile_queue;
   
   ImageImpl() 
   {
@@ -138,15 +142,16 @@ Image::get_tile(int x, int y, int tile_scale)
 
   if (i == impl->cache.end())
     {
-      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->file_entry.fileid, tile_scale, x, y, *this));
+      impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry.fileid, tile_scale, Vector2i(x, y), 
+                                                                   boost::bind(&Image::receive_tile, this, _1)));
 
-      // Request the next smaller tile too, so we get a lower quality
-      // image fast and a higher quality one soon after FIXME: Its
-      // unclear if this actually improves things, also the order of
-      // request gets mungled in the DatabaseThread, we should request
-      // the whole group of lower res tiles at once, instead of one by
-      // one, since that eats up the possible speed up
-      impl->jobs.push_back(ViewerThread::current()->request_tile(impl->file_entry.fileid, tile_scale+1, x, y, *this));
+      // FIXME: Something to try: Request the next smaller tile too,
+      // so we get a lower quality image fast and a higher quality one
+      // soon after FIXME: Its unclear if this actually improves
+      // things, also the order of request gets mungled in the
+      // DatabaseThread, we should request the whole group of lower
+      // res tiles at once, instead of one by one, since that eats up
+      // the possible speed up
 
       SurfaceStruct s;
       
@@ -223,6 +228,22 @@ Image::draw_tile(int x, int y, int tiledb_scale,
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
+  // Check the queue for newly arrived tiles
+  while (!impl->tile_queue.empty())
+    {
+      TileEntry tile = impl->tile_queue.front();
+      impl->tile_queue.pop();
+
+      int tile_id = make_cache_id(tile.pos.x, tile.pos.y, tile.scale);
+  
+      SurfaceStruct s;
+  
+      s.surface = Surface(tile.surface);
+      s.status  = SurfaceStruct::SURFACE_OK;
+
+      impl->cache[tile_id] = s;
+    }
+
   // Cancel all old jobs (FIXME: Stupid brute force hack)
   if (0)
     {
@@ -319,16 +340,9 @@ Image::draw(const Rectf& cliprect, float fscale)
 }
 
 void
-Image::receive_tile(int x, int y, int tiledb_scale, const SoftwareSurface& surface)
+Image::receive_tile(const TileEntry& tile)
 {
-  int tile_id = make_cache_id(x, y, tiledb_scale);
-
-  SurfaceStruct s;
-  
-  s.surface = Surface(surface);
-  s.status  = SurfaceStruct::SURFACE_OK;
-
-  impl->cache[tile_id] = s;
+  impl->tile_queue.push(tile);
 }
 
 /* EOF */

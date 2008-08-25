@@ -60,13 +60,6 @@ ViewerThread::receive_tile(const Image& image, const TileEntry& tile)
   tile_queue.push(msg);
 }
 
-JobHandle 
-ViewerThread::request_tile(int fileid, int tilescale, int x, int y, const Image& image)
-{
-  return DatabaseThread::current()->request_tile(fileid, tilescale, x, y,
-                                                 boost::bind(&ViewerThread::receive_tile, this, image, _1));
-}
-
 int
 ViewerThread::run()
 {
@@ -88,12 +81,11 @@ ViewerThread::run()
           file_queue.pop();
         }
 
-      while (!tile_queue.empty()) // FIXME: Crash happens somewhere here!
+      while (!tile_queue.empty())
         {
           TileMessage msg = tile_queue.front();
 
-          msg.image.receive_tile(msg.tile.pos.x, msg.tile.pos.y, 
-                                 msg.tile.scale, msg.tile.surface);
+          msg.image.receive_tile(msg.tile);
 
           tile_queue.pop();
         }

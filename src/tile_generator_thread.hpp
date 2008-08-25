@@ -27,16 +27,36 @@
 #define HEADER_TILE_GENERATOR_THREAD_HPP
 
 #include <boost/function.hpp>
+#include <map>
 #include "thread.hpp"
 #include "thread_message_queue.hpp"
+#include "file_entry.hpp"
 #include "tile_entry.hpp"
 
 class FileEntry;
 
-struct TileGeneratorMessage
+/** A Task as received from another thread */
+struct TileGeneratorThreadJob
 {
-  int fileid;
-  std::string filename;
+  FileEntry entry;
+  Vector2i pos;
+  int      scale;
+  boost::function<void (TileEntry)> callback;
+};
+
+/** Tasks will be grouped into groups, so that one image will be
+    handled in one go, instead of accessing multiple files over and
+    over again. Groups will be processed in one go. */
+struct TileGeneratorMessageGroup { 
+  struct TileDescription 
+  { 
+    boost::function<void (TileEntry)> callback;
+  };
+
+  FileEntry entry;
+  
+  /** [(scale, (x,y,callback)), ...] */
+  std::map<int, std::vector<TileDescription> > jobs;
 };
 
 class TileGeneratorThread : public Thread
@@ -48,8 +68,7 @@ public:
 
 private:
   bool quit;
-  ThreadMessageQueue<TileGeneratorMessage> msg_queue;
-
+  
 protected:
   int run();
   
@@ -59,11 +78,9 @@ public:
 
   void stop();
 
-  void request_tile(const FileEntry& file_entry, 
-                    const Vector2i& pos, int scale,
-                    const boost::function<void (TileEntry)>& callback);
-
-  void receive_tile(const TileEntry& tile);
+  /** Generate tiles for \a file_entry from min_scale to max_scale */
+  void request_tiles(const FileEntry& file_entry, int min_scale, int max_scale,
+                     const boost::function<void (TileEntry)>& callback);
   
 private:
   TileGeneratorThread (const TileGeneratorThread&);

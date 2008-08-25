@@ -72,14 +72,14 @@ TileDatabase::has_tile(uint32_t fileid, Vector2i& pos, int scale)
 }
 
 bool
-TileDatabase::get_tile(uint32_t fileid, int scale, int x, int y, TileEntry& tile)
+TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntry& tile)
 {
   //SDL_Delay(100);
 
   get_stmt.bind_int(1, fileid);
   get_stmt.bind_int(2, scale);
-  get_stmt.bind_int(3, x);
-  get_stmt.bind_int(4, y);
+  get_stmt.bind_int(3, pos.x);
+  get_stmt.bind_int(4, pos.y);
 
   SQLiteReader reader = get_stmt.execute_query();
 

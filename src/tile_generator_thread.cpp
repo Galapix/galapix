@@ -42,23 +42,16 @@ TileGeneratorThread::~TileGeneratorThread()
 }
 
 void
-TileGeneratorThread::request_tile(const FileEntry& file_entry, 
-                                  const Vector2i& pos, int scale,
-                                  const boost::function<void (TileEntry)>& callback)
+TileGeneratorThread::request_tiles(const FileEntry& file_entry, int min_scale, int max_scale,
+                                   const boost::function<void (TileEntry)>& callback)
 {
-  // Do some magic to group tile request for the same fileid
+  
 }
 
 void
 TileGeneratorThread::stop()
 {
   quit = true;
-}
-
-void
-TileGeneratorThread::receive_tile(const TileEntry& tile)
-{
-  DatabaseThread::current()->store_tile(tile);
 }
 
 int
@@ -70,18 +63,19 @@ TileGeneratorThread::run()
 
   while(!quit)
     {
+#if 0
       while(!msg_queue.empty())
         {
           TileGeneratorMessage msg = msg_queue.front();
           msg_queue.pop();
-
-          std::cout << "Generating tiles for: " << msg.filename << std::endl;
-          generator.generate_all(msg.fileid, msg.filename,
-                                 boost::bind(&TileGeneratorThread::receive_tile, this, _1));
+         
+          // process message         
         }
+            
       msg_queue.wait();
+#endif
     }
-
+  
   return 0;
 }
 
