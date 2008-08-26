@@ -39,24 +39,10 @@ class FileEntry;
 struct TileGeneratorThreadJob
 {
   FileEntry entry;
-  Vector2i pos;
-  int      scale;
-  boost::function<void (TileEntry)> callback;
-};
-
-/** Tasks will be grouped into groups, so that one image will be
-    handled in one go, instead of accessing multiple files over and
-    over again. Groups will be processed in one go. */
-struct TileGeneratorMessageGroup { 
-  struct TileDescription 
-  { 
-    boost::function<void (TileEntry)> callback;
-  };
-
-  FileEntry entry;
+  int       min_scale;
+  int       max_scale;
   
-  /** [(scale, (x,y,callback)), ...] */
-  std::map<int, std::vector<TileDescription> > jobs;
+  boost::function<void (TileEntry)> callback;
 };
 
 class TileGeneratorThread : public Thread
@@ -68,7 +54,9 @@ public:
 
 private:
   bool quit;
-  
+  bool working;
+  ThreadMessageQueue<TileGeneratorThreadJob> msg_queue;
+
 protected:
   int run();
   
@@ -78,11 +66,15 @@ public:
 
   void stop();
 
+  bool is_working() const;
+
   /** Generate tiles for \a file_entry from min_scale to max_scale */
   void request_tiles(const FileEntry& file_entry, int min_scale, int max_scale,
                      const boost::function<void (TileEntry)>& callback);
   
 private:
+  void process_message(const TileGeneratorThreadJob& job);
+
   TileGeneratorThread (const TileGeneratorThread&);
   TileGeneratorThread& operator= (const TileGeneratorThread&);
 };

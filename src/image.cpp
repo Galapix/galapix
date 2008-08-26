@@ -142,7 +142,7 @@ Image::get_tile(int x, int y, int tile_scale)
 
   if (i == impl->cache.end())
     {
-      impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry.fileid, tile_scale, Vector2i(x, y), 
+      impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, tile_scale, Vector2i(x, y), 
                                                                    boost::bind(&Image::receive_tile, this, _1)));
 
       // FIXME: Something to try: Request the next smaller tile too,
@@ -152,6 +152,8 @@ Image::get_tile(int x, int y, int tile_scale)
       // DatabaseThread, we should request the whole group of lower
       // res tiles at once, instead of one by one, since that eats up
       // the possible speed up
+      //impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, tile_scale+1, Vector2i(x, y), 
+      //                                                             boost::bind(&Image::receive_tile, this, _1)));
 
       SurfaceStruct s;
       

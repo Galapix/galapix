@@ -39,6 +39,13 @@ public:
 
   TileEntry()
   {}
+
+  TileEntry(int fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_)
+    : fileid(fileid_),
+      scale(scale_),
+      pos(pos_),
+      surface(surface_)
+  {}
 };
 
 #endif

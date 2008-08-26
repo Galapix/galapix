@@ -33,7 +33,6 @@
 #include "math/rect.hpp"
 #include "math/size.hpp"
 
-#include "url.hpp"
 #include "software_surface.hpp"
 
 class SoftwareSurfaceImpl

@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include <boost/bind.hpp>
 #include <assert.h>
 #include "file_database.hpp"
 #include "tile_database.hpp"
@@ -57,17 +58,17 @@ class TileDatabaseMessage : public DatabaseMessage
 public:
   JobHandle job_handle;
 
-  int fileid;
+  FileEntry file_entry;
   int tilescale;
   Vector2i pos;
   boost::function<void (TileEntry)> callback;
 
   TileDatabaseMessage(const JobHandle& job_handle,
-                      int fileid, int tilescale, const Vector2i& pos,
+                      const FileEntry& file_entry, int tilescale, const Vector2i& pos,
                       const boost::function<void (TileEntry)>& callback)
     : DatabaseMessage(DATABASE_TILE_MESSAGE),
       job_handle(job_handle),
-      fileid(fileid),
+      file_entry(file_entry),
       tilescale(tilescale),
       pos(pos),
       callback(callback)
@@ -138,10 +139,10 @@ DatabaseThread::~DatabaseThread()
 }
 
 JobHandle
-DatabaseThread::request_tile(int fileid, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback)
+DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback)
 {
   JobHandle job_handle;
-  queue.push(new TileDatabaseMessage(job_handle, fileid, tilescale, pos, callback));
+  queue.push(new TileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
   return job_handle;
 }
 
@@ -175,34 +176,6 @@ DatabaseThread::stop()
   quit = true;
 }
 
-void
-DatabaseThread::process_tile_generation(int fileid, const Vector2i& pos, int scale,
-                                        const boost::function<void (TileEntry)>& callback)
-{
-#if 0
-  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    {
-      Thread& thread = *i;
-
-      // Find a thread that is processing the tiles we need and add ourself to the callback list of that thread
-      if (thread.get_fileid() == fileid)
-        {
-          if (scale >= thread.get_min_scale() ||
-              scale <= thread.get_max_scale())
-            {
-              thread.add_callback(pos, scale, callback);
-              return;
-            }
-        }
-    }
-
-  // No fitting thread found, so launch a new one, don't launch more then max_thread threads
-
-  Thread thread(fileid, scale);
-  thread.add_callback(pos, scale, callback);
-#endif
-}
-
 int
 DatabaseThread::run()
 {
@@ -219,17 +192,11 @@ DatabaseThread::run()
     {
       //std::cout << "DatabaseThread: looping" << std::endl;
       
-      // do things
+      // FIXME: Ugly hack to reverse the order of the queue
       while(!queue.empty() && !quit)
         {
-          messages.push_back(queue.front());
+          DatabaseMessage* msg = queue.front();
           queue.pop();
-        }
-
-      if (!messages.empty())
-        {
-          DatabaseMessage* msg = messages.back();
-          messages.pop_back();
 
           switch(msg->type)
             {
@@ -237,8 +204,23 @@ DatabaseThread::run()
                 {
                   StoreTileDatabaseMessage* tile_msg = static_cast<StoreTileDatabaseMessage*>(msg);
                   
-                  // FIXME: Check all threads for callbacks that might
-                  // want the tile, then call those callbacks
+                  for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end();)
+                    {
+                      if (tile_msg->tile.fileid == (*i)->file_entry.fileid &&
+                          tile_msg->tile.scale  == (*i)->tilescale &&
+                          tile_msg->tile.pos    == (*i)->pos)
+                        {
+                          (*i)->callback(tile_msg->tile);
+
+                          delete *i;
+
+                          i = tile_queue.erase(i);
+                        }
+                      else
+                        {
+                          ++i;
+                        }
+                    }
 
                   tile_db.store_tile(tile_msg->tile);
                 }
@@ -292,7 +274,7 @@ DatabaseThread::run()
                   if (!tile_msg->job_handle.is_aborted())
                     {
                       TileEntry tile;
-                      if (tile_db.get_tile(tile_msg->fileid, tile_msg->tilescale, tile_msg->pos, tile))
+                      if (tile_db.get_tile(tile_msg->file_entry.fileid, tile_msg->tilescale, tile_msg->pos, tile))
                         {
                           tile_msg->callback(tile);
                           tile_msg->job_handle.finish();
@@ -301,14 +283,16 @@ DatabaseThread::run()
                         {
                           if (0)
                             std::cout << "Error: Couldn't get tile: " 
-                                      << tile_msg->fileid << " "
+                                      << tile_msg->file_entry.fileid << " "
                                       << tile_msg->pos.x << " "
                                       << tile_msg->pos.y << " "
                                       << tile_msg->tilescale
                                       << std::endl;
                           
-                          process_tile_generation(tile_msg->fileid, tile_msg->pos, tile_msg->tilescale, 
-                                                  tile_msg->callback);
+                          tile_queue.push_back(tile_msg);
+
+                          //std::cout << tile_queue.size() << std::endl;
+                          msg = 0; // FIXME: HACK so that msg doesn't get deleted
                         }
                     }
                 }
@@ -320,9 +304,18 @@ DatabaseThread::run()
 
           delete msg;
         }
-      else
+      
+      queue.wait();
+
+      std::cout << tile_queue.size() << " vs " << queue.size() << std::endl;
+
+      if (queue.empty() && // FIXME UGLY: to make load on demand somewhat usable
+          TileGeneratorThread::current() && !TileGeneratorThread::current()->is_working() && !tile_queue.empty())
         {
-          queue.wait();
+          TileGeneratorThread::current()->request_tiles(tile_queue.back()->file_entry,
+                                                        tile_queue.back()->tilescale,
+                                                        tile_queue.back()->tilescale,
+                                                        boost::bind(&DatabaseThread::receive_tile, this, _1));
         }
     }
 

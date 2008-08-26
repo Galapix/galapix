@@ -38,7 +38,6 @@
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
-#include "url.hpp"
 #include "sqlite.hpp"
 #include "software_surface.hpp"
 #include "jpeg_decoder_thread.hpp"

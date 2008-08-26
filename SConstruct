@@ -39,7 +39,6 @@ griv_env.Program('griv', [
         'src/tile_generator_thread.cpp',
         'src/database_thread.cpp',
         'src/viewer_thread.cpp',
-        'src/url.cpp',
         'src/viewer.cpp',
         'src/workspace.cpp',
         ])

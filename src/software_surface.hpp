@@ -29,7 +29,6 @@
 #include <boost/shared_ptr.hpp>
 #include "blob.hpp"
 
-class URL;
 class Rect;
 class Size;
 class SoftwareSurfaceImpl;

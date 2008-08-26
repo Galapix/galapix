@@ -27,6 +27,7 @@
 #define HEADER_DATABASE_THREAD_HPP
 
 #include <boost/function.hpp>
+#include <list>
 #include <string>
 #include "thread_message_queue.hpp"
 #include "file_entry.hpp"
@@ -35,6 +36,7 @@
 #include "thread.hpp"
 
 class DatabaseMessage;
+class TileDatabaseMessage;
 
 /** */
 class DatabaseThread : public Thread
@@ -49,9 +51,7 @@ private:
   bool quit;
   
   ThreadMessageQueue<DatabaseMessage*> queue;
-
-  void process_tile_generation(int fileid, const Vector2i& pos, int scale,
-                               const boost::function<void (TileEntry)>& callback);
+  std::list<TileDatabaseMessage*>    tile_queue;
 
 protected: 
   int run();
@@ -64,7 +64,7 @@ public:
   
   /* @{ */ // syncronized functions to be used by other threads
   /** Request the tile for file \a tileid */
-  JobHandle request_tile(int fileid, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
+  JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
 
   /** Request the FileEntry for \a filename */
   void      request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
