@@ -74,8 +74,9 @@ TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_,
       scale += 1;
 
       //std::cout << "Scale: " << scale << " - " << surface.get_size() << std::endl;
-    } while (surface.get_width() > 32 ||
-             surface.get_height() > 32);
+    } 
+  while (surface.get_width()/2  != 0 &&
+         surface.get_height()/2 != 0);
 }
 
 void
@@ -131,9 +132,8 @@ TileGenerator::generate_quick(const FileEntry& entry,
           
       callback(tile);
 
-      // FIXME: Might barf if width/height get == 0
-      if (surface.get_width()  < 32 &&
-          surface.get_height() < 32)
+      if (surface.get_width()/2  == 0 ||
+          surface.get_height()/2 == 0)
         {
           break;
         }

@@ -1,5 +1,7 @@
 [[ Griv ToDo ]]
 
+* store the max_tile size into the FileTable
+
 * implement shader to change hue, saturation, contrast, brightness, etc.
 
 Toolpalette: Select picture, scale picture, move pictures, align
