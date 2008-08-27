@@ -142,8 +142,12 @@ Image::get_tile(int x, int y, int tile_scale)
 
   if (i == impl->cache.end())
     {
+      // Important: it must be '*this', not 'this', since the 'this'
+      // pointer might disappear any time, its only the impl that
+      // stays and which we can link to by making a copy of the Image
+      // object via *this.
       impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, tile_scale, Vector2i(x, y), 
-                                                                   boost::bind(&Image::receive_tile, this, _1)));
+                                                                   boost::bind(&Image::receive_tile, *this, _1)));
 
       // FIXME: Something to try: Request the next smaller tile too,
       // so we get a lower quality image fast and a higher quality one
@@ -153,7 +157,7 @@ Image::get_tile(int x, int y, int tile_scale)
       // res tiles at once, instead of one by one, since that eats up
       // the possible speed up
       //impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, tile_scale+1, Vector2i(x, y), 
-      //                                                             boost::bind(&Image::receive_tile, this, _1)));
+      //                                                             boost::bind(&Image::receive_tile, *this, _1)));
 
       SurfaceStruct s;
       
@@ -345,6 +349,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 void
 Image::receive_tile(const TileEntry& tile)
 {
+  assert(impl.get());
   impl->tile_queue.push(tile);
 }
 

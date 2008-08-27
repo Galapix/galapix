@@ -36,12 +36,6 @@
 class FileEntry;
 class Image;
 class TileEntry;
-
-struct TileMessage
-{
-  Image     image;
-  TileEntry tile;
-};
 
 class ViewerThread
 {
@@ -52,7 +46,6 @@ public:
   
 private:
   ThreadMessageQueue<FileEntry>   file_queue;
-  ThreadMessageQueue<TileMessage> tile_queue;
 
 public:
   ViewerThread();
@@ -61,7 +54,6 @@ public:
   int run();
 
   void receive_file(const FileEntry& entry);
-  void receive_tile(const Image& image, const TileEntry& tile);
 
 private:
   ViewerThread (const ViewerThread&);

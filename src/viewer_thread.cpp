@@ -48,17 +48,6 @@ ViewerThread::receive_file(const FileEntry& entry)
 {
   file_queue.push(entry);
 }
-
-void
-ViewerThread::receive_tile(const Image& image, const TileEntry& tile)
-{
-  TileMessage msg;
-  
-  msg.image = image;
-  msg.tile  = tile;
-
-  tile_queue.push(msg);
-}
 
 int
 ViewerThread::run()
@@ -79,15 +68,6 @@ ViewerThread::run()
           const FileEntry& entry = file_queue.front();
           workspace.add_image(entry);
           file_queue.pop();
-        }
-
-      while (!tile_queue.empty())
-        {
-          TileMessage msg = tile_queue.front();
-
-          msg.image.receive_tile(msg.tile);
-
-          tile_queue.pop();
         }
 
       SDL_Event event;
