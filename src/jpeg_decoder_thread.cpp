@@ -29,7 +29,8 @@
 JPEGDecoderThread* JPEGDecoderThread::current_ = 0;
 
 JPEGDecoderThread::JPEGDecoderThread()
-  : quit(false)
+  : Thread("JPEGDecoderThread"),
+    quit(false)
 {
   current_ = 0;
 }

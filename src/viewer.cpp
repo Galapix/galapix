@@ -33,7 +33,7 @@
 #include "viewer.hpp"
 
 ViewerState::ViewerState()
-  : scale(1.0f),
+  : scale(0.25f),
     offset(0.0f, 0.0f)
 {
 }

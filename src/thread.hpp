@@ -50,14 +50,16 @@ class Thread
 {
 private:
   SDL_Thread* thread;
+  std::string name;
 
 public:
-  Thread();
+  Thread(const std::string& name);
   virtual ~Thread();
 
   void start();
   int  join();
   Uint32 get_id();
+  std::string get_name() const; 
   
   virtual int run() =0;
 

@@ -240,23 +240,21 @@ Image::draw(const Rectf& cliprect, float fscale)
   
       SurfaceStruct s;
   
-      s.surface = Surface(tile.surface);
-      s.status  = SurfaceStruct::SURFACE_OK;
+      if (tile.surface)
+        {
+          s.surface = Surface(tile.surface);
+          s.status  = SurfaceStruct::SURFACE_OK;
+        }
+      else
+        {
+          s.surface = Surface();
+          s.status  = SurfaceStruct::SURFACE_FAILED;
+        }
 
       impl->cache[tile_id] = s;
     }
-
-  // Cancel all old jobs (FIXME: Stupid brute force hack)
-  if (0)
-    {
-      for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
-        i->abort();
-      impl->jobs.clear();
-    }
-
+  
   Rectf image_rect(impl->pos, Sizef(impl->file_entry.size * impl->scale)); // in world coordinates
-
-  //Framebuffer::draw_rect(image_rect);
 
   if (cliprect.is_overlapped(image_rect))
     {
@@ -304,7 +302,10 @@ Image::draw(const Rectf& cliprect, float fscale)
   else
     {
       // Image is not visible so clear the cache
-      
+      for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
+        i->abort();
+      impl->jobs.clear();
+        
       // FIXME: We should keep at least some tiles or wait with the
       // cache purge a bit longer
 
@@ -320,7 +321,7 @@ Image::draw(const Rectf& cliprect, float fscale)
         {
           int max_tiledb_scale = 0;
           SurfaceStruct s;
-          int tileid;
+          int tileid = -1;
           for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
             {
               int tiledb_scale = (i->first >> 16);

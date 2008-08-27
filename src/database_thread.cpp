@@ -127,7 +127,8 @@ public:
 DatabaseThread* DatabaseThread::current_ = 0;
 
 DatabaseThread::DatabaseThread(const std::string& filename_)
-  : database_filename(filename_),
+  : Thread("DatabaseThread"),
+    database_filename(filename_),
     quit(false)
 {
   assert(current_ == 0);
@@ -221,8 +222,16 @@ DatabaseThread::run()
                           ++i;
                         }
                     }
-
-                  tile_db.store_tile(tile_msg->tile);
+                  
+                  // FIXME: Make some better error checking in case of loading failure
+                  if (tile_msg->tile.surface)
+                    {
+                      tile_db.store_tile(tile_msg->tile);
+                    }
+                  else
+                    {
+                      
+                    }
                 }
                 break;
 
@@ -307,15 +316,31 @@ DatabaseThread::run()
       
       queue.wait();
 
-      std::cout << tile_queue.size() << " vs " << queue.size() << std::endl;
+      //std::cout << tile_queue.size() << " vs " << queue.size() << std::endl;
+
+      // Check if job is still valid before starting to generate tiles
+      for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end();)
+        {
+          if ((*i)->job_handle.is_aborted())
+            {
+              delete *i;
+              i = tile_queue.erase(i);
+            }
+          else
+            {
+              ++i;
+            }
+        }
 
       if (queue.empty() && // FIXME UGLY: to make load on demand somewhat usable
-          TileGeneratorThread::current() && !TileGeneratorThread::current()->is_working() && !tile_queue.empty())
+          TileGeneratorThread::current() && !TileGeneratorThread::current()->is_working())
         {
-          TileGeneratorThread::current()->request_tiles(tile_queue.back()->file_entry,
-                                                        tile_queue.back()->tilescale,
-                                                        tile_queue.back()->tilescale,
-                                                        boost::bind(&DatabaseThread::receive_tile, this, _1));
+
+          if (!tile_queue.empty())
+            TileGeneratorThread::current()->request_tiles(tile_queue.back()->file_entry,
+                                                          tile_queue.back()->tilescale,
+                                                          tile_queue.back()->tilescale,
+                                                          boost::bind(&DatabaseThread::receive_tile, this, _1));
         }
     }
 

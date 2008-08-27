@@ -38,7 +38,6 @@
 class DatabaseMessage;
 class TileDatabaseMessage;
 
-/** */
 class DatabaseThread : public Thread
 {
 private:

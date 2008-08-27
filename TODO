@@ -1,5 +1,7 @@
 [[ Griv ToDo ]]
 
+* implement shader to change hue, saturation, contrast, brightness, etc.
+
 Toolpalette: Select picture, scale picture, move pictures, align
 selected picture into a group, maybe have a box into which one can
 drop pictures.
@@ -52,7 +54,7 @@ Exception: JPEG: Unsupported color depth: 4
 
 * griv name is already taken
 
-  Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview
+  Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview, brickview
 
 * How to avoid duplicate entries in the queue?
 

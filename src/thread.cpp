@@ -23,7 +23,9 @@
 **  02111-1307, USA.
 */
 
+#include <iostream>
 #include <assert.h>
+#include <stdexcept>
 #include "thread.hpp"
 
 /*
@@ -57,16 +59,31 @@ Mutex::unlock()
 int launch_thread(void* thread_ptr)
 {
   Thread* thread = static_cast<Thread*>(thread_ptr);
-  return thread->run();
+  try 
+    {
+      return thread->run();
+    }
+  catch(std::exception& err)
+    {
+      std::cout << "\nFatal Error: " << thread->get_name() << " (" << thread->get_id() << "): " << err.what() << std::endl;
+      return EXIT_FAILURE;
+    }
 }
 
-Thread::Thread()
-  : thread(0)
+Thread::Thread(const std::string& name_)
+  : thread(0),
+    name(name_)
 {
 }
 
 Thread::~Thread()
 {
+}
+
+std::string
+Thread::get_name() const
+{
+  return name;
 }
 
 int

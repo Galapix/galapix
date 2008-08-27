@@ -93,7 +93,7 @@ JPEG::load_from_file(const std::string& filename, int scale)
 
   FILE* in = fopen(filename.c_str(), "rb");
   if (!in)
-    throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
+    throw std::runtime_error("JPEG::load_from_file: Couldn't open " + filename);
 
   struct jpeg_decompress_struct  cinfo;
   struct jpeg_error_mgr jerr;
@@ -106,7 +106,7 @@ JPEG::load_from_file(const std::string& filename, int scale)
 
   if (setjmp(setjmp_buffer))
     {
-      throw std::runtime_error("JPEG::get_size: ERROR: Couldn't open " + filename);
+      throw std::runtime_error("JPEG::load_from_file: ERROR: Couldn't open " + filename);
     }
 
   jpeg_read_header(&cinfo, FALSE);

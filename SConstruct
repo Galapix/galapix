@@ -1,6 +1,6 @@
 # Zoomable Image Viewer
-griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O0", "-g3"], 
-                       CXXFLAGS=["-Wall", "-Werror", "-O0", "-g3", "-Wnon-virtual-dtor"], 
+griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g3"], 
+                       CXXFLAGS=["-Wall", "-Werror", "-O2", "-g3", "-Wnon-virtual-dtor"], 
                        LIBS=['jpeg',
                              'mhash', 
                              'GL', 

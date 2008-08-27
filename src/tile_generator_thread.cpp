@@ -35,7 +35,8 @@
 TileGeneratorThread* TileGeneratorThread::current_ = 0; 
 
 TileGeneratorThread::TileGeneratorThread()
-  : quit(false)
+  : Thread("TileGeneratorThread"),
+    quit(false)
 {
   current_ = this;
   working  = false;
@@ -132,10 +133,19 @@ TileGeneratorThread::run()
     {
       while(!msg_queue.empty())
         {
-          TileGeneratorThreadJob msg = msg_queue.front();
+          TileGeneratorThreadJob job = msg_queue.front();
           msg_queue.pop();
          
-          process_message(msg);
+          try 
+            {
+              process_message(job);
+            }
+          catch(std::exception& err)
+            {
+              // FIXME: We need a better way to communicate errors back
+              std::cout << "\Error: nTileGeneratorThread: Loading failure: " << job.entry.filename << std::endl;
+              job.callback(TileEntry());
+            }
         }
             
       msg_queue.wait();
