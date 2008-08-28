@@ -53,6 +53,7 @@ class Framebuffer
 private:
   static SDL_Surface* screen;
   static Uint32 flags;
+  static Size desktop_resolution;
 
 public:
   static void set_video_mode(const Size& size);

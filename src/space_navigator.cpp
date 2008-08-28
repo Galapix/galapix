@@ -31,15 +31,22 @@
 #include "space_navigator.hpp"
 
 SpaceNavigator::SpaceNavigator()
+  : usable(false)
 {
   if (spnav_open() != 0)
     {
-      std::cout << "Error: SpaceNavigator: open" << std::endl;
+      std::cout << "Error: SpaceNavigator: open failed" << std::endl;
+      usable = false;
+    }
+  else
+    {
+      usable = true;
     }
 }
 
 SpaceNavigator::~SpaceNavigator()
 {
+  if (usable)
   if (spnav_close() != 0)
     {
       std::cout << "Error: SpaceNavigator: close" << std::endl;
@@ -49,47 +56,50 @@ SpaceNavigator::~SpaceNavigator()
 void
 SpaceNavigator::poll(Viewer& viewer)
 {
-  spnav_event event;
-  while(spnav_poll_event(&event))
+  if (usable)
     {
-      switch(event.type)
+      spnav_event event;
+      while(spnav_poll_event(&event))
         {
-          case SPNAV_EVENT_MOTION:
+          switch(event.type)
             {
-              if (0)
-              std::cout << "MotionEvent: " 
-                        << "("
-                        << event.motion.x << ", "
-                        << event.motion.y << ", "
-                        << event.motion.z
-                        << ") ("
-                        << event.motion.rx << ", "
-                        << event.motion.ry << ", "
-                        << event.motion.rz
-                        << std::endl;              
+              case SPNAV_EVENT_MOTION:
+                {
+                  if (0)
+                    std::cout << "MotionEvent: " 
+                              << "("
+                              << event.motion.x << ", "
+                              << event.motion.y << ", "
+                              << event.motion.z
+                              << ") ("
+                              << event.motion.rx << ", "
+                              << event.motion.ry << ", "
+                              << event.motion.rz
+                              << std::endl;              
 
 
-              float factor = -abs(event.motion.y)/10000.0f;
+                  float factor = -abs(event.motion.y)/10000.0f;
 
-              if (event.motion.y > 0)
-                viewer.get_state().zoom(1.0f+factor);
-              else if (event.motion.y < 0)
-                viewer.get_state().zoom(1.0f/(1.0f+factor));
+                  if (event.motion.y > 0)
+                    viewer.get_state().zoom(1.0f+factor);
+                  else if (event.motion.y < 0)
+                    viewer.get_state().zoom(1.0f/(1.0f+factor));
 
-              viewer.get_state().move(Vector2f(-event.motion.x / 10.0f,
-                                               +event.motion.z / 10.0f));
+                  viewer.get_state().move(Vector2f(-event.motion.x / 10.0f,
+                                                   +event.motion.z / 10.0f));
 
-              viewer.get_state().rotate(event.motion.ry / 100.0f);                                       
-            }
-            break;
+                  viewer.get_state().rotate(event.motion.ry / 100.0f);                                       
+                }
+                break;
             
-          case SPNAV_EVENT_BUTTON:
-            if (0)
-            std::cout << "ButtonEvent: " << event.button.press << event.button.bnum << std::endl;
-            break;
+              case SPNAV_EVENT_BUTTON:
+                if (0)
+                  std::cout << "ButtonEvent: " << event.button.press << event.button.bnum << std::endl;
+                break;
 
-          default:
-            assert(!"SpaceNavigator: Unhandled event");
+              default:
+                assert(!"SpaceNavigator: Unhandled event");
+            }
         }
     }
 }

@@ -3,11 +3,11 @@ griv - A Zoomable Image Viewer zoomview
 
 griv is a image viewer that allows you to directly zoom into large
 collection of tens of thousand of images from tiny thumbnails down to
-the images original size fluently with little or no noticable
-loadtimes. It accomplishes this by keeping a tile cache which stores
-not only thumbnails for one size, but thumbnails of many different
-sizes. This thumbnail cache requires at maximum 1.5x times as much
-storage as the images themselves.
+the images original size fluently with small loadtimes or no loss of
+interactivity. It accomplishes this by keeping a tile cache which
+stores not only thumbnails for one size, but thumbnails of many
+different sizes. This thumbnail cache requires at maximum 1.5x times
+as much storage as the images themselves.
 
 griv can also be used to view gigapixel sized images, it however
 currently requires the tiles for that to be generated previously,
@@ -55,6 +55,17 @@ the database.
 
 Via the -d flag you can specifiy a database, so that you can have
 different databases for different files.
+
+
+SpaceNavigator Support:
+=======================
+
+griv supports the Space Navigator via the Open Source spacenavd daemon:
+
+ * http://spacenav.sourceforge.net
+
+The 3Dconnexion's official 3dxsrv daemon is not supported, neither is
+directly reading from /dev/input/eventX.
 
 
 Bugs:

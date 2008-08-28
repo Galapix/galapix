@@ -30,6 +30,9 @@ class Viewer;
 
 class SpaceNavigator
 {
+private:
+  bool usable;
+
 public:
   SpaceNavigator();
   ~SpaceNavigator();
