@@ -41,6 +41,13 @@ Framebuffer::set_video_mode(const Size& size)
 {
   assert(screen == 0);
 
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE,   5);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  5);
+  SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
   SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); // vsync
 
   const SDL_VideoInfo* info = SDL_GetVideoInfo();
