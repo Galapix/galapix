@@ -1,5 +1,11 @@
 [[ Griv ToDo ]]
 
+* pointing griv to an empty directory is weird (directory is empty,
+  griv displays files in database, but can't create new thumbnails due
+  to missing files). It should give an error that no images could be found
+
+* float isn't enough, on high zoom level it breaks apart, need double
+
 * store the max_tile size into the FileTable
 
 * implement shader to change hue, saturation, contrast, brightness, etc.

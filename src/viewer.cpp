@@ -34,6 +34,7 @@
 
 ViewerState::ViewerState()
   : scale(0.25f),
+    angle(0.0f),
     offset(0.0f, 0.0f)
 {
 }
@@ -47,7 +48,20 @@ ViewerState::zoom(float factor, const Vector2i& pos)
 }
 
 void
-ViewerState::move(const Vector2i& pos)
+ViewerState::zoom(float factor)
+{
+  zoom(factor, Vector2i(Framebuffer::get_width()/2, // FIXME: Little ugly, isn't it?
+                        Framebuffer::get_height()/2));
+}
+
+void
+ViewerState::rotate(float r)
+{
+  angle += r;
+}
+
+void
+ViewerState::move(const Vector2f& pos)
 {
   offset.x += pos.x;
   offset.y += pos.y;
@@ -117,6 +131,10 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               workspace.layout(4, 3);
               break;
 
+            case SDLK_2:
+              workspace.layout(16, 9);
+              break;
+
             default:
               break;
           }
@@ -128,8 +146,8 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
         
         if (drag_n_drop)
           {
-            state.move(Vector2i(event.motion.xrel * 4,
-                                event.motion.yrel * 4));
+            state.move(Vector2f(event.motion.xrel * 4.0f,
+                                event.motion.yrel * 4.0f));
           }
         break;
 
@@ -195,6 +213,7 @@ Viewer::draw(Workspace& workspace)
 
   glTranslatef(state.get_offset().x, state.get_offset().y, 0.0f);
   glScalef(state.get_scale(), state.get_scale(), 1.0f);
+  //glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f);
 
   Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
 

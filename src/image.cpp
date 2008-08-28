@@ -326,6 +326,9 @@ Image::draw(const Rectf& cliprect, float fscale)
           int max_tiledb_scale = 0;
           SurfaceStruct s;
           int tileid = -1;
+
+          //FIXME: Calculate a size at which the thumbnail is 32x32 or
+          //smaller, keep that and everything smaller, discard the rest
           for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
             {
               int tiledb_scale = (i->first >> 16);

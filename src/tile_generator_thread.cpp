@@ -36,7 +36,10 @@ TileGeneratorThread* TileGeneratorThread::current_ = 0;
 
 TileGeneratorThread::TileGeneratorThread()
   : Thread("TileGeneratorThread"),
-    quit(false)
+    quit(false),
+    min_scale(0),
+    max_scale(0),
+    fileid(0)
 {
   current_ = this;
   working  = false;
@@ -73,53 +76,65 @@ TileGeneratorThread::stop()
 void
 TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
 {
-  std::cout << "Processing: scale: " << job.min_scale << "-" << job.max_scale << " " << job.entry.filename << "..." << std::flush;
-
-  // Find scale at which the image fits on one tile
-  int width  = job.entry.size.width;
-  int height = job.entry.size.height;
-  int scale  = job.min_scale;
-
-  int jpeg_scale = Math::pow2(scale);
-  SoftwareSurface surface;
-
-  if (jpeg_scale > 8)
-    {
-      // The JPEG class can only scale down by factor 2,4,8, so we have to
-      // limit things (FIXME: is that true? if so, why?)
-      surface = JPEG::load_from_file(job.entry.filename, 8);
-      
-      surface = surface.scale(Size(width  / Math::pow2(scale),
-                                   height / Math::pow2(scale)));
+  if (fileid    == job.entry.fileid &&
+      min_scale == job.min_scale &&
+      max_scale == job.max_scale)
+    { 
+      // FIXME: Workaround for jobs getting reqested multiple times in a row for some reason
+      std::cout << "TileGeneratorThread: Job rejected: " << job.min_scale << "-" << job.max_scale << " " << job.entry.filename << std::endl;
     }
   else
     {
-      surface = JPEG::load_from_file(job.entry.filename, jpeg_scale);
-    }
+      std::cout << "TileGeneratorThread: Processing: scale: " << job.min_scale << "-" << job.max_scale << " " << job.entry.filename << "..." << std::flush;
 
-  do
-    {
-      if (scale != job.min_scale)
+      min_scale = job.min_scale;
+      max_scale = job.max_scale;
+      fileid    = job.entry.fileid;
+
+      // Find scale at which the image fits on one tile
+      int width  = job.entry.size.width;
+      int height = job.entry.size.height;
+      int scale  = job.min_scale;
+
+      int jpeg_scale = Math::pow2(scale);
+      SoftwareSurface surface;
+
+      if (jpeg_scale > 8)
         {
-          surface = surface.halve();
+          // The JPEG class can only scale down by factor 2,4,8, so we have to
+          // limit things (FIXME: is that true? if so, why?)
+          surface = JPEG::load_from_file(job.entry.filename, 8);
+      
+          surface = surface.scale(Size(width  / Math::pow2(scale),
+                                       height / Math::pow2(scale)));
+        }
+      else
+        {
+          surface = JPEG::load_from_file(job.entry.filename, jpeg_scale);
         }
 
-      for(int y = 0; 256*y < surface.get_height(); ++y)
-        for(int x = 0; 256*x < surface.get_width(); ++x)
-          {
-            SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
-                                                               Size(256, 256)));
+      do
+        {
+          if (scale != job.min_scale)
+            {
+              surface = surface.halve();
+            }
 
-            job.callback(TileEntry(job.entry.fileid, scale, Vector2i(x, y), croped_surface));
-          }
+          for(int y = 0; 256*y < surface.get_height(); ++y)
+            for(int x = 0; 256*x < surface.get_width(); ++x)
+              {
+                SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
+                                                                   Size(256, 256)));
 
-      scale += 1;
+                job.callback(TileEntry(job.entry.fileid, scale, Vector2i(x, y), croped_surface));
+              }
 
-    } while (scale <= job.max_scale);
+          scale += 1;
 
-  working = false;
+        } while (scale <= job.max_scale);
 
-  std::cout << "done" << std::endl;
+      std::cout << "done" << std::endl;
+    }
 }
 
 int
@@ -143,11 +158,13 @@ TileGeneratorThread::run()
           catch(std::exception& err)
             {
               // FIXME: We need a better way to communicate errors back
-              std::cout << "\Error: nTileGeneratorThread: Loading failure: " << job.entry.filename << std::endl;
+              std::cout << "\nError: TileGeneratorThread: Loading failure: " << job.entry.filename << std::endl;
               job.callback(TileEntry());
             }
+          working = false;
         }
-            
+
+      //std::cout << "TileGeneratorThread: Waiting" << std::endl;
       msg_queue.wait();
     }
   

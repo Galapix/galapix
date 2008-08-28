@@ -57,6 +57,10 @@ private:
   bool working;
   ThreadMessageQueue<TileGeneratorThreadJob> msg_queue;
 
+  int min_scale;
+  int max_scale;
+  int fileid;
+
 protected:
   int run();
   

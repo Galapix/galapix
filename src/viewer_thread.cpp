@@ -30,6 +30,7 @@
 #include "viewer.hpp"
 #include "viewer_thread.hpp"
 #include "tile_generator_thread.hpp"
+#include "space_navigator.hpp"
 #include "database_thread.hpp"
 
 ViewerThread* ViewerThread::current_ = 0;
@@ -61,6 +62,9 @@ ViewerThread::run()
   Viewer viewer;
 
   Uint32 ticks = SDL_GetTicks();
+
+  SpaceNavigator space_navigator;
+
   while(!viewer.done())
     {     
       while (!file_queue.empty())
@@ -69,6 +73,8 @@ ViewerThread::run()
           workspace.add_image(entry);
           file_queue.pop();
         }
+
+      space_navigator.poll(viewer);
 
       SDL_Event event;
       while (SDL_PollEvent(&event))
