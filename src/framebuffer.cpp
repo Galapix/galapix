@@ -40,6 +40,8 @@ Framebuffer::set_video_mode(const Size& size)
 {
   assert(screen == 0);
 
+  SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); // vsync
+
   flags = SDL_RESIZABLE | SDL_OPENGL;
   screen = SDL_SetVideoMode(800, 600, 0, flags);
 
@@ -91,7 +93,7 @@ Framebuffer::toggle_fullscreen()
     flags |= SDL_FULLSCREEN;
  
   // Should use desktop resolution for this instead, but how?
-  screen = SDL_SetVideoMode(1152, 864, 0, flags); 
+  screen = SDL_SetVideoMode(1680, 1050, 0, flags); 
   glViewport(0, 0, screen->w, screen->h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();

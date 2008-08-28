@@ -118,14 +118,18 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               break;
 
             case SDLK_PAGEUP:
-                gamma *= 1.1f;
-                SDL_SetGamma(gamma, gamma, gamma);
+              gamma *= 1.1f;
+              SDL_SetGamma(gamma, gamma, gamma);
               break;
 
             case SDLK_PAGEDOWN:
-                gamma /= 1.1f;
-                SDL_SetGamma(gamma, gamma, gamma);
-                break;
+              gamma /= 1.1f;
+              SDL_SetGamma(gamma, gamma, gamma);
+              break;
+
+            case SDLK_F11:
+              Framebuffer::toggle_fullscreen();
+              break;
                 
             case SDLK_1:
               workspace.layout(4, 3);
@@ -172,16 +176,16 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
                   
             case SDL_BUTTON_LEFT:
               if (event.button.state == SDL_PRESSED)
-                  zoom_button = 1;
+                zoom_button = 1;
               else
-                  zoom_button = 0;
+                zoom_button = 0;
               break;
 
             case SDL_BUTTON_RIGHT:
               if (event.button.state == SDL_PRESSED)
-                  zoom_button = -1;
+                zoom_button = -1;
               else
-                  zoom_button = 0;
+                zoom_button = 0;
               break;
   
             case SDL_BUTTON_MIDDLE:
