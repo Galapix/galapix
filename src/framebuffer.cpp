@@ -90,12 +90,17 @@ Framebuffer::set_video_mode(const Size& size)
 void
 Framebuffer::toggle_fullscreen()
 {
-  flags |= SDL_OPENGL;
   if (flags & SDL_FULLSCREEN)
-    flags &= ~SDL_FULLSCREEN;
+    {
+      flags = SDL_OPENGL | SDL_RESIZABLE;
+    }
   else
-    flags |= SDL_FULLSCREEN;
+    {
+      flags = SDL_OPENGL | SDL_FULLSCREEN;
+    }
  
+  std::cout << "Switching to fullscreen " 
+            << desktop_resolution.width << "x" << desktop_resolution.height << std::endl;
   screen = SDL_SetVideoMode(desktop_resolution.width, desktop_resolution.height, 0, flags); 
   glViewport(0, 0, screen->w, screen->h);
   glMatrixMode(GL_PROJECTION);
