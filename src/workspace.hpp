@@ -36,6 +36,7 @@ private:
   typedef std::vector<Image> Images;
   Images images;
   Vector2i next_pos;
+  int row_width;
   
 public:
   Workspace();

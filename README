@@ -68,30 +68,4 @@ The 3Dconnexion's official 3dxsrv daemon is not supported, neither is
 directly reading from /dev/input/eventX.
 
 
-Bugs:
-=====
-
-When zooming into an images beyond its original size one will see
-noticable seams at the areas where the tiles meet. This is an artifact
-caused by OpenGLs linear filtering that can't work across tile
-borders, but only on a single tile. A possible fix for this would be
-to add a 1px width border to the tiles, but that would slow down the
-tile generation process from JPEG data, so it is unclear if it ever
-will be implemented.
-
-Jobs are currently not prioritized properly so unimportant ones might
-be executed before important ones, not harmfull, but its unpleasing to
-see images on the edge of the screen being generated before images in
-the center of the screen.
-
-griv can only handle JPEG files, no other format is supported. 
-
-Jobs are only canceled when the image is no longer visible, but not
-when the images zoom level has changed.
-
-There is no handling of tile collisions in the database, so one might
-end up with duplicate entries for the same tile. Tile generation is
-also not optimal, since some data gets discarded.
-
-
 # EOF #

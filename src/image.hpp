@@ -63,6 +63,7 @@ private:
 
   void cache_cleanup();
   void process_queue();
+  Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_in);
 
 public:
   Image();

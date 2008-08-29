@@ -171,6 +171,27 @@ Image::get_tile(int x, int y, int tile_scale)
     }
 }
 
+Surface
+Image::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale)
+{
+  int  downscale_factor = 1;
+
+  // FIXME: Replace this loop with a 'find_next_best_smaller_tile()' function
+  while(downscale_factor < 10) // Make this 'max_scale' instead of random number
+    {
+      downscale = Math::pow2(downscale_factor);
+      uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+downscale_factor);
+      Cache::iterator i = impl->cache.find(cache_id);
+      if (i != impl->cache.end() && i->second.surface)
+        {
+          return i->second.surface;
+        }
+
+      downscale_factor += 1;
+    }
+  return Surface();
+}
+
 void
 Image::draw_tile(int x, int y, int tiledb_scale, 
                  const Vector2f& pos, float scale)
@@ -184,46 +205,29 @@ Image::draw_tile(int x, int y, int tiledb_scale,
   else
     {
       // Look for the next smaller tile
-      // FIXME: Rewrite this to work all smaller tiles, not just the next
-      
-      int downscale_factor = 1;
-
-    retry:
-      int downscale = Math::pow2(downscale_factor);
-
-      uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+downscale_factor);
-      Cache::iterator i = impl->cache.find(cache_id);
-  
-      if (i != impl->cache.end() && i->second.surface)
+      // FIXME: Rewrite this to work all smaller tiles, not just the next     
+      int downscale;
+      surface = find_smaller_tile(x, y, tiledb_scale, downscale);
+      if (surface)
         { // Must only draw relevant section!
-          Size s((x%downscale) ? (i->second.surface.get_width()  - 256/downscale * (x%downscale)) : 256/downscale,
-                 (y%downscale) ? (i->second.surface.get_height() - 256/downscale * (y%downscale)) : 256/downscale);
+          Size s((x%downscale) ? (surface.get_width()  - 256/downscale * (x%downscale)) : 256/downscale,
+                 (y%downscale) ? (surface.get_height() - 256/downscale * (y%downscale)) : 256/downscale);
 
-          s.width  = Math::min(i->second.surface.get_width(),  s.width);
-          s.height = Math::min(i->second.surface.get_height(), s.height);
+          s.width  = Math::min(surface.get_width(),  s.width);
+          s.height = Math::min(surface.get_height(), s.height);
           
-          i->second.surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
-                                       s),
-                                 Rectf(pos, s * scale * downscale));
-          //Framebuffer::draw_rect(Rectf(pos, s * scale * downscale), RGB(255, 255, 255));
+          surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
+                             s),
+                       Rectf(pos, s * scale * downscale));
         }
-      else
-        {
-          if (downscale_factor < 6) // Make this 'max_scale' instead of random number
-            {
-              downscale_factor += 1;
-              goto retry;
-            }
-          else
-            {         
-              // give up, no lower resolution found
+      else // draw replacement rect when no tile could be loaded
+        {         
+          // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
+          Size s(Math::min(256, (impl->file_entry.size.width  / Math::pow2(tiledb_scale)) - 256 * x),
+                 Math::min(256, (impl->file_entry.size.height / Math::pow2(tiledb_scale)) - 256 * y));
 
-              Size s(Math::min(256, (impl->file_entry.size.width  / Math::pow2(tiledb_scale)) - 256 * x),
-                     Math::min(256, (impl->file_entry.size.height / Math::pow2(tiledb_scale)) - 256 * y));
-
-              Framebuffer::fill_rect(Rectf(pos, s*scale),
-                                     RGB(255, 0, 255));
-            }
+          Framebuffer::fill_rect(Rectf(pos, s*scale),
+                                 RGB(255, 0, 255));
         }
     }
 }
@@ -274,6 +278,9 @@ Image::process_queue()
 void
 Image::cache_cleanup()
 {
+  // FIXME: Cache cleanup should happen based on if the Tile is
+  // visible, not if the image is visible
+
   // Image is not visible, so cancel all jobs
   for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
     i->abort();

@@ -1,30 +1,122 @@
 [[ Griv ToDo ]]
 
-* pointing griv to an empty directory is weird (directory is empty,
-  griv displays files in database, but can't create new thumbnails due
-  to missing files). It should give an error that no images could be found
+* build "scons configure" like stuff, see Pingus for reference
 
-* float isn't enough, on high zoom level it breaks apart, need double
+* allow rotation of view, maybe later of images
+
+* save color or a 8x8 thumbnail in the FileEntry, for faster loading, also save 1x1 Color in FileEntry
 
 * store the max_tile size into the FileTable
 
-* implement shader to change hue, saturation, contrast, brightness, etc.
+* opening a large directory causes file entries to be generated, but
+  no tiles to be shown, because tiles are last in the queue, different
+  jobs should have different queue
 
-Toolpalette: Select picture, scale picture, move pictures, align
-selected picture into a group, maybe have a box into which one can
-drop pictures.
-
-Generating tiles for /resources/flickr/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
-Exception: JPEG: Unsupported color depth: 4
-
-* Support for multiple databases at once would be good 
+* pointing griv to an empty directory is weird (directory is empty,
+  griv displays files in database, but can't create new thumbnails due
+  to missing files). It should give an error that no images could be found
 
 * Loading JPEG file can throw exception and that isn't handled
 
 * Displaying 75'000 images gets really slow, OpenGL bottleneck,
   texture packing might help, sending vertex array instead of glBegin/glEnd of course too
 
-* add 8x8 JPEG is larger then RAW, else JPEG always wins
+* need to properly check for collisions in the database and update
+  entries instead of just inserting a duplicate
+
+* implement smooth scale in SoftwareSurface (like LINEAR instead of NEAREST),
+
+* implement non-copying crop in SoftwareSurface (use parent image data
+  as pixel source)
+
+* multi-threading in the tile generator for multicore
+
+* faster incremental tile generation
+
+* griv name is already taken, need a new one:
+
+  Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview, brickview, birdview, hawkeye
+
+* File stuff should really be seperate from Tile getting -> Seperate worker thread?
+
+* need to display the thread status graphically somehow (graphical
+  rotating wheel? per image or overall?)
+
+* Jobs are only canceled when the image is no longer visible, but not
+  when the images zoom level has changed.
+
+
+Database Stuff:
+===============
+
+* There is no handling of tile collisions in the database, so one
+  might end up with duplicate entries for the same tile. Tile
+  generation is also not optimal, since some data gets discarded.
+
+* Support for multiple databases at once would be good 
+
+
+Thread Stuff:
+=============
+
+* Jobs are currently not prioritized properly so unimportant ones
+  might be executed before important ones, not harmfull, but its
+  unpleasing to see images on the edge of the screen being generated
+  before images in the center of the screen.
+
+* request lower res tiles, before requesting highres tiles
+
+* move JPEG decoding in a seperate thread so that the database thread
+  can run free with database stuff
+
+
+Old Features that need to be moved:
+===================================
+
+* move dynamic image sorting/movement code over
+
+* grid drawing over to new griv 
+
+
+Possible Future Improvements:
+=============================
+
+* float isn't enough, on high zoom level it breaks apart, might need double
+
+* implement shader to change hue, saturation, contrast, brightness, etc.
+
+* Toolpalette: Select picture, scale picture, move pictures, align
+  selected picture into a group, maybe have a box into which one can
+  drop pictures.
+
+* griv can only handle JPEG files, no other format is supported. 
+
+* When zooming into an images beyond its original size one will see
+  noticable seams at the areas where the tiles meet. This is an
+  artifact caused by OpenGLs linear filtering that can't work across
+  tile borders, but only on a single tile. A possible fix for this
+  would be to add a 1px width border to the tiles, but that would slow
+  down the tile generation process from JPEG data, so it is unclear if
+  it ever will be implemented.
+
+* griv completly ignores ~/.thumbnails/, it should maybe make use of
+  that to speed up initial thumbnail generation
+
+* Generating tiles for /resources/flickr/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
+  Exception: JPEG: Unsupported color depth: 4
+
+* Grayscale JPEGs aren't supported either (easy to fix)
+
+
+Random Notes:
+=============
+
+* jpegtran can't do crop of large scale JPEGs in small amount of
+  space, so cropping with libjpeg likely won't work
+
+* a single 2048x2048 texture can hold 65536 8x8 tiles -> ~12MB
+
+* when 8x8 or smaller JPEG is larger then RAW, else JPEG always wins
 
 1920x1080: (64x64) 30x17=510, (32x32) 60x34=2040, (16x16) 120x68=8160, (4x4) 480x270=129600
 ~100MB for fullscreen 16x16 Thumbs
@@ -35,41 +127,5 @@ Exception: JPEG: Unsupported color depth: 4
 10'000 thumbnails -> 10MB
 100'000 thumbnails -> 100MB (graphic card gets full) -> Solution: smaller thumbnails, also unload from GFX card, but keep software backstore
 
-* need to properly check for collisions in the database and update
-  entries instead of just inserting a duplicate
-
-* implement fast crop
-
-* implement smooth scale in SoftwareSurface (like LINEAR instead of NEAREST),
-
-* move image sorting code on workspace over
-
-* request lower res tiles, before requesting highres tiles
-
-* move JPEG decoding in a seperate thread so that the database thread
-  can run free with database stuff
-
-* jpegtran *can't* do crop of large scale JPEGs in small amount of
-  space, so cropping with libjpeg likely won't work
-
-* multi-threading in the tile generator for multicore
-
-* faster image handling, FreeImage is not good enough
-
-* do something about the seams on tile borders (hard, need to save a 1px border, but that screws up the JPEG compression)
-
-* faster incremental tile generation
-
-* griv name is already taken
-
-  Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview, brickview
-
-* How to avoid duplicate entries in the queue?
-
-* figure out why the thing crashes -> move viewer thread into main thread
-
-* File stuff should really be seperate from Tile getting -> Seperate worker thread?
-
-* need to display the thread status graphically somehow
 
 # EOF #

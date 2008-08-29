@@ -30,6 +30,7 @@
 Workspace::Workspace()
 {
   next_pos = Vector2i(0, 0);
+  row_width = 100;
 }
 
 void
@@ -41,25 +42,24 @@ Workspace::add_image(const FileEntry& file_entry)
                             1000.0f / file_entry.size.height));
 
   image.set_pos(next_pos * 1024.0f);
-                   
-  next_pos.x += 1;
 
-  //layout(4.0f, 3.0f);
+  // FIXME: Ugly, instead we should relayout once a second or so
+  next_pos.x += 1;
+  if (next_pos.x >= row_width)
+    {
+      next_pos.x  = 0;
+      next_pos.y += 1;
+    }
 }
 
 void
 Workspace::layout(float aspect_w, float aspect_h)
 {
   if (!images.empty())
-    {
-      //       float x_pos = 0;
-      //       for(Images::iterator i = images.begin(); i != images.end(); ++i)
-      //         {
-      //           i->set_pos(Vector2f(x_pos, 0.0f));
-      //           x_pos += i->get_width() + 128/*spacing*/;
-      //         }    
-      
+    {     
       int w = int(Math::sqrt(aspect_w * images.size() / aspect_h));
+      
+      row_width = w;
 
       for(int i = 0; i < int(images.size()); ++i)
         {
@@ -76,6 +76,8 @@ Workspace::layout(float aspect_w, float aspect_h)
 
           images[i].set_pos(images[i].get_pos() + Vector2f((1000.0f - images[i].get_scaled_width()) / 2,
                                                            (1000.0f - images[i].get_scaled_height()) / 2));
+
+          next_pos = Vector2i(i % w, i / w);
         }
     }
 }

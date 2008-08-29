@@ -29,16 +29,44 @@
 #include <stdint.h>
 #include <string>
 #include "math/size.hpp"
+#include "math/rgb.hpp"
+#include "software_surface.hpp"
 
 class FileEntry 
 {
 public:
-  int         fileid;
-  std::string filename; // 
-  std::string md5;      //
-  int         filesize; //
-  uint32_t    mtime;    // mtime of the file
-  Size        size;
+  /** Unique id by which one can refer to this FileEntry, used in the
+      'tile' table in the database */
+  int fileid;
+
+  /** The absolute filename of the image file */
+  std::string filename; 
+
+  /** MD5 Checksum of the image file 
+      FIXME: currently not used */
+  std::string md5;      
+
+  /** MD5 Checksum of the image file 
+      FIXME: currently not used */
+  int         filesize; 
+
+  /** Modification time of the image file
+      FIXME: currently not used */
+  uint32_t    mtime;
+
+  /** The size of the image in pixels */
+  Size size;
+
+  /** The average color of the image, it can also be thought of as a
+      1x1 thumbnail, it is used when drawing the place holder rect
+      when no Tile is available */
+  RGB color;
+
+  /** A 8x8 thumbnail of the image, at this size the thumbnail doesn't
+      consume more more diskspace then the filename, so it makes a
+      good lower bound, it also the point at which the pixel data
+      stored raw consumes less space then a JPEG compressed file */
+  SoftwareSurface surface;
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);
