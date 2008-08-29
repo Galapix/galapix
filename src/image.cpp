@@ -46,7 +46,7 @@ public:
   FileEntry file_entry;
   float scale;
 
-  int max_tiledb_scale;
+  int min_keep_scale; 
   Vector2f pos;
 
   Image::Cache cache;
@@ -66,24 +66,21 @@ public:
 Image::Image()
 {
 }
-
+
 Image::Image(const FileEntry& file_entry)
   : impl(new ImageImpl())
 {
   impl->file_entry = file_entry;
   impl->scale      = 1.0f;
+
+  int size  = Math::max(file_entry.size.width, file_entry.size.height);
+  impl->min_keep_scale = 0;
+  while(size > 32) 
+    {
+      size /= 2;
+      impl->min_keep_scale +=1 ;
+    }
   
-  int  tiledb_scale = 0;
-  Size tmpsize = file_entry.size;
-
-  do {
-    tmpsize.width  /= 2;
-    tmpsize.height /= 2;
-    tiledb_scale += 1;
-  } while (tmpsize.width  > 32 ||
-           tmpsize.height > 32);
-
-  impl->max_tiledb_scale = tiledb_scale;
 }
 
 void
@@ -277,49 +274,29 @@ Image::process_queue()
 void
 Image::cache_cleanup()
 {
-  // Image is not visible so clear the cache
+  // Image is not visible, so cancel all jobs
   for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
     i->abort();
   impl->jobs.clear();
         
-  // FIXME: We should keep at least some tiles or wait with the
-  // cache purge a bit longer
-
   // FIXME: We also need to purge the cache more often, since with
-  // big images we would end up never clearing it
+  // big gigapixel images we would end up never clearing it
       
-  // Clear the cache, but keep the smallest tile (Wonky hack)
-  if (0)
+  // Erase all tiles larger then 32x32
+
+  // FIXME: Could make this more clever and relative to the number
+  // of the images we display, since with large collections 32x32
+  // might be to much for memory while with small collections it
+  // will lead to unnecessary loading artifacts.      
+  for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
     {
-      impl->cache.clear();
+      int tiledb_scale = (i->first >> 16); // get scale
+      if (tiledb_scale > impl->min_keep_scale)
+        {
+          impl->cache.erase(i);
+        }
     }
-  else
-    {
-      int max_tiledb_scale = 0;
-      SurfaceStruct s;
-      int tileid = -1;
-
-      //FIXME: Calculate a size at which the thumbnail is 32x32 or
-      //smaller, keep that and everything smaller, discard the rest
-      for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
-        {
-          int tiledb_scale = (i->first >> 16);
-          if (tiledb_scale > max_tiledb_scale)
-            {
-              max_tiledb_scale = tiledb_scale;
-              tileid = i->first;
-              s      = i->second;
-            }
-        }
-      impl->cache.clear();
-
-      if (max_tiledb_scale != 0)
-        {
-          impl->cache[tileid] = s;
-        }
-    } 
 }
-
 
 void
 Image::draw(const Rectf& cliprect, float fscale)
@@ -335,6 +312,7 @@ Image::draw(const Rectf& cliprect, float fscale)
   else
     {
       // scale factor for requesting the tile from the TileDatabase
+      // FIXME: Can likely be done without float
       int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale*impl->scale)) /
                                                        log(2)));
       int scale_factor = Math::pow2(tiledb_scale);
