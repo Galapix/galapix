@@ -61,11 +61,15 @@ public:
 private:
   Surface get_tile(int x, int y, int tile_scale);
 
+  void cache_cleanup();
+  void process_queue();
+
 public:
   Image();
   Image(const FileEntry& file_entry);
 
   void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
+  void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float scale);
   void draw(const Rectf& cliprect, float scale);
 
   void set_pos(const Vector2f& pos);

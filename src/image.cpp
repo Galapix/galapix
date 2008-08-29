@@ -231,8 +231,23 @@ Image::draw_tile(int x, int y, int tiledb_scale,
     }
 }
 
+void 
+Image::draw_tiles(const Rect& rect, int tiledb_scale, 
+                  const Vector2f& pos, float scale)
+{
+  float tilesize = 256.0f * scale;
+
+  for(int y = rect.top; y < rect.bottom; ++y)
+    for(int x = rect.left; x < rect.right; ++x)
+      {
+        draw_tile(x, y, tiledb_scale, 
+                  impl->pos + Vector2f(x,y) * tilesize,
+                  scale);
+      }
+}
+
 void
-Image::draw(const Rectf& cliprect, float fscale)
+Image::process_queue()
 {
   // Check the queue for newly arrived tiles
   while (!impl->tile_queue.empty())
@@ -257,10 +272,67 @@ Image::draw(const Rectf& cliprect, float fscale)
 
       impl->cache[tile_id] = s;
     }
+}
+
+void
+Image::cache_cleanup()
+{
+  // Image is not visible so clear the cache
+  for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
+    i->abort();
+  impl->jobs.clear();
+        
+  // FIXME: We should keep at least some tiles or wait with the
+  // cache purge a bit longer
+
+  // FIXME: We also need to purge the cache more often, since with
+  // big images we would end up never clearing it
+      
+  // Clear the cache, but keep the smallest tile (Wonky hack)
+  if (0)
+    {
+      impl->cache.clear();
+    }
+  else
+    {
+      int max_tiledb_scale = 0;
+      SurfaceStruct s;
+      int tileid = -1;
+
+      //FIXME: Calculate a size at which the thumbnail is 32x32 or
+      //smaller, keep that and everything smaller, discard the rest
+      for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
+        {
+          int tiledb_scale = (i->first >> 16);
+          if (tiledb_scale > max_tiledb_scale)
+            {
+              max_tiledb_scale = tiledb_scale;
+              tileid = i->first;
+              s      = i->second;
+            }
+        }
+      impl->cache.clear();
+
+      if (max_tiledb_scale != 0)
+        {
+          impl->cache[tileid] = s;
+        }
+    } 
+}
+
+
+void
+Image::draw(const Rectf& cliprect, float fscale)
+{
+  process_queue();
   
   Rectf image_rect(impl->pos, Sizef(impl->file_entry.size * impl->scale)); // in world coordinates
 
-  if (cliprect.is_overlapped(image_rect))
+  if (!cliprect.is_overlapped(image_rect))
+    {
+      cache_cleanup();
+    }
+  else
     {
       // scale factor for requesting the tile from the TileDatabase
       int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale*impl->scale)) /
@@ -286,69 +358,22 @@ Image::draw(const Rectf& cliprect, float fscale)
           image_region.bottom = (image_region.bottom - impl->pos.y) / impl->scale;
 
           int   itilesize = 256 * scale_factor;
-          float tilesize  = 256.0f * scale_factor * impl->scale;
-
+          
           int start_x = (image_region.left)  / itilesize;
           int end_x   = (image_region.right) / itilesize + 1;
 
           int start_y = (image_region.top   ) / itilesize;
           int end_y   = (image_region.bottom) / itilesize + 1;
 
-          for(int y = start_y; y < end_y; y += 1)
-            for(int x = start_x; x < end_x; x += 1)
-              {
-                draw_tile(x, y, tiledb_scale, 
-                          impl->pos + Vector2f(x,y) * tilesize,
-                          scale_factor * impl->scale);
-              }
-        }
-    }
-  else
-    {
-      // Image is not visible so clear the cache
-      for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
-        i->abort();
-      impl->jobs.clear();
-        
-      // FIXME: We should keep at least some tiles or wait with the
-      // cache purge a bit longer
-
-      // FIXME: We also need to purge the cache more often, since with
-      // big images we would end up never clearing it
-      
-      // Clear the cache, but keep the smallest tile (Wonky hack)
-      if (0)
-        {
-          impl->cache.clear();
-        }
-      else
-        {
-          int max_tiledb_scale = 0;
-          SurfaceStruct s;
-          int tileid = -1;
-
-          //FIXME: Calculate a size at which the thumbnail is 32x32 or
-          //smaller, keep that and everything smaller, discard the rest
-          for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
-            {
-              int tiledb_scale = (i->first >> 16);
-              if (tiledb_scale > max_tiledb_scale)
-                {
-                  max_tiledb_scale = tiledb_scale;
-                  tileid = i->first;
-                  s      = i->second;
-                }
-            }
-          impl->cache.clear();
-
-          if (max_tiledb_scale != 0)
-            {
-              impl->cache[tileid] = s;
-            }
+          draw_tiles(Rect(start_x, start_y, end_x, end_y), 
+                     tiledb_scale, 
+                     impl->pos,
+                     scale_factor * impl->scale);
         }
     }
 }
 
+
 void
 Image::receive_tile(const TileEntry& tile)
 {
