@@ -88,6 +88,7 @@ class SQLiteStatement
 private:
   SQLiteConnection* db;
   sqlite3_stmt*   stmt;
+  std::string     stmt_str;
 
   void reset();
   
@@ -105,6 +106,8 @@ public:
 
   void execute();
   SQLiteReader execute_query();
+
+  std::string str() const { return stmt_str; }
 
 private:
   SQLiteStatement(const SQLiteStatement&);

@@ -26,6 +26,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <assert.h>
+#include "math.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "tile_generator_thread.hpp"
@@ -213,8 +214,9 @@ DatabaseThread::run()
                         {
                           (*i)->callback(tile_msg->tile);
 
-                          delete *i;
+                          // FIXME: Correct!?
 
+                          delete *i;
                           i = tile_queue.erase(i);
                         }
                       else
@@ -226,10 +228,11 @@ DatabaseThread::run()
                   // FIXME: Make some better error checking in case of loading failure
                   if (tile_msg->tile.surface)
                     {
-                      //if (tile_msg->tile.scale == file_entry.max_scale)
-                      //  file_db.store_tile(tile_msg->tile);
+                      // FIXME: Need file_entry object for this:
+                      //if (tile_msg->tile.scale == file_entry.thumbnail_scale)
+                        //  file_db.store_tile(tile_msg->tile);
                       //else
-                      tile_db.store_tile(tile_msg->tile);
+                        tile_db.store_tile(tile_msg->tile);
                     }
                   else
                     {
@@ -339,10 +342,41 @@ DatabaseThread::run()
           TileGeneratorThread::current() && !TileGeneratorThread::current()->is_working())
         {
           if (!tile_queue.empty())
-            TileGeneratorThread::current()->request_tiles(tile_queue.back()->file_entry,
-                                                          tile_queue.back()->tilescale,
-                                                          tile_queue.back()->tilescale,
-                                                          boost::bind(&DatabaseThread::receive_tile, this, _1));
+            {
+              // FIXME: Either buggy or not syncronized
+              TileDatabaseMessage& msg = *tile_queue.back();
+
+              int max_scale = msg.tilescale;
+
+              bool tiles_missing;
+              do
+                {
+                  tiles_missing = false;
+
+                  int width  = Math::ceil_div(msg.file_entry.size.width  / Math::pow2(max_scale), 256);
+                  int height = Math::ceil_div(msg.file_entry.size.height / Math::pow2(max_scale), 256);
+
+                  for(int y = 0; y < height; ++y)
+                    for(int x = 0; x < width; ++x)
+                      {
+                        if (!tile_db.has_tile(msg.file_entry.fileid, Vector2i(x,y), max_scale+1))
+                          {
+                            tiles_missing = true;
+                            max_scale += 1;
+                            goto here;
+                          }
+                      }
+
+                here:
+                  ;
+                }
+              while(tiles_missing && max_scale < msg.file_entry.thumbnail_scale);
+              
+              TileGeneratorThread::current()->request_tiles(msg.file_entry,
+                                                            msg.tilescale,
+                                                            max_scale,
+                                                            boost::bind(&DatabaseThread::receive_tile, this, _1));
+            }
         }
     }
 

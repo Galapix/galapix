@@ -37,7 +37,7 @@ class FileEntry
 public:
   /** Unique id by which one can refer to this FileEntry, used in the
       'tile' table in the database */
-  int fileid;
+  uint32_t fileid;
 
   /** The absolute filename of the image file */
   std::string filename; 

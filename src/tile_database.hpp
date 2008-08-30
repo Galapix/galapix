@@ -46,7 +46,7 @@ private:
 public:
   TileDatabase(SQLiteConnection* db);
   
-  bool has_tile(uint32_t file_id, Vector2i& pos, int scale);
+  bool has_tile(uint32_t file_id, const Vector2i& pos, int scale);
   bool get_tile(uint32_t file_id, int scale, const Vector2i& pos, TileEntry& tile);
   void store_tile(const TileEntry& tile);
   void check();

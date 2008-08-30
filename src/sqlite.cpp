@@ -126,6 +126,8 @@ SQLiteStatement::~SQLiteStatement()
 void
 SQLiteStatement::prepare(const std::string& sqlstmt)
 {
+  stmt_str = sqlstmt;
+
   if (sqlite3_prepare_v2(db->get_db(), sqlstmt.c_str(), -1, &stmt,  0)
       != SQLITE_OK)
     {
@@ -142,6 +144,7 @@ SQLiteStatement::bind_int(int n, int i)
     {
       std::ostringstream str;
       str << "SQLiteStatement::bind_int: " << sqlite3_errmsg(db->get_db());
+      str << "\n" << stmt_str;
       throw SQLiteError(str.str());
     }
 }

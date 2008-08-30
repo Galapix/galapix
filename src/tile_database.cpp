@@ -56,7 +56,7 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
 }
 
 bool
-TileDatabase::has_tile(uint32_t fileid, Vector2i& pos, int scale)
+TileDatabase::has_tile(uint32_t fileid, const Vector2i& pos, int scale)
 {
   has_stmt.bind_int(1, fileid);
   has_stmt.bind_int(2, scale);
@@ -132,7 +132,7 @@ TileDatabase::check()
   while(reader.next())
     {
       /*
-        int fileid = reader.get_int(0);
+        uint32_t fileid = reader.get_int(0);
         int scale  = reader.get_int(1);
         int x      = reader.get_int(2);
         int y      = reader.get_int(3);

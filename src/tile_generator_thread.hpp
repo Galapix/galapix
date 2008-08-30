@@ -59,7 +59,7 @@ private:
 
   int min_scale;
   int max_scale;
-  int fileid;
+  uint32_t fileid;
 
 protected:
   int run();

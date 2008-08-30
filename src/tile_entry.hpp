@@ -32,7 +32,7 @@
 class TileEntry
 {
 public:
-  int      fileid; // FIXME: Can we replace this with a FileEntry object?!
+  uint32_t fileid; // FIXME: Can we replace this with a FileEntry object?!
   int      scale;
   Vector2i pos;
   SoftwareSurface surface;
@@ -40,7 +40,7 @@ public:
   TileEntry()
   {}
 
-  TileEntry(int fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_)
+  TileEntry(uint32_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_)
     : fileid(fileid_),
       scale(scale_),
       pos(pos_),

@@ -124,6 +124,12 @@ inline bool is_power_of_two(int n)
   return (n > 0) && ((n & (n - 1)) == 0);
 }
 
+/** Does a/b and rounds the result up */
+inline int ceil_div(int a, int b)
+{
+  return (a + b - 1) / b;
+}
+
 } // namespace Math
 
 #endif
