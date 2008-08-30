@@ -175,7 +175,7 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 }
 
 void
-Framebuffer::draw_grid(int grid_size)
+Framebuffer::draw_grid(int num_cells)
 {
   glDisable(GL_TEXTURE_RECTANGLE_ARB);
  
@@ -185,20 +185,20 @@ Framebuffer::draw_grid(int grid_size)
   //else
   //  glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
 
-  for(int x = Framebuffer::get_width()/grid_size;
-      x < Framebuffer::get_width(); 
-      x += Framebuffer::get_width()/grid_size)
-    {
-      glVertex2f(x, 0);
-      glVertex2f(x, Framebuffer::get_height());
-    }
+    int cell_width = Framebuffer::get_width()/num_cells;
+    for(int x = 1; x < num_cells; ++x)
+      {
+        glVertex2f(x*cell_width, 0);
+        glVertex2f(x*cell_width, Framebuffer::get_height());
+      }
 
-  for(int y = Framebuffer::get_height()/grid_size;
-      y < Framebuffer::get_height(); y += Framebuffer::get_height()/grid_size)
-    {
-      glVertex2f(0, y);
-      glVertex2f(Framebuffer::get_width(), y);
-    }
+    int cell_height = Framebuffer::get_height()/num_cells;
+    for(int y = 1; y < num_cells; ++y)
+      {
+        glVertex2f(0, y*cell_height);
+        glVertex2f(Framebuffer::get_width(), y*cell_height);
+      }
+
   glEnd();
 }
 
