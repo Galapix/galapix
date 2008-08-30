@@ -226,9 +226,9 @@ DatabaseThread::run()
                   // FIXME: Make some better error checking in case of loading failure
                   if (tile_msg->tile.surface)
                     {
-                      // FIXME: if (tile_msg->tile.scale == file_entry.max_scale)
-                      //   file_db.store_tile(tile_msg->tile);
-                      // else
+                      //if (tile_msg->tile.scale == file_entry.max_scale)
+                      //  file_db.store_tile(tile_msg->tile);
+                      //else
                       tile_db.store_tile(tile_msg->tile);
                     }
                   else

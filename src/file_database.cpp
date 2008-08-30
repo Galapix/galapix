@@ -52,7 +52,8 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
            "height    INTEGER, "
            "mtime     INTEGER, "
            "color     INTEGER, "
-           "thumbnail BLOB);");
+           "thumbnail BLOB,"
+           "thumbnail_scale INTEGER);");
 
   db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename );");
 
@@ -82,9 +83,11 @@ FileDatabase::store_file_entry(FileEntry& entry)
   store_stmt.bind_int (3, entry.filesize); 
   store_stmt.bind_int (4, entry.size.width); 
   store_stmt.bind_int (5, entry.size.height);
-  // FIXME: Should we handle them her or depend on store_tile()?
+  // FIXME: Should we handle them here or depend on store_tile()?
   // store_stmt.bind_int (6, entry.color); 
   // store_stmt.bind_int (7, entry.surface.get_raw_data()); 
+  
+  store_stmt.bind_int (8, entry.thumbnail_scale);
 
   store_stmt.execute();
   
@@ -123,8 +126,9 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
       entry->filesize    = reader.get_int (3);
       entry->size.width  = reader.get_int (4);
       entry->size.height = reader.get_int (5);
-      entry->color       = RGB(reader.get_int(6));
-      entry->surface     = SoftwareSurface::from_raw_data(reader.get_blob(7));
+      entry->color       = reader.is_null(6) ? RGB(155,0,155) : RGB(reader.get_int(6));
+      entry->thumbnail   = reader.is_null(7) ? SoftwareSurface() : SoftwareSurface::from_raw_data(reader.get_blob(7));
+      entry->thumbnail_scale = reader.get_int(8);
 
       return true;
     }
@@ -134,8 +138,11 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
       entry->filename = filename;
       entry->filesize = Filesystem::get_size(filename);
       entry->mtime    = Filesystem::get_mtime(filename);
-      
+     
       entry->size = Size(-1, -1);
+
+      entry->color    = RGB(155,0,155);
+      entry->thumbnail = SoftwareSurface();
       
       if (JPEG::get_size(entry->filename, entry->size))
         {
@@ -164,6 +171,8 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
       entry.size.width  = reader.get_int (4);
       entry.size.height = reader.get_int (5);
       entry.mtime       = reader.get_int (6);
+      entry.color       = reader.is_null(6) ? RGB(155,0,155) : RGB(reader.get_int(6));
+      entry.thumbnail   = reader.is_null(7) ? SoftwareSurface() : SoftwareSurface::from_raw_data(reader.get_blob(7));
 
       entries.push_back(entry);
     }

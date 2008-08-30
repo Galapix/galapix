@@ -31,9 +31,11 @@
 #define __MATH_RECT_HPP__
 
 #include <iosfwd>
+#include <math.h>
 #include "../math.hpp"
 #include "origin.hpp"
 #include "vector3f.hpp"
+#include "vector2f.hpp"
 #include "size.hpp"
 
 class Rectf;
@@ -352,6 +354,17 @@ public:
                  Math::max(top,    cliprect.top),
                  Math::min(right,  cliprect.right),
                  Math::min(bottom, cliprect.bottom));
+  }
+
+  float get_diagonal() const
+  {
+    return sqrtf((get_width() * get_width()) + (get_height() * get_height()));
+  }
+
+  Vector2f get_center() const
+  {
+    return Vector2f((left + right) / 2.0f,
+                    (top  + bottom) / 2.0f);
   }
 };
 

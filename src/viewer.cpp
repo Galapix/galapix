@@ -24,6 +24,7 @@
 */
 
 #include <iostream>
+#include <math.h>
 #include "math/rgb.hpp"
 #include "framebuffer.hpp"
 #include "software_surface.hpp"
@@ -243,14 +244,27 @@ Viewer::draw(Workspace& workspace)
       glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
     }
 
-  glTranslatef(Framebuffer::get_width()/2, Framebuffer::get_height()/2, 0.0f);
-  glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
-  glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
+  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
+
+  if (state.get_angle() != 0.0f)
+    {
+      glTranslatef(Framebuffer::get_width()/2, Framebuffer::get_height()/2, 0.0f);
+      glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
+      glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
+
+      // FIXME: We enlarge the cliprect so much that we can rotate
+      // freely, however this enlargement creates a cliprect that
+      // might be quite a bit larger then what is really needed
+      float  diagonal = cliprect.get_diagonal();
+      Vector2f center = cliprect.get_center();
+      cliprect.left   = center.x - diagonal;
+      cliprect.right  = center.x + diagonal;
+      cliprect.top    = center.y - diagonal;
+      cliprect.bottom = center.y + diagonal;
+    }
 
   glTranslatef(state.get_offset().x, state.get_offset().y, 0.0f);
   glScalef(state.get_scale(), state.get_scale(), 1.0f);
-
-  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
 
   if (clip_debug)
     Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));

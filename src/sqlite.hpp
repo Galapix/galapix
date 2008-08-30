@@ -74,6 +74,8 @@ public:
 
   bool next();
 
+  bool        is_null(int column);
+  int         get_type(int column);
   int         get_int(int column);
   std::string get_text(int column);
   Blob        get_blob(int column);

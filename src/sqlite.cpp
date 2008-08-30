@@ -266,6 +266,18 @@ SQLiteReader::get_int(int column)
   return sqlite3_column_int(stmt, column);
 }
 
+bool
+SQLiteReader::is_null(int column)
+{
+  return sqlite3_column_type(stmt, column) == SQLITE_NULL;
+}
+
+int
+SQLiteReader::get_type(int column)
+{
+  return sqlite3_column_type(stmt, column);
+}
+
 std::string
 SQLiteReader::get_text(int column)
 {
