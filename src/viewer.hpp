@@ -62,6 +62,7 @@ private:
   bool quit;
   bool force_redraw;
   bool drag_n_drop;
+  bool draw_grid;
   int  zoom_button;
   float gamma;
 

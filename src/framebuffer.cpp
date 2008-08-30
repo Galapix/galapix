@@ -174,4 +174,32 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
   glEnd();
 }
 
+void
+Framebuffer::draw_grid(int grid_size)
+{
+  glDisable(GL_TEXTURE_RECTANGLE_ARB);
+ 
+  glBegin(GL_LINES);
+  //  if (grid_color)
+    glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+  //else
+  //  glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+
+  for(int x = Framebuffer::get_width()/grid_size;
+      x < Framebuffer::get_width(); 
+      x += Framebuffer::get_width()/grid_size)
+    {
+      glVertex2f(x, 0);
+      glVertex2f(x, Framebuffer::get_height());
+    }
+
+  for(int y = Framebuffer::get_height()/grid_size;
+      y < Framebuffer::get_height(); y += Framebuffer::get_height()/grid_size)
+    {
+      glVertex2f(0, y);
+      glVertex2f(Framebuffer::get_width(), y);
+    }
+  glEnd();
+}
+
 /* EOF */

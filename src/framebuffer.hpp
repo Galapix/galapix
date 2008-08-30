@@ -70,6 +70,7 @@ public:
 
   static void draw_rect(const Rectf& rect, const RGB& rgb);
   static void fill_rect(const Rectf& rect, const RGB& rgb);
+  static void draw_grid(int grid_size);
 };
 
 #endif

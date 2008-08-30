@@ -86,6 +86,7 @@ Viewer::Viewer()
   : quit(false),
     force_redraw(false),
     drag_n_drop(false),
+    draw_grid(false),
     zoom_button(0),
     gamma(1.0f)
 {
@@ -131,6 +132,10 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               Framebuffer::toggle_fullscreen();
               break;
                 
+            case SDLK_g:
+              draw_grid = !draw_grid;
+              break;
+
             case SDLK_1:
               workspace.layout(4, 3);
               break;
@@ -228,6 +233,9 @@ Viewer::draw(Workspace& workspace)
                  state.get_scale());
 
   glPopMatrix();
+
+  if (draw_grid)
+    Framebuffer::draw_grid(3);
 }
 
 void

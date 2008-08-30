@@ -1,6 +1,6 @@
 [[ Griv ToDo ]]
 
-* hide mouse cursor on rejuest
+* hide mouse cursor on request
 
 * build "scons configure" like stuff, see Pingus for reference
 
@@ -70,14 +70,6 @@ Thread Stuff:
 
 * move JPEG decoding in a seperate thread so that the database thread
   can run free with database stuff
-
-
-Old Features that need to be moved:
-===================================
-
-* move dynamic image sorting/movement code over
-
-* grid drawing over to new griv 
 
 
 Possible Future Improvements:
