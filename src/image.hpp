@@ -73,6 +73,10 @@ public:
   void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float scale);
   void draw(const Rectf& cliprect, float scale);
 
+  void update_pos(float progress);
+
+  void set_target_pos(const Vector2f& target_pos);
+
   void set_pos(const Vector2f& pos);
   Vector2f get_pos() const;
 

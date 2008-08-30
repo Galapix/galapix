@@ -48,6 +48,8 @@ public:
 
   int min_keep_scale; 
   Vector2f pos;
+  Vector2f last_pos;
+  Vector2f target_pos;
 
   Image::Cache cache;
   Image::Jobs jobs;  
@@ -75,7 +77,7 @@ Image::Image(const FileEntry& file_entry)
 
   int size  = Math::max(file_entry.size.width, file_entry.size.height);
   impl->min_keep_scale = 0;
-  while(size > 32) 
+  while(size > 8) 
     {
       size /= 2;
       impl->min_keep_scale +=1 ;
@@ -84,15 +86,40 @@ Image::Image(const FileEntry& file_entry)
 }
 
 void
-Image::set_pos(const Vector2f& pos_)
+Image::set_pos(const Vector2f& pos)
 {
-  impl->pos = pos_;
+  impl->pos        = pos;
+  impl->last_pos   = pos;
+  impl->target_pos = pos;
 }
 
 Vector2f
 Image::get_pos() const
 {
   return impl->pos;
+}
+
+void
+Image::set_target_pos(const Vector2f& target_pos)
+{
+  impl->last_pos   = impl->pos;
+  impl->target_pos = target_pos;
+}
+
+void
+Image::update_pos(float progress)
+{
+  assert(progress >= 0.0f &&
+         progress <= 1.0f);
+
+  if (progress == 1.0f)
+    {
+      set_pos(impl->target_pos);
+    }
+  else
+    {
+      impl->pos = (impl->last_pos * (1.0f - progress)) + (impl->target_pos * progress);
+    }
 }
 
 void

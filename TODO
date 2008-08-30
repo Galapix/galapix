@@ -1,5 +1,7 @@
 [[ Griv ToDo ]]
 
+* hide mouse cursor on rejuest
+
 * build "scons configure" like stuff, see Pingus for reference
 
 * allow rotation of view, maybe later of images

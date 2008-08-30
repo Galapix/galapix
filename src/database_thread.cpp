@@ -335,7 +335,6 @@ DatabaseThread::run()
       if (queue.empty() && // FIXME UGLY: to make load on demand somewhat usable
           TileGeneratorThread::current() && !TileGeneratorThread::current()->is_working())
         {
-
           if (!tile_queue.empty())
             TileGeneratorThread::current()->request_tiles(tile_queue.back()->file_entry,
                                                           tile_queue.back()->tilescale,

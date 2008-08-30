@@ -37,12 +37,14 @@ private:
   Images images;
   Vector2i next_pos;
   int row_width;
+  float progress;
   
 public:
   Workspace();
 
   void add_image(const FileEntry& file_entry);
   void draw(const Rectf& cliprect, float scale);
+  void update(float delta);
 
   void layout(float aspect_w, float aspect_h);
 

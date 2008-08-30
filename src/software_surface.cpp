@@ -31,9 +31,13 @@
 #include "math.hpp"
 #include "jpeg.hpp"
 #include "math/rect.hpp"
+#include "math/rgb.hpp"
 #include "math/size.hpp"
 
 #include "software_surface.hpp"
+
+// FIXME: Stuff in this file is currently written to just work, not to
+// be fast
 
 class SoftwareSurfaceImpl
 {
@@ -69,25 +73,25 @@ SoftwareSurface::~SoftwareSurface()
 }
 
 void
-SoftwareSurface::put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b)
+SoftwareSurface::put_pixel(int x, int y, const RGB& rgb)
 {
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
 
-  impl->pixels[y * impl->pitch + x*3 + 0] = r;
-  impl->pixels[y * impl->pitch + x*3 + 1] = g;
-  impl->pixels[y * impl->pitch + x*3 + 2] = b;
+  impl->pixels[y * impl->pitch + x*3 + 0] = rgb.r;
+  impl->pixels[y * impl->pitch + x*3 + 1] = rgb.g;
+  impl->pixels[y * impl->pitch + x*3 + 2] = rgb.b;
 }
 
 void
-SoftwareSurface::get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const
+SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
 {
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
 
-  *r = impl->pixels[y * impl->pitch + x*3 + 0];
-  *g = impl->pixels[y * impl->pitch + x*3 + 1];
-  *b = impl->pixels[y * impl->pitch + x*3 + 2];
+  rgb.r = impl->pixels[y * impl->pitch + x*3 + 0];
+  rgb.g = impl->pixels[y * impl->pitch + x*3 + 1];
+  rgb.b = impl->pixels[y * impl->pitch + x*3 + 2];
 }
 
 SoftwareSurface
@@ -102,15 +106,15 @@ SoftwareSurface::scale(const Size& size) const
   SoftwareSurface surface(size);
   // Very much non-fast, needs replacement with proper
 
-  uint8_t r,g,b;
+  RGB rgb;
   for(int y = 0; y < surface.get_height(); ++y)
     for(int x = 0; x < surface.get_width(); ++x)
       {
         get_pixel(x * impl->size.width  / surface.impl->size.width,
                   y * impl->size.height / surface.impl->size.height,
-                  &r, &g, &b);
+                  rgb);
 
-        surface.put_pixel(x, y, r, g, b);
+        surface.put_pixel(x, y, rgb);
       }
 
   return surface;
@@ -201,6 +205,33 @@ SoftwareSurface::get_row_data(int y) const
 {
   return impl->pixels + (y * impl->pitch);
   
+}
+
+RGB
+SoftwareSurface::get_average_color() const
+{
+  // Only works for smaller surfaces, else we would run into integer overflows
+  assert(get_width() > 256 || get_height() > 256); // random limit, but should be enough for griv
+
+  unsigned int r = 0;
+  unsigned int g = 0;
+  unsigned int b = 0;
+
+  for(int y = 0; y < get_height(); ++y)
+    for(int x = 0; x < get_width(); ++x)
+      {
+        RGB rgb;
+        get_pixel(x, y, rgb);
+
+        r += rgb.r;
+        g += rgb.g;
+        b += rgb.b;
+      }
+
+  int num_pixels = get_width() * get_height();
+  return RGB(r / num_pixels,
+             g / num_pixels,
+             b / num_pixels);
 }
   
 /* EOF */

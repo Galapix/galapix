@@ -123,8 +123,10 @@ Griv::check(const std::string& database)
   SQLiteConnection db(database);
 
   FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
 
   file_db.check();
+  tile_db.check();
 }
 
 void

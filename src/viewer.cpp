@@ -231,7 +231,7 @@ Viewer::draw(Workspace& workspace)
 }
 
 void
-Viewer::update(float delta)
+Viewer::update(Workspace& workspace, float delta)
 {
   if (zoom_button == -1)
     {
@@ -241,6 +241,8 @@ Viewer::update(float delta)
     {
       state.zoom(1.0f + 4.0f * delta, mouse_pos);
     }
+
+  workspace.update(delta);
 }
 
 /* EOF */

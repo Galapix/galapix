@@ -29,6 +29,7 @@
 #include <boost/shared_ptr.hpp>
 #include "blob.hpp"
 
+class RGB;
 class Rect;
 class Size;
 class SoftwareSurfaceImpl;
@@ -57,11 +58,13 @@ public:
   static SoftwareSurface from_data(const Blob& blob);
   static SoftwareSurface from_file(const std::string& filename);
  
-  void put_pixel(int x, int y, uint8_t r, uint8_t g, uint8_t b);
-  void get_pixel(int x, int y, uint8_t* r, uint8_t* g, uint8_t* b) const;
+  void put_pixel(int x, int y, const RGB& rgb);
+  void get_pixel(int x, int y, RGB& rgb) const;
 
   uint8_t* get_data() const;
   uint8_t* get_row_data(int y) const;
+
+  RGB get_average_color() const;
 
   operator bool() const { return impl.get(); }
 

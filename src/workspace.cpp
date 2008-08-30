@@ -31,6 +31,7 @@ Workspace::Workspace()
 {
   next_pos = Vector2i(0, 0);
   row_width = 100;
+  progress = 0.0f;
 }
 
 void
@@ -63,23 +64,26 @@ Workspace::layout(float aspect_w, float aspect_h)
 
       for(int i = 0; i < int(images.size()); ++i)
         {
+          // Offset that positions the image in the center of the 1000x1000 rectangle
+          Vector2f off((1000.0f - images[i].get_scaled_width()) / 2,
+                       (1000.0f - images[i].get_scaled_height()) / 2);
+
           if ((i/w) % 2 == 0)
             {
-              images[i].set_pos(Vector2f((i % w) * 1024.0f,
-                                         (i / w) * 1024.0f));
+              images[i].set_target_pos(Vector2f((i % w) * 1024.0f,
+                                         (i / w) * 1024.0f) + off);
             }
           else
             {
-              images[i].set_pos(Vector2f((w - (i % w)-1) * 1024.0f,
-                                         (i / w)         * 1024.0f));
+              images[i].set_target_pos(Vector2f((w - (i % w)-1) * 1024.0f,
+                                         (i / w)         * 1024.0f) + off);
             }
-
-          images[i].set_pos(images[i].get_pos() + Vector2f((1000.0f - images[i].get_scaled_width()) / 2,
-                                                           (1000.0f - images[i].get_scaled_height()) / 2));
 
           next_pos = Vector2i(i % w, i / w);
         }
     }
+
+  progress = 0.0f;
 }
 
 void
@@ -91,6 +95,23 @@ Workspace::draw(const Rectf& cliprect, float scale)
     {
       i->draw(cliprect, scale);
     }  
+}
+
+void
+Workspace::update(float delta)
+{
+  if (progress != 1.0f)
+    {
+      progress += delta * 2.0f;
+
+      if (progress > 1.0f)
+        progress = 1.0f;
+
+      for(Images::iterator i = images.begin(); i != images.end(); ++i)
+        {
+          i->update_pos(progress);
+        }
+    }
 }
 
 /* EOF */

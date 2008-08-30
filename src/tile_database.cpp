@@ -32,6 +32,7 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
   : db(db),
     store_stmt(db),
     get_stmt(db),
+    get_all_stmt(db),
     has_stmt(db)
 {
   db->exec("CREATE TABLE IF NOT EXISTS tiles ("
@@ -39,16 +40,19 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
            "scale   INTEGER, " // zoom level
            "x       INTEGER, " // X position in tiles
            "y       INTEGER, " // Y position in tiles
-           "data    BLOB     " // the image data, JPEG
+           "data    BLOB,    " // the image data, JPEG
+           "quality INTEGER  " // the quality of the tile (default: 0)
            ");");
 
   db->exec("CREATE INDEX IF NOT EXISTS tiles_index ON tiles ( fileid, x, y, scale );");
 
   // FIXME: This is brute force and doesn't handle collisions
-  store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data) VALUES (?1, ?2, ?3, ?4, ?5);");
+  store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data, quality) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
 
   get_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
   has_stmt.prepare("SELECT (rowid) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
+
+  get_all_stmt.prepare("SELECT * FROM tiles ORDER BY fileid;");
 }
 
 bool
@@ -90,7 +94,7 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
       tile.pos.x   = reader.get_int (2);
       tile.pos.y   = reader.get_int (3);
 
-      // FIXME: Do this in the JPEGDecoderThread
+      // FIXME: Do this in a JPEGDecoderThread
       tile.surface = SoftwareSurface::from_data(reader.get_blob(4));
 
       return true;
@@ -115,6 +119,7 @@ TileDatabase::store_tile(const TileEntry& tile)
   store_stmt.bind_int (3, tile.pos.x);
   store_stmt.bind_int (4, tile.pos.y);
   store_stmt.bind_blob(5, blob);
+  store_stmt.bind_int (6, 0);
 
   store_stmt.execute();
 }
@@ -122,7 +127,18 @@ TileDatabase::store_tile(const TileEntry& tile)
 void
 TileDatabase::check()
 {
-  
+  SQLiteReader reader = get_all_stmt.execute_query();
+
+  while(reader.next())
+    {
+      /*
+        int fileid = reader.get_int(0);
+        int scale  = reader.get_int(1);
+        int x      = reader.get_int(2);
+        int y      = reader.get_int(3);
+        Blob blob  = reader.get_blob(4);
+      */
+    }
 }
   
 /* EOF */

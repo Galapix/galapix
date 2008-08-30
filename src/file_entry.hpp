@@ -57,6 +57,10 @@ public:
   /** The size of the image in pixels */
   Size size;
 
+  /** The maximum scale for which a tile is generated, any tile
+      smaller then this will not be generated */
+  int max_tiledb_scale;
+
   /** The average color of the image, it can also be thought of as a
       1x1 thumbnail, it is used when drawing the place holder rect
       when no Tile is available */

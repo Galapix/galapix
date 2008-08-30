@@ -73,7 +73,7 @@ public:
   Viewer();
 
   void draw(Workspace& workspace);
-  void update(float delta);
+  void update(Workspace& workspace, float delta);
   void process_event(Workspace& workspace, const SDL_Event& event);
   bool done() const { return quit; }
 

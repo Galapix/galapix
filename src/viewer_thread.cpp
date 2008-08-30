@@ -86,7 +86,7 @@ ViewerThread::run()
       float delta = (cticks - ticks) / 1000.0f;
       ticks = cticks;
 
-      viewer.update(delta);
+      viewer.update(workspace, delta);
 
       if (1) // if something has changed, redraw
         {
