@@ -32,6 +32,7 @@ class SpaceNavigator
 {
 private:
   bool usable;
+  bool allow_rotate;
 
 public:
   SpaceNavigator();

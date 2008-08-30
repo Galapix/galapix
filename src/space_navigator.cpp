@@ -31,7 +31,8 @@
 #include "space_navigator.hpp"
 
 SpaceNavigator::SpaceNavigator()
-  : usable(false)
+  : usable(false),
+    allow_rotate(false)
 {
   if (spnav_open() != 0)
     {
@@ -88,13 +89,20 @@ SpaceNavigator::poll(Viewer& viewer)
                   viewer.get_state().move(Vector2f(-event.motion.x / 10.0f,
                                                    +event.motion.z / 10.0f));
 
-                  viewer.get_state().rotate(event.motion.ry / 100.0f);                                       
+                  if (allow_rotate)
+                    viewer.get_state().rotate(event.motion.ry / 200.0f);
                 }
                 break;
             
               case SPNAV_EVENT_BUTTON:
                 if (0)
-                  std::cout << "ButtonEvent: " << event.button.press << event.button.bnum << std::endl;
+                std::cout << "ButtonEvent: " << event.button.press << event.button.bnum << std::endl;
+
+                if (event.button.bnum == 0 && event.button.press)
+                  viewer.get_state().set_angle(0.0f);
+                
+                if (event.button.bnum == 1 && event.button.press)
+                  allow_rotate = !allow_rotate;
                 break;
 
               default:

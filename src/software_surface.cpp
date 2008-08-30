@@ -182,6 +182,13 @@ SoftwareSurface::get_jpeg_data() const
   return JPEG::save(*this, 75);
 }
 
+Blob
+SoftwareSurface::get_raw_data() const
+{
+  assert(impl->pitch != impl->size.width*3);
+  return Blob(impl->pixels, impl->size.height * impl->pitch);
+}
+
 SoftwareSurface
 SoftwareSurface::from_file(const std::string& filename)
 {
@@ -189,9 +196,16 @@ SoftwareSurface::from_file(const std::string& filename)
 }
 
 SoftwareSurface
-SoftwareSurface::from_data(const Blob& blob)
+SoftwareSurface::from_jpeg_data(const Blob& blob)
 {
   return JPEG::load_from_mem(blob.get_data(), blob.size());
+}
+
+SoftwareSurface
+SoftwareSurface::from_raw_data(const Blob& blob)
+{
+  std::cout << "SoftwareSurface::from_raw_data(const Blob& blob): Implement me" << std::endl;
+  return SoftwareSurface();
 }
 
 uint8_t*

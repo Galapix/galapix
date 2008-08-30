@@ -47,6 +47,7 @@ public:
   void zoom(float factor);
   void move(const Vector2f& pos);
   void rotate(float r);
+  void set_angle(float r);
 
   Vector2f screen2world(const Vector2i&) const;
   Rectf    screen2world(const Rect&) const;

@@ -32,11 +32,13 @@
 #include "filesystem.hpp"
 #include "software_surface.hpp"
 #include "file_entry.hpp"
+#include "tile_entry.hpp"
 #include "file_database.hpp"
 
 FileDatabase::FileDatabase(SQLiteConnection* db)
   : db(db),
     store_stmt(db),
+    store_tile_stmt(db),
     get_by_filename_stmt(db),
     get_all_stmt(db),
     get_by_file_id_stmt(db)
@@ -48,11 +50,15 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
            "filesize  INTEGER, "
            "width     INTEGER, "
            "height    INTEGER, "
-           "mtime     INTEGER);");
+           "mtime     INTEGER, "
+           "color     INTEGER, "
+           "thumbnail BLOB);");
 
   db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename );");
 
   store_stmt.prepare("INSERT INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
+  store_tile_stmt.prepare("UPDATE files SET thumbnail=?1, color=?2 WHERE fileid=?3");
+
   get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
   get_by_file_id_stmt.prepare("SELECT * FROM files WHERE rowid = ?1;");
   get_all_stmt.prepare("SELECT * FROM files ORDER BY filename");
@@ -76,13 +82,25 @@ FileDatabase::store_file_entry(FileEntry& entry)
   store_stmt.bind_int (3, entry.filesize); 
   store_stmt.bind_int (4, entry.size.width); 
   store_stmt.bind_int (5, entry.size.height);
-  store_stmt.bind_int (6, entry.mtime); 
+  // FIXME: Should we handle them her or depend on store_tile()?
+  // store_stmt.bind_int (6, entry.color); 
+  // store_stmt.bind_int (7, entry.surface.get_raw_data()); 
 
   store_stmt.execute();
   
   entry.fileid = sqlite3_last_insert_rowid(db->get_db());
 
   return entry.fileid;
+}
+
+void
+FileDatabase::store_tile(TileEntry& entry)
+{
+  store_tile_stmt.bind_blob(1, entry.surface.get_raw_data());
+  store_tile_stmt.bind_int (2, entry.surface.get_average_color().get_uint32());
+  store_tile_stmt.bind_int (3, entry.fileid);
+
+  store_tile_stmt.execute();
 }
 
 bool
@@ -105,6 +123,8 @@ FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
       entry->filesize    = reader.get_int (3);
       entry->size.width  = reader.get_int (4);
       entry->size.height = reader.get_int (5);
+      entry->color       = RGB(reader.get_int(6));
+      entry->surface     = SoftwareSurface::from_raw_data(reader.get_blob(7));
 
       return true;
     }

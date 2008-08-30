@@ -42,10 +42,10 @@ public:
 
   ~SoftwareSurface();
 
-  Size get_size()  const;
-  int get_width()  const;
-  int get_height() const;
-  int get_pitch()  const;
+  Size get_size()   const;
+  int  get_width()  const;
+  int  get_height() const;
+  int  get_pitch()  const;
 
   SoftwareSurface halve() const;
   SoftwareSurface scale(const Size& size) const;
@@ -54,8 +54,10 @@ public:
   void save(const std::string& filename) const;
   
   Blob get_jpeg_data() const;
+  Blob get_raw_data()  const;
   
-  static SoftwareSurface from_data(const Blob& blob);
+  static SoftwareSurface from_jpeg_data(const Blob& blob);
+  static SoftwareSurface from_raw_data(const Blob& blob);
   static SoftwareSurface from_file(const std::string& filename);
  
   void put_pixel(int x, int y, const RGB& rgb);

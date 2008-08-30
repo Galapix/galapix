@@ -95,7 +95,7 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
       tile.pos.y   = reader.get_int (3);
 
       // FIXME: Do this in a JPEGDecoderThread
-      tile.surface = SoftwareSurface::from_data(reader.get_blob(4));
+      tile.surface = SoftwareSurface::from_jpeg_data(reader.get_blob(4));
 
       return true;
     }

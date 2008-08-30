@@ -61,7 +61,7 @@ JPEGDecoderThread::run()
         {
           JPEGDecoderThreadMessage msg = queue.front();
           queue.pop();
-          msg.callback(SoftwareSurface::from_data(msg.blob));
+          msg.callback(SoftwareSurface::from_jpeg_data(msg.blob));
         }
       queue.wait();
     }

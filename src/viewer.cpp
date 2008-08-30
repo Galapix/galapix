@@ -61,10 +61,17 @@ ViewerState::rotate(float r)
 }
 
 void
+ViewerState::set_angle(float r)
+{
+  angle = r;
+}
+
+void
 ViewerState::move(const Vector2f& pos)
 {
-  offset.x += pos.x;
-  offset.y += pos.y;
+  // FIXME: Implement a proper 2D Matrix instead of this hackery
+  offset.x += pos.x * cosf(angle/180.0f*M_PI) +  pos.y * sinf(angle/180.0f*M_PI);
+  offset.y -= pos.x * sinf(angle/180.0f*M_PI) -  pos.y * cosf(angle/180.0f*M_PI);
 }
 
 Vector2f
@@ -130,6 +137,22 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
 
             case SDLK_F11:
               Framebuffer::toggle_fullscreen();
+              break;
+
+            case SDLK_LEFT:
+              state.rotate(90.0f);
+              break;
+
+            case SDLK_RIGHT:
+              state.rotate(-90.0f);
+              break;
+
+            case SDLK_UP:
+              state.set_angle(0.0f);
+              break;
+
+            case SDLK_DOWN:
+              state.set_angle(0.0f);
               break;
                 
             case SDLK_g:
@@ -220,9 +243,12 @@ Viewer::draw(Workspace& workspace)
       glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
     }
 
+  glTranslatef(Framebuffer::get_width()/2, Framebuffer::get_height()/2, 0.0f);
+  glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
+  glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
+
   glTranslatef(state.get_offset().x, state.get_offset().y, 0.0f);
   glScalef(state.get_scale(), state.get_scale(), 1.0f);
-  //glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f);
 
   Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
 

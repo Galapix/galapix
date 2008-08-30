@@ -253,8 +253,7 @@ Image::draw_tile(int x, int y, int tiledb_scale,
           Size s(Math::min(256, (impl->file_entry.size.width  / Math::pow2(tiledb_scale)) - 256 * x),
                  Math::min(256, (impl->file_entry.size.height / Math::pow2(tiledb_scale)) - 256 * y));
 
-          Framebuffer::fill_rect(Rectf(pos, s*scale),
-                                 RGB(255, 0, 255));
+          Framebuffer::fill_rect(Rectf(pos, s*scale), impl->file_entry.color);
         }
     }
 }

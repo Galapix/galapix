@@ -42,6 +42,16 @@ public:
   RGB(uint8_t r, uint8_t g, uint8_t b)
     : r(r), g(g), b(b)
   {}
+
+  RGB(uint32_t c)
+    : r((c>> 0) & 0xFF), 
+      g((c>> 8) & 0xFF),
+      b((c>>16) & 0xFF)
+  {}
+
+  uint32_t get_uint32() const {
+    return ((r << 0) | (g << 8) | (b << 16));
+  }
 };
 
 #endif

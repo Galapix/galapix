@@ -34,6 +34,7 @@
 #include "math/size.hpp"
 
 class FileEntry;
+class TileEntry;
 
 /** The FileDatabase keeps a record of all files that have been
     view. It keeps information on the last modification time and
@@ -48,6 +49,7 @@ class FileDatabase
 private:
   SQLiteConnection* db;
   SQLiteStatement store_stmt;
+  SQLiteStatement store_tile_stmt;
   SQLiteStatement get_by_filename_stmt;
   SQLiteStatement get_all_stmt;
   SQLiteStatement get_by_file_id_stmt;
@@ -72,6 +74,8 @@ public:
   */
   bool get_file_entry(const std::string& filename, FileEntry* entry);
   void get_file_entries(std::vector<FileEntry>& entries);
+
+  void store_tile(TileEntry& entry);
 
   void check();
 
