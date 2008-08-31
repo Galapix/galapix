@@ -26,6 +26,7 @@
 #ifndef HEADER_VIEWER_THREAD_HPP
 #define HEADER_VIEWER_THREAD_HPP
 
+#include "math/size.hpp"
 #include "thread.hpp"
 #include "thread_message_queue.hpp"
 
@@ -45,10 +46,13 @@ public:
   static ViewerThread* current() { return current_; }
   
 private:
+  Size geometry;
+  bool fullscreen;
+
   ThreadMessageQueue<FileEntry>   file_queue;
 
 public:
-  ViewerThread();
+  ViewerThread(const Size& geometry, bool fullscreen);
   virtual ~ViewerThread();
 
   int run();

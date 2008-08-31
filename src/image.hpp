@@ -92,6 +92,8 @@ public:
   void cache_cleanup();
   void print_info();
 
+  std::string get_filename() const;
+
   operator bool() const { return impl.get(); }
 
   /** Syncronized function to require data from other threads */

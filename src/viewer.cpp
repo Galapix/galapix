@@ -166,6 +166,10 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               workspace.cache_cleanup();
               break;
 
+            case SDLK_s:
+              workspace.sort();
+              break;
+
             case SDLK_i:
               workspace.print_info();
               break;

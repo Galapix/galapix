@@ -53,6 +53,8 @@
 #include "griv.hpp"
 
 Griv::Griv()
+  : fullscreen(false),
+    geometry(800, 600)
 {
   Filesystem::init();
 }
@@ -228,7 +230,7 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
   JPEGDecoderThread   jpeg_thread;
   DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;
-  ViewerThread        viewer_thread;
+  ViewerThread        viewer_thread(geometry, fullscreen);
 
   jpeg_thread.start();
   database_thread.start();
@@ -282,6 +284,8 @@ Griv::print_usage()
                 << "\n"
                 << "Options:\n"
                 << "  -d, --database FILE    Use FILE has database (default: test.sqlite)\n"
+                << "  -f, --fullscreen       Start in fullscreen mode\n"
+                << "  -g, --geometry WxH     Start with window size WxH\n"        
                 << "\n"
                 << "If you do not supply any files, the whole content of the given database will be displayed."
                 << std::endl;
@@ -325,6 +329,20 @@ Griv::main(int argc, char** argv)
                     {
                       throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
                     }
+                }
+              else if (strcmp(argv[i], "--geometry") == 0 ||
+                       strcmp(argv[i], "-g") == 0)
+                {
+                  i += 1;
+                  if (i < argc)
+                    sscanf(argv[i], "%dx%d", &geometry.width, &geometry.height);
+                  else
+                    throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+                }
+              else if (strcmp(argv[i], "--fullscreen") == 0 ||
+                       strcmp(argv[i], "-f") == 0)
+                {
+                  fullscreen = true;
                 }
               else
                 {

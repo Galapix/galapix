@@ -20,10 +20,15 @@
 
 #ifndef HEADER_GRIV_HPP
 #define HEADER_GRIV_HPP
+
+#include "math/size.hpp"
 
 class Griv
 {
 private:
+  bool fullscreen;
+  Size geometry;
+
 public:
   Griv();
   ~Griv();

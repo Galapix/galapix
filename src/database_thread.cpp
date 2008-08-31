@@ -206,6 +206,12 @@ DatabaseThread::run()
                 {
                   StoreTileDatabaseMessage* tile_msg = static_cast<StoreTileDatabaseMessage*>(msg);
                   
+                  if (0)
+                  std::cout << "Received Tile: "
+                            << tile_msg->tile.fileid << " pos: " 
+                            << tile_msg->tile.pos  << " scale: " 
+                            << tile_msg->tile.scale << std::endl;
+
                   for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end();)
                     {
                       if (tile_msg->tile.fileid == (*i)->file_entry.fileid &&

@@ -35,7 +35,9 @@
 
 ViewerThread* ViewerThread::current_ = 0;
 
-ViewerThread::ViewerThread()
+ViewerThread::ViewerThread(const Size& geometry, bool fullscreen)
+  : geometry(geometry),
+    fullscreen(fullscreen)
 {
   current_ = this;
 }
@@ -55,7 +57,7 @@ ViewerThread::run()
 {
   Workspace workspace;
 
-  Framebuffer::set_video_mode(Size(800, 600));
+  Framebuffer::set_video_mode(geometry, fullscreen);
 
   workspace.layout(4,3);
 

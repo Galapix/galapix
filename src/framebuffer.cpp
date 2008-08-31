@@ -37,7 +37,7 @@ Uint32 Framebuffer::flags = 0;
 Size Framebuffer::desktop_resolution;
 
 void
-Framebuffer::set_video_mode(const Size& size)
+Framebuffer::set_video_mode(const Size& size, bool fullscreen)
 {
   assert(screen == 0);
 
@@ -54,7 +54,16 @@ Framebuffer::set_video_mode(const Size& size)
   desktop_resolution = Size(info->current_w, info->current_h);
 
   flags = SDL_RESIZABLE | SDL_OPENGL;
-  screen = SDL_SetVideoMode(800, 600, 0, flags);
+
+  if (fullscreen)
+    {
+      flags |= SDL_FULLSCREEN;
+      screen = SDL_SetVideoMode(desktop_resolution.width, desktop_resolution.height, 0, flags);
+    }
+  else
+    {
+      screen = SDL_SetVideoMode(size.width, size.height, 0, flags);
+    }
 
   if (screen == NULL) 
     {

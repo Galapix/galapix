@@ -63,7 +63,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
 
   get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
   get_by_file_id_stmt.prepare("SELECT * FROM files WHERE rowid = ?1;");
-  get_all_stmt.prepare("SELECT * FROM files ORDER BY filename");
+  get_all_stmt.prepare("SELECT * FROM files");
 }
  
 FileDatabase::~FileDatabase()

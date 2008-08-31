@@ -1,10 +1,15 @@
 [[ Griv ToDo ]]
 
+* trackball control
+
+* add more command line options:
+
+  --aspect
+  --select (?)
+
 * hide mouse cursor on request
 
 * build "scons configure" like stuff, see Pingus for reference
-
-* allow rotation of view, maybe later of images
 
 * save color or a 8x8 thumbnail in the FileEntry, for faster loading, also save 1x1 Color in FileEntry
 
@@ -100,6 +105,11 @@ Possible Future Improvements:
   Exception: JPEG: Unsupported color depth: 4
 
 * Grayscale JPEGs aren't supported either (easy to fix)
+
+* allow rotation of images
+
+* record how long an image has been viewed and allow to display which
+  images have been viewed most
 
 
 Random Notes:

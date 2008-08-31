@@ -56,6 +56,8 @@ Workspace::add_image(const FileEntry& file_entry)
 void
 Workspace::layout(float aspect_w, float aspect_h)
 {
+  sort();
+
   if (!images.empty())
     {     
       int w = int(Math::sqrt(aspect_w * images.size() / aspect_h));
@@ -112,6 +114,20 @@ Workspace::update(float delta)
           i->update_pos(progress);
         }
     }
+}
+
+struct ImageSorter
+{
+  bool operator()(const Image& lhs, const Image& rhs)
+  {
+    return lhs.get_filename() < rhs.get_filename();
+  }
+};
+
+void
+Workspace::sort()
+{
+  std::sort(images.begin(), images.end(), ImageSorter());
 }
 
 void
