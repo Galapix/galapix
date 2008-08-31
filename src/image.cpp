@@ -52,6 +52,8 @@ public:
   Vector2f target_pos;
 
   Image::Cache cache;
+
+  /** FIXME: Jobs array does not get cleared after jobs are done */
   Image::Jobs jobs;  
 
   ThreadMessageQueue<TileEntry> tile_queue;
@@ -77,7 +79,7 @@ Image::Image(const FileEntry& file_entry)
 
   int size  = Math::max(file_entry.size.width, file_entry.size.height);
   impl->min_keep_scale = 0;
-  while(size > 8) 
+  while(size > 32) 
     {
       size /= 2;
       impl->min_keep_scale +=1 ;
@@ -323,12 +325,28 @@ Image::cache_cleanup()
   // will lead to unnecessary loading artifacts.      
   for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
     {
-      int tiledb_scale = (i->first >> 16); // get scale
-      if (tiledb_scale > impl->min_keep_scale)
-        {
-          impl->cache.erase(i);
-        }
+      int tiledb_scale = (i->first >> 16);
+      if (tiledb_scale < impl->min_keep_scale)
+        impl->cache.erase(i);
     }
+}
+
+void
+Image::clear_cache()
+{
+ for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
+    i->abort();
+  impl->jobs.clear();
+
+  impl->cache.clear();
+}
+
+void
+Image::print_info()
+{
+  std::cout << "  Image: " << impl.get() << std::endl;
+  std::cout << "    Cache Size: " << impl->cache.size() << std::endl;
+  std::cout << "    Job Size:   " << impl->jobs.size() << std::endl;
 }
 
 void

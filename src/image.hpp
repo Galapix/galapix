@@ -61,7 +61,6 @@ public:
 private:
   Surface get_tile(int x, int y, int tile_scale);
 
-  void cache_cleanup();
   void process_queue();
   Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_in);
 
@@ -88,6 +87,10 @@ public:
 
   int get_original_width() const;
   int get_original_height() const;
+
+  void clear_cache();
+  void cache_cleanup();
+  void print_info();
 
   operator bool() const { return impl.get(); }
 

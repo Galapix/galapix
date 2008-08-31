@@ -47,7 +47,9 @@ public:
   void update(float delta);
 
   void layout(float aspect_w, float aspect_h);
-
+  void clear_cache();
+  void cache_cleanup();
+  void print_info();
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);

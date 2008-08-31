@@ -113,5 +113,36 @@ Workspace::update(float delta)
         }
     }
 }
+
+void
+Workspace::clear_cache()
+{
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      i->clear_cache();
+    }  
+}
+
+void
+Workspace::cache_cleanup()
+{
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      i->cache_cleanup();
+    }   
+}
+
+void
+Workspace::print_info()
+{
+  std::cout << "-------------------------------------------------------" << std::endl;
+  std::cout << "Workspace Info:" << std::endl;
+  std::cout << "  Number of Images: " << images.size() << std::endl;
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      i->print_info();
+    }
+  std::cout << "-------------------------------------------------------" << std::endl;
+}
 
 /* EOF */

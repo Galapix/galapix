@@ -156,6 +156,20 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               state.set_angle(0.0f);
               break;
                 
+            case SDLK_c:
+              std::cout << "Workspace: Clearing cache" << std::endl;
+              workspace.clear_cache();
+              break;
+
+            case SDLK_k:
+              std::cout << "Workspace: Cache Cleanup" << std::endl;
+              workspace.cache_cleanup();
+              break;
+
+            case SDLK_i:
+              workspace.print_info();
+              break;
+
             case SDLK_g:
               draw_grid = !draw_grid;
               break;
