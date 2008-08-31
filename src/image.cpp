@@ -172,6 +172,7 @@ Image::get_tile(int x, int y, int tile_scale)
       // pointer might disappear any time, its only the impl that
       // stays and which we can link to by making a copy of the Image
       // object via *this.
+      //std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << tile_scale << std::endl;
       impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, tile_scale, Vector2i(x, y), 
                                                                    boost::bind(&Image::receive_tile, *this, _1)));
 
@@ -264,6 +265,8 @@ void
 Image::draw_tiles(const Rect& rect, int tiledb_scale, 
                   const Vector2f& pos, float scale)
 {
+  //std::cout << " drawtiles: " << rect << " scale: " << tiledb_scale << std::endl;
+
   float tilesize = 256.0f * scale;
 
   for(int y = rect.top; y < rect.bottom; ++y)
@@ -388,11 +391,11 @@ Image::draw(const Rectf& cliprect, float fscale)
 
           int   itilesize = 256 * scale_factor;
           
-          int start_x = (image_region.left)  / itilesize;
-          int end_x   = (image_region.right) / itilesize + 1;
+          int start_x = image_region.left  / itilesize;
+          int end_x   = Math::ceil_div(image_region.right, itilesize);
 
-          int start_y = (image_region.top   ) / itilesize;
-          int end_y   = (image_region.bottom) / itilesize + 1;
+          int start_y = image_region.top / itilesize;
+          int end_y   = Math::ceil_div(image_region.bottom, itilesize);
 
           draw_tiles(Rect(start_x, start_y, end_x, end_y), 
                      tiledb_scale, 
@@ -400,6 +403,12 @@ Image::draw(const Rectf& cliprect, float fscale)
                      scale_factor * impl->scale);
         }
     }
+}
+
+std::string
+Image::get_filename() const
+{
+  return impl->file_entry.filename;
 }
 
 
