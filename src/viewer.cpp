@@ -92,6 +92,7 @@ ViewerState::screen2world(const Rect& rect) const
 
 Viewer::Viewer()
   : quit(false),
+    trackball_mode(false),
     force_redraw(false),
     drag_n_drop(false),
     draw_grid(false),
@@ -166,6 +167,22 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               workspace.cache_cleanup();
               break;
 
+            case SDLK_t:
+              trackball_mode = !trackball_mode;
+              if (trackball_mode)
+                {
+                  std::cout << "Trackball mode active, press 't' to leave" << std::endl;
+                  SDL_ShowCursor(SDL_DISABLE);
+                  SDL_WM_GrabInput(SDL_GRAB_ON);
+                }
+              else
+                {
+                  std::cout << "Trackball mode deactivated" << std::endl;
+                  SDL_ShowCursor(SDL_ENABLE);
+                  SDL_WM_GrabInput(SDL_GRAB_OFF);
+                }
+              break;
+
             case SDLK_s:
               workspace.sort();
               break;
@@ -192,19 +209,29 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
         break;
 
       case SDL_MOUSEMOTION:
-        mouse_pos = Vector2i(event.motion.x,
-                             event.motion.y);
-        
-        if (drag_n_drop)
+        if (trackball_mode)
           {
             state.move(Vector2f(event.motion.xrel * 4.0f,
                                 event.motion.yrel * 4.0f));
+          }
+        else
+          {
+            mouse_pos = Vector2i(event.motion.x,
+                                 event.motion.y);
+        
+            if (drag_n_drop)
+              { // FIXME: This is of course wrong, since depending on x/yrel will lead to drift
+                // Also we shouldn't use 4x speed, but 1x seems so useless
+                state.move(Vector2f(event.motion.xrel * 4,
+                                    event.motion.yrel * 4));
+              }
           }
         break;
 
 
       case SDL_MOUSEBUTTONDOWN:
       case SDL_MOUSEBUTTONUP:
+        // FIXME: SDL Reverses the mouse buttons when a grab is active!
         switch(event.button.button)
           {
             case SDL_BUTTON_WHEELUP:
@@ -237,8 +264,10 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
   
             case SDL_BUTTON_MIDDLE:
               //std::cout << state.screen2world(mouse_pos) << std::endl;
-
-              drag_n_drop = event.button.state;
+              if (trackball_mode)
+                drag_n_drop = false;
+              else
+                drag_n_drop = event.button.state;
               break;
           }
         break;
@@ -299,13 +328,19 @@ Viewer::draw(Workspace& workspace)
 void
 Viewer::update(Workspace& workspace, float delta)
 {
-  if (zoom_button == -1)
+  if (trackball_mode)
     {
-      state.zoom(1.0f / (1.0f + 4.0f * delta), mouse_pos);
+      if (zoom_button == -1)
+        state.zoom(1.0f / (1.0f + 4.0f * delta));
+      else if (zoom_button == 1)
+        state.zoom(1.0f + 4.0f * delta);
     }
-  else if (zoom_button == 1)
+  else
     {
-      state.zoom(1.0f + 4.0f * delta, mouse_pos);
+      if (zoom_button == -1)
+        state.zoom(1.0f / (1.0f + 4.0f * delta), mouse_pos);
+      else if (zoom_button == 1)
+        state.zoom(1.0f + 4.0f * delta, mouse_pos);
     }
 
   workspace.update(delta);

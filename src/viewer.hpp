@@ -61,6 +61,7 @@ class Viewer
 {
 private:
   bool quit;
+  bool trackball_mode;
   bool force_redraw;
   bool drag_n_drop;
   bool draw_grid;

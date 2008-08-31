@@ -1,6 +1,9 @@
 [[ Griv ToDo ]]
 
-* trackball control
+* SDL returns different mouse butten numbers depending in if a grab is active or not!
+
+* handle file failures more gracefully, currently we run into a 'job
+  rejected' situation because the job can never be completed
 
 * add more command line options:
 
