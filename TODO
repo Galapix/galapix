@@ -1,6 +1,7 @@
-[[ Griv ToDo ]]
+[[ Galapix ToDo ]]
 
-* SDL returns different mouse butten numbers depending in if a grab is active or not!
+* SDL returns different mouse button numbers depending in if a grab is
+  active or not, so buttons will get swapped in left-hand situations
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
@@ -10,9 +11,8 @@
   --aspect
   --select (?)
 
-* hide mouse cursor on request
-
-* build "scons configure" like stuff, see Pingus for reference
+* build "scons configure" like stuff, see Pingus for reference, so
+  that SpaceNavigator libraries are optional
 
 * save color or a 8x8 thumbnail in the FileEntry, for faster loading, also save 1x1 Color in FileEntry
 
@@ -22,8 +22,8 @@
   no tiles to be shown, because tiles are last in the queue, different
   jobs should have different queue
 
-* pointing griv to an empty directory is weird (directory is empty,
-  griv displays files in database, but can't create new thumbnails due
+* pointing galapix to an empty directory is weird (directory is empty,
+  galapix displays files in database, but can't create new thumbnails due
   to missing files). It should give an error that no images could be found
 
 * Loading JPEG file can throw exception and that isn't handled
@@ -43,9 +43,10 @@
 
 * faster incremental tile generation
 
-* griv name is already taken, need a new one:
+* galapix name is already taken, need a new one:
 
   Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview, brickview, birdview, hawkeye
+  Closer selection: zoomiv, galapix
 
 * File stuff should really be seperate from Tile getting -> Seperate worker thread?
 
@@ -91,7 +92,7 @@ Possible Future Improvements:
   selected picture into a group, maybe have a box into which one can
   drop pictures.
 
-* griv can only handle JPEG files, no other format is supported. 
+* galapix can only handle JPEG files, no other format is supported. 
 
 * When zooming into an images beyond its original size one will see
   noticable seams at the areas where the tiles meet. This is an
@@ -101,7 +102,7 @@ Possible Future Improvements:
   down the tile generation process from JPEG data, so it is unclear if
   it ever will be implemented.
 
-* griv completly ignores ~/.thumbnails/, it should maybe make use of
+* galapix completly ignores ~/.thumbnails/, it should maybe make use of
   that to speed up initial thumbnail generation
 
 * Generating tiles for /resources/flickr/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
@@ -124,6 +125,11 @@ Random Notes:
 * a single 2048x2048 texture can hold 65536 8x8 tiles -> ~12MB
 
 * when 8x8 or smaller JPEG is larger then RAW, else JPEG always wins
+
+8x8   -> 250
+16x16 -> 430
+32x32 -> 700
+64x64 -> 1600
 
 1920x1080: (64x64) 30x17=510, (32x32) 60x34=2040, (16x16) 120x68=8160, (4x4) 480x270=129600
 ~100MB for fullscreen 16x16 Thumbs

@@ -1,5 +1,5 @@
 # Zoomable Image Viewer
-griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g3"], 
+galapix_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g3"], 
                        CXXFLAGS=["-Wall", "-Werror", "-O2", "-g3", "-Wnon-virtual-dtor"], 
                        LIBS=['jpeg',
                              'mhash', 
@@ -7,9 +7,9 @@ griv_env = Environment(CCFLAGS=["-Wall", "-Werror", "-O2", "-g3"],
                              'GL', 
                              'GLU',
                              'GLEW'])
-griv_env.ParseConfig("sdl-config --libs --cflags")
-griv_env.ParseConfig("pkg-config sqlite3 --libs --cflags")
-griv_env.Program('griv', [
+galapix_env.ParseConfig("sdl-config --libs --cflags")
+galapix_env.ParseConfig("pkg-config sqlite3 --libs --cflags")
+galapix_env.Program('galapix', [
         'src/blob.cpp',
         'src/math.cpp',
         'src/math/size.cpp',
@@ -27,7 +27,7 @@ griv_env.Program('griv', [
         'src/jpeg_memory_dest.cpp',
         'src/jpeg_decoder_thread.cpp',
         'src/job_handle.cpp',
-        'src/griv.cpp',
+        'src/galapix.cpp',
         'src/image.cpp',
         'src/md5.cpp',
         'src/software_surface.cpp',

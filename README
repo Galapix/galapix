@@ -1,15 +1,15 @@
-griv - A Zoomable Image Viewer zoomview 
-=======================================
+galapix - A Zoomable Image Viewer zoomview 
+==========================================
 
-griv is a image viewer that allows you to directly zoom into large
+galapix is an image viewer that allows you to directly zoom into large
 collection of tens of thousand of images from tiny thumbnails down to
-the images original size fluently with small loadtimes or no loss of
+the images original size fluently with short load times and no loss of
 interactivity. It accomplishes this by keeping a tile cache which
 stores not only thumbnails for one size, but thumbnails of many
 different sizes. This thumbnail cache requires at maximum 1.5x times
 as much storage as the images themselves.
 
-griv can also be used to view gigapixel sized images, it however
+galapix can also be used to view gigapixel sized images, it however
 currently requires the tiles for that to be generated previously,
 which can take quite a bit of time and memory.
 
@@ -33,24 +33,24 @@ library names might be a little different.
 Running:
 ========
 
-griv comes with a number of sub commands, allowing the user to either
+galapix comes with a number of sub commands, allowing the user to either
 view images or pre generate thumbnails. The most basic command is:
 
- ./griv view [FILES]...
+ ./galapix view [FILES]...
 
 Which display the given files. To pregenerate only the small
 thumbnails you use:
 
- ./griv thumbgen [FILES]...
+ ./galapix thumbgen [FILES]...
 
 To generate not only the small thumbnails, but all tiles you use:
 
- ./griv prepare [FILES]...
+ ./galapix prepare [FILES]...
 
 The other available commands are mostly for debugging and have little
 actualy use.
 
-When you do not supply a list of files griv will display all files in
+When you do not supply a list of files galapix will display all files in
 the database.
 
 Via the -d flag you can specifiy a database, so that you can have
@@ -60,7 +60,7 @@ different databases for different files.
 SpaceNavigator Support:
 =======================
 
-griv supports the Space Navigator via the Open Source spacenavd daemon:
+galapix supports the Space Navigator via the Open Source spacenavd daemon:
 
  * http://spacenav.sourceforge.net
 

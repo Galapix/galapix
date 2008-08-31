@@ -1,26 +1,19 @@
-/*  $Id$
-**   __      __ __             ___        __   __ __   __
-**  /  \    /  \__| ____    __| _/_______/  |_|__|  | |  |   ____
-**  \   \/\/   /  |/    \  / __ |/  ___/\   __\  |  | |  | _/ __ \
-**   \        /|  |   |  \/ /_/ |\___ \  |  | |  |  |_|  |_\  ___/
-**    \__/\  / |__|___|  /\____ /____  > |__| |__|____/____/\___  >
-**         \/          \/      \/    \/                         \/
-**  Copyright (C) 2007 Ingo Ruhnke <grumbel@gmx.de>
+/*
+**  Galapix - an image viewer for large image collections
+**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
-**  This program is free software; you can redistribute it and/or
-**  modify it under the terms of the GNU General Public License
-**  as published by the Free Software Foundation; either version 2
-**  of the License, or (at your option) any later version.
+**  This program is free software: you can redistribute it and/or modify
+**  it under the terms of the GNU General Public License as published by
+**  the Free Software Foundation, either version 3 of the License, or
+**  (at your option) any later version.
 **
 **  This program is distributed in the hope that it will be useful,
 **  but WITHOUT ANY WARRANTY; without even the implied warranty of
 **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 **  GNU General Public License for more details.
-** 
+**
 **  You should have received a copy of the GNU General Public License
-**  along with this program; if not, write to the Free Software
-**  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-**  02111-1307, USA.
+**  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <boost/bind.hpp>
@@ -50,7 +43,7 @@
 #include "workspace.hpp"
 #include "viewer_thread.hpp"
 #include "viewer.hpp"
-#include "griv.hpp"
+#include "galapix.hpp"
 
 Griv::Griv()
   : fullscreen(false),
@@ -263,14 +256,14 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
 void
 Griv::print_usage()
 {
-      std::cout << "Usage: griv view     [OPTIONS]... [FILES]...\n"
-                << "       griv prepare  [OPTIONS]... [FILES]...\n"
-                << "       griv thumbgen [OPTIONS]... [FILES]...\n"
-                << "       griv filegen  [OPTIONS]... [FILES]...\n"
-                << "       griv info     [OPTIONS]... [FILES]...\n"
-                << "       griv check    [OPTIONS]...\n"
-                << "       griv list     [OPTIONS]...\n"
-                << "       griv cleanup  [OPTIONS]...\n"
+      std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
+                << "       galapix prepare  [OPTIONS]... [FILES]...\n"
+                << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
+                << "       galapix filegen  [OPTIONS]... [FILES]...\n"
+                << "       galapix info     [OPTIONS]... [FILES]...\n"
+                << "       galapix check    [OPTIONS]...\n"
+                << "       galapix list     [OPTIONS]...\n"
+                << "       galapix cleanup  [OPTIONS]...\n"
                 << "\n"
                 << "Commands:\n"
                 << "  view      Display the given files\n"
@@ -283,7 +276,7 @@ Griv::print_usage()
                 << "  cleanup   Runs garbage collection on the database\n"
                 << "\n"
                 << "Options:\n"
-                << "  -d, --database FILE    Use FILE has database (default: test.sqlite)\n"
+                << "  -d, --database FILE    Use FILE has database (default: none)\n"
                 << "  -f, --fullscreen       Start in fullscreen mode\n"
                 << "  -g, --geometry WxH     Start with window size WxH\n"        
                 << "\n"
@@ -298,7 +291,7 @@ Griv::main(int argc, char** argv)
   // if (!sqlite3_threadsafe())
   //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
-  std::string database = "test.sqlite";
+  std::string database = "";
   
   if (argc < 2)
     {
