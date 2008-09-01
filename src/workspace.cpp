@@ -32,8 +32,8 @@ Workspace::add_image(const FileEntry& file_entry)
 {
   Image image(file_entry);
   images.push_back(image);
-  image.set_scale(Math::min(1000.0f / file_entry.size.width,
-                            1000.0f / file_entry.size.height));
+  image.set_scale(Math::min(1000.0f / file_entry.get_width(),
+                            1000.0f / file_entry.get_height()));
 
   image.set_pos(next_pos * 1024.0f);
 

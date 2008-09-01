@@ -69,24 +69,24 @@ TileGeneratorThread::stop()
 void
 TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
 {
-  if (fileid    == job.entry.fileid &&
+  if (fileid    == job.entry.get_fileid() &&
       min_scale == job.min_scale &&
       max_scale == job.max_scale)
     { 
       // FIXME: Workaround for jobs getting reqested multiple times in a row for some reason
-      std::cout << "TileGeneratorThread: Job rejected: " << job.min_scale << "-" << job.max_scale << " " << job.entry.filename << std::endl;
+      std::cout << "TileGeneratorThread: Job rejected: " << job.min_scale << "-" << job.max_scale << " " << job.entry.get_filename() << std::endl;
     }
   else
     {
-      std::cout << "TileGeneratorThread: Processing: scale: " << job.min_scale << "-" << job.max_scale << " " << job.entry.filename << "..." << std::flush;
+      std::cout << "TileGeneratorThread: Processing: scale: " << job.min_scale << "-" << job.max_scale << " " << job.entry.get_filename() << "..." << std::flush;
 
       min_scale = job.min_scale;
       max_scale = job.max_scale;
-      fileid    = job.entry.fileid;
+      fileid    = job.entry.get_fileid();
 
       // Find scale at which the image fits on one tile
-      int width  = job.entry.size.width;
-      int height = job.entry.size.height;
+      int width  = job.entry.get_width();
+      int height = job.entry.get_height();
       int scale  = job.min_scale;
 
       int jpeg_scale = Math::pow2(scale);
@@ -96,14 +96,14 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
         {
           // The JPEG class can only scale down by factor 2,4,8, so we have to
           // limit things (FIXME: is that true? if so, why?)
-          surface = JPEG::load_from_file(job.entry.filename, 8);
+          surface = JPEG::load_from_file(job.entry.get_filename(), 8);
       
           surface = surface.scale(Size(width  / Math::pow2(scale),
                                        height / Math::pow2(scale)));
         }
       else
         {
-          surface = JPEG::load_from_file(job.entry.filename, jpeg_scale);
+          surface = JPEG::load_from_file(job.entry.get_filename(), jpeg_scale);
         }
 
       do
@@ -119,7 +119,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
                 SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
                                                                    Size(256, 256)));
 
-                job.callback(TileEntry(job.entry.fileid, scale, Vector2i(x, y), croped_surface));
+                job.callback(TileEntry(job.entry.get_fileid(), scale, Vector2i(x, y), croped_surface));
               }
 
           scale += 1;
@@ -151,7 +151,7 @@ TileGeneratorThread::run()
           catch(std::exception& err)
             {
               // FIXME: We need a better way to communicate errors back
-              std::cout << "\nError: TileGeneratorThread: Loading failure: " << job.entry.filename << std::endl;
+              std::cout << "\nError: TileGeneratorThread: Loading failure: " << job.entry.get_filename() << std::endl;
               job.callback(TileEntry());
             }
           working = false;

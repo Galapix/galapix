@@ -207,7 +207,7 @@ DatabaseThread::run()
 
                   for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end();)
                     {
-                      if (tile_msg->tile.fileid == (*i)->file_entry.fileid &&
+                      if (tile_msg->tile.fileid == (*i)->file_entry.get_fileid() &&
                           tile_msg->tile.scale  == (*i)->tilescale &&
                           tile_msg->tile.pos    == (*i)->pos)
                         {
@@ -254,17 +254,14 @@ DatabaseThread::run()
               case DATABASE_FILE_MESSAGE:
                 {
                   FileDatabaseMessage* file_msg = static_cast<FileDatabaseMessage*>(msg);
-                  FileEntry entry;
-
-                  //std::cout << "Lookup for: " << file_msg->filename << std::endl;
-                  if (file_db.get_file_entry(file_msg->filename, &entry))
+                  FileEntry entry = file_db.get_file_entry(file_msg->filename);
+                  if (!entry)
                     {
-                      //std::cout << entry.filename << " -> " << entry.fileid << std::endl;
-                      file_msg->callback(entry);
+                      std::cout << "Error: Couldn't get FileEntry for " << file_msg->filename << std::endl;
                     }
                   else
                     {
-                      std::cout << "Error: Couldn't get FileEntry for " << file_msg->filename << std::endl;
+                      file_msg->callback(entry);
                     }
                 }
                 break;
@@ -288,7 +285,7 @@ DatabaseThread::run()
                   if (!tile_msg->job_handle.is_aborted())
                     {
                       TileEntry tile;
-                      if (tile_db.get_tile(tile_msg->file_entry.fileid, tile_msg->tilescale, tile_msg->pos, tile))
+                      if (tile_db.get_tile(tile_msg->file_entry.get_fileid(), tile_msg->tilescale, tile_msg->pos, tile))
                         {
                           tile_msg->callback(tile);
                           tile_msg->job_handle.finish();
@@ -297,7 +294,7 @@ DatabaseThread::run()
                         {
                           if (0)
                             std::cout << "Error: Couldn't get tile: " 
-                                      << tile_msg->file_entry.fileid << " "
+                                      << tile_msg->file_entry.get_fileid() << " "
                                       << tile_msg->pos.x << " "
                                       << tile_msg->pos.y << " "
                                       << tile_msg->tilescale
@@ -352,13 +349,13 @@ DatabaseThread::run()
                 {
                   tiles_missing = false;
 
-                  int width  = Math::ceil_div(msg.file_entry.size.width  / Math::pow2(max_scale), 256);
-                  int height = Math::ceil_div(msg.file_entry.size.height / Math::pow2(max_scale), 256);
+                  int width  = Math::ceil_div(msg.file_entry.get_width()  / Math::pow2(max_scale), 256);
+                  int height = Math::ceil_div(msg.file_entry.get_height() / Math::pow2(max_scale), 256);
 
                   for(int y = 0; y < height; ++y)
                     for(int x = 0; x < width; ++x)
                       {
-                        if (!tile_db.has_tile(msg.file_entry.fileid, Vector2i(x,y), max_scale+1))
+                        if (!tile_db.has_tile(msg.file_entry.get_fileid(), Vector2i(x,y), max_scale+1))
                           {
                             tiles_missing = true;
                             max_scale += 1;
@@ -369,7 +366,7 @@ DatabaseThread::run()
                 here:
                   ;
                 }
-              while(tiles_missing && max_scale < msg.file_entry.thumbnail_scale);
+              while(tiles_missing && max_scale < msg.file_entry.get_thumbnail_scale());
               
               TileGeneratorThread::current()->request_tiles(msg.file_entry,
                                                             msg.tilescale,

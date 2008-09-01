@@ -25,7 +25,7 @@
 class TileEntry
 {
 public:
-  uint32_t fileid; // FIXME: Can we replace this with a FileEntry object?!
+  uint32_t fileid;
   int      scale;
   Vector2i pos;
   SoftwareSurface surface;

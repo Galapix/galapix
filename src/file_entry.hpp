@@ -21,11 +21,13 @@
 
 #include <stdint.h>
 #include <string>
+#include <boost/shared_ptr.hpp>
+#include "math.hpp"
 #include "math/size.hpp"
 #include "math/rgb.hpp"
 #include "software_surface.hpp"
 
-class FileEntry 
+class FileEntryImpl
 {
 public:
   /** Unique id by which one can refer to this FileEntry, used in the
@@ -35,35 +37,49 @@ public:
   /** The absolute filename of the image file */
   std::string filename; 
 
-  /** MD5 Checksum of the image file 
-      FIXME: currently not used */
-  std::string md5;      
-
-  /** MD5 Checksum of the image file 
-      FIXME: currently not used */
-  int         filesize; 
-
-  /** Modification time of the image file
-      FIXME: currently not used */
-  uint32_t    mtime;
-
   /** The size of the image in pixels */
   Size size;
 
-  /** The average color of the image, it can also be thought of as a
-      1x1 thumbnail, it is used when drawing the place holder rect
-      when no Tile is available */
-  RGB color;
+  int thumbnail_size;
+};
 
-  /** A 8x8 thumbnail of the image, at this size the thumbnail doesn't
-      consume more more diskspace then the filename, so it makes a
-      good lower bound, it also the point at which the pixel data
-      stored raw consumes less space then a JPEG compressed file */
-  SoftwareSurface thumbnail;
+class FileEntry 
+{
+public:
+  FileEntry()
+  {}
 
-  /** The maximum scale for which a tile is generated, any tile
-      smaller then this will not be generated */
-  int thumbnail_scale;
+  FileEntry(uint32_t fileid, 
+            const std::string& filename,
+            int width,
+            int height)
+    : impl(new FileEntryImpl())
+  {
+    impl->fileid    = fileid;
+    impl->filename  = filename;
+    impl->size      = Size(width, height);
+
+    int s = Math::max(width, height);
+    impl->thumbnail_size = 0;
+    while(s > 8)
+      {
+        s /= 2;
+        impl->thumbnail_size += 1;
+      }
+  }
+
+  uint32_t    get_fileid()   const { return impl->fileid; }
+  std::string get_filename() const { return impl->filename; }
+  int         get_width()    const { return impl->size.width; }
+  int         get_height()   const { return impl->size.height; }
+  Size        get_size()     const { return impl->size; }
+
+  int get_thumbnail_scale() const { return impl->thumbnail_size; }
+
+  operator bool() const { return impl.get(); }
+ 
+private:
+  boost::shared_ptr<FileEntryImpl> impl;
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);

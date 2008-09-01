@@ -47,7 +47,7 @@ private:
   SQLiteStatement get_all_stmt;
   SQLiteStatement get_by_file_id_stmt;
 
-  int  store_file_entry(FileEntry& entry);
+  FileEntry store_file_entry(const std::string& filename, const Size& size);
   void delete_file_entry(uint32_t fileid);
   void update_file_entry(FileEntry& entry);
  
@@ -65,7 +65,7 @@ public:
       @param[out] entry   Lokation where the file information will be stored 
       @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
-  bool get_file_entry(const std::string& filename, FileEntry* entry);
+  FileEntry get_file_entry(const std::string& filename);
   void get_file_entries(std::vector<FileEntry>& entries);
 
   void store_tile(TileEntry& entry);

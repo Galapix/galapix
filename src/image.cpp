@@ -70,7 +70,7 @@ Image::Image(const FileEntry& file_entry)
   impl->file_entry = file_entry;
   impl->scale      = 1.0f;
 
-  int size  = Math::max(file_entry.size.width, file_entry.size.height);
+  int size  = Math::max(file_entry.get_width(), file_entry.get_height());
   impl->min_keep_scale = 0;
   while(size > 32) 
     {
@@ -132,25 +132,25 @@ Image::get_scale() const
 float
 Image::get_scaled_width() const
 {
-  return impl->file_entry.size.width * impl->scale;
+  return impl->file_entry.get_width() * impl->scale;
 }
 
 float
 Image::get_scaled_height() const
 {
-  return impl->file_entry.size.height * impl->scale;
+  return impl->file_entry.get_height() * impl->scale;
 }
 
 int
 Image::get_original_width() const
 {
-  return impl->file_entry.size.width;
+  return impl->file_entry.get_width();
 }
 
 int
 Image::get_original_height() const
 {
-  return impl->file_entry.size.height;
+  return impl->file_entry.get_height();
 }
 
 Surface
@@ -246,10 +246,10 @@ Image::draw_tile(int x, int y, int tiledb_scale,
       else // draw replacement rect when no tile could be loaded
         {         
           // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
-          Size s(Math::min(256, (impl->file_entry.size.width  / Math::pow2(tiledb_scale)) - 256 * x),
-                 Math::min(256, (impl->file_entry.size.height / Math::pow2(tiledb_scale)) - 256 * y));
+          Size s(Math::min(256, (impl->file_entry.get_width()  / Math::pow2(tiledb_scale)) - 256 * x),
+                 Math::min(256, (impl->file_entry.get_height() / Math::pow2(tiledb_scale)) - 256 * y));
 
-          Framebuffer::fill_rect(Rectf(pos, s*scale), impl->file_entry.color);
+          Framebuffer::fill_rect(Rectf(pos, s*scale), RGB(155, 0, 155)); // impl->file_entry.color);
         }
     }
 }
@@ -350,7 +350,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 {
   process_queue();
   
-  Rectf image_rect(impl->pos, Sizef(impl->file_entry.size * impl->scale)); // in world coordinates
+  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
 
   if (!cliprect.is_overlapped(image_rect))
     {
@@ -364,8 +364,8 @@ Image::draw(const Rectf& cliprect, float fscale)
                                                        log(2)));
       int scale_factor = Math::pow2(tiledb_scale);
 
-      int scaled_width  = impl->file_entry.size.width  / scale_factor;
-      int scaled_height = impl->file_entry.size.height / scale_factor;
+      int scaled_width  = impl->file_entry.get_width()  / scale_factor;
+      int scaled_height = impl->file_entry.get_height() / scale_factor;
 
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn
@@ -401,7 +401,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 std::string
 Image::get_filename() const
 {
-  return impl->file_entry.filename;
+  return impl->file_entry.get_filename();
 }
 
 

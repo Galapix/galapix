@@ -108,7 +108,7 @@ Griv::list(const std::string& database)
 
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {
-      std::cout << i->filename << std::endl;
+      std::cout << i->get_filename() << std::endl;
     }  
 }
 
@@ -133,14 +133,14 @@ Griv::filegen(const std::string& database,
 
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
-      FileEntry entry;
-      if (!file_db.get_file_entry(filenames[i], &entry))
+      FileEntry entry = file_db.get_file_entry(filenames[i]);
+      if (!entry)
         {
           std::cout << "Couldn't get entry for " << filenames[i] << std::endl;
         }
       else
         {
-          std::cout << "Got: " << entry.filename << " " << entry.size << std::endl;
+          std::cout << "Got: " << entry.get_filename() << " " << entry.get_width() << "x" << entry.get_height() << std::endl;
         }
     }
 }
@@ -158,13 +158,9 @@ Griv::thumbgen(const std::string& database,
 
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
-      FileEntry entry;
-      if (!file_db.get_file_entry(filenames[i], &entry))
+      try 
         {
-          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
-        }
-      else
-        {
+          FileEntry entry = file_db.get_file_entry(filenames[i]);
           // FIXME: Insert some checks if the tile already exist
 
           // Generate Image Tiles
@@ -175,6 +171,10 @@ Griv::thumbgen(const std::string& database,
           } catch(std::exception& err) {
             std::cout << err.what() << std::endl;
           }
+        }
+      catch (std::exception& err) 
+        {
+          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
         }
     }
 }
@@ -192,9 +192,9 @@ Griv::generate_tiles(const std::string& database,
 
   for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
-      FileEntry entry;
       std::cout << "Getting file entry..." << std::endl;
-      if (!file_db.get_file_entry(filenames[i], &entry))
+      FileEntry entry = file_db.get_file_entry(filenames[i]);
+      if (!entry)
         {
           std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
         }
@@ -204,7 +204,7 @@ Griv::generate_tiles(const std::string& database,
           std::cout << "Generating tiles... " << filenames[i]  << std::endl;
           SoftwareSurface surface = SoftwareSurface::from_file(filenames[i]);
           
-          tile_generator.generate_all(entry.fileid, surface, 
+          tile_generator.generate_all(entry.get_fileid(), surface, 
                                       boost::bind(&TileDatabase::store_tile, &tile_db, _1));
         }
     }
@@ -348,11 +348,13 @@ Griv::main(int argc, char** argv)
             }
         }
 
+      std::cout << "Scanning directories... " << std::flush;
       std::vector<std::string> filenames;
       for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
         Filesystem::generate_jpeg_file_list(*i, filenames);
 
       std::sort(filenames.begin(), filenames.end());
+      std::cout << "done" << std::endl;
 
       if (strcmp(argv[1], "view") == 0)
         {

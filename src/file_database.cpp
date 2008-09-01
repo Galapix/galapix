@@ -64,17 +64,15 @@ FileDatabase::~FileDatabase()
 
 }
  
-int
-FileDatabase::store_file_entry(FileEntry& entry)
+FileEntry
+FileDatabase::store_file_entry(const std::string& filename,
+                               const Size& size)
 {
-  store_stmt.bind_text(1, entry.filename);
-  if (entry.md5.empty())
-    store_stmt.bind_null(2);
-  else
-    store_stmt.bind_text(2, entry.md5);
-  store_stmt.bind_int (3, entry.filesize); 
-  store_stmt.bind_int (4, entry.size.width); 
-  store_stmt.bind_int (5, entry.size.height);
+  store_stmt.bind_text(1, filename);
+  store_stmt.bind_null(2); // MD5
+  store_stmt.bind_null(3); // filesize
+  store_stmt.bind_int (4, size.width);
+  store_stmt.bind_int (5, size.height);
   // FIXME: Should we handle them here or depend on store_tile()?
   // store_stmt.bind_int (6, entry.color); 
   // store_stmt.bind_int (7, entry.surface.get_raw_data()); 
@@ -82,9 +80,9 @@ FileDatabase::store_file_entry(FileEntry& entry)
 
   store_stmt.execute();
   
-  entry.fileid = sqlite3_last_insert_rowid(db->get_db());
+  int fileid = sqlite3_last_insert_rowid(db->get_db());
 
-  return entry.fileid;
+  return FileEntry(fileid, filename, size.width, size.height);
 }
 
 void
@@ -111,53 +109,29 @@ int get_thumbnail_scale(const Size& size)
   return i;
 }
 
-bool
-FileDatabase::get_file_entry(const std::string& filename, FileEntry* entry)
+FileEntry
+FileDatabase::get_file_entry(const std::string& filename)
 {
   get_by_filename_stmt.bind_text(1, filename);
   SQLiteReader reader = get_by_filename_stmt.execute_query();
 
   if (reader.next())
     {
-      if (0)
-        std::cout << "Row: " 
-                  << reader.get_column_name(0) << " "
-                  << reader.get_text(0)
-                  << std::endl;
-
-      entry->fileid      = reader.get_int (0);
-      entry->filename    = reader.get_text(1);
-      entry->md5         = reader.get_text(2);
-      entry->filesize    = reader.get_int (3);
-      entry->size.width  = reader.get_int (4);
-      entry->size.height = reader.get_int (5);
-      entry->color       = reader.is_null(6) ? RGB(155,0,155) : RGB(reader.get_int(6));
-      entry->thumbnail   = reader.is_null(7) ? SoftwareSurface() : SoftwareSurface::from_raw_data(reader.get_blob(7));
-      entry->thumbnail_scale = reader.is_null(8) ? get_thumbnail_scale(entry->size) : reader.get_int(8);
-
-      return true;
+      return FileEntry(reader.get_int (0),  // fileid
+                       reader.get_text(1),  // filename
+                       reader.get_int (4),  // width
+                       reader.get_int (5)); // height
     }
   else
     {
-      entry->fileid   = -1;
-      entry->filename = filename;
-      entry->filesize = Filesystem::get_size(filename);
-      entry->mtime    = Filesystem::get_mtime(filename);
-     
-      entry->size = Size(-1, -1);
-
-      entry->color    = RGB(155,0,155);
-      entry->thumbnail = SoftwareSurface();
-      
-      if (JPEG::get_size(entry->filename, entry->size))
+      Size size;
+      if (JPEG::get_size(filename, size))
         {
-          store_file_entry(*entry);
-          entry->thumbnail_scale = get_thumbnail_scale(entry->size);
-          return true;
+          return store_file_entry(filename, size);
         }
       else
         {
-          return false;
+          throw std::runtime_error("FileDatabase: Couldn't load " + filename);
         }
     }
 }
@@ -169,18 +143,11 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
 
   while (reader.next())  
     {
-      FileEntry entry;
-      entry.fileid      = reader.get_int (0);
-      entry.filename    = reader.get_text(1);
-      entry.md5         = reader.get_text(2);
-      entry.filesize    = reader.get_int (3);
-      entry.size.width  = reader.get_int (4);
-      entry.size.height = reader.get_int (5);
-      entry.mtime       = reader.get_int (6);
-      entry.color       = reader.is_null(6) ? RGB(155,0,155) : RGB(reader.get_int(6));
-      entry.thumbnail   = reader.is_null(7) ? SoftwareSurface() : SoftwareSurface::from_raw_data(reader.get_blob(7));
-      entry.thumbnail_scale = reader.is_null(8) ? get_thumbnail_scale(entry.size) : reader.get_int(8);
-
+      // FIXME: Use macro definitions instead of numeric constants
+      FileEntry entry(reader.get_int (0),  // fileid
+                      reader.get_text(1),  // filename
+                      reader.get_int (4),  // width
+                      reader.get_int (5)); // height
       entries.push_back(entry);
     }
 }
@@ -206,13 +173,13 @@ FileDatabase::check()
   std::cout << "Checking File Existance:" << std::endl;
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {
-      if (!Filesystem::exist(i->filename))
+      if (!Filesystem::exist(i->get_filename()))
         {
-          std::cout << i->filename << ": does not exist" << std::endl;
+          std::cout << i->get_filename() << ": does not exist" << std::endl;
         }
       else
         {
-          std::cout << i->filename << ": ok" << std::endl;
+          std::cout << i->get_filename() << ": ok" << std::endl;
         }
     } 
 
