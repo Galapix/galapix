@@ -17,6 +17,7 @@
 */
 
 #include <boost/bind.hpp>
+#include "../config.h"
 #include "file_entry.hpp"
 #include "workspace.hpp"
 #include "framebuffer.hpp"
@@ -58,7 +59,9 @@ ViewerThread::run()
 
   Uint32 ticks = SDL_GetTicks();
 
+#ifdef HAVE_SPACE_NAVIGATOR
   SpaceNavigator space_navigator;
+#endif
 
   while(!viewer.done())
     {     
@@ -69,7 +72,9 @@ ViewerThread::run()
           file_queue.pop();
         }
 
+#ifdef HAVE_SPACE_NAVIGATOR
       space_navigator.poll(viewer);
+#endif
 
       SDL_Event event;
       while (SDL_PollEvent(&event))
