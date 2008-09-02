@@ -153,5 +153,19 @@ Workspace::print_info()
     }
   std::cout << "-------------------------------------------------------" << std::endl;
 }
+
+void
+Workspace::print_images(const Rectf& rect)
+{
+  std::cout << ",-- Visible images --------------------------------------" << std::endl;
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      if (i->overlaps(rect))
+        {
+          std::cout << "| " << i->get_filename() << std::endl;
+        }
+    }
+  std::cout << "'--------------------------------------------------------" << std::endl;
+}
 
 /* EOF */

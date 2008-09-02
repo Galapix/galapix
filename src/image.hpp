@@ -87,6 +87,8 @@ public:
 
   std::string get_filename() const;
 
+  bool overlaps(const Rectf& cliprect) const;
+
   operator bool() const { return impl.get(); }
 
   /** Syncronized function to require data from other threads */

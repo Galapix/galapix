@@ -354,7 +354,7 @@ Griv::main(int argc, char** argv)
         Filesystem::generate_jpeg_file_list(*i, filenames);
 
       std::sort(filenames.begin(), filenames.end());
-      std::cout << "done" << std::endl;
+      std::cout << filenames.size() << " files found." << std::endl;
 
       if (strcmp(argv[1], "view") == 0)
         {

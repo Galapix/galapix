@@ -44,6 +44,8 @@ public:
   void clear_cache();
   void cache_cleanup();
   void print_info();
+  void print_images(const Rectf& rect);
+
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);

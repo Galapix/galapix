@@ -345,6 +345,13 @@ Image::print_info()
   std::cout << "    Job Size:   " << impl->jobs.size() << std::endl;
 }
 
+bool
+Image::overlaps(const Rectf& cliprect) const
+{
+  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
+  return cliprect.is_overlapped(image_rect);
+}
+
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {

@@ -142,6 +142,13 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               state.rotate(-90.0f);
               break;
 
+            case SDLK_SPACE:
+              {
+                Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+                workspace.print_images(cliprect);
+              }
+              break;
+
             case SDLK_UP:
               state.set_angle(0.0f);
               break;
