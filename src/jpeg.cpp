@@ -175,57 +175,47 @@ JPEG::load_from_mem(uint8_t* mem, int len, int scale)
 void
 JPEG::save(const SoftwareSurface& surface, int quality, const std::string& filename)
 {
-  assert(!"Unfinished: JPEG::save(SoftwareSurface& surface, int quality, const std::string& filename)");
-
-  struct jpeg_compress_struct cinfo;
-  struct jpeg_error_mgr jerr;
-
-  cinfo.err = jpeg_std_error(&jerr);
-
-  jpeg_create_compress(&cinfo);
-
-  //jpeg_stdio_dest(&cinfo, outfile);
-
-  cinfo.image_width  = surface.get_width();
-  cinfo.image_height = surface.get_height();
-
-  cinfo.input_components = 3;		/* # of color components per pixel */
-  cinfo.in_color_space   = JCS_RGB; 	/* colorspace of input image */
-
-  jpeg_set_defaults(&cinfo);
-  jpeg_set_quality(&cinfo, quality, TRUE /* limit to baseline-JPEG values */);
- 
-  jpeg_start_compress(&cinfo, TRUE);
-
-  JSAMPROW row_pointer[surface.get_height()];
-  
-  for(int y = 0; y < surface.get_height(); ++y)
-    row_pointer[y] = static_cast<JSAMPLE*>(surface.get_row_data(y));
-
-  while(cinfo.next_scanline < cinfo.image_height)
+  FILE* out = fopen(filename.c_str(), "wb");
+  if (!out)
     {
-      jpeg_write_scanlines(&cinfo, row_pointer, surface.get_height());
+      throw std::runtime_error("JPEG:save: Couldn't open " + filename + " for writing");
     }
-  
-  jpeg_finish_compress(&cinfo);
-  
-  jpeg_destroy_compress(&cinfo);
-}  
+  else
+    {
+      JPEG::save(surface, 
+                 boost::bind(jpeg_stdio_dest, _1, out),
+                 quality);
+                 
+      fclose(out);
+    }
+}
 
 Blob
 JPEG::save(const SoftwareSurface& surface, int quality)
 {
-  // std::cout << "JPEG::save(const SoftwareSurface& surface, int quality)" << std::endl;
+  std::vector<uint8_t> data;
 
+  JPEG::save(surface, boost::bind(jpeg_memory_dest, _1, &data), quality);
+
+  // FIXME: Unneeded copy of data
+  return Blob(data);
+}
+
+
+void
+JPEG::save(const SoftwareSurface& surface, 
+           const boost::function<void (j_compress_ptr)>& setup_dest_mgr, 
+           int quality)
+{
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
 
   cinfo.err = jpeg_std_error(&jerr);
 
   jpeg_create_compress(&cinfo);
-
-  std::vector<uint8_t> data;
-  jpeg_memory_dest(&cinfo, &data);
+  
+  // Setup output manager
+  setup_dest_mgr(&cinfo);
 
   cinfo.image_width  = surface.get_width();
   cinfo.image_height = surface.get_height();
@@ -252,9 +242,6 @@ JPEG::save(const SoftwareSurface& surface, int quality)
   jpeg_finish_compress(&cinfo);
   
   jpeg_destroy_compress(&cinfo);
-
-  // FIXME: This causes an unnecessary copy, should have a BlobImpl that is based on std::vector<>
-  return Blob(data);
 }
   
 /* EOF */
