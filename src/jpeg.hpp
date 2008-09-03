@@ -20,15 +20,19 @@
 #define HEADER_JPEG_HPP
 
 #include <string>
+#include <jpeglib.h>
+#include <boost/function.hpp>
 #include "software_surface.hpp"
 
 class JPEG
 {
 private:
 
-
 public:
   static bool get_size(const std::string& filename, Size& size);
+
+  static SoftwareSurface load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
+                              int scale = 1);
 
   /** Load a SoftwareSurface from a JPEG file
       
@@ -42,7 +46,7 @@ public:
       @param mem   Address of the JPEG data
       @param len   Length of the JPEG data
    */
-  static SoftwareSurface load_from_mem(uint8_t* mem, int len);
+  static SoftwareSurface load_from_mem(uint8_t* mem, int len, int scale = 1);
 
   static void save(const SoftwareSurface& surface, int quality, const std::string& filename);
   static Blob save(const SoftwareSurface& surface, int quality);

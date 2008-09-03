@@ -1,26 +1,13 @@
 [[ Galapix ToDo ]]
-
-* SDL returns different mouse button numbers depending in if a grab is
-  active or not, so buttons will get swapped in left-hand situations
+_______________________________________________________________________________
+
+Galapix 0.1.0 Release ToDo:
+---------------------------
+
+* Grayscale JPEGs aren't supported either (easy to fix)
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
-
-* add more command line options:
-
-  --aspect
-  --select (?)
-
-* build "scons configure" like stuff, see Pingus for reference, so
-  that SpaceNavigator libraries are optional
-
-* save color or a 8x8 thumbnail in the FileEntry, for faster loading, also save 1x1 Color in FileEntry
-
-* store the max_tile size into the FileTable
-
-* opening a large directory causes file entries to be generated, but
-  no tiles to be shown, because tiles are last in the queue, different
-  jobs should have different queue
 
 * pointing galapix to an empty directory is weird (directory is empty,
   galapix displays files in database, but can't create new thumbnails due
@@ -28,11 +15,39 @@
 
 * Loading JPEG file can throw exception and that isn't handled
 
-* Displaying 75'000 images gets really slow, OpenGL bottleneck,
-  texture packing might help, sending vertex array instead of glBegin/glEnd of course too
-
 * need to properly check for collisions in the database and update
   entries instead of just inserting a duplicate
+
+* need to display the thread status graphically somehow (graphical
+  rotating wheel? per image or overall?)
+
+* when the current tiles aren't available only higher scales are
+  searched, not lower ones
+
+* seperate galapix from the thumbgen code, so that there is a
+  galapix-tool and a galapix program
+
+_______________________________________________________________________________
+
+
+* SDL returns different mouse button numbers depending in if a grab is
+  active or not, so buttons will get swapped in left-hand situations
+
+* add more command line options:
+
+  --aspect
+  --select (?)
+
+* save color or a 8x8 thumbnail in the FileEntry, for faster loading, also save 1x1 Color in FileEntry
+
+* store the max_tile size into the FileTable (should we? We can calc it dynamically)
+
+* opening a large directory causes file entries to be generated, but
+  no tiles to be shown, because tiles are last in the queue, different
+  jobs should have different queue
+
+* Displaying 75'000 images gets really slow, OpenGL bottleneck,
+  texture packing might help, sending vertex array instead of glBegin/glEnd of course too
 
 * implement smooth scale in SoftwareSurface (like LINEAR instead of NEAREST),
 
@@ -43,15 +58,7 @@
 
 * faster incremental tile generation
 
-* galapix name is already taken, need a new one:
-
-  Possible alternative names: ZoomIV, ZUIIV, VIIUZ, viuz, zoiv zoui, magzoi, gig, zuiview, brickview, birdview, hawkeye
-  Closer selection: zoomiv, galapix
-
 * File stuff should really be seperate from Tile getting -> Seperate worker thread?
-
-* need to display the thread status graphically somehow (graphical
-  rotating wheel? per image or overall?)
 
 * Jobs are only canceled when the image is no longer visible, but not
   when the images zoom level has changed.
@@ -105,15 +112,16 @@ Possible Future Improvements:
 * galapix completly ignores ~/.thumbnails/, it should maybe make use of
   that to speed up initial thumbnail generation
 
-* Generating tiles for /resources/flickr/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
+* Some obscure JPEG formats are not supported:
+  Generating tiles for /resources/flickr/flickr/farm3.static.flickr.com/2123/1782745732_d7f5c8cc8c_o.jpg
   Exception: JPEG: Unsupported color depth: 4
-
-* Grayscale JPEGs aren't supported either (easy to fix)
 
 * allow rotation of images
 
 * record how long an image has been viewed and allow to display which
   images have been viewed most
+
+* basic exif support to get the orientation right (libexif)
 
 
 Random Notes:
@@ -140,5 +148,7 @@ Random Notes:
 10'000 thumbnails -> 10MB
 100'000 thumbnails -> 100MB (graphic card gets full) -> Solution: smaller thumbnails, also unload from GFX card, but keep software backstore
 
-
+_______________________________________________________________________________
+
+
 # EOF #
