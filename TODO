@@ -4,10 +4,16 @@ _______________________________________________________________________________
 Galapix 0.0.2 Release ToDo:
 ---------------------------
 
+* when reading whole database file count is displayed incorrectly
+
+* when no database is given we currently save to memory, but we should
+  save to ~/.galapix/database.sqlite or so
+
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
 
 * Loading JPEG file can throw exception and that isn't handled
+  - failure modes: file not found, data corrupt
 
 * need to properly check for collisions in the database and update
   entries instead of just inserting a duplicate

@@ -45,6 +45,7 @@ private:
   SQLiteStatement store_tile_stmt;
   SQLiteStatement get_by_filename_stmt;
   SQLiteStatement get_all_stmt;
+  SQLiteStatement get_by_pattern_stmt;
   SQLiteStatement get_by_file_id_stmt;
 
   FileEntry store_file_entry(const std::string& filename, const Size& size);
@@ -67,6 +68,7 @@ public:
   */
   FileEntry get_file_entry(const std::string& filename);
   void get_file_entries(std::vector<FileEntry>& entries);
+  void get_file_entries(std::vector<FileEntry>& entries, const std::string& pattern);
 
   void store_tile(TileEntry& entry);
 

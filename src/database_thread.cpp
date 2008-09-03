@@ -31,7 +31,8 @@ enum DatabaseMessageType
   DATABASE_FILE_MESSAGE,
   DATABASE_TILE_MESSAGE,
   DATABASE_STORE_TILE_MESSAGE,
-  DATABASE_THREAD_DONE_MESSAGE
+  DATABASE_THREAD_DONE_MESSAGE,
+  DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE
 };
 
 class DatabaseMessage
@@ -95,6 +96,20 @@ public:
   }
 };
 
+class FilesByPatternDatabaseMessage : public DatabaseMessage
+{
+public:
+  std::string pattern;
+  boost::function<void (FileEntry)> callback;
+
+  FilesByPatternDatabaseMessage(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
+    : DatabaseMessage(DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE),
+      callback(callback),
+      pattern(pattern)
+  {
+  }
+};
+
 class ThreadDoneDatabaseMessage : public DatabaseMessage
 {
 public: 
@@ -151,6 +166,12 @@ void
 DatabaseThread::request_all_files(const boost::function<void (FileEntry)>& callback)
 {
   queue.push(new AllFilesDatabaseMessage(callback));
+}
+
+void
+DatabaseThread::request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
+{
+  queue.push(new FilesByPatternDatabaseMessage(callback, pattern));
 }
 
 void
@@ -262,6 +283,18 @@ DatabaseThread::run()
                   else
                     {
                       file_msg->callback(entry);
+                    }
+                }
+                break;
+
+              case DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE:
+                {
+                  FilesByPatternDatabaseMessage* all_files_msg = static_cast<FilesByPatternDatabaseMessage*>(msg);
+                  std::vector<FileEntry> entries;
+                  file_db.get_file_entries(entries, all_files_msg->pattern);
+                  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+                    {
+                      all_files_msg->callback(*i);
                     }
                 }
                 break;

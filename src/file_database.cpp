@@ -35,6 +35,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
     store_tile_stmt(db),
     get_by_filename_stmt(db),
     get_all_stmt(db),
+    get_by_pattern_stmt(db),
     get_by_file_id_stmt(db)
 {
   db->exec("CREATE TABLE IF NOT EXISTS files ("
@@ -56,6 +57,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
 
   get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
   get_by_file_id_stmt.prepare("SELECT * FROM files WHERE rowid = ?1;");
+  get_by_pattern_stmt.prepare("SELECT * FROM files WHERE filename GLOB ?1;");
   get_all_stmt.prepare("SELECT * FROM files");
 }
  
@@ -134,6 +136,23 @@ FileDatabase::get_file_entry(const std::string& filename)
           throw std::runtime_error("FileDatabase: Couldn't load " + filename);
         }
     }
+}
+
+void
+FileDatabase::get_file_entries(std::vector<FileEntry>& entries, const std::string& pattern)
+{
+  get_by_pattern_stmt.bind_text(1, pattern);
+  SQLiteReader reader = get_by_pattern_stmt.execute_query();
+
+  while (reader.next())  
+    {
+      // FIXME: Use macro definitions instead of numeric constants
+      FileEntry entry(reader.get_int (0),  // fileid
+                      reader.get_text(1),  // filename
+                      reader.get_int (4),  // width
+                      reader.get_int (5)); // height
+      entries.push_back(entry);
+    } 
 }
 
 void

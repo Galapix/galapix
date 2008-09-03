@@ -211,7 +211,7 @@ Galapix::generate_tiles(const std::string& database,
 }
 
 void
-Galapix::view(const std::string& database, const std::vector<std::string>& filenames)
+Galapix::view(const std::string& database, const std::vector<std::string>& filenames, const std::string& pattern)
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -229,17 +229,21 @@ Galapix::view(const std::string& database, const std::vector<std::string>& filen
   database_thread.start();
   tile_generator_thread.start();
 
-  if (filenames.empty())
+  if (filenames.empty() && pattern.empty())
     {
       // When no files are given, display everything in the database
       database_thread.request_all_files(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
     }
-  else
+
+  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
     {
-      for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
-        {
-          database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
-        }
+      database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+    }
+
+  if (!pattern.empty())
+    {
+      std::cout << "Using pattern: '" << pattern << "'" << std::endl;
+      database_thread.request_files_by_pattern(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1), pattern);
     }
 
   viewer_thread.run();
@@ -278,6 +282,7 @@ Galapix::print_usage()
                 << "Options:\n"
                 << "  -d, --database FILE    Use FILE has database (default: none)\n"
                 << "  -f, --fullscreen       Start in fullscreen mode\n"
+                << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
                 << "  -g, --geometry WxH     Start with window size WxH\n"        
                 << "\n"
                 << "If you do not supply any files, the whole content of the given database will be displayed."
@@ -299,6 +304,7 @@ Galapix::main(int argc, char** argv)
     }
   else
     {
+      std::string pattern;
       std::vector<std::string> argument_filenames;
       for(int i = 2; i < argc; ++i)
         {
@@ -322,6 +328,15 @@ Galapix::main(int argc, char** argv)
                     {
                       throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
                     }
+                }
+              else if (strcmp(argv[i], "--pattern") == 0 ||
+                       strcmp(argv[i], "-p") == 0)
+                {
+                  i += 1;
+                  if (i < argc)
+                    pattern = argv[i];
+                  else
+                    throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
                 }
               else if (strcmp(argv[i], "--geometry") == 0 ||
                        strcmp(argv[i], "-g") == 0)
@@ -358,7 +373,7 @@ Galapix::main(int argc, char** argv)
 
       if (strcmp(argv[1], "view") == 0)
         {
-          view(database, filenames);
+          view(database, filenames, pattern);
         }
       else if (strcmp(argv[1], "check") == 0)
         {

@@ -46,7 +46,8 @@ public:
   void generate_tiles(const std::string& database, 
                       const std::vector<std::string>& filenames);
   void view(const std::string& database, 
-            const std::vector<std::string>& filenames);
+            const std::vector<std::string>& filenames,
+            const std::string& pattern);
 };
 
 #endif

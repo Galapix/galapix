@@ -61,6 +61,9 @@ public:
   /** Request the FileEntry for \a filename */
   void      request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
 
+  /** Request FileEntrys by glob pattern */
+  void      request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern);
+
   /** Request all FileEntrys available in the database */
   void      request_all_files(const boost::function<void (FileEntry)>& callback);
 
