@@ -133,7 +133,30 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
     }
   else if (cinfo.output_components == 1)
     { // Greyscale Image
-      
+      JSAMPLE* scanlines[cinfo.output_height];
+
+      for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
+        scanlines[y] = surface.get_row_data(y);
+
+      while (cinfo.output_scanline < cinfo.output_height) 
+        {
+          jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
+                              cinfo.output_height - cinfo.output_scanline);
+        }
+
+      // Expand the greyscale data to RGB
+      // FIXME: Could be made faster if SoftwareSurface would support
+      // other color formats
+      for(int y = 0; y < surface.get_height(); ++y)
+        {
+          uint8_t* rowptr = surface.get_row_data(y);
+          for(int x = surface.get_width()-1; x >= 0; --x)
+            {
+              rowptr[3*x+0] = rowptr[x];
+              rowptr[3*x+1] = rowptr[x];
+              rowptr[3*x+2] = rowptr[x];
+            }
+        }
     }
   else
     {
