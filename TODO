@@ -1,20 +1,24 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
-Galapix 0.1.0 Release ToDo:
+Galapix 0.0.2 Release ToDo:
 ---------------------------
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
 
-* pointing galapix to an empty directory is weird (directory is empty,
-  galapix displays files in database, but can't create new thumbnails due
-  to missing files). It should give an error that no images could be found
-
 * Loading JPEG file can throw exception and that isn't handled
 
 * need to properly check for collisions in the database and update
   entries instead of just inserting a duplicate
+
+
+Galapix 0.1.0 Release ToDo:
+---------------------------
+
+* pointing galapix to an empty directory is weird (directory is empty,
+  galapix displays files in database, but can't create new thumbnails due
+  to missing files). It should give an error that no images could be found
 
 * need to display the thread status graphically somehow (graphical
   rotating wheel? per image or overall?)
@@ -28,6 +32,10 @@ Galapix 0.1.0 Release ToDo:
 _______________________________________________________________________________
 
 
+* images are always requested in the highest quality, instead lower
+  quality should be requested first and heigher quality only if the
+  image is visible for longer periodes of time on the screen
+
 * SDL returns different mouse button numbers depending in if a grab is
   active or not, so buttons will get swapped in left-hand situations
 
@@ -36,16 +44,19 @@ _______________________________________________________________________________
   --aspect
   --select (?)
 
-* save color or a 8x8 thumbnail in the FileEntry, for faster loading, also save 1x1 Color in FileEntry
+* save color or a 8x8 thumbnail in the FileEntry, for faster loading,
+  also save 1x1 Color in FileEntry
 
-* store the max_tile size into the FileTable (should we? We can calc it dynamically)
+* store the max_tile size into the FileTable (should we? We can calc
+  it dynamically)
 
 * opening a large directory causes file entries to be generated, but
   no tiles to be shown, because tiles are last in the queue, different
   jobs should have different queue
 
 * Displaying 75'000 images gets really slow, OpenGL bottleneck,
-  texture packing might help, sending vertex array instead of glBegin/glEnd of course too
+  texture packing might help, sending vertex array instead of
+  glBegin/glEnd of course too
 
 * implement smooth scale in SoftwareSurface (like LINEAR instead of NEAREST),
 
@@ -56,7 +67,8 @@ _______________________________________________________________________________
 
 * faster incremental tile generation
 
-* File stuff should really be seperate from Tile getting -> Seperate worker thread?
+* File stuff should really be seperate from Tile getting -> Seperate
+  worker thread?
 
 * Jobs are only canceled when the image is no longer visible, but not
   when the images zoom level has changed.
@@ -88,6 +100,9 @@ Thread Stuff:
 
 Possible Future Improvements:
 =============================
+
+* turn Galapix into a proper Gnome/Gtk or WxWidget Application with
+  proper GUI, instead of a raw SDL/OpenGL application
 
 * float isn't enough, on high zoom level it breaks apart, might need double
 
@@ -121,12 +136,15 @@ Possible Future Improvements:
 
 * basic exif support to get the orientation right (libexif)
 
+* no support for RGBA and greyscale in SoftwareSurface
+
 
 Random Notes:
 =============
 
 * jpegtran can't do crop of large scale JPEGs in small amount of
-  space, so cropping with libjpeg likely won't work
+  space, so cropping with libjpeg likely won't work or get more
+  complicated
 
 * a single 2048x2048 texture can hold 65536 8x8 tiles -> ~12MB
 

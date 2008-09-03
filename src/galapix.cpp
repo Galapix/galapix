@@ -45,20 +45,20 @@
 #include "viewer.hpp"
 #include "galapix.hpp"
 
-Griv::Griv()
+Galapix::Galapix()
   : fullscreen(false),
     geometry(800, 600)
 {
   Filesystem::init();
 }
 
-Griv::~Griv()
+Galapix::~Galapix()
 {
   Filesystem::deinit();
 }
 
 void
-Griv::info(const std::vector<std::string>& filenames)
+Galapix::info(const std::vector<std::string>& filenames)
 {
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
@@ -69,7 +69,7 @@ Griv::info(const std::vector<std::string>& filenames)
 }
 
 void
-Griv::downscale(const std::vector<std::string>& filenames)
+Galapix::downscale(const std::vector<std::string>& filenames)
 {
   int num = 0;
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i, ++num)
@@ -87,7 +87,7 @@ Griv::downscale(const std::vector<std::string>& filenames)
 }
 
 void
-Griv::cleanup(const std::string& database)
+Galapix::cleanup(const std::string& database)
 {
   SQLiteConnection db(database); 
   std::cout << "Running database cleanup routines, this process can take multiple minutes." << std::endl;
@@ -97,7 +97,7 @@ Griv::cleanup(const std::string& database)
 }
 
 void
-Griv::list(const std::string& database)
+Galapix::list(const std::string& database)
 {
   SQLiteConnection db(database);
 
@@ -113,7 +113,7 @@ Griv::list(const std::string& database)
 }
 
 void
-Griv::check(const std::string& database)
+Galapix::check(const std::string& database)
 {
   SQLiteConnection db(database);
 
@@ -125,7 +125,7 @@ Griv::check(const std::string& database)
 }
 
 void
-Griv::filegen(const std::string& database, 
+Galapix::filegen(const std::string& database, 
               const std::vector<std::string>& filenames)
 {
   SQLiteConnection db(database);
@@ -146,7 +146,7 @@ Griv::filegen(const std::string& database,
 }
 
 void
-Griv::thumbgen(const std::string& database, 
+Galapix::thumbgen(const std::string& database, 
                const std::vector<std::string>& filenames)
 {
   SQLiteConnection db(database);
@@ -180,7 +180,7 @@ Griv::thumbgen(const std::string& database,
 }
 
 void
-Griv::generate_tiles(const std::string& database, 
+Galapix::generate_tiles(const std::string& database, 
                      const std::vector<std::string>& filenames)
 {
   SQLiteConnection db(database);
@@ -211,7 +211,7 @@ Griv::generate_tiles(const std::string& database,
 }
 
 void
-Griv::view(const std::string& database, const std::vector<std::string>& filenames)
+Galapix::view(const std::string& database, const std::vector<std::string>& filenames)
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -254,7 +254,7 @@ Griv::view(const std::string& database, const std::vector<std::string>& filename
 }
 
 void
-Griv::print_usage()
+Galapix::print_usage()
 {
       std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
                 << "       galapix prepare  [OPTIONS]... [FILES]...\n"
@@ -285,7 +285,7 @@ Griv::print_usage()
 }
 
 int
-Griv::main(int argc, char** argv)
+Galapix::main(int argc, char** argv)
 {
   // FIXME: Function doesn't seem to be available in 3.4.2
   // if (!sqlite3_threadsafe())
@@ -405,7 +405,7 @@ int main(int argc, char** argv)
 {
   try 
     {
-      Griv app;
+      Galapix app;
       int ret = app.main(argc, argv);
       return ret;
     }

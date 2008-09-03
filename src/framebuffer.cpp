@@ -19,6 +19,7 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include "../config.h"
 #include "math/rgb.hpp"
 #include "SDL_syswm.h"
 #include "math/rect.hpp"
@@ -77,7 +78,7 @@ Framebuffer::set_video_mode(const Size& size, bool fullscreen)
       throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
     }
 
-  SDL_WM_SetCaption("Griv 0.0.2", 0 /* icon */);
+  SDL_WM_SetCaption("Galapix " VERSION, 0 /* icon */);
   SDL_EnableUNICODE(1);
 
   glViewport(0, 0, screen->w, screen->h);
