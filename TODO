@@ -1,7 +1,7 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
-Galapix 0.0.2 Release ToDo:
+Galapix 0.1.0 Release ToDo:
 ---------------------------
 
 * handle file failures more gracefully, currently we run into a 'job
@@ -13,10 +13,9 @@ Galapix 0.0.2 Release ToDo:
   entries instead of just inserting a duplicate (not an issue for
   normal use, but for 'prepare' and 'thumbgen'), fixing this would
   also fix incorrect generation ranges
-_______________________________________________________________________________
 
-Galapix 0.1.0 Release ToDo:
----------------------------
+* handle "Premature end of JPEG file" a little better, mark FileEntry
+  as broken or so
 
 * figure out a way to record the version number in the table
 

@@ -14,20 +14,39 @@ currently requires the tiles for that to be generated previously,
 which can take quite a bit of time and memory.
 
 
-Required Libraries:
-===================
+Required Libraries and Tools:
+=============================
+
+  * SQlite  - http://www.sqlite.org/
+  * libjpeg - http://www.ijg.org/
+  * scons   - http://www.scons.org/ 
+  * OpenGL  - http://www.opengl.org 
+  * GLEW    - http://glew.sourceforge.net/
 
 On Ubuntu you have to do a:
 
 apt-get install \
   libsqlite3-dev \
-  libmhash-dev \
   libglew1.5-dev \
   libjpeg62-dev \
   scons
 
-And make sure you have OpenGL installed. For other distributions
-library names might be a little different.
+And make sure you have OpenGL up and running. For other distributions
+library names might be a little different, but all the required
+libraries should be part of most distributions.
+
+
+Compilation:
+============
+
+Type:
+
+ scons
+
+The rest should happen automatically. If you want to change compiler
+options or other stuff you can do that by running:
+  
+ scons configure
 
 
 Running:
@@ -55,6 +74,21 @@ the database.
 
 Via the -d flag you can specifiy a database, so that you can have
 different databases for different files.
+
+
+Keyboard Commands:
+===================
+
+Key       | Function
+----------+------------------------------
+F11       | toggle fullscreen
+t         | toggle trackball mode
+1 	  | layout images 4:3
+2 	  | layout images 16:9
+g 	  | toggle grid
+Page Up   | increase gamma
+Page Down | increase gamma
+space     | print the currently visible images to stdout 
 
 
 SpaceNavigator Support:
