@@ -17,6 +17,7 @@
 */
 
 #include <fstream>
+#include <string.h>
 #include "blob.hpp"
 
 class BlobImpl
