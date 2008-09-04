@@ -23,7 +23,7 @@
 Workspace::Workspace()
 {
   next_pos = Vector2i(0, 0);
-  row_width = 100;
+  row_width = 20;
   progress = 0.0f;
 }
 
@@ -166,6 +166,12 @@ Workspace::print_images(const Rectf& rect)
         }
     }
   std::cout << "'--------------------------------------------------------" << std::endl;
+}
+
+void
+Workspace::set_row_width(int w)
+{
+  row_width = w;
 }
 
 /* EOF */

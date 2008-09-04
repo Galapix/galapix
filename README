@@ -1,17 +1,20 @@
 galapix - A Zoomable Image Viewer zoomview 
 ==========================================
 
-galapix is an image viewer that allows you to directly zoom into large
-collection of tens of thousand of images from tiny thumbnails down to
-the images original size fluently with short load times and no loss of
-interactivity. It accomplishes this by keeping a tile cache which
-stores not only thumbnails for one size, but thumbnails of many
+galapix is an JPEG image viewer that allows you to directly zoom into
+large collection of tens of thousand of images from tiny thumbnails
+down to the images original size fluently with short load times and no
+loss of interactivity. It accomplishes this by keeping a tile cache
+which stores not only thumbnails for one size, but thumbnails of many
 different sizes. This thumbnail cache requires at maximum 1.5x times
 as much storage as the images themselves.
 
 galapix can also be used to view gigapixel sized images, it however
 currently requires the tiles for that to be generated previously,
 which can take quite a bit of time and memory.
+
+galapix is currently limited to JPEG files, no other fileformat is
+currently supported.
 
 
 Required Libraries and Tools:

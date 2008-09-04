@@ -112,17 +112,6 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
 
     fatal_error = ""
     reports = ""
-    
-    #------------------------------------------------------------------
-    # -- Check for Space Navigator
-    if not env['with_space_navigator']:
-        reports += "  * SpaceNavigator support: disabled\n"
-    else:
-        reports += "  * SpaceNavigator support: enabled\n"
-        config_h_defines  += [('HAVE_SPACE_NAVIGATOR', 1)]
-        env['LIBS']       += ['spnav']
-        env['optional_sources'] += ['src/space_navigator.cpp']
-
     #------------------------------------------------------------------
     # -- Check for SDL
     if config.CheckMyProgram('sdl-config'):
@@ -138,6 +127,20 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
     env['LIBS']       += ['GL']
 
     env['LIBS']       += ['GLEW']
+
+    
+    #------------------------------------------------------------------
+    # -- Check for Space Navigator
+    if not env['with_space_navigator']:
+        reports += "  * SpaceNavigator support: disabled\n"
+    else:
+        if config.CheckLibWithHeader('spnav', 'spnav.h', 'c++'):
+            reports += "  * SpaceNavigator support: enabled\n"
+            config_h_defines  += [('HAVE_SPACE_NAVIGATOR', 1)]
+            env['LIBS']       += ['spnav']
+            env['optional_sources'] += ['src/space_navigator.cpp']
+        else:
+            reports += "  * SpaceNavigator support: disabled, libspnav not found\n"
 
     #------------------------------------------------------------------
     # -- Check for libjpeg
@@ -158,8 +161,11 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
         fatal_error += "  * sqlite3 library not found\n"
 
     #------------------------------------------------------------------
-    # -- Finish up
+    # -- Check for boost    
+    # not implemented
 
+    #------------------------------------------------------------------
+    # -- Finish up
     env = config.Finish()
     opts.Save("config.py", env)
 

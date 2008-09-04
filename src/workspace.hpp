@@ -35,6 +35,8 @@ private:
 public:
   Workspace();
 
+  void set_row_width(int w);
+
   void add_image(const FileEntry& file_entry);
   void draw(const Rectf& cliprect, float scale);
   void update(float delta);

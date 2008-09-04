@@ -4,6 +4,8 @@ _______________________________________________________________________________
 Galapix 0.1.0 Release ToDo:
 ---------------------------
 
+* add check for boost header files and make scons somewhat more solid
+
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
 * Loading JPEG file can throw exception and that isn't handled
