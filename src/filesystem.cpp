@@ -206,21 +206,28 @@ void
 Filesystem::generate_jpeg_file_list(const std::string& pathname, std::vector<std::string>& file_list)
 {
   std::vector<std::string> lst;
-  if (is_directory(pathname))
-    open_directory_recursivly(pathname, lst);
-  else
-    lst.push_back(pathname);
-  
-  for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
+  if (!exist(pathname))
     {
-      if (Filesystem::has_extension(*i, ".jpg")  ||
-          Filesystem::has_extension(*i, ".JPG")  ||
-          Filesystem::has_extension(*i, ".jpe")  ||
-          Filesystem::has_extension(*i, ".JPE")  ||
-          Filesystem::has_extension(*i, ".JPEG") ||
-          Filesystem::has_extension(*i, ".jpeg"))
+      std::cout << "Filesystem::generate_jpeg_file_list: Error: " << pathname << " does not exist" << std::endl;
+    }
+  else
+    {
+      if (is_directory(pathname))
+        open_directory_recursivly(pathname, lst);
+      else
+        lst.push_back(pathname);
+  
+      for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
-          file_list.push_back(Filesystem::realpath(*i)); // realpath slow?
+          if (Filesystem::has_extension(*i, ".jpg")  ||
+              Filesystem::has_extension(*i, ".JPG")  ||
+              Filesystem::has_extension(*i, ".jpe")  ||
+              Filesystem::has_extension(*i, ".JPE")  ||
+              Filesystem::has_extension(*i, ".JPEG") ||
+              Filesystem::has_extension(*i, ".jpeg"))
+            {
+              file_list.push_back(Filesystem::realpath(*i)); // realpath slow?
+            }
         }
     }
 }
