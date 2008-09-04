@@ -133,7 +133,7 @@ FileDatabase::get_file_entry(const std::string& filename)
         }
       else
         {
-          throw std::runtime_error("FileDatabase: Couldn't load " + filename);
+          return FileEntry();
         }
     }
 }

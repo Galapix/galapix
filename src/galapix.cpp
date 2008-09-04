@@ -271,7 +271,7 @@ Galapix::print_usage()
                 << "\n"
                 << "Commands:\n"
                 << "  view      Display the given files\n"
-                << "  prepare   Generate all thumbnail tiles for all given images, makes view command faster\n"
+                << "  prepare   Generate all thumbnail for all given images\n"
                 << "  thumbgen  Generate only small thumbnails for all given images\n"
                 << "  filegen   Generate only small the file entries in the database\n"
                 << "  list      Lists all files in the database\n"
@@ -296,7 +296,7 @@ Galapix::main(int argc, char** argv)
   // if (!sqlite3_threadsafe())
   //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
-  std::string database = "";
+  std::string database = Filesystem::get_home() + "/.galapix/cache.sqlite";
   
   if (argc < 2)
     {
@@ -317,7 +317,7 @@ Galapix::main(int argc, char** argv)
                   exit(0);
                 }
               else if (strcmp(argv[i], "--database") == 0 ||
-                  strcmp(argv[i], "-d") == 0)
+                       strcmp(argv[i], "-d") == 0)
                 {
                   ++i;
                   if (i < argc)
@@ -363,13 +363,21 @@ Galapix::main(int argc, char** argv)
             }
         }
 
-      std::cout << "Scanning directories... " << std::flush;
-      std::vector<std::string> filenames;
-      for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
-        Filesystem::generate_jpeg_file_list(*i, filenames);
+      std::cout << "Using database: " << (database.empty() ? "memory" : database) << std::endl;
 
-      std::sort(filenames.begin(), filenames.end());
-      std::cout << filenames.size() << " files found." << std::endl;
+      std::vector<std::string> filenames;
+      if (argument_filenames.empty())
+        {
+          std::cout << "Displaying all files in the database" << std::endl;;
+        }
+      else
+        {
+          std::cout << "Scanning directories... " << std::flush;
+          for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
+            Filesystem::generate_jpeg_file_list(*i, filenames);
+          std::sort(filenames.begin(), filenames.end());
+          std::cout << filenames.size() << " files found." << std::endl;
+        }
 
       if (strcmp(argv[1], "view") == 0)
         {

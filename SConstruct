@@ -112,7 +112,9 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
 
     fatal_error = ""
     reports = ""
-
+    
+    #------------------------------------------------------------------
+    # -- Check for Space Navigator
     if not env['with_space_navigator']:
         reports += "  * SpaceNavigator support: disabled\n"
     else:
@@ -120,19 +122,25 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
         config_h_defines  += [('HAVE_SPACE_NAVIGATOR', 1)]
         env['LIBS']       += ['spnav']
         env['optional_sources'] += ['src/space_navigator.cpp']
-
+
+    #------------------------------------------------------------------
+    # -- Check for SDL
     if config.CheckMyProgram('sdl-config'):
         env.ParseConfig('sdl-config  --cflags --libs')
     else:
         fatal_error += "  * couldn't find sdl-config, SDL missing\n"
-
+
+    #------------------------------------------------------------------
+    # -- Check for OpenGL Libraries
     # FIXME: Add check for OpenGL libraries
     reports += "  * OpenGL support:         enabled\n"
     config_h_defines  += [('HAVE_OPENGL', 1)]
     env['LIBS']       += ['GL']
 
     env['LIBS']       += ['GLEW']
-
+
+    #------------------------------------------------------------------
+    # -- Check for libjpeg
     env['LIBS'] += ['jpeg']
 # FIXME: Doesn't work, jpeg wants stdio.h to work
 #     if config.CheckLibWithHeader('jpeg', 'jpeglib.h', 'c++'):
@@ -140,13 +148,18 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
 #         reports += "  * libjpeg found\n"
 #     else:
 #         fatal_error += "  * libjpeg library not found\n"
-
+
+    #------------------------------------------------------------------
+    # -- Check for SQlite3
     if config.CheckLibWithHeader('sqlite3', 'sqlite3.h', 'c++'):
         env['LIBS'] += ['sqlite3']
         reports += "  * sqlite3 found\n"
     else:
         fatal_error += "  * sqlite3 library not found\n"
-
+
+    #------------------------------------------------------------------
+    # -- Finish up
+
     env = config.Finish()
     opts.Save("config.py", env)
 

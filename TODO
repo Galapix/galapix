@@ -4,23 +4,21 @@ _______________________________________________________________________________
 Galapix 0.0.2 Release ToDo:
 ---------------------------
 
-* when reading whole database file count is displayed incorrectly
-
-* when no database is given we currently save to memory, but we should
-  save to ~/.galapix/database.sqlite or so
-
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
-
 * Loading JPEG file can throw exception and that isn't handled
   - failure modes: file not found, data corrupt
 
 * need to properly check for collisions in the database and update
-  entries instead of just inserting a duplicate
-
+  entries instead of just inserting a duplicate (not an issue for
+  normal use, but for 'prepare' and 'thumbgen'), fixing this would
+  also fix incorrect generation ranges
+_______________________________________________________________________________
 
 Galapix 0.1.0 Release ToDo:
 ---------------------------
+
+* figure out a way to record the version number in the table
 
 * pointing galapix to an empty directory is weird (directory is empty,
   galapix displays files in database, but can't create new thumbnails due
@@ -35,8 +33,18 @@ Galapix 0.1.0 Release ToDo:
 * seperate galapix from the thumbgen code, so that there is a
   galapix-tool and a galapix program
 
+* galapix --help
+   -d, --database FILE
+
+* galapix-thumbgen
+   -m, --minsize X      Generate tiles till this size
+   -d, --database FILE  
+
+* galapix-db [info|list]
+   -d, --database FILE
 _______________________________________________________________________________
 
+* replace SCons with WAF?
 
 * images are always requested in the highest quality, instead lower
   quality should be requested first and heigher quality only if the
