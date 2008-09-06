@@ -76,7 +76,9 @@ When you do not supply a list of files galapix will display all files in
 the database.
 
 Via the -d flag you can specifiy a database, so that you can have
-different databases for different files.
+different databases for different files. If you give an empty string
+-d "" no database file will be created, the database will resist in
+memory only.
 
 
 Keyboard Commands:
@@ -103,6 +105,13 @@ galapix supports the Space Navigator via the Open Source spacenavd daemon:
 
 The 3Dconnexion's official 3dxsrv daemon is not supported, neither is
 directly reading from /dev/input/eventX.
+
+
+Issues:
+=======
+
+Galapix is very picky about IO, so if you have updatedb running around
+in the background or other indexing software, it gets extremely slow.
 
 
 # EOF #

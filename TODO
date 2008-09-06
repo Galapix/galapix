@@ -4,7 +4,14 @@ _______________________________________________________________________________
 Galapix 0.1.0 Release ToDo:
 ---------------------------
 
+* make middle button exit trackball mode
+
+* add home-button to reset scrolling back to 0,0
+
+* maybe limit the scrolling area, so that one can't scroll completly out of the picture
+
 * add check for boost header files and make scons somewhat more solid
+* replace SCons with WAF?
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
@@ -13,7 +20,7 @@ Galapix 0.1.0 Release ToDo:
 
 * need to properly check for collisions in the database and update
   entries instead of just inserting a duplicate (not an issue for
-  normal use, but for 'prepare' and 'thumbgen'), fixing this would
+  normal use, but for 'prepare' and 'thumbgen'), fixing this might
   also fix incorrect generation ranges
 
 * handle "Premature end of JPEG file" a little better, mark FileEntry
@@ -24,12 +31,13 @@ Galapix 0.1.0 Release ToDo:
 * pointing galapix to an empty directory is weird (directory is empty,
   galapix displays files in database, but can't create new thumbnails due
   to missing files). It should give an error that no images could be found
+  should do something special if in-filenames are smaller then out-filenames 
 
 * need to display the thread status graphically somehow (graphical
   rotating wheel? per image or overall?)
 
-* when the current tiles aren't available only higher scales are
-  searched, not lower ones
+* when the current tiles aren't available only higher scales (smallerones) are
+  searched, not lower ones (bigger)
 
 * seperate galapix from the thumbgen code, so that there is a
   galapix-tool and a galapix program
@@ -44,8 +52,6 @@ Galapix 0.1.0 Release ToDo:
 * galapix-db [info|list]
    -d, --database FILE
 _______________________________________________________________________________
-
-* replace SCons with WAF?
 
 * images are always requested in the highest quality, instead lower
   quality should be requested first and heigher quality only if the
@@ -96,7 +102,8 @@ Database Stuff:
   might end up with duplicate entries for the same tile. Tile
   generation is also not optimal, since some data gets discarded.
 
-* Support for multiple databases at once would be good 
+* Support for multiple databases at once would be good, since a
+  database can be used/abused as image file
 
 
 Thread Stuff:
