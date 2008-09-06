@@ -33,15 +33,10 @@ class Workspace;
 class Viewer
 {
 private:
-  bool quit;
-  bool trackball_mode;
-  bool force_redraw;
-  bool drag_n_drop;
-  bool draw_grid;
-  int  zoom_button;
+  bool  quit;
+  bool  force_redraw;
+  bool  draw_grid;
   float gamma;
-
-  Vector2i mouse_pos;
 
   ViewerState state;
 

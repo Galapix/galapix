@@ -32,11 +32,12 @@ public:
   Tool(Viewer* viewer) : viewer(viewer) {}
   virtual ~Tool() {}
 
-  virtual void mouse_move(const Vector2f& pos, const Vector2f& rel) =0;
-  virtual void mouse_btn_up  (int num, const Vector2f& pos) =0;
-  virtual void mouse_btn_down(int num, const Vector2f& pos) =0;
+  virtual void mouse_move(const Vector2i& pos, const Vector2i& rel) =0;
+  virtual void mouse_btn_up  (int num, const Vector2i& pos) =0;
+  virtual void mouse_btn_down(int num, const Vector2i& pos) =0;
 
   virtual void draw() =0;
+  virtual void update(float delta) =0;
 
 private:
   Tool (const Tool&);
