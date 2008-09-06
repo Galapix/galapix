@@ -27,63 +27,6 @@
 #include "pan_tool.hpp"
 #include "viewer.hpp"
 
-ViewerState::ViewerState()
-  : scale(0.25f),
-    angle(0.0f),
-    offset(0.0f, 0.0f)
-{
-}
-
-void
-ViewerState::zoom(float factor, const Vector2i& pos)
-{
-  scale *= factor;
-
-  offset = Vector2f(pos) - ((Vector2f(pos) - offset) * factor);
-}
-
-void
-ViewerState::zoom(float factor)
-{
-  zoom(factor, Vector2i(Framebuffer::get_width()/2, // FIXME: Little ugly, isn't it?
-                        Framebuffer::get_height()/2));
-}
-
-void
-ViewerState::rotate(float r)
-{
-  angle += r;
-}
-
-void
-ViewerState::set_angle(float r)
-{
-  angle = r;
-}
-
-void
-ViewerState::move(const Vector2f& pos)
-{
-  // FIXME: Implement a proper 2D Matrix instead of this hackery
-  offset.x += pos.x * cosf(angle/180.0f*M_PI) +  pos.y * sinf(angle/180.0f*M_PI);
-  offset.y -= pos.x * sinf(angle/180.0f*M_PI) -  pos.y * cosf(angle/180.0f*M_PI);
-}
-
-Vector2f
-ViewerState::screen2world(const Vector2i& pos) const
-{
-  return (Vector2f(pos) - offset) / scale;
-}
-
-Rectf
-ViewerState::screen2world(const Rect& rect) const
-{
-  return Rectf((rect.left   - offset.x) / scale,
-               (rect.top    - offset.y) / scale,
-               (rect.right  - offset.x) / scale,
-               (rect.bottom - offset.y) / scale);
-}
-
 Viewer::Viewer()
   : quit(false),
     trackball_mode(false),

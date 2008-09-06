@@ -16,51 +16,34 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_VIEWER_HPP
-#define HEADER_VIEWER_HPP
+#ifndef HEADER_VIEWER_STATE_HPP
+#define HEADER_VIEWER_STATE_HPP
 
-#include <memory>
-#include "SDL.h"
-#include "surface.hpp"
-#include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
-#include "viewer_state.hpp"
-#include "pan_tool.hpp"
+#include "math/rect.hpp"
 
-class Tool;
-class Workspace;
-
-class Viewer
+class ViewerState
 {
 private:
-  bool quit;
-  bool trackball_mode;
-  bool force_redraw;
-  bool drag_n_drop;
-  bool draw_grid;
-  int  zoom_button;
-  float gamma;
-
-  Vector2i mouse_pos;
-
-  ViewerState state;
-
-  std::auto_ptr<PanTool> pan_tool;
-  PanTool* current_tool;
-
+  float    scale;
+  float    angle;
+  Vector2f offset;
+  
 public:
-  Viewer();
+  ViewerState();
 
-  void draw(Workspace& workspace);
-  void update(Workspace& workspace, float delta);
-  void process_event(Workspace& workspace, const SDL_Event& event);
-  bool done() const { return quit; }
+  void zoom(float factor, const Vector2i& pos);
+  void zoom(float factor);
+  void move(const Vector2f& pos);
+  void rotate(float r);
+  void set_angle(float r);
 
-  ViewerState& get_state() { return state; }
+  Vector2f screen2world(const Vector2i&) const;
+  Rectf    screen2world(const Rect&) const;
 
-private:
-  Viewer (const Viewer&);
-  Viewer& operator= (const Viewer&);
+  Vector2f get_offset() const { return offset; }
+  float    get_scale()  const { return scale; }
+  float    get_angle() const  { return angle; }
 };
 
 #endif

@@ -31,6 +31,7 @@ galapix_sources = [
     'src/database_thread.cpp',
     'src/viewer_thread.cpp',
     'src/viewer.cpp',
+    'src/viewer_state.cpp',
     'src/workspace.cpp',
     ]
 
