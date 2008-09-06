@@ -19,6 +19,7 @@ galapix_sources = [
     'src/galapix.cpp',
     'src/image.cpp',
     #    'src/md5.cpp',
+    'src/pan_tool.cpp',
     'src/software_surface.cpp',
     'src/sqlite.cpp',
     'src/surface.cpp',

@@ -19,11 +19,14 @@
 #ifndef HEADER_VIEWER_HPP
 #define HEADER_VIEWER_HPP
 
+#include <memory>
 #include "SDL.h"
 #include "surface.hpp"
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 
+class PanTool;
+class Tool;
 class Workspace;
 
 class ViewerState
@@ -64,6 +67,9 @@ private:
   Vector2i mouse_pos;
 
   ViewerState state;
+
+  std::auto_ptr<PanTool> pan_tool;
+  PanTool* current_tool;
 
 public:
   Viewer();

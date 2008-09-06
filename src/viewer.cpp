@@ -24,6 +24,7 @@
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 #include "workspace.hpp"
+#include "pan_tool.hpp"
 #include "viewer.hpp"
 
 ViewerState::ViewerState()
@@ -92,6 +93,8 @@ Viewer::Viewer()
     zoom_button(0),
     gamma(1.0f)
 {
+  pan_tool = std::auto_ptr<PanTool>(new PanTool(this));
+  current_tool = pan_tool.get();
 }
 
 void
