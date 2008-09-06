@@ -33,7 +33,8 @@ Viewer::Viewer()
     draw_grid(false),
     gamma(1.0f)
 {
-  pan_tool = std::auto_ptr<PanTool>(new PanTool(this));
+  pan_tool  = std::auto_ptr<PanTool>(new PanTool(this));
+  move_tool = std::auto_ptr<MoveTool>(new MoveTool(this));
   current_tool = pan_tool.get();
 }
 
@@ -126,6 +127,19 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
                 }
               break;
 
+            case SDLK_m:
+              if (current_tool == pan_tool.get())
+                {
+                  std::cout << "MoveTool Activated" << std::endl;
+                  current_tool = move_tool.get();
+                }
+              else
+                {
+                  std::cout << "PanTool Activated" << std::endl;
+                  current_tool = pan_tool.get();
+                }
+              break;
+              
             case SDLK_h:
               state.set_offset(Vector2f(0.0f, 0.0f));
               state.set_angle(0.0f);
@@ -225,6 +239,8 @@ Viewer::draw(Workspace& workspace)
   
   workspace.draw(cliprect,
                  state.get_scale());
+
+  current_tool->draw();
 
   glPopMatrix();
 

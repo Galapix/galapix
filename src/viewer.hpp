@@ -26,6 +26,7 @@
 #include "math/vector2f.hpp"
 #include "viewer_state.hpp"
 #include "pan_tool.hpp"
+#include "move_tool.hpp"
 
 class Tool;
 class Workspace;
@@ -41,7 +42,8 @@ private:
   ViewerState state;
 
   std::auto_ptr<PanTool> pan_tool;
-  PanTool* current_tool;
+  std::auto_ptr<MoveTool> move_tool;
+  Tool* current_tool;
 
 public:
   Viewer();

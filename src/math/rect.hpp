@@ -229,6 +229,9 @@ public:
       bottom(static_cast<float>(rect.bottom))
   {}
 
+  Rectf(const Vector2f& p1, const Vector2f& p2)
+  { left = p1.x; top = p1.y; right = p2.x; bottom = p2.y; }
+
   Rectf(float new_left, float new_top, float new_right, float new_bottom)
   { left = new_left; top = new_top; right = new_right; bottom = new_bottom; }
 
