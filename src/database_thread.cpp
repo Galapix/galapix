@@ -104,8 +104,8 @@ public:
 
   FilesByPatternDatabaseMessage(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
     : DatabaseMessage(DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE),
-      callback(callback),
-      pattern(pattern)
+      pattern(pattern),
+      callback(callback)
   {
   }
 };
