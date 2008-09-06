@@ -91,6 +91,7 @@ t         | toggle trackball mode
 1 	  | layout images 4:3
 2 	  | layout images 16:9
 g 	  | toggle grid
+h         | reset zoom and scroll
 Page Up   | increase gamma
 Page Down | increase gamma
 space     | print the currently visible images to stdout 

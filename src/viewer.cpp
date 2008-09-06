@@ -126,6 +126,12 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
                 }
               break;
 
+            case SDLK_h:
+              state.set_offset(Vector2f(0.0f, 0.0f));
+              state.set_angle(0.0f);
+              state.set_scale(1.0f);
+              break;
+
             case SDLK_s:
               workspace.sort();
               break;

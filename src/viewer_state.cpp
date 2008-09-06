@@ -20,7 +20,7 @@
 #include "viewer_state.hpp"
 
 ViewerState::ViewerState()
-  : scale(0.25f),
+  : scale(1.0f),
     angle(0.0f),
     offset(0.0f, 0.0f)
 {
@@ -52,6 +52,18 @@ ViewerState::set_angle(float r)
 {
   angle = r;
 }
+
+void
+ViewerState::set_offset(const Vector2f& o)
+{
+  offset = o;
+}
+
+void
+ViewerState::set_scale(float s)
+{
+  scale = s;
+}  
 
 void
 ViewerState::move(const Vector2f& pos)

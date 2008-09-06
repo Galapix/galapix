@@ -18,6 +18,7 @@ galapix_sources = [
     'src/job_handle.cpp',
     'src/galapix.cpp',
     'src/image.cpp',
+    'src/move_tool.cpp',
     #    'src/md5.cpp',
     'src/pan_tool.cpp',
     'src/software_surface.cpp',

@@ -37,6 +37,8 @@ public:
   void move(const Vector2f& pos);
   void rotate(float r);
   void set_angle(float r);
+  void set_offset(const Vector2f& o);
+  void set_scale(float s);
 
   Vector2f screen2world(const Vector2i&) const;
   Rectf    screen2world(const Rect&) const;
