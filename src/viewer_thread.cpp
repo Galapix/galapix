@@ -55,7 +55,7 @@ ViewerThread::run()
 
   workspace.layout(4,3);
 
-  Viewer viewer;
+  Viewer viewer(&workspace);
 
   Uint32 ticks = SDL_GetTicks();
 
@@ -79,19 +79,19 @@ ViewerThread::run()
       SDL_Event event;
       while (SDL_PollEvent(&event))
         {
-          viewer.process_event(workspace, event);
+          viewer.process_event(event);
         }
 
       Uint32 cticks = SDL_GetTicks();
       float delta = (cticks - ticks) / 1000.0f;
       ticks = cticks;
 
-      viewer.update(workspace, delta);
+      viewer.update(delta);
 
       if (1) // if something has changed, redraw
         {
           Framebuffer::clear();
-          viewer.draw(workspace);
+          viewer.draw();
           Framebuffer::flip();
         }
 

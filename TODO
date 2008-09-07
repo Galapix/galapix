@@ -1,6 +1,8 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
+* give Viewer a pointer to Workspace instead of giving it in functions
+
 Galapix 0.1.0 Release ToDo:
 ---------------------------
 

@@ -27,8 +27,9 @@
 #include "pan_tool.hpp"
 #include "viewer.hpp"
 
-Viewer::Viewer()
-  : quit(false),
+Viewer::Viewer(Workspace* workspace)
+  : workspace(workspace),
+    quit(false),
     force_redraw(false),
     draw_grid(false),
     gamma(1.0f)
@@ -39,7 +40,7 @@ Viewer::Viewer()
 }
 
 void
-Viewer::process_event(Workspace& workspace, const SDL_Event& event)
+Viewer::process_event(const SDL_Event& event)
 {
   switch(event.type)
     {
@@ -89,7 +90,7 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
             case SDLK_SPACE:
               {
                 Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
-                workspace.print_images(cliprect);
+                workspace->print_images(cliprect);
               }
               break;
 
@@ -103,12 +104,12 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
                 
             case SDLK_c:
               std::cout << "Workspace: Clearing cache" << std::endl;
-              workspace.clear_cache();
+              workspace->clear_cache();
               break;
 
             case SDLK_k:
               std::cout << "Workspace: Cache Cleanup" << std::endl;
-              workspace.cache_cleanup();
+              workspace->cache_cleanup();
               break;
 
             case SDLK_t:
@@ -147,11 +148,11 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               break;
 
             case SDLK_s:
-              workspace.sort();
+              workspace->sort();
               break;
 
             case SDLK_i:
-              workspace.print_info();
+              workspace->print_info();
               break;
 
             case SDLK_g:
@@ -159,11 +160,11 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
               break;
 
             case SDLK_1:
-              workspace.layout(4, 3);
+              workspace->layout(4, 3);
               break;
 
             case SDLK_2:
-              workspace.layout(16, 9);
+              workspace->layout(16, 9);
               break;
 
             default:
@@ -199,7 +200,7 @@ Viewer::process_event(Workspace& workspace, const SDL_Event& event)
 }
 
 void
-Viewer::draw(Workspace& workspace)
+Viewer::draw()
 {
   bool clip_debug = false;
 
@@ -237,7 +238,7 @@ Viewer::draw(Workspace& workspace)
   if (clip_debug)
     Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));
   
-  workspace.draw(cliprect,
+  workspace->draw(cliprect,
                  state.get_scale());
 
   current_tool->draw();
@@ -249,9 +250,9 @@ Viewer::draw(Workspace& workspace)
 }
 
 void
-Viewer::update(Workspace& workspace, float delta)
+Viewer::update(float delta)
 {
-  workspace.update(delta);
+  workspace->update(delta);
 
   current_tool->update(delta);
 }

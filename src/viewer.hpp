@@ -34,6 +34,7 @@ class Workspace;
 class Viewer
 {
 private:
+  Workspace* workspace;
   bool  quit;
   bool  force_redraw;
   bool  draw_grid;
@@ -46,11 +47,11 @@ private:
   Tool* current_tool;
 
 public:
-  Viewer();
+  Viewer(Workspace* workspace);
 
-  void draw(Workspace& workspace);
-  void update(Workspace& workspace, float delta);
-  void process_event(Workspace& workspace, const SDL_Event& event);
+  void draw();
+  void update(float delta);
+  void process_event(const SDL_Event& event);
   bool done() const { return quit; }
 
   ViewerState& get_state() { return state; }
