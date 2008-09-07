@@ -88,6 +88,14 @@ Viewer::process_event(const SDL_Event& event)
               state.rotate(-90.0f);
               break;
 
+            case SDLK_7:
+              workspace->scale_selection(1.0f/1.1f);
+              break;
+
+            case SDLK_8:
+              workspace->scale_selection(1.1f);
+              break;
+
             case SDLK_SPACE:
               {
                 Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));

@@ -41,10 +41,7 @@ MoveTool::mouse_move(const Vector2i& pos, const Vector2i& rel)
 
   if (move_active)
     {
-      for(std::vector<Image>::iterator i = selected_images.begin(); i != selected_images.end(); ++i)
-        {
-          i->set_pos(i->get_pos() + rel * (1.0f/viewer->get_state().get_scale()));
-        }
+      viewer->get_workspace()->move_selection(rel * (1.0f/viewer->get_state().get_scale()));
     }
 }
 
@@ -61,7 +58,7 @@ MoveTool::mouse_btn_up  (int num, const Vector2i& pos)
               Rectf rect(click_pos,
                          viewer->get_state().screen2world(mouse_pos));
               rect.normalize();
-              selected_images = viewer->get_workspace()->get_images(rect);
+              viewer->get_workspace()->select_images(viewer->get_workspace()->get_images(rect));
             }
           else if (move_active)
             {
@@ -84,14 +81,14 @@ MoveTool::mouse_btn_down(int num, const Vector2i& pos)
         {
           click_pos = viewer->get_state().screen2world(pos);
 
-          if (selection_clicked(click_pos))
+          if (viewer->get_workspace()->selection_clicked(click_pos))
             {
               move_active = true;
             }
           else
             {
               drag_active = true;
-              selected_images.clear();
+              viewer->get_workspace()->clear_selection();
             }
         }
         break;
@@ -99,17 +96,6 @@ MoveTool::mouse_btn_down(int num, const Vector2i& pos)
       default:
         break;
     }
-}
-
-bool
-MoveTool::selection_clicked(const Vector2f& pos)
-{
-  for(std::vector<Image>::iterator i = selected_images.begin(); i != selected_images.end(); ++i)
-    {
-      if (i->overlaps(pos))
-        return true;
-    }
-  return false;
 }
 
 void
@@ -124,10 +110,6 @@ MoveTool::draw()
     }
   else
     {
-      for(std::vector<Image>::iterator i = selected_images.begin(); i != selected_images.end(); ++i)
-        {
-          i->draw_mark();
-        }
     }
 }
 

@@ -30,7 +30,6 @@ private:
   bool drag_active;
   bool move_active;
   Vector2f click_pos;
-  std::vector<Image> selected_images;
 
 public:
   MoveTool(Viewer* viewer);
@@ -42,8 +41,6 @@ public:
 
   void draw();
   void update(float delta);
-
-  bool selection_clicked(const Vector2f& pos);
 
 private:
   MoveTool (const MoveTool&);
