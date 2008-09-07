@@ -64,6 +64,7 @@ public:
   void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
   void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float scale);
   void draw(const Rectf& cliprect, float scale);
+  void draw_mark();
 
   void update_pos(float progress);
 
@@ -88,6 +89,7 @@ public:
   std::string get_filename() const;
 
   bool overlaps(const Rectf& cliprect) const;
+  bool overlaps(const Vector2f& pos) const;
 
   operator bool() const { return impl.get(); }
 

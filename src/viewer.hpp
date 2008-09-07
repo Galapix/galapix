@@ -19,16 +19,17 @@
 #ifndef HEADER_VIEWER_HPP
 #define HEADER_VIEWER_HPP
 
+#include <boost/shared_ptr.hpp>
 #include <memory>
 #include "SDL.h"
 #include "surface.hpp"
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 #include "viewer_state.hpp"
-#include "pan_tool.hpp"
-#include "move_tool.hpp"
 
 class Tool;
+class PanTool;
+class MoveTool;
 class Workspace;
 
 class Viewer
@@ -42,8 +43,8 @@ private:
 
   ViewerState state;
 
-  std::auto_ptr<PanTool> pan_tool;
-  std::auto_ptr<MoveTool> move_tool;
+  boost::shared_ptr<PanTool> pan_tool;
+  boost::shared_ptr<MoveTool> move_tool;
   Tool* current_tool;
 
 public:
@@ -55,7 +56,7 @@ public:
   bool done() const { return quit; }
 
   ViewerState& get_state() { return state; }
-
+  Workspace*   get_workspace() { return workspace; }
 private:
   Viewer (const Viewer&);
   Viewer& operator= (const Viewer&);

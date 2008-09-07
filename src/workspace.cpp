@@ -27,6 +27,20 @@ Workspace::Workspace()
   progress = 0.0f;
 }
 
+std::vector<Image>
+Workspace::get_images(const Rectf& rect)
+{
+  std::vector<Image> result;
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      if (i->overlaps(rect))
+        {
+          result.push_back(*i);
+        }
+    }  
+  return result;
+}
+
 void
 Workspace::add_image(const FileEntry& file_entry)
 {

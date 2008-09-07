@@ -25,6 +25,7 @@
 #include "math/rect.hpp"
 #include "workspace.hpp"
 #include "pan_tool.hpp"
+#include "move_tool.hpp"
 #include "viewer.hpp"
 
 Viewer::Viewer(Workspace* workspace)
@@ -34,8 +35,8 @@ Viewer::Viewer(Workspace* workspace)
     draw_grid(false),
     gamma(1.0f)
 {
-  pan_tool  = std::auto_ptr<PanTool>(new PanTool(this));
-  move_tool = std::auto_ptr<MoveTool>(new MoveTool(this));
+  pan_tool  = boost::shared_ptr<PanTool>(new PanTool(this));
+  move_tool = boost::shared_ptr<MoveTool>(new MoveTool(this));
   current_tool = pan_tool.get();
 }
 

@@ -16,43 +16,38 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_WORKSPACE_HPP
-#define HEADER_WORKSPACE_HPP
+#ifndef HEADER_MOVE_TOOL_HPP
+#define HEADER_MOVE_TOOL_HPP
 
+#include <vector>
 #include "image.hpp"
+#include "tool.hpp"
 
-class Rectf;
-
-class Workspace
+class MoveTool : public Tool
 {
 private:
-  typedef std::vector<Image> Images;
-  Images images;
-  Vector2i next_pos;
-  int row_width;
-  float progress;
-  
+  Vector2i mouse_pos;
+  bool drag_active;
+  bool move_active;
+  Vector2f click_pos;
+  std::vector<Image> selected_images;
+
 public:
-  Workspace();
+  MoveTool(Viewer* viewer);
+  ~MoveTool();
 
-  void set_row_width(int w);
+  void mouse_move(const Vector2i& pos, const Vector2i& rel);
+  void mouse_btn_up  (int num, const Vector2i& pos);
+  void mouse_btn_down(int num, const Vector2i& pos);
 
-  std::vector<Image> get_images(const Rectf& rect);
-
-  void add_image(const FileEntry& file_entry);
-  void draw(const Rectf& cliprect, float scale);
+  void draw();
   void update(float delta);
 
-  void sort();
-  void layout(float aspect_w, float aspect_h);
-  void clear_cache();
-  void cache_cleanup();
-  void print_info();
-  void print_images(const Rectf& rect);
+  bool selection_clicked(const Vector2f& pos);
 
 private:
-  Workspace (const Workspace&);
-  Workspace& operator= (const Workspace&);
+  MoveTool (const MoveTool&);
+  MoveTool& operator= (const MoveTool&);
 };
 
 #endif
