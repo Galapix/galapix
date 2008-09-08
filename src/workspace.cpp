@@ -101,6 +101,18 @@ Workspace::layout(float aspect_w, float aspect_h)
 }
 
 void
+Workspace::random_layout()
+{
+  int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      i->set_target_pos(Vector2f(rand()%width, rand()%width));
+      i->set_target_scale((rand()%250) / 1000.0f + 0.25f);
+    }
+  progress = 0.0f;
+}
+
+void
 Workspace::draw(const Rectf& cliprect, float scale)
 {
   //std::cout << Math::clamp(1, static_cast<int>(1.0f / scale), 32) << " -> " << scale << std::endl;

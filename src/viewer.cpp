@@ -180,6 +180,10 @@ Viewer::process_event(const SDL_Event& event)
               workspace->layout(16, 9);
               break;
 
+            case SDLK_3:
+              workspace->random_layout();
+              break;
+
             default:
               break;
           }

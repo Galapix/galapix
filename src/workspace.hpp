@@ -52,11 +52,13 @@ public:
   void update(float delta);
 
   void sort();
-  void layout(float aspect_w, float aspect_h);
   void clear_cache();
   void cache_cleanup();
   void print_info();
   void print_images(const Rectf& rect);
+
+  void layout(float aspect_w, float aspect_h);
+  void random_layout();
 
 private:
   Workspace (const Workspace&);
