@@ -45,6 +45,7 @@ public:
   void clear_selection();
   void move_selection(const Vector2f& rel);
   void scale_selection(float factor);
+  void isolate_selection();
 
   void add_image(const FileEntry& file_entry);
   void draw(const Rectf& cliprect, float scale);

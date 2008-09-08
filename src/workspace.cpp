@@ -73,19 +73,24 @@ Workspace::layout(float aspect_w, float aspect_h)
 
       for(int i = 0; i < int(images.size()); ++i)
         {
+          float target_scale = Math::min(1000.0f / images[i].get_original_width(),
+                                         1000.0f / images[i].get_original_height());
+
+          images[i].set_target_scale(target_scale);
+
           // Offset that positions the image in the center of the 1000x1000 rectangle
-          Vector2f off((1000.0f - images[i].get_scaled_width()) / 2,
-                       (1000.0f - images[i].get_scaled_height()) / 2);
+          Vector2f off((1000.0f - images[i].get_original_width()  * target_scale) / 2,
+                       (1000.0f - images[i].get_original_height() * target_scale) / 2);
 
           if ((i/w) % 2 == 0)
             {
               images[i].set_target_pos(Vector2f((i % w) * 1024.0f,
-                                         (i / w) * 1024.0f) + off);
+                                                (i / w) * 1024.0f) + off);
             }
           else
             {
               images[i].set_target_pos(Vector2f((w - (i % w)-1) * 1024.0f,
-                                         (i / w)         * 1024.0f) + off);
+                                                (i / w)         * 1024.0f) + off);
             }
 
           next_pos = Vector2i(i % w, i / w);
@@ -232,6 +237,13 @@ Workspace::scale_selection(float factor)
     {
       i->set_scale(i->get_scale() * factor);
     } 
+}
+
+void
+Workspace::isolate_selection()
+{
+  images = selected_images;
+  selected_images.clear();
 }
 
 /* EOF */

@@ -69,6 +69,7 @@ public:
   void update_pos(float progress);
 
   void set_target_pos(const Vector2f& target_pos);
+  void set_target_scale(float target_scale);
 
   void set_pos(const Vector2f& pos);
   Vector2f get_pos() const;

@@ -137,6 +137,10 @@ Viewer::process_event(const SDL_Event& event)
                 }
               break;
 
+            case SDLK_i:
+              workspace->isolate_selection();
+              break;
+
             case SDLK_m:
               if (current_tool == pan_tool.get())
                 {
@@ -160,9 +164,9 @@ Viewer::process_event(const SDL_Event& event)
               workspace->sort();
               break;
 
-            case SDLK_i:
-              workspace->print_info();
-              break;
+              //case SDLK_i:
+              //workspace->print_info();
+              //break;
 
             case SDLK_g:
               draw_grid = !draw_grid;

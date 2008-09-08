@@ -37,12 +37,16 @@ class ImageImpl
 {
 public:
   FileEntry file_entry;
-  float scale;
 
   int min_keep_scale; 
+
   Vector2f pos;
   Vector2f last_pos;
   Vector2f target_pos;
+
+  float scale;
+  float last_scale;
+  float target_scale;
 
   Image::Cache cache;
 
@@ -68,7 +72,10 @@ Image::Image(const FileEntry& file_entry)
   : impl(new ImageImpl())
 {
   impl->file_entry = file_entry;
-  impl->scale      = 1.0f;
+
+  impl->scale        = 1.0f;
+  impl->last_scale   = 1.0f;
+  impl->target_scale = 1.0f;
 
   int size  = Math::max(file_entry.get_width(), file_entry.get_height());
   impl->min_keep_scale = 0;
@@ -102,6 +109,13 @@ Image::set_target_pos(const Vector2f& target_pos)
 }
 
 void
+Image::set_target_scale(float target_scale)
+{
+  impl->last_scale   = impl->scale;
+  impl->target_scale = target_scale;  
+}
+
+void
 Image::update_pos(float progress)
 {
   assert(progress >= 0.0f &&
@@ -110,17 +124,21 @@ Image::update_pos(float progress)
   if (progress == 1.0f)
     {
       set_pos(impl->target_pos);
+      set_scale(impl->target_scale);
     }
   else
     {
-      impl->pos = (impl->last_pos * (1.0f - progress)) + (impl->target_pos * progress);
+      impl->pos   = (impl->last_pos   * (1.0f - progress)) + (impl->target_pos   * progress);
+      impl->scale = (impl->last_scale * (1.0f - progress)) + (impl->target_scale * progress);
     }
 }
 
 void
 Image::set_scale(float f)
 {
-  impl->scale = f;
+  impl->scale        = f;
+  impl->last_scale   = f;
+  impl->target_scale = f;
 }
 
 float
