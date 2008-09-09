@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "math/rect.hpp"
 #include "file_entry.hpp"
 #include "math.hpp"
 #include "workspace.hpp"
@@ -107,7 +108,7 @@ Workspace::random_layout()
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       i->set_target_pos(Vector2f(rand()%width, rand()%width));
-      i->set_target_scale((rand()%250) / 1000.0f + 0.25f);
+      i->set_target_scale((rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
     }
   progress = 0.0f;
 }
@@ -256,6 +257,46 @@ Workspace::isolate_selection()
 {
   images = selected_images;
   selected_images.clear();
+}
+
+void
+Workspace::solve_overlaps()
+{
+  int num_overlappings = 1;
+
+  while(num_overlappings)
+    {
+      num_overlappings = 0;
+      // Use QuadTree to make this fast
+      for(std::vector<Image>::iterator i = images.begin(); i != images.end(); ++i)
+        {
+          for(std::vector<Image>::iterator j = i+1; j != images.end(); ++j)
+            {
+              Rectf irect = i->get_image_rect();
+              Rectf jrect = j->get_image_rect();
+
+              if (irect.is_overlapped(jrect))
+                {
+                  num_overlappings += 1;
+                  
+                  Rectf clip = irect.clip_to(jrect);
+
+                  // FIXME: This only works if one rect isn't completly within the other
+                  if (clip.get_width() > clip.get_height())
+                    {
+                      i->set_pos(i->get_pos() - Vector2f(0.0f, clip.get_height()/2 + 16.0f));
+                      j->set_pos(j->get_pos() + Vector2f(0.0f, clip.get_height()/2 + 16.0f));
+                    }
+                  else
+                    {
+                      i->set_pos(i->get_pos() - Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
+                      j->set_pos(j->get_pos() + Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
+                    }
+                }
+            }          
+        }
+      std::cout << "NumOverlappings: " << num_overlappings << std::endl; 
+    }
 }
 
 /* EOF */

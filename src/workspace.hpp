@@ -60,6 +60,8 @@ public:
   void layout(float aspect_w, float aspect_h);
   void random_layout();
 
+  void solve_overlaps();
+
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);

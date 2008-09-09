@@ -2,7 +2,8 @@ Galapix 0.0.3 (4. Sep 2008)
 ===========================
 
 * include fix for gcc 4.3
-
+* random layout
+* scale is smoothly handled on relayout
 
 Galapix 0.0.2 (4. Sep 2008)
 ===========================

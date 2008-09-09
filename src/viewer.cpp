@@ -184,6 +184,10 @@ Viewer::process_event(const SDL_Event& event)
               workspace->random_layout();
               break;
 
+            case SDLK_4:
+              workspace->solve_overlaps();
+              break;
+
             default:
               break;
           }

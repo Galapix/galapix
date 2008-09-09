@@ -366,15 +366,13 @@ Image::print_info()
 bool
 Image::overlaps(const Vector2f& pos) const
 {
-  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
-  return image_rect.is_inside(pos);
+  return get_image_rect().is_inside(pos);
 }
 
 bool
 Image::overlaps(const Rectf& cliprect) const
 {
-  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
-  return cliprect.is_overlapped(image_rect);
+  return cliprect.is_overlapped(get_image_rect());
 }
 
 void
@@ -382,7 +380,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 {
   process_queue();
   
-  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
+  Rectf image_rect = get_image_rect();
 
   if (!cliprect.is_overlapped(image_rect))
     {
@@ -436,19 +434,24 @@ Image::get_filename() const
   return impl->file_entry.get_filename();
 }
 
+void
+Image::draw_mark()
+{
+  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
+  Framebuffer::draw_rect(image_rect, RGB(255, 255, 255));
+}
+
+Rectf
+Image::get_image_rect() const
+{
+  return Rectf(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
+}
 
 void
 Image::receive_tile(const TileEntry& tile)
 {
   assert(impl.get());
   impl->tile_queue.push(tile);
-}
-
-void
-Image::draw_mark()
-{
-  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
-  Framebuffer::draw_rect(image_rect, RGB(255, 255, 255));
 }
 
 /* EOF */

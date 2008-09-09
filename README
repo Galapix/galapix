@@ -90,8 +90,14 @@ F11       | toggle fullscreen
 t         | toggle trackball mode
 1 	  | layout images 4:3
 2 	  | layout images 16:9
+3 	  | random layout
+4         | relayout images in a non-overlapping form
+7         | scale selection down
+8         | scale selection up
 g 	  | toggle grid
 h         | reset zoom and scroll
+m         | switch between tools
+i         | only display selected images, remove the rest
 Page Up   | increase gamma
 Page Down | increase gamma
 space     | print the currently visible images to stdout 

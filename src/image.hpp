@@ -92,6 +92,8 @@ public:
   bool overlaps(const Rectf& cliprect) const;
   bool overlaps(const Vector2f& pos) const;
 
+  Rectf get_image_rect() const;
+
   operator bool() const { return impl.get(); }
 
   /** Syncronized function to require data from other threads */

@@ -1,9 +1,27 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
+* small scales are displayed at the wrong size (thumbnail.size * scale
+  != image_size due to small values of thumbnail.size)
+
+* add button to flip the view
+
+* scale must be handled when running layout
+
 * make rotation accessible via mouse
 
 * give Viewer a pointer to Workspace instead of giving it in functions
+
+* When thumbgen is running while galapix view is started:
+
+terminate called after throwing an instance of 'SQLiteError'
+  what():  SQLiteStatement::~SQLiteStatement: column filename is not unique
+Aborted
+
+* support for archive files (rar, zip) would be nice
+
+* support for additional image formats would be nice, via ImageMagicks
+  "convert" as a fallback
 
 Galapix 0.1.0 Release ToDo:
 ---------------------------
@@ -53,9 +71,16 @@ Galapix 0.1.0 Release ToDo:
    -m, --minsize X      Generate tiles till this size
    -d, --database FILE  
 
-* galapix-db [info|list]
+* galapix-db [info|list|merge|cleanup|delete]
    -d, --database FILE
+
+  galapix-db merge database1.sqlite database2.sqlite out-database.sqlite
+  galapix-db cleanup
+  galapix-db delete -d database1.sqlite [PATTERN]...
+
 _______________________________________________________________________________
+
+* improve overlap constrain solver
 
 * images are always requested in the highest quality, instead lower
   quality should be requested first and heigher quality only if the
