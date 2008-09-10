@@ -24,73 +24,53 @@
 */
 
 #include "viewer.hpp"
-#include "pan_tool.hpp"
+#include "workspace.hpp"
+#include "resize_tool.hpp"
 
-PanTool::PanTool(Viewer* viewer)
+ResizeTool::ResizeTool(Viewer* viewer)
   : Tool(viewer),
-    trackball_mode(false),
-    move_active(false)
-{
-}
-
-PanTool::~PanTool()
-{
+    resize_active(false),
+    old_scale(1.0f)
+{  
 }
 
 void
-PanTool::move(const Vector2i& pos, const Vector2i& rel)
+ResizeTool::move(const Vector2i& pos, const Vector2i& rel)
 {
-  mouse_pos = pos;
-
-  if (trackball_mode)
+  if (resize_active)
     {
-      viewer->get_state().move(rel * 4);
-    }
-  else if (move_active)
-    { // FIXME: This is of course wrong, since depending on x/yrel will lead to drift
-      // Also we shouldn't use 4x speed, but 1x seems so useless
-      viewer->get_state().move(rel * 4);
-    }
-}
+      Vector2f p = viewer->get_state().screen2world(pos);
 
-void
-PanTool::up(const Vector2i& pos)
-{
-  mouse_pos   = pos;
-  move_active = false;
-}
+      float a = (selection_center - p).length();
+      float b = (selection_center - resize_center).length();
 
-void
-PanTool::down(const Vector2i& pos)
-{
-  mouse_pos   = pos;
-  move_active = true;
-}
-
-void
-PanTool::update(const Vector2i& pos, float delta)
-{
-  if (trackball_mode)
-    {
-      /* FIXME: Integrate that somewhere 
-         if (zoom_in && !zoom_out)
-         viewer->get_state().zoom(1.0f / (1.0f + 4.0f * delta));
-         else if (!zoom_in && zoom_out)
-         viewer->get_state().zoom(1.0f + 4.0f * delta);
-      */
+      if (b != 0.0f)
+        {
+          //std::cout << a << " " << b << " " << a / b << std::endl;
+          viewer->get_workspace()->get_selection().scale((1.0f/old_scale) * (a/b));
+          old_scale = a/b; // FIXME: Hack, should scale to original scale 
+        }
     }
 }
 
-bool
-PanTool::get_trackball_mode() const
+void
+ResizeTool::up(const Vector2i& pos)
 {
-  return trackball_mode;
+  resize_active = false;
+  old_scale = 1.0f;
 }
 
 void
-PanTool::set_trackball_mode(bool mode)
+ResizeTool::down(const Vector2i& pos)
 {
-  trackball_mode = mode;
+  resize_active    = true;
+  resize_center    = viewer->get_state().screen2world(pos);
+  selection_center = viewer->get_workspace()->get_selection().get_center();
+}
+
+void
+ResizeTool::update(const Vector2i& pos, float delta)
+{
 }
 
 /* EOF */

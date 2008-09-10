@@ -16,38 +16,48 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MOVE_TOOL_HPP
-#define HEADER_MOVE_TOOL_HPP
-
-#include <vector>
-#include "image.hpp"
-#include "tool.hpp"
+#include "viewer.hpp"
+#include "zoom_tool.hpp"
 
-class MoveTool : public Tool
+ZoomTool::ZoomTool(Viewer* viewer, float zoom_factor)
+  : Tool(viewer),
+    zoom_active(false),
+    zoom_factor(zoom_factor)
 {
-private:
-  Vector2i mouse_pos;
-  bool drag_active;
+}
 
-  bool move_active;
-  Vector2f click_pos;
+void
+ZoomTool::move(const Vector2i& pos, const Vector2i& rel)
+{
+}
 
-public:
-  MoveTool(Viewer* viewer);
-  ~MoveTool();
+void
+ZoomTool::up  (const Vector2i& pos)
+{
+  zoom_active = false;  
+}
 
-  void move(const Vector2i& pos, const Vector2i& rel);
-  void up  (const Vector2i& pos);
-  void down(const Vector2i& pos);
+void
+ZoomTool::down(const Vector2i& pos)
+{
+  zoom_active = true;
+}
 
-  void draw();
-  void update(const Vector2i& pos, float delta);
+void
+ZoomTool::update(const Vector2i& mouse_pos, float delta)
+{
+  if (zoom_active)
+    {
+      if (zoom_factor > 0)
+        viewer->get_state().zoom(1.0f / (1.0f + zoom_factor * delta), mouse_pos);
+      else
+        viewer->get_state().zoom(1.0f - zoom_factor * delta, mouse_pos);
+    }
+}
 
-private:
-  MoveTool (const MoveTool&);
-  MoveTool& operator= (const MoveTool&);
-};
+void
+ZoomTool::draw()
+{
+}
 
-#endif
-
 /* EOF */

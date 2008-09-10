@@ -21,6 +21,7 @@ galapix_sources = [
     'src/move_tool.cpp',
     #    'src/md5.cpp',
     'src/pan_tool.cpp',
+    'src/resize_tool.cpp',
     'src/software_surface.cpp',
     'src/sqlite.cpp',
     'src/surface.cpp',
@@ -35,6 +36,7 @@ galapix_sources = [
     'src/viewer.cpp',
     'src/viewer_state.cpp',
     'src/workspace.cpp',
+    'src/zoom_tool.cpp',
     ]
 
 import sys, os

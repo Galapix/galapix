@@ -30,6 +30,8 @@
 class Tool;
 class PanTool;
 class MoveTool;
+class ZoomTool;
+class ResizeTool;
 class Workspace;
 
 class Viewer
@@ -43,10 +45,17 @@ private:
 
   ViewerState state;
 
-  boost::shared_ptr<PanTool> pan_tool;
+  boost::shared_ptr<PanTool>  pan_tool;
   boost::shared_ptr<MoveTool> move_tool;
-  Tool* current_tool;
+  boost::shared_ptr<ZoomTool> zoom_in_tool;
+  boost::shared_ptr<ZoomTool> zoom_out_tool;
+  boost::shared_ptr<ResizeTool> resize_tool;
 
+  Tool* left_tool;
+  Tool* middle_tool;
+  Tool* right_tool;
+
+  Vector2i mouse_pos;
 public:
   Viewer(Workspace* workspace);
 

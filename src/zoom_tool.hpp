@@ -16,25 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MOVE_TOOL_HPP
-#define HEADER_MOVE_TOOL_HPP
+#ifndef HEADER_ZOOM_TOOL_HPP
+#define HEADER_ZOOM_TOOL_HPP
 
-#include <vector>
-#include "image.hpp"
 #include "tool.hpp"
 
-class MoveTool : public Tool
+class ZoomTool : public Tool
 {
 private:
-  Vector2i mouse_pos;
-  bool drag_active;
-
-  bool move_active;
-  Vector2f click_pos;
+  bool  zoom_active;
+  float zoom_factor;
 
 public:
-  MoveTool(Viewer* viewer);
-  ~MoveTool();
+  ZoomTool(Viewer* viewer, float zoom_factor);
 
   void move(const Vector2i& pos, const Vector2i& rel);
   void up  (const Vector2i& pos);
@@ -42,10 +36,6 @@ public:
 
   void draw();
   void update(const Vector2i& pos, float delta);
-
-private:
-  MoveTool (const MoveTool&);
-  MoveTool& operator= (const MoveTool&);
 };
 
 #endif

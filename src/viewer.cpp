@@ -26,6 +26,8 @@
 #include "workspace.hpp"
 #include "pan_tool.hpp"
 #include "move_tool.hpp"
+#include "zoom_tool.hpp"
+#include "resize_tool.hpp"
 #include "viewer.hpp"
 
 Viewer::Viewer(Workspace* workspace)
@@ -35,9 +37,16 @@ Viewer::Viewer(Workspace* workspace)
     draw_grid(false),
     gamma(1.0f)
 {
-  pan_tool  = boost::shared_ptr<PanTool>(new PanTool(this));
-  move_tool = boost::shared_ptr<MoveTool>(new MoveTool(this));
-  current_tool = pan_tool.get();
+  pan_tool    = boost::shared_ptr<PanTool>(new PanTool(this));
+  move_tool   = boost::shared_ptr<MoveTool>(new MoveTool(this));
+  resize_tool = boost::shared_ptr<ResizeTool>(new ResizeTool(this));
+
+  zoom_in_tool  = boost::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
+  zoom_out_tool = boost::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
+
+  left_tool   = zoom_in_tool.get();
+  middle_tool = pan_tool.get();
+  right_tool  = zoom_out_tool.get();
 }
 
 void
@@ -141,17 +150,18 @@ Viewer::process_event(const SDL_Event& event)
               workspace->isolate_selection();
               break;
 
+            case SDLK_p:
+              std::cout << "Pan&Zoom Tools selected" << std::endl;
+              left_tool   = zoom_in_tool.get();
+              right_tool  = zoom_out_tool.get();              
+              middle_tool = pan_tool.get();
+              break;
+
             case SDLK_m:
-              if (current_tool == pan_tool.get())
-                {
-                  std::cout << "MoveTool Activated" << std::endl;
-                  current_tool = move_tool.get();
-                }
-              else
-                {
-                  std::cout << "PanTool Activated" << std::endl;
-                  current_tool = pan_tool.get();
-                }
+              std::cout << "Move&Resize Tools selected" << std::endl;
+              left_tool   = move_tool.get();
+              right_tool  = resize_tool.get();              
+              middle_tool = pan_tool.get();
               break;
               
             case SDLK_h:
@@ -194,23 +204,56 @@ Viewer::process_event(const SDL_Event& event)
         break;
 
       case SDL_MOUSEMOTION:
-        current_tool->mouse_move(Vector2i(event.motion.x,    event.motion.y),
-                                 Vector2i(event.motion.xrel, event.motion.yrel));
+        mouse_pos = Vector2i(event.motion.x, event.motion.y);
+
+        left_tool  ->move(mouse_pos, Vector2i(event.motion.xrel, event.motion.yrel));
+        middle_tool->move(mouse_pos, Vector2i(event.motion.xrel, event.motion.yrel));
+        right_tool ->move(mouse_pos, Vector2i(event.motion.xrel, event.motion.yrel));
         break;
+        
+      case SDL_MOUSEBUTTONDOWN:
+        mouse_pos = Vector2i(event.button.x, event.button.y);
 
+        switch(event.button.button)
+          {
+            case SDL_BUTTON_WHEELUP:
+              get_state().zoom(1.1f, mouse_pos);
+              break;
+        
+            case SDL_BUTTON_WHEELDOWN:
+              get_state().zoom(1.0f/1.1f, mouse_pos);
+              break;
 
-      case SDL_MOUSEBUTTONDOWN:      
-        current_tool->mouse_btn_down(event.button.button, Vector2i(event.button.x, event.button.y));
+            case SDL_BUTTON_LEFT:
+              left_tool->down(Vector2i(event.button.x, event.button.y));
+              break;
+
+            case SDL_BUTTON_RIGHT:
+              right_tool->down(Vector2i(event.button.x, event.button.y));
+              break;
+
+            case SDL_BUTTON_MIDDLE:
+              middle_tool->down(Vector2i(event.button.x, event.button.y));
+              break;
+          }
         break;
 
       case SDL_MOUSEBUTTONUP:
-        current_tool->mouse_btn_up(event.button.button, Vector2i(event.button.x, event.button.y));
+        mouse_pos = Vector2i(event.button.x, event.button.y);
 
         // FIXME: SDL Reverses the mouse buttons when a grab is active!
         switch(event.button.button)
-          {                 
+          {
+            case SDL_BUTTON_LEFT:
+              left_tool->up(Vector2i(event.button.x, event.button.y));
+              break;
+
+            case SDL_BUTTON_RIGHT:
+              right_tool->up(Vector2i(event.button.x, event.button.y));
+              break;
+
             case SDL_BUTTON_MIDDLE:
-              //std::cout << state.screen2world(mouse_pos) << std::endl;
+              middle_tool->up(Vector2i(event.button.x, event.button.y));
               break;
           }
         break;
@@ -262,7 +305,9 @@ Viewer::draw()
   workspace->draw(cliprect,
                  state.get_scale());
 
-  current_tool->draw();
+  left_tool->draw();
+  middle_tool->draw();
+  right_tool->draw();
 
   glPopMatrix();
 
@@ -275,7 +320,9 @@ Viewer::update(float delta)
 {
   workspace->update(delta);
 
-  current_tool->update(delta);
+  left_tool  ->update(mouse_pos, delta);
+  middle_tool->update(mouse_pos, delta);
+  right_tool ->update(mouse_pos, delta);
 }
 
 /* EOF */

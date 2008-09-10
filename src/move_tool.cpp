@@ -26,8 +26,6 @@
 MoveTool::MoveTool(Viewer* viewer)
   : Tool(viewer),
     drag_active(false),
-    resize_active(false),
-    old_scale(1.0f),
     move_active(false)
 {
 }
@@ -37,7 +35,7 @@ MoveTool::~MoveTool()
 }
 
 void
-MoveTool::mouse_move(const Vector2i& pos, const Vector2i& rel)
+MoveTool::move(const Vector2i& pos, const Vector2i& rel)
 {
   mouse_pos = pos;
 
@@ -45,84 +43,38 @@ MoveTool::mouse_move(const Vector2i& pos, const Vector2i& rel)
     {
       viewer->get_workspace()->move_selection(rel * (1.0f/viewer->get_state().get_scale()));
     }
-  
-  if (resize_active)
+}
+
+void
+MoveTool::up(const Vector2i& pos)
+{
+  if (drag_active)
     {
-      Vector2f p = viewer->get_state().screen2world(pos);
-
-      float a = (selection_center - p).length();
-      float b = (selection_center - resize_center).length();
-
-      if (b != 0.0f)
-        {
-          //std::cout << a << " " << b << " " << a / b << std::endl;
-          viewer->get_workspace()->get_selection().scale((1.0f/old_scale) * (a/b));
-          old_scale = a/b; // FIXME: Hack, should scale to original scale 
-        }
+      drag_active = false;
+      Rectf rect(click_pos,
+                 viewer->get_state().screen2world(mouse_pos));
+      rect.normalize();
+      viewer->get_workspace()->select_images(viewer->get_workspace()->get_images(rect));
+    }
+  else if (move_active)
+    {
+      move_active = false;
     }
 }
 
 void
-MoveTool::mouse_btn_up  (int num, const Vector2i& pos)
+MoveTool::down(const Vector2i& pos)
 {
-  switch (num)
-    {
-      case SDL_BUTTON_LEFT:
-        {
-          if (drag_active)
-            {
-              drag_active = false;
-              Rectf rect(click_pos,
-                         viewer->get_state().screen2world(mouse_pos));
-              rect.normalize();
-              viewer->get_workspace()->select_images(viewer->get_workspace()->get_images(rect));
-            }
-          else if (move_active)
-            {
-              move_active = false;
-            }
-        }
-        break;
-        
-      case SDL_BUTTON_RIGHT:
-        resize_active = false;
-        old_scale = 1.0f;
-        break;
+  click_pos = viewer->get_state().screen2world(pos);
 
-      default:
-        break;
+  if (viewer->get_workspace()->selection_clicked(click_pos))
+    {
+      move_active = true;
     }
-}
-
-void
-MoveTool::mouse_btn_down(int num, const Vector2i& pos)
-{
-  switch (num)
+  else
     {
-      case SDL_BUTTON_LEFT:
-        {
-          click_pos = viewer->get_state().screen2world(pos);
-
-          if (viewer->get_workspace()->selection_clicked(click_pos))
-            {
-              move_active = true;
-            }
-          else
-            {
-              drag_active = true;
-              viewer->get_workspace()->clear_selection();
-            }
-        }
-        break;
-       
-      case SDL_BUTTON_RIGHT:
-        resize_active = true;
-        resize_center    = viewer->get_state().screen2world(pos);
-        selection_center = viewer->get_workspace()->get_selection().get_center();
-        break;
-        
-      default:
-        break;
+      drag_active = true;
+      viewer->get_workspace()->clear_selection();
     }
 }
 
@@ -136,14 +88,11 @@ MoveTool::draw()
       rect.normalize();
       Framebuffer::draw_rect(rect, RGB(255, 255, 255));
     }
-  else
-    {
-    }
 }
 
 void
-MoveTool::update(float delta)
+MoveTool::update(const Vector2i& pos, float delta)
 {
 }
-
+  
 /* EOF */

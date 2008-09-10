@@ -30,19 +30,17 @@ private:
   bool move_active;
 
   Vector2i mouse_pos;
-  bool     zoom_in;
-  bool     zoom_out;
 
 public:
   PanTool(Viewer* viewer);
   ~PanTool();
 
-  void mouse_move(const Vector2i& pos, const Vector2i& rel);
-  void mouse_btn_up  (int num, const Vector2i& pos);
-  void mouse_btn_down(int num, const Vector2i& pos);
+  void move(const Vector2i& pos, const Vector2i& rel);
+  void up  (const Vector2i& pos);
+  void down(const Vector2i& pos);
 
-  void draw();
-  void update(float delta);
+  void draw() {}
+  void update(const Vector2i& pos, float delta);
 
   bool get_trackball_mode() const;
   void set_trackball_mode(bool mode);
