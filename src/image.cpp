@@ -40,6 +40,8 @@ public:
 
   int min_keep_scale; 
 
+  float alpha;
+
   /** Position refers to the center of the image */
   Vector2f pos;
   Vector2f last_pos;
@@ -74,6 +76,8 @@ Image::Image(const FileEntry& file_entry)
 {
   impl->file_entry = file_entry;
 
+  impl->alpha = 1.0f;
+
   impl->scale        = 1.0f;
   impl->last_scale   = 1.0f;
   impl->target_scale = 1.0f;
@@ -86,6 +90,18 @@ Image::Image(const FileEntry& file_entry)
       impl->min_keep_scale +=1 ;
     }
   
+}
+
+void
+Image::set_alpha(float alpha)
+{
+  impl->alpha = alpha;
+}
+
+float
+Image::get_alpha() const
+{
+  return impl->alpha;
 }
 
 Vector2f

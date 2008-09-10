@@ -245,15 +245,6 @@ Workspace::move_selection(const Vector2f& rel)
 }
 
 void
-Workspace::scale_selection(float factor)
-{
-  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
-    {
-      i->set_scale(i->get_scale() * factor);
-    }
-}
-
-void
 Workspace::isolate_selection()
 {
   images = selection.get_images();

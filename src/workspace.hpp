@@ -46,7 +46,6 @@ public:
   bool selection_clicked(const Vector2f& pos);
   void clear_selection();
   void move_selection(const Vector2f& rel);
-  void scale_selection(float factor);
   void isolate_selection();
 
   void add_image(const FileEntry& file_entry);

@@ -50,6 +50,18 @@ Selection::remove_image(const Image& image)
 }
 
 void
+Selection::scale(float factor)
+{
+  Vector2f center = get_center();
+  for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+    {
+      i->set_scale(i->get_scale() * factor);
+
+      i->set_pos(center + (i->get_pos() - center) * factor);
+    }
+}
+
+void
 Selection::clear()
 {
   impl->images.clear();
@@ -76,11 +88,11 @@ Selection::get_center() const
     }
   else
     {
-      Vector2f pos = impl->images.front().get_image_rect().get_center();
-      for(Images::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
+      Vector2f pos;
+      for(Images::const_iterator i = impl->images.begin(); i != impl->images.end(); ++i)
         {
           pos += i->get_pos();
-        }  
+        }
       return pos / impl->images.size();
     }
 }

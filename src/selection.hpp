@@ -39,6 +39,8 @@ public:
   Images get_images() const;
   bool   empty() const;
 
+  void scale(float factor);
+
   Vector2f get_center() const;
 
   iterator begin();

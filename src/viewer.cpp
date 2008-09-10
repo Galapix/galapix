@@ -89,11 +89,11 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_7:
-              workspace->scale_selection(1.0f/1.1f);
+              workspace->get_selection().scale(1.0f/1.1f);
               break;
 
             case SDLK_8:
-              workspace->scale_selection(1.1f);
+              workspace->get_selection().scale(1.1f);
               break;
 
             case SDLK_SPACE:
