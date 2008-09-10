@@ -1,6 +1,8 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
+* when highly zoomed in, moving doesn't work any more
+
 * implemented 2x2 Matrix
 
 * implement image rotation
@@ -25,6 +27,8 @@ Aborted
 
 Galapix 0.1.0 Release ToDo:
 ---------------------------
+
+* implement workspace load&save
 
 * make middle button exit trackball mode
 

@@ -254,6 +254,8 @@ Workspace::isolate_selection()
 void
 Workspace::solve_overlaps()
 {
+  // FIXME: This function is extremely slow and doesn't work
+  // dynamically (no animation on position setting)
   int num_overlappings = 1;
 
   while(num_overlappings)
@@ -289,6 +291,12 @@ Workspace::solve_overlaps()
         }
       std::cout << "NumOverlappings: " << num_overlappings << std::endl; 
     }
+}
+
+void
+Workspace::save(const std::string& filename)
+{
+
 }
 
 /* EOF */

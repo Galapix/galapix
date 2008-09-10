@@ -28,6 +28,7 @@
 #include "move_tool.hpp"
 #include "zoom_tool.hpp"
 #include "resize_tool.hpp"
+#include "rotate_tool.hpp"
 #include "viewer.hpp"
 
 Viewer::Viewer(Workspace* workspace)
@@ -40,6 +41,7 @@ Viewer::Viewer(Workspace* workspace)
   pan_tool    = boost::shared_ptr<PanTool>(new PanTool(this));
   move_tool   = boost::shared_ptr<MoveTool>(new MoveTool(this));
   resize_tool = boost::shared_ptr<ResizeTool>(new ResizeTool(this));
+  rotate_tool = boost::shared_ptr<RotateTool>(new RotateTool(this));
 
   zoom_in_tool  = boost::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
   zoom_out_tool = boost::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
@@ -154,6 +156,13 @@ Viewer::process_event(const SDL_Event& event)
               std::cout << "Pan&Zoom Tools selected" << std::endl;
               left_tool   = zoom_in_tool.get();
               right_tool  = zoom_out_tool.get();              
+              middle_tool = pan_tool.get();
+              break;
+
+            case SDLK_r:
+              std::cout << "Move&Rotate Tools selected" << std::endl;
+              left_tool   = move_tool.get();
+              right_tool  = rotate_tool.get();
               middle_tool = pan_tool.get();
               break;
 

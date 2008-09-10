@@ -63,6 +63,7 @@ public:
 
   void solve_overlaps();
 
+  void save(const std::string& filename);
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);

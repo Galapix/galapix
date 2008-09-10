@@ -32,6 +32,7 @@ class PanTool;
 class MoveTool;
 class ZoomTool;
 class ResizeTool;
+class RotateTool;
 class Workspace;
 
 class Viewer
@@ -45,11 +46,12 @@ private:
 
   ViewerState state;
 
-  boost::shared_ptr<PanTool>  pan_tool;
-  boost::shared_ptr<MoveTool> move_tool;
-  boost::shared_ptr<ZoomTool> zoom_in_tool;
-  boost::shared_ptr<ZoomTool> zoom_out_tool;
+  boost::shared_ptr<PanTool>    pan_tool;
+  boost::shared_ptr<MoveTool>   move_tool;
+  boost::shared_ptr<ZoomTool>   zoom_in_tool;
+  boost::shared_ptr<ZoomTool>   zoom_out_tool;
   boost::shared_ptr<ResizeTool> resize_tool;
+  boost::shared_ptr<RotateTool> rotate_tool;
 
   Tool* left_tool;
   Tool* middle_tool;
