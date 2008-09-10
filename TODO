@@ -1,24 +1,16 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
-* Make Image::get_pos() refer to the image center instead of top/left
-
 * implemented 2x2 Matrix
 
 * implement image rotation
-
-* abstract the selection into a seperate class
 
 * small scales are displayed at the wrong size (thumbnail.size * scale
   != image_size due to small values of thumbnail.size)
 
 * add button to flip the view
 
-* scale must be handled when running layout
-
-* make rotation accessible via mouse
-
-* give Viewer a pointer to Workspace instead of giving it in functions
+* make view rotation accessible via mouse
 
 * When thumbgen is running while galapix view is started:
 
