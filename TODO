@@ -1,6 +1,12 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
+* implemented 2x2 Matrix
+
+* implement image rotation
+
+* abstract the selection into a seperate class
+
 * small scales are displayed at the wrong size (thumbnail.size * scale
   != image_size due to small values of thumbnail.size)
 

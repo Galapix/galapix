@@ -24,6 +24,7 @@ galapix_sources = [
     'src/software_surface.cpp',
     'src/sqlite.cpp',
     'src/surface.cpp',
+    'src/selection.cpp',
     'src/texture.cpp',
     'src/thread.cpp',
     'src/tile_database.cpp',

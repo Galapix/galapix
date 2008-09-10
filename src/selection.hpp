@@ -16,39 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MOVE_TOOL_HPP
-#define HEADER_MOVE_TOOL_HPP
+#ifndef HEADER_SELECTION_HPP
+#define HEADER_SELECTION_HPP
 
-#include <vector>
+#include "math/vector2f.hpp"
 #include "image.hpp"
-#include "tool.hpp"
 
-class MoveTool : public Tool
+class SelectionImpl;
+
+class Selection
 {
-private:
-  Vector2i mouse_pos;
-  bool drag_active;
-  bool     resize_active;
-  Vector2f resize_center;
-  Vector2f selection_center;
-  float    old_scale;
-  bool move_active;
-  Vector2f click_pos;
-
 public:
-  MoveTool(Viewer* viewer);
-  ~MoveTool();
+  typedef std::vector<Image> Images;
+  typedef std::vector<Image>::iterator iterator;
 
-  void mouse_move(const Vector2i& pos, const Vector2i& rel);
-  void mouse_btn_up  (int num, const Vector2i& pos);
-  void mouse_btn_down(int num, const Vector2i& pos);
+  Selection();
 
-  void draw();
-  void update(float delta);
+  void   add_image(const Image& image);
+  void   add_images(const std::vector<Image>& images);
+  void   remove_image(const Image& image);
+  void   clear();
+  Images get_images() const;
+  bool   empty() const;
 
+  Vector2f get_center() const;
+
+  iterator begin();
+  iterator end();
+  
 private:
-  MoveTool (const MoveTool&);
-  MoveTool& operator= (const MoveTool&);
+  boost::shared_ptr<SelectionImpl> impl;
 };
 
 #endif

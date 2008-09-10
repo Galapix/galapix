@@ -123,7 +123,7 @@ Workspace::draw(const Rectf& cliprect, float scale)
       i->draw(cliprect, scale);
     }  
 
-  for(std::vector<Image>::iterator i = selected_images.begin(); i != selected_images.end(); ++i)
+  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
       i->draw_mark();
     }
@@ -214,13 +214,14 @@ Workspace::set_row_width(int w)
 void
 Workspace::select_images(const std::vector<Image>& lst)
 {
-  selected_images = lst;
+  selection.clear();
+  selection.add_images(lst);
 }
 
 bool
 Workspace::selection_clicked(const Vector2f& pos)
 {
-  for(std::vector<Image>::iterator i = selected_images.begin(); i != selected_images.end(); ++i)
+  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
       if (i->overlaps(pos))
         return true;
@@ -231,13 +232,13 @@ Workspace::selection_clicked(const Vector2f& pos)
 void
 Workspace::clear_selection()
 {
-  selected_images.clear();
+  selection.clear();
 }
 
 void
 Workspace::move_selection(const Vector2f& rel)
 {
-  for(std::vector<Image>::iterator i = selected_images.begin(); i != selected_images.end(); ++i)
+  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
       i->set_pos(i->get_pos() + rel);
     }
@@ -246,17 +247,22 @@ Workspace::move_selection(const Vector2f& rel)
 void
 Workspace::scale_selection(float factor)
 {
-  for(std::vector<Image>::iterator i = selected_images.begin(); i != selected_images.end(); ++i)
+  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
       i->set_scale(i->get_scale() * factor);
-    } 
+
+      Rectf r = i->get_image_rect();
+      i->set_pos(i->get_pos()
+                 + Vector2f(r.get_width()/2, r.get_height()/2)
+                 - Vector2f(r.get_width()/2, r.get_height()/2) * factor);
+    }
 }
 
 void
 Workspace::isolate_selection()
 {
-  images = selected_images;
-  selected_images.clear();
+  images = selection.get_images();
+  selection.clear();
 }
 
 void

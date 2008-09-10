@@ -19,6 +19,7 @@
 #ifndef HEADER_WORKSPACE_HPP
 #define HEADER_WORKSPACE_HPP
 
+#include "selection.hpp"
 #include "image.hpp"
 
 class Rectf;
@@ -28,7 +29,7 @@ class Workspace
 private:
   typedef std::vector<Image> Images;
   Images images;
-  Images selected_images;
+  Selection selection;
   Vector2i next_pos;
   int row_width;
   float progress;
@@ -39,7 +40,8 @@ public:
   void set_row_width(int w);
 
   std::vector<Image> get_images(const Rectf& rect);
-  
+
+  Selection get_selection() const { return selection; }
   void select_images(const std::vector<Image>& images);
   bool selection_clicked(const Vector2f& pos);
   void clear_selection();
