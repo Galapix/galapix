@@ -102,7 +102,7 @@ i         | only display selected images, remove the rest
 Page Up   | increase gamma
 Page Down | increase gamma
 space     | print the currently visible images to stdout 
-
+delete    | remove selected images from workspace
 
 SpaceNavigator Support:
 =======================

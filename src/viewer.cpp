@@ -107,6 +107,10 @@ Viewer::process_event(const SDL_Event& event)
               workspace->get_selection().scale(1.1f);
               break;
 
+            case SDLK_DELETE:
+              workspace->delete_selection();
+              break;
+              
             case SDLK_SPACE:
               {
                 Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
@@ -180,7 +184,13 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_s:
+              std::cout << "Workspace: Sorting" << std::endl;
               workspace->sort();
+              break;
+
+            case SDLK_n:
+              std::cout << "Workspace: Random Shuffle" << std::endl;
+              workspace->random_shuffle();
               break;
 
               //case SDLK_i:

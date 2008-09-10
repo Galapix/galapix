@@ -103,6 +103,7 @@ public:
   Rectf get_image_rect() const;
 
   operator bool() const { return impl.get(); }
+  bool operator==(const Image& rhs) { return impl.get() == rhs.impl.get(); }
 
   /** Syncronized function to require data from other threads */
   void receive_tile(const TileEntry& tile_entry);

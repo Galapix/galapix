@@ -64,8 +64,6 @@ Workspace::add_image(const FileEntry& file_entry)
 void
 Workspace::layout(float aspect_w, float aspect_h)
 {
-  sort();
-
   if (!images.empty())
     {     
       int w = int(Math::sqrt(aspect_w * images.size() / aspect_h));
@@ -161,6 +159,12 @@ Workspace::sort()
 }
 
 void
+Workspace::random_shuffle()
+{
+  std::random_shuffle(images.begin(), images.end());
+}
+
+void
 Workspace::clear_cache()
 {
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
@@ -248,6 +252,33 @@ void
 Workspace::isolate_selection()
 {
   images = selection.get_images();
+  selection.clear();
+}
+
+struct ImagesMemberOf
+{
+  Selection selection;
+
+  ImagesMemberOf(const Selection& selection)
+    : selection(selection)
+  {}
+
+  bool operator()(const Image& image)
+  {
+    for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+      {
+        if (*i == image)
+          return true;
+      }
+    return false;
+  }
+};
+
+void
+Workspace::delete_selection()
+{
+  images.erase(std::remove_if(images.begin(), images.end(), ImagesMemberOf(selection)),
+               images.end());
   selection.clear();
 }
 

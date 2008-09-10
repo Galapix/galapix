@@ -46,13 +46,20 @@ public:
   bool selection_clicked(const Vector2f& pos);
   void clear_selection();
   void move_selection(const Vector2f& rel);
+
+  /** Delete all images that aren't in the selection */
   void isolate_selection();
+
+  /** Delete all images in the selection */
+  void delete_selection();
 
   void add_image(const FileEntry& file_entry);
   void draw(const Rectf& cliprect, float scale);
   void update(float delta);
 
   void sort();
+  void random_shuffle();
+
   void clear_cache();
   void cache_cleanup();
   void print_info();

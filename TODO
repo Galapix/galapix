@@ -1,6 +1,11 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
+* change Framebuffer/Surface so that we can draw images with alpha
+
+* make image selection work as expected when images overlap or when
+  clicked and dragged in one go
+
 * when highly zoomed in, moving doesn't work any more
 
 * implemented 2x2 Matrix
