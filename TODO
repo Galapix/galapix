@@ -28,10 +28,6 @@ Galapix 0.1.0 Release ToDo:
 
 * make middle button exit trackball mode
 
-* add home-button to reset scrolling back to 0,0
-
-* maybe limit the scrolling area, so that one can't scroll completly out of the picture
-
 * add check for boost header files and make scons somewhat more solid
 * replace SCons with WAF?
 
@@ -79,6 +75,8 @@ Galapix 0.1.0 Release ToDo:
   galapix-db delete -d database1.sqlite [PATTERN]...
 
 _______________________________________________________________________________
+
+* maybe limit the scrolling area, so that one can't scroll completly out of the picture
 
 * improve overlap constrain solver
 

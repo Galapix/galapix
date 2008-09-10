@@ -47,9 +47,13 @@ public:
   Vector2f last_pos;
   Vector2f target_pos;
 
+  /** Scale of the image */
   float scale;
   float last_scale;
   float target_scale;
+
+  /** Rotation angle */
+  float angle;
 
   Image::Cache cache;
 
@@ -76,6 +80,8 @@ Image::Image(const FileEntry& file_entry)
 {
   impl->file_entry = file_entry;
 
+  impl->angle = 0.0f;
+  
   impl->alpha = 1.0f;
 
   impl->scale        = 1.0f;
@@ -154,6 +160,18 @@ Image::update_pos(float progress)
       impl->pos   = (impl->last_pos   * (1.0f - progress)) + (impl->target_pos   * progress);
       impl->scale = (impl->last_scale * (1.0f - progress)) + (impl->target_scale * progress);
     }
+}
+
+void
+Image::set_angle(float a)
+{
+  impl->angle = a;
+}
+
+float
+Image::get_angle(float a) const
+{
+  return impl->angle;
 }
 
 void
