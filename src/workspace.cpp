@@ -250,11 +250,6 @@ Workspace::scale_selection(float factor)
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
       i->set_scale(i->get_scale() * factor);
-
-      Rectf r = i->get_image_rect();
-      i->set_pos(i->get_pos()
-                 + Vector2f(r.get_width()/2, r.get_height()/2)
-                 - Vector2f(r.get_width()/2, r.get_height()/2) * factor);
     }
 }
 

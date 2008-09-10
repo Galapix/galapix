@@ -40,6 +40,7 @@ public:
 
   int min_keep_scale; 
 
+  /** Position refers to the center of the image */
   Vector2f pos;
   Vector2f last_pos;
   Vector2f target_pos;
@@ -85,6 +86,12 @@ Image::Image(const FileEntry& file_entry)
       impl->min_keep_scale +=1 ;
     }
   
+}
+
+Vector2f
+Image::get_top_left_pos() const
+{
+  return impl->pos - Vector2f(get_scaled_width()/2, get_scaled_height()/2);
 }
 
 void
@@ -284,7 +291,7 @@ Image::draw_tiles(const Rect& rect, int tiledb_scale,
     for(int x = rect.left; x < rect.right; ++x)
       {
         draw_tile(x, y, tiledb_scale, 
-                  impl->pos + Vector2f(x,y) * tilesize,
+                  get_top_left_pos() + Vector2f(x,y) * tilesize,
                   scale);
       }
 }
@@ -381,6 +388,7 @@ Image::draw(const Rectf& cliprect, float fscale)
   process_queue();
   
   Rectf image_rect = get_image_rect();
+  Vector2f top_left(image_rect.left, image_rect.top);
 
   if (!cliprect.is_overlapped(image_rect))
     {
@@ -400,17 +408,17 @@ Image::draw(const Rectf& cliprect, float fscale)
       if (scaled_width  < 256 && scaled_height < 256)
         { // So small that only one tile is to be drawn
           draw_tile(0, 0, tiledb_scale, 
-                    impl->pos,
+                    top_left,
                     scale_factor * impl->scale);
         }
       else
         {
           Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
 
-          image_region.left   = (image_region.left   - impl->pos.x) / impl->scale;
-          image_region.right  = (image_region.right  - impl->pos.x) / impl->scale;
-          image_region.top    = (image_region.top    - impl->pos.y) / impl->scale;
-          image_region.bottom = (image_region.bottom - impl->pos.y) / impl->scale;
+          image_region.left   = (image_region.left   - top_left.x) / impl->scale;
+          image_region.right  = (image_region.right  - top_left.x) / impl->scale;
+          image_region.top    = (image_region.top    - top_left.y) / impl->scale;
+          image_region.bottom = (image_region.bottom - top_left.y) / impl->scale;
 
           int   itilesize = 256 * scale_factor;
           
@@ -422,7 +430,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 
           draw_tiles(Rect(start_x, start_y, end_x, end_y), 
                      tiledb_scale, 
-                     impl->pos,
+                     top_left,
                      scale_factor * impl->scale);
         }
     }
@@ -437,14 +445,14 @@ Image::get_filename() const
 void
 Image::draw_mark()
 {
-  Rectf image_rect(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
-  Framebuffer::draw_rect(image_rect, RGB(255, 255, 255));
+  Framebuffer::draw_rect(get_image_rect(), RGB(255, 255, 255));
 }
 
 Rectf
 Image::get_image_rect() const
 {
-  return Rectf(impl->pos, Sizef(impl->file_entry.get_size() * impl->scale)); // in world coordinates
+  Sizef image_size(impl->file_entry.get_size() * impl->scale);
+  return Rectf(impl->pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
 }
 
 void

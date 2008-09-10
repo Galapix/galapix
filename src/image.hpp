@@ -71,7 +71,9 @@ public:
   void set_target_pos(const Vector2f& target_pos);
   void set_target_scale(float target_scale);
 
-  void set_pos(const Vector2f& pos);
+  Vector2f get_top_left_pos() const;
+
+  void     set_pos(const Vector2f& pos);
   Vector2f get_pos() const;
 
   void  set_scale(float f);

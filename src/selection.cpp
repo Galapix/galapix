@@ -79,7 +79,7 @@ Selection::get_center() const
       Vector2f pos = impl->images.front().get_image_rect().get_center();
       for(Images::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
         {
-          pos += i->get_image_rect().get_center();
+          pos += i->get_pos();
         }  
       return pos / impl->images.size();
     }

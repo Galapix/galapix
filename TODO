@@ -1,6 +1,8 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
+* Make Image::get_pos() refer to the image center instead of top/left
+
 * implemented 2x2 Matrix
 
 * implement image rotation
