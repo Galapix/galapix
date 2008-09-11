@@ -34,6 +34,7 @@ galapix_sources = [
     'src/tile_generator_thread.cpp',
     'src/database_thread.cpp',
     'src/viewer_thread.cpp',
+    'src/view_rotate_tool.cpp',
     'src/viewer.cpp',
     'src/viewer_state.cpp',
     'src/workspace.cpp',

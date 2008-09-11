@@ -103,6 +103,7 @@ Page Up   | increase gamma
 Page Down | increase gamma
 space     | print the currently visible images to stdout 
 delete    | remove selected images from workspace
+shift     | rotate the view by moving the mouse while shift is hold down
 
 SpaceNavigator Support:
 =======================

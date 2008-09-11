@@ -29,6 +29,7 @@
 #include "zoom_tool.hpp"
 #include "resize_tool.hpp"
 #include "rotate_tool.hpp"
+#include "view_rotate_tool.hpp"
 #include "viewer.hpp"
 
 Viewer::Viewer(Workspace* workspace)
@@ -48,6 +49,8 @@ Viewer::Viewer(Workspace* workspace)
 
   keyboard_zoom_in_tool  = boost::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
   keyboard_zoom_out_tool = boost::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
+
+  keyboard_view_rotate_tool = boost::shared_ptr<ViewRotateTool>(new ViewRotateTool(this));
 
   left_tool   = zoom_in_tool.get();
   middle_tool = pan_tool.get();
@@ -82,6 +85,11 @@ Viewer::process_event(const SDL_Event& event)
 
             case SDLK_HOME:
               keyboard_zoom_in_tool->up(mouse_pos);
+              break;
+
+            case SDLK_RSHIFT:
+            case SDLK_LSHIFT:
+              keyboard_view_rotate_tool->up(mouse_pos);
               break;
 
             default:
@@ -143,6 +151,11 @@ Viewer::process_event(const SDL_Event& event)
                 Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
                 workspace->print_images(cliprect);
               }
+              break;
+
+            case SDLK_RSHIFT:
+            case SDLK_LSHIFT:
+              keyboard_view_rotate_tool->down(mouse_pos);
               break;
 
             case SDLK_UP:
@@ -255,6 +268,8 @@ Viewer::process_event(const SDL_Event& event)
         left_tool  ->move(mouse_pos, Vector2i(event.motion.xrel, event.motion.yrel));
         middle_tool->move(mouse_pos, Vector2i(event.motion.xrel, event.motion.yrel));
         right_tool ->move(mouse_pos, Vector2i(event.motion.xrel, event.motion.yrel));
+
+        keyboard_view_rotate_tool->move(mouse_pos, Vector2i(event.motion.xrel, event.motion.yrel));
         break;
         
       case SDL_MOUSEBUTTONDOWN:

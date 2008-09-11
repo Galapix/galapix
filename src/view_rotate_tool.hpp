@@ -16,37 +16,25 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_VIEWER_STATE_HPP
-#define HEADER_VIEWER_STATE_HPP
+#ifndef HEADER_VIEW_ROTATE_TOOL_HPP
+#define HEADER_VIEW_ROTATE_TOOL_HPP
 
-#include "math/vector2f.hpp"
-#include "math/rect.hpp"
+#include "tool.hpp"
 
-class ViewerState
+class ViewRotateTool : public Tool
 {
 private:
-  float    scale;
-  // angle in degree, not rad
-  float    angle;
-  Vector2f offset;
-  
+  bool active;
+  float start_angle;
 public:
-  ViewerState();
+  ViewRotateTool(Viewer* viewer);
 
-  void zoom(float factor, const Vector2i& pos);
-  void zoom(float factor);
-  void move(const Vector2f& pos);
-  void rotate(float r);
-  void set_angle(float r);
-  void set_offset(const Vector2f& o);
-  void set_scale(float s);
+  void move(const Vector2i& pos, const Vector2i& rel);
+  void up  (const Vector2i& pos);
+  void down(const Vector2i& pos);
 
-  Vector2f screen2world(const Vector2i&) const;
-  Rectf    screen2world(const Rect&) const;
-
-  Vector2f get_offset() const { return offset; }
-  float    get_scale()  const { return scale; }
-  float    get_angle() const  { return angle; }
+  void draw() {}
+  void update(const Vector2i& pos, float delta) {}
 };
 
 #endif

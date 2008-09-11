@@ -14,29 +14,21 @@ Release procedure:
 
 * test database compatibilty
 
+* check that all keyboard shortcuts are documented
+
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* make view rotation accessible via mouse (holding shift while moving)
-
 * add shift-click support to the MoveTool, also rename MoveTool to SelectTool
 
 * make 'd' clone the current selection
 
-* max_scale isn't handled correctly, so we get purple rects when far zoomed out 
-
 * change Framebuffer/Surface so that we can draw images with alpha
-
-* make image selection work as expected when images overlap or when
-  clicked and dragged in one go
 
 * when highly zoomed in, moving doesn't work any more
 
 * implemented 2x2 Matrix
 
 * implement image rotation
-
-* small scales are displayed at the wrong size (thumbnail.size * scale
-  != image_size due to small values of thumbnail.size)
 
 * add button to flip the view
 
@@ -50,7 +42,18 @@ Aborted
 
 * support for additional image formats would be nice, via ImageMagicks
   "convert" as a fallback
+
+Galapix 0.0.3 Release ToDo:
+---------------------------
 
+* fix the max_scale mess some more
+
+* add function to relayout just the selection instead of all images
+
+* small scales are displayed at the wrong size (thumbnail.size * scale
+  != image_size due to small values of thumbnail.size)
+
+ 
 Galapix 0.1.0 Release ToDo:
 ---------------------------
 
