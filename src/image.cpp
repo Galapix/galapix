@@ -407,7 +407,7 @@ Image::print_info()
 bool
 Image::overlaps(const Vector2f& pos) const
 {
-  return get_image_rect().is_inside(pos);
+  return get_image_rect().contains(pos);
 }
 
 bool

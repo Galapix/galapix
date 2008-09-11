@@ -140,7 +140,7 @@ public:
   Size get_size() const { return Size(right - left, bottom - top); }
 	
   //: Returns true if point is inside the rectangle.
-  bool is_inside(const Vector2i &p) const { return (p.x >= left && p.y >= top && p.x <= right && p.y <= bottom); }
+  bool contains(const Vector2i &p) const { return (p.x >= left && p.y >= top && p.x <= right && p.y <= bottom); }
 
   //: Returns true if rectangle passed is overlapping or inside this rectangle.
   bool is_overlapped(const Rect &r) const 
@@ -305,7 +305,17 @@ public:
   Sizef get_size() const { return Sizef(right - left, bottom - top); }
 	
   //: Returns true if point is inside the rectangle.
-  bool is_inside(const Vector3f &p) const { return (p.x >= left && p.y >= top && p.x <= right && p.y <= bottom); }
+  bool contains(const Vector3f &p) const { return (p.x >= left && p.y >= top && p.x <= right && p.y <= bottom); }
+
+  //: Check if rect is inside this
+  bool contains(const Rectf& rect) const
+  {
+    return 
+      left   <= rect.left  &&
+      right  >= rect.right &&
+      top    <= rect.top   &&
+      bottom >= rect.bottom;
+  }
 	
   //: Returns true if rectangle passed is overlapping or inside this rectangle.
   bool is_overlapped(const Rectf &r) const 

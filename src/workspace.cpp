@@ -34,7 +34,7 @@ Workspace::get_images(const Rectf& rect)
   std::vector<Image> result;
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      if (i->overlaps(rect))
+      if (rect.contains(i->get_image_rect()))
         {
           result.push_back(*i);
         }

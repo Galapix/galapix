@@ -1,6 +1,23 @@
 [[ Galapix ToDo ]]
 _______________________________________________________________________________
 
+Release procedure:
+==================
+
+* test that Galapix works with and without SpaceNavigator libraries
+
+* test that all Galapix functions are accessible without SpaceNavigator
+
+* test that mouse wheel is supported
+
+* test svn trunk a lot
+
+* test database compatibilty
+
+* svn cp trunk@REV tags/galapix-0.0.X
+
+* max_scale isn't handled correctly, so we get purple rects when far zoomed out 
+
 * change Framebuffer/Surface so that we can draw images with alpha
 
 * make image selection work as expected when images overlap or when
