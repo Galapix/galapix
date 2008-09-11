@@ -16,6 +16,10 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* make view rotation accessible via mouse (holding shift while moving)
+
+* add shift-click support to the MoveTool, also rename MoveTool to SelectTool
+
 * make 'd' clone the current selection
 
 * max_scale isn't handled correctly, so we get purple rects when far zoomed out 
@@ -35,8 +39,6 @@ Release procedure:
   != image_size due to small values of thumbnail.size)
 
 * add button to flip the view
-
-* make view rotation accessible via mouse
 
 * When thumbgen is running while galapix view is started:
 

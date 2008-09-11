@@ -38,7 +38,11 @@ class ImageImpl
 public:
   FileEntry file_entry;
 
+  /** The smallest scale that is stored permanently */
   int min_keep_scale; 
+
+  /** The maximum scale for which tiles exist */
+  int max_scale;
 
   float alpha;
 
@@ -88,14 +92,27 @@ Image::Image(const FileEntry& file_entry)
   impl->last_scale   = 1.0f;
   impl->target_scale = 1.0f;
 
-  int size  = Math::max(file_entry.get_width(), file_entry.get_height());
-  impl->min_keep_scale = 0;
-  while(size > 32) 
-    {
-      size /= 2;
-      impl->min_keep_scale +=1 ;
-    }
-  
+  // FIXME: Make this depended on how much free memory we have
+  { // Calculate min_keep_scale
+    int size  = Math::max(file_entry.get_width(), file_entry.get_height());
+    impl->min_keep_scale = 0;
+    while(size > 32) 
+      {
+        size /= 2;
+        impl->min_keep_scale +=1 ;
+      }
+  }
+
+  // FIXME: Sync this with what the TileGenerator does
+  { // Calculate max_scale
+    int size  = Math::max(file_entry.get_width(), file_entry.get_height());
+    impl->max_scale = 0;
+    while(size > 32)
+      {
+        size /= 2;
+        impl->max_scale +=1 ;
+      }
+  }
 }
 
 void
@@ -259,7 +276,7 @@ Image::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale)
   int  downscale_factor = 1;
 
   // FIXME: Replace this loop with a 'find_next_best_smaller_tile()' function
-  while(downscale_factor < 10) // Make this 'max_scale' instead of random number
+  while(downscale_factor < impl->max_scale)
     {
       downscale = Math::pow2(downscale_factor);
       uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+downscale_factor);
@@ -432,8 +449,8 @@ Image::draw(const Rectf& cliprect, float fscale)
     {
       // scale factor for requesting the tile from the TileDatabase
       // FIXME: Can likely be done without float
-      int tiledb_scale = Math::max(0, static_cast<int>(log(1.0f / (fscale*impl->scale)) /
-                                                       log(2)));
+      int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (fscale*impl->scale)) /
+                                                         log(2)), impl->max_scale);
       int scale_factor = Math::pow2(tiledb_scale);
 
       int scaled_width  = impl->file_entry.get_width()  / scale_factor;
