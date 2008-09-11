@@ -16,6 +16,8 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* make 'd' clone the current selection
+
 * max_scale isn't handled correctly, so we get purple rects when far zoomed out 
 
 * change Framebuffer/Surface so that we can draw images with alpha

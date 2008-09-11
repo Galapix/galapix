@@ -46,6 +46,9 @@ Viewer::Viewer(Workspace* workspace)
   zoom_in_tool  = boost::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
   zoom_out_tool = boost::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
 
+  keyboard_zoom_in_tool  = boost::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
+  keyboard_zoom_out_tool = boost::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
+
   left_tool   = zoom_in_tool.get();
   middle_tool = pan_tool.get();
   right_tool  = zoom_out_tool.get();
@@ -70,11 +73,35 @@ Viewer::process_event(const SDL_Event& event)
         force_redraw = true;
         break;
 
+      case SDL_KEYUP:
+        switch(event.key.keysym.sym)
+          {
+            case SDLK_END:
+              keyboard_zoom_out_tool->up(mouse_pos);
+              break;
+
+            case SDLK_HOME:
+              keyboard_zoom_in_tool->up(mouse_pos);
+              break;
+
+            default:
+              break;
+          }
+        break;
+
       case SDL_KEYDOWN:
         switch(event.key.keysym.sym)
           {
             case SDLK_ESCAPE:
               quit = true;
+              break;
+
+            case SDLK_END:
+              keyboard_zoom_out_tool->down(mouse_pos);
+              break;
+
+            case SDLK_HOME:
+              keyboard_zoom_in_tool->down(mouse_pos);
               break;
 
             case SDLK_PAGEUP:
@@ -342,6 +369,9 @@ Viewer::update(float delta)
   left_tool  ->update(mouse_pos, delta);
   middle_tool->update(mouse_pos, delta);
   right_tool ->update(mouse_pos, delta);
+
+  keyboard_zoom_in_tool ->update(mouse_pos, delta);
+  keyboard_zoom_out_tool->update(mouse_pos, delta);
 }
 
 /* EOF */

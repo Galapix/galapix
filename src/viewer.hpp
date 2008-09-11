@@ -46,6 +46,9 @@ private:
 
   ViewerState state;
 
+  boost::shared_ptr<ZoomTool>   keyboard_zoom_in_tool;
+  boost::shared_ptr<ZoomTool>   keyboard_zoom_out_tool;
+
   boost::shared_ptr<PanTool>    pan_tool;
   boost::shared_ptr<MoveTool>   move_tool;
   boost::shared_ptr<ZoomTool>   zoom_in_tool;
