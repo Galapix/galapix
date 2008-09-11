@@ -42,6 +42,17 @@ Workspace::get_images(const Rectf& rect)
   return result;
 }
 
+Image
+Workspace::get_image(const Vector2f& pos)
+{
+  for(Images::reverse_iterator i = images.rbegin(); i != images.rend(); ++i)
+    {
+      if (i->overlaps(pos))
+        return *i;
+    }  
+  return Image();
+}
+
 void
 Workspace::add_image(const FileEntry& file_entry)
 {

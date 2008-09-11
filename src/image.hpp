@@ -19,6 +19,7 @@
 #ifndef HEADER_IMAGE_HPP
 #define HEADER_IMAGE_HPP
 
+#include <iostream>
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <string>
@@ -103,7 +104,10 @@ public:
   Rectf get_image_rect() const;
 
   operator bool() const { return impl.get(); }
-  bool operator==(const Image& rhs) { return impl.get() == rhs.impl.get(); }
+  bool operator==(const Image& rhs) const { 
+    // FIXME: Shouldn't really use operator==, should use equal() instead
+    return impl.get() == rhs.impl.get(); 
+  }
 
   /** Syncronized function to require data from other threads */
   void receive_tile(const TileEntry& tile_entry);

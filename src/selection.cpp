@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "image.hpp"
 #include "math/rect.hpp"
 #include "selection.hpp"
 
@@ -59,6 +60,19 @@ Selection::scale(float factor)
 
       i->set_pos(center + (i->get_pos() - center) * factor);
     }
+}
+
+bool
+Selection::has(const Image& image) const
+{
+  for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+    {
+      if (image == *i)
+        {
+          return true;
+        }
+    }
+  return false;
 }
 
 void

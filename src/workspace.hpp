@@ -40,6 +40,7 @@ public:
   void set_row_width(int w);
 
   std::vector<Image> get_images(const Rectf& rect);
+  Image get_image(const Vector2f& pos);
 
   Selection get_selection() const { return selection; }
   void select_images(const std::vector<Image>& images);

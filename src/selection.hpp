@@ -38,6 +38,7 @@ public:
   void   clear();
   Images get_images() const;
   bool   empty() const;
+  bool   has(const Image& image) const;
 
   void scale(float factor);
 

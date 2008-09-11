@@ -67,8 +67,19 @@ MoveTool::down(const Vector2i& pos)
 {
   click_pos = viewer->get_state().screen2world(pos);
 
-  if (viewer->get_workspace()->selection_clicked(click_pos))
+  Image image = viewer->get_workspace()->get_image(click_pos);
+
+  if (image)
     {
+      if (viewer->get_workspace()->get_selection().has(image))
+        {
+          // Ok, so move the whole selection 
+        }
+      else
+        {
+          viewer->get_workspace()->clear_selection();
+          viewer->get_workspace()->get_selection().add_image(image);
+        }
       move_active = true;
     }
   else
