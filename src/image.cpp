@@ -298,6 +298,8 @@ Image::draw_tile(int x, int y, int tiledb_scale,
   Surface surface = get_tile(x, y, tiledb_scale);
   if (surface)
     {
+      // FIXME: surface.get_size() * scale does not give the correct
+      // size of a tile due to rounding errors
       surface.draw(Rectf(pos, surface.get_size() * scale));
       //Framebuffer::draw_rect(Rectf(pos, surface.get_size() * scale), RGB(100, 100, 100));
     }

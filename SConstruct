@@ -189,7 +189,7 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
             print "\nError are being ignored, the build continues"
 
     config_h = open('config.h', 'w')
-    config_h.write('#define VERSION "0.0.2"\n')
+    config_h.write('#define VERSION "0.0.3"\n')
     for (v,k) in config_h_defines:
         config_h.write('#define %s %s\n' % (v, k))
     config_h.close()
