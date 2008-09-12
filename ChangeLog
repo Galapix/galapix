@@ -1,0 +1,814 @@
+2008-09-11 19:23  grumbel
+
+	* README, SConstruct, TODO, src/view_rotate_tool.cpp,
+	  src/view_rotate_tool.hpp, src/viewer.cpp, src/viewer.hpp,
+	  src/viewer_state.hpp:
+	  Added ViewRotateTool, View can now be rotated by holding down
+	  shift
+
+2008-09-11 17:35  grumbel
+
+	* TODO, src/image.cpp:
+	  Added max_scale back into Image, this fixes a few purple rects
+
+2008-09-11 13:08  grumbel
+
+	* TODO, src/viewer.cpp, src/viewer.hpp:
+	  Made POS1/HOME act as zoom key
+
+2008-09-11 13:07  grumbel
+
+	* src/workspace.cpp:
+	  Some now unneeded offset code removed
+
+2008-09-11 03:59  grumbel
+
+	* src/image.hpp, src/move_tool.cpp, src/selection.cpp,
+	  src/selection.hpp, src/workspace.cpp, src/workspace.hpp:
+	  Changed MoveTool to behave more traditional, clicking a image and
+	  moving the mouse now instantly leads to drag, instead of just to
+	  a select
+
+2008-09-11 03:36  grumbel
+
+	* TODO, src/image.cpp, src/math/rect.hpp, src/workspace.cpp:
+	  Changed rect select so that it works only when Images are inside
+	  the rect and not just overlap it
+
+2008-09-11 03:36  grumbel
+
+	* NEWS:
+	  Updates NEWS
+
+2008-09-10 23:21  grumbel
+
+	* README, TODO, src/image.hpp, src/viewer.cpp, src/workspace.cpp,
+	  src/workspace.hpp:
+	  Added image remove key
+
+2008-09-10 22:47  grumbel
+
+	* SConstruct, TODO, src/rotate_tool.cpp, src/rotate_tool.hpp,
+	  src/viewer.cpp, src/viewer.hpp, src/workspace.cpp,
+	  src/workspace.hpp:
+	  Added rotate tool, placeholder, not functioning currently
+
+2008-09-10 19:13  grumbel
+
+	* README, SConstruct, src/move_tool.cpp, src/move_tool.hpp,
+	  src/pan_tool.cpp, src/pan_tool.hpp, src/resize_tool.cpp,
+	  src/resize_tool.hpp, src/tool.hpp, src/viewer.cpp,
+	  src/viewer.hpp, src/zoom_tool.cpp, src/zoom_tool.hpp:
+	  Split tools, left, right and middle buttons are now seperate
+	  tools
+
+2008-09-10 18:17  grumbel
+
+	* TODO, src/image.cpp, src/image.hpp:
+	  Added angle placehorder to Image
+	  Todo cleanup
+
+2008-09-10 15:53  grumbel
+
+	* TODO:
+	  Cleanup
+
+2008-09-10 15:51  grumbel
+
+	* src/image.cpp, src/image.hpp, src/move_tool.cpp,
+	  src/selection.cpp, src/selection.hpp, src/viewer.cpp,
+	  src/workspace.cpp, src/workspace.hpp:
+	  scale whole selection properly instead of just images
+	  individually
+
+2008-09-10 15:33  grumbel
+
+	* TODO, src/image.cpp, src/image.hpp, src/selection.cpp,
+	  src/workspace.cpp:
+	  Changed Image::pos refer to the center instead of the top/left
+
+2008-09-10 12:19  grumbel
+
+	* SConstruct, TODO, src/move_tool.cpp, src/move_tool.hpp,
+	  src/selection.cpp, src/selection.hpp, src/workspace.cpp,
+	  src/workspace.hpp:
+	  Added resize via right-click in MoveTool
+	  Split of Selection into seperate class
+
+2008-09-09 14:01  grumbel
+
+	* NEWS, README, TODO, src/image.cpp, src/image.hpp, src/viewer.cpp,
+	  src/workspace.cpp, src/workspace.hpp:
+	  Implemented overlapping solver
+
+2008-09-08 23:10  grumbel
+
+	* src/viewer.cpp, src/workspace.cpp, src/workspace.hpp:
+	  Added random_layout() function
+
+2008-09-08 22:23  grumbel
+
+	* src/image.cpp, src/image.hpp, src/viewer.cpp, src/workspace.cpp,
+	  src/workspace.hpp:
+	  Implemented smooth transitions for scale changes
+
+2008-09-07 13:15  grumbel
+
+	* TODO, src/move_tool.cpp, src/move_tool.hpp, src/viewer.cpp,
+	  src/workspace.cpp, src/workspace.hpp:
+	  Cleaned up MoveTool a bit, added selection scale
+
+2008-09-07 00:41  grumbel
+
+	* src/image.cpp, src/image.hpp, src/move_tool.cpp,
+	  src/move_tool.hpp, src/viewer.cpp, src/viewer.hpp,
+	  src/workspace.cpp, src/workspace.hpp:
+	  Hacked together a MoveTool, still hacky, but somewhat working
+
+2008-09-07 00:05  grumbel
+
+	* TODO, src/viewer.cpp, src/viewer.hpp, src/viewer_thread.cpp:
+	  moved Workspace pointer into Viewer class
+
+2008-09-06 20:00  grumbel
+
+	* src/math/rect.hpp, src/viewer.cpp, src/viewer.hpp:
+	  Implemented some more of move tool
+
+2008-09-06 19:44  grumbel
+
+	* README, SConstruct, src/viewer.cpp, src/viewer_state.cpp,
+	  src/viewer_state.hpp:
+	  Added empty MoveTool class
+	  Added 'h' keyboard shortcut to reset the view to default zoom and
+	  pan
+
+2008-09-06 15:48  grumbel
+
+	* NEWS, README, TODO:
+	  TODO updates
+
+2008-09-06 15:48  grumbel
+
+	* src/pan_tool.cpp, src/pan_tool.hpp, src/tool.hpp, src/viewer.cpp,
+	  src/viewer.hpp:
+	  Moved movement code into PanTool
+
+2008-09-06 14:47  grumbel
+
+	* src/database_thread.cpp:
+	  Warning fix
+
+2008-09-06 14:46  grumbel
+
+	* SConstruct, src/viewer.cpp, src/viewer.hpp, src/viewer_state.cpp,
+	  src/viewer_state.hpp:
+	  Moved ViewerState into its own file
+
+2008-09-06 14:40  grumbel
+
+	* SConstruct, src/pan_tool.cpp, src/pan_tool.hpp, src/tool.hpp,
+	  src/viewer.cpp, src/viewer.hpp:
+	  Simple framework code for tools
+
+2008-09-04 16:24  grumbel
+
+	* src/blob.cpp, src/filesystem.cpp:
+	  include fix
+
+2008-09-04 13:39  grumbel
+
+	* README, SConstruct, TODO, src/workspace.cpp, src/workspace.hpp:
+	  Fixed spnav check, some more cleanup
+
+2008-09-04 12:51  grumbel
+
+	* NEWS:
+	  Added news file
+
+2008-09-04 12:50  grumbel
+
+	* README, TODO, src/texture.cpp:
+	  Updated documentation a bit, fixed copyright header
+
+2008-09-04 12:32  grumbel
+
+	* src/filesystem.cpp:
+	  Report non-existant files
+
+2008-09-04 12:21  grumbel
+
+	* SConstruct, TODO, src/file_database.cpp, src/galapix.cpp:
+	  Some cleanup, handle non-existing files better, display number of
+	  files properly
+
+2008-09-03 22:26  grumbel
+
+	* TODO, src/database_thread.cpp, src/database_thread.hpp,
+	  src/file_database.cpp, src/file_database.hpp, src/galapix.cpp,
+	  src/galapix.hpp:
+	  Added option to query a database by glob pattern
+
+2008-09-03 20:19  grumbel
+
+	* AUTHORS, TODO, src/framebuffer.cpp, src/galapix.cpp,
+	  src/galapix.hpp:
+	  Some more Griv -> Galapix renames and some general cleanup
+
+2008-09-03 19:45  grumbel
+
+	* TODO, src/jpeg.cpp:
+	  Added greyscale support
+
+2008-09-03 19:33  grumbel
+
+	* src/jpeg.cpp, src/jpeg.hpp:
+	  Merged the two JPEG::save functions
+
+2008-09-03 19:23  grumbel
+
+	* TODO, src/jpeg.cpp, src/jpeg.hpp:
+	  Merged the two JPEG load function to share their code
+
+2008-09-02 21:11  grumbel
+
+	* SConstruct, src/viewer_thread.cpp:
+	  Added configure checks to SConstruct, spnav library is now
+	  optional
+
+2008-09-02 17:18  grumbel
+
+	* AUTHORS:
+	  Adde paroneayea
+
+2008-09-02 16:29  grumbel
+
+	* .:
+	  Renamed griv/ to galapix/
+
+2008-09-02 01:18  grumbel
+
+	* 
+	  Pressing space prints the images currently displayed
+
+2008-09-01 23:20  grumbel
+
+	* 
+	  Make FileEntry a refcounted objected
+
+2008-08-31 20:54  grumbel
+
+	* 
+	  Renamed griv to galapix
+
+2008-08-31 13:01  grumbel
+
+	* 
+	  Added trackball control
+
+2008-08-31 12:03  grumbel
+
+	* 
+	  Added fullscreen and geometry options, moved sorting to Workspace
+
+2008-08-31 09:45  grumbel
+
+	* 
+	  Fixed 'job rejection' issue, caused by wrong divison
+
+2008-08-31 00:56  grumbel
+
+	* 
+	  Fixed issue with tile cache not getting cleared, added some
+	  debugging output functions
+
+2008-08-30 21:43  grumbel
+
+	* 
+	  Some more code, maybe some more bugs
+
+2008-08-30 19:44  grumbel
+
+	* 
+	  Some better handling of NULL entries in table, adjust cliprect
+	  when stuff is rotated
+
+2008-08-30 19:43  grumbel
+
+	* 
+	  Grid drawing cleanup
+
+2008-08-30 18:11  grumbel
+
+	* 
+	  Added simplistic rotation, change database format to handle color
+	  and thumbnail in filetable
+
+2008-08-30 02:50  grumbel
+
+	* 
+	  Moved grid drawing code over
+
+2008-08-30 02:40  grumbel
+
+	* 
+	  Order get_all requests
+
+2008-08-30 02:33  grumbel
+
+	* 
+	  Added dynamic image movement and changed the database format a
+	  bit
+
+2008-08-29 17:48  grumbel
+
+	* 
+	  Some cleanup
+
+2008-08-29 11:45  grumbel
+
+	* 
+	  Small improvement in which tiles are cached and which aren't
+
+2008-08-29 00:33  grumbel
+
+	* 
+	  Small code cleanup
+
+2008-08-28 13:21  grumbel
+
+	* 
+	  Trying to get OpenGL speeded up a bit and tearing fixed
+
+2008-08-28 13:20  grumbel
+
+	* 
+	  Documented 'info'
+
+2008-08-28 11:01  grumbel
+
+	* 
+	  Small fix in fullscreen toggle
+
+2008-08-28 10:55  grumbel
+
+	* 
+	  Added some debug output
+
+2008-08-28 10:46  grumbel
+
+	* 
+	  Use desktop resolution for fullscreen, do not fail if space
+	  navigator is not present
+
+2008-08-28 02:00  grumbel
+
+	* 
+	  Added fullscreen and vsync
+
+2008-08-28 01:36  grumbel
+
+	* 
+	  Added space navigator support and some other small bug fixes
+
+2008-08-27 20:13  grumbel
+
+	* 
+	  Generate tiles down to 1 pixel instead of stopping at something
+	  larger
+
+2008-08-27 19:08  grumbel
+
+	* 
+	  Removed some old code, fixed crash at startup, added some bugs in
+	  the readme
+
+2008-08-27 17:03  grumbel
+
+	* 
+	  Fixed a bunch of issues in the load on demand code
+
+2008-08-26 00:53  grumbel
+
+	* 
+	  Got rid of URL class, implemented load on demand, still quite
+	  buggy
+
+2008-08-25 14:16  grumbel
+
+	* 
+	  A little bit of cleanup and a little ground work to get loading
+	  done automatically
+
+2008-08-21 21:10  grumbel
+
+	* 
+	  Pass around whole FileEntry objects, instead of breaking them up
+	  into fileid and filename
+
+2008-08-21 20:39  grumbel
+
+	* 
+	  Moved FileEntry and TileEntry to their own files
+
+2008-08-21 20:39  grumbel
+
+	* 
+	  Replaced int x,y with Vector2i pos
+
+2008-08-21 20:32  grumbel
+
+	* 
+	  Moved FileEntry and TileEntry to their own files
+
+2008-08-21 20:30  grumbel
+
+	* 
+	  Moved FileEntry and TileEntry to their own files
+
+2008-08-21 17:00  grumbel
+
+	* 
+	  Stuff
+
+2008-08-20 23:00  grumbel
+
+	* 
+	  Added some code to generate quick thumbnails
+
+2008-08-20 21:58  grumbel
+
+	* 
+	  Moved code into src/ subdirectory
+
+2008-08-20 17:32  grumbel
+
+	* 
+	  Some mor documentation and let the code behave as documented
+
+2008-08-20 17:21  grumbel
+
+	* 
+	  Moved new griv into the place of the old one
+
+2008-08-20 17:21  grumbel
+
+	* 
+	  Moved old griv code to its own directory
+
+2008-08-17 11:10  grumbel
+
+	* 
+	  Stuff
+
+2008-08-17 01:08  grumbel
+
+	* 
+	  Added support for fast loading of downscaled images
+
+2008-08-16 23:38  grumbel
+
+	* 
+	  Added griv list option
+
+2008-08-16 23:30  grumbel
+
+	* 
+	  A README
+
+2008-08-16 00:42  grumbel
+
+	* 
+	  Removed debugging stuff
+
+2008-08-15 20:23  grumbel
+
+	* 
+	  Added some JobHandle stuff
+
+2008-08-15 20:21  grumbel
+
+	* 
+	  Accept directory arguments and shut down the jpeg thread properly
+
+2008-08-15 20:15  grumbel
+
+	* 
+	  Added gamma change via button press
+
+2008-08-15 19:56  grumbel
+
+	* 
+	  Adedd JobHandle class
+
+2008-08-15 13:14  grumbel
+
+	* 
+	  Added JPEG decoder thread
+
+2008-08-15 13:12  grumbel
+
+	* 
+	  Random updates
+
+2008-08-15 13:12  grumbel
+
+	* 
+	  Made rect drawing calls take color argument
+
+2008-08-14 22:32  grumbel
+
+	* 
+	  Added fugly hack to keep a small image in cache
+
+2008-08-14 22:13  grumbel
+
+	* 
+	  Go over all smaller tiles, instead of just the one one scale
+	  away, this makes zoom in smooth, zoom out still broken
+
+2008-08-14 21:59  grumbel
+
+	* 
+	  Added some better status keeping for tiles
+
+2008-08-14 21:59  grumbel
+
+	* 
+	  Added garbage collect call
+
+2008-08-14 21:57  grumbel
+
+	* 
+	  Added RGB class and way to draw colored rects
+
+2008-08-14 14:01  grumbel
+
+	* 
+	  Display all files in the database when none are given on the
+	  command line
+
+2008-08-14 01:27  grumbel
+
+	* 
+	  Added thread for tile generation
+
+2008-08-14 00:14  grumbel
+
+	* 
+	  Removed two stage texture generation, which is no longer needed
+	  with texture_rectangle
+
+2008-08-13 22:27  grumbel
+
+	* 
+	  Made some function arguments const&
+	  Dirty little hack to process the newest jobs first
+
+2008-08-13 22:04  grumbel
+
+	* 
+	  Merged Viewer into main thread, so we have one less thread to
+	  worry about
+
+2008-08-13 21:49  grumbel
+
+	* 
+	  Added drawing of lower res tile, if highres isn't yet available
+	  (incomplete)
+
+2008-08-13 21:00  grumbel
+
+	* 
+	  Splitted of tile drawing into seperate function
+
+2008-08-13 20:47  grumbel
+
+	* 
+	  Minor changes
+
+2008-08-13 19:11  grumbel
+
+	* 
+	  Implemented or fixed most of the other JPEG stuff, griv should
+	  now be fully working again
+
+2008-08-13 15:23  grumbel
+
+	* 
+	  Switched from GL_TEXTURE_2D to GL_TEXTURE_RECTANGLE_ARB, added
+	  glew to the library requirements
+
+2008-08-13 15:06  grumbel
+
+	* 
+	  Replaced FreeImage with plain jpeglib code, still unfinished and
+	  experimental, loading from database however should work
+
+2008-08-12 17:46  grumbel
+
+	* 
+	  Moved SDL init out of Framebuffe
+	  Some argument parsing cleanup
+
+2008-08-11 23:42  grumbel
+
+	* 
+	  Added stuff to get the next best tile, when the request one isn't
+	  available (doesn't fully work)
+
+2008-08-11 23:42  grumbel
+
+	* 
+	  Position centered in their region
+
+2008-08-11 22:15  grumbel
+
+	* 
+	  Added --database command line option
+	  Relayout the workspace when new image is added
+
+2008-08-11 21:07  grumbel
+
+	* 
+	  Limit queue flooding a bit
+
+2008-08-11 20:57  grumbel
+
+	* 
+	  Added multithreading support
+
+2008-08-10 22:16  grumbel
+
+	* 
+	  Added license file
+
+2008-08-10 22:04  grumbel
+
+	* 
+	  Added thread_message_queue.hpp
+
+2008-08-10 15:18  grumbel
+
+	* 
+	  Some more thread stuff
+	  Splitted tile generation code into seperate class
+
+2008-08-09 23:38  grumbel
+
+	* 
+	  Some threading related classes
+
+2008-08-09 19:31  grumbel
+
+	* 
+	  Some cleanup and stuff
+
+2008-08-09 12:21  grumbel
+
+	* 
+	  Added progress indicator on startup
+
+2008-08-09 12:11  grumbel
+
+	* 
+	  Draw placeholder, when images aren't found
+
+2008-08-09 11:50  grumbel
+
+	* 
+	  Fixed support for scaled images
+
+2008-08-09 10:54  grumbel
+
+	* 
+	  Some bugfixing and cleanup
+
+2008-08-09 01:40  grumbel
+
+	* 
+	  back to GL_LINEAR, have to fix the issue another way
+
+2008-08-09 01:40  grumbel
+
+	* 
+	  Some TODO stuff
+
+2008-08-09 01:16  grumbel
+
+	* 
+	  Use GL_NEAREST to avoid seams on zoom
+
+2008-08-09 01:12  grumbel
+
+	* 
+	  Index shouldn't be unique
+
+2008-08-09 01:03  grumbel
+
+	* 
+	  Create an index in the database, big speed up
+
+2008-08-09 00:54  grumbel
+
+	* 
+	  Some small bugfixes
+
+2008-08-09 00:03  grumbel
+
+	* 
+	  Displaying pictures at higher zoom levels now somewhat working,
+	  lower zoom levels not so much
+
+2008-08-08 22:39  grumbel
+
+	* 
+	  Detecting which tiles need to get drawn looks alright now
+
+2008-08-08 17:43  grumbel
+
+	* 
+	  Added viewer class, its now possible to view an image and zoom
+	  and move around
+
+2008-08-08 15:28  grumbel
+
+	* 
+	  - fixed issue with color format and image being upsidedown
+
+2008-08-08 15:24  grumbel
+
+	* 
+	  Plenty of fixing and rewriting of the Texture and Surface
+	  classes, code now far enough to draw things to the screen
+
+2008-08-08 01:27  grumbel
+
+	* 
+	  More stuff
+
+2008-08-07 23:00  grumbel
+
+	* 
+	  Moved some more classes over from the old griv
+
+2008-08-07 21:11  grumbel
+
+	* 
+	  Make new classes compilable
+
+2008-08-07 21:05  grumbel
+
+	* 
+	  Added Texture, Surface and Framebuffer classes
+
+2008-08-07 21:05  grumbel
+
+	* 
+	  Deleted JPEG stuff
+
+2008-08-07 15:39  grumbel
+
+	* 
+	  Misc stuff
+
+2008-08-07 15:37  grumbel
+
+	* 
+	  Class to hold a binary blob
+
+2008-08-07 13:45  grumbel
+
+	* 
+	  Moved JPEG code over
+
+2008-08-07 00:10  grumbel
+
+	* 
+	  Added md5 stuff, more work on file_database
+
+2008-08-06 21:46  grumbel
+
+	* 
+	  Added filesystem class
+
+2008-08-06 21:35  grumbel
+
+	* 
+	  Some more SQLite code for TileDatabase and FileDatabase
+
+2008-08-06 18:27  grumbel
+
+	* 
+	  Added some SQlite related code
+
+2008-08-06 16:31  grumbel
+
+	* 
+	  Started simple sqlite wrapper
+
+2008-08-05 20:26  grumbel
+
+	* 
+	  Started reimplementation of griv
+
