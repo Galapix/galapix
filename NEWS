@@ -7,6 +7,7 @@ Galapix 0.0.3 (??. Sep 2008)
 * added function to create non-overlapping layouts  
 * scale is smoothly handled on relayout
 * added MoveTool to move and scale images
+* fixed random halting of the application
 
 
 Galapix 0.0.2 (4. Sep 2008)

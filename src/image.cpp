@@ -397,11 +397,15 @@ Image::cache_cleanup()
   // of the images we display, since with large collections 32x32
   // might be to much for memory while with small collections it
   // will lead to unnecessary loading artifacts.      
-  for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end(); ++i)
+
+  // FIXME: Code can hang here for some reason
+  for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end();)
     {
       int tiledb_scale = (i->first >> 16);
       if (tiledb_scale < impl->min_keep_scale)
-        impl->cache.erase(i);
+        impl->cache.erase(i++);
+      else
+        ++i;
     }
 }
 
