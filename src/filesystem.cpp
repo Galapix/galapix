@@ -29,6 +29,7 @@
 #include <boost/format.hpp>
 //#include <attr/xattr.h>
 
+#include "software_surface.hpp"
 #include "filesystem.hpp"
 
 std::string Filesystem::home_directory;
@@ -220,15 +221,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<st
   
       for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
-          // FIXME: Convert to lowercase before doing the compare
-          if (Filesystem::has_extension(*i, ".jpg")  ||
-              Filesystem::has_extension(*i, ".JPG")  ||
-              Filesystem::has_extension(*i, ".jpe")  ||
-              Filesystem::has_extension(*i, ".JPE")  ||
-              Filesystem::has_extension(*i, ".JPEG") ||
-              Filesystem::has_extension(*i, ".jpeg") ||
-              Filesystem::has_extension(*i, ".PNG")  ||
-              Filesystem::has_extension(*i, ".png"))
+          if (SoftwareSurface::get_fileformat(*i) != SoftwareSurface::UNKNOWN_FILEFORMAT)
             {
               file_list.push_back(Filesystem::realpath(*i)); // realpath slow?
             }

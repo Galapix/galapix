@@ -23,14 +23,56 @@
 #include "blob.hpp"
 #include "math.hpp"
 #include "jpeg.hpp"
+#include "png.hpp"
 #include "math/rect.hpp"
 #include "math/rgb.hpp"
 #include "math/size.hpp"
 
+#include "filesystem.hpp"
 #include "software_surface.hpp"
 
 // FIXME: Stuff in this file is currently written to just work, not to
 // be fast
+
+SoftwareSurface::FileFormat
+SoftwareSurface::get_fileformat(const std::string& filename)
+{
+  // FIXME: Make this more clever
+  if (Filesystem::has_extension(filename, ".jpg")  ||
+      Filesystem::has_extension(filename, ".JPG")  ||
+      Filesystem::has_extension(filename, ".jpe")  ||
+      Filesystem::has_extension(filename, ".JPE")  ||
+      Filesystem::has_extension(filename, ".JPEG") ||
+      Filesystem::has_extension(filename, ".jpeg"))
+    {
+      return JPEG_FILEFORMAT;
+    }
+  else if (Filesystem::has_extension(filename, ".PNG")  ||
+           Filesystem::has_extension(filename, ".png"))
+    {
+      return PNG_FILEFORMAT;
+    }
+  else
+    {
+      return UNKNOWN_FILEFORMAT;
+    }
+}
+
+bool
+SoftwareSurface::get_size(const std::string& filename, Size& size)
+{
+  switch(get_fileformat(filename))
+    {
+      case JPEG_FILEFORMAT:
+        return JPEG::get_size(filename, size);
+
+      case PNG_FILEFORMAT:
+        return PNG::get_size(filename, size);
+
+      default:
+        return false;
+    }
+}
 
 class SoftwareSurfaceImpl
 {

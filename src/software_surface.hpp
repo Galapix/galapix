@@ -30,6 +30,12 @@ class SoftwareSurfaceImpl;
 class SoftwareSurface
 {
 public:
+  enum FileFormat { JPEG_FILEFORMAT, PNG_FILEFORMAT, UNKNOWN_FILEFORMAT };
+
+  static FileFormat get_fileformat(const std::string& filename);
+  static bool       get_size(const std::string& filename, Size& size);
+
+public:
   enum Format { RGB_FORMAT, RGBA_FORMAT };
 
   SoftwareSurface();

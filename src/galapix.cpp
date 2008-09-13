@@ -65,7 +65,7 @@ Galapix::info(const std::vector<std::string>& filenames)
     {
       Size size;
 
-      if (PNG::get_size(*i, size))
+      if (SoftwareSurface::get_size(*i, size))
         std::cout << *i << " " << size.width << "x" << size.height << std::endl;
       else
         std::cout << "Error reading " << *i << std::endl;

@@ -25,8 +25,6 @@
 
 class TileEntry;
 
-/** 
- */
 class TileDatabase
 {
 private:
