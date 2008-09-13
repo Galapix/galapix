@@ -67,12 +67,14 @@ PNG::load_from_file(const std::string& filename)
 
       png_read_info(png_ptr, info_ptr); 
       
-      // Convert image to one of the formats we actually handle
+      // Convert all formats to either RGB or RGBA so we don't have to
+      // handle them all seperatly
       png_set_strip_16(png_ptr);
       png_set_expand_gray_1_2_4_to_8(png_ptr);
       png_set_palette_to_rgb(png_ptr);
-      png_set_expand(png_ptr);
+      png_set_expand(png_ptr); // FIXME: What does this do? what the other don't?
       png_set_tRNS_to_alpha(png_ptr);
+      png_set_gray_to_rgb(png_ptr);
 
       png_read_update_info(png_ptr, info_ptr);
 
@@ -80,47 +82,10 @@ PNG::load_from_file(const std::string& filename)
       int height = png_get_image_height(png_ptr, info_ptr);
       //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
-      // FIXME: Different bitdepths not handled
-
       SoftwareSurface surface;
 
       switch(png_get_color_type(png_ptr, info_ptr))
         {
-          case PNG_COLOR_TYPE_GRAY:
-            {
-              surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
-
-              png_bytep row_pointers[height];
-              png_byte rows[width*height];
-              for(int y = 0; y < height; ++y)
-                row_pointers[y] = &rows[width*y];
-
-              png_read_image(png_ptr, (png_byte**)row_pointers);
-
-              for (int y = 0; y < height; ++y)
-                {
-                  uint8_t* row_pixels = surface.get_row_data(y);
-
-                  for(int x = 0; x < width; ++x)
-                    {
-                      row_pixels[3*x+0] = row_pointers[y][x];
-                      row_pixels[3*x+1] = row_pointers[y][x];
-                      row_pixels[3*x+2] = row_pointers[y][x];
-                    }
-                }
-            }
-            break;           
-
-          case PNG_COLOR_TYPE_GRAY_ALPHA:
-            std::cout << "PNG: Unsupported PNG_COLOR_TYPE_GRAY_ALPHA" << std::endl;
-            surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
-            break;           
-
-          case PNG_COLOR_TYPE_PALETTE:
-            std::cout << "PNG: Unsupported PNG_COLOR_TYPE_PALETTE" << std::endl;
-            surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
-            break;           
-
           case PNG_COLOR_TYPE_RGBA:
             {
               surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
@@ -130,14 +95,11 @@ PNG::load_from_file(const std::string& filename)
                 row_pointers[y] = surface.get_row_data(y);
             
               png_read_image(png_ptr, row_pointers);
-              
-              //std::cout << "PNG_COLOR_TYPE_RGBA: " << surface.get_format() << std::endl;
             }
             break;           
 
           case PNG_COLOR_TYPE_RGB:
             {
-              //std::cout << "PNG_COLOR_TYPE_RGB" << std::endl;
               surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
               png_bytep row_pointers[height];
@@ -165,13 +127,52 @@ PNG::load_from_mem(uint8_t* mem, int len)
 }
 
 void
-PNG::save(const SoftwareSurface& surface, int quality, const std::string& filename)
+PNG::save(const SoftwareSurface& surface, const std::string& filename)
 {
-  assert(!"Unimplemented");
+  FILE* out = fopen(filename.c_str(), "wb");
+  if (!out)
+    {
+      perror(filename.c_str());
+      throw std::runtime_error("PNG::save: Couldn't save " + filename);
+    }
+  else
+    {
+      png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+      png_infop   info_ptr = png_create_info_struct(png_ptr);
+      assert(png_ptr && info_ptr);
+
+      if (setjmp(png_ptr->jmpbuf))
+        {
+          fclose(out);
+          png_destroy_write_struct(&png_ptr, &info_ptr);
+          throw std::runtime_error("PNG::save: setjmp: Couldn't save " + filename);
+        }
+
+      // set up the output control if you are using standard C streams
+      png_init_io(png_ptr, out);
+
+      png_set_IHDR(png_ptr, info_ptr, 
+                   surface.get_width(), surface.get_height(), 8,
+                   (surface.get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA, 
+                   PNG_INTERLACE_NONE, 
+                   PNG_COMPRESSION_TYPE_DEFAULT,
+                   PNG_FILTER_TYPE_DEFAULT);
+
+      png_write_info(png_ptr, info_ptr);
+
+      for (int y = 0; y < surface.get_height(); ++y)
+        png_write_row(png_ptr, surface.get_row_data(y));
+
+      png_write_end(png_ptr, info_ptr);
+
+      png_destroy_write_struct(&png_ptr, &info_ptr);
+
+      fclose(out);
+    }
 }
 
 Blob
-PNG::save(const SoftwareSurface& surface, int quality)
+PNG::save(const SoftwareSurface& surface)
 {
   assert(!"Unimplemented");
   return Blob();

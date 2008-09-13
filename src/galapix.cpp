@@ -64,18 +64,12 @@ Galapix::test(const std::vector<std::string>& filenames)
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
       SoftwareSurface surface = SoftwareSurface::from_file(*i);
-      for(int scale = 0; scale < 4; ++scale)
-        {
-          std::ostringstream out;
-          out << "/tmp/out-" << scale << ".jpg";
-          JPEG::save(surface, 75, out.str());
+      
+      std::ostringstream out;
+      out << "/tmp/out-" << (i - filenames.begin()) << ".png";
+      PNG::save(surface, out.str());
 
-          surface = surface.crop(Rect(Vector2i(512, 256), Size(256, 256)));
-
-          std::cout << "surface: " << surface.get_size() << std::endl;
-
-          std::cout << "Wrote " << out.str() << std::endl;
-        }
+      std::cout << "Wrote " << out.str() << std::endl;
     }
 }
 

@@ -18,6 +18,10 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* implement PNG::load_from_mem() and PNG::save()
+
+* allow toggle of background color, maybe allow generic pattern or textures
+
 * added toggle for GL_LINEAR/GL_NEAREST
 
 * Merge TileGenerator and TileGeneratorThread code

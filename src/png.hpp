@@ -32,8 +32,8 @@ public:
   static SoftwareSurface load_from_file(const std::string& filename);
   static SoftwareSurface load_from_mem(uint8_t* mem, int len);
 
-  static void save(const SoftwareSurface& surface, int quality, const std::string& filename);
-  static Blob save(const SoftwareSurface& surface, int quality);
+  static void save(const SoftwareSurface& surface, const std::string& filename);
+  static Blob save(const SoftwareSurface& surface);
 };
 
 #endif
