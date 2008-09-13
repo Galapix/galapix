@@ -235,7 +235,6 @@ DatabaseThread::run()
                           (*i)->callback(tile_msg->tile);
 
                           // FIXME: Correct!?
-
                           delete *i;
                           i = tile_queue.erase(i);
                         }
@@ -336,7 +335,7 @@ DatabaseThread::run()
                           tile_queue.push_back(tile_msg);
 
                           //std::cout << tile_queue.size() << std::endl;
-                          msg = 0; // FIXME: HACK so that msg doesn't get deleted
+                          msg = 0; // FIXME: HACK so that msg doesn't get deleted, used shared_ptr instead
                         }
                     }
                 }

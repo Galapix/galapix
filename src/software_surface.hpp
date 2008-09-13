@@ -43,7 +43,7 @@ public:
   enum Format { RGB_FORMAT, RGBA_FORMAT };
 
   SoftwareSurface();
-  SoftwareSurface(const Size& size, Format format);
+  SoftwareSurface(Format format, const Size& size);
 
   ~SoftwareSurface();
 

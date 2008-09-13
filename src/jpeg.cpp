@@ -115,9 +115,9 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
 
   jpeg_start_decompress(&cinfo);
 
-  SoftwareSurface surface(Size(cinfo.output_width,
-                               cinfo.output_height),
-                          SoftwareSurface::RGB_FORMAT);
+  SoftwareSurface surface(SoftwareSurface::RGB_FORMAT,
+                          Size(cinfo.output_width,
+                               cinfo.output_height));
   
   if (cinfo.output_components == 3)
     { // RGB Image

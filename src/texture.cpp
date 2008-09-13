@@ -50,27 +50,27 @@ public:
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
     
-    int format;
+    int gl_format;
     switch(src.get_format())
       {
         case SoftwareSurface::RGB_FORMAT:
-          format = GL_RGB;
+          gl_format = GL_RGB;
           break;
 
         case SoftwareSurface::RGBA_FORMAT:
-          format = GL_RGBA;
+          gl_format = GL_RGBA;
           break;
 
         default:
           assert(!"Texture: Not supposed to be reached");
       }
 
-    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, format,
+    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, gl_format,
                  size.width, size.height,
                  0, /* border */
-                 format,
+                 gl_format,
                  GL_UNSIGNED_BYTE,
-                 src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left*3));
+                 src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left*src.get_bytes_per_pixel()));
 
     assert_gl("packing image texture");
     

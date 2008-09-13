@@ -66,6 +66,15 @@ PNG::load_from_file(const std::string& filename)
       png_init_io(png_ptr, in);
 
       png_read_info(png_ptr, info_ptr); 
+      
+      // Convert image to one of the formats we actually handle
+      png_set_strip_16(png_ptr);
+      png_set_expand_gray_1_2_4_to_8(png_ptr);
+      png_set_palette_to_rgb(png_ptr);
+      png_set_expand(png_ptr);
+      png_set_tRNS_to_alpha(png_ptr);
+
+      png_read_update_info(png_ptr, info_ptr);
 
       int width  = png_get_image_width(png_ptr, info_ptr);
       int height = png_get_image_height(png_ptr, info_ptr);
@@ -79,7 +88,7 @@ PNG::load_from_file(const std::string& filename)
         {
           case PNG_COLOR_TYPE_GRAY:
             {
-              surface = SoftwareSurface(Size(width, height), SoftwareSurface::RGB_FORMAT);
+              surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
               png_bytep row_pointers[height];
               png_byte rows[width*height];
@@ -104,29 +113,32 @@ PNG::load_from_file(const std::string& filename)
 
           case PNG_COLOR_TYPE_GRAY_ALPHA:
             std::cout << "PNG: Unsupported PNG_COLOR_TYPE_GRAY_ALPHA" << std::endl;
-            surface = SoftwareSurface(Size(width, height), SoftwareSurface::RGBA_FORMAT);
+            surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
             break;           
 
           case PNG_COLOR_TYPE_PALETTE:
             std::cout << "PNG: Unsupported PNG_COLOR_TYPE_PALETTE" << std::endl;
-            surface = SoftwareSurface(Size(width, height), SoftwareSurface::RGB_FORMAT);
+            surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
             break;           
 
           case PNG_COLOR_TYPE_RGBA:
             {
-              surface = SoftwareSurface(Size(width, height), SoftwareSurface::RGBA_FORMAT);
+              surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
               png_bytep row_pointers[height];
               for (int y = 0; y < height; ++y)
                 row_pointers[y] = surface.get_row_data(y);
             
               png_read_image(png_ptr, row_pointers);
+              
+              //std::cout << "PNG_COLOR_TYPE_RGBA: " << surface.get_format() << std::endl;
             }
             break;           
 
           case PNG_COLOR_TYPE_RGB:
             {
-              surface = SoftwareSurface(Size(width, height), SoftwareSurface::RGB_FORMAT);
+              //std::cout << "PNG_COLOR_TYPE_RGB" << std::endl;
+              surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
               png_bytep row_pointers[height];
               for (int y = 0; y < height; ++y)

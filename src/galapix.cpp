@@ -59,6 +59,27 @@ Galapix::~Galapix()
 }
 
 void
+Galapix::test(const std::vector<std::string>& filenames)
+{
+  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
+    {
+      SoftwareSurface surface = SoftwareSurface::from_file(*i);
+      for(int scale = 0; scale < 4; ++scale)
+        {
+          std::ostringstream out;
+          out << "/tmp/out-" << scale << ".jpg";
+          JPEG::save(surface, 75, out.str());
+
+          surface = surface.crop(Rect(Vector2i(512, 256), Size(256, 256)));
+
+          std::cout << "surface: " << surface.get_size() << std::endl;
+
+          std::cout << "Wrote " << out.str() << std::endl;
+        }
+    }
+}
+
+void
 Galapix::info(const std::vector<std::string>& filenames)
 {
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
@@ -402,6 +423,10 @@ Galapix::main(int argc, char** argv)
       else if (strcmp(argv[1], "info") == 0)
         {
           info(filenames);
+        }
+      else if (strcmp(argv[1], "test") == 0)
+        {
+          test(filenames);
         }
       else if (strcmp(argv[1], "downscale") == 0)
         {

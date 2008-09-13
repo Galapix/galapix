@@ -106,9 +106,9 @@ public:
   int      pitch;
   uint8_t* pixels;
   
-  SoftwareSurfaceImpl(const Size& size, SoftwareSurface::Format format)
-    : format(format),
-      size(size)
+  SoftwareSurfaceImpl(SoftwareSurface::Format format_, const Size& size_)
+    : format(format_),
+      size(size_)
   {
     switch(format)
       {
@@ -137,8 +137,8 @@ SoftwareSurface::SoftwareSurface()
 {
 }
 
-SoftwareSurface::SoftwareSurface(const Size& size, Format format)
-  : impl(new SoftwareSurfaceImpl(size, format))
+SoftwareSurface::SoftwareSurface(Format format_, const Size& size_)
+  : impl(new SoftwareSurfaceImpl(format_, size_))
 {
 }
 
@@ -205,7 +205,7 @@ SoftwareSurface::halve() const
 SoftwareSurface
 SoftwareSurface::scale(const Size& size) const
 {
-  SoftwareSurface surface(size, impl->format);
+  SoftwareSurface surface(impl->format, size);
   // FIXME: very much non-fast, needs replacement with proper
 
   switch(impl->format)
@@ -257,12 +257,12 @@ SoftwareSurface::crop(const Rect& rect_in) const
   assert(rect_in.is_normal());
  
   // Clip the rectangle to the image
-  Rect rect(Math::max(0, rect_in.left),
-            Math::max(0, rect_in.top),
-            Math::min(get_width(),  rect_in.right), 
-            Math::min(get_height(), rect_in.bottom));
+  Rect rect(Math::clamp(0, rect_in.left,   get_width()),
+            Math::clamp(0, rect_in.top,    get_height()),
+            Math::clamp(0, rect_in.right,  get_width()), 
+            Math::clamp(0, rect_in.bottom, get_height()));
 
-  SoftwareSurface surface(rect.get_size(), impl->format);
+  SoftwareSurface surface(impl->format, rect.get_size());
 
   for(int y = rect.top; y < rect.bottom; ++y)
     {
@@ -333,7 +333,7 @@ SoftwareSurface::get_row_data(int y) const
 SoftwareSurface::Format
 SoftwareSurface::get_format() const
 {
-  return RGB_FORMAT;
+  return impl->format;
 }
 
 RGB
@@ -367,30 +367,32 @@ SoftwareSurface::get_average_color() const
 SoftwareSurface
 SoftwareSurface::to_rgb() const
 {
-  if (impl->format == RGB_FORMAT)
+  switch(impl->format)
     {
-      return *this;
-    }
-  else if (impl->format == RGBA_FORMAT)
-    {
-      SoftwareSurface surface(impl->size, RGB_FORMAT);
-
-      int num_pixels      = get_width() * get_height();
-      uint8_t* src_pixels = get_data();
-      uint8_t* dst_pixels = surface.get_data();
-
-      for(int i = 0; i < num_pixels; ++i)
+      case RGB_FORMAT:
+        return *this;
+        
+      case RGBA_FORMAT:
         {
-          dst_pixels[3*i+0] = src_pixels[4*i+0];
-          dst_pixels[3*i+1] = src_pixels[4*i+1];
-          dst_pixels[3*i+2] = src_pixels[4*i+2];
-        }
+          SoftwareSurface surface(RGB_FORMAT, impl->size);
 
-      return surface;
-    }  
-  else
-    {
-      assert(!"SoftwareSurface::to_rgb: Unknown format");
+          int num_pixels      = get_width() * get_height();
+          uint8_t* src_pixels = get_data();
+          uint8_t* dst_pixels = surface.get_data();
+
+          for(int i = 0; i < num_pixels; ++i)
+            {
+              dst_pixels[3*i+0] = src_pixels[4*i+0];
+              dst_pixels[3*i+1] = src_pixels[4*i+1];
+              dst_pixels[3*i+2] = src_pixels[4*i+2];
+            }
+
+          return surface;
+        }
+        
+      default:
+        assert(!"SoftwareSurface::to_rgb: Unknown format");
+        return SoftwareSurface();
     }
 }
 

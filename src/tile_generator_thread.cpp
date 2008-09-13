@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <sstream>
 #include <iostream>
 #include <boost/bind.hpp>
 #include "math/rect.hpp"
@@ -92,32 +93,35 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
 
       SoftwareSurface surface;
 
-      int jpeg_scale = Math::pow2(scale);
-
       switch(SoftwareSurface::get_fileformat(job.entry.get_filename()))
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
-            if (jpeg_scale > 8)
-              {
-                // The JPEG class can only scale down by factor 2,4,8, so we have to
-                // limit things (FIXME: is that true? if so, why?)
-                surface = JPEG::load_from_file(job.entry.get_filename(), 8);
+            {
+              int jpeg_scale = Math::pow2(scale);
+              if (jpeg_scale > 8)
+                {
+                  // The JPEG class can only scale down by factor 2,4,8, so we have to
+                  // limit things (FIXME: is that true? if so, why?)
+                  surface = JPEG::load_from_file(job.entry.get_filename(), 8);
       
-                surface = surface.scale(Size(width  / Math::pow2(scale),
-                                             height / Math::pow2(scale)));
-              }
-            else
-              {
-                surface = JPEG::load_from_file(job.entry.get_filename(), jpeg_scale);
-              }
+                  surface = surface.scale(Size(width  / Math::pow2(scale),
+                                               height / Math::pow2(scale)));
+                }
+              else
+                {
+                  surface = JPEG::load_from_file(job.entry.get_filename(), jpeg_scale);
+                }
+            }
             break;
 
           case SoftwareSurface::PNG_FILEFORMAT:
-            // FIXME: This is terrible, min/max_scale are meaningless
-            // for non-jpeg formats, so we should just forget them
-            surface = PNG::load_from_file(job.entry.get_filename());
-            surface = surface.scale(Size(width  / Math::pow2(scale),
-                                         height / Math::pow2(scale)));
+            {
+              // FIXME: This is terrible, min/max_scale are meaningless
+              // for non-jpeg formats, so we should just forget them
+              surface = PNG::load_from_file(job.entry.get_filename());
+              surface = surface.scale(Size(width  / Math::pow2(scale),
+                                           height / Math::pow2(scale)));
+            }
             break;
 
           default:
