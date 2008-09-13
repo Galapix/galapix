@@ -116,7 +116,8 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
   jpeg_start_decompress(&cinfo);
 
   SoftwareSurface surface(Size(cinfo.output_width,
-                               cinfo.output_height));
+                               cinfo.output_height),
+                          SoftwareSurface::RGB_FORMAT);
   
   if (cinfo.output_components == 3)
     { // RGB Image
@@ -226,10 +227,12 @@ JPEG::save(const SoftwareSurface& surface, int quality)
 
 
 void
-JPEG::save(const SoftwareSurface& surface, 
+JPEG::save(const SoftwareSurface& surface_in, 
            const boost::function<void (j_compress_ptr)>& setup_dest_mgr, 
            int quality)
 {
+  SoftwareSurface surface = surface_in.to_rgb();
+
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
 

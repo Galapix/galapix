@@ -40,15 +40,15 @@ public:
     : r(0), g(0), b(0), a(0)
   {}
 
-  RGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+  RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     : r(r), g(g), b(b), a(a)
   {}
 
-  RGB(uint32_t c)
+  RGBA(uint32_t c)
     : r((c>> 0) & 0xFF), 
       g((c>> 8) & 0xFF),
       b((c>>16) & 0xFF),
-      a((c>>24) & 0xFF),
+      a((c>>24) & 0xFF)
   {}
 
   uint32_t get_uint32() const {

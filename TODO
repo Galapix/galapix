@@ -18,6 +18,8 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* Merge TileGenerator and TileGeneratorThread code
+
 * How to detect file format: file extension (case-insensitive, magic byte)
 
 * SoftwareSurface:Colorformat: RGB, RGBA (grayscale: could, but seem to have little benefit)

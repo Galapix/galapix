@@ -23,6 +23,7 @@
 #include "blob.hpp"
 
 class RGB;
+class RGBA;
 class Rect;
 class Size;
 class SoftwareSurfaceImpl;
@@ -35,11 +36,14 @@ public:
   static FileFormat get_fileformat(const std::string& filename);
   static bool       get_size(const std::string& filename, Size& size);
 
+  static SoftwareSurface from_jpeg_data(const Blob& blob);
+  static SoftwareSurface from_file(const std::string& filename);
+
 public:
   enum Format { RGB_FORMAT, RGBA_FORMAT };
 
   SoftwareSurface();
-  SoftwareSurface(const Size& size);
+  SoftwareSurface(const Size& size, Format format);
 
   ~SoftwareSurface();
 
@@ -56,13 +60,12 @@ public:
   
   Blob get_jpeg_data() const;
   Blob get_raw_data()  const;
-  
-  static SoftwareSurface from_jpeg_data(const Blob& blob);
-  static SoftwareSurface from_raw_data(const Blob& blob);
-  static SoftwareSurface from_file(const std::string& filename);
- 
+   
   void put_pixel(int x, int y, const RGB& rgb);
   void get_pixel(int x, int y, RGB& rgb) const;
+
+  void put_pixel(int x, int y, const RGBA& rgb);
+  void get_pixel(int x, int y, RGBA& rgb) const;
 
   uint8_t* get_data() const;
   uint8_t* get_row_data(int y) const;
@@ -70,6 +73,10 @@ public:
   RGB get_average_color() const;
 
   Format get_format() const;
+
+  SoftwareSurface to_rgb() const;
+
+  int get_bytes_per_pixel() const;
 
   operator bool() const { return impl.get(); }
 

@@ -205,15 +205,17 @@ Workspace::print_info()
 void
 Workspace::print_images(const Rectf& rect)
 {
-  std::cout << ",-- Visible images --------------------------------------" << std::endl;
+  std::cout << "-- Visible images --------------------------------------" << std::endl;
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       if (i->overlaps(rect))
         {
-          std::cout << "| " << i->get_filename() << std::endl;
+          std::cout << i->get_filename() << " "
+                    << i->get_original_width() << "x" << i->get_original_height()
+                    << std::endl;
         }
     }
-  std::cout << "'--------------------------------------------------------" << std::endl;
+  std::cout << "--------------------------------------------------------" << std::endl;
 }
 
 void

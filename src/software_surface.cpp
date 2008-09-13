@@ -26,6 +26,7 @@
 #include "png.hpp"
 #include "math/rect.hpp"
 #include "math/rgb.hpp"
+#include "math/rgba.hpp"
 #include "math/size.hpp"
 
 #include "filesystem.hpp"
@@ -73,19 +74,57 @@ SoftwareSurface::get_size(const std::string& filename, Size& size)
         return false;
     }
 }
+
+SoftwareSurface
+SoftwareSurface::from_file(const std::string& filename)
+{
+  switch(get_fileformat(filename))
+    {
+      case JPEG_FILEFORMAT:
+        return JPEG::load_from_file(filename);
+
+      case PNG_FILEFORMAT:
+        return PNG::load_from_file(filename);
+
+      default:
+        throw std::runtime_error(filename + ": unknown file type");
+        return SoftwareSurface();
+    }  
+}
+
+SoftwareSurface
+SoftwareSurface::from_jpeg_data(const Blob& blob)
+{
+  return JPEG::load_from_mem(blob.get_data(), blob.size());
+}
 
 class SoftwareSurfaceImpl
 {
 public:
+  SoftwareSurface::Format format;
   Size     size;
   int      pitch;
   uint8_t* pixels;
   
-  SoftwareSurfaceImpl(const Size& size)
-    : size(size),
-      pitch(size.width * 3),
-      pixels(new uint8_t[pitch * size.height])
+  SoftwareSurfaceImpl(const Size& size, SoftwareSurface::Format format)
+    : format(format),
+      size(size)
   {
+    switch(format)
+      {
+        case SoftwareSurface::RGB_FORMAT:
+          pitch = size.width * 3; // FIXME: Implement support for RGBA here
+          pixels = new uint8_t[pitch * size.height];
+          break;
+          
+        case SoftwareSurface::RGBA_FORMAT:
+          pitch = size.width * 4; // FIXME: Implement support for RGBA here
+          pixels = new uint8_t[pitch * size.height];
+          break;
+
+        default:
+          assert(!"SoftwareSurfaceImpl: Unknown color format");
+      }
   }
 
   ~SoftwareSurfaceImpl() 
@@ -98,8 +137,8 @@ SoftwareSurface::SoftwareSurface()
 {
 }
 
-SoftwareSurface::SoftwareSurface(const Size& size)
- : impl(new SoftwareSurfaceImpl(size))
+SoftwareSurface::SoftwareSurface(const Size& size, Format format)
+  : impl(new SoftwareSurfaceImpl(size, format))
 {
 }
 
@@ -108,8 +147,35 @@ SoftwareSurface::~SoftwareSurface()
 }
 
 void
+SoftwareSurface::put_pixel(int x, int y, const RGBA& rgba)
+{
+  assert(impl->format == RGBA_FORMAT);
+  assert(x >= 0 && x < impl->size.width &&
+         y >= 0 && y < impl->size.height);
+
+  impl->pixels[y * impl->pitch + x*4 + 0] = rgba.r;
+  impl->pixels[y * impl->pitch + x*4 + 1] = rgba.g;
+  impl->pixels[y * impl->pitch + x*4 + 2] = rgba.b;  
+  impl->pixels[y * impl->pitch + x*4 + 3] = rgba.a;
+}
+
+void
+SoftwareSurface::get_pixel(int x, int y, RGBA& rgb) const
+{
+  assert(impl->format == RGBA_FORMAT);
+  assert(x >= 0 && x < impl->size.width &&
+         y >= 0 && y < impl->size.height);
+  
+  rgb.r = impl->pixels[y * impl->pitch + x*4 + 0];
+  rgb.g = impl->pixels[y * impl->pitch + x*4 + 1];
+  rgb.b = impl->pixels[y * impl->pitch + x*4 + 2];
+  rgb.a = impl->pixels[y * impl->pitch + x*4 + 3];
+}
+
+void
 SoftwareSurface::put_pixel(int x, int y, const RGB& rgb)
 {
+  assert(impl->format == RGB_FORMAT);
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
 
@@ -121,6 +187,7 @@ SoftwareSurface::put_pixel(int x, int y, const RGB& rgb)
 void
 SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
 {
+  assert(impl->format == RGB_FORMAT);
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
 
@@ -138,19 +205,45 @@ SoftwareSurface::halve() const
 SoftwareSurface
 SoftwareSurface::scale(const Size& size) const
 {
-  SoftwareSurface surface(size);
-  // Very much non-fast, needs replacement with proper
+  SoftwareSurface surface(size, impl->format);
+  // FIXME: very much non-fast, needs replacement with proper
 
-  RGB rgb;
-  for(int y = 0; y < surface.get_height(); ++y)
-    for(int x = 0; x < surface.get_width(); ++x)
-      {
-        get_pixel(x * impl->size.width  / surface.impl->size.width,
-                  y * impl->size.height / surface.impl->size.height,
-                  rgb);
+  switch(impl->format)
+    {
+      case RGB_FORMAT:
+        {
+          RGB rgb;
+          for(int y = 0; y < surface.get_height(); ++y)
+            for(int x = 0; x < surface.get_width(); ++x)
+              {
+                get_pixel(x * impl->size.width  / surface.impl->size.width,
+                          y * impl->size.height / surface.impl->size.height,
+                          rgb);
+                
+                surface.put_pixel(x, y, rgb);
+              }
+        }
+        break;
 
-        surface.put_pixel(x, y, rgb);
-      }
+      case RGBA_FORMAT:
+        {
+          RGBA rgba;
+          for(int y = 0; y < surface.get_height(); ++y)
+            for(int x = 0; x < surface.get_width(); ++x)
+              {
+                get_pixel(x * impl->size.width  / surface.impl->size.width,
+                          y * impl->size.height / surface.impl->size.height,
+                          rgba);
+                
+                surface.put_pixel(x, y, rgba);
+              }
+        }
+        break;
+
+      default:
+        assert(!"SoftwareSurface::scale: Unknown format");
+        break;
+    }
 
   return surface;
 }
@@ -169,13 +262,13 @@ SoftwareSurface::crop(const Rect& rect_in) const
             Math::min(get_width(),  rect_in.right), 
             Math::min(get_height(), rect_in.bottom));
 
-  SoftwareSurface surface(rect.get_size());
+  SoftwareSurface surface(rect.get_size(), impl->format);
 
   for(int y = rect.top; y < rect.bottom; ++y)
     {
       memcpy(surface.get_row_data(y - rect.top), 
-             get_row_data(y) + rect.left*3,
-             rect.get_width() * 3);
+             get_row_data(y) + rect.left * get_bytes_per_pixel(),
+             rect.get_width() * get_bytes_per_pixel());
     }
 
   return surface;
@@ -224,25 +317,6 @@ SoftwareSurface::get_raw_data() const
   return Blob(impl->pixels, impl->size.height * impl->pitch);
 }
 
-SoftwareSurface
-SoftwareSurface::from_file(const std::string& filename)
-{
-  return JPEG::load_from_file(filename);
-}
-
-SoftwareSurface
-SoftwareSurface::from_jpeg_data(const Blob& blob)
-{
-  return JPEG::load_from_mem(blob.get_data(), blob.size());
-}
-
-SoftwareSurface
-SoftwareSurface::from_raw_data(const Blob& blob)
-{
-  std::cout << "SoftwareSurface::from_raw_data(const Blob& blob): Implement me" << std::endl;
-  return SoftwareSurface();
-}
-
 uint8_t*
 SoftwareSurface::get_data() const
 {
@@ -265,6 +339,7 @@ SoftwareSurface::get_format() const
 RGB
 SoftwareSurface::get_average_color() const
 {
+  assert(impl->format == RGB_FORMAT);
   // Only works for smaller surfaces, else we would run into integer overflows
   assert(get_width() > 256 || get_height() > 256); // random limit, but should be enough for galapix
 
@@ -287,6 +362,52 @@ SoftwareSurface::get_average_color() const
   return RGB(r / num_pixels,
              g / num_pixels,
              b / num_pixels);
+}
+
+SoftwareSurface
+SoftwareSurface::to_rgb() const
+{
+  if (impl->format == RGB_FORMAT)
+    {
+      return *this;
+    }
+  else if (impl->format == RGBA_FORMAT)
+    {
+      SoftwareSurface surface(impl->size, RGB_FORMAT);
+
+      int num_pixels      = get_width() * get_height();
+      uint8_t* src_pixels = get_data();
+      uint8_t* dst_pixels = surface.get_data();
+
+      for(int i = 0; i < num_pixels; ++i)
+        {
+          dst_pixels[3*i+0] = src_pixels[4*i+0];
+          dst_pixels[3*i+1] = src_pixels[4*i+1];
+          dst_pixels[3*i+2] = src_pixels[4*i+2];
+        }
+
+      return surface;
+    }  
+  else
+    {
+      assert(!"SoftwareSurface::to_rgb: Unknown format");
+    }
+}
+
+int
+SoftwareSurface::get_bytes_per_pixel() const
+{
+  switch(impl->format) 
+    {
+      case RGB_FORMAT:
+        return 3;
+
+      case RGBA_FORMAT:
+        return 4;
+
+      default:
+        assert(!"SoftwareSurface::get_bytes_per_pixel(): Unknown format");
+    }
 }
   
 /* EOF */

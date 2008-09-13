@@ -22,7 +22,6 @@
 
 #include <assert.h>
 #include "math.hpp"
-#include "jpeg.hpp"
 #include "filesystem.hpp"
 #include "software_surface.hpp"
 #include "file_entry.hpp"
@@ -127,7 +126,7 @@ FileDatabase::get_file_entry(const std::string& filename)
   else
     {
       Size size;
-      if (JPEG::get_size(filename, size))
+      if (SoftwareSurface::get_size(filename, size))
         {
           return store_file_entry(filename, size);
         }

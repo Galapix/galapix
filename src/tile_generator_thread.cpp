@@ -22,6 +22,7 @@
 #include "tile_generator.hpp"
 #include "math.hpp"
 #include "jpeg.hpp"
+#include "png.hpp"
 #include "database_thread.hpp"
 #include "tile_generator_thread.hpp"
  
@@ -89,21 +90,38 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
       int height = job.entry.get_height();
       int scale  = job.min_scale;
 
-      int jpeg_scale = Math::pow2(scale);
       SoftwareSurface surface;
 
-      if (jpeg_scale > 8)
+      int jpeg_scale = Math::pow2(scale);
+
+      switch(SoftwareSurface::get_fileformat(job.entry.get_filename()))
         {
-          // The JPEG class can only scale down by factor 2,4,8, so we have to
-          // limit things (FIXME: is that true? if so, why?)
-          surface = JPEG::load_from_file(job.entry.get_filename(), 8);
+          case SoftwareSurface::JPEG_FILEFORMAT:
+            if (jpeg_scale > 8)
+              {
+                // The JPEG class can only scale down by factor 2,4,8, so we have to
+                // limit things (FIXME: is that true? if so, why?)
+                surface = JPEG::load_from_file(job.entry.get_filename(), 8);
       
-          surface = surface.scale(Size(width  / Math::pow2(scale),
-                                       height / Math::pow2(scale)));
-        }
-      else
-        {
-          surface = JPEG::load_from_file(job.entry.get_filename(), jpeg_scale);
+                surface = surface.scale(Size(width  / Math::pow2(scale),
+                                             height / Math::pow2(scale)));
+              }
+            else
+              {
+                surface = JPEG::load_from_file(job.entry.get_filename(), jpeg_scale);
+              }
+            break;
+
+          case SoftwareSurface::PNG_FILEFORMAT:
+            // FIXME: This is terrible, min/max_scale are meaningless
+            // for non-jpeg formats, so we should just forget them
+            surface = PNG::load_from_file(job.entry.get_filename());
+            surface = surface.scale(Size(width  / Math::pow2(scale),
+                                         height / Math::pow2(scale)));
+            break;
+
+          default:
+            assert(!"Unhandled image format");
         }
 
       do
