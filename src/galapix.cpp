@@ -63,11 +63,14 @@ Galapix::test(const std::vector<std::string>& filenames)
 {
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
-      SoftwareSurface surface = SoftwareSurface::from_file(*i);
+      Blob blob = Blob::from_file(*i);
+      SoftwareSurface surface = PNG::load_from_mem(blob.get_data(), blob.size());
       
+      Blob out_blob = PNG::save(surface);
+
       std::ostringstream out;
       out << "/tmp/out-" << (i - filenames.begin()) << ".png";
-      PNG::save(surface, out.str());
+      out_blob.write_to_file(out.str());
 
       std::cout << "Wrote " << out.str() << std::endl;
     }

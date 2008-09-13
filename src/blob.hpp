@@ -35,7 +35,7 @@ public:
   uint8_t* get_data() const;
 
   void write_to_file(const std::string& filename);
-
+  static Blob from_file(const std::string& filename);
 private: 
   boost::shared_ptr<BlobImpl> impl;
 };

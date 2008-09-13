@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdexcept>
 #include <fstream>
 #include <string.h>
 #include "blob.hpp"
@@ -82,6 +83,28 @@ Blob::write_to_file(const std::string& filename)
 {
   std::ofstream out(filename.c_str(), std::ios::binary);
   out.write(reinterpret_cast<char*>(impl->data), impl->len);
+}
+
+Blob
+Blob::from_file(const std::string& filename)
+{
+  std::ifstream in(filename.c_str(), std::ios::binary);
+  if (!in)
+    {
+      throw std::runtime_error("Blob::from_file: Couldn't read " + filename);
+    }
+  else
+    {
+      std::vector<uint8_t> data;
+      uint8_t buffer[4096];
+      while(!in.eof())
+        {
+          int len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
+          std::copy(buffer, buffer+len, std::back_inserter(data));
+        }
+      // FIXME: Useless copy again
+      return Blob(data);
+    }
 }
 
 /* EOF */
