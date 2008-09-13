@@ -1,3 +1,19 @@
+2008-09-12 15:58  grumbel
+
+	* ., ChangeLog, TODO:
+	  Release preparations
+
+2008-09-12 14:24  grumbel
+
+	* NEWS, src/image.cpp:
+	  Fixed incorrect iterator handling
+
+2008-09-12 14:06  grumbel
+
+	* README, SConstruct, TODO, src/image.cpp:
+	  Updated README and TODO
+	  Upped version number
+
 2008-09-11 19:23  grumbel
 
 	* README, SConstruct, TODO, src/view_rotate_tool.cpp,

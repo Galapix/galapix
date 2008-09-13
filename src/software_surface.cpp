@@ -214,6 +214,12 @@ SoftwareSurface::get_row_data(int y) const
   
 }
 
+SoftwareSurface::Format
+SoftwareSurface::get_format() const
+{
+  return RGB_FORMAT;
+}
+
 RGB
 SoftwareSurface::get_average_color() const
 {

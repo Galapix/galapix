@@ -1,5 +1,9 @@
-Galapix 0.0.3 (??. Sep 2008)
-===========================
+Galapix 0.0.4 (??. Sep 2008)
+============================
+
+
+Galapix 0.0.3 (12. Sep 2008)
+============================
 
 * fixes for gcc 4.3
 * added random layout function

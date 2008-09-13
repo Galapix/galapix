@@ -26,6 +26,7 @@
 #include <sqlite3.h>
 
 #include "jpeg.hpp"
+#include "png.hpp"
 #include "surface.hpp"
 #include "framebuffer.hpp"
 #include "math/size.hpp"
@@ -63,8 +64,11 @@ Galapix::info(const std::vector<std::string>& filenames)
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
       Size size;
-      JPEG::get_size(*i, size);
-      std::cout << *i << " " << size.width << "x" << size.height << std::endl;
+
+      if (PNG::get_size(*i, size))
+        std::cout << *i << " " << size.width << "x" << size.height << std::endl;
+      else
+        std::cout << "Error reading " << *i << std::endl;
     }
 }
 
@@ -374,7 +378,7 @@ Galapix::main(int argc, char** argv)
         {
           std::cout << "Scanning directories... " << std::flush;
           for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
-            Filesystem::generate_jpeg_file_list(*i, filenames);
+            Filesystem::generate_image_file_list(*i, filenames);
           std::sort(filenames.begin(), filenames.end());
           std::cout << filenames.size() << " files found." << std::endl;
         }

@@ -50,8 +50,8 @@ public:
   static unsigned int get_mtime(const std::string& filename);
   static unsigned int get_size(const std::string& filename);
   
-  /** Generate a recursive list of all JPEGs in pathname */
-  static void generate_jpeg_file_list(const std::string& pathname, std::vector<std::string>& file_list);
+  /** Generate a recursive list of all images in pathname */
+  static void generate_image_file_list(const std::string& pathname, std::vector<std::string>& file_list);
 
   static void init();
   static void deinit();

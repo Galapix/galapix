@@ -18,6 +18,10 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* SoftwareSurface:Colorformat: RGB, RGBA (grayscale: could, but seem to have little benefit)
+
+* DatabaseTileformats: JPEG(Grayscale, RGB), PNG(RGBA)
+
 * add shift-click support to the MoveTool, also rename MoveTool to SelectTool
 
 * make 'd' clone the current selection
@@ -43,8 +47,8 @@ Aborted
 * support for additional image formats would be nice, via ImageMagicks
   "convert" as a fallback
 
-Galapix 0.0.3 Release ToDo:
----------------------------
+Galapix Video Demo:
+-------------------
 
 http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 
@@ -56,6 +60,11 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
   - demonstrate the movement of images
   - demonstrate the resize of images
   - demonstrate isolation and deletion of images
+
+* make sure that it isn't as blurry as the last one and doesn't have
+  the framerate glitch
+
+* use a wider range of pictures
 
 
 Galapix 0.0.4 Release ToDo:
@@ -69,16 +78,11 @@ Galapix 0.0.4 Release ToDo:
   != image_size due to small values of thumbnail.size)
 
 * implement workspace load&save
- 
-Galapix 0.1.0 Release ToDo:
----------------------------
 
 * add function to relayout just the selection instead of all images
 
-* make middle button exit trackball mode
-
-* add check for boost header files and make scons somewhat more solid
-* replace SCons with WAF?
+* fix random layout so that all image sizes are handled equally,
+  currently low-res images get really small
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
@@ -92,6 +96,14 @@ Galapix 0.1.0 Release ToDo:
 
 * handle "Premature end of JPEG file" a little better, mark FileEntry
   as broken or so
+ 
+Galapix 0.1.0 Release ToDo:
+---------------------------
+
+* make middle button exit trackball mode
+
+* add check for boost header files and make scons somewhat more solid
+* replace SCons with WAF?
 
 * figure out a way to record the version number in the table
 
@@ -125,7 +137,10 @@ Galapix 0.1.0 Release ToDo:
 
 _______________________________________________________________________________
 
-* maybe limit the scrolling area, so that one can't scroll completly out of the picture
+* maybe limit the scrolling area, so that one can't scroll completly
+  out of the picture: calculate the center of all images and let an
+  arrow point into the right direction when no images are visible on
+  the screen
 
 * improve overlap constrain solver, make it fast and make it animated
 

@@ -21,6 +21,7 @@ galapix_sources = [
     'src/move_tool.cpp',
     #    'src/md5.cpp',
     'src/pan_tool.cpp',
+    'src/png.cpp',
     'src/resize_tool.cpp',
     'src/rotate_tool.cpp',
     'src/software_surface.cpp',
@@ -161,6 +162,11 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
 #         fatal_error += "  * libjpeg library not found\n"
 
     #------------------------------------------------------------------
+    # -- Check for libpng
+    env['LIBS'] += ['png']
+# FIXME: Add proper check
+
+    #------------------------------------------------------------------
     # -- Check for SQlite3
     if config.CheckLibWithHeader('sqlite3', 'sqlite3.h', 'c++'):
         env['LIBS'] += ['sqlite3']
@@ -189,7 +195,7 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
             print "\nError are being ignored, the build continues"
 
     config_h = open('config.h', 'w')
-    config_h.write('#define VERSION "0.0.3"\n')
+    config_h.write('#define VERSION "0.0.4"\n')
     for (v,k) in config_h_defines:
         config_h.write('#define %s %s\n' % (v, k))
     config_h.close()

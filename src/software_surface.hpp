@@ -30,6 +30,8 @@ class SoftwareSurfaceImpl;
 class SoftwareSurface
 {
 public:
+  enum Format { RGB_FORMAT, RGBA_FORMAT };
+
   SoftwareSurface();
   SoftwareSurface(const Size& size);
 
@@ -60,6 +62,8 @@ public:
   uint8_t* get_row_data(int y) const;
 
   RGB get_average_color() const;
+
+  Format get_format() const;
 
   operator bool() const { return impl.get(); }
 
