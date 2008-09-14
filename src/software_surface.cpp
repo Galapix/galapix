@@ -119,12 +119,12 @@ public:
     switch(format)
       {
         case SoftwareSurface::RGB_FORMAT:
-          pitch = size.width * 3; // FIXME: Implement support for RGBA here
+          pitch  = size.width * 3;
           pixels = new uint8_t[pitch * size.height];
           break;
           
         case SoftwareSurface::RGBA_FORMAT:
-          pitch = size.width * 4; // FIXME: Implement support for RGBA here
+          pitch  = size.width * 4;
           pixels = new uint8_t[pitch * size.height];
           break;
 
