@@ -56,7 +56,6 @@ Imagemagick::load_from_file(const std::string& filename)
   int width  = image.columns();
   int height = image.rows();
 
-
   int shift;
   if (MaxRGB == 65535)
     shift = 8;
@@ -80,7 +79,7 @@ Imagemagick::load_from_file(const std::string& filename)
               dst_pixels[4*x + 0] = src_pixels[x].red     >> shift;
               dst_pixels[4*x + 1] = src_pixels[x].green   >> shift;
               dst_pixels[4*x + 2] = src_pixels[x].blue    >> shift;
-              dst_pixels[4*x + 3] = src_pixels[x].opacity >> shift;
+              dst_pixels[4*x + 3] = 255 - (src_pixels[x].opacity >> shift);
             }
         }
     }
@@ -88,20 +87,16 @@ Imagemagick::load_from_file(const std::string& filename)
     {
       surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, 
                                 Size(width, height));
-
       for(int y = 0; y < height; ++y)
         {
-          std::cout << y << "/" << height << std::endl;
-
-          const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
           uint8_t* dst_pixels = surface.get_row_data(y);
+          const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
 
           for(int x = 0; x < width; ++x)
             {
               dst_pixels[3*x + 0] = src_pixels[x].red     >> shift;
               dst_pixels[3*x + 1] = src_pixels[x].green   >> shift;
               dst_pixels[3*x + 2] = src_pixels[x].blue    >> shift;
-              dst_pixels[3*x + 3] = src_pixels[x].opacity >> shift;
             }
         }
     }  
