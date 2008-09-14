@@ -18,6 +18,8 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* xcfinfo is much faster then Imagemagick for xcf
+
 * multilayer .xcf are not properly supported
 
 * /home/ingo/images/art/female25.xcf crashes Imagemagick
