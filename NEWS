@@ -3,6 +3,7 @@ Galapix 0.0.4 (??. Sep 2008)
 
 * support for PNG images
 * support for RGBA tiles
+* support for ImageMagick
 * database format changed, for conversion do a:
 
   ALTER TABLE tiles add format INTEGER DEFAULT 0;

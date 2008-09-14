@@ -18,6 +18,17 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* multilayer .xcf are not properly supported
+
+* /home/ingo/images/art/female25.xcf crashes Imagemagick
+  /home/ingo/images/art/women49.xcf  crashes Imagemagick
+
+* some formats (.xcf) are very slow when it comes to getting
+  width/height, would be faster to not get it only only get it when
+  generating tiles
+
+* switch to plain Magick libraries, not the C++ version
+
 * reading all files from the database should be incremental
 
 * add raise/lower buttons 
