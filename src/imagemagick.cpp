@@ -24,6 +24,7 @@
 */
 
 #include <assert.h>
+#include <stdexcept>
 #include <Magick++.h>
 #include <iostream>
 #include "math/size.hpp"
@@ -32,12 +33,17 @@
 bool
 Imagemagick::get_size(const std::string& filename, Size& size)
 {
-  Magick::Image image(filename);
+  try {
+    Magick::Image image(filename);
   
-  size.width  = image.columns();
-  size.height = image.rows();
+    size.width  = image.columns();
+    size.height = image.rows();
 
-  return true;
+    return true;
+  } catch(std::exception& err) {
+    std::cout << "Imagemagick: " << filename << ": " << err.what() << std::endl;
+    return false;
+  }
 }
 
 SoftwareSurface
@@ -64,33 +70,40 @@ Imagemagick::load_from_file(const std::string& filename)
       surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, 
                                 Size(width, height));
 
-      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, 0, width, height);
-      uint8_t* dst_pixels = surface.get_data();
-
       for(int y = 0; y < height; ++y)
-        for(int x = 0; x < width; ++x)
-          {
-            dst_pixels[y * 4*height + 4*x + 0] = src_pixels[y * height + x].red     >> shift;
-            dst_pixels[y * 4*height + 4*x + 1] = src_pixels[y * height + x].green   >> shift;
-            dst_pixels[y * 4*height + 4*x + 2] = src_pixels[y * height + x].blue    >> shift;
-            dst_pixels[y * 4*height + 4*x + 3] = src_pixels[y * height + x].opacity >> shift;
-          }
+        {
+          const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
+          uint8_t* dst_pixels = surface.get_row_data(y);
+
+          for(int x = 0; x < width; ++x)
+            {
+              dst_pixels[4*x + 0] = src_pixels[x].red     >> shift;
+              dst_pixels[4*x + 1] = src_pixels[x].green   >> shift;
+              dst_pixels[4*x + 2] = src_pixels[x].blue    >> shift;
+              dst_pixels[4*x + 3] = src_pixels[x].opacity >> shift;
+            }
+        }
     }
   else
     {
       surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, 
                                 Size(width, height));
 
-      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, 0, width, height);
-      uint8_t*     dst_pixels = surface.get_data();
-
       for(int y = 0; y < height; ++y)
-        for(int x = 0; x < width; ++x)
-          {
-            dst_pixels[y * 3*height + 3*x + 0] = src_pixels[y * height + x].red   >> shift;
-            dst_pixels[y * 3*height + 3*x + 1] = src_pixels[y * height + x].green >> shift;
-            dst_pixels[y * 3*height + 3*x + 2] = src_pixels[y * height + x].blue  >> shift;
-          }
+        {
+          std::cout << y << "/" << height << std::endl;
+
+          const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
+          uint8_t* dst_pixels = surface.get_row_data(y);
+
+          for(int x = 0; x < width; ++x)
+            {
+              dst_pixels[3*x + 0] = src_pixels[x].red     >> shift;
+              dst_pixels[3*x + 1] = src_pixels[x].green   >> shift;
+              dst_pixels[3*x + 2] = src_pixels[x].blue    >> shift;
+              dst_pixels[3*x + 3] = src_pixels[x].opacity >> shift;
+            }
+        }
     }  
 
   return surface;
