@@ -27,6 +27,7 @@
 #include "SDL.h"
 
 class RGB;
+class RGBA;
 class Size;
 class Rectf;
 
@@ -59,7 +60,7 @@ public:
   static SDL_Surface* get_screen() { return screen; }
   static void resize(int w, int h);
   static void flip();
-  static void clear();
+  static void clear(const RGBA& rgba);
 
   static void draw_rect(const Rectf& rect, const RGB& rgb);
   static void fill_rect(const Rectf& rect, const RGB& rgb);

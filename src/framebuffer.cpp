@@ -21,6 +21,7 @@
 #include <GL/gl.h>
 #include "../config.h"
 #include "math/rgb.hpp"
+#include "math/rgba.hpp"
 #include "SDL_syswm.h"
 #include "math/rect.hpp"
 #include "framebuffer.hpp"
@@ -141,9 +142,9 @@ Framebuffer::flip()
 }
 
 void
-Framebuffer::clear()
+Framebuffer::clear(const RGBA& rgba)
 {
-  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClearColor(rgba.r/255.0f, rgba.g/255.0, rgba.b/255.0f, rgba.a/255.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   //SDL_FillRect(Framebuffer::get_screen(), NULL, SDL_MapRGB(Framebuffer::get_screen()->format, 0, 0, 0));
 }

@@ -18,6 +18,7 @@
 
 #include <boost/bind.hpp>
 #include "../config.h"
+#include "math/rgba.hpp"
 #include "file_entry.hpp"
 #include "workspace.hpp"
 #include "framebuffer.hpp"
@@ -90,7 +91,7 @@ ViewerThread::run()
 
       if (1) // if something has changed, redraw
         {
-          Framebuffer::clear();
+          Framebuffer::clear(RGBA(255, 0, 255, 255));
           viewer.draw();
           Framebuffer::flip();
         }
