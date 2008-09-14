@@ -20,11 +20,13 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "blob.hpp"
-#include "math.hpp"
 #include "jpeg.hpp"
 #include "png.hpp"
 #include "imagemagick.hpp"
+#include "xcf.hpp"
+
+#include "blob.hpp"
+#include "math.hpp"
 #include "math/rect.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
@@ -54,8 +56,11 @@ SoftwareSurface::get_fileformat(const std::string& filename)
     {
       return PNG_FILEFORMAT;
     }
-  else if (Filesystem::has_extension(filename, ".xcf") ||
-           Filesystem::has_extension(filename, ".gif") ||
+  else if (Filesystem::has_extension(filename, ".xcf"))
+    {
+      return XCF_FILEFORMAT;
+    }
+  else if (Filesystem::has_extension(filename, ".gif") ||
            Filesystem::has_extension(filename, ".pnm") ||
            Filesystem::has_extension(filename, ".pgm") ||
            Filesystem::has_extension(filename, ".tif") ||
@@ -82,6 +87,12 @@ SoftwareSurface::get_size(const std::string& filename, Size& size)
       case PNG_FILEFORMAT:
         return PNG::get_size(filename, size);
 
+      case XCF_FILEFORMAT:
+        return XCF::get_size(filename, size);
+
+      case MAGICK_FILEFORMAT:
+        return Imagemagick::get_size(filename, size);
+
       default:
         return Imagemagick::get_size(filename, size);
     }
@@ -97,6 +108,10 @@ SoftwareSurface::from_file(const std::string& filename)
 
       case PNG_FILEFORMAT:
         return PNG::load_from_file(filename);
+
+      case XCF_FILEFORMAT:
+      case MAGICK_FILEFORMAT:
+        return Imagemagick::load_from_file(filename);
 
       default:
         throw std::runtime_error(filename + ": unknown file type");

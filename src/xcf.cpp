@@ -16,75 +16,61 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
+#include "math/size.hpp"
+#include "exec.hpp"
 #include "xcf.hpp"
 
-std::string xcfinfo(const std::string& filename)
-{
-  int stdout_fd[2];
-  int stderr_fd[2];
-
-  if (pipe(stdout_fd) < 0)
-    throw std::runtime_error("pipe failed");
-
-  if (pipe(stderr_fd) < 0)
-    throw std::runtime_error("pipe failed");
-
-  pid_t pid = fork();
-  if (pid < 0)
-    { // error
-      throw std::runtime_error("fork failed");
-    }
-  else if (pid == 0) 
-    { // child
-      close(stdout_fd[0]);
-      close(stderr_fd[0]);
-      dup2(stdout_fd[1], STDOUT_FILENO);
-      dup2(stderr_fd[1], STDERR_FILENO);
-
-      execlp("xcfinfo", "xcfinfo", filename.c_str(), NULL);
-    }
-  else // if (pid > 0)
-    { // parent
-      close(stdout_fd[1]);
-      close(stderr_fd[1]);
-
-      int len;
-      char buffer[4096];
-      std::string str_stdout;
-      std::string str_stderr;
-      
-      while((len = read(stdout_fd[0], buffer, sizeof(buffer))) > 0)
-        str_stdout.append(buffer, len);
-
-      if (len == -1)
-        throw std::runtime_error("error reading stdout from xcfinfo");
-
-      while((len = read(stderr_fd[0], buffer, sizeof(buffer))) > 0)
-        str_stderr.append(buffer, len);
-
-      if (len == -1)
-        throw std::runtime_error("error reading stderr from xcfinfo");
-
-      int child_status;
-      waitpid(pid, &child_status, 0);
-
-      std::cout << "Exit Status: " << child_status << std::endl;
-
-      // Cleanup
-      close(stdout_fd[0]);
-      close(stderr_fd[0]);
-
-      if (child_status == 0)
-        return str_stdout;
-      else
-        return str_stderr;
-    }
-}
+// Example xcfinfo output:
+// Version 0, 800x800 RGB color, 6 layers, compressed RLE
+//  ...
+//
+// Version 0, 800x800 Grayscale, 6 layers, compressed RLE
+// ...
+//
+// Version 1, 800x800 Indexed color, 6 layers, compressed RLE
+// + 800x800+0+0 Indexed-alpha Normal New Layer#3
+// + 800x800+0+0 Indexed-alpha Normal New Layer
+// + 800x800+0+0 Indexed-alpha Normal New Layer#2
+// - 760x705+21+32 Indexed-alpha Normal Pasted Layer#1
+// - 800x800+0+0 Indexed-alpha Normal Pasted Layer
 
 bool
 XCF::get_size(const std::string& filename, Size& size)
 {
-  return false;
+  Exec xcfinfo("xcfinfo");
+  xcfinfo.arg(filename);
+  if (xcfinfo.exec() == 0)
+    {
+      const std::vector<char>& stdout = xcfinfo.get_stdout();
+      std::vector<char>::const_iterator line_end = std::find(stdout.begin(), stdout.end(), '\n');
+      if (line_end == stdout.end())
+        {
+          std::cout << "Error: XCF: couldn't parse xcfinfo output" << std::endl;
+          return false;
+        }
+      else
+        {
+          std::string line(stdout.begin(), line_end);
+          int version, width, height;          
+          if (sscanf(line.c_str(), "Version %d, %dx%d", &version, &width, &height) == 3)
+            {
+              size.width  = width;
+              size.height = height;
+              return true;
+            }
+          else
+            {
+              std::cout << "Error: XCF: couldn't parse xcfinfo output: \"" << line << "\"" << std::endl;
+              return false;
+            }
+        }
+    }
+  else
+    {
+      std::cout.write(&*xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().size());
+      return false;
+    }
 }
 
 SoftwareSurface

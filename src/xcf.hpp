@@ -18,6 +18,11 @@
 
 #ifndef HEADER_XCF_HPP
 #define HEADER_XCF_HPP
+
+#include <string>
+#include "software_surface.hpp"
+
+class Size;
 
 class XCF
 {

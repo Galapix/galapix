@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <errno.h>
 #include <stdexcept>
 #include <unistd.h>
 #include <sys/wait.h>
@@ -43,15 +44,15 @@ Exec::exec()
   int stderr_fd[2];
 
   if (pipe(stdout_fd) < 0)
-    throw std::runtime_error("pipe failed");
+    throw std::runtime_error("Exec: pipe failed");
 
   if (pipe(stderr_fd) < 0)
-    throw std::runtime_error("pipe failed");
+    throw std::runtime_error("Exec: pipe failed");
 
   pid_t pid = fork();
   if (pid < 0)
     { // error
-      throw std::runtime_error("fork failed");
+      throw std::runtime_error("Exec: fork failed");
     }
   else if (pid == 0) 
     { // child
@@ -62,12 +63,14 @@ Exec::exec()
       close(stdout_fd[1]); // 
       close(stderr_fd[1]); // 
 
-      const char* c_arguments[arguments.size()+2];
+      const char** c_arguments = new const char*[arguments.size()+2];
       c_arguments[0] = program.c_str();
       for(std::vector<std::string>::size_type i = 0; i < arguments.size(); ++i)
         c_arguments[i+1] = arguments[i].c_str();
       c_arguments[arguments.size()+1] = NULL;
-      return execvp(c_arguments[0], const_cast<char**>(c_arguments));
+      execvp(c_arguments[0], const_cast<char**>(c_arguments));
+      // execvp() only returns on failure 
+      throw std::runtime_error("Exec: " + program + ": " + strerror(errno));
     }
   else // if (pid > 0)
     { // parent
@@ -100,4 +103,41 @@ Exec::exec()
     }
 }
 
+#ifdef __TEST__
+#include <iostream>
+
+int main(int argc, char** argv)
+{
+  try {
+    if (argc < 2)
+      {
+        std::cout << "Usage: " << argv[0] << " PROGRAM [ARGUMENTS]..." << std::endl;
+      }
+    else
+      {
+        Exec prgn(argv[1]);
+        for(int i = 2; i < argc; ++i)
+          prgn.arg(argv[i]);
+        std::cout << "ExitCode: " << prgn.exec() << std::endl;
+
+        std::cout << "stdout: " << std::endl;
+        std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
+        std::cout << "EOF" << std::endl;
+
+        std::cout << "stderr: " << std::endl;
+        std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
+        std::cout << "EOF" << std::endl;
+
+        std::cout << "END" << std::endl;
+      }
+  }
+  catch(std::exception& err)
+    {
+      std::cout << "Exception: " << err.what() << std::endl;
+    }
+  return 0;
+}
+
+#endif
+
 /* EOF */
