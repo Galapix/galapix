@@ -121,7 +121,7 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
   
   if (cinfo.output_components == 3)
     { // RGB Image
-      JSAMPLE* scanlines[cinfo.output_height];
+      JSAMPLE** scanlines = new JSAMPLE*[cinfo.output_height];
 
       for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
         scanlines[y] = surface.get_row_data(y);
@@ -131,10 +131,12 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
           jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
                               cinfo.output_height - cinfo.output_scanline);
         }
+
+      delete[] scanlines;
     }
   else if (cinfo.output_components == 1)
     { // Greyscale Image
-      JSAMPLE* scanlines[cinfo.output_height];
+      JSAMPLE** scanlines = new JSAMPLE*[cinfo.output_height];
 
       for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
         scanlines[y] = surface.get_row_data(y);
@@ -144,6 +146,8 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
           jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
                               cinfo.output_height - cinfo.output_scanline);
         }
+
+      delete[] scanlines;
 
       // Expand the greyscale data to RGB
       // FIXME: Could be made faster if SoftwareSurface would support
@@ -254,7 +258,7 @@ JPEG::save(const SoftwareSurface& surface_in,
  
   jpeg_start_compress(&cinfo, TRUE);
 
-  JSAMPROW row_pointer[surface.get_height()];
+  JSAMPROW* row_pointer = new JSAMPROW[surface.get_height()];
   
   for(int y = 0; y < surface.get_height(); ++y)
     row_pointer[y] = static_cast<JSAMPLE*>(surface.get_row_data(y));
@@ -264,6 +268,7 @@ JPEG::save(const SoftwareSurface& surface_in,
       jpeg_write_scanlines(&cinfo, &row_pointer[cinfo.next_scanline], 
                            surface.get_height() - cinfo.next_scanline);
     }
+  delete[] row_pointer;
   
   jpeg_finish_compress(&cinfo);
   

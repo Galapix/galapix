@@ -125,6 +125,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
             }
             break;
 
+          case SoftwareSurface::XCF_FILEFORMAT:
           case SoftwareSurface::MAGICK_FILEFORMAT:
             // FIXME: This is terrible, min/max_scale are meaningless
             // for non-jpeg formats, so we should just forget them

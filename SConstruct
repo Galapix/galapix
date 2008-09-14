@@ -24,6 +24,7 @@ galapix_sources = [
     'src/move_tool.cpp',
     'src/pan_tool.cpp',
     'src/png.cpp',
+    'src/pnm.cpp',
     'src/resize_tool.cpp',
     'src/rotate_tool.cpp',
     'src/selection.cpp',

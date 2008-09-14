@@ -104,11 +104,12 @@ PNG::load_from_file(const std::string& filename)
             {
               surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
-              png_bytep row_pointers[height];
+              png_bytep* row_pointers = new png_bytep[height];
               for (int y = 0; y < height; ++y)
                 row_pointers[y] = surface.get_row_data(y);
             
               png_read_image(png_ptr, row_pointers);
+              delete[] row_pointers;
             }
             break;           
 
@@ -116,11 +117,12 @@ PNG::load_from_file(const std::string& filename)
             {
               surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
-              png_bytep row_pointers[height];
+              png_bytep* row_pointers = new png_bytep[height];
               for (int y = 0; y < height; ++y)
                 row_pointers[y] = surface.get_row_data(y);
             
               png_read_image(png_ptr, row_pointers);
+              delete[] row_pointers;
             }
             break;
         }
@@ -200,11 +202,12 @@ PNG::load_from_mem(uint8_t* data, int len)
         {
           surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
-          png_bytep row_pointers[height];
+          png_bytep* row_pointers = new png_bytep[height];
           for (int y = 0; y < height; ++y)
             row_pointers[y] = surface.get_row_data(y);
             
           png_read_image(png_ptr, row_pointers);
+          delete[] row_pointers;
         }
         break;           
 
@@ -212,11 +215,12 @@ PNG::load_from_mem(uint8_t* data, int len)
         {
           surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
-          png_bytep row_pointers[height];
+          png_bytep* row_pointers = new png_bytep[height];
           for (int y = 0; y < height; ++y)
             row_pointers[y] = surface.get_row_data(y);
             
           png_read_image(png_ptr, row_pointers);
+          delete[] row_pointers;
         }
         break;
     }
