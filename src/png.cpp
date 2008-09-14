@@ -36,6 +36,13 @@ PNG::get_size(const std::string& filename, Size& size)
       png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
       png_infop info_ptr  = png_create_info_struct(png_ptr);
 
+      if (setjmp(png_ptr->jmpbuf))
+        {
+          png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+          std::cout << "PNG::get_size: setjmp: Couldn't load " << filename << std::endl;
+          return false;
+        }
+
       png_init_io(png_ptr, in);
 
       png_read_info(png_ptr, info_ptr); 
@@ -63,6 +70,12 @@ PNG::load_from_file(const std::string& filename)
     {
       png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
       png_infop info_ptr  = png_create_info_struct(png_ptr);
+
+      if (setjmp(png_ptr->jmpbuf))
+        {
+          png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+          throw std::runtime_error("PNG::load_from_mem: setjmp: Couldn't load " + filename);
+        }
 
       png_init_io(png_ptr, in);
 
@@ -153,6 +166,12 @@ PNG::load_from_mem(uint8_t* data, int len)
   png_memory.data = data;
   png_memory.len  = len;
   png_memory.pos  = 0;
+
+  if (setjmp(png_ptr->jmpbuf))
+    {
+      png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+      throw std::runtime_error("PNG::load_from_mem: setjmp: Couldn't load from mem");
+    }
 
   png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
 
