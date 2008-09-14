@@ -17,8 +17,10 @@
 */
 
 #include <iostream>
+#include <stdexcept>
 #include "math/size.hpp"
 #include "exec.hpp"
+#include "pnm.hpp"
 #include "xcf.hpp"
 
 // Example xcfinfo output:
@@ -76,7 +78,16 @@ XCF::get_size(const std::string& filename, Size& size)
 SoftwareSurface
 XCF::load_from_file(const std::string& filename)
 {
-  return SoftwareSurface();
+  Exec xcfinfo("xcfinfo");
+  xcfinfo.arg(filename);
+  if (xcfinfo.exec() != 0)
+    {
+      throw std::runtime_error("XCF::load_from_file: " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
+    }
+  else
+    {
+      return PNM::load_from_mem(&*xcfinfo.get_stdout().begin(), xcfinfo.get_stdout().size());
+    }
 }
 
 /* EOF */

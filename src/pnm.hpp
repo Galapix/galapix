@@ -25,7 +25,11 @@
 class PNM
 {
 public:
-  static SoftwareSurface load_from_mem(uint8_t* data, int len);
+  enum Format { PNM_PIXMAP, PNM_GRAYSCALE };
+
+  static void read_header(const char* data, int len,
+                          PNM::Format& format, int& width, int& height, int& max_value);
+  static SoftwareSurface load_from_mem(const char* data, int len);
 };
 
 #endif

@@ -23,12 +23,98 @@
 **  02111-1307, USA.
 */
 
+#include <stdexcept>
+#include "math/size.hpp"
 #include "pnm.hpp"
 
-SoftwareSurface
-PNM::load_from_mem(uint8_t* data, int len)
+class PNMMemReader
 {
-  return SoftwareSurface();
+private:
+  const char* data;
+  int len;
+  const char* ptr;
+
+public:
+  PNMMemReader(const char* data, int len)
+    : data(data),
+      len(len),
+      ptr(data)
+  {
+  }
+
+  // FIXME: Unfinished
+
+  std::string get_token() 
+  {
+    const char* start = ptr;
+    while(!isspace(advance()));
+    return std::string(start, ptr);
+  }
+
+  void skip_whitespace()
+  {
+    while(isspace(advance()));
+  }
+
+  char advance()
+  {
+    if (ptr < data+len)
+      {
+        return *ptr++;
+      }
+    else
+      {
+        throw std::runtime_error("PNM: Unexpected end of file");
+      }
+  }
+};
+
+void
+PNM::read_header(const char* data, int len,
+                 PNM::Format& format, int& width, int& height, int& max_value)
+{
+  //format = get_token();
+  //skip_whitespace();
+  //width  = get_token();
+  //skip_whitespace();
+  //height = get_token();
+  //skip_whitespace();
+  //max_value = get_token();
+
+  
+  //else
+    {
+      throw std::runtime_error("Unhandled PNM format");
+    }
+}
+
+SoftwareSurface
+PNM::load_from_mem(const char* data, int len)
+{
+  //P6 # Converted by xcf2pnm 1.0.4
+  //1239 1024
+  //255
+  //data...
+
+  Format format;
+  Size   size;
+  int    max_value;
+
+  read_header(data, len, format, size.width, size.height, max_value);
+
+  SoftwareSurface surface(SoftwareSurface::RGB_FORMAT, size);
+  switch(format)
+    {
+      case PNM_GRAYSCALE:
+        
+        break;
+
+      case PNM_PIXMAP:
+        
+        break;
+    }
+
+  return surface;
 }
 
 /* EOF */
