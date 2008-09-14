@@ -34,7 +34,7 @@ void jpeg_memory_init_source(j_decompress_ptr cinfo)
   cinfo->src->bytes_in_buffer = 0;
 }
 
-void jpeg_memory_term_source(j_decompress_ptr cinfo)
+void jpeg_memory_term_source(j_decompress_ptr)
 {
   //std::cout << "jpeg_memory_term" << std::endl;
 
