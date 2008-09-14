@@ -91,12 +91,6 @@ SoftwareSurface::from_file(const std::string& filename)
         return SoftwareSurface();
     }  
 }
-
-SoftwareSurface
-SoftwareSurface::from_jpeg_data(const Blob& blob)
-{
-  return JPEG::load_from_mem(blob.get_data(), blob.size());
-}
 
 class SoftwareSurfaceImpl
 {
@@ -302,12 +296,6 @@ void
 SoftwareSurface::save(const std::string& filename) const
 {
   assert(!"SoftwareSurface::save(const std::string& filename) const");
-}
-
-Blob
-SoftwareSurface::get_jpeg_data() const
-{
-  return JPEG::save(*this, 75);
 }
 
 Blob

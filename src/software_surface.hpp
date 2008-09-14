@@ -31,12 +31,16 @@ class SoftwareSurfaceImpl;
 class SoftwareSurface
 {
 public:
-  enum FileFormat { JPEG_FILEFORMAT, PNG_FILEFORMAT, UNKNOWN_FILEFORMAT };
+  // Do not change the value of these, since they are stored in the database
+  enum FileFormat { 
+    JPEG_FILEFORMAT = 0,
+    PNG_FILEFORMAT  = 1, 
+    UNKNOWN_FILEFORMAT 
+  };
 
   static FileFormat get_fileformat(const std::string& filename);
   static bool       get_size(const std::string& filename, Size& size);
 
-  static SoftwareSurface from_jpeg_data(const Blob& blob);
   static SoftwareSurface from_file(const std::string& filename);
 
 public:
@@ -58,7 +62,6 @@ public:
 
   void save(const std::string& filename) const;
   
-  Blob get_jpeg_data() const;
   Blob get_raw_data()  const;
    
   void put_pixel(int x, int y, const RGB& rgb);

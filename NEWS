@@ -2,6 +2,10 @@ Galapix 0.0.4 (??. Sep 2008)
 ============================
 
 * support for PNG images
+* database format changed, for conversion do a:
+
+  ALTER TABLE tiles add format INTEGER;
+  UPDATE tiles SET format=0;
 
 
 Galapix 0.0.3 (12. Sep 2008)

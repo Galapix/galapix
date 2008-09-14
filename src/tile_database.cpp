@@ -18,6 +18,8 @@
 
 #include <sstream>
 #include "SDL.h"
+#include "png.hpp"
+#include "jpeg.hpp"
 #include "tile_entry.hpp"
 #include "tile_database.hpp"
 
@@ -34,13 +36,14 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
            "x       INTEGER, " // X position in tiles
            "y       INTEGER, " // Y position in tiles
            "data    BLOB,    " // the image data, JPEG
-           "quality INTEGER  " // the quality of the tile (default: 0)
+           "quality INTEGER, " // the quality of the tile (default: 0) FIXME: not used
+           "format  INTEGER"   // format of the data (0: JPEG, 1: PNG)
            ");");
 
   db->exec("CREATE INDEX IF NOT EXISTS tiles_index ON tiles ( fileid, x, y, scale );");
 
   // FIXME: This is brute force and doesn't handle collisions
-  store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data, quality) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
+  store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data, quality, format) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);");
 
   get_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
   has_stmt.prepare("SELECT (rowid) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
@@ -87,8 +90,18 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
       tile.pos.x   = reader.get_int (2);
       tile.pos.y   = reader.get_int (3);
 
-      // FIXME: Do this in a JPEGDecoderThread
-      tile.surface = SoftwareSurface::from_jpeg_data(reader.get_blob(4));
+      // FIXME: Do this in a DecoderThread
+      Blob blob = reader.get_blob(4);
+      switch(reader.get_int(6)) // format
+        {
+          case SoftwareSurface::JPEG_FILEFORMAT:
+            tile.surface = JPEG::load_from_mem(blob.get_data(), blob.size());
+            break;
+
+          case SoftwareSurface::PNG_FILEFORMAT:
+            tile.surface = PNG::load_from_mem(blob.get_data(), blob.size());
+            break;
+        }
 
       return true;
     }
@@ -103,7 +116,22 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
 void
 TileDatabase::store_tile(const TileEntry& tile)
 {
-  Blob blob = tile.surface.get_jpeg_data();
+  Blob blob;
+
+  switch(tile.surface.get_format())
+    {
+      case SoftwareSurface::RGB_FORMAT:
+        blob = JPEG::save(tile.surface, 75);
+        break;
+
+      case SoftwareSurface::RGBA_FORMAT:
+        blob = PNG::save(tile.surface);
+        break;
+
+      default:
+        assert(!"TileDatabase::store_tile: Unhandled format");
+        break;
+    }
 
   // FIXME: We need to update a already existing record, instead of
   // just storing a duplicate
@@ -113,6 +141,7 @@ TileDatabase::store_tile(const TileEntry& tile)
   store_stmt.bind_int (4, tile.pos.y);
   store_stmt.bind_blob(5, blob);
   store_stmt.bind_int (6, 0);
+  store_stmt.bind_int (7, tile.surface.get_format());
 
   store_stmt.execute();
 }

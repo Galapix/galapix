@@ -18,7 +18,9 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* implement PNG::load_from_mem() and PNG::save()
+* catch PNG read errors properly 
+
+* add a way to delete all cached stuff related to an image
 
 * allow toggle of background color, maybe allow generic pattern or textures
 
