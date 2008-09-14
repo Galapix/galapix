@@ -10,8 +10,8 @@ galapix_sources = [
     'src/file_entry.cpp',
     'src/filesystem.cpp',
     'src/framebuffer.cpp',
+    'src/imagemagick.cpp',
     'src/jpeg.cpp',
-    'src/jpeg_image.cpp',
     'src/jpeg_memory_src.cpp',
     'src/jpeg_memory_dest.cpp',
     'src/jpeg_decoder_thread.cpp',
@@ -68,8 +68,8 @@ def DefineOptions(filename, args):
 def CheckMyProgram(context, prgn):
     context.Message('Checking for %s...' % prgn)
     for i in context.env['ENV']['PATH'].split(":"):
-        if os.path.exists(i + "/sdl-config"):
-            context.Result(i + "/sdl-config")
+        if os.path.exists(i + "/" + prgn):
+            context.Result(i + "/" + prgn)
             return True
     context.Result("failed")
     return False
@@ -165,6 +165,16 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
     # -- Check for libpng
     env['LIBS'] += ['png']
 # FIXME: Add proper check
+
+    #------------------------------------------------------------------
+    # -- Check for Magick++
+    if config.CheckMyProgram('Magick++-config'):
+        env['CXXFLAGS'] = os.popen("Magick++-config --cxxflags").read().split()
+        env['CPPFLAGS'] = os.popen("Magick++-config --cppflags").read().split()
+        env['LINKFLAGS']  = os.popen("Magick++-config --ldflags").read().split()
+        env['LINKFLAGS']  = os.popen("Magick++-config --libs").read().split()
+    else:
+        fatal_error += "  * couldn't find Magick++-config, Magick++ missing\n"
 
     #------------------------------------------------------------------
     # -- Check for SQlite3

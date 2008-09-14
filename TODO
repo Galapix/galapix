@@ -18,6 +18,10 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* reading all files from the database should be incremental
+
+* add raise/lower buttons 
+
 * catch PNG read errors properly 
 
 * add a way to delete all cached stuff related to an image
