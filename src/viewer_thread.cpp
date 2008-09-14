@@ -88,13 +88,7 @@ ViewerThread::run()
       ticks = cticks;
 
       viewer.update(delta);
-
-      if (1) // if something has changed, redraw
-        {
-          Framebuffer::clear(RGBA(255, 0, 255, 255));
-          viewer.draw();
-          Framebuffer::flip();
-        }
+      viewer.draw();
 
       SDL_Delay(30);
     }

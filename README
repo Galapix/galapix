@@ -112,6 +112,7 @@ g 	  | toggle grid
 h         | reset zoom and scroll
 m         | switch to move/resize tools
 p         | switch pan/zoom tools
+b         | toggle background color
 i         | only display selected images, remove the rest
 n         | random shuffle images (not visible until layout it done via 1 or 2)
 s         | sort images alphabetically  (not visible until layout it done via 1 or 2)

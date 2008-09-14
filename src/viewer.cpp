@@ -23,6 +23,7 @@
 #include "software_surface.hpp"
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
+#include "math/rgba.hpp"
 #include "workspace.hpp"
 #include "pan_tool.hpp"
 #include "move_tool.hpp"
@@ -55,6 +56,27 @@ Viewer::Viewer(Workspace* workspace)
   left_tool   = zoom_in_tool.get();
   middle_tool = pan_tool.get();
   right_tool  = zoom_out_tool.get();
+
+  background_color = 0;
+  // Black to White
+  background_colors.push_back(RGBA(  0,   0,   0));
+  background_colors.push_back(RGBA( 64,  64,  64));
+  background_colors.push_back(RGBA(128, 128, 128));
+  background_colors.push_back(RGBA(255, 255, 255));
+  // Rainbow
+  background_colors.push_back(RGBA(255,   0,   0));
+  background_colors.push_back(RGBA(255, 255,   0));
+  background_colors.push_back(RGBA(255,   0, 255));
+  background_colors.push_back(RGBA(  0, 255,   0));
+  background_colors.push_back(RGBA(  0, 255, 255));
+  background_colors.push_back(RGBA(  0,   0, 255));
+  // Dimmed Rainbow
+  background_colors.push_back(RGBA(128,   0,   0));
+  background_colors.push_back(RGBA(128, 128,   0));
+  background_colors.push_back(RGBA(128,   0, 128));
+  background_colors.push_back(RGBA(  0, 128,   0));
+  background_colors.push_back(RGBA(  0, 128, 128));
+  background_colors.push_back(RGBA(  0,   0, 128));
 }
 
 void
@@ -237,6 +259,12 @@ Viewer::process_event(const SDL_Event& event)
               //workspace->print_info();
               //break;
 
+            case SDLK_b:
+              background_color += 1;
+              if (background_color >= int(background_colors.size()))
+                background_color = 0;
+              break;
+
             case SDLK_g:
               draw_grid = !draw_grid;
               break;
@@ -327,6 +355,8 @@ Viewer::process_event(const SDL_Event& event)
 void
 Viewer::draw()
 {
+  Framebuffer::clear(background_colors[background_color]);
+
   bool clip_debug = false;
 
   glPushMatrix();
@@ -374,6 +404,8 @@ Viewer::draw()
 
   if (draw_grid)
     Framebuffer::draw_grid(3);
+
+  Framebuffer::flip();
 }
 
 void

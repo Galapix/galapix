@@ -63,6 +63,9 @@ private:
   Tool* right_tool;
 
   Vector2i mouse_pos;
+
+  int background_color;
+  std::vector<RGBA> background_colors;
 public:
   Viewer(Workspace* workspace);
 
