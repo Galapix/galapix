@@ -35,6 +35,7 @@ public:
   enum FileFormat { 
     JPEG_FILEFORMAT = 0,
     PNG_FILEFORMAT  = 1, 
+    MAGICK_FILEFORMAT, 
     UNKNOWN_FILEFORMAT 
   };
 

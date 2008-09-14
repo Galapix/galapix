@@ -24,6 +24,7 @@
 #include "math.hpp"
 #include "jpeg.hpp"
 #include "png.hpp"
+#include "imagemagick.hpp"
 #include "math/rect.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
@@ -53,6 +54,17 @@ SoftwareSurface::get_fileformat(const std::string& filename)
     {
       return PNG_FILEFORMAT;
     }
+  else if (Filesystem::has_extension(filename, ".xcf") ||
+           Filesystem::has_extension(filename, ".gif") ||
+           Filesystem::has_extension(filename, ".pnm") ||
+           Filesystem::has_extension(filename, ".pgm") ||
+           Filesystem::has_extension(filename, ".tif") ||
+           Filesystem::has_extension(filename, ".TIF") ||
+           Filesystem::has_extension(filename, ".tiff"))
+    // FIXME: Add more stuff
+    {
+      return MAGICK_FILEFORMAT;
+    }
   else
     {
       return UNKNOWN_FILEFORMAT;
@@ -71,7 +83,7 @@ SoftwareSurface::get_size(const std::string& filename, Size& size)
         return PNG::get_size(filename, size);
 
       default:
-        return false;
+        return Imagemagick::get_size(filename, size);
     }
 }
 

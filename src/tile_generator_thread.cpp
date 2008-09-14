@@ -23,6 +23,7 @@
 #include "tile_generator.hpp"
 #include "math.hpp"
 #include "jpeg.hpp"
+#include "imagemagick.hpp"
 #include "png.hpp"
 #include "database_thread.hpp"
 #include "tile_generator_thread.hpp"
@@ -122,6 +123,15 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
               surface = surface.scale(Size(width  / Math::pow2(scale),
                                            height / Math::pow2(scale)));
             }
+            break;
+
+          case SoftwareSurface::MAGICK_FILEFORMAT:
+            // FIXME: This is terrible, min/max_scale are meaningless
+            // for non-jpeg formats, so we should just forget them
+            surface = Imagemagick::load_from_file(job.entry.get_filename());
+            surface = surface.scale(Size(width  / Math::pow2(scale),
+                                         height / Math::pow2(scale)));            
+
             break;
 
           default:

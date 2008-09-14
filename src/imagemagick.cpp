@@ -23,7 +23,9 @@
 **  02111-1307, USA.
 */
 
+#include <assert.h>
 #include <Magick++.h>
+#include <iostream>
 #include "math/size.hpp"
 #include "imagemagick.hpp"
 
@@ -35,13 +37,63 @@ Imagemagick::get_size(const std::string& filename, Size& size)
   size.width  = image.columns();
   size.height = image.rows();
 
-  return false;
+  return true;
 }
 
 SoftwareSurface
 Imagemagick::load_from_file(const std::string& filename)
 {
-  return SoftwareSurface();
+  Magick::Image image(filename);
+
+  SoftwareSurface surface;
+
+  int width  = image.columns();
+  int height = image.rows();
+
+
+  int shift;
+  if (MaxRGB == 65535)
+    shift = 8;
+  else if (MaxRGB == 255)
+    shift = 0;
+  else
+    assert(!"Imagemagick: Unknown MaxRGB");
+
+  if (image.matte())
+    {
+      surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, 
+                                Size(width, height));
+
+      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, 0, width, height);
+      uint8_t* dst_pixels = surface.get_data();
+
+      for(int y = 0; y < height; ++y)
+        for(int x = 0; x < width; ++x)
+          {
+            dst_pixels[y * 4*height + 4*x + 0] = src_pixels[y * height + x].red     >> shift;
+            dst_pixels[y * 4*height + 4*x + 1] = src_pixels[y * height + x].green   >> shift;
+            dst_pixels[y * 4*height + 4*x + 2] = src_pixels[y * height + x].blue    >> shift;
+            dst_pixels[y * 4*height + 4*x + 3] = src_pixels[y * height + x].opacity >> shift;
+          }
+    }
+  else
+    {
+      surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, 
+                                Size(width, height));
+
+      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, 0, width, height);
+      uint8_t*     dst_pixels = surface.get_data();
+
+      for(int y = 0; y < height; ++y)
+        for(int x = 0; x < width; ++x)
+          {
+            dst_pixels[y * 3*height + 3*x + 0] = src_pixels[y * height + x].red   >> shift;
+            dst_pixels[y * 3*height + 3*x + 1] = src_pixels[y * height + x].green >> shift;
+            dst_pixels[y * 3*height + 3*x + 2] = src_pixels[y * height + x].blue  >> shift;
+          }
+    }  
+
+  return surface;
 }
 
 /* EOF */

@@ -27,6 +27,7 @@
 
 #include "jpeg.hpp"
 #include "png.hpp"
+#include "imagemagick.hpp"
 #include "surface.hpp"
 #include "framebuffer.hpp"
 #include "math/size.hpp"
@@ -63,8 +64,7 @@ Galapix::test(const std::vector<std::string>& filenames)
 {
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
-      Blob blob = Blob::from_file(*i);
-      SoftwareSurface surface = PNG::load_from_mem(blob.get_data(), blob.size());
+      SoftwareSurface surface = Imagemagick::load_from_file(*i);
       
       Blob out_blob = PNG::save(surface);
 
