@@ -155,7 +155,7 @@ struct ImageSorter
 {
   bool operator()(const Image& lhs, const Image& rhs)
   {
-    return lhs.get_filename() < rhs.get_filename();
+    return lhs.get_url() < rhs.get_url();
   }
 };
 
@@ -210,7 +210,7 @@ Workspace::print_images(const Rectf& rect)
     {
       if (i->overlaps(rect))
         {
-          std::cout << i->get_filename() << " "
+          std::cout << i->get_url() << " "
                     << i->get_original_width() << "x" << i->get_original_height()
                     << std::endl;
         }

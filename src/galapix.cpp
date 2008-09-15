@@ -83,7 +83,7 @@ Galapix::info(const std::vector<URL>& filenames)
     {
       Size size;
 
-      if (SoftwareSurface::get_size(i->get_stdio_name(), size))
+      if (SoftwareSurface::get_size(*i, size))
         std::cout << *i << " " << size.width << "x" << size.height << std::endl;
       else
         std::cout << "Error reading " << *i << std::endl;
@@ -130,7 +130,7 @@ Galapix::list(const std::string& database)
 
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {
-      std::cout << i->get_filename() << std::endl;
+      std::cout << i->get_url() << std::endl;
     }  
 }
 
@@ -162,7 +162,7 @@ Galapix::filegen(const std::string& database,
         }
       else
         {
-          std::cout << "Got: " << entry.get_filename() << " " << entry.get_width() << "x" << entry.get_height() << std::endl;
+          std::cout << "Got: " << entry.get_url() << " " << entry.get_width() << "x" << entry.get_height() << std::endl;
         }
     }
 }
@@ -203,7 +203,7 @@ Galapix::thumbgen(const std::string& database,
 
 void
 Galapix::generate_tiles(const std::string& database, 
-                        const std::vector<URL>& filenames)
+                        const std::vector<URL>& urls)
 {
   SQLiteConnection db(database);
 
@@ -212,19 +212,19 @@ Galapix::generate_tiles(const std::string& database,
 
   TileGenerator tile_generator;
 
-  for(std::vector<URL>::size_type i = 0; i < filenames.size(); ++i)
+  for(std::vector<URL>::size_type i = 0; i < urls.size(); ++i)
     {
       std::cout << "Getting file entry..." << std::endl;
-      FileEntry entry = file_db.get_file_entry(filenames[i]);
+      FileEntry entry = file_db.get_file_entry(urls[i]);
       if (!entry)
         {
-          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
+          std::cout << "Couldn't find entry for " << urls[i] << std::endl;
         }
       else
         {
           // Generate Image Tiles
-          std::cout << "Generating tiles... " << filenames[i]  << std::endl;
-          SoftwareSurface surface = SoftwareSurface::from_file(filenames[i].get_stdio_name());
+          std::cout << "Generating tiles... " << urls[i]  << std::endl;
+          SoftwareSurface surface = SoftwareSurface::from_url(urls[i]);
           
           tile_generator.generate_all(entry.get_fileid(), surface, 
                                       boost::bind(&TileDatabase::store_tile, &tile_db, _1));
@@ -233,7 +233,7 @@ Galapix::generate_tiles(const std::string& database,
 }
 
 void
-Galapix::view(const std::string& database, const std::vector<URL>& filenames, const std::string& pattern)
+Galapix::view(const std::string& database, const std::vector<URL>& urls, const std::string& pattern)
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -251,15 +251,15 @@ Galapix::view(const std::string& database, const std::vector<URL>& filenames, co
   database_thread.start();
   tile_generator_thread.start();
 
-  if (filenames.empty() && pattern.empty())
+  if (urls.empty() && pattern.empty())
     {
       // When no files are given, display everything in the database
       database_thread.request_all_files(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
     }
 
-  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+  for(std::vector<std::string>::size_type i = 0; i < urls.size(); ++i)
     {
-      database_thread.request_file(filenames[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+      database_thread.request_file(urls[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
     }
 
   if (!pattern.empty())

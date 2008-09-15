@@ -73,10 +73,10 @@ TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_,
 }
 
 void
-TileGenerator::generate_all(int fileid, const std::string& filename,
+TileGenerator::generate_all(int fileid, const URL& url,
                             const boost::function<void (TileEntry)>& callback)
 {
-  generate_all(fileid, SoftwareSurface::from_file(filename), callback);
+  generate_all(fileid, SoftwareSurface::from_url(url), callback);
 }
 
 void
@@ -97,7 +97,7 @@ TileGenerator::generate_quick(const FileEntry& entry,
   int jpeg_scale = Math::min(8, Math::pow2(scale));
 
   // Load the largest scale at which the image fits on a single tile 
-  SoftwareSurface surface = JPEG::load_from_file(entry.get_filename(), jpeg_scale);
+  SoftwareSurface surface = JPEG::load_from_file(entry.get_url().get_stdio_name(), jpeg_scale);
 
   // The result of JPEG::load_from_file might be larger then the requested size, so scale it down
   // FIXME: We should not throw this data away, now that we already

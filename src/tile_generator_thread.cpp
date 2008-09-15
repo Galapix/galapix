@@ -78,11 +78,11 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
       max_scale == job.max_scale)
     { 
       // FIXME: Workaround for jobs getting reqested multiple times in a row for some reason
-      std::cout << "TileGeneratorThread: Job rejected: " << job.min_scale << "-" << job.max_scale << " " << job.entry.get_filename() << std::endl;
+      std::cout << "TileGeneratorThread: Job rejected: " << job.min_scale << "-" << job.max_scale << " " << job.entry.get_url() << std::endl;
     }
   else
     {
-      std::cout << "TileGeneratorThread: Processing: scale: " << job.min_scale << "-" << job.max_scale << " " << job.entry.get_filename() << "..." << std::flush;
+      std::cout << "TileGeneratorThread: Processing: scale: " << job.min_scale << "-" << job.max_scale << " " << job.entry.get_url() << "..." << std::flush;
 
       min_scale = job.min_scale;
       max_scale = job.max_scale;
@@ -95,7 +95,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
 
       SoftwareSurface surface;
 
-      switch(SoftwareSurface::get_fileformat(job.entry.get_filename()))
+      switch(SoftwareSurface::get_fileformat(job.entry.get_url()))
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
             {
@@ -104,14 +104,14 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
                 {
                   // The JPEG class can only scale down by factor 2,4,8, so we have to
                   // limit things (FIXME: is that true? if so, why?)
-                  surface = JPEG::load_from_file(job.entry.get_filename(), 8);
+                  surface = JPEG::load_from_file(job.entry.get_url().get_stdio_name(), 8);
       
                   surface = surface.scale(Size(width  / Math::pow2(scale),
                                                height / Math::pow2(scale)));
                 }
               else
                 {
-                  surface = JPEG::load_from_file(job.entry.get_filename(), jpeg_scale);
+                  surface = JPEG::load_from_file(job.entry.get_url().get_stdio_name(), jpeg_scale);
                 }
             }
             break;
@@ -120,7 +120,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
             {
               // FIXME: This is terrible, min/max_scale are meaningless
               // for non-jpeg formats, so we should just forget them
-              surface = PNG::load_from_file(job.entry.get_filename());
+              surface = PNG::load_from_file(job.entry.get_url().get_stdio_name());
               surface = surface.scale(Size(width  / Math::pow2(scale),
                                            height / Math::pow2(scale)));
             }
@@ -129,7 +129,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
           case SoftwareSurface::XCF_FILEFORMAT:
             // FIXME: This is terrible, min/max_scale are meaningless
             // for non-jpeg formats, so we should just forget them
-            surface = XCF::load_from_file(job.entry.get_filename());
+            surface = XCF::load_from_file(job.entry.get_url().get_stdio_name());
             surface = surface.scale(Size(width  / Math::pow2(scale),
                                          height / Math::pow2(scale)));            
             break;
@@ -137,7 +137,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
           case SoftwareSurface::MAGICK_FILEFORMAT:
             // FIXME: This is terrible, min/max_scale are meaningless
             // for non-jpeg formats, so we should just forget them
-            surface = Imagemagick::load_from_file(job.entry.get_filename());
+            surface = Imagemagick::load_from_file(job.entry.get_url().get_stdio_name());
             surface = surface.scale(Size(width  / Math::pow2(scale),
                                          height / Math::pow2(scale)));            
             break;
@@ -191,7 +191,7 @@ TileGeneratorThread::run()
           catch(std::exception& err)
             {
               // FIXME: We need a better way to communicate errors back
-              std::cout << "\nError: TileGeneratorThread: Loading failure: " << job.entry.get_filename() << ": " << err.what() << std::endl;
+              std::cout << "\nError: TileGeneratorThread: Loading failure: " << job.entry.get_url() << ": " << err.what() << std::endl;
               job.callback(TileEntry());
             }
           working = false;

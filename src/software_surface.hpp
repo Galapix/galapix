@@ -21,7 +21,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include "blob.hpp"
-
+
+class URL;
 class RGB;
 class RGBA;
 class Rect;
@@ -40,10 +41,10 @@ public:
     UNKNOWN_FILEFORMAT 
   };
 
-  static FileFormat get_fileformat(const std::string& filename);
-  static bool       get_size(const std::string& filename, Size& size);
+  static FileFormat get_fileformat(const URL& url);
+  static bool       get_size(const URL& url, Size& size);
 
-  static SoftwareSurface from_file(const std::string& filename);
+  static SoftwareSurface from_url(const URL& url);
 
 public:
   enum Format { RGB_FORMAT, RGBA_FORMAT };

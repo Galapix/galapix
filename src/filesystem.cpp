@@ -222,9 +222,10 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
   
       for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
-          if (SoftwareSurface::get_fileformat(*i) != SoftwareSurface::UNKNOWN_FILEFORMAT)
+          URL url = URL::from_filename(*i);
+          if (SoftwareSurface::get_fileformat(url) != SoftwareSurface::UNKNOWN_FILEFORMAT)
             {
-              file_list.push_back(URL::from_filename(*i));
+              file_list.push_back(url);
             }
         }
     }

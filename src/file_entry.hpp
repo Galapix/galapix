@@ -71,7 +71,7 @@ public:
 
   uint32_t    get_fileid()   const { return impl->fileid; }
   URL         get_url()      const { return impl->url; }
-  std::string get_filename() const { return impl->url.get_stdio_name(); } // FIXME: Remove this
+  //std::string get_filename() const { return impl->url.get_stdio_name(); } // FIXME: Remove this
   int         get_width()    const { return impl->size.width; }
   int         get_height()   const { return impl->size.height; }
   Size        get_size()     const { return impl->size; }

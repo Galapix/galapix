@@ -493,10 +493,10 @@ Image::draw(const Rectf& cliprect, float fscale)
     }
 }
 
-std::string
-Image::get_filename() const
+URL
+Image::get_url() const
 {
-  return impl->file_entry.get_filename();
+  return impl->file_entry.get_url();
 }
 
 void

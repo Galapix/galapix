@@ -39,8 +39,10 @@
 // be fast
 
 SoftwareSurface::FileFormat
-SoftwareSurface::get_fileformat(const std::string& filename)
+SoftwareSurface::get_fileformat(const URL& url)
 {
+  std::string filename = url.get_url();
+
   // FIXME: Make this more clever
   if (Filesystem::has_extension(filename, ".jpg")  ||
       Filesystem::has_extension(filename, ".JPG")  ||
@@ -79,44 +81,44 @@ SoftwareSurface::get_fileformat(const std::string& filename)
 }
 
 bool
-SoftwareSurface::get_size(const std::string& filename, Size& size)
+SoftwareSurface::get_size(const URL& url, Size& size)
 {
-  switch(get_fileformat(filename))
+  switch(get_fileformat(url))
     {
       case JPEG_FILEFORMAT:
-        return JPEG::get_size(filename, size);
+        return JPEG::get_size(url.get_stdio_name(), size);
 
       case PNG_FILEFORMAT:
-        return PNG::get_size(filename, size);
+        return PNG::get_size(url.get_stdio_name(), size);
 
       case XCF_FILEFORMAT:
-        return XCF::get_size(filename, size);
+        return XCF::get_size(url.get_stdio_name(), size);
 
       case MAGICK_FILEFORMAT:
-        return Imagemagick::get_size(filename, size);
+        return Imagemagick::get_size(url.get_stdio_name(), size);
 
       default:
-        return Imagemagick::get_size(filename, size);
+        return Imagemagick::get_size(url.get_stdio_name(), size);
     }
 }
 
 SoftwareSurface
-SoftwareSurface::from_file(const std::string& filename)
+SoftwareSurface::from_url(const URL& url)
 {
-  switch(get_fileformat(filename))
+  switch(get_fileformat(url))
     {
       case JPEG_FILEFORMAT:
-        return JPEG::load_from_file(filename);
+        return JPEG::load_from_file(url.get_stdio_name());
 
       case PNG_FILEFORMAT:
-        return PNG::load_from_file(filename);
+        return PNG::load_from_file(url.get_stdio_name());
 
       case XCF_FILEFORMAT:
       case MAGICK_FILEFORMAT:
-        return Imagemagick::load_from_file(filename);
+        return Imagemagick::load_from_file(url.get_stdio_name());
 
       default:
-        throw std::runtime_error(filename + ": unknown file type");
+        throw std::runtime_error(url.get_url() + ": unknown file type");
         return SoftwareSurface();
     }  
 }

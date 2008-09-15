@@ -21,7 +21,7 @@
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
-  return os << "filename: " << entry.get_filename() << " size: "<< entry.get_width() << "x" << entry.get_height();
+  return os << entry.get_url() << " size: "<< entry.get_width() << "x" << entry.get_height();
 }
 
 /* EOF */

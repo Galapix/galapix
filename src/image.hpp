@@ -96,7 +96,7 @@ public:
   void cache_cleanup();
   void print_info();
 
-  std::string get_filename() const;
+  URL get_url() const;
 
   bool overlaps(const Rectf& cliprect) const;
   bool overlaps(const Vector2f& pos) const;

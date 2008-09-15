@@ -126,7 +126,7 @@ FileDatabase::get_file_entry(const URL& url)
   else
     {
       Size size;
-      if (SoftwareSurface::get_size(url.get_stdio_name(), size))
+      if (SoftwareSurface::get_size(url, size))
         {
           return store_file_entry(url, size);
         }
@@ -191,13 +191,13 @@ FileDatabase::check()
   std::cout << "Checking File Existance:" << std::endl;
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {
-      if (!Filesystem::exist(i->get_filename()))
+      if (!Filesystem::exist(i->get_url().get_stdio_name()))
         {
-          std::cout << i->get_filename() << ": does not exist" << std::endl;
+          std::cout << i->get_url() << ": does not exist" << std::endl;
         }
       else
         {
-          std::cout << i->get_filename() << ": ok" << std::endl;
+          std::cout << i->get_url() << ": ok" << std::endl;
         }
     } 
 

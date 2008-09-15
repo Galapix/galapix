@@ -25,6 +25,7 @@
 #include "tile_entry.hpp"
 
 class FileEntry;
+class URL;
 
 class TileGenerator
 {
@@ -39,7 +40,7 @@ public:
   void generate_all(int fileid, const SoftwareSurface& surface,
                     const boost::function<void (TileEntry)>& callback);
 
-  void generate_all(int fileid, const std::string& filename,
+  void generate_all(int fileid, const URL& url,
                     const boost::function<void (TileEntry)>& callback);
 
   void generate_quick(const FileEntry& entry,
