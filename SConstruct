@@ -27,6 +27,7 @@ galapix_sources = [
     'src/pnm.cpp',
     'src/resize_tool.cpp',
     'src/rotate_tool.cpp',
+    'src/rar.cpp',
     'src/selection.cpp',
     'src/software_surface.cpp',
     'src/sqlite.cpp',

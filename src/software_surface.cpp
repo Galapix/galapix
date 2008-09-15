@@ -56,7 +56,9 @@ SoftwareSurface::get_fileformat(const std::string& filename)
     {
       return PNG_FILEFORMAT;
     }
-  else if (Filesystem::has_extension(filename, ".xcf"))
+  else if (Filesystem::has_extension(filename, ".xcf") ||
+           Filesystem::has_extension(filename, ".xcf.bz2") ||
+           Filesystem::has_extension(filename, ".xcf.gz"))
     {
       return XCF_FILEFORMAT;
     }
