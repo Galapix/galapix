@@ -18,14 +18,18 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* xcfinfo is much faster then Imagemagick for xcf
+* check for xcf2pnm and xcfinfo binaries on startup
 
-* multilayer .xcf are not properly supported
+* make sure that PNM class can handle all PNM formats that XCF can output
 
-* /home/ingo/images/art/female25.xcf crashes Imagemagick
-  /home/ingo/images/art/women49.xcf  crashes Imagemagick
+* leaving fullscreen doesn't work properly, glViewport size ends up
+  being different from the window size
 
-* some formats (.xcf) are very slow when it comes to getting
+* when relayout track the currently selected item with the camera, so
+  that you can switch between random layout and sorted layout without
+  losing track of a picture
+
+* some formats (which?) are very slow when it comes to getting
   width/height, would be faster to not get it only only get it when
   generating tiles
 
@@ -39,17 +43,13 @@ Release procedure:
 
 * add a way to delete all cached stuff related to an image
 
-* allow toggle of background color, maybe allow generic pattern or textures
+* add support for checkboard pattern and stuff in the background
 
 * added toggle for GL_LINEAR/GL_NEAREST
 
 * Merge TileGenerator and TileGeneratorThread code
 
 * How to detect file format: file extension (case-insensitive, magic byte)
-
-* DatabaseTileformats: JPEG(Grayscale, RGB), PNG(RGBA)
-
-* need TileFormat (PNG/JPEG) flag inside the tile row
 
 * add shift-click support to the MoveTool, also rename MoveTool to SelectTool
 

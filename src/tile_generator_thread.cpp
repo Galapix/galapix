@@ -25,6 +25,7 @@
 #include "jpeg.hpp"
 #include "imagemagick.hpp"
 #include "png.hpp"
+#include "xcf.hpp"
 #include "database_thread.hpp"
 #include "tile_generator_thread.hpp"
  
@@ -126,13 +127,19 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
             break;
 
           case SoftwareSurface::XCF_FILEFORMAT:
+            // FIXME: This is terrible, min/max_scale are meaningless
+            // for non-jpeg formats, so we should just forget them
+            surface = XCF::load_from_file(job.entry.get_filename());
+            surface = surface.scale(Size(width  / Math::pow2(scale),
+                                         height / Math::pow2(scale)));            
+            break;
+
           case SoftwareSurface::MAGICK_FILEFORMAT:
             // FIXME: This is terrible, min/max_scale are meaningless
             // for non-jpeg formats, so we should just forget them
             surface = Imagemagick::load_from_file(job.entry.get_filename());
             surface = surface.scale(Size(width  / Math::pow2(scale),
                                          height / Math::pow2(scale)));            
-
             break;
 
           default:
@@ -184,7 +191,7 @@ TileGeneratorThread::run()
           catch(std::exception& err)
             {
               // FIXME: We need a better way to communicate errors back
-              std::cout << "\nError: TileGeneratorThread: Loading failure: " << job.entry.get_filename() << std::endl;
+              std::cout << "\nError: TileGeneratorThread: Loading failure: " << job.entry.get_filename() << ": " << err.what() << std::endl;
               job.callback(TileEntry());
             }
           working = false;

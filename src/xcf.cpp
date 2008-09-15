@@ -78,15 +78,16 @@ XCF::get_size(const std::string& filename, Size& size)
 SoftwareSurface
 XCF::load_from_file(const std::string& filename)
 {
-  Exec xcfinfo("xcfinfo");
-  xcfinfo.arg(filename);
-  if (xcfinfo.exec() != 0)
+  Exec xcf2pnm("xcf2pnm");
+  xcf2pnm.arg("--background").arg("#000"); // Makes transparent pixels black
+  xcf2pnm.arg(filename);
+  if (xcf2pnm.exec() != 0)
     {
-      throw std::runtime_error("XCF::load_from_file: " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
+      throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
     }
   else
     {
-      return PNM::load_from_mem(&*xcfinfo.get_stdout().begin(), xcfinfo.get_stdout().size());
+      return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
     }
 }
 

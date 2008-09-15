@@ -23,6 +23,7 @@
 **  02111-1307, USA.
 */
 
+#include <iostream>
 #include <stdexcept>
 #include "math/size.hpp"
 #include "pnm.hpp"
@@ -33,6 +34,73 @@ private:
   const char* data;
   int len;
   const char* ptr;
+  int token_count;
+
+  std::string magic;
+  Size size;
+  int maxval;
+  const char* pixel_data;
+
+private:
+  bool eof() { return ptr >= (data+len); }
+  void forward()  { ptr += 1; }
+
+  void parse()
+  {
+    token_count = 0;
+
+    while(!eof())
+      {
+        if (*ptr == '#')
+          {
+            // skip comment
+            forward();
+            while(!eof() && *ptr != '\n')
+              forward();
+          }
+        else if (isspace(*ptr))
+          {
+            // skip whitespace
+            forward();
+            while(!eof() && isspace(*ptr))
+              forward();
+          }
+        else
+          {
+            const char* start = ptr;
+            forward();
+            while(!eof() && !isspace(*ptr) && *ptr != '#')
+              {
+                forward();
+              }
+
+            std::string token(start, ptr);
+            switch(token_count)
+              {
+                case 0:
+                  magic = token;
+                  break;
+
+                case 1:
+                  size.width = atoi(token.c_str());
+                  break;
+
+                case 2:
+                  size.height = atoi(token.c_str());
+                  break;
+
+                case 3:
+                  maxval = atoi(token.c_str());
+                  forward();
+                  pixel_data = ptr;
+                  ptr = data+len; // set ptr to EOF 
+                  break;
+              }
+
+            token_count += 1;
+          }
+      }
+  }
 
 public:
   PNMMemReader(const char* data, int len)
@@ -40,81 +108,74 @@ public:
       len(len),
       ptr(data)
   {
+    parse();
   }
 
-  // FIXME: Unfinished
-
-  std::string get_token() 
-  {
-    const char* start = ptr;
-    while(!isspace(advance()));
-    return std::string(start, ptr);
-  }
-
-  void skip_whitespace()
-  {
-    while(isspace(advance()));
-  }
-
-  char advance()
-  {
-    if (ptr < data+len)
-      {
-        return *ptr++;
-      }
-    else
-      {
-        throw std::runtime_error("PNM: Unexpected end of file");
-      }
-  }
+  std::string get_magic() const { return magic; }
+  const char* get_pixel_data() const { return pixel_data; }
+  Size get_size() const { return size; }
+  int  get_maxval() const { return maxval; }
 };
-
-void
-PNM::read_header(const char* data, int len,
-                 PNM::Format& format, int& width, int& height, int& max_value)
-{
-  //format = get_token();
-  //skip_whitespace();
-  //width  = get_token();
-  //skip_whitespace();
-  //height = get_token();
-  //skip_whitespace();
-  //max_value = get_token();
-
-  
-  //else
-    {
-      throw std::runtime_error("Unhandled PNM format");
-    }
-}
 
 SoftwareSurface
 PNM::load_from_mem(const char* data, int len)
 {
-  //P6 # Converted by xcf2pnm 1.0.4
-  //1239 1024
-  //255
-  //data...
+  PNMMemReader pnm(data, len);
 
-  Format format;
-  Size   size;
-  int    max_value;
-
-  read_header(data, len, format, size.width, size.height, max_value);
-
-  SoftwareSurface surface(SoftwareSurface::RGB_FORMAT, size);
-  switch(format)
+  SoftwareSurface surface(SoftwareSurface::RGB_FORMAT, pnm.get_size());
+  const uint8_t* src_pixels = (uint8_t*)pnm.get_pixel_data();
+  uint8_t* dst_pixels = surface.get_data();
+  //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;
+  assert(pnm.get_maxval() == 255);
+  if (pnm.get_magic() == "P6") // RGB
     {
-      case PNM_GRAYSCALE:
-        
-        break;
-
-      case PNM_PIXMAP:
-        
-        break;
+      for(int i = 0; i < surface.get_width() * surface.get_height(); ++i)
+        {
+          dst_pixels[3*i+0] = src_pixels[3*i+0];
+          dst_pixels[3*i+1] = src_pixels[3*i+1];
+          dst_pixels[3*i+2] = src_pixels[3*i+2];
+        }
+    }
+  else if (pnm.get_magic() == "P5") // Grayscale
+    {
+      for(int i = 0; i < surface.get_width() * surface.get_height(); ++i)
+        {
+          dst_pixels[3*i+0] = src_pixels[i];
+          dst_pixels[3*i+1] = src_pixels[i];
+          dst_pixels[3*i+2] = src_pixels[i];
+        }
+    }
+  else
+    {
+      throw std::runtime_error("Unhandled PNM format: '" + pnm.get_magic() + "'");
     }
 
   return surface;
 }
+
+#ifdef __TEST__
+
+// g++ -Wall -Werror -ansi -pedantic blob.cpp pnm.cpp -o myexec -D__TEST__
+
+#include <iostream>
+#include "blob.hpp"
+
+int main(int argc, char** argv)
+{
+  if (argc < 2)
+    {
+      std::cout << "Usage: " << argv[0] << " [PNMFiles]..." << std::endl;
+    }
+  else
+    {
+      for(int i = 1; i < argc; ++i)
+        {
+          Blob blob = Blob::from_file(argv[i]);
+          PNMMemReader reader((char*)blob.get_data(), blob.size());
+        }
+    }
+}
+
+#endif
 
 /* EOF */
