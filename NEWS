@@ -1,10 +1,11 @@
 Galapix 0.0.4 (??. Sep 2008)
 ============================
 
-* support for PNG images
+* support for PNG images via libpng
+* support for ImageMagick via Magick++
+* support for Gimp/XCF via xcftools
 * support for RGBA tiles
-* support for ImageMagick
-* background color toggle
+* background color toggle function
 * database format changed, for conversion do a:
 
   ALTER TABLE tiles add format INTEGER DEFAULT 0;

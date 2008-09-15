@@ -18,7 +18,22 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* check for xcf2pnm and xcfinfo binaries on startup
+* bring back URL
+
+* figure out a way to handle multi-image files (rar, tar, zip, pdf, multilayer-xcf)
+
+  rar vb RARFILE -> [files, ...]
+  rar p -inul RARFILE FILE_IN_ARCHIVE -> file_content
+
+  unzip -lqq ZIP 
+  unzip -pqq ZIP FILE_IN_ARCHIVE
+
+  tar --list TAR
+  tar --extract --to-stdout --file TAR FILE
+ 
+  XCF: parse xcfinfo output
+
+* check for xcf2pnm, xcfinfo and other tool binaries on startup
 
 * make sure that PNM class can handle all PNM formats that XCF can output
 
@@ -99,7 +114,7 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 Galapix 0.0.4 Release ToDo:
 ---------------------------
 
-* basic PNG support
+* check PNG support: indexed, RGB, RGBA, Grayscale
 
 * fix the max_scale mess some more
 
@@ -134,7 +149,8 @@ Galapix 0.1.0 Release ToDo:
 * add check for boost header files and make scons somewhat more solid
 * replace SCons with WAF?
 
-* figure out a way to record the version number in the table
+* check with sqlite3_table_column_metadata() that the table has the
+  right format
 
 * pointing galapix to an empty directory is weird (directory is empty,
   galapix displays files in database, but can't create new thumbnails due
