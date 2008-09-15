@@ -9,6 +9,7 @@ Galapix 0.0.4 (??. Sep 2008)
 * database format changed, for conversion do a:
 
   ALTER TABLE tiles add format INTEGER DEFAULT 0;
+  UPDATE files SET filename = 'file://' || filename;
 
 Galapix 0.0.3 (12. Sep 2008)
 ============================
