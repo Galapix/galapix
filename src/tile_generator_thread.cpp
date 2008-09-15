@@ -116,34 +116,15 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
             }
             break;
 
-          case SoftwareSurface::PNG_FILEFORMAT:
+          default:
             {
               // FIXME: This is terrible, min/max_scale are meaningless
               // for non-jpeg formats, so we should just forget them
-              surface = PNG::load_from_file(job.entry.get_url().get_stdio_name());
+              surface = SoftwareSurface::from_url(job.entry.get_url());
               surface = surface.scale(Size(width  / Math::pow2(scale),
                                            height / Math::pow2(scale)));
             }
             break;
-
-          case SoftwareSurface::XCF_FILEFORMAT:
-            // FIXME: This is terrible, min/max_scale are meaningless
-            // for non-jpeg formats, so we should just forget them
-            surface = XCF::load_from_file(job.entry.get_url().get_stdio_name());
-            surface = surface.scale(Size(width  / Math::pow2(scale),
-                                         height / Math::pow2(scale)));            
-            break;
-
-          case SoftwareSurface::MAGICK_FILEFORMAT:
-            // FIXME: This is terrible, min/max_scale are meaningless
-            // for non-jpeg formats, so we should just forget them
-            surface = Imagemagick::load_from_file(job.entry.get_url().get_stdio_name());
-            surface = surface.scale(Size(width  / Math::pow2(scale),
-                                         height / Math::pow2(scale)));            
-            break;
-
-          default:
-            assert(!"Unhandled image format");
         }
 
       do

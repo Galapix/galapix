@@ -114,6 +114,8 @@ SoftwareSurface::from_url(const URL& url)
         return PNG::load_from_file(url.get_stdio_name());
 
       case XCF_FILEFORMAT:
+        return XCF::load_from_file(url.get_stdio_name());
+
       case MAGICK_FILEFORMAT:
         return Imagemagick::load_from_file(url.get_stdio_name());
 
