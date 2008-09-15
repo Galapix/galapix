@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include "url.hpp"
 #include "math.hpp"
 #include "math/size.hpp"
 #include "math/rgb.hpp"
@@ -34,8 +35,8 @@ public:
       'tile' table in the database */
   uint32_t fileid;
 
-  /** The absolute filename of the image file */
-  std::string filename; 
+  /** The URL of the image file */
+  URL url;
 
   /** The size of the image in pixels */
   Size size;
@@ -50,13 +51,13 @@ public:
   {}
 
   FileEntry(uint32_t fileid, 
-            const std::string& filename,
+            const URL& url,
             int width,
             int height)
     : impl(new FileEntryImpl())
   {
     impl->fileid    = fileid;
-    impl->filename  = filename;
+    impl->url       = url;
     impl->size      = Size(width, height);
 
     int s = Math::max(width, height);
@@ -69,7 +70,8 @@ public:
   }
 
   uint32_t    get_fileid()   const { return impl->fileid; }
-  std::string get_filename() const { return impl->filename; }
+  URL         get_url()      const { return impl->url; }
+  std::string get_filename() const { return impl->url.get_stdio_name(); } // FIXME: Remove this
   int         get_width()    const { return impl->size.width; }
   int         get_height()   const { return impl->size.height; }
   Size        get_size()     const { return impl->size; }

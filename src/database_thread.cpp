@@ -74,13 +74,13 @@ public:
 class FileDatabaseMessage : public DatabaseMessage
 {
 public:
-  URL filename;
+  URL url;
   boost::function<void (FileEntry)> callback;
 
   FileDatabaseMessage(const URL& url,
                       const boost::function<void (FileEntry)>& callback)
     : DatabaseMessage(DATABASE_FILE_MESSAGE),
-      filename(url),
+      url(url),
       callback(callback)
   {}
 };
@@ -275,10 +275,10 @@ DatabaseThread::run()
               case DATABASE_FILE_MESSAGE:
                 {
                   FileDatabaseMessage* file_msg = static_cast<FileDatabaseMessage*>(msg);
-                  FileEntry entry = file_db.get_file_entry(file_msg->filename);
+                  FileEntry entry = file_db.get_file_entry(file_msg->url);
                   if (!entry)
                     {
-                      std::cout << "Error: Couldn't get FileEntry for " << file_msg->filename << std::endl;
+                      std::cout << "Error: Couldn't get FileEntry for " << file_msg->url << std::endl;
                     }
                   else
                     {

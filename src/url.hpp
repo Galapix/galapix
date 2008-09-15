@@ -32,8 +32,8 @@ class URL
 private:
   std::string url;
 
-  URL();
 public:
+  URL();
   ~URL();
 
   /** Create a URL from a normal filename */

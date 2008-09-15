@@ -60,7 +60,7 @@ public:
   JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
 
   /** Request the FileEntry for \a filename */
-  void      request_file(const URL& filename, const boost::function<void (FileEntry)>& callback);
+  void      request_file(const URL& url, const boost::function<void (FileEntry)>& callback);
 
   /** Request FileEntrys by glob pattern from the database */
   void      request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern);

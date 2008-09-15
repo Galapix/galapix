@@ -39,7 +39,7 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
 {
   db->exec("CREATE TABLE IF NOT EXISTS files ("
            "fileid    INTEGER PRIMARY KEY AUTOINCREMENT,"
-           "filename  TEXT UNIQUE, "
+           "filename  TEXT UNIQUE, " // FIXME: Rename this to url
            "md5       TEXT, "
            "filesize  INTEGER, "
            "width     INTEGER, "
@@ -66,10 +66,10 @@ FileDatabase::~FileDatabase()
 }
  
 FileEntry
-FileDatabase::store_file_entry(const std::string& filename,
+FileDatabase::store_file_entry(const URL& url,
                                const Size& size)
 {
-  store_stmt.bind_text(1, filename);
+  store_stmt.bind_text(1, url.get_url());
   store_stmt.bind_null(2); // MD5
   store_stmt.bind_null(3); // filesize
   store_stmt.bind_int (4, size.width);
@@ -83,7 +83,7 @@ FileDatabase::store_file_entry(const std::string& filename,
   
   int fileid = sqlite3_last_insert_rowid(db->get_db());
 
-  return FileEntry(fileid, filename, size.width, size.height);
+  return FileEntry(fileid, url, size.width, size.height);
 }
 
 void
@@ -113,24 +113,22 @@ int get_thumbnail_scale(const Size& size)
 FileEntry
 FileDatabase::get_file_entry(const URL& url)
 {
-  std::string filename = url.get_stdio_name();
-
-  get_by_filename_stmt.bind_text(1, filename);
+  get_by_filename_stmt.bind_text(1, url.get_url());
   SQLiteReader reader = get_by_filename_stmt.execute_query();
 
   if (reader.next())
     {
       return FileEntry(reader.get_int (0),  // fileid
-                       reader.get_text(1),  // filename
+                       URL::from_string(reader.get_text(1)),  // url
                        reader.get_int (4),  // width
                        reader.get_int (5)); // height
     }
   else
     {
       Size size;
-      if (SoftwareSurface::get_size(filename, size))
+      if (SoftwareSurface::get_size(url.get_stdio_name(), size))
         {
-          return store_file_entry(filename, size);
+          return store_file_entry(url, size);
         }
       else
         {
@@ -149,7 +147,7 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries, const std::strin
     {
       // FIXME: Use macro definitions instead of numeric constants
       FileEntry entry(reader.get_int (0),  // fileid
-                      reader.get_text(1),  // filename
+                      URL::from_string(reader.get_text(1)),  // filename
                       reader.get_int (4),  // width
                       reader.get_int (5)); // height
       entries.push_back(entry);
@@ -165,7 +163,7 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
     {
       // FIXME: Use macro definitions instead of numeric constants
       FileEntry entry(reader.get_int (0),  // fileid
-                      reader.get_text(1),  // filename
+                      URL::from_string(reader.get_text(1)),  // filename
                       reader.get_int (4),  // width
                       reader.get_int (5)); // height
       entries.push_back(entry);
