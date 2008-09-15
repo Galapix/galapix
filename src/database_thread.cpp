@@ -20,6 +20,7 @@
 #include <boost/bind.hpp>
 #include <assert.h>
 #include "math.hpp"
+#include "url.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "tile_generator_thread.hpp"
@@ -73,13 +74,13 @@ public:
 class FileDatabaseMessage : public DatabaseMessage
 {
 public:
-  std::string filename;
+  URL filename;
   boost::function<void (FileEntry)> callback;
 
-  FileDatabaseMessage(const std::string& filename,
+  FileDatabaseMessage(const URL& url,
                       const boost::function<void (FileEntry)>& callback)
     : DatabaseMessage(DATABASE_FILE_MESSAGE),
-      filename(filename),
+      filename(url),
       callback(callback)
   {}
 };
@@ -157,9 +158,9 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
 }
 
 void
-DatabaseThread::request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback)
+DatabaseThread::request_file(const URL& url, const boost::function<void (FileEntry)>& callback)
 {
-  queue.push(new FileDatabaseMessage(filename, callback));
+  queue.push(new FileDatabaseMessage(url, callback));
 }
 
 void

@@ -60,11 +60,11 @@ Galapix::~Galapix()
 }
 
 void
-Galapix::test(const std::vector<std::string>& filenames)
+Galapix::test(const std::vector<URL>& filenames)
 {
-  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
+  for(std::vector<URL>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
-      SoftwareSurface surface = Imagemagick::load_from_file(*i);
+      SoftwareSurface surface = Imagemagick::load_from_file(i->get_stdio_name());
       
       Blob out_blob = PNG::save(surface);
 
@@ -77,13 +77,13 @@ Galapix::test(const std::vector<std::string>& filenames)
 }
 
 void
-Galapix::info(const std::vector<std::string>& filenames)
+Galapix::info(const std::vector<URL>& filenames)
 {
-  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
+  for(std::vector<URL>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
       Size size;
 
-      if (SoftwareSurface::get_size(*i, size))
+      if (SoftwareSurface::get_size(i->get_stdio_name(), size))
         std::cout << *i << " " << size.width << "x" << size.height << std::endl;
       else
         std::cout << "Error reading " << *i << std::endl;
@@ -91,13 +91,13 @@ Galapix::info(const std::vector<std::string>& filenames)
 }
 
 void
-Galapix::downscale(const std::vector<std::string>& filenames)
+Galapix::downscale(const std::vector<URL>& filenames)
 {
   int num = 0;
-  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i, ++num)
+  for(std::vector<URL>::const_iterator i = filenames.begin(); i != filenames.end(); ++i, ++num)
     {
       std::cout << *i << std::endl;
-      SoftwareSurface surface = JPEG::load_from_file(*i, 8);
+      SoftwareSurface surface = JPEG::load_from_file(i->get_stdio_name(), 8);
 
       std::ostringstream out;
       out << "/tmp/out-" << num << ".jpg";
@@ -113,7 +113,7 @@ Galapix::cleanup(const std::string& database)
 {
   SQLiteConnection db(database); 
   std::cout << "Running database cleanup routines, this process can take multiple minutes." << std::endl;
-   std::cout << "You can interrupt it via Ctrl-c, which won't do harm, but will throw away all the cleanup work done till that point" << std::endl;
+  std::cout << "You can interrupt it via Ctrl-c, which won't do harm, but will throw away all the cleanup work done till that point" << std::endl;
   db.vacuum();
   std::cout << "Running database cleanup routines done" << std::endl;
 }
@@ -148,12 +148,12 @@ Galapix::check(const std::string& database)
 
 void
 Galapix::filegen(const std::string& database, 
-              const std::vector<std::string>& filenames)
+                 const std::vector<URL>& filenames)
 {
   SQLiteConnection db(database);
   FileDatabase file_db(&db);  
 
-  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+  for(std::vector<URL>::size_type i = 0; i < filenames.size(); ++i)
     {
       FileEntry entry = file_db.get_file_entry(filenames[i]);
       if (!entry)
@@ -169,7 +169,7 @@ Galapix::filegen(const std::string& database,
 
 void
 Galapix::thumbgen(const std::string& database, 
-               const std::vector<std::string>& filenames)
+                  const std::vector<URL>& filenames)
 {
   SQLiteConnection db(database);
 
@@ -203,7 +203,7 @@ Galapix::thumbgen(const std::string& database,
 
 void
 Galapix::generate_tiles(const std::string& database, 
-                     const std::vector<std::string>& filenames)
+                        const std::vector<URL>& filenames)
 {
   SQLiteConnection db(database);
 
@@ -212,7 +212,7 @@ Galapix::generate_tiles(const std::string& database,
 
   TileGenerator tile_generator;
 
-  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+  for(std::vector<URL>::size_type i = 0; i < filenames.size(); ++i)
     {
       std::cout << "Getting file entry..." << std::endl;
       FileEntry entry = file_db.get_file_entry(filenames[i]);
@@ -224,7 +224,7 @@ Galapix::generate_tiles(const std::string& database,
         {
           // Generate Image Tiles
           std::cout << "Generating tiles... " << filenames[i]  << std::endl;
-          SoftwareSurface surface = SoftwareSurface::from_file(filenames[i]);
+          SoftwareSurface surface = SoftwareSurface::from_file(filenames[i].get_stdio_name());
           
           tile_generator.generate_all(entry.get_fileid(), surface, 
                                       boost::bind(&TileDatabase::store_tile, &tile_db, _1));
@@ -233,7 +233,7 @@ Galapix::generate_tiles(const std::string& database,
 }
 
 void
-Galapix::view(const std::string& database, const std::vector<std::string>& filenames, const std::string& pattern)
+Galapix::view(const std::string& database, const std::vector<URL>& filenames, const std::string& pattern)
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -282,33 +282,33 @@ Galapix::view(const std::string& database, const std::vector<std::string>& filen
 void
 Galapix::print_usage()
 {
-      std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
-                << "       galapix prepare  [OPTIONS]... [FILES]...\n"
-                << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
-                << "       galapix filegen  [OPTIONS]... [FILES]...\n"
-                << "       galapix info     [OPTIONS]... [FILES]...\n"
-                << "       galapix check    [OPTIONS]...\n"
-                << "       galapix list     [OPTIONS]...\n"
-                << "       galapix cleanup  [OPTIONS]...\n"
-                << "\n"
-                << "Commands:\n"
-                << "  view      Display the given files\n"
-                << "  prepare   Generate all thumbnail for all given images\n"
-                << "  thumbgen  Generate only small thumbnails for all given images\n"
-                << "  filegen   Generate only small the file entries in the database\n"
-                << "  list      Lists all files in the database\n"
-                << "  check     Checks the database for consistency\n"
-                << "  info      Display size of the given files\n"
-                << "  cleanup   Runs garbage collection on the database\n"
-                << "\n"
-                << "Options:\n"
-                << "  -d, --database FILE    Use FILE has database (default: none)\n"
-                << "  -f, --fullscreen       Start in fullscreen mode\n"
-                << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
-                << "  -g, --geometry WxH     Start with window size WxH\n"        
-                << "\n"
-                << "If you do not supply any files, the whole content of the given database will be displayed."
-                << std::endl;
+  std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
+            << "       galapix prepare  [OPTIONS]... [FILES]...\n"
+            << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
+            << "       galapix filegen  [OPTIONS]... [FILES]...\n"
+            << "       galapix info     [OPTIONS]... [FILES]...\n"
+            << "       galapix check    [OPTIONS]...\n"
+            << "       galapix list     [OPTIONS]...\n"
+            << "       galapix cleanup  [OPTIONS]...\n"
+            << "\n"
+            << "Commands:\n"
+            << "  view      Display the given files\n"
+            << "  prepare   Generate all thumbnail for all given images\n"
+            << "  thumbgen  Generate only small thumbnails for all given images\n"
+            << "  filegen   Generate only small the file entries in the database\n"
+            << "  list      Lists all files in the database\n"
+            << "  check     Checks the database for consistency\n"
+            << "  info      Display size of the given files\n"
+            << "  cleanup   Runs garbage collection on the database\n"
+            << "\n"
+            << "Options:\n"
+            << "  -d, --database FILE    Use FILE has database (default: none)\n"
+            << "  -f, --fullscreen       Start in fullscreen mode\n"
+            << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
+            << "  -g, --geometry WxH     Start with window size WxH\n"        
+            << "\n"
+            << "If you do not supply any files, the whole content of the given database will be displayed."
+            << std::endl;
 }
 
 int
@@ -381,13 +381,13 @@ Galapix::main(int argc, char** argv)
             }
           else
             {
-              argument_filenames.push_back(Filesystem::realpath(argv[i]));
+              argument_filenames.push_back(argv[i]);
             }
         }
 
       std::cout << "Using database: " << (database.empty() ? "memory" : database) << std::endl;
 
-      std::vector<std::string> filenames;
+      std::vector<URL> filenames;
       if (argument_filenames.empty())
         {
           std::cout << "Displaying all files in the database" << std::endl;;

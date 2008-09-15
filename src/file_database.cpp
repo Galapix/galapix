@@ -111,8 +111,10 @@ int get_thumbnail_scale(const Size& size)
 }
 
 FileEntry
-FileDatabase::get_file_entry(const std::string& filename)
+FileDatabase::get_file_entry(const URL& url)
 {
+  std::string filename = url.get_stdio_name();
+
   get_by_filename_stmt.bind_text(1, filename);
   SQLiteReader reader = get_by_filename_stmt.execute_query();
 

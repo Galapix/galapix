@@ -30,12 +30,12 @@
 class URL
 {
 private:
-  URL();
-  ~URL();
-
   std::string url;
 
+  URL();
 public:
+  ~URL();
+
   /** Create a URL from a normal filename */
   static URL from_filename(const std::string& filename);
 
@@ -54,6 +54,9 @@ public:
       doesn't have a normal system filename */
   Blob        get_blob() const;
 };
+
+std::ostream& operator<<(std::ostream& out, const URL& url);
+bool operator<(const URL& lhs, const URL& rhs);
 
 #endif
 

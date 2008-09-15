@@ -34,20 +34,20 @@ public:
   void print_usage();
   int main(int argc, char** argv);
 
-  void test(const std::vector<std::string>& filenames);
-  void info(const std::vector<std::string>& filenames);
-  void downscale(const std::vector<std::string>& filenames);
+  void test(const std::vector<URL>& filenames);
+  void info(const std::vector<URL>& filenames);
+  void downscale(const std::vector<URL>& filenames);
   void cleanup(const std::string& database);
   void check(const std::string& database);
   void list(const std::string& database);
   void thumbgen(const std::string& database, 
-                const std::vector<std::string>& filenames);
+                const std::vector<URL>& filenames);
   void filegen(const std::string& database, 
-                const std::vector<std::string>& filenames);
+                const std::vector<URL>& filenames);
   void generate_tiles(const std::string& database, 
-                      const std::vector<std::string>& filenames);
+                      const std::vector<URL>& filenames);
   void view(const std::string& database, 
-            const std::vector<std::string>& filenames,
+            const std::vector<URL>& filenames,
             const std::string& pattern);
 };
 

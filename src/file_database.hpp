@@ -26,6 +26,7 @@
 #include "sqlite.hpp"
 #include "math/size.hpp"
 
+class URL;
 class FileEntry;
 class TileEntry;
 
@@ -66,7 +67,7 @@ public:
       @param[out] entry   Lokation where the file information will be stored 
       @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
-  FileEntry get_file_entry(const std::string& filename);
+  FileEntry get_file_entry(const URL& filename);
   void get_file_entries(std::vector<FileEntry>& entries);
   void get_file_entries(std::vector<FileEntry>& entries, const std::string& pattern);
 

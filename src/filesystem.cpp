@@ -29,6 +29,7 @@
 #include <boost/format.hpp>
 //#include <attr/xattr.h>
 
+#include "url.hpp"
 #include "software_surface.hpp"
 #include "filesystem.hpp"
 
@@ -205,7 +206,7 @@ Filesystem::get_mtime(const std::string& filename)
 }
 
 void
-Filesystem::generate_image_file_list(const std::string& pathname, std::vector<std::string>& file_list)
+Filesystem::generate_image_file_list(const std::string& pathname, std::vector<URL>& file_list)
 {
   std::vector<std::string> lst;
   if (!exist(pathname))
@@ -223,7 +224,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<st
         {
           if (SoftwareSurface::get_fileformat(*i) != SoftwareSurface::UNKNOWN_FILEFORMAT)
             {
-              file_list.push_back(Filesystem::realpath(*i)); // realpath slow?
+              file_list.push_back(URL::from_filename(*i));
             }
         }
     }

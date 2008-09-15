@@ -28,6 +28,7 @@
 #include "job_handle.hpp"
 #include "thread.hpp"
 
+class URL;
 class DatabaseMessage;
 class TileDatabaseMessage;
 
@@ -59,9 +60,9 @@ public:
   JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
 
   /** Request the FileEntry for \a filename */
-  void      request_file(const std::string& filename, const boost::function<void (FileEntry)>& callback);
+  void      request_file(const URL& filename, const boost::function<void (FileEntry)>& callback);
 
-  /** Request FileEntrys by glob pattern */
+  /** Request FileEntrys by glob pattern from the database */
   void      request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern);
 
   /** Request all FileEntrys available in the database */

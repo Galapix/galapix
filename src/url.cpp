@@ -67,4 +67,14 @@ URL::get_blob() const
   return Blob();
 }
 
+std::ostream& operator<<(std::ostream& out, const URL& url)
+{
+  return out << url.get_url();
+}
+
+bool operator<(const URL& lhs, const URL& rhs)
+{
+  return lhs.get_url() < rhs.get_url();
+}
+
 /* EOF */
