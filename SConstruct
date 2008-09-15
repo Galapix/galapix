@@ -44,6 +44,7 @@ galapix_sources = [
     'src/workspace.cpp',
     'src/xcf.cpp',
     'src/zoom_tool.cpp',
+    'src/zip.cpp',
     ]
 
 import sys, os
