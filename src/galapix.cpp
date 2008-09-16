@@ -27,6 +27,7 @@
 
 #include "jpeg.hpp"
 #include "png.hpp"
+#include "xcf.hpp"
 #include "imagemagick.hpp"
 #include "surface.hpp"
 #include "framebuffer.hpp"
@@ -60,20 +61,23 @@ Galapix::~Galapix()
 }
 
 void
-Galapix::test(const std::vector<URL>& filenames)
+Galapix::test(const std::vector<URL>& url)
 {
-  std::string url_str = "file:///tmp/test.rar//rar:test.jpg";
-  URL url = URL::from_string(url_str);
-  
-  std::cout << "'" << url_str << "'" << std::endl;
-
-  std::cout << "Blob Size: " << url.get_blob().size() << std::endl;
+  for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
+    {
+      std::vector<std::string> layer =  XCF::get_layer(*i);
+      std::cout << *i << ":" << std::endl;
+      for(std::vector<std::string>::iterator j = layer.begin(); j != layer.end(); ++j)
+        {
+          std::cout << "  '" << *j << "'" << std::endl;
+        }
+    }
 }
 
 void
-Galapix::info(const std::vector<URL>& filenames)
+Galapix::info(const std::vector<URL>& url)
 {
-  for(std::vector<URL>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
+  for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
     {
       Size size;
 
@@ -85,10 +89,10 @@ Galapix::info(const std::vector<URL>& filenames)
 }
 
 void
-Galapix::downscale(const std::vector<URL>& filenames)
+Galapix::downscale(const std::vector<URL>& url)
 {
   int num = 0;
-  for(std::vector<URL>::const_iterator i = filenames.begin(); i != filenames.end(); ++i, ++num)
+  for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i, ++num)
     {
       std::cout << *i << std::endl;
       SoftwareSurface surface = JPEG::load_from_file(i->get_stdio_name(), 8);
@@ -142,17 +146,17 @@ Galapix::check(const std::string& database)
 
 void
 Galapix::filegen(const std::string& database, 
-                 const std::vector<URL>& filenames)
+                 const std::vector<URL>& url)
 {
   SQLiteConnection db(database);
   FileDatabase file_db(&db);  
 
-  for(std::vector<URL>::size_type i = 0; i < filenames.size(); ++i)
+  for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
     {
-      FileEntry entry = file_db.get_file_entry(filenames[i]);
+      FileEntry entry = file_db.get_file_entry(url[i]);
       if (!entry)
         {
-          std::cout << "Couldn't get entry for " << filenames[i] << std::endl;
+          std::cout << "Couldn't get entry for " << url[i] << std::endl;
         }
       else
         {
@@ -163,7 +167,7 @@ Galapix::filegen(const std::string& database,
 
 void
 Galapix::thumbgen(const std::string& database, 
-                  const std::vector<URL>& filenames)
+                  const std::vector<URL>& url)
 {
   SQLiteConnection db(database);
 
@@ -172,15 +176,15 @@ Galapix::thumbgen(const std::string& database,
 
   TileGenerator tile_generator;
 
-  for(std::vector<std::string>::size_type i = 0; i < filenames.size(); ++i)
+  for(std::vector<std::string>::size_type i = 0; i < url.size(); ++i)
     {
       try 
         {
-          FileEntry entry = file_db.get_file_entry(filenames[i]);
+          FileEntry entry = file_db.get_file_entry(url[i]);
           // FIXME: Insert some checks if the tile already exist
 
           // Generate Image Tiles
-          std::cout << "Generating tiles for " << filenames[i]  << std::endl;
+          std::cout << "Generating tiles for " << url[i]  << std::endl;
           try {
             tile_generator.generate_quick(entry,
                                           boost::bind(&TileDatabase::store_tile, &tile_db, _1));
@@ -190,7 +194,7 @@ Galapix::thumbgen(const std::string& database,
         }
       catch (std::exception& err) 
         {
-          std::cout << "Couldn't find entry for " << filenames[i] << std::endl;
+          std::cout << "Couldn't find entry for " << url[i] << std::endl;
         }
     }
 }

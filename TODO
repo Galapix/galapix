@@ -18,6 +18,9 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* Exec::stdout isn't a Blob, cleanup relationship between Blob,
+  std::vector<char> and std::vector<uint8_t*> so that we don't need unneeded copies
+
 * add support for Imagemagick files that create multiple images (i.e. pdf)
 
 * crazy stuff: extend Exec() so that stdout from one Exec() can be
@@ -135,14 +138,14 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 Galapix 0.0.4 Release ToDo:
 ---------------------------
 
-* check all new features
+* turn static classes into objects and map them dynamically to a file ending
 
-* implement ::from_mem(std::string filename); for all image formats
+* check all new features
 
 * fix the max_scale mess some more
 
-* fix random layout so that all image sizes are handled equally,
-  currently low-res images get really small
+* do generate all tiles at once for stuff loading from archive and for
+  things that don't support incremental loading
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
@@ -159,6 +162,11 @@ Galapix 0.0.4 Release ToDo:
  
 Galapix 0.1.0 Release ToDo:
 ---------------------------
+
+* http/ftp handling via libcurl
+
+* fix random layout so that all image sizes are handled equally,
+  currently low-res images get really small
 
 * implement a function to delete all cached tiles and regenerate them (F5 - reload)
 

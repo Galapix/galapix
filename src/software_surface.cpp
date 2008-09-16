@@ -105,7 +105,7 @@ SoftwareSurface::get_size(const URL& url, Size& size)
     }
   else
     {
-      std::cout << "Warning: Using very slow get_size for " << url.get_url() << std::endl;
+      std::cout << "Warning: Using very slow SoftwareSurface::get_size() for " << url.get_url() << std::endl;
       switch(get_fileformat(url))
         {
           case JPEG_FILEFORMAT:

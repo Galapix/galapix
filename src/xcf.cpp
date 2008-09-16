@@ -16,11 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <boost/tokenizer.hpp>
 #include <iostream>
 #include <stdexcept>
 #include "math/size.hpp"
 #include "exec.hpp"
 #include "pnm.hpp"
+#include "url.hpp"
 #include "xcf.hpp"
 
 // Example xcfinfo output:
@@ -36,6 +38,69 @@
 // + 800x800+0+0 Indexed-alpha Normal New Layer#2
 // - 760x705+21+32 Indexed-alpha Normal Pasted Layer#1
 // - 800x800+0+0 Indexed-alpha Normal Pasted Layer
+
+std::vector<std::string>
+xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end)
+{
+  std::vector<std::string> layer_names;
+
+  while(start != end)
+    {
+      std::vector<char>::const_iterator line_end = std::find(start, end, '\n');
+      std::string line(&*start, line_end - start);
+      start = line_end+1;
+      
+      char visible;
+      int  width, height;
+      char x_sign, y_sign;
+      int  x, y;
+      char color[128];
+      char mode[128];
+      char layer_name[1024];
+
+      if (sscanf(line.c_str(), "%c %dx%d%c%d%c%d %127s %127s %[^\n]s",
+                 &visible, &width, &height, &x_sign, &x, &y_sign, &y,
+                 color, mode, layer_name) != 10)
+        {
+          throw std::runtime_error("XCF::get_layer: Couldn't parse output line:\n" + line);
+        }
+
+      layer_names.push_back(layer_name);
+    }
+  
+  return layer_names;
+}
+
+std::vector<std::string>
+XCF::get_layer(const URL& url)
+{
+  Exec xcfinfo("xcfinfo");
+
+  if (url.has_stdio_name())
+    xcfinfo.arg(url.get_stdio_name());
+  else
+    xcfinfo.arg("-").set_stdin(url.get_blob());
+
+  if (xcfinfo.exec() == 0)
+    {
+      const std::vector<char>& stdout = xcfinfo.get_stdout();
+      std::vector<char>::const_iterator line_end = std::find(stdout.begin(), stdout.end(), '\n');
+      if (line_end == stdout.end())
+        {
+          throw std::runtime_error("XCF::get_layer: Couldn't parse output");
+          return std::vector<std::string>();
+        }
+      else
+        {
+          return xcfinfo_get_layer(line_end+1, stdout.end());
+        }
+    }
+  else
+    {
+      throw std::runtime_error("XCF::get_layer: " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
+      return std::vector<std::string>();
+    }
+  }
 
 bool
 XCF::get_size(const std::string& filename, Size& size)
