@@ -21,6 +21,7 @@
 #include "filesystem.hpp"
 #include "rar.hpp"
 #include "zip.hpp"
+#include "tar.hpp"
 #include "url.hpp"
 
 URL::URL()
@@ -118,6 +119,10 @@ URL::get_blob() const
       else if (plugin == "zip")
         {
           return Zip::get_file(payload, plugin_payload);
+        }
+      else if (plugin == "tar")
+        {
+          return Tar::get_file(payload, plugin_payload);
         }
       else
         {

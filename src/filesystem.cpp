@@ -29,6 +29,7 @@
 #include <boost/format.hpp>
 //#include <attr/xattr.h>
 
+#include "tar.hpp"
 #include "zip.hpp"
 #include "rar.hpp"
 #include "url.hpp"
@@ -247,6 +248,13 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
                   const std::vector<std::string>& lst = Zip::get_filenames(*i);
                   for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
                     file_list.push_back(URL::from_string(url.get_url() + "//zip:" + *j));
+                }
+              else if (has_extension(*i, ".tar") || has_extension(*i, ".tar.bz") || has_extension(*i, ".tar.gz") ||
+                       has_extension(*i, ".tgz") || has_extension(*i, ".tbz"))
+                {
+                  const std::vector<std::string>& lst = Tar::get_filenames(*i);
+                  for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                    file_list.push_back(URL::from_string(url.get_url() + "//tar:" + *j));
                 }
               else
                 {

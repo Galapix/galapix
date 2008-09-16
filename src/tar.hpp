@@ -16,25 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XCF_HPP
-#define HEADER_XCF_HPP
+#ifndef HEADER_TAR_HPP
+#define HEADER_TAR_HPP
 
 #include <string>
-#include "software_surface.hpp"
+#include <vector>
+#include "blob.hpp"
 
-class URL;
-class Size;
-
-class XCF
+class Tar
 {
-private:
 public:
-  static std::vector<std::string> get_layer(const URL& url);
-  static bool get_size(const std::string& filename, Size& size);
-
-  static SoftwareSurface load_from_url(const URL& url);
-  static SoftwareSurface load_from_file(const std::string& filename);
-  static SoftwareSurface load_from_mem(void* data, int len);
+  static std::vector<std::string> get_filenames(const std::string& rar_filename);
+  static Blob get_file(const std::string& rar_filename, const std::string& filename);
 };
 
 #endif

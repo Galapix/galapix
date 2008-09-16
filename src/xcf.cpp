@@ -141,6 +141,27 @@ XCF::get_size(const std::string& filename, Size& size)
 }
 
 SoftwareSurface
+XCF::load_from_url(const URL& url)
+{
+  Exec xcf2pnm("xcf2pnm");
+  xcf2pnm.arg("--background").arg("#000"); // Makes transparent pixels black
+
+  if (url.has_stdio_name())
+    xcf2pnm.arg(url.get_stdio_name());
+  else
+    xcf2pnm.arg("-").set_stdin(url.get_blob());
+
+  if (xcf2pnm.exec() != 0)
+    {
+      throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+    }
+  else
+    {
+      return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
+    }  
+}
+
+SoftwareSurface
 XCF::load_from_file(const std::string& filename)
 {
   Exec xcf2pnm("xcf2pnm");
