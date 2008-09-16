@@ -36,6 +36,8 @@ public:
 
   void write_to_file(const std::string& filename);
   static Blob from_file(const std::string& filename);
+
+  operator bool() const { return impl.get(); }
 private: 
   boost::shared_ptr<BlobImpl> impl;
 };
