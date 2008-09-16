@@ -234,24 +234,31 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         {
           URL url = URL::from_filename(*i);
 
-          if (has_extension(*i, ".rar") || has_extension(*i, ".cbr"))
+          try 
             {
-              const std::vector<std::string>& lst = Rar::get_filenames(*i);
-              for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
-                file_list.push_back(URL::from_string(url.get_url() + "//rar:" + *j));
-            }
-          else if (has_extension(*i, ".zip") || has_extension(*i, ".cbz"))
-            {
-              const std::vector<std::string>& lst = Zip::get_filenames(*i);
-              for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
-                file_list.push_back(URL::from_string(url.get_url() + "//zip:" + *j));
-            }
-          else
-            {
-              if (SoftwareSurface::get_fileformat(url) != SoftwareSurface::UNKNOWN_FILEFORMAT)
+              if (has_extension(*i, ".rar") || has_extension(*i, ".cbr"))
                 {
-                  file_list.push_back(url);
+                  const std::vector<std::string>& lst = Rar::get_filenames(*i);
+                  for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                    file_list.push_back(URL::from_string(url.get_url() + "//rar:" + *j));
                 }
+              else if (has_extension(*i, ".zip") || has_extension(*i, ".cbz"))
+                {
+                  const std::vector<std::string>& lst = Zip::get_filenames(*i);
+                  for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                    file_list.push_back(URL::from_string(url.get_url() + "//zip:" + *j));
+                }
+              else
+                {
+                  if (SoftwareSurface::get_fileformat(url) != SoftwareSurface::UNKNOWN_FILEFORMAT)
+                    {
+                      file_list.push_back(url);
+                    }
+                }
+            } 
+          catch(std::exception& err) 
+            {
+              std::cout << "Warning: " << err.what() << std::endl;
             }
         }
     }
