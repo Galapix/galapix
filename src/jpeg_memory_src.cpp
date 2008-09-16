@@ -64,7 +64,7 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
 
 void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 {
-  std::cout << "jpeg_memory_skip_input_data" << std::endl;
+  //std::cout << "jpeg_memory_skip_input_data" << std::endl;
 
   cinfo->src->next_input_byte = cinfo->src->next_input_byte + num_bytes;
   cinfo->src->bytes_in_buffer = cinfo->src->bytes_in_buffer - num_bytes;

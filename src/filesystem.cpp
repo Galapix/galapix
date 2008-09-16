@@ -29,6 +29,8 @@
 #include <boost/format.hpp>
 //#include <attr/xattr.h>
 
+#include "zip.hpp"
+#include "rar.hpp"
 #include "url.hpp"
 #include "software_surface.hpp"
 #include "filesystem.hpp"
@@ -205,6 +207,14 @@ Filesystem::get_mtime(const std::string& filename)
   return stat_buf.st_mtime;
 }
 
+// static bool has_prefix(const std::string& lhs, const std::string rhs)
+// {
+//   if (lhs.length() < rhs.length())
+//     return false;
+//   else
+//     return lhs.compare(0, rhs.length(), rhs) == 0;
+// }
+
 void
 Filesystem::generate_image_file_list(const std::string& pathname, std::vector<URL>& file_list)
 {
@@ -223,9 +233,25 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
       for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
         {
           URL url = URL::from_filename(*i);
-          if (SoftwareSurface::get_fileformat(url) != SoftwareSurface::UNKNOWN_FILEFORMAT)
+
+          if (has_extension(*i, ".rar") || has_extension(*i, ".cbr"))
             {
-              file_list.push_back(url);
+              const std::vector<std::string>& lst = Rar::get_filenames(*i);
+              for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                file_list.push_back(URL::from_string(url.get_url() + "//rar:" + *j));
+            }
+          else if (has_extension(*i, ".zip") || has_extension(*i, ".cbz"))
+            {
+              const std::vector<std::string>& lst = Zip::get_filenames(*i);
+              for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                file_list.push_back(URL::from_string(url.get_url() + "//zip:" + *j));
+            }
+          else
+            {
+              if (SoftwareSurface::get_fileformat(url) != SoftwareSurface::UNKNOWN_FILEFORMAT)
+                {
+                  file_list.push_back(url);
+                }
             }
         }
     }

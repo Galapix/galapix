@@ -83,22 +83,41 @@ SoftwareSurface::get_fileformat(const URL& url)
 bool
 SoftwareSurface::get_size(const URL& url, Size& size)
 {
-  switch(get_fileformat(url))
+  if (url.has_stdio_name())
     {
-      case JPEG_FILEFORMAT:
-        return JPEG::get_size(url.get_stdio_name(), size);
+      switch(get_fileformat(url))
+        {
+          case JPEG_FILEFORMAT:
+            return JPEG::get_size(url.get_stdio_name(), size);
 
-      case PNG_FILEFORMAT:
-        return PNG::get_size(url.get_stdio_name(), size);
+          case PNG_FILEFORMAT:
+            return PNG::get_size(url.get_stdio_name(), size);
 
-      case XCF_FILEFORMAT:
-        return XCF::get_size(url.get_stdio_name(), size);
+          case XCF_FILEFORMAT:
+            return XCF::get_size(url.get_stdio_name(), size);
 
-      case MAGICK_FILEFORMAT:
-        return Imagemagick::get_size(url.get_stdio_name(), size);
+          case MAGICK_FILEFORMAT:
+            return Imagemagick::get_size(url.get_stdio_name(), size);
 
-      default:
-        return Imagemagick::get_size(url.get_stdio_name(), size);
+          default:
+            return Imagemagick::get_size(url.get_stdio_name(), size);
+        }
+    }
+  else
+    {
+      switch(get_fileformat(url))
+        {
+          case JPEG_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              SoftwareSurface surface = JPEG::load_from_mem(blob.get_data(), blob.size());
+              size = surface.get_size();
+              return true;
+            }
+
+          default:
+            return false;
+        }      
     }
 }
 

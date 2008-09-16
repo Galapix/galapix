@@ -30,7 +30,11 @@
 class URL
 {
 private:
-  std::string url;
+  // URL: {PROTOCOL}://{PAYLOAD}//{PLUGIN}:{PLUGIN_PAYLOAD}
+  std::string protocol;
+  std::string payload;
+  std::string plugin;
+  std::string plugin_payload;
 
 public:
   URL();
@@ -42,6 +46,8 @@ public:
   /** Create a URL object from a URL string as returned from
       get_url() */
   static URL from_string(const std::string& str);
+
+  std::string get_protocol() const;
 
   /** Get unique representation of this URL */
   std::string get_url() const;

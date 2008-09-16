@@ -21,7 +21,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
-
+#include <sstream>
 #include "exec.hpp"
 
 Exec::Exec(const std::string& program)
@@ -101,6 +101,19 @@ Exec::exec()
 
       return child_status;
     }
+}
+
+std::string
+Exec::str() const
+{
+  std::ostringstream out;
+
+  out << program << " ";
+
+  for(std::vector<std::string>::size_type i = 0; i < arguments.size(); ++i)
+    out << "'" << arguments[i] << "' ";
+
+  return out.str();
 }
 
 #ifdef __TEST__

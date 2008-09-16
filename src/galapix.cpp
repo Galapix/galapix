@@ -62,18 +62,12 @@ Galapix::~Galapix()
 void
 Galapix::test(const std::vector<URL>& filenames)
 {
-  for(std::vector<URL>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
-    {
-      SoftwareSurface surface = Imagemagick::load_from_file(i->get_stdio_name());
-      
-      Blob out_blob = PNG::save(surface);
+  std::string url_str = "file:///tmp/test.rar//rar:test.jpg";
+  URL url = URL::from_string(url_str);
+  
+  std::cout << "'" << url_str << "'" << std::endl;
 
-      std::ostringstream out;
-      out << "/tmp/out-" << (i - filenames.begin()) << ".png";
-      out_blob.write_to_file(out.str());
-
-      std::cout << "Wrote " << out.str() << std::endl;
-    }
+  std::cout << "Blob Size: " << url.get_blob().size() << std::endl;
 }
 
 void
@@ -396,7 +390,9 @@ Galapix::main(int argc, char** argv)
         {
           std::cout << "Scanning directories... " << std::flush;
           for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
-            Filesystem::generate_image_file_list(*i, filenames);
+            {
+              Filesystem::generate_image_file_list(*i, filenames);
+            }
           std::sort(filenames.begin(), filenames.end());
           std::cout << filenames.size() << " files found." << std::endl;
         }

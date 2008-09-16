@@ -60,7 +60,7 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
     }
   else
     {
-      throw std::runtime_error("Rar: " + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+      throw std::runtime_error("Rar: " + rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
       return Blob();
     }
 }

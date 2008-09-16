@@ -18,7 +18,13 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* bring back URL
+* ZoomTool doesn't know about trackball_mode and thus zooms wrong
+
+* need to filter out directories when generating file list for .rar
+
+* need a way to handle 'maybe' situations, i.e. impossible to tell
+  quickly if a URL exist or not, Size is impossible to tell in a quick
+  way often as well
 
 * add something to reconstruct a file from the database (as backup in
   case of file loss)

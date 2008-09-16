@@ -99,20 +99,22 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
             {
-              int jpeg_scale = Math::pow2(scale);
-              if (jpeg_scale > 8)
-                {
-                  // The JPEG class can only scale down by factor 2,4,8, so we have to
-                  // limit things (FIXME: is that true? if so, why?)
-                  surface = JPEG::load_from_file(job.entry.get_url().get_stdio_name(), 8);
-      
-                  surface = surface.scale(Size(width  / Math::pow2(scale),
-                                               height / Math::pow2(scale)));
-                }
-              else
+              // The JPEG class can only scale down by factor 2,4,8, so we have to
+              // limit things (FIXME: is that true? if so, why?)
+              int jpeg_scale = Math::min(Math::pow2(scale), 8);
+              
+              if (job.entry.get_url().has_stdio_name())
                 {
                   surface = JPEG::load_from_file(job.entry.get_url().get_stdio_name(), jpeg_scale);
                 }
+              else
+                {
+                  Blob blob = job.entry.get_url().get_blob();
+                  surface = JPEG::load_from_mem(blob.get_data(), blob.size(), jpeg_scale);
+                }
+      
+              surface = surface.scale(Size(width  / Math::pow2(scale),
+                                           height / Math::pow2(scale)));
             }
             break;
 

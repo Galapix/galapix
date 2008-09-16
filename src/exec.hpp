@@ -39,6 +39,8 @@ public:
   const std::vector<char>& get_stdout() const { return stdout_vec; }
   const std::vector<char>& get_stderr() const { return stderr_vec; }
 
+  std::string str() const;
+
 private:
   Exec (const Exec&);
   Exec& operator= (const Exec&);
