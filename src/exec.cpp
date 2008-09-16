@@ -37,31 +37,49 @@ Exec::arg(const std::string& argument)
   return *this;
 }
 
+void
+Exec::set_stdin(const Blob& blob)
+{
+  stdin_data = blob;
+}
+
 int
 Exec::exec()
 {
+  int stdin_fd[2];
   int stdout_fd[2];
   int stderr_fd[2];
 
-  if (pipe(stdout_fd) < 0)
-    throw std::runtime_error("Exec: pipe failed");
-
-  if (pipe(stderr_fd) < 0)
+  if (pipe(stdout_fd) < 0 || pipe(stderr_fd) < 0 || pipe(stdin_fd) < 0)
     throw std::runtime_error("Exec: pipe failed");
 
   pid_t pid = fork();
   if (pid < 0)
     { // error
+      // Cleanup
+      close(stdout_fd[0]);
+      close(stdout_fd[1]);
+      close(stderr_fd[0]);
+      close(stderr_fd[1]);
+      close(stdin_fd[0]);
+      close(stdin_fd[1]);
+
       throw std::runtime_error("Exec: fork failed");
     }
   else if (pid == 0) 
     { // child
+      close(stdin_fd[1]);
       close(stdout_fd[0]);
       close(stderr_fd[0]);
+
+      dup2(stdin_fd[0], STDIN_FILENO);
+      close(stdin_fd[0]);
+
       dup2(stdout_fd[1], STDOUT_FILENO);
+      close(stdout_fd[1]);
+
       dup2(stderr_fd[1], STDERR_FILENO);
-      close(stdout_fd[1]); // 
-      close(stderr_fd[1]); // 
+      close(stderr_fd[1]);
 
       const char** c_arguments = new const char*[arguments.size()+2];
       c_arguments[0] = program.c_str();
@@ -74,12 +92,19 @@ Exec::exec()
     }
   else // if (pid > 0)
     { // parent
+      close(stdin_fd[0]);
       close(stdout_fd[1]);
       close(stderr_fd[1]);
 
       int len;
       char buffer[4096];
       
+      if (stdin_data)
+        {
+          write(stdin_fd[1], stdin_data.get_data(), stdin_data.size());
+          close(stdin_fd[1]);
+        }
+
       while((len = read(stdout_fd[0], buffer, sizeof(buffer))) > 0)
         stdout_vec.insert(stdout_vec.end(), buffer, buffer+len);
 
@@ -116,7 +141,11 @@ Exec::str() const
   return out.str();
 }
 
-#ifdef __TEST__
+#ifdef __EXEC_TEST__
+
+// g++ -Wall -Werror -ansi -pedantic exec.cpp blob.cpp -o myexec -D__EXEC_TEST__
+
+
 #include <iostream>
 
 int main(int argc, char** argv)
@@ -129,6 +158,8 @@ int main(int argc, char** argv)
     else
       {
         Exec prgn(argv[1]);
+        std::string stdin = "-- Stdin Test Data --\n";
+        prgn.set_stdin(Blob(stdin.c_str(), stdin.length()));
         for(int i = 2; i < argc; ++i)
           prgn.arg(argv[i]);
         std::cout << "ExitCode: " << prgn.exec() << std::endl;

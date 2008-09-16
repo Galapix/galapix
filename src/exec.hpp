@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include "blob.hpp"
 
 class Exec
 {
@@ -31,9 +32,12 @@ private:
   std::vector<char> stdout_vec;
   std::vector<char> stderr_vec;
 
+  Blob stdin_data;
+
 public:
   Exec(const std::string& program);
   Exec& arg(const std::string& argument);
+  void set_stdin(const Blob& blob);
   int exec();
 
   const std::vector<char>& get_stdout() const { return stdout_vec; }
