@@ -27,6 +27,7 @@
 #include <stdexcept>
 #include <Magick++.h>
 #include <iostream>
+#include "url.hpp"
 #include "math/size.hpp"
 #include "imagemagick.hpp"
 
@@ -47,10 +48,23 @@ Imagemagick::get_size(const std::string& filename, Size& size)
 }
 
 SoftwareSurface
-Imagemagick::load_from_file(const std::string& filename)
+Imagemagick::load_from_url(const URL& url)
 {
-  Magick::Image image(filename);
+  if (url.has_stdio_name())
+    {
+      return load_from_file(url.get_stdio_name());
+    }
+  else
+    {
+      Blob blob = url.get_blob();
+      return load_from_mem(blob.get_data(), blob.size());
+    }
+}
 
+static 
+SoftwareSurface
+MagickImage2SoftwareSurface(const Magick::Image& image)
+{
   SoftwareSurface surface;
 
   int width  = image.columns();
@@ -102,6 +116,19 @@ Imagemagick::load_from_file(const std::string& filename)
     }  
 
   return surface;
+}
+
+SoftwareSurface
+Imagemagick::load_from_mem(void* data, int len)
+{
+  // FIXME: Magick::Blob creates an unneeded copy of the data
+  return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len))); 
+}
+
+SoftwareSurface
+Imagemagick::load_from_file(const std::string& filename)
+{
+  return MagickImage2SoftwareSurface(Magick::Image(filename));
 }
 
 /* EOF */

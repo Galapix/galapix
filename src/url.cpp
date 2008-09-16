@@ -83,6 +83,7 @@ URL::get_url() const
 std::string
 URL::get_stdio_name() const
 {
+  assert(has_stdio_name());
   return payload;
 }
 

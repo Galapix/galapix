@@ -22,6 +22,7 @@
 #include <string>
 #include "software_surface.hpp"
 
+class URL;
 class Size;
 
 class Imagemagick
@@ -29,6 +30,9 @@ class Imagemagick
 public:
   static bool get_size(const std::string& filename, Size& size);
   static SoftwareSurface load_from_file(const std::string& filename);
+  static SoftwareSurface load_from_mem(void* data, int len);
+  static SoftwareSurface load_from_url(const URL& url);
+  
 };
 
 #endif

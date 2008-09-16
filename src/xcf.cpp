@@ -90,5 +90,22 @@ XCF::load_from_file(const std::string& filename)
       return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
     }
 }
+
+SoftwareSurface
+XCF::load_from_mem(void* data, int len)
+{
+  Exec xcf2pnm("xcf2pnm");
+  xcf2pnm.arg("--background").arg("#000"); // Makes transparent pixels black
+  xcf2pnm.arg("-"); // Read from stdin
+  xcf2pnm.set_stdin(Blob(data, len)); // FIXME: Unneeded copy
+  if (xcf2pnm.exec() != 0)
+    {
+      throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+    }
+  else
+    {
+      return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
+    }
+}
 
 /* EOF */

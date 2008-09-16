@@ -105,12 +105,38 @@ SoftwareSurface::get_size(const URL& url, Size& size)
     }
   else
     {
+      std::cout << "Warning: Using very slow get_size for " << url.get_url() << std::endl;
       switch(get_fileformat(url))
         {
           case JPEG_FILEFORMAT:
             {
               Blob blob = url.get_blob();
               SoftwareSurface surface = JPEG::load_from_mem(blob.get_data(), blob.size());
+              size = surface.get_size();
+              return true;
+            }
+
+          case PNG_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              SoftwareSurface surface = PNG::load_from_mem(blob.get_data(), blob.size());
+              size = surface.get_size();
+              return true;
+            }
+
+          case XCF_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              SoftwareSurface surface = XCF::load_from_mem(blob.get_data(), blob.size());
+              size = surface.get_size();
+              return true;
+            }
+
+
+          case MAGICK_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              SoftwareSurface surface = Imagemagick::load_from_mem(blob.get_data(), blob.size());
               size = surface.get_size();
               return true;
             }
@@ -124,24 +150,60 @@ SoftwareSurface::get_size(const URL& url, Size& size)
 SoftwareSurface
 SoftwareSurface::from_url(const URL& url)
 {
-  switch(get_fileformat(url))
+  if (url.has_stdio_name())
     {
-      case JPEG_FILEFORMAT:
-        return JPEG::load_from_file(url.get_stdio_name());
+      switch(get_fileformat(url))
+        {
+          case JPEG_FILEFORMAT:
+            return JPEG::load_from_file(url.get_stdio_name());
 
-      case PNG_FILEFORMAT:
-        return PNG::load_from_file(url.get_stdio_name());
+          case PNG_FILEFORMAT:
+            return PNG::load_from_file(url.get_stdio_name());
 
-      case XCF_FILEFORMAT:
-        return XCF::load_from_file(url.get_stdio_name());
+          case XCF_FILEFORMAT:
+            return XCF::load_from_file(url.get_stdio_name());
 
-      case MAGICK_FILEFORMAT:
-        return Imagemagick::load_from_file(url.get_stdio_name());
+          case MAGICK_FILEFORMAT:
+            return Imagemagick::load_from_file(url.get_stdio_name());
 
-      default:
-        throw std::runtime_error(url.get_url() + ": unknown file type");
-        return SoftwareSurface();
-    }  
+          default:
+            throw std::runtime_error(url.get_url() + ": unknown file type");
+            return SoftwareSurface();
+        }  
+    }
+  else
+    {
+      switch(get_fileformat(url))
+        {
+          case JPEG_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              return JPEG::load_from_mem(blob.get_data(), blob.size());
+            }
+
+          case PNG_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              return PNG::load_from_mem(blob.get_data(), blob.size());
+            }
+
+          case XCF_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              return XCF::load_from_mem(blob.get_data(), blob.size());
+            }
+
+          case MAGICK_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              return Imagemagick::load_from_mem(blob.get_data(), blob.size());
+            }
+
+          default:
+            throw std::runtime_error("SoftwareSurface::from_url: " + url.get_url() + ": unknown file type");
+            return SoftwareSurface();
+        }      
+    }
 }
 
 class SoftwareSurfaceImpl

@@ -18,9 +18,17 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* ZoomTool doesn't know about trackball_mode and thus zooms wrong
+* add support for Imagemagick files that create multiple images (i.e. pdf)
+
+* crazy stuff: extend Exec() so that stdout from one Exec() can be
+  redirected into another Exec(), could be a bit tricky to get the
+  whole archive extraction to connected to the file extraction.
+
+* ZoomTool doesn't know about trackball_mode and thus zooms not into
+  the center of the picture, but to the mouse cursor
 
 * need to filter out directories when generating file list for .rar
+  (how? since rar doesn't tell you if its a directiory -> use file extension)
 
 * need a way to handle 'maybe' situations, i.e. impossible to tell
   quickly if a URL exist or not, Size is impossible to tell in a quick
@@ -127,7 +135,9 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 Galapix 0.0.4 Release ToDo:
 ---------------------------
 
-* check all new features some more
+* check all new features
+
+* implement ::from_mem(std::string filename); for all image formats
 
 * fix the max_scale mess some more
 
@@ -149,6 +159,8 @@ Galapix 0.0.4 Release ToDo:
  
 Galapix 0.1.0 Release ToDo:
 ---------------------------
+
+* implement a function to delete all cached tiles and regenerate them (F5 - reload)
 
 * small scales are displayed at the wrong size (thumbnail.size * scale
   != image_size due to small values of thumbnail.size)
