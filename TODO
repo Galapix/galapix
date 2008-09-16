@@ -127,16 +127,9 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 Galapix 0.0.4 Release ToDo:
 ---------------------------
 
-* check PNG support: indexed, RGB, RGBA, Grayscale
+* check all new features some more
 
 * fix the max_scale mess some more
-
-* small scales are displayed at the wrong size (thumbnail.size * scale
-  != image_size due to small values of thumbnail.size)
-
-* implement workspace load&save
-
-* add function to relayout just the selection instead of all images
 
 * fix random layout so that all image sizes are handled equally,
   currently low-res images get really small
@@ -156,6 +149,13 @@ Galapix 0.0.4 Release ToDo:
  
 Galapix 0.1.0 Release ToDo:
 ---------------------------
+
+* small scales are displayed at the wrong size (thumbnail.size * scale
+  != image_size due to small values of thumbnail.size)
+
+* implement workspace load&save
+
+* add function to relayout just the selection instead of all images
 
 * make middle button exit trackball mode
 
