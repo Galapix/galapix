@@ -144,7 +144,8 @@ URL::get_blob() const
 bool
 URL::is_url(const std::string& url)
 {
-  std::string::size_type k = url.find_first_of("://");
+  std::string::size_type k = url.find("://");
+
   if (k == std::string::npos)
     {
       return false;
