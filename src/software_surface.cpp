@@ -90,7 +90,7 @@ SoftwareSurface::get_size(const URL& url, Size& size)
 {
   FileFormat format = get_fileformat(url);
 
-  if (url.has_stdio_name() && format != KRA_FILEFORMAT)
+  if (url.has_stdio_name())
     {
       switch(format)
         {
@@ -102,6 +102,9 @@ SoftwareSurface::get_size(const URL& url, Size& size)
 
           case XCF_FILEFORMAT:
             return XCF::get_size(url.get_stdio_name(), size);
+
+          case KRA_FILEFORMAT:
+            return KRA::get_size(url.get_stdio_name(), size);
 
           case MAGICK_FILEFORMAT:
             return Imagemagick::get_size(url.get_stdio_name(), size);
@@ -139,13 +142,15 @@ SoftwareSurface::get_size(const URL& url, Size& size)
               return true;
             }
 
-          case KRA_FILEFORMAT:
-            {
+           case KRA_FILEFORMAT:
+//             {
 //               Blob blob = url.get_blob();
 //               SoftwareSurface surface = KRA::load_from_mem(blob.get_data(), blob.size());
 //               size = surface.get_size();
-              return false;
-            }
+//               return false;
+//             }
+             std::cout << "Krita from non file source not supported" << std::endl;
+             return false;
 
           case MAGICK_FILEFORMAT:
             {
@@ -178,7 +183,7 @@ SoftwareSurface::from_url(const URL& url)
             return XCF::load_from_file(url.get_stdio_name());
 
           case KRA_FILEFORMAT:
-            return XCF::load_from_file(url.get_stdio_name());
+            return KRA::load_from_file(url.get_stdio_name());
 
           case MAGICK_FILEFORMAT:
             return Imagemagick::load_from_file(url.get_stdio_name());

@@ -20,6 +20,17 @@
 #include "exec.hpp"
 #include "kra.hpp"
 
+bool
+KRA::get_size(const std::string& filename, Size& size)
+{
+  Exec koconverter("koconverter");
+  koconverter.arg("--batch").arg("--mimetype").arg("image/png");
+  koconverter.arg(filename).arg("/dev/stdout");
+  koconverter.exec();
+
+  return PNG::get_size((uint8_t*)&*koconverter.get_stdout().begin(), koconverter.get_stdout().size(), size);
+}
+
 SoftwareSurface
 KRA::load_from_file(const std::string& filename)
 {

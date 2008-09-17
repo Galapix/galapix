@@ -22,6 +22,59 @@
 #include <stdexcept>
 #include "png.hpp"
 
+struct PNGReadMemory
+{
+  png_bytep  data;
+  png_size_t len;
+  png_size_t pos;
+};
+
+void readPNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+  PNGReadMemory* mem = static_cast<PNGReadMemory*>(png_ptr->io_ptr);
+
+  if (mem->pos + length > mem->len)
+    {
+      png_error(png_ptr, "PNG: readPNGMemory: Read Error");
+    }
+  else
+    {
+      memcpy(data, mem->data + mem->pos, length);
+      mem->pos += length;
+    }
+}
+
+bool
+PNG::get_size(void* data, int len, Size& size)
+{ 
+  // FIXME: Could install error/warning handling functions here 
+  png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_infop info_ptr  = png_create_info_struct(png_ptr);
+
+  if (setjmp(png_ptr->jmpbuf))
+    {
+      png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+      std::cout << "PNG::get_size: setjmp: Couldn't load from memory" << std::endl;
+      return false;
+    }
+
+  PNGReadMemory png_memory;
+  png_memory.data = (png_bytep)data;
+  png_memory.len  = len;
+  png_memory.pos  = 0;
+
+  png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
+
+  png_read_info(png_ptr, info_ptr); 
+
+  size.width  = png_get_image_width(png_ptr, info_ptr);
+  size.height = png_get_image_height(png_ptr, info_ptr);
+
+  png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+
+  return true;
+}
+
 bool
 PNG::get_size(const std::string& filename, Size& size)
 {
@@ -132,28 +185,6 @@ PNG::load_from_file(const std::string& filename)
       fclose(in);
         
       return surface;
-    }
-}
-
-struct PNGReadMemory
-{
-  png_bytep  data;
-  png_size_t len;
-  png_size_t pos;
-};
-
-void readPNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
-{
-  PNGReadMemory* mem = static_cast<PNGReadMemory*>(png_ptr->io_ptr);
-
-  if (mem->pos + length > mem->len)
-    {
-      png_error(png_ptr, "PNG: readPNGMemory: Read Error");
-    }
-  else
-    {
-      memcpy(data, mem->data + mem->pos, length);
-      mem->pos += length;
     }
 }
 
