@@ -18,19 +18,10 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* scons configure CXXFLAGS="-Wall -Werror -g -O2 -ansi -pedantic"
-  -> gets cut to '-Wall -W' for some reason
-
-* implement support for giving URLs directly on command line
-
 * Exec::stdout isn't a Blob, cleanup relationship between Blob,
   std::vector<char> and std::vector<uint8_t*> so that we don't need unneeded copies
 
 * add support for Imagemagick files that create multiple images (i.e. pdf)
-
-* crazy stuff: extend Exec() so that stdout from one Exec() can be
-  redirected into another Exec(), could be a bit tricky to get the
-  whole archive extraction to connected to the file extraction.
 
 * ZoomTool doesn't know about trackball_mode and thus zooms not into
   the center of the picture, but to the mouse cursor
@@ -296,6 +287,10 @@ Thread Stuff:
 
 Possible Future Improvements:
 =============================
+
+* crazy stuff: extend Exec() so that stdout from one Exec() can be
+  redirected into another Exec(), could be a bit tricky to get the
+  whole archive extraction to connected to the file extraction.
 
 * turn Galapix into a proper Gnome/Gtk or WxWidget Application with
   proper GUI, instead of a raw SDL/OpenGL application

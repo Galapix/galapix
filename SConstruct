@@ -9,6 +9,7 @@ galapix_sources = [
     'src/filesystem.cpp',
     'src/framebuffer.cpp',
     'src/galapix.cpp',
+    'src/kra.cpp',
     'src/image.cpp',
     'src/imagemagick.cpp',
     'src/job_handle.cpp',

@@ -7,6 +7,7 @@ Galapix 0.0.4 (??. Sep 2008)
 * support for RGBA tiles
 * support for zip archive files 
 * support for rar archive files 
+* support for http/ftp via libcurl
 * background color toggle function
 * database format changed, for conversion do a:
 

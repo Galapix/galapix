@@ -395,6 +395,7 @@ Galapix::main(int argc, char** argv)
           std::cout << "Scanning directories... " << std::flush;
           for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
             {
+              std::cout << " --- " << *i << " " << URL::is_url(*i) << std::endl;
               if (URL::is_url(*i))
                 urls.push_back(URL::from_string(*i));
               else

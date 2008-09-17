@@ -24,6 +24,7 @@
 #include "png.hpp"
 #include "imagemagick.hpp"
 #include "xcf.hpp"
+#include "kra.hpp"
 
 #include "blob.hpp"
 #include "math.hpp"
@@ -64,6 +65,10 @@ SoftwareSurface::get_fileformat(const URL& url)
     {
       return XCF_FILEFORMAT;
     }
+  else if (Filesystem::has_extension(filename, ".kra"))
+    {
+      return KRA_FILEFORMAT;
+    }
   else if (Filesystem::has_extension(filename, ".gif") ||
            Filesystem::has_extension(filename, ".pnm") ||
            Filesystem::has_extension(filename, ".pgm") ||
@@ -83,9 +88,11 @@ SoftwareSurface::get_fileformat(const URL& url)
 bool
 SoftwareSurface::get_size(const URL& url, Size& size)
 {
-  if (url.has_stdio_name())
+  FileFormat format = get_fileformat(url);
+
+  if (url.has_stdio_name() && format != KRA_FILEFORMAT)
     {
-      switch(get_fileformat(url))
+      switch(format)
         {
           case JPEG_FILEFORMAT:
             return JPEG::get_size(url.get_stdio_name(), size);
@@ -106,7 +113,7 @@ SoftwareSurface::get_size(const URL& url, Size& size)
   else
     {
       std::cout << "Warning: Using very slow SoftwareSurface::get_size() for " << url.get_url() << std::endl;
-      switch(get_fileformat(url))
+      switch(format)
         {
           case JPEG_FILEFORMAT:
             {
@@ -132,6 +139,13 @@ SoftwareSurface::get_size(const URL& url, Size& size)
               return true;
             }
 
+          case KRA_FILEFORMAT:
+            {
+//               Blob blob = url.get_blob();
+//               SoftwareSurface surface = KRA::load_from_mem(blob.get_data(), blob.size());
+//               size = surface.get_size();
+              return false;
+            }
 
           case MAGICK_FILEFORMAT:
             {
@@ -163,6 +177,9 @@ SoftwareSurface::from_url(const URL& url)
           case XCF_FILEFORMAT:
             return XCF::load_from_file(url.get_stdio_name());
 
+          case KRA_FILEFORMAT:
+            return XCF::load_from_file(url.get_stdio_name());
+
           case MAGICK_FILEFORMAT:
             return Imagemagick::load_from_file(url.get_stdio_name());
 
@@ -192,6 +209,12 @@ SoftwareSurface::from_url(const URL& url)
               Blob blob = url.get_blob();
               return XCF::load_from_mem(blob.get_data(), blob.size());
             }
+
+//           case KRA_FILEFORMAT:
+//             {
+//               Blob blob = url.get_blob();
+//               return KRA::load_from_mem(blob.get_data(), blob.size());
+//             }
 
           case MAGICK_FILEFORMAT:
             {
