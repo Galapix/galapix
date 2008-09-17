@@ -68,7 +68,7 @@ PanTool::down(const Vector2i& pos)
 }
 
 void
-PanTool::update(const Vector2i& pos, float delta)
+PanTool::update(const Vector2i& /*pos*/, float /*delta*/)
 {
   if (trackball_mode)
     {

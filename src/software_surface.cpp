@@ -406,12 +406,6 @@ SoftwareSurface::get_pitch()  const
   return impl->pitch;
 }
 
-void
-SoftwareSurface::save(const std::string& filename) const
-{
-  assert(!"SoftwareSurface::save(const std::string& filename) const");
-}
-
 Blob
 SoftwareSurface::get_raw_data() const
 {

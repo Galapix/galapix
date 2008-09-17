@@ -186,7 +186,7 @@ Image::set_angle(float a)
 }
 
 float
-Image::get_angle(float a) const
+Image::get_angle() const
 {
   return impl->angle;
 }
@@ -334,7 +334,7 @@ Image::draw_tile(int x, int y, int tiledb_scale,
 
 void 
 Image::draw_tiles(const Rect& rect, int tiledb_scale, 
-                  const Vector2f& pos, float scale)
+                  const Vector2f& /*pos*/, float scale)
 {
   //std::cout << " drawtiles: " << rect << " scale: " << tiledb_scale << std::endl;
 

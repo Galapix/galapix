@@ -17,6 +17,7 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 #include <curl/curl.h>
 #include "curl.hpp"
@@ -52,9 +53,11 @@ CURLHandler::get_data(const std::string& url)
 
   curl_easy_cleanup(handle);
 
-  if (response_code >= 400)
+  if (response_code/100 != 2 && response_code/100 != 3)
     {
-      throw std::runtime_error("Error: CURLHandler::get_data(): File not found");
+      std::ostringstream str;
+      str << "Error: CURLHandler::get_data(): HTTP Error: " << response_code;
+      throw std::runtime_error(str.str());
     }
 
   if (ret == 0)

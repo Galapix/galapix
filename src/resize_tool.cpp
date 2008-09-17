@@ -35,7 +35,7 @@ ResizeTool::ResizeTool(Viewer* viewer)
 }
 
 void
-ResizeTool::move(const Vector2i& pos, const Vector2i& rel)
+ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
 {
   if (resize_active)
     {
@@ -54,7 +54,7 @@ ResizeTool::move(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-ResizeTool::up(const Vector2i& pos)
+ResizeTool::up(const Vector2i& /*pos*/)
 {
   resize_active = false;
   old_scale = 1.0f;
@@ -69,7 +69,7 @@ ResizeTool::down(const Vector2i& pos)
 }
 
 void
-ResizeTool::update(const Vector2i& pos, float delta)
+ResizeTool::update(const Vector2i& /*pos*/, float /*delta*/)
 {
 }
 

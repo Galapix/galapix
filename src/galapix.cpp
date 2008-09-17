@@ -385,7 +385,7 @@ Galapix::main(int argc, char** argv)
 
       std::cout << "Using database: " << (database.empty() ? "memory" : database) << std::endl;
 
-      std::vector<URL> filenames;
+      std::vector<URL> urls;
       if (argument_filenames.empty())
         {
           std::cout << "Displaying all files in the database" << std::endl;;
@@ -395,15 +395,18 @@ Galapix::main(int argc, char** argv)
           std::cout << "Scanning directories... " << std::flush;
           for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
             {
-              Filesystem::generate_image_file_list(*i, filenames);
+              if (URL::is_url(*i))
+                urls.push_back(URL::from_string(*i));
+              else
+                Filesystem::generate_image_file_list(*i, urls);
             }
-          std::sort(filenames.begin(), filenames.end());
-          std::cout << filenames.size() << " files found." << std::endl;
+          std::sort(urls.begin(), urls.end());
+          std::cout << urls.size() << " files found." << std::endl;
         }
 
       if (strcmp(argv[1], "view") == 0)
         {
-          view(database, filenames, pattern);
+          view(database, urls, pattern);
         }
       else if (strcmp(argv[1], "check") == 0)
         {
@@ -419,27 +422,27 @@ Galapix::main(int argc, char** argv)
         }
       else if (strcmp(argv[1], "info") == 0)
         {
-          info(filenames);
+          info(urls);
         }
       else if (strcmp(argv[1], "test") == 0)
         {
-          test(filenames);
+          test(urls);
         }
       else if (strcmp(argv[1], "downscale") == 0)
         {
-          downscale(filenames);
+          downscale(urls);
         }
       else if (strcmp(argv[1], "prepare") == 0)
         {
-          generate_tiles(database, filenames);
+          generate_tiles(database, urls);
         }
       else if (strcmp(argv[1], "thumbgen") == 0)
         {
-          thumbgen(database, filenames);
+          thumbgen(database, urls);
         }
       else if (strcmp(argv[1], "filegen") == 0)
         {
-          filegen(database, filenames);
+          filegen(database, urls);
         }
       else
         {

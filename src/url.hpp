@@ -59,6 +59,8 @@ public:
   /** Get the content of the file in the form of a Blob in case it
       doesn't have a normal system filename */
   Blob        get_blob() const;
+
+  static bool is_url(const std::string& url);
 };
 
 std::ostream& operator<<(std::ostream& out, const URL& url);

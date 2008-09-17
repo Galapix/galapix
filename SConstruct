@@ -2,6 +2,7 @@ galapix_sources = [
     #    'src/md5.cpp',
     'src/blob.cpp',
     'src/database_thread.cpp',
+    'src/curl.cpp',
     'src/exec.cpp',
     'src/file_database.cpp',
     'src/file_entry.cpp',
@@ -49,8 +50,46 @@ galapix_sources = [
     'src/zip.cpp',
     ]
 
-import sys, os
+import sys, os, SCons
+
+class _SpaceListOptionClass:
+   """An option type for space-separated lists with arbitrary elements."""
+   def CheckDir(self, val):
+      if not os.path.isdir(val):
+         raise SCons.Errors.UserError("No directory at %s" % val)
 
+   def _convert(self, key, val, env):
+      if SCons.Util.is_List(val): # prefer val if it's already a list
+         return val
+      elif len(val) > 0 and val[0] == '[' and val[-1] == ']':
+         # or a repr of a list
+         return eval(val)
+      elif env: # otherwise, use whatever's in env
+         val = env[key]
+         if not SCons.Util.is_List(val):
+            val = val.split(None)
+         return val
+      else: # val was substituted into a string, losing its structure
+         # We'll be called again with env, hopefully that's more useful
+         raise TypeError("try again with the environment")
+
+   def _validate(self, val, env, check, converter):
+      for i in converter(val, env):
+         if check(i):
+            return True
+      return False
+
+   def __call__(self, key, help, check=None, default=[]):
+      def converter(val, env = None):
+         return self._convert(key, val, env)
+ 
+      validator = None
+      if check is not None:
+         validator = lambda k, v, e: self._validate(v, e, check, converter)
+      return (key, help, default, validator, converter)
+ 
+SpaceListOption = _SpaceListOptionClass()
+
 def DefineOptions(filename, args):
     opts = Options(filename, args)
     opts.Add('CC', 'C Compiler', 'gcc')
@@ -58,14 +97,14 @@ def DefineOptions(filename, args):
 #   opts.Add('debug', 'Build with debugging options', 0)
 #   opts.Add('profile', 'Build with profiling support', 0)
 
-    opts.Add('CPPPATH',    'Additional preprocessor paths', [])
-    opts.Add('LIBPATH',    'Additional library paths',      [])
-    opts.Add('CPPFLAGS',   'Additional preprocessor flags', [])
-    opts.Add('CPPDEFINES', 'defined constants', [])
-    opts.Add('LIBS',       'Additional libraries', [])
-    opts.Add('CCFLAGS',    'C Compiler flags', [])
-    opts.Add('CXXFLAGS',   'C++ Compiler flags', [])
-    opts.Add('LINKFLAGS',  'Linker Compiler flags', [])
+    opts.Add(SpaceListOption('CPPPATH',    'Additional preprocessor paths'))
+    opts.Add(SpaceListOption('LIBPATH',    'Additional library paths'))
+    opts.Add(SpaceListOption('CPPFLAGS',   'Additional preprocessor flags'))
+    opts.Add(SpaceListOption('CPPDEFINES', 'defined constants'))
+    opts.Add(SpaceListOption('LIBS',       'Additional libraries'))
+    opts.Add(SpaceListOption('CCFLAGS',    'C Compiler flags'))
+    opts.Add(SpaceListOption('CXXFLAGS',   'C++ Compiler flags'))
+    opts.Add(SpaceListOption('LINKFLAGS',  'Linker Compiler flags'))
 
     opts.Add(BoolOption('with_space_navigator', 'Build with Space Navigator support', True))
     opts.Add(BoolOption('ignore_errors',        'Ignore any fatal configuration errors', False))
@@ -100,6 +139,17 @@ int main(int argc, char* argv[]) { return 0; }
     else:
         context.Result("ok")
         return True
+
+def parse_config(env, args):
+    for arg in args:
+        if arg[:2] == '-L':
+            env['LIBPATH'].append(arg[2:])
+        elif arg[:2] == '-l':
+            env['LIBS'].append(arg[2:])
+        elif arg[:2] == '-I':
+            env['CPPPATH'].append(arg[2:])
+        else:
+            print "Error: Unhandled", arg
 
 Alias('configure')
 
@@ -176,10 +226,10 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
     #------------------------------------------------------------------
     # -- Check for Magick++
     if config.CheckMyProgram('Magick++-config'):
-        env['CXXFLAGS'] = os.popen("Magick++-config --cxxflags").read().split()
-        env['CPPFLAGS'] = os.popen("Magick++-config --cppflags").read().split()
-        env['LINKFLAGS']  = os.popen("Magick++-config --ldflags").read().split()
-        env['LINKFLAGS']  = os.popen("Magick++-config --libs").read().split()
+        # env['CXXFLAGS']  += os.popen("Magick++-config --cxxflags").read().split()
+        env['CPPFLAGS']  += os.popen("Magick++-config --cppflags").read().split()
+        # env['LINKFLAGS'] += os.popen("Magick++-config --ldflags").read().split()
+        parse_config(env, os.popen("Magick++-config --libs").read().split())
     else:
         fatal_error += "  * couldn't find Magick++-config, Magick++ missing\n"
 
@@ -190,6 +240,11 @@ if ('configure' in COMMAND_LINE_TARGETS) or \
         reports += "  * sqlite3 found\n"
     else:
         fatal_error += "  * sqlite3 library not found\n"
+
+    #------------------------------------------------------------------
+    # -- Check for cURL        
+    env['CPPFLAGS'] += os.popen("pkg-config --cflags libcurl").read().split()
+    env['LIBS']     += os.popen("pkg-config --libs libcurl").read().split()
 
     #------------------------------------------------------------------
     # -- Check for boost    
@@ -234,18 +289,5 @@ if not ('configure' in COMMAND_LINE_TARGETS):
     opts.Update(env)
     Default(env.Program('galapix', galapix_sources + env['optional_sources']))
     Clean('galapix', ['config.py', 'config.h'])
-
-#     CCFLAGS=["-Wall", "-Werror", "-O2", "-g3"], 
-#                               CXXFLAGS=["-Wall", "-Werror", "-O2", "-g3", "-Wnon-virtual-dtor"], 
-#                               LIBS=['jpeg',
-#                                     'mhash', 
-#                                     'spnav',
-#                                     'GL', 
-#                                     'GLU',
-#                                     'GLEW'])
-
-#     galapix_env.ParseConfig("sdl-config --libs --cflags")
-#     galapix_env.ParseConfig("pkg-config sqlite3 --libs --cflags")
-#     galapix_env.Program('galapix', galapix_source)
 
 # EOF #

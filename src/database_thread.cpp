@@ -182,12 +182,6 @@ DatabaseThread::receive_tile(const TileEntry& tile)
 }
 
 void
-DatabaseThread::receive_job_finished(int threadid)
-{
-  
-}
-
-void
 DatabaseThread::stop()
 {
   quit = true;

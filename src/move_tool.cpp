@@ -46,7 +46,7 @@ MoveTool::move(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-MoveTool::up(const Vector2i& pos)
+MoveTool::up(const Vector2i& /*pos*/)
 {
   if (drag_active)
     {
@@ -102,7 +102,7 @@ MoveTool::draw()
 }
 
 void
-MoveTool::update(const Vector2i& pos, float delta)
+MoveTool::update(const Vector2i& /*pos*/, float /*delta*/)
 {
 }
   

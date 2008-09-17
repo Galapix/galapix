@@ -27,18 +27,18 @@ ZoomTool::ZoomTool(Viewer* viewer, float zoom_factor)
 }
 
 void
-ZoomTool::move(const Vector2i& pos, const Vector2i& rel)
+ZoomTool::move(const Vector2i& /*pos*/, const Vector2i& /*rel*/)
 {
 }
 
 void
-ZoomTool::up  (const Vector2i& pos)
+ZoomTool::up  (const Vector2i& /*pos*/)
 {
   zoom_active = false;  
 }
 
 void
-ZoomTool::down(const Vector2i& pos)
+ZoomTool::down(const Vector2i& /*pos*/)
 {
   zoom_active = true;
 }

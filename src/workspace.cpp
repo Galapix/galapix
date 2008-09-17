@@ -334,7 +334,7 @@ Workspace::solve_overlaps()
 }
 
 void
-Workspace::save(const std::string& filename)
+Workspace::save(const std::string& /*filename*/)
 {
 
 }

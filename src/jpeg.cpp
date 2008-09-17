@@ -30,7 +30,7 @@
 
 jmp_buf setjmp_buffer;
 
-void fatal_error_handler(j_common_ptr cinfo)
+void fatal_error_handler(j_common_ptr /*cinfo*/)
 {
   std::cout << "Some jpeg error: " << std::endl;
   longjmp(setjmp_buffer, 1);

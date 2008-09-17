@@ -71,8 +71,6 @@ public:
   /** Place tile into the database */
   void      receive_tile(const TileEntry& tile);
 
-  /** A Worker Thread reports that it is done and ready to accept new jobs */
-  void      receive_job_finished(int threadid);
   /* @} */
 
 private:

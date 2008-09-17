@@ -22,6 +22,7 @@
 #include "rar.hpp"
 #include "zip.hpp"
 #include "tar.hpp"
+#include "curl.hpp"
 #include "url.hpp"
 
 URL::URL()
@@ -129,13 +130,33 @@ URL::get_blob() const
           throw std::runtime_error("URL: Unhandled plugin: " + plugin);
         }
     }
+  else if (protocol == "http" || protocol == "https" || protocol == "ftp")
+    {
+      return CURLHandler::get_data(get_url());
+    }
   else
     {
       throw std::runtime_error("URL: Unhandled protocol: " + protocol);
       return Blob();
     }
-  
-  
+}
+
+bool
+URL::is_url(const std::string& url)
+{
+  std::string::size_type k = url.find_first_of("://");
+  if (k == std::string::npos)
+    {
+      return false;
+    }
+  else
+    {
+      for(std::string::size_type i = 0; i < k; ++i)
+        if (!(url[i] >= 'a' && url[i] <= 'z'))
+          return false;
+        
+      return true;
+    }
 }
 
 std::ostream& operator<<(std::ostream& out, const URL& url)

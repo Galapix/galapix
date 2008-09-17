@@ -84,7 +84,7 @@ public:
   float get_scale() const;
 
   void  set_angle(float a);
-  float get_angle(float a) const;
+  float get_angle() const;
 
   float get_scaled_width() const;
   float get_scaled_height() const;

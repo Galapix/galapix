@@ -22,7 +22,7 @@
 #include <sstream>
 #include "sqlite.hpp"
 
-int busy_callback(void* , int n)
+static int busy_callback(void* , int)
 {
   SDL_Delay(10);
   return 1;

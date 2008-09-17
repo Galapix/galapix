@@ -30,7 +30,7 @@ ViewRotateTool::ViewRotateTool(Viewer* viewer)
 }
 
 void
-ViewRotateTool::move(const Vector2i& pos, const Vector2i& rel)
+ViewRotateTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
 {
   if (active)
     {
@@ -46,7 +46,7 @@ ViewRotateTool::move(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-ViewRotateTool::up  (const Vector2i& pos)
+ViewRotateTool::up  (const Vector2i& /*pos*/)
 {
   active = false;
 }

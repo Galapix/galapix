@@ -29,7 +29,7 @@ RotateTool::RotateTool(Viewer* viewer)
 }
 
 void
-RotateTool::move(const Vector2i& pos, const Vector2i& rel)
+RotateTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
 {
   if (rotate_active)
     {
@@ -48,7 +48,7 @@ RotateTool::move(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-RotateTool::up  (const Vector2i& pos)
+RotateTool::up  (const Vector2i& /*pos*/)
 {
   rotate_active = false;
 }
@@ -66,7 +66,7 @@ RotateTool::down(const Vector2i& pos)
 }
 
 void
-RotateTool::update(const Vector2i& pos, float delta)
+RotateTool::update(const Vector2i& /*pos*/, float /*delta*/)
 {
 }
 

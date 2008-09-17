@@ -34,7 +34,7 @@ public:
   void down(const Vector2i& pos);
 
   void draw() {}
-  void update(const Vector2i& pos, float delta) {}
+  void update(const Vector2i& /*pos*/, float /*delta*/) {}
 };
 
 #endif

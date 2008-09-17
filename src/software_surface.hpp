@@ -63,8 +63,6 @@ public:
   SoftwareSurface scale(const Size& size) const;
   SoftwareSurface crop(const Rect& rect) const;
 
-  void save(const std::string& filename) const;
-  
   Blob get_raw_data()  const;
    
   void put_pixel(int x, int y, const RGB& rgb);

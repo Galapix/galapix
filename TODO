@@ -18,6 +18,11 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* scons configure CXXFLAGS="-Wall -Werror -g -O2 -ansi -pedantic"
+  -> gets cut to '-Wall -W' for some reason
+
+* implement support for giving URLs directly on command line
+
 * Exec::stdout isn't a Blob, cleanup relationship between Blob,
   std::vector<char> and std::vector<uint8_t*> so that we don't need unneeded copies
 
