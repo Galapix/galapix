@@ -107,6 +107,35 @@ Workspace::layout(float aspect_w, float aspect_h)
 }
 
 void
+Workspace::tight_layout()
+{
+  float    width = Math::sqrt(images.size()) * 1024.0f;;
+  Vector2f pos(0.0f, 0.0f);
+  
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      Image& image = *i;
+
+      float target_scale = 1000.0f / image.get_original_height();
+
+      image.set_target_scale(target_scale);
+      
+      if (pos.x - (image.get_original_width()*target_scale/2) > width)
+        {
+          pos.x = 0;
+          pos.y += 1024.0f;
+        }
+
+      pos.x += image.get_original_width()*target_scale + 24.0f;
+
+      image.set_target_pos(pos - Vector2f(image.get_original_width()*target_scale,
+                                          image.get_original_height()*target_scale)/2);
+    }
+
+  progress = 0.0f;
+}
+
+void
 Workspace::random_layout()
 {
   int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);

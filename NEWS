@@ -4,6 +4,7 @@ Galapix 0.0.4 (??. Sep 2008)
 * support for PNG images via libpng
 * support for ImageMagick via Magick++
 * support for Gimp/XCF via xcftools
+* support for Krita/KRA via koconvert
 * support for RGBA tiles
 * support for zip archive files 
 * support for rar archive files 

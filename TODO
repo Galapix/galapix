@@ -134,14 +134,13 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 Galapix 0.0.4 Release ToDo:
 ---------------------------
 
-* turn static classes into objects and map them dynamically to a file ending
+* fix the max_scale mess some more (important!)
 
-* check all new features
+* generate all tiles at once for stuff that doesn't support
+  incremental loading (every other format then jpeg and jpegs loaded
+  from archive files) (important!)
 
-* fix the max_scale mess some more
-
-* do generate all tiles at once for stuff loading from archive and for
-  things that don't support incremental loading
+* check the new features some more
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
@@ -152,14 +151,14 @@ Galapix 0.0.4 Release ToDo:
   entries instead of just inserting a duplicate (not an issue for
   normal use, but for 'prepare' and 'thumbgen'), fixing this might
   also fix incorrect generation ranges
-
-* handle "Premature end of JPEG file" a little better, mark FileEntry
-  as broken or so
  
 Galapix 0.1.0 Release ToDo:
 ---------------------------
 
-* http/ftp handling via libcurl
+* handle "Premature end of JPEG file" a little better, mark FileEntry
+  as broken or so
+
+* turn static classes into objects and map them dynamically to a file ending
 
 * fix random layout so that all image sizes are handled equally,
   currently low-res images get really small

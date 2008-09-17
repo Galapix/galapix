@@ -285,6 +285,10 @@ Viewer::process_event(const SDL_Event& event)
               workspace->solve_overlaps();
               break;
 
+            case SDLK_5:
+              workspace->tight_layout();
+              break;
+
             default:
               break;
           }

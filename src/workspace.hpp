@@ -66,6 +66,7 @@ public:
   void print_info();
   void print_images(const Rectf& rect);
 
+  void tight_layout();
   void layout(float aspect_w, float aspect_h);
   void random_layout();
 

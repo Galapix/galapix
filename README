@@ -106,6 +106,7 @@ t         | toggle trackball mode (mouse is grabbed and cursor hidden)
 2 	  | layout images 16:9
 3 	  | random layout
 4         | relayout images in a non-overlapping form
+5         | layout images in a tight fashion
 7         | scale selection down
 8         | scale selection up
 g 	  | toggle grid
