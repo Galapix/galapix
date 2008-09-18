@@ -1,0 +1,61 @@
+# -*- python -*-
+
+galapix_sources = [
+    'blob.cpp',
+    'database_thread.cpp',
+    'curl.cpp',
+    'exec.cpp',
+    'file_database.cpp',
+    'file_entry.cpp',
+    'filesystem.cpp',
+    'framebuffer.cpp',
+    'galapix.cpp',
+    'kra.cpp',
+    'image.cpp',
+    'imagemagick.cpp',
+    'job_handle.cpp',
+    'jpeg.cpp',
+    'jpeg_decoder_thread.cpp',
+    'jpeg_memory_dest.cpp',
+    'jpeg_memory_src.cpp',
+    'math.cpp',
+    'math/rect.cpp',
+    'math/size.cpp',
+    'math/vector2f.cpp',
+    'math/vector2i.cpp',
+    'math/vector3f.cpp',
+    'move_tool.cpp',
+    'pan_tool.cpp',
+    'png.cpp',
+    'pnm.cpp',
+    'resize_tool.cpp',
+    'rotate_tool.cpp',
+    'rar.cpp',
+    'selection.cpp',
+    'software_surface.cpp',
+    'sqlite.cpp',
+    'surface.cpp',
+    'texture.cpp',
+    'thread.cpp',
+    'tile_database.cpp',
+    'tile_generator.cpp',
+    'tile_generator_thread.cpp',
+    'view_rotate_tool.cpp',
+    'url.cpp',
+    'viewer.cpp',
+    'viewer_state.cpp',
+    'viewer_thread.cpp',
+    'tar.cpp',
+    'workspace.cpp',
+    'xcf.cpp',
+    'zoom_tool.cpp',
+    'zip.cpp',
+    ]
+
+def build(bld):
+    obj = bld.create_obj('cpp', 'program')
+    obj.source = galapix_sources + ['space_navigator.cpp'] # FIXME: Make this optional
+    obj.target = 'galapix'
+    obj.uselib = ['SDL', 'curl', 'png', 'ImageMagick++', 'OpenGL', 'SQLite', 'SpNav']
+
+# EOF #
