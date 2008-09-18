@@ -78,6 +78,15 @@ Blob::get_data() const
     return 0;
 }
 
+std::string
+Blob::str() const
+{
+  if (impl.get())
+    return std::string(reinterpret_cast<char*>(impl->data), impl->len);
+  else
+    return std::string();
+}
+
 void
 Blob::write_to_file(const std::string& filename)
 {

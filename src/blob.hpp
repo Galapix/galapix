@@ -34,6 +34,8 @@ public:
   int size() const;
   uint8_t* get_data() const;
 
+  std::string str() const;
+
   void write_to_file(const std::string& filename);
   static Blob from_file(const std::string& filename);
 
