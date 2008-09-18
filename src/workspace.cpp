@@ -19,6 +19,7 @@
 #include "math/rect.hpp"
 #include "file_entry.hpp"
 #include "math.hpp"
+#include "framebuffer.hpp"
 #include "workspace.hpp"
 
 Workspace::Workspace()
@@ -111,27 +112,68 @@ Workspace::tight_layout()
 {
   float    width = Math::sqrt(images.size()) * 1024.0f;;
   Vector2f pos(0.0f, 0.0f);
+  Vector2f last_pos(0.0f, 0.0f);
+  bool go_right = true;
   
+  float spacing = 24.0f;
+
+  std::cout << width << std::endl;
+
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       Image& image = *i;
 
-      float target_scale = 1000.0f / image.get_original_height();
+      const float scale = 1000.0f / image.get_original_height();
+      image.set_target_scale(scale);
 
-      image.set_target_scale(target_scale);
-      
-      if (pos.x - (image.get_original_width()*target_scale/2) > width)
+      if (go_right)
         {
-          pos.x = 0;
-          pos.y += 1024.0f;
+          if (pos.x + (image.get_original_width()*scale) > width)
+            {
+              pos.x = last_pos.x;
+              pos.y += 1000.0f + spacing;   
+              
+              go_right = false;
+
+              last_pos = pos;
+              image.set_target_pos(pos + Vector2f(image.get_original_width(),
+                                                  image.get_original_height()) * scale / 2.0f);
+            }
+          else
+            {
+              last_pos = pos;
+              image.set_target_pos(pos + Vector2f(image.get_original_width(),
+                                                  image.get_original_height()) * scale / 2.0f);
+            
+              pos.x += image.get_original_width()*scale + spacing;
+            }
         }
+      else
+        {
+          if (pos.x - (image.get_original_width()*scale) < 0)
+            {
+              //pos.x = 0;
+              pos.y += 1000.0f + spacing;   
+              go_right = true;
 
-      pos.x += image.get_original_width()*target_scale + 24.0f;
+              last_pos = pos;
+              image.set_target_pos(pos + Vector2f(image.get_original_width(),
+                                                  image.get_original_height()) * scale / 2.0f);
 
-      image.set_target_pos(pos - Vector2f(image.get_original_width()*target_scale,
-                                          image.get_original_height()*target_scale)/2);
+              pos.x += image.get_original_width()*scale + spacing;
+            }
+          else
+            {
+              pos.x -= image.get_original_width()*scale + spacing;
+
+              last_pos = pos;
+              image.set_target_pos(pos + Vector2f(image.get_original_width(),
+                                                  image.get_original_height()) * scale / 2.0f);
+            }
+        }
     }
 
+  // Cause a smooth relayout
   progress = 0.0f;
 }
 
