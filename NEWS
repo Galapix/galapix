@@ -9,12 +9,13 @@ Galapix 0.0.4 (??. Sep 2008)
 * support for zip archive files 
 * support for rar archive files 
 * support for http/ftp via libcurl
-* anti-aliasing support
-* background color toggle function
+* support for anti-aliasing
+* support for toggling background color
 * database format changed, for conversion do a:
 
   ALTER TABLE tiles add format INTEGER DEFAULT 0;
   UPDATE files SET filename = 'file://' || filename;
+
 
 Galapix 0.0.3 (12. Sep 2008)
 ============================
