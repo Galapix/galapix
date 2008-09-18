@@ -82,20 +82,31 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
     }
   else
     {
-      std::cout << "TileGeneratorThread: Processing: scale: " << job.min_scale << "-" << job.max_scale << " " << job.entry.get_url() << "..." << std::flush;
+      SoftwareSurface::FileFormat format = SoftwareSurface::get_fileformat(job.entry.get_url());
 
-      min_scale = job.min_scale;
-      max_scale = job.max_scale;
+      if (format == SoftwareSurface::JPEG_FILEFORMAT)
+        {
+          min_scale = job.min_scale;
+          max_scale = job.max_scale;
+        }
+      else
+        { // Generate all tiles instead of just the requested for non-jpeg formats
+          min_scale = 0;
+          max_scale = job.entry.get_thumbnail_scale();
+        }
+
       fileid    = job.entry.get_fileid();
+
+      std::cout << "TileGeneratorThread: Processing: scale: " << min_scale << "-" << max_scale << " " << job.entry.get_url() << "..." << std::flush;
 
       // Find scale at which the image fits on one tile
       int width  = job.entry.get_width();
       int height = job.entry.get_height();
-      int scale  = job.min_scale;
+      int scale  = min_scale;
 
       SoftwareSurface surface;
 
-      switch(SoftwareSurface::get_fileformat(job.entry.get_url()))
+      switch(format)
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
             {
@@ -131,7 +142,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
 
       do
         {
-          if (scale != job.min_scale)
+          if (scale != min_scale)
             {
               surface = surface.halve();
             }
@@ -147,7 +158,7 @@ TileGeneratorThread::process_message(const TileGeneratorThreadJob& job)
 
           scale += 1;
 
-        } while (scale <= job.max_scale);
+        } while (scale <= max_scale);
 
       std::cout << "done" << std::endl;
     }
