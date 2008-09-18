@@ -32,7 +32,7 @@ Uint32 Framebuffer::flags = 0;
 Size Framebuffer::desktop_resolution;
 
 void
-Framebuffer::set_video_mode(const Size& size, bool fullscreen)
+Framebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
 {
   assert(screen == 0);
 
@@ -41,6 +41,12 @@ Framebuffer::set_video_mode(const Size& size, bool fullscreen)
   SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,  5);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
+  if (anti_aliasing > 0)
+    {
+      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, anti_aliasing);
+    }
+  
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
   SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); // vsync

@@ -41,11 +41,12 @@ public:
 private:
   Size geometry;
   bool fullscreen;
+  int  anti_aliasing;
 
   ThreadMessageQueue<FileEntry>   file_queue;
 
 public:
-  ViewerThread(const Size& geometry, bool fullscreen);
+  ViewerThread(const Size& geometry, bool fullscreen, int  anti_aliasing);
   virtual ~ViewerThread();
 
   int run();

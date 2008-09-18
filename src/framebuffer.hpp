@@ -50,7 +50,7 @@ private:
   static Size desktop_resolution;
 
 public:
-  static void set_video_mode(const Size& size, bool fullscreen);
+  static void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
 
   static void toggle_fullscreen();
 

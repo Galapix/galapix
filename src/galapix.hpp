@@ -26,6 +26,7 @@ class Galapix
 private:
   bool fullscreen;
   Size geometry;
+  int  anti_aliasing;
 
 public:
   Galapix();

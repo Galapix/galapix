@@ -9,6 +9,7 @@ Galapix 0.0.4 (??. Sep 2008)
 * support for zip archive files 
 * support for rar archive files 
 * support for http/ftp via libcurl
+* anti-aliasing support
 * background color toggle function
 * database format changed, for conversion do a:
 

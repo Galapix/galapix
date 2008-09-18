@@ -18,6 +18,11 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* add anti-aliasing command line option
+
+* mouse behaves incorrectly when view is rotated: zooming in doesn't
+  zoom in on mouse_pos properly
+
 * Exec::stdout isn't a Blob, cleanup relationship between Blob,
   std::vector<char> and std::vector<uint8_t*> so that we don't need unneeded copies
 

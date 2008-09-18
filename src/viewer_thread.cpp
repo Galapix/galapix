@@ -30,9 +30,10 @@
 
 ViewerThread* ViewerThread::current_ = 0;
 
-ViewerThread::ViewerThread(const Size& geometry, bool fullscreen)
+ViewerThread::ViewerThread(const Size& geometry, bool fullscreen, int  anti_aliasing)
   : geometry(geometry),
-    fullscreen(fullscreen)
+    fullscreen(fullscreen),
+    anti_aliasing(anti_aliasing)
 {
   current_ = this;
 }
@@ -52,7 +53,7 @@ ViewerThread::run()
 {
   Workspace workspace;
 
-  Framebuffer::set_video_mode(geometry, fullscreen);
+  Framebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
 
   workspace.layout(4,3);
 

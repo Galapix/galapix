@@ -117,8 +117,6 @@ Workspace::tight_layout()
   
   float spacing = 24.0f;
 
-  std::cout << width << std::endl;
-
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       Image& image = *i;

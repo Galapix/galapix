@@ -50,7 +50,8 @@
 
 Galapix::Galapix()
   : fullscreen(false),
-    geometry(800, 600)
+    geometry(800, 600),
+    anti_aliasing(0)
 {
   Filesystem::init();
 }
@@ -243,7 +244,7 @@ Galapix::view(const std::string& database, const std::vector<URL>& urls, const s
   JPEGDecoderThread   jpeg_thread;
   DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;
-  ViewerThread        viewer_thread(geometry, fullscreen);
+  ViewerThread        viewer_thread(geometry, fullscreen, anti_aliasing);
 
   jpeg_thread.start();
   database_thread.start();
@@ -304,6 +305,7 @@ Galapix::print_usage()
             << "  -f, --fullscreen       Start in fullscreen mode\n"
             << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
             << "  -g, --geometry WxH     Start with window size WxH\n"        
+            << "  -a, --anti-aliasing N  Anti-aliasing factor 0,2,4 (default: 0)\n"
             << "\n"
             << "If you do not supply any files, the whole content of the given database will be displayed."
             << std::endl;
@@ -357,6 +359,15 @@ Galapix::main(int argc, char** argv)
                     pattern = argv[i];
                   else
                     throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+                }
+              else if (strcmp(argv[i], "--anti-aliasing") == 0 ||
+                       strcmp(argv[i], "-a") == 0)
+                {
+                  i += 1;
+                  if (i < argc)
+                    anti_aliasing = atoi(argv[i]);
+                  else
+                    throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");                  
                 }
               else if (strcmp(argv[i], "--geometry") == 0 ||
                        strcmp(argv[i], "-g") == 0)
