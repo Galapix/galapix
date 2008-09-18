@@ -92,27 +92,8 @@ Image::Image(const FileEntry& file_entry)
   impl->last_scale   = 1.0f;
   impl->target_scale = 1.0f;
 
-  // FIXME: Make this depended on how much free memory we have
-  { // Calculate min_keep_scale
-    int size  = Math::max(file_entry.get_width(), file_entry.get_height());
-    impl->min_keep_scale = 0;
-    while(size > 32) 
-      {
-        size /= 2;
-        impl->min_keep_scale +=1 ;
-      }
-  }
-
-  // FIXME: Sync this with what the TileGenerator does
-  { // Calculate max_scale
-    int size  = Math::max(file_entry.get_width(), file_entry.get_height());
-    impl->max_scale = 0;
-    while(size > 32)
-      {
-        size /= 2;
-        impl->max_scale +=1 ;
-      }
-  }
+  impl->max_scale = file_entry.get_thumbnail_scale();
+  impl->min_keep_scale = impl->max_scale - 2;
 }
 
 void
@@ -456,7 +437,7 @@ Image::draw(const Rectf& cliprect, float fscale)
       // scale factor for requesting the tile from the TileDatabase
       // FIXME: Can likely be done without float
       int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (fscale*impl->scale)) /
-                                                         log(2)), impl->max_scale);
+                                                         log(2)), impl->max_scale-1);
       int scale_factor = Math::pow2(tiledb_scale);
 
       int scaled_width  = impl->file_entry.get_width()  / scale_factor;
