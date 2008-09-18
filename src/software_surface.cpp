@@ -533,6 +533,7 @@ SoftwareSurface::get_bytes_per_pixel() const
 
       default:
         assert(!"SoftwareSurface::get_bytes_per_pixel(): Unknown format");
+        return 0;
     }
 }
   

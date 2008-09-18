@@ -65,7 +65,7 @@ public:
   Image::Jobs jobs;  
 
   ThreadMessageQueue<TileEntry> tile_queue;
-  
+
   ImageImpl() 
   {
   }
@@ -94,6 +94,8 @@ Image::Image(const FileEntry& file_entry)
 
   impl->max_scale = file_entry.get_thumbnail_scale();
   impl->min_keep_scale = impl->max_scale - 2;
+
+  assert(impl->max_scale >= 0);
 }
 
 void
@@ -436,8 +438,14 @@ Image::draw(const Rectf& cliprect, float fscale)
     {
       // scale factor for requesting the tile from the TileDatabase
       // FIXME: Can likely be done without float
+      
+      //std::cout << 0 << " " 
+      //          << static_cast<int>(log(1.0f / (fscale*impl->scale)) / log(2)) << " "
+      //          << impl->max_scale << std::endl;
+  
+      assert(impl->max_scale >= 0);
       int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (fscale*impl->scale)) /
-                                                         log(2)), impl->max_scale-1);
+                                                         log(2)), impl->max_scale);
       int scale_factor = Math::pow2(tiledb_scale);
 
       int scaled_width  = impl->file_entry.get_width()  / scale_factor;

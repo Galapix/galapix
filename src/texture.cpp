@@ -50,7 +50,7 @@ public:
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
     
-    int gl_format;
+    int gl_format = GL_RGB;
     switch(src.get_format())
       {
         case SoftwareSurface::RGB_FORMAT:
