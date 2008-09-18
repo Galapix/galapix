@@ -341,47 +341,54 @@ SoftwareSurface::halve() const
 SoftwareSurface
 SoftwareSurface::scale(const Size& size) const
 {
-  SoftwareSurface surface(impl->format, size);
-  // FIXME: very much non-fast, needs replacement with proper
-
-  switch(impl->format)
+  if (size == impl->size)
     {
-      case RGB_FORMAT:
-        {
-          RGB rgb;
-          for(int y = 0; y < surface.get_height(); ++y)
-            for(int x = 0; x < surface.get_width(); ++x)
-              {
-                get_pixel(x * impl->size.width  / surface.impl->size.width,
-                          y * impl->size.height / surface.impl->size.height,
-                          rgb);
-                
-                surface.put_pixel(x, y, rgb);
-              }
-        }
-        break;
-
-      case RGBA_FORMAT:
-        {
-          RGBA rgba;
-          for(int y = 0; y < surface.get_height(); ++y)
-            for(int x = 0; x < surface.get_width(); ++x)
-              {
-                get_pixel(x * impl->size.width  / surface.impl->size.width,
-                          y * impl->size.height / surface.impl->size.height,
-                          rgba);
-                
-                surface.put_pixel(x, y, rgba);
-              }
-        }
-        break;
-
-      default:
-        assert(!"SoftwareSurface::scale: Unknown format");
-        break;
+      return *this;
     }
+  else
+    {
+      SoftwareSurface surface(impl->format, size);
+      // FIXME: very much non-fast, needs replacement with proper
 
-  return surface;
+      switch(impl->format)
+        {
+          case RGB_FORMAT:
+            {
+              RGB rgb;
+              for(int y = 0; y < surface.get_height(); ++y)
+                for(int x = 0; x < surface.get_width(); ++x)
+                  {
+                    get_pixel(x * impl->size.width  / surface.impl->size.width,
+                              y * impl->size.height / surface.impl->size.height,
+                              rgb);
+                
+                    surface.put_pixel(x, y, rgb);
+                  }
+            }
+            break;
+
+          case RGBA_FORMAT:
+            {
+              RGBA rgba;
+              for(int y = 0; y < surface.get_height(); ++y)
+                for(int x = 0; x < surface.get_width(); ++x)
+                  {
+                    get_pixel(x * impl->size.width  / surface.impl->size.width,
+                              y * impl->size.height / surface.impl->size.height,
+                              rgba);
+                
+                    surface.put_pixel(x, y, rgba);
+                  }
+            }
+            break;
+
+          default:
+            assert(!"SoftwareSurface::scale: Unknown format");
+            break;
+        }
+
+      return surface;
+    }
 }
 
 SoftwareSurface
