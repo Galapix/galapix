@@ -67,7 +67,8 @@ Filesystem::open_directory_recursivly(const std::string& pathname, std::vector<s
       while ((de = ::readdir(dp)) != 0)
         {
           if (strcmp(de->d_name, ".")  != 0 &&
-              strcmp(de->d_name, "..") != 0)
+              strcmp(de->d_name, "..") != 0 &&
+              strcmp(de->d_name, ".xvpics") != 0) // FIXME: Doesn't really fit here
             {
               if (de->d_type == DT_DIR)
                 { // Avoid stat'ing on file systems that don't need it
