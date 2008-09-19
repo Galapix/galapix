@@ -100,10 +100,9 @@ Exec::exec()
       char buffer[4096];
       
       if (stdin_data)
-        {
-          write(stdin_fd[1], stdin_data.get_data(), stdin_data.size());
-          close(stdin_fd[1]);
-        }
+        write(stdin_fd[1], stdin_data.get_data(), stdin_data.size());
+
+      close(stdin_fd[1]);
 
       while((len = read(stdout_fd[0], buffer, sizeof(buffer))) > 0)
         stdout_vec.insert(stdout_vec.end(), buffer, buffer+len);
