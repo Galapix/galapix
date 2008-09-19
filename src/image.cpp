@@ -292,6 +292,12 @@ Image::draw_tile(int x, int y, int tiledb_scale,
       // FIXME: Rewrite this to work all smaller tiles, not just the next     
       int downscale;
       surface = find_smaller_tile(x, y, tiledb_scale, downscale);
+
+      // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
+      Size tile_size(Math::min(256, (impl->file_entry.get_width()  / Math::pow2(tiledb_scale)) - 256 * x),
+                     Math::min(256, (impl->file_entry.get_height() / Math::pow2(tiledb_scale)) - 256 * y));
+
+
       if (surface)
         { // Must only draw relevant section!
           Size s((x%downscale) ? (surface.get_width()  - 256/downscale * (x%downscale)) : 256/downscale,
@@ -302,16 +308,15 @@ Image::draw_tile(int x, int y, int tiledb_scale,
           
           surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
                              s),
+                       //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
                        Rectf(pos, s * scale * downscale));
         }
       else // draw replacement rect when no tile could be loaded
         {         
-          // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
-          Size s(Math::min(256, (impl->file_entry.get_width()  / Math::pow2(tiledb_scale)) - 256 * x),
-                 Math::min(256, (impl->file_entry.get_height() / Math::pow2(tiledb_scale)) - 256 * y));
-
-          Framebuffer::fill_rect(Rectf(pos, s*scale), RGB(155, 0, 155)); // impl->file_entry.color);
+          Framebuffer::fill_rect(Rectf(pos, tile_size*scale), RGB(155, 0, 155)); // impl->file_entry.color);
         }
+
+      //Framebuffer::draw_rect(Rectf(pos, s*scale), RGB(255, 255, 255)); // impl->file_entry.color);
     }
 }
 

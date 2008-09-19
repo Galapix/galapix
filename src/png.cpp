@@ -350,7 +350,7 @@ PNG::save(const SoftwareSurface& surface)
 
   png_destroy_write_struct(&png_ptr, &info_ptr);
 
-  return Blob(mem.data);
+  return Blob::copy(mem.data);
 }
 
 

@@ -56,7 +56,7 @@ Tar::get_file(const std::string& tar_filename, const std::string& filename)
   if (tar.exec() == 0)
     {
       // FIXME: Unneeded copy of data
-      return Blob(&*tar.get_stdout().begin(), tar.get_stdout().size());
+      return Blob::copy(&*tar.get_stdout().begin(), tar.get_stdout().size());
     }
   else
     {

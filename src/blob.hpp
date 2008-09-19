@@ -26,20 +26,36 @@ class BlobImpl;
 
 class Blob
 {
+private:
+  Blob(const std::vector<uint8_t>& data); 
+  Blob(const void* data, int len);
+
 public:
   Blob();
-  Blob(const std::vector<uint8_t>& data);
-  Blob(const void* data, int len);
 
   int size() const;
   uint8_t* get_data() const;
 
   std::string str() const;
+  operator bool() const { return impl.get(); }
 
   void write_to_file(const std::string& filename);
-  static Blob from_file(const std::string& filename);
 
-  operator bool() const { return impl.get(); }
+  static Blob from_file(const std::string& filename);
+  
+  /** Append data to the given Blob, only possible for non-wrap Blobs
+      (will invalidade the pointer returned by get_data() */
+  void append(const void* data, int len);
+
+  /** Copy the given data into a Blob object */
+  static Blob copy(const void* data, int len);
+  static Blob copy(const std::vector<uint8_t>& data);
+
+  /** Wrap the given pointer or vector into a Blob without copying it,
+      the Blob is only valid as long as the parent object is valid */
+  static Blob wrap(const void* data, int len);
+  static Blob wrap(const std::vector<uint8_t>& data);
+
 private: 
   boost::shared_ptr<BlobImpl> impl;
 };

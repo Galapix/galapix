@@ -445,7 +445,7 @@ Blob
 SoftwareSurface::get_raw_data() const
 {
   assert(impl->pitch != impl->size.width*3);
-  return Blob(impl->pixels, impl->size.height * impl->pitch);
+  return Blob::copy(impl->pixels, impl->size.height * impl->pitch);
 }
 
 uint8_t*

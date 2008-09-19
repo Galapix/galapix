@@ -62,7 +62,7 @@ CURLHandler::get_data(const std::string& url)
 
   if (ret == 0)
     {
-      return Blob(data);
+      return Blob::copy(data);
     }
   else
     {

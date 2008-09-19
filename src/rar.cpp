@@ -56,7 +56,7 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
   if (rar.exec() == 0)
     {
       // FIXME: Unneeded copy of data
-      return Blob(&*rar.get_stdout().begin(), rar.get_stdout().size());
+      return Blob::copy(&*rar.get_stdout().begin(), rar.get_stdout().size());
     }
   else
     {

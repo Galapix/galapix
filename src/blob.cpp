@@ -26,7 +26,7 @@ class BlobImpl
 public:
   uint8_t* data;
   int      len;
-
+  
   BlobImpl(const void* data_, int len_)
   {
     data = new uint8_t[len_];
@@ -114,6 +114,38 @@ Blob::from_file(const std::string& filename)
       // FIXME: Useless copy again
       return Blob(data);
     }
+}
+
+void
+Blob::append(const void* data, int len)
+{
+  assert(!"Blob::append(const void* data, int len): Implement me");
+}
+
+Blob
+Blob::copy(const void* data, int len)
+{
+  return Blob(data, len);
+}
+
+Blob
+Blob::copy(const std::vector<uint8_t>& data)
+{
+  return Blob(data);
+}
+
+Blob
+Blob::wrap(const void* data, int len)
+{
+  // FIXME: Implement me
+  return Blob(data, len);
+}
+
+Blob
+Blob::wrap(const std::vector<uint8_t>& data)
+{
+  // FIXME: Implement me
+  return Blob(data);
 }
 
 /* EOF */

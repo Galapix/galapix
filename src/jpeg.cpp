@@ -226,7 +226,7 @@ JPEG::save(const SoftwareSurface& surface, int quality)
   JPEG::save(surface, boost::bind(jpeg_memory_dest, _1, &data), quality);
 
   // FIXME: Unneeded copy of data
-  return Blob(data);
+  return Blob::copy(data);
 }
 
 

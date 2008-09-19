@@ -285,8 +285,8 @@ SQLiteReader::get_text(int column)
 Blob
 SQLiteReader::get_blob(int column)
 {
-  return Blob(sqlite3_column_blob(stmt, column),
-              sqlite3_column_bytes(stmt, column));
+  return Blob::copy(sqlite3_column_blob(stmt, column),
+                    sqlite3_column_bytes(stmt, column));
 }
 
 std::string
