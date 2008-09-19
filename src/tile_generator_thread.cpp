@@ -169,8 +169,6 @@ TileGeneratorThread::run()
 {
   quit = false;
 
-  TileGenerator generator;
-
   while(!quit)
     {
       while(!msg_queue.empty())
