@@ -17,8 +17,9 @@
 */
 
 #include "math/rect.hpp"
-#include "file_entry.hpp"
+#include "math/quad_tree.hpp"
 #include "math.hpp"
+#include "file_entry.hpp"
 #include "framebuffer.hpp"
 #include "workspace.hpp"
 
@@ -188,14 +189,56 @@ Workspace::random_layout()
 }
 
 void
+Workspace::build_quad_tree()
+{
+  if (!images.empty())
+    {
+      Rectf rect = images.front().get_image_rect();
+      for(Images::iterator i = images.begin()+1; i != images.end(); ++i)
+        {
+          const Rectf& image_rect = i->get_image_rect(); 
+          
+          rect.left   = Math::min(rect.left,   image_rect.left);
+          rect.right  = Math::max(rect.right,  image_rect.right);
+          rect.top    = Math::min(rect.top,    image_rect.top);
+          rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+        }
+
+      quad_tree = std::auto_ptr<QuadTree<Image> >(new QuadTree<Image>(rect));
+      
+      for(Images::iterator i = images.begin(); i != images.end(); ++i)
+        {
+          quad_tree->add(i->get_image_rect(), *i);
+        }
+    }
+}
+
+void
+Workspace::clear_quad_tree()
+{
+  quad_tree = std::auto_ptr<QuadTree<Image> >();
+}
+
+void
 Workspace::draw(const Rectf& cliprect, float scale)
 {
-  //std::cout << Math::clamp(1, static_cast<int>(1.0f / scale), 32) << " -> " << scale << std::endl;
-
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  if (quad_tree.get())
     {
-      i->draw(cliprect, scale);
-    }  
+      Images current_images = quad_tree->get_items_at(cliprect);
+      for(Images::iterator i = current_images.begin(); i != current_images.end(); ++i)
+        {
+          i->draw(cliprect, scale);
+        }
+    }
+  else
+    {
+      //std::cout << Math::clamp(1, static_cast<int>(1.0f / scale), 32) << " -> " << scale << std::endl;
+        
+      for(Images::iterator i = images.begin(); i != images.end(); ++i)
+        {
+          i->draw(cliprect, scale);
+        }
+    }
 
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
@@ -263,11 +306,11 @@ Workspace::print_info()
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
-  std::cout << "  Number of Images: " << images.size() << std::endl;
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       i->print_info();
     }
+  std::cout << "  Number of Images: " << images.size() << std::endl;
   std::cout << "-------------------------------------------------------" << std::endl;
 }
 

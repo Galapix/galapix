@@ -187,6 +187,17 @@ Viewer::process_event(const SDL_Event& event)
             case SDLK_DOWN:
               state.set_angle(0.0f);
               break;
+
+            case SDLK_q:
+              std::cout << "Building QuadTree... " << std::flush;
+              workspace->build_quad_tree();
+              std::cout << "done" << std::endl;
+              break;
+              
+            case SDLK_j:
+              std::cout << "Killing QuadTree" << std::endl;
+              workspace->clear_quad_tree();              
+              break;
                 
             case SDLK_c:
               std::cout << "Workspace: Clearing cache" << std::endl;
@@ -255,9 +266,9 @@ Viewer::process_event(const SDL_Event& event)
               workspace->random_shuffle();
               break;
 
-              //case SDLK_i:
-              //workspace->print_info();
-              //break;
+            case SDLK_0:
+              workspace->print_info();
+              break;
 
             case SDLK_b:
               background_color += 1;

@@ -307,6 +307,8 @@ public:
   //: Returns true if point is inside the rectangle.
   bool contains(const Vector3f &p) const { return (p.x >= left && p.y >= top && p.x <= right && p.y <= bottom); }
 
+  bool contains(const Vector2f &p) const { return (p.x >= left && p.y >= top && p.x <= right && p.y <= bottom); }
+
   //: Check if rect is inside this
   bool contains(const Rectf& rect) const
   {

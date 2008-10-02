@@ -20,6 +20,7 @@
 #define HEADER_WORKSPACE_HPP
 
 #include "selection.hpp"
+#include "math/quad_tree.hpp"
 #include "image.hpp"
 
 class Rectf;
@@ -28,6 +29,8 @@ class Workspace
 {
 private:
   typedef std::vector<Image> Images;
+  std::auto_ptr<QuadTree<Image> > quad_tree;
+
   Images images;
   Selection selection;
   Vector2i next_pos;
@@ -73,6 +76,9 @@ public:
   void solve_overlaps();
 
   void save(const std::string& filename);
+
+  void build_quad_tree();
+  void clear_quad_tree();
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);
