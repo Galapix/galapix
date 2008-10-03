@@ -194,7 +194,11 @@ SQLiteStatement::execute()
   if (sqlite3_step(stmt) != SQLITE_DONE)
     {
       std::ostringstream str;
-      str << "SQLiteStatement::execute: " << sqlite3_errmsg(db->get_db());
+      str << "SQLiteStatement::execute: " << sqlite3_errmsg(db->get_db()) << ":" << std::endl;
+      str << stmt_str << std::endl;
+
+      reset();
+
       throw SQLiteError(str.str());      
     }
 

@@ -240,7 +240,7 @@ DatabaseThread::run()
                     }
                   
                   // FIXME: Make some better error checking in case of loading failure
-                  if (tile_msg->tile.surface)
+                  if (tile_msg->tile.get_software_surface())
                     {
                       // FIXME: Need file_entry object for this:
                       //if (tile_msg->tile.scale == file_entry.thumbnail_scale)

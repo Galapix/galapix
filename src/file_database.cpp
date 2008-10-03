@@ -51,7 +51,8 @@ FileDatabase::FileDatabase(SQLiteConnection* db)
 
   db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename );");
 
-  store_stmt.prepare("INSERT INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
+  // FIXME: Does replace change the rowid?
+  store_stmt.prepare("INSERT OR REPLACE INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
   store_tile_stmt.prepare("UPDATE files SET thumbnail=?1, color=?2 WHERE fileid=?3");
 
   get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
@@ -68,8 +69,7 @@ FileDatabase::~FileDatabase()
 FileEntry
 FileDatabase::store_file_entry(const FileEntry& entry)
 {
-  assert(!"Implement me");
-  return FileEntry();
+  return store_file_entry(entry.get_url(), entry.get_size());
 }
  
 FileEntry
@@ -93,6 +93,7 @@ FileDatabase::store_file_entry(const URL& url,
   return FileEntry(fileid, url, size.width, size.height);
 }
 
+/*
 void
 FileDatabase::store_tile(TileEntry& entry)
 {
@@ -116,7 +117,7 @@ int get_thumbnail_scale(const Size& size)
 
   return i;
 }
-
+*/
 FileEntry
 FileDatabase::get_file_entry(const URL& url)
 {

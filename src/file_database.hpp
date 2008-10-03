@@ -72,7 +72,7 @@ public:
   void get_file_entries(std::vector<FileEntry>& entries, const std::string& pattern);
 
   FileEntry store_file_entry(const FileEntry& entry);
-  void store_tile(TileEntry& entry);
+  //void store_tile(TileEntry& entry);
 
   void check();
 

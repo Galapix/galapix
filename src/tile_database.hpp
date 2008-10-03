@@ -31,6 +31,7 @@ private:
   SQLiteConnection* db;
   SQLiteStatement store_stmt;
   SQLiteStatement get_stmt;
+  SQLiteStatement get_all_by_fileid_stmt;
   SQLiteStatement get_all_stmt;
   SQLiteStatement has_stmt;
 

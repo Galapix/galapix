@@ -27,6 +27,7 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
   : db(db),
     store_stmt(db),
     get_stmt(db),
+    get_all_by_fileid_stmt(db),
     get_all_stmt(db),
     has_stmt(db)
 {
@@ -46,6 +47,7 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
   store_stmt.prepare("INSERT into tiles (fileid, scale, x, y, data, quality, format) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);");
 
   get_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
+  get_all_by_fileid_stmt.prepare("SELECT * FROM tiles WHERE fileid = ?1;");
   has_stmt.prepare("SELECT (rowid) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;");
 
   get_all_stmt.prepare("SELECT * FROM tiles ORDER BY fileid;");
@@ -72,9 +74,36 @@ TileDatabase::has_tile(uint32_t fileid, const Vector2i& pos, int scale)
 }
 
 void
-TileDatabase::get_tiles(uint32_t file_id, std::vector<TileEntry>& tiles)
+TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
 {
-  assert(!"Implement me");
+  get_all_by_fileid_stmt.bind_int(1, fileid);
+
+  SQLiteReader reader = get_all_by_fileid_stmt.execute_query();
+  while(reader.next())
+    {
+      TileEntry tile(reader.get_int(0), // fileid
+                     reader.get_int(1), // scale
+                     Vector2i(reader.get_int (2),
+                              reader.get_int (3)),
+                     SoftwareSurface());
+      
+      // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
+      // Blob, so we don't do encode/decode when doing a database
+      // merge
+      Blob blob = reader.get_blob(4);
+      switch(reader.get_int(6)) // format
+        {
+          case SoftwareSurface::JPEG_FILEFORMAT:
+            tile.surface = JPEG::load_from_mem(blob.get_data(), blob.size());
+            break;
+
+          case SoftwareSurface::PNG_FILEFORMAT:
+            tile.surface = PNG::load_from_mem(blob.get_data(), blob.size());
+            break;
+        }
+
+      tiles.push_back(tile);
+    }
 }
 
 bool

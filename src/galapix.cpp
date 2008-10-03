@@ -79,40 +79,41 @@ Galapix::test(const std::vector<URL>& url)
 /** Merge content of the databases given by filenames into database */
 void
 Galapix::merge(const std::string& database,
-               const std::vector<URL>& urls)
+               const std::vector<std::string>& filenames)
 {
   SQLiteConnection db(database);
   FileDatabase out_file_db(&db);
   TileDatabase out_tile_db(&db);
 
-  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
+  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
-      if (i->has_stdio_name())
-        {
-          SQLiteConnection in_db(i->get_stdio_name());
-          FileDatabase in_file_db(&in_db);
-          TileDatabase in_tile_db(&in_db);
+      SQLiteConnection in_db(*i);
+      FileDatabase in_file_db(&in_db);
+      TileDatabase in_tile_db(&in_db);
           
-          std::vector<FileEntry> entries;
-          in_file_db.get_file_entries(entries);
-          for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
-            {
-              FileEntry entry = out_file_db.store_file_entry(*i);
-
-              std::vector<TileEntry> tiles;
-              in_tile_db.get_tiles(i->get_fileid(), tiles);
-              for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
-                {
-                  // Change the fileid
-                  j->fileid = entry.get_fileid();
-                  out_tile_db.store_tile(*j);
-                }
-            }
-        }
-      else
+      std::vector<FileEntry> entries;
+      in_file_db.get_file_entries(entries);
+      for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
         {
-          std::cout << "Error: database doesn't have stdio_name: " << *i << std::endl;
+          try {
+          std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
+
+          // FIXME: Must catch URL collisions here (or maybe not?)
+          FileEntry entry = out_file_db.store_file_entry(*i);
+
+          std::vector<TileEntry> tiles;
+          in_tile_db.get_tiles(i->get_fileid(), tiles);
+          for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
+            {
+              // Change the fileid
+              j->fileid = entry.get_fileid();
+              out_tile_db.store_tile(*j);
+            }
+          } catch(std::exception& err) {
+            std::cout << "Error: " << err.what() << std::endl;
+          }
         }
+      std::cout << std::endl;
     }
 }
 
@@ -330,6 +331,7 @@ Galapix::print_usage()
             << "       galapix check    [OPTIONS]...\n"
             << "       galapix list     [OPTIONS]...\n"
             << "       galapix cleanup  [OPTIONS]...\n"
+            << "       galapix merge    [OPTIONS]... [FILES]...\n"
             << "\n"
             << "Commands:\n"
             << "  view      Display the given files\n"
@@ -340,6 +342,7 @@ Galapix::print_usage()
             << "  check     Checks the database for consistency\n"
             << "  info      Display size of the given files\n"
             << "  cleanup   Runs garbage collection on the database\n"
+            << "  merge     Merges the given databases into the database given by -d FILE\n"
             << "\n"
             << "Options:\n"
             << "  -d, --database FILE    Use FILE has database (default: none)\n"
@@ -478,6 +481,10 @@ Galapix::main(int argc, char** argv)
       else if (strcmp(argv[1], "cleanup") == 0)
         {
           cleanup(database);
+        }
+      else if (strcmp(argv[1], "merge") == 0)
+        {
+          merge(database, argument_filenames);
         }
       else if (strcmp(argv[1], "info") == 0)
         {

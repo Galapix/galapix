@@ -30,6 +30,7 @@ public:
   Vector2i pos;
   SoftwareSurface surface;
 
+public:  
   TileEntry()
   {}
 
@@ -39,6 +40,10 @@ public:
       pos(pos_),
       surface(surface_)
   {}
+
+  SoftwareSurface get_software_surface() const {
+    return surface;
+  }
 };
 
 #endif
