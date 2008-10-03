@@ -94,11 +94,11 @@ TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
       switch(reader.get_int(6)) // format
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
-            tile.surface = JPEG::load_from_mem(blob.get_data(), blob.size());
+            tile.set_software_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
             break;
 
           case SoftwareSurface::PNG_FILEFORMAT:
-            tile.surface = PNG::load_from_mem(blob.get_data(), blob.size());
+            tile.set_software_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
             break;
         }
 
@@ -120,21 +120,22 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
 
   if (reader.next())
     {
-      tile.fileid  = reader.get_int (0);
-      tile.scale   = reader.get_int (1);
-      tile.pos.x   = reader.get_int (2);
-      tile.pos.y   = reader.get_int (3);
+      tile = TileEntry(reader.get_int(0), // fileid
+                       reader.get_int(1), // scale
+                       Vector2i(reader.get_int(2), // pos
+                                reader.get_int(3)),
+                       SoftwareSurface());
 
       // FIXME: Do this in a DecoderThread
       Blob blob = reader.get_blob(4);
       switch(reader.get_int(6)) // format
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
-            tile.surface = JPEG::load_from_mem(blob.get_data(), blob.size());
+            tile.set_software_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
             break;
 
           case SoftwareSurface::PNG_FILEFORMAT:
-            tile.surface = PNG::load_from_mem(blob.get_data(), blob.size());
+            tile.set_software_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
             break;
         }
 
@@ -153,14 +154,14 @@ TileDatabase::store_tile(const TileEntry& tile)
 {
   Blob blob;
 
-  switch(tile.surface.get_format())
+  switch(tile.get_software_surface().get_format())
     {
       case SoftwareSurface::RGB_FORMAT:
-        blob = JPEG::save(tile.surface, 75);
+        blob = JPEG::save(tile.get_software_surface(), 75);
         break;
 
       case SoftwareSurface::RGBA_FORMAT:
-        blob = PNG::save(tile.surface);
+        blob = PNG::save(tile.get_software_surface());
         break;
 
       default:
@@ -170,13 +171,13 @@ TileDatabase::store_tile(const TileEntry& tile)
 
   // FIXME: We need to update a already existing record, instead of
   // just storing a duplicate
-  store_stmt.bind_int (1, tile.fileid);
-  store_stmt.bind_int (2, tile.scale);
-  store_stmt.bind_int (3, tile.pos.x);
-  store_stmt.bind_int (4, tile.pos.y);
+  store_stmt.bind_int (1, tile.get_fileid());
+  store_stmt.bind_int (2, tile.get_scale());
+  store_stmt.bind_int (3, tile.get_pos().x);
+  store_stmt.bind_int (4, tile.get_pos().y);
   store_stmt.bind_blob(5, blob);
   store_stmt.bind_int (6, 0);
-  store_stmt.bind_int (7, tile.surface.get_format());
+  store_stmt.bind_int (7, tile.get_software_surface().get_format());
 
   store_stmt.execute();
 }

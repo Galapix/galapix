@@ -24,7 +24,7 @@
 
 class TileEntry
 {
-public:
+private:
   uint32_t fileid;
   int      scale;
   Vector2i pos;
@@ -41,9 +41,19 @@ public:
       surface(surface_)
   {}
 
+  void set_software_surface(const SoftwareSurface& surface_)  {
+    surface = surface_;
+  }
+
   SoftwareSurface get_software_surface() const {
     return surface;
   }
+
+  uint32_t get_fileid() const { return fileid; }
+  int      get_scale()  const { return scale; }
+  Vector2i get_pos()    const { return pos; }
+
+  void set_fileid(uint32_t fileid_) { fileid = fileid_; }
 };
 
 #endif

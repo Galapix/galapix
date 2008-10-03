@@ -54,12 +54,7 @@ TileGenerator::generate_all(int fileid, const SoftwareSurface& surface_,
             SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
                                                                Size(256, 256)));
 
-            TileEntry tile;
-            tile.fileid = fileid;
-            tile.scale  = scale;
-            tile.pos.x = x;
-            tile.pos.y = y;
-            tile.surface = croped_surface;
+            TileEntry tile(fileid, scale, Vector2i(x, y), croped_surface);
           
             callback(tile);
           }
@@ -116,12 +111,10 @@ TileGenerator::generate_quick(const FileEntry& entry,
     {
       //std::cout << scale << " size: " << surface.get_size() << std::endl;
 
-      TileEntry tile;
-      tile.fileid  = entry.get_fileid();
-      tile.scale   = scale;
-      tile.pos.x   = 0;
-      tile.pos.y   = 0;
-      tile.surface = surface;
+      TileEntry tile(entry.get_fileid(),
+                     scale,
+                     Vector2i(0, 0),
+                     surface);
           
       callback(tile);
 

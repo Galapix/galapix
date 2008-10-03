@@ -346,7 +346,7 @@ Image::process_queue()
       TileEntry tile = impl->tile_queue.front();
       impl->tile_queue.pop();
 
-      int tile_id = make_cache_id(tile.pos.x, tile.pos.y, tile.scale);
+      int tile_id = make_cache_id(tile.get_pos().x, tile.get_pos().y, tile.get_scale());
   
       SurfaceStruct s;
   

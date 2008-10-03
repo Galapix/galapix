@@ -106,7 +106,7 @@ Galapix::merge(const std::string& database,
           for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
             {
               // Change the fileid
-              j->fileid = entry.get_fileid();
+              j->set_fileid(entry.get_fileid());
               out_tile_db.store_tile(*j);
             }
           } catch(std::exception& err) {

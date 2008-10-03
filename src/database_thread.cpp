@@ -217,15 +217,15 @@ DatabaseThread::run()
                   
                   if (0)
                   std::cout << "Received Tile: "
-                            << tile_msg->tile.fileid << " pos: " 
-                            << tile_msg->tile.pos  << " scale: " 
-                            << tile_msg->tile.scale << std::endl;
+                            << tile_msg->tile.get_fileid() << " pos: " 
+                            << tile_msg->tile.get_pos()    << " scale: " 
+                            << tile_msg->tile.get_scale()  << std::endl;
 
                   for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end();)
                     {
-                      if (tile_msg->tile.fileid == (*i)->file_entry.get_fileid() &&
-                          tile_msg->tile.scale  == (*i)->tilescale &&
-                          tile_msg->tile.pos    == (*i)->pos)
+                      if (tile_msg->tile.get_fileid() == (*i)->file_entry.get_fileid() &&
+                          tile_msg->tile.get_scale()  == (*i)->tilescale &&
+                          tile_msg->tile.get_pos()    == (*i)->pos)
                         {
                           (*i)->callback(tile_msg->tile);
 
