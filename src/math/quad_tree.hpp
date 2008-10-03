@@ -129,7 +129,7 @@ public:
           }
       }
 
-    // Check other quadrands for overlapping objects
+    // If rect overlaps with the given quadrant, recursivly check the quadrant
     if (nw.get() && 
         rect.left < center.x &&
         rect.top  < center.y)
@@ -146,7 +146,7 @@ public:
       sw->get_items_at(rect, out_items);
 
     if (se.get() &&
-        rect.right  < center.x &&
+        rect.right  > center.x &&
         rect.bottom > center.y)
       se->get_items_at(rect, out_items);
   }
