@@ -228,12 +228,15 @@ Galapix::thumbgen(const std::string& database,
 
           // Generate Image Tiles
           std::cout << "Generating tiles for " << url[i]  << std::endl;
-          try {
-            tile_generator.generate_quick(entry,
-                                          boost::bind(&TileDatabase::store_tile, &tile_db, _1));
-          } catch(std::exception& err) {
-            std::cout << err.what() << std::endl;
-          }
+          if (entry)
+            {
+              try {
+                tile_generator.generate_quick(entry,
+                                              boost::bind(&TileDatabase::store_tile, &tile_db, _1));
+              } catch(std::exception& err) {
+                std::cout << err.what() << std::endl;
+              }
+            }
         }
       catch (std::exception& err) 
         {
