@@ -64,6 +64,13 @@ FileDatabase::~FileDatabase()
 {
 
 }
+
+FileEntry
+FileDatabase::store_file_entry(const FileEntry& entry)
+{
+  assert(!"Implement me");
+  return FileEntry();
+}
  
 FileEntry
 FileDatabase::store_file_entry(const URL& url,

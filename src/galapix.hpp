@@ -35,6 +35,7 @@ public:
   void print_usage();
   int main(int argc, char** argv);
 
+  void merge(const std::string& database, const std::vector<URL>& filenames);
   void test(const std::vector<URL>& filenames);
   void info(const std::vector<URL>& filenames);
   void downscale(const std::vector<URL>& filenames);

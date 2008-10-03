@@ -44,7 +44,7 @@ private:
   bool quit;
   
   ThreadMessageQueue<DatabaseMessage*> queue;
-  std::list<TileDatabaseMessage*>    tile_queue;
+  std::list<TileDatabaseMessage*>      tile_queue;
 
 protected: 
   int run();

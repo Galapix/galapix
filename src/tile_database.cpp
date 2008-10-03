@@ -71,6 +71,12 @@ TileDatabase::has_tile(uint32_t fileid, const Vector2i& pos, int scale)
     }
 }
 
+void
+TileDatabase::get_tiles(uint32_t file_id, std::vector<TileEntry>& tiles)
+{
+  assert(!"Implement me");
+}
+
 bool
 TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntry& tile)
 {

@@ -76,6 +76,46 @@ Galapix::test(const std::vector<URL>& url)
     }
 }
 
+/** Merge content of the databases given by filenames into database */
+void
+Galapix::merge(const std::string& database,
+               const std::vector<URL>& urls)
+{
+  SQLiteConnection db(database);
+  FileDatabase out_file_db(&db);
+  TileDatabase out_tile_db(&db);
+
+  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
+    {
+      if (i->has_stdio_name())
+        {
+          SQLiteConnection in_db(i->get_stdio_name());
+          FileDatabase in_file_db(&in_db);
+          TileDatabase in_tile_db(&in_db);
+          
+          std::vector<FileEntry> entries;
+          in_file_db.get_file_entries(entries);
+          for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+            {
+              FileEntry entry = out_file_db.store_file_entry(*i);
+
+              std::vector<TileEntry> tiles;
+              in_tile_db.get_tiles(i->get_fileid(), tiles);
+              for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
+                {
+                  // Change the fileid
+                  j->fileid = entry.get_fileid();
+                  out_tile_db.store_tile(*j);
+                }
+            }
+        }
+      else
+        {
+          std::cout << "Error: database doesn't have stdio_name: " << *i << std::endl;
+        }
+    }
+}
+
 void
 Galapix::info(const std::vector<URL>& url)
 {
