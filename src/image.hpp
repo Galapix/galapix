@@ -40,7 +40,10 @@ class TileEntry;
 class Image
 {
 public:
-  struct SurfaceStruct {
+  // _____________________________________________________
+  // Type Definition 
+  struct SurfaceStruct 
+  {
     enum Status { SURFACE_OK,
                   SURFACE_REQUESTED,
                   SURFACE_FAILED };
@@ -62,20 +65,24 @@ public:
   Image();
   Image(const FileEntry& file_entry);
 
+  // _____________________________________________________
+  // Drawing stuff
+  void draw(const Rectf& cliprect, float scale);
   void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
   void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float scale);
-  void draw(const Rectf& cliprect, float scale);
   void draw_mark();
 
+  // _____________________________________________________
+  // Update stuff
   void update_pos(float progress);
 
+  // _____________________________________________________
+  // Getter/Setter
   void  set_alpha(float alpha);
   float get_alpha() const;
 
   void set_target_pos(const Vector2f& target_pos);
   void set_target_scale(float target_scale);
-
-  Vector2f get_top_left_pos() const;
 
   void     set_pos(const Vector2f& pos);
   Vector2f get_pos() const;
@@ -86,29 +93,39 @@ public:
   void  set_angle(float a);
   float get_angle() const;
 
+  URL get_url() const;
+
+  // _____________________________________________________
+  // Getter
   float get_scaled_width() const;
   float get_scaled_height() const;
 
   int get_original_width() const;
   int get_original_height() const;
 
+  Vector2f get_top_left_pos() const;
+
+  // _____________________________________________________
+  // Debug stuff
   void clear_cache();
   void cache_cleanup();
-  void print_info();
+  void print_info() const;
 
-  URL get_url() const;
-
+  // _____________________________________________________
+  // Query Stuff
   bool overlaps(const Rectf& cliprect) const;
   bool overlaps(const Vector2f& pos) const;
 
   Rectf get_image_rect() const;
 
+  // _____________________________________________________
+  // SharedPtr/impl stuff
   operator bool() const { return impl.get(); }
   bool operator==(const Image& rhs) const { 
     // FIXME: Shouldn't really use operator==, should use equal() instead
     return impl.get() == rhs.impl.get(); 
   }
-
+  
   /** Syncronized function to require data from other threads */
   void receive_tile(const TileEntry& tile_entry);
 

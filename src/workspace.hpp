@@ -40,14 +40,32 @@ private:
 public:
   Workspace();
 
+  // ---------------------------------------------
+
+  // Layout hints
   void set_row_width(int w);
+  void sort();
+  void random_shuffle();
+  void tight_layout();
+  void layout(float aspect_w, float aspect_h);
+  void random_layout();
+  void solve_overlaps();
 
-  std::vector<Image> get_images(const Rectf& rect);
-  Image get_image(const Vector2f& pos);
+  // ---------------------------------------------
 
+  // Image Query Functions (dangerous: need to now when Image position
+  // changes) -> Return "const Image"? -> can't do breaks due to impl
+  std::vector<Image> get_images(const Rectf& rect) const;
+  Image get_image(const Vector2f& pos) const;
+
+  // ---------------------------------------------
+
+  void add_image(const FileEntry& file_entry); 
+
+  // Selection Commands
   Selection get_selection() const { return selection; }
+  bool selection_clicked(const Vector2f& pos) const;
   void select_images(const std::vector<Image>& images);
-  bool selection_clicked(const Vector2f& pos);
   void clear_selection();
   void move_selection(const Vector2f& rel);
 
@@ -57,28 +75,26 @@ public:
   /** Delete all images in the selection */
   void delete_selection();
 
-  void add_image(const FileEntry& file_entry);
+  // ---------------------------------------------
+
   void draw(const Rectf& cliprect, float scale);
   void update(float delta);
 
-  void sort();
-  void random_shuffle();
+  // ---------------------------------------------
 
+  // Debug stuff
   void clear_cache();
   void cache_cleanup();
   void print_info();
   void print_images(const Rectf& rect);
 
-  void tight_layout();
-  void layout(float aspect_w, float aspect_h);
-  void random_layout();
-
-  void solve_overlaps();
-
+  // ---------------------------------------------
+  
   void save(const std::string& filename);
 
   void build_quad_tree();
   void clear_quad_tree();
+
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);

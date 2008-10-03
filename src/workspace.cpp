@@ -31,10 +31,10 @@ Workspace::Workspace()
 }
 
 std::vector<Image>
-Workspace::get_images(const Rectf& rect)
+Workspace::get_images(const Rectf& rect) const
 {
   std::vector<Image> result;
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::const_iterator i = images.begin(); i != images.end(); ++i)
     {
       if (rect.contains(i->get_image_rect()))
         {
@@ -45,9 +45,9 @@ Workspace::get_images(const Rectf& rect)
 }
 
 Image
-Workspace::get_image(const Vector2f& pos)
+Workspace::get_image(const Vector2f& pos) const
 {
-  for(Images::reverse_iterator i = images.rbegin(); i != images.rend(); ++i)
+  for(Images::const_reverse_iterator i = images.rbegin(); i != images.rend(); ++i)
     {
       if (i->overlaps(pos))
         return *i;
@@ -344,9 +344,9 @@ Workspace::select_images(const std::vector<Image>& lst)
 }
 
 bool
-Workspace::selection_clicked(const Vector2f& pos)
+Workspace::selection_clicked(const Vector2f& pos) const
 {
-  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+  for(Selection::const_iterator i = selection.begin(); i != selection.end(); ++i)
     {
       if (i->overlaps(pos))
         return true;

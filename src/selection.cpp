@@ -122,5 +122,17 @@ Selection::end()
 {
   return impl->images.end();
 }
+
+Selection::const_iterator
+Selection::begin() const
+{
+  return impl->images.begin();
+}
+
+Selection::const_iterator
+Selection::end() const
+{
+  return impl->images.end();
+}
 
 /* EOF */

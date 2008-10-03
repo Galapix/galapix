@@ -29,6 +29,7 @@ class Selection
 public:
   typedef std::vector<Image> Images;
   typedef std::vector<Image>::iterator iterator;
+  typedef std::vector<Image>::const_iterator const_iterator;
 
   Selection();
 
@@ -46,6 +47,9 @@ public:
 
   iterator begin();
   iterator end();
+
+  const_iterator begin() const;
+  const_iterator end()   const;
   
 private:
   boost::shared_ptr<SelectionImpl> impl;

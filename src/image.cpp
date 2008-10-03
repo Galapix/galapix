@@ -408,7 +408,7 @@ Image::clear_cache()
 }
 
 void
-Image::print_info()
+Image::print_info() const
 {
   std::cout << "  Image: " << impl.get() << std::endl;
   std::cout << "    Cache Size: " << impl->cache.size() << std::endl;
