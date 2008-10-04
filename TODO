@@ -18,6 +18,11 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* merging databases causes reencoding of the JPEG data due to
+  TileEntry storing SoftwareSurface instead of Blob
+
+* implement: Blob Blob::wrap(void* data, int len);
+
 * mouse behaves incorrectly when view is rotated: zooming in doesn't
   zoom in on mouse_pos properly
 
@@ -95,8 +100,6 @@ Release procedure:
 
 * change Framebuffer/Surface so that we can draw images with alpha
 
-* when highly zoomed in, moving doesn't work any more
-
 * implemented 2x2 Matrix
 
 * implement image rotation
@@ -137,11 +140,24 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 Galapix 0.0.4 Release ToDo:
 ---------------------------
 
+// Get a list of all tiles for a given file
+// SELECT files.fileid,files.filename,tiles.scale,tiles.x,tiles.y 
+//   FROM files, tiles 
+//   WHERE files.filename = 'file:///tmp/ssc2008-11a14.jpg' AND files.fileid = tiles.fileid;
+// When no tiles are available nothing is returned, which makes this call kind of useless for the intended purpose
+
+* implement quadtree properly and do some testing on it (some bugs left)
+
+* seperate loading of tiles from drawing, making loading/job-cancel
+  event based instead of brute force as it is now
+
 * fix the max_scale mess some more (important!)
 
 * generate all tiles at once for stuff that doesn't support
   incremental loading (every other format then jpeg and jpegs loaded
   from archive files) (important!)
+
+* add way to figure out which tiles are already in the database
 
 * check the new features some more
 
@@ -207,7 +223,7 @@ Galapix 0.1.0 Release ToDo:
 * galapix-db [info|list|merge|cleanup|delete]
    -d, --database FILE
 
-  galapix-db merge database1.sqlite database2.sqlite out-database.sqlite
+  galapix-db merge -d outdatabase.sqlite indatabase1.sqlite indatabase2.sqlite ...
   galapix-db cleanup
   galapix-db delete -d database1.sqlite [PATTERN]...
 
@@ -242,9 +258,9 @@ _______________________________________________________________________________
   no tiles to be shown, because tiles are last in the queue, different
   jobs should have different queue
 
-* Displaying 75'000 images gets really slow, OpenGL bottleneck,
-  texture packing might help, sending vertex array instead of
-  glBegin/glEnd of course too
+* Displaying 75'000 images at once gets really slow, OpenGL
+  bottleneck, texture packing might help, sending vertex array instead
+  of glBegin/glEnd of course too
 
 * implement smooth scale in SoftwareSurface (like LINEAR instead of NEAREST),
 
