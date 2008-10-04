@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <fstream>
 #include <iostream>
 #include <math.h>
 #include "math/rgb.hpp"
@@ -186,6 +187,14 @@ Viewer::process_event(const SDL_Event& event)
 
             case SDLK_DOWN:
               state.set_angle(0.0f);
+              break;
+
+            case SDLK_F5:
+              {
+                std::ofstream out("/tmp/workspace-dump.galapix");
+                workspace->save(out);
+                out.close();
+              }
               break;
 
             case SDLK_q:

@@ -446,9 +446,24 @@ Workspace::solve_overlaps()
 }
 
 void
-Workspace::save(const std::string& /*filename*/)
+Workspace::save(std::ostream& out)
 {
+  out << "(galapix-workspace\n"
+      << "  (images\n";
+  
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      // FIXME: Must escape the filename!
+      out  << "    (image (url   \"" << i->get_url() << "\")\n"
+           << "           (pos   " << i->get_pos().x << " " << i->get_pos().y << ")\n"
+           << "           (scale " << i->get_scale() << ")"
+        // << "           (angle " << i->get_angle() << ")"
+        // << "           (alpha " << i->get_alpha() << ")"
+           << ")\n";
+    }
 
+  out << "  ))\n\n";
+  out << ";; EOF ;;" << std::endl;
 }
 
 /* EOF */

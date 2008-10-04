@@ -90,7 +90,7 @@ public:
 
   // ---------------------------------------------
   
-  void save(const std::string& filename);
+  void save(std::ostream& out);
 
   void build_quad_tree();
   void clear_quad_tree();

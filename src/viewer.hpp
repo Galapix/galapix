@@ -66,6 +66,7 @@ private:
 
   int background_color;
   std::vector<RGBA> background_colors;
+
 public:
   Viewer(Workspace* workspace);
 
