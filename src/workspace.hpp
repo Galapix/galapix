@@ -89,7 +89,7 @@ public:
   void print_images(const Rectf& rect);
 
   // ---------------------------------------------
-  
+  void load(std::istream& in);
   void save(std::ostream& out);
 
   void build_quad_tree();

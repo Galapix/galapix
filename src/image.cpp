@@ -502,8 +502,15 @@ Image::draw_mark()
 Rectf
 Image::get_image_rect() const
 {
-  Sizef image_size(impl->file_entry.get_size() * impl->scale);
-  return Rectf(impl->pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
+  if (impl->file_entry.get_size() == Size(0,0))
+    {
+      return Rectf(impl->pos, impl->file_entry.get_size());
+    }
+  else
+    {
+      Sizef image_size(impl->file_entry.get_size() * impl->scale);
+      return Rectf(impl->pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
+    }
 }
 
 void

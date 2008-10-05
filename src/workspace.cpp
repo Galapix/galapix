@@ -194,6 +194,13 @@ Workspace::build_quad_tree()
   if (!images.empty())
     {
       Rectf rect = images.front().get_image_rect();
+
+      std::cout << images.front().get_url() << " " << images.front().get_pos() << " " 
+                << images.front().get_scale() << " "
+                << images.front().get_scaled_width() << " "
+                << images.front().get_scaled_height()
+                << std::endl;
+
       for(Images::iterator i = images.begin()+1; i != images.end(); ++i)
         {
           const Rectf& image_rect = i->get_image_rect(); 
@@ -202,7 +209,18 @@ Workspace::build_quad_tree()
           rect.right  = Math::max(rect.right,  image_rect.right);
           rect.top    = Math::min(rect.top,    image_rect.top);
           rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+
+          if (isnan(rect.left) ||
+              isnan(rect.right) ||
+              isnan(rect.top) ||
+              isnan(rect.bottom))
+            {
+              std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
+              assert(0);
+            }
         }
+
+      std::cout << "QuadTree: " << rect << std::endl;
 
       quad_tree = std::auto_ptr<QuadTree<Image> >(new QuadTree<Image>(rect));
       
@@ -464,6 +482,12 @@ Workspace::save(std::ostream& out)
 
   out << "  ))\n\n";
   out << ";; EOF ;;" << std::endl;
+}
+
+void
+Workspace::load(std::istream& in)
+{
+  // FIXME: Implement me
 }
 
 /* EOF */
