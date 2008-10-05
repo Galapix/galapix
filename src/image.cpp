@@ -79,13 +79,28 @@ Image::Image()
 {
 }
 
+Image::Image(const URL& url, const Vector2f& pos, float scale)
+  : impl(new ImageImpl())
+{
+  impl->file_entry = FileEntry();
+
+  impl->angle = 0.0f; 
+  impl->alpha = 1.0f;
+
+  impl->scale        = scale;
+  impl->last_scale   = scale;
+  impl->target_scale = scale;
+
+  impl->max_scale      = 0;
+  impl->min_keep_scale = 0;
+}
+
 Image::Image(const FileEntry& file_entry)
   : impl(new ImageImpl())
 {
   impl->file_entry = file_entry;
 
-  impl->angle = 0.0f;
-  
+  impl->angle = 0.0f; 
   impl->alpha = 1.0f;
 
   impl->scale        = 1.0f;
@@ -430,6 +445,9 @@ Image::overlaps(const Rectf& cliprect) const
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
+  if (!impl->file_entry)
+    return;
+
   process_queue();
   
   Rectf image_rect = get_image_rect();
@@ -502,14 +520,21 @@ Image::draw_mark()
 Rectf
 Image::get_image_rect() const
 {
-  if (impl->file_entry.get_size() == Size(0,0))
+  if (!impl->file_entry)
     {
-      return Rectf(impl->pos, impl->file_entry.get_size());
+      return Rectf(impl->pos, Size(0, 0));
     }
   else
     {
-      Sizef image_size(impl->file_entry.get_size() * impl->scale);
-      return Rectf(impl->pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
+      if (impl->file_entry.get_size() == Size(0,0))
+        {
+          return Rectf(impl->pos, impl->file_entry.get_size());
+        }
+      else
+        {
+          Sizef image_size(impl->file_entry.get_size() * impl->scale);
+          return Rectf(impl->pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
+        }
     }
 }
 
@@ -518,6 +543,17 @@ Image::receive_tile(const TileEntry& tile)
 {
   assert(impl.get());
   impl->tile_queue.push(tile);
+}
+
+void
+Image::receive_file_entry(const FileEntry& file_entry)
+{
+  assert(!impl->file_entry);
+
+  impl->file_entry = file_entry;
+
+  impl->max_scale      = impl->file_entry.get_thumbnail_scale();
+  impl->min_keep_scale = impl->max_scale - 2;
 }
 
 /* EOF */

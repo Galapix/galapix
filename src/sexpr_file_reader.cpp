@@ -161,6 +161,18 @@ public:
     return false;
   }
 
+  bool read_vector2f(const char* name, Vector2f& v) const
+  {
+    boost::shared_ptr<lisp::Lisp> sub = get_subsection(name);
+    if (sub && sub->get_list_size() == 3)
+      {
+        v.x = sub->get_list_elem(1)->get_float();
+        v.y = sub->get_list_elem(2)->get_float();
+        return true;
+      }    
+    return false;
+  }
+
   bool read_rect(const char* name, Rect& rect) const
   {
     boost::shared_ptr<lisp::Lisp> sub = get_subsection(name);

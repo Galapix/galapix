@@ -20,6 +20,7 @@
 #include "math/quad_tree.hpp"
 #include "math.hpp"
 #include "file_entry.hpp"
+#include "file_reader.hpp"
 #include "framebuffer.hpp"
 #include "workspace.hpp"
 
@@ -56,6 +57,12 @@ Workspace::get_image(const Vector2f& pos) const
 }
 
 void
+Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
+{
+  images.push_back(Image(url, pos, scale));
+}
+
+void
 Workspace::add_image(const FileEntry& file_entry)
 {
   Image image(file_entry);
@@ -75,10 +82,25 @@ Workspace::add_image(const FileEntry& file_entry)
 }
 
 void
+Workspace::layout_vertical()
+{
+  float spacing = 10.0f;
+  next_pos = Vector2f(0.0f, 0.0f);
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      i->set_target_scale(1.0f);
+      i->set_target_pos(next_pos);
+      next_pos.y += i->get_original_height() + spacing;
+    }
+  
+  progress = 0.0f;
+}
+
+void
 Workspace::layout(float aspect_w, float aspect_h)
 {
   if (!images.empty())
-    {     
+    {
       int w = int(Math::sqrt(aspect_w * images.size() / aspect_h));
       
       row_width = w;
@@ -379,6 +401,14 @@ Workspace::clear_selection()
 }
 
 void
+Workspace::clear()
+{
+  clear_quad_tree();
+  selection.clear();
+  images.clear();
+}
+
+void
 Workspace::move_selection(const Vector2f& rel)
 {
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
@@ -466,6 +496,7 @@ Workspace::solve_overlaps()
 void
 Workspace::save(std::ostream& out)
 {
+  // FIXME: Rewrite with FileWriter
   out << "(galapix-workspace\n"
       << "  (images\n";
   
@@ -485,9 +516,38 @@ Workspace::save(std::ostream& out)
 }
 
 void
-Workspace::load(std::istream& in)
+Workspace::load(const std::string& filename)
 {
-  // FIXME: Implement me
+  FileReader reader = FileReader::parse(filename);
+  
+  if (reader.get_name() != "galapix-workspace")
+    {
+      std::cout << "Error: Unknown file format: " << reader.get_name() << std::endl;      
+    }
+  else
+    {
+      clear();
+
+      std::vector<FileReader> image_sections = reader.read_section("images").get_sections();
+
+      for(std::vector<FileReader>::iterator i = image_sections.begin(); i != image_sections.end(); ++i)
+        {
+          if (i->get_name() == "image")
+            {
+              URL      url;
+              Vector2f pos;
+              float    scale;
+
+              i->read_url("url", url);
+              i->read_vector2f("pos", pos);
+              i->read_float("scale", scale);
+
+              std::cout << url << " " << pos << " " << scale << std::endl;
+
+              add_image(url, pos, scale);
+            }
+        }
+    }
 }
 
 /* EOF */

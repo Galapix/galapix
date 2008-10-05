@@ -25,6 +25,7 @@ class RGBA;
 class Size;
 class Vector3f;
 class Vector2i;
+class Vector2f;
 class Rect;
 
 class FileReaderImpl;
@@ -49,6 +50,7 @@ public:
   bool read_url   (const char* name, URL&)           const;
   bool read_vector(const char* name, Vector3f&)      const;
   bool read_vector2i(const char* name, Vector2i&)    const;
+  bool read_vector2f(const char* name, Vector2f&)    const;
   bool read_rect(const char* name, Rect&)    const;
   bool read_size  (const char* name, Size&)          const;
   bool read_rgba (const char* name, RGBA&)         const;

@@ -41,6 +41,7 @@ public:
   virtual bool read_vector(const char* name, Vector3f&)    const =0;
   virtual bool read_size  (const char* name, Size&)        const =0;
   virtual bool read_vector2i(const char* name, Vector2i&)  const =0;
+  virtual bool read_vector2f(const char* name, Vector2f&)  const =0;
   virtual bool read_rect  (const char* name, Rect&)        const =0;
   virtual bool read_rgba  (const char* name, RGBA&)        const =0;
   virtual bool read_section(const char* name, FileReader&) const =0;

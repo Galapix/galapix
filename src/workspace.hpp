@@ -33,7 +33,7 @@ private:
 
   Images images;
   Selection selection;
-  Vector2i next_pos;
+  Vector2f next_pos;
   int row_width;
   float progress;
   
@@ -47,6 +47,7 @@ public:
   void sort();
   void random_shuffle();
   void tight_layout();
+  void layout_vertical();
   void layout(float aspect_w, float aspect_h);
   void random_layout();
   void solve_overlaps();
@@ -61,6 +62,7 @@ public:
   // ---------------------------------------------
 
   void add_image(const FileEntry& file_entry); 
+  void add_image(const URL& url, const Vector2f& pos, float scale); 
 
   // Selection Commands
   Selection get_selection() const { return selection; }
@@ -68,6 +70,7 @@ public:
   void select_images(const std::vector<Image>& images);
   void clear_selection();
   void move_selection(const Vector2f& rel);
+  void clear();
 
   /** Delete all images that aren't in the selection */
   void isolate_selection();
@@ -89,7 +92,7 @@ public:
   void print_images(const Rectf& rect);
 
   // ---------------------------------------------
-  void load(std::istream& in);
+  void load(const std::string& filename);
   void save(std::ostream& out);
 
   void build_quad_tree();

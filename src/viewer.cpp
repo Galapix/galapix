@@ -190,6 +190,10 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_F5:
+              workspace->load("/tmp/workspace-dump.galapix");
+              break;
+
+            case SDLK_F6:
               {
                 std::ofstream out("/tmp/workspace-dump.galapix");
                 workspace->save(out);
@@ -307,6 +311,10 @@ Viewer::process_event(const SDL_Event& event)
 
             case SDLK_5:
               workspace->tight_layout();
+              break;
+
+            case SDLK_6:
+              workspace->layout_vertical();
               break;
 
             default:
