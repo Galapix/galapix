@@ -72,7 +72,7 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
 }
 
 std::vector<std::string>
-XCF::get_layer(const URL& url)
+XCF::get_layers(const URL& url)
 {
   Exec xcfinfo("xcfinfo");
 

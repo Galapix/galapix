@@ -29,7 +29,7 @@ class XCF
 {
 private:
 public:
-  static std::vector<std::string> get_layer(const URL& url);
+  static std::vector<std::string> get_layers(const URL& url);
   static bool get_size(const std::string& filename, Size& size);
 
   static SoftwareSurface load_from_url(const URL& url);
