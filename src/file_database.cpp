@@ -31,33 +31,28 @@
 FileDatabase::FileDatabase(SQLiteConnection* db)
   : db(db),
     store_stmt(db),
-    store_tile_stmt(db),
-    get_by_filename_stmt(db),
+    get_by_url_stmt(db),
     get_all_stmt(db),
     get_by_pattern_stmt(db),
     get_by_file_id_stmt(db)
 {
   db->exec("CREATE TABLE IF NOT EXISTS files ("
            "fileid    INTEGER PRIMARY KEY AUTOINCREMENT,"
-           "filename  TEXT UNIQUE, " // FIXME: Rename this to url
-           "md5       TEXT, "
-           "filesize  INTEGER, "
-           "width     INTEGER, "
-           "height    INTEGER, "
+           "url       TEXT UNIQUE, "
+           "size      INTEGER, "
            "mtime     INTEGER, "
-           "color     INTEGER, "
-           "thumbnail BLOB,"
-           "thumbnail_scale INTEGER);");
+           
+           "width     INTEGER, "
+           "height    INTEGER);");
 
-  db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( filename );");
+  db->exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( url );");
 
   // FIXME: Does replace change the rowid?
-  store_stmt.prepare("INSERT OR REPLACE INTO files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
-  store_tile_stmt.prepare("UPDATE files SET thumbnail=?1, color=?2 WHERE fileid=?3");
+  store_stmt.prepare("INSERT OR REPLACE INTO files (url, size, mtime, width, height) VALUES (?1, ?2, ?3, ?4, ?5);");
 
-  get_by_filename_stmt.prepare("SELECT * FROM files WHERE filename = ?1;");
-  get_by_file_id_stmt.prepare("SELECT * FROM files WHERE rowid = ?1;");
-  get_by_pattern_stmt.prepare("SELECT * FROM files WHERE filename GLOB ?1;");
+  get_by_url_stmt.prepare("SELECT * FROM files WHERE url = ?1;");
+  get_by_file_id_stmt.prepare("SELECT * FROM files WHERE fileid = ?1;");
+  get_by_pattern_stmt.prepare("SELECT * FROM files WHERE url GLOB ?1;");
   get_all_stmt.prepare("SELECT * FROM files");
 }
  
@@ -77,14 +72,10 @@ FileDatabase::store_file_entry(const URL& url,
                                const Size& size)
 {
   store_stmt.bind_text(1, url.get_url());
-  store_stmt.bind_null(2); // MD5
-  store_stmt.bind_null(3); // filesize
+  store_stmt.bind_null(2); // filesize
+  store_stmt.bind_null(3); // mtime
   store_stmt.bind_int (4, size.width);
   store_stmt.bind_int (5, size.height);
-  // FIXME: Should we handle them here or depend on store_tile()?
-  // store_stmt.bind_int (6, entry.color); 
-  // store_stmt.bind_int (7, entry.surface.get_raw_data()); 
-  // store_stmt.bind_int (8, entry.thumbnail_scale);
 
   store_stmt.execute();
   
@@ -93,36 +84,11 @@ FileDatabase::store_file_entry(const URL& url,
   return FileEntry(fileid, url, size.width, size.height);
 }
 
-/*
-void
-FileDatabase::store_tile(TileEntry& entry)
-{
-  store_tile_stmt.bind_blob(1, entry.surface.get_raw_data());
-  store_tile_stmt.bind_int (2, entry.surface.get_average_color().get_uint32());
-  store_tile_stmt.bind_int (3, entry.fileid);
-
-  store_tile_stmt.execute();
-}
-
-int get_thumbnail_scale(const Size& size)
-{
-  int s = Math::max(size.width, size.height);
-  int i = 0;
-  
-  while(s > 8)
-    {
-      s /= 2;
-      i += 1;
-    }
-
-  return i;
-}
-*/
 FileEntry
 FileDatabase::get_file_entry(const URL& url)
 {
-  get_by_filename_stmt.bind_text(1, url.get_url());
-  SQLiteReader reader = get_by_filename_stmt.execute_query();
+  get_by_url_stmt.bind_text(1, url.get_url());
+  SQLiteReader reader = get_by_url_stmt.execute_query();
 
   if (reader.next())
     {
@@ -155,7 +121,7 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries, const std::strin
     {
       // FIXME: Use macro definitions instead of numeric constants
       FileEntry entry(reader.get_int (0),  // fileid
-                      URL::from_string(reader.get_text(1)),  // filename
+                      URL::from_string(reader.get_text(1)),  // url
                       reader.get_int (4),  // width
                       reader.get_int (5)); // height
       entries.push_back(entry);
@@ -171,7 +137,7 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
     {
       // FIXME: Use macro definitions instead of numeric constants
       FileEntry entry(reader.get_int (0),  // fileid
-                      URL::from_string(reader.get_text(1)),  // filename
+                      URL::from_string(reader.get_text(1)),  // url
                       reader.get_int (4),  // width
                       reader.get_int (5)); // height
       entries.push_back(entry);
@@ -208,19 +174,6 @@ FileDatabase::check()
           std::cout << i->get_url() << ": ok" << std::endl;
         }
     } 
-
-  /* FIXME: Do magic to detect duplicate file entries and other potential damage to the database (are missing tiles an error?) 
-
-    SQLiteStatement duplicates_stmt(db);
-    duplicates_stmt.prepare("SELECT * IN files (filename, md5, filesize, width, height, mtime) VALUES (?1, ?2, ?3, ?4, ?5, ?6);");
-    SELECT filename,
-    COUNT(filename) AS NumOccurrences
-    FROM files
-    GROUP BY filename
-    HAVING ( COUNT(filename) > 1 )
-    
-    SQLiteReader reader = duplicates_stmt.execute_query();
-  */
 }
 
 /* EOF */
