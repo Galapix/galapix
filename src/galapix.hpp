@@ -50,6 +50,7 @@ public:
                       const std::vector<URL>& filenames);
   void view(const std::string& database, 
             const std::vector<URL>& filenames,
+            bool view_all,
             const std::string& pattern);
 };
 

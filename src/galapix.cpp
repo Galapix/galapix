@@ -67,7 +67,7 @@ Galapix::test(const std::vector<URL>& url)
 {
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
     {
-      std::vector<std::string> layer =  XCF::get_layer(*i);
+      std::vector<std::string> layer =  XCF::get_layers(*i);
       std::cout << *i << ":" << std::endl;
       for(std::vector<std::string>::iterator j = layer.begin(); j != layer.end(); ++j)
         {
@@ -277,7 +277,7 @@ Galapix::generate_tiles(const std::string& database,
 }
 
 void
-Galapix::view(const std::string& database, const std::vector<URL>& urls, const std::string& pattern)
+Galapix::view(const std::string& database, const std::vector<URL>& urls, bool view_all, const std::string& pattern)
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
@@ -295,21 +295,23 @@ Galapix::view(const std::string& database, const std::vector<URL>& urls, const s
   database_thread.start();
   tile_generator_thread.start();
 
-  if (urls.empty() && pattern.empty())
+  if (view_all)
     {
-      // When no files are given, display everything in the database
-      database_thread.request_all_files(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+      if (pattern.empty())
+        {
+          // When no files are given, display everything in the database
+          database_thread.request_all_files(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+        }
+      else 
+        {
+          std::cout << "Using pattern: '" << pattern << "'" << std::endl;
+          database_thread.request_files_by_pattern(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1), pattern);
+        }
     }
 
   for(std::vector<std::string>::size_type i = 0; i < urls.size(); ++i)
     {
       database_thread.request_file(urls[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
-    }
-
-  if (!pattern.empty())
-    {
-      std::cout << "Using pattern: '" << pattern << "'" << std::endl;
-      database_thread.request_files_by_pattern(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1), pattern);
     }
 
   viewer_thread.run();
@@ -327,6 +329,7 @@ void
 Galapix::print_usage()
 {
   std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
+            << "       galapix viewdb   [OPTIONS]... [FILES]...\n"
             << "       galapix prepare  [OPTIONS]... [FILES]...\n"
             << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
             << "       galapix filegen  [OPTIONS]... [FILES]...\n"
@@ -338,6 +341,7 @@ Galapix::print_usage()
             << "\n"
             << "Commands:\n"
             << "  view      Display the given files\n"
+            << "  viewdb    Display all files in the database\n"
             << "  prepare   Generate all thumbnail for all given images\n"
             << "  thumbgen  Generate only small thumbnails for all given images\n"
             << "  filegen   Generate only small the file entries in the database\n"
@@ -451,27 +455,25 @@ Galapix::main(int argc, char** argv)
       std::cout << "Using database: " << (database.empty() ? "memory" : database) << std::endl;
 
       std::vector<URL> urls;
-      if (argument_filenames.empty())
+
+      std::cout << "Scanning directories... " << std::flush;
+      for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
         {
-          std::cout << "Displaying all files in the database" << std::endl;;
+          if (URL::is_url(*i))
+            urls.push_back(URL::from_string(*i));
+          else
+            Filesystem::generate_image_file_list(*i, urls);
         }
-      else
-        {
-          std::cout << "Scanning directories... " << std::flush;
-          for(std::vector<std::string>::iterator i = argument_filenames.begin(); i != argument_filenames.end(); ++i)
-            {
-              if (URL::is_url(*i))
-                urls.push_back(URL::from_string(*i));
-              else
-                Filesystem::generate_image_file_list(*i, urls);
-            }
-          std::sort(urls.begin(), urls.end());
-          std::cout << urls.size() << " files found." << std::endl;
-        }
+      std::sort(urls.begin(), urls.end());
+      std::cout << urls.size() << " files found." << std::endl;
 
       if (strcmp(argv[1], "view") == 0)
         {
-          view(database, urls, pattern);
+          view(database, urls, false, pattern);
+        }
+      else if (strcmp(argv[1], "viewdb") == 0)
+        {
+          view(database, urls, true, pattern);
         }
       else if (strcmp(argv[1], "check") == 0)
         {
