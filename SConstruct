@@ -55,6 +55,7 @@ galapix_sources = [
     'src/workspace.cpp',
     'src/xcf.cpp',
     'src/zoom_tool.cpp',
+    'src/zoom_rect_tool.cpp',
     'src/zip.cpp',
     ]
 
