@@ -72,8 +72,8 @@ FileDatabase::store_file_entry(const URL& url,
                                const Size& size)
 {
   store_stmt.bind_text(1, url.get_url());
-  store_stmt.bind_null(2); // filesize
-  store_stmt.bind_null(3); // mtime
+  store_stmt.bind_int (2, url.get_size());
+  store_stmt.bind_int (3, url.get_mtime());
   store_stmt.bind_int (4, size.width);
   store_stmt.bind_int (5, size.height);
 
@@ -173,7 +173,7 @@ FileDatabase::check()
         {
           std::cout << i->get_url() << ": ok" << std::endl;
         }
-    } 
+    }
 }
 
 /* EOF */
