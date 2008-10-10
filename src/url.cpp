@@ -141,6 +141,32 @@ URL::get_blob() const
     }
 }
 
+int
+URL::get_mtime() const
+{
+  if (has_stdio_name())
+    {
+      return Filesystem::get_mtime(get_stdio_name());
+    }
+  else
+    {
+      return 0;
+    } 
+}
+
+int
+URL::get_size() const
+{
+  if (has_stdio_name())
+    {
+      return Filesystem::get_size(get_stdio_name());
+    }
+  else
+    {
+      return 0;
+    }  
+}
+
 bool
 URL::is_url(const std::string& url)
 {

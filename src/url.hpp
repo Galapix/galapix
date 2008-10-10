@@ -60,6 +60,9 @@ public:
       doesn't have a normal system filename */
   Blob        get_blob() const;
 
+  int         get_mtime() const;
+  int         get_size() const;
+
   static bool is_url(const std::string& url);
 };
 
