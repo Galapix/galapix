@@ -496,7 +496,10 @@ Galapix::main(int argc, char** argv)
 
       if (strcmp(argv[1], "view") == 0)
         {
-          view(database, urls, false, pattern);
+          if (!urls.empty())
+            view(database, urls, false, pattern);
+          else
+            std::cout << "Error: No URLs given" << std::endl;
         }
       else if (strcmp(argv[1], "viewdb") == 0)
         {
