@@ -98,6 +98,8 @@ public:
   void build_quad_tree();
   void clear_quad_tree();
 
+  Rectf get_bounding_rect() const;
+
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);

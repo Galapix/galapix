@@ -275,6 +275,11 @@ Viewer::process_event(const SDL_Event& event)
               right_tool  = resize_tool.get();              
               middle_tool = pan_tool.get();
               break;
+
+            case SDLK_d:
+              state.zoom_to(Framebuffer::get_size(),
+                            workspace->get_bounding_rect());
+              break;
               
             case SDLK_h:
               state.set_offset(Vector2f(0.0f, 0.0f));

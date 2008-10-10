@@ -215,32 +215,7 @@ Workspace::build_quad_tree()
 {
   if (!images.empty())
     {
-      Rectf rect = images.front().get_image_rect();
-
-      std::cout << images.front().get_url() << " " << images.front().get_pos() << " " 
-                << images.front().get_scale() << " "
-                << images.front().get_scaled_width() << " "
-                << images.front().get_scaled_height()
-                << std::endl;
-
-      for(Images::iterator i = images.begin()+1; i != images.end(); ++i)
-        {
-          const Rectf& image_rect = i->get_image_rect(); 
-          
-          rect.left   = Math::min(rect.left,   image_rect.left);
-          rect.right  = Math::max(rect.right,  image_rect.right);
-          rect.top    = Math::min(rect.top,    image_rect.top);
-          rect.bottom = Math::max(rect.bottom, image_rect.bottom);
-
-          if (isnan(rect.left) ||
-              isnan(rect.right) ||
-              isnan(rect.top) ||
-              isnan(rect.bottom))
-            {
-              std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
-              assert(0);
-            }
-        }
+      Rectf rect = get_bounding_rect();
 
       std::cout << "QuadTree: " << rect << std::endl;
 
@@ -547,6 +522,46 @@ Workspace::load(const std::string& filename)
               add_image(url, pos, scale);
             }
         }
+    }
+}
+
+Rectf
+Workspace::get_bounding_rect() const
+{
+  if (images.empty())
+    {
+      return Rectf();
+    }
+  else
+    {
+      Rectf rect = images.front().get_image_rect();
+
+      std::cout << images.front().get_url() << " " << images.front().get_pos() << " " 
+                << images.front().get_scale() << " "
+                << images.front().get_scaled_width() << " "
+                << images.front().get_scaled_height()
+                << std::endl;
+
+      for(Images::const_iterator i = images.begin()+1; i != images.end(); ++i)
+        {
+          const Rectf& image_rect = i->get_image_rect(); 
+          
+          rect.left   = Math::min(rect.left,   image_rect.left);
+          rect.right  = Math::max(rect.right,  image_rect.right);
+          rect.top    = Math::min(rect.top,    image_rect.top);
+          rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+
+          if (isnan(rect.left) ||
+              isnan(rect.right) ||
+              isnan(rect.top) ||
+              isnan(rect.bottom))
+            {
+              std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
+              assert(0);
+            }
+        }
+  
+      return rect;
     }
 }
 
