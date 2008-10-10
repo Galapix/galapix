@@ -30,7 +30,6 @@ void
 ViewerState::zoom(float factor, const Vector2i& pos)
 {
   scale *= factor;
-
   offset = Vector2f(pos) - ((Vector2f(pos) - offset) * factor);
 }
 
@@ -86,6 +85,29 @@ ViewerState::screen2world(const Rect& rect) const
                (rect.top    - offset.y) / scale,
                (rect.right  - offset.x) / scale,
                (rect.bottom - offset.y) / scale);
+}
+
+void
+ViewerState::zoom_to(const Size& display_, const Rectf& rect)
+{
+  assert(rect.is_normal());
+
+  Sizef display = display_;
+
+  if ((display.height / display.width) > (rect.get_height() / rect.get_width()))
+    { // match width
+      scale = display.width / rect.get_width();
+      
+      offset.x = -rect.left * scale;
+      offset.y = -(rect.top - ((display.height / scale) - rect.get_height()) / 2.0f) * scale;
+    }
+  else
+    { // match height
+      scale = display.height / rect.get_height();
+
+      offset.x = -(rect.left - ((display.width / scale) - rect.get_width()) / 2.0f) * scale;
+      offset.y = -rect.top  * scale;
+    }
 }
 
 /* EOF */

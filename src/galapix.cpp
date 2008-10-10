@@ -19,6 +19,7 @@
 #include "../config.h"
 #include <boost/bind.hpp>
 #include <algorithm>
+#include <fstream>
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
@@ -354,6 +355,7 @@ Galapix::print_usage()
             << "Options:\n"
             << "  -d, --database FILE    Use FILE has database (default: none)\n"
             << "  -f, --fullscreen       Start in fullscreen mode\n"
+            << "  -F, --files-from FILE  Get urls from FILE\n"
             << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
             << "  -g, --geometry WxH     Start with window size WxH\n"        
             << "  -a, --anti-aliasing N  Anti-aliasing factor 0,2,4 (default: 0)\n"
@@ -403,6 +405,31 @@ Galapix::main(int argc, char** argv)
                   if (i < argc)
                     {
                       database = argv[i];
+                    }
+                  else
+                    {
+                      throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+                    }
+                }
+              else if (strcmp(argv[i], "-F") == 0 ||
+                       strcmp(argv[i], "--files-from") == 0)
+                {
+                  ++i;
+                  if (i < argc)
+                    {
+                      std::string line;
+                      std::ifstream in(argv[i]);
+                      if (!in)
+                        {
+                          throw std::runtime_error("Couldn't open " + std::string(argv[i]));
+                        }
+                      else
+                        {
+                          while(std::getline(in, line))
+                            {
+                              argument_filenames.push_back(line);
+                            }
+                        }
                     }
                   else
                     {

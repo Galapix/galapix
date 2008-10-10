@@ -25,9 +25,13 @@
 class ViewerState
 {
 private:
+  /** scale 1.0f is neutral */
   float    scale;
-  // angle in degree, not rad
+
+  /** angle in degree, not rad */
   float    angle;
+
+  /** top right of the view in scaled inverse world co! (-offset/scale -> WO) */
   Vector2f offset;
   
 public:
@@ -35,11 +39,16 @@ public:
 
   void zoom(float factor, const Vector2i& pos);
   void zoom(float factor);
+  
+  /** pos is in screen coordinates */
   void move(const Vector2f& pos);
+
   void rotate(float r);
   void set_angle(float r);
   void set_offset(const Vector2f& o);
   void set_scale(float s);
+
+  void zoom_to(const Size& display, const Rectf& rect);
 
   Vector2f screen2world(const Vector2i&) const;
   Rectf    screen2world(const Rect&) const;

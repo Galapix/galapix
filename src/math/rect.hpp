@@ -324,6 +324,11 @@ public:
   {
     return (r.left < right && r.right > left && r.top < bottom && r.bottom > top);
   }
+
+  bool is_normal() const 
+  {
+    return left <= right && top <= bottom;
+  }
 	
   //! Operations:
 public:

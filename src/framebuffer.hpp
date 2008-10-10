@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <math.h>
 #include "SDL.h"
+#include "math/size.hpp"
 
 class RGB;
 class RGBA;
@@ -54,8 +55,9 @@ public:
 
   static void toggle_fullscreen();
 
-  static int get_width()  { return screen->w; }
-  static int get_height() { return screen->h; }
+  static int  get_width()  { return screen->w; }
+  static int  get_height() { return screen->h; }
+  static Size get_size()   { return Size(screen->w, screen->h); }
 
   static SDL_Surface* get_screen() { return screen; }
   static void resize(int w, int h);

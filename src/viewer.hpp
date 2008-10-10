@@ -34,6 +34,7 @@ class ZoomTool;
 class ResizeTool;
 class RotateTool;
 class ViewRotateTool;
+class ZoomRectTool;
 class Workspace;
 
 class Viewer
@@ -53,6 +54,7 @@ private:
 
   boost::shared_ptr<PanTool>    pan_tool;
   boost::shared_ptr<MoveTool>   move_tool;
+  boost::shared_ptr<ZoomRectTool>   zoom_rect_tool;
   boost::shared_ptr<ZoomTool>   zoom_in_tool;
   boost::shared_ptr<ZoomTool>   zoom_out_tool;
   boost::shared_ptr<ResizeTool> resize_tool;
