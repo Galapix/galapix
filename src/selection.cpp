@@ -134,5 +134,39 @@ Selection::end() const
 {
   return impl->images.end();
 }
+
+Rectf
+Selection::get_bounding_rect() const
+{
+  if (impl->images.empty())
+    {
+      return Rectf();
+    }
+  else
+    {
+      Rectf rect = impl->images.front().get_image_rect();
+
+      for(Images::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
+        {
+          const Rectf& image_rect = i->get_image_rect(); 
+          
+          rect.left   = Math::min(rect.left,   image_rect.left);
+          rect.right  = Math::max(rect.right,  image_rect.right);
+          rect.top    = Math::min(rect.top,    image_rect.top);
+          rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+
+          if (isnan(rect.left) ||
+              isnan(rect.right) ||
+              isnan(rect.top) ||
+              isnan(rect.bottom))
+            {
+              //std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
+              assert(!"NAN Rect encountered");
+            }
+        }
+  
+      return rect;
+    }
+}
 
 /* EOF */

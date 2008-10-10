@@ -50,6 +50,8 @@ public:
 
   const_iterator begin() const;
   const_iterator end()   const;
+
+  Rectf get_bounding_rect() const;
   
 private:
   boost::shared_ptr<SelectionImpl> impl;

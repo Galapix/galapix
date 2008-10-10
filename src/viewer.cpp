@@ -277,8 +277,16 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_d:
-              state.zoom_to(Framebuffer::get_size(),
-                            workspace->get_bounding_rect());
+              if (!workspace->get_selection().empty())
+                {
+                  state.zoom_to(Framebuffer::get_size(),
+                                workspace->get_selection().get_bounding_rect());
+                }
+              else
+                {
+                  state.zoom_to(Framebuffer::get_size(),
+                                workspace->get_bounding_rect());
+                }
               break;
               
             case SDLK_h:
