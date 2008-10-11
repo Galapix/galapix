@@ -90,12 +90,12 @@ public:
   SQLiteStatement(SQLiteConnection* db, const std::string& sqlstmt);
   ~SQLiteStatement();
 
-  void prepare(const std::string& sqlstmt);
+  SQLiteStatement& prepare(const std::string& sqlstmt);
 
-  void bind_null(int n);
-  void bind_int(int n, int i);
-  void bind_text(int n, const std::string&);
-  void bind_blob(int n, const Blob&);
+  SQLiteStatement& bind_null(int n);
+  SQLiteStatement& bind_int(int n, int i);
+  SQLiteStatement& bind_text(int n, const std::string&);
+  SQLiteStatement& bind_blob(int n, const Blob&);
 
   void execute();
   SQLiteReader execute_query();

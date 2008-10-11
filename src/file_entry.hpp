@@ -39,7 +39,10 @@ public:
   URL url;
 
   /** The size of the image in pixels */
-  Size size;
+  Size image_size;
+
+  int file_size;
+  int file_mtime;
 
   int thumbnail_size;
 };
@@ -52,13 +55,17 @@ public:
 
   FileEntry(uint32_t fileid, 
             const URL& url,
+            int size,
+            int mtime,
             int width,
             int height)
     : impl(new FileEntryImpl())
   {
-    impl->fileid    = fileid;
-    impl->url       = url;
-    impl->size      = Size(width, height);
+    impl->fileid     = fileid;
+    impl->url        = url;
+    impl->image_size = Size(width, height);
+    impl->file_size  = size;
+    impl->file_mtime = mtime;
 
     int s = Math::max(width, height);
     impl->thumbnail_size = 0;
@@ -69,11 +76,15 @@ public:
       }
   }
 
-  uint32_t    get_fileid()   const { return impl->fileid; }
-  URL         get_url()      const { return impl->url; }
-  int         get_width()    const { return impl->size.width; }
-  int         get_height()   const { return impl->size.height; }
-  Size        get_size()     const { return impl->size; }
+  void        set_fileid(int fileid) { impl->fileid = fileid; }
+  uint32_t    get_fileid()     const { return impl->fileid; }
+  URL         get_url()        const { return impl->url; }
+  int         get_width()      const { return impl->image_size.width; }
+  int         get_height()     const { return impl->image_size.height; }
+  Size        get_image_size() const { return impl->image_size; }
+
+  int         get_size()  const { return impl->file_size;  }
+  int         get_mtime() const { return impl->file_mtime; }
 
   int get_thumbnail_scale() const { return impl->thumbnail_size; }
 

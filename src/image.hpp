@@ -109,6 +109,7 @@ public:
   // _____________________________________________________
   // Debug stuff
   void clear_cache();
+  void refresh();
   void cache_cleanup();
   void print_info() const;
 

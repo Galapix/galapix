@@ -33,7 +33,8 @@ enum DatabaseMessageType
   DATABASE_TILE_MESSAGE,
   DATABASE_STORE_TILE_MESSAGE,
   DATABASE_THREAD_DONE_MESSAGE,
-  DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE
+  DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE,
+  DATABASE_DELETE_FILE_ENTRY_MESSAGE
 };
 
 class DatabaseMessage
@@ -134,6 +135,17 @@ public:
   {}
 };
 
+class DeleteFileEntryDatabaseMessage : public DatabaseMessage
+{
+public:
+  uint32_t fileid;
+
+  DeleteFileEntryDatabaseMessage(uint32_t fileid)
+    : DatabaseMessage(DATABASE_DELETE_FILE_ENTRY_MESSAGE),
+      fileid(fileid)
+  {}
+};
+
 DatabaseThread* DatabaseThread::current_ = 0;
 
 DatabaseThread::DatabaseThread(const std::string& filename_)
@@ -179,6 +191,12 @@ void
 DatabaseThread::receive_tile(const TileEntry& tile)
 {
   queue.push(new StoreTileDatabaseMessage(tile));
+}
+
+void
+DatabaseThread::delete_file_entry(uint32_t fileid)
+{
+  queue.push(new DeleteFileEntryDatabaseMessage(fileid));
 }
 
 void
@@ -302,6 +320,26 @@ DatabaseThread::run()
                     {
                       all_files_msg->callback(*i);
                     }
+                }
+                break;
+
+              case DATABASE_DELETE_FILE_ENTRY_MESSAGE:
+                {
+                  DeleteFileEntryDatabaseMessage* delete_msg = static_cast<DeleteFileEntryDatabaseMessage*>(msg);
+                  SQLiteStatement(&db)
+                    .prepare("BEGIN;")
+                    .execute();
+                  SQLiteStatement(&db)
+                    .prepare("DELETE FROM files WHERE fileid = ?1;")
+                    .bind_int(1, delete_msg->fileid)
+                    .execute();
+                  SQLiteStatement(&db)
+                    .prepare("DELETE FROM tiles WHERE fileid = ?1;")
+                    .bind_int(1, delete_msg->fileid)
+                    .execute();
+                  SQLiteStatement(&db)
+                    .prepare("END;")
+                    .execute();
                 }
                 break;
 

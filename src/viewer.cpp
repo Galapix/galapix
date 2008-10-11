@@ -191,15 +191,26 @@ Viewer::process_event(const SDL_Event& event)
               state.set_angle(0.0f);
               break;
 
-            case SDLK_F5:
+            case SDLK_F2:
               workspace->load("/tmp/workspace-dump.galapix");
               break;
 
-            case SDLK_F6:
+            case SDLK_F3:
               {
                 std::ofstream out("/tmp/workspace-dump.galapix");
                 workspace->save(out);
                 out.close();
+              }
+              break;
+
+            case SDLK_F5:
+              {
+                std::cout << "Refreshing tiles..." << std::endl;
+                Selection selection = workspace->get_selection();
+                for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+                  {
+                    i->refresh();
+                  }
               }
               break;
 

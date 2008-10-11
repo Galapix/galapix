@@ -64,24 +64,26 @@ FileDatabase::~FileDatabase()
 FileEntry
 FileDatabase::store_file_entry(const FileEntry& entry)
 {
-  return store_file_entry(entry.get_url(), entry.get_size());
+  return store_file_entry(entry.get_url(), entry.get_image_size());
 }
  
 FileEntry
 FileDatabase::store_file_entry(const URL& url,
                                const Size& size)
 {
-  store_stmt.bind_text(1, url.get_url());
-  store_stmt.bind_int (2, url.get_size());
-  store_stmt.bind_int (3, url.get_mtime());
-  store_stmt.bind_int (4, size.width);
-  store_stmt.bind_int (5, size.height);
+  FileEntry file_entry(0, url, url.get_size(), url.get_mtime(), size.width, size.height);
+
+  store_stmt.bind_text(1, file_entry.get_url().get_url());
+  store_stmt.bind_int (2, file_entry.get_size());
+  store_stmt.bind_int (3, file_entry.get_mtime());
+  store_stmt.bind_int (4, file_entry.get_width());
+  store_stmt.bind_int (5, file_entry.get_height());
 
   store_stmt.execute();
   
-  int fileid = sqlite3_last_insert_rowid(db->get_db());
+  file_entry.set_fileid(sqlite3_last_insert_rowid(db->get_db()));
 
-  return FileEntry(fileid, url, size.width, size.height);
+  return file_entry;
 }
 
 FileEntry
@@ -94,6 +96,8 @@ FileDatabase::get_file_entry(const URL& url)
     {
       return FileEntry(reader.get_int (0),  // fileid
                        URL::from_string(reader.get_text(1)),  // url
+                       reader.get_int(2),
+                       reader.get_int(3),
                        reader.get_int (4),  // width
                        reader.get_int (5)); // height
     }
@@ -120,10 +124,12 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries, const std::strin
   while (reader.next())  
     {
       // FIXME: Use macro definitions instead of numeric constants
-      FileEntry entry(reader.get_int (0),  // fileid
+      FileEntry entry(reader.get_int(0),  // fileid
                       URL::from_string(reader.get_text(1)),  // url
-                      reader.get_int (4),  // width
-                      reader.get_int (5)); // height
+                      reader.get_int(2),
+                      reader.get_int(3),
+                      reader.get_int(4),  // width
+                      reader.get_int(5)); // height
       entries.push_back(entry);
     } 
 }
@@ -136,10 +142,12 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
   while (reader.next())  
     {
       // FIXME: Use macro definitions instead of numeric constants
-      FileEntry entry(reader.get_int (0),  // fileid
+      FileEntry entry(reader.get_int(0),  // fileid
                       URL::from_string(reader.get_text(1)),  // url
-                      reader.get_int (4),  // width
-                      reader.get_int (5)); // height
+                      reader.get_int(2),
+                      reader.get_int(3),
+                      reader.get_int(4),  // width
+                      reader.get_int(5)); // height
       entries.push_back(entry);
     }
 }

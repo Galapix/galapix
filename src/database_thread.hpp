@@ -71,6 +71,8 @@ public:
   /** Place tile into the database */
   void      receive_tile(const TileEntry& tile);
 
+  /** Delete the given FileEntry along with all TileEntry refering to it */
+  void      delete_file_entry(uint32_t fileid);
   /* @} */
 
 private:

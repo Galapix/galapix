@@ -423,6 +423,13 @@ Image::clear_cache()
 }
 
 void
+Image::refresh()
+{
+  clear_cache();
+  DatabaseThread::current()->delete_file_entry(impl->file_entry.get_fileid());
+}
+
+void
 Image::print_info() const
 {
   std::cout << "  Image: " << impl.get() << std::endl;
@@ -526,13 +533,13 @@ Image::get_image_rect() const
     }
   else
     {
-      if (impl->file_entry.get_size() == Size(0,0))
+      if (impl->file_entry.get_image_size() == Size(0,0))
         {
-          return Rectf(impl->pos, impl->file_entry.get_size());
+          return Rectf(impl->pos, impl->file_entry.get_image_size());
         }
       else
         {
-          Sizef image_size(impl->file_entry.get_size() * impl->scale);
+          Sizef image_size(impl->file_entry.get_image_size() * impl->scale);
           return Rectf(impl->pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
         }
     }
