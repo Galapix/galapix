@@ -243,20 +243,20 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
                 {
                   const std::vector<std::string>& lst = Rar::get_filenames(*i);
                   for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
-                    file_list.push_back(URL::from_string(url.get_url() + "//rar:" + *j));
+                    file_list.push_back(URL::from_string(url.str() + "//rar:" + *j));
                 }
               else if (has_extension(*i, ".zip") || has_extension(*i, ".cbz"))
                 {
                   const std::vector<std::string>& lst = Zip::get_filenames(*i);
                   for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
-                    file_list.push_back(URL::from_string(url.get_url() + "//zip:" + *j));
+                    file_list.push_back(URL::from_string(url.str() + "//zip:" + *j));
                 }
               else if (has_extension(*i, ".tar") || has_extension(*i, ".tar.bz") || has_extension(*i, ".tar.gz") ||
                        has_extension(*i, ".tgz") || has_extension(*i, ".tbz"))
                 {
                   const std::vector<std::string>& lst = Tar::get_filenames(*i);
                   for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
-                    file_list.push_back(URL::from_string(url.get_url() + "//tar:" + *j));
+                    file_list.push_back(URL::from_string(url.str() + "//tar:" + *j));
                 }
               else
                 {

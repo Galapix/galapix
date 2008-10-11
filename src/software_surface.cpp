@@ -42,7 +42,7 @@
 SoftwareSurface::FileFormat
 SoftwareSurface::get_fileformat(const URL& url)
 {
-  std::string filename = url.get_url();
+  std::string filename = url.str();
 
   // FIXME: Make this more clever
   if (Filesystem::has_extension(filename, ".jpg")  ||
@@ -115,7 +115,7 @@ SoftwareSurface::get_size(const URL& url, Size& size)
     }
   else
     {
-      std::cout << "Warning: Using very slow SoftwareSurface::get_size() for " << url.get_url() << std::endl;
+      std::cout << "Warning: Using very slow SoftwareSurface::get_size() for " << url.str() << std::endl;
       switch(format)
         {
           case JPEG_FILEFORMAT:
@@ -189,7 +189,7 @@ SoftwareSurface::from_url(const URL& url)
             return Imagemagick::load_from_file(url.get_stdio_name());
 
           default:
-            throw std::runtime_error(url.get_url() + ": unknown file type");
+            throw std::runtime_error(url.str() + ": unknown file type");
             return SoftwareSurface();
         }  
     }
@@ -228,7 +228,7 @@ SoftwareSurface::from_url(const URL& url)
             }
 
           default:
-            throw std::runtime_error("SoftwareSurface::from_url: " + url.get_url() + ": unknown file type");
+            throw std::runtime_error("SoftwareSurface::from_url: " + url.str() + ": unknown file type");
             return SoftwareSurface();
         }      
     }

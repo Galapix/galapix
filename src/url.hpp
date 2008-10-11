@@ -50,7 +50,7 @@ public:
   std::string get_protocol() const;
 
   /** Get unique representation of this URL */
-  std::string get_url() const;
+  std::string str() const;
 
   /** Get the filename in a form that can be used with the system */
   std::string get_stdio_name() const;

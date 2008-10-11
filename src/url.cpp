@@ -69,7 +69,7 @@ URL::from_string(const std::string& url)
 }
 
 std::string
-URL::get_url() const
+URL::str() const
 {
   std::string url = protocol + "://" + payload;
   if (!plugin.empty())
@@ -132,7 +132,7 @@ URL::get_blob() const
     }
   else if (protocol == "http" || protocol == "https" || protocol == "ftp")
     {
-      return CURLHandler::get_data(get_url());
+      return CURLHandler::get_data(str());
     }
   else
     {
@@ -188,12 +188,12 @@ URL::is_url(const std::string& url)
 
 std::ostream& operator<<(std::ostream& out, const URL& url)
 {
-  return out << url.get_url();
+  return out << url.str();
 }
 
 bool operator<(const URL& lhs, const URL& rhs)
 {
-  return lhs.get_url() < rhs.get_url();
+  return lhs.str() < rhs.str();
 }
 
 #ifdef __URL_TEST__

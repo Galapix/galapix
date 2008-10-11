@@ -19,12 +19,28 @@
 #ifndef HEADER_WORKSPACE_HPP
 #define HEADER_WORKSPACE_HPP
 
+#include "url.hpp"
 #include "selection.hpp"
 #include "math/quad_tree.hpp"
 #include "image.hpp"
 
 class Rectf;
 
+class ImageRequest
+{
+private:
+  URL      url;
+  Vector2f pos;
+  float    scale;
+
+public:
+  ImageRequest(const URL&      url,
+               const Vector2f& pos,
+               float           scale)
+    : url(url), pos(pos), scale(scale)
+  {}
+};
+
 class Workspace
 {
 private:
@@ -33,10 +49,13 @@ private:
 
   Images images;
   Selection selection;
-  Vector2f next_pos;
-  int row_width;
+  Vector2f  next_pos;
+  int   row_width;
   float progress;
-  
+ 
+  typedef std::vector<ImageRequest> ImageRequests;
+  ImageRequests image_requests;
+
 public:
   Workspace();
 

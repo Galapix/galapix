@@ -59,7 +59,7 @@ Workspace::get_image(const Vector2f& pos) const
 void
 Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 {
-  images.push_back(Image(url, pos, scale));
+  image_requests.push_back(ImageRequest(url, pos, scale));
 }
 
 void

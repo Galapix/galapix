@@ -73,7 +73,7 @@ FileDatabase::store_file_entry(const URL& url,
 {
   FileEntry file_entry(0, url, url.get_size(), url.get_mtime(), size.width, size.height);
 
-  store_stmt.bind_text(1, file_entry.get_url().get_url());
+  store_stmt.bind_text(1, file_entry.get_url().str());
   store_stmt.bind_int (2, file_entry.get_size());
   store_stmt.bind_int (3, file_entry.get_mtime());
   store_stmt.bind_int (4, file_entry.get_width());
@@ -89,7 +89,7 @@ FileDatabase::store_file_entry(const URL& url,
 FileEntry
 FileDatabase::get_file_entry(const URL& url)
 {
-  get_by_url_stmt.bind_text(1, url.get_url());
+  get_by_url_stmt.bind_text(1, url.str());
   SQLiteReader reader = get_by_url_stmt.execute_query();
 
   if (reader.next())
