@@ -16,6 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <boost/bind.hpp>
+#include "viewer_thread.hpp"
+#include "database_thread.hpp"
 #include "math/rect.hpp"
 #include "math/quad_tree.hpp"
 #include "math.hpp"
@@ -59,26 +62,63 @@ Workspace::get_image(const Vector2f& pos) const
 void
 Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 {
+  DatabaseThread::current()->request_file(url, boost::bind(&ViewerThread::receive_file, ViewerThread::current(), _1));
   image_requests.push_back(ImageRequest(url, pos, scale));
 }
+
+void
+Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float scale)
+{
+  Image image(file_entry);
+  images.push_back(image);
+  image.set_scale(scale);
+  image.set_pos(pos);
+}
+
+struct ImageRequestFinder {
+  std::string str;
+
+  ImageRequestFinder(const std::string& str)
+    : str(str)
+  {}
+
+  bool operator()(const ImageRequest& lhs) const {
+    return str == lhs.url.str();
+  }
+};
 
 void
 Workspace::add_image(const FileEntry& file_entry)
 {
   Image image(file_entry);
   images.push_back(image);
-  image.set_scale(Math::min(1000.0f / file_entry.get_width(),
-                            1000.0f / file_entry.get_height()));
 
-  image.set_pos(next_pos * 1024.0f);
-
-  // FIXME: Ugly, instead we should relayout once a second or so
-  next_pos.x += 1;
-  if (next_pos.x >= row_width)
+  if (!image_requests.empty())
     {
-      next_pos.x  = 0;
-      next_pos.y += 1;
+      ImageRequests::iterator i = std::find_if(image_requests.begin(), image_requests.end(), 
+                                               ImageRequestFinder(file_entry.get_url().str()));
+      if (i != image_requests.end())
+        {
+          image.set_pos(i->pos);
+          image.set_scale(i->scale);
+          return;
+        }
     }
+
+  {
+    image.set_scale(Math::min(1000.0f / file_entry.get_width(),
+                              1000.0f / file_entry.get_height()));
+
+    image.set_pos(next_pos * 1024.0f);
+
+    // FIXME: Ugly, instead we should relayout once a second or so
+    next_pos.x += 1;
+    if (next_pos.x >= row_width)
+      {
+        next_pos.x  = 0;
+        next_pos.y += 1;
+      }
+  }
 }
 
 void
@@ -462,7 +502,7 @@ Workspace::solve_overlaps()
                       j->set_pos(j->get_pos() + Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
                     }
                 }
-            }          
+            }
         }
       std::cout << "NumOverlappings: " << num_overlappings << std::endl; 
     }
@@ -511,7 +551,7 @@ Workspace::load(const std::string& filename)
             {
               URL      url;
               Vector2f pos;
-              float    scale;
+              float    scale = 0.5f;
 
               i->read_url("url", url);
               i->read_vector2f("pos", pos);

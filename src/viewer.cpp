@@ -85,6 +85,8 @@ Viewer::Viewer(Workspace* workspace)
 void
 Viewer::process_event(const SDL_Event& event)
 {
+  Uint8* keystates = SDL_GetKeyState(NULL);
+
   switch(event.type)
     {
       case SDL_QUIT:
@@ -208,9 +210,10 @@ Viewer::process_event(const SDL_Event& event)
                 // FIXME: Make force on Shift-F5 and normal F5 only refresh if the file changed
                 std::cout << "Refreshing tiles..." << std::endl;
                 Selection selection = workspace->get_selection();
+                bool force = keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
                 for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
                   {
-                    i->refresh();
+                    i->refresh(force);
                   }
               }
               break;

@@ -65,7 +65,6 @@ private:
 
 public:
   Image();
-  Image(const URL& url, const Vector2f& pos, float scale);
   Image(const FileEntry& file_entry);
 
   // _____________________________________________________
@@ -109,7 +108,7 @@ public:
   // _____________________________________________________
   // Debug stuff
   void clear_cache();
-  void refresh();
+  void refresh(bool force);
   void cache_cleanup();
   void print_info() const;
 

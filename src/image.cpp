@@ -79,22 +79,6 @@ Image::Image()
 {
 }
 
-Image::Image(const URL& url, const Vector2f& pos, float scale)
-  : impl(new ImageImpl())
-{
-  impl->file_entry = FileEntry();
-
-  impl->angle = 0.0f; 
-  impl->alpha = 1.0f;
-
-  impl->scale        = scale;
-  impl->last_scale   = scale;
-  impl->target_scale = scale;
-
-  impl->max_scale      = 0;
-  impl->min_keep_scale = 0;
-}
-
 Image::Image(const FileEntry& file_entry)
   : impl(new ImageImpl())
 {
@@ -423,10 +407,18 @@ Image::clear_cache()
 }
 
 void
-Image::refresh()
+Image::refresh(bool force)
 {
-  clear_cache();
-  DatabaseThread::current()->delete_file_entry(impl->file_entry.get_fileid());
+  if (force || impl->file_entry.get_url().get_mtime() != impl->file_entry.get_mtime())
+    {
+      clear_cache();
+      DatabaseThread::current()->delete_file_entry(impl->file_entry.get_fileid());
+
+      // FIXME: Add this point the FileEntry is invalid and points to
+      // something that no longer exists, newly generated Tiles point
+      // to that obsolete fileid number
+      // do stuff with receive_file_entry() to fix this
+    }
 }
 
 void
