@@ -21,6 +21,7 @@
 #include <math.h>
 #include "math/rgb.hpp"
 #include "framebuffer.hpp"
+#include "sdl_framebuffer.hpp"
 #include "software_surface.hpp"
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
@@ -38,7 +39,6 @@
 Viewer::Viewer(Workspace* workspace)
   : workspace(workspace),
     quit(false),
-    force_redraw(false),
     draw_grid(false),
     gamma(1.0f)
 {
@@ -89,20 +89,6 @@ Viewer::process_event(const SDL_Event& event)
 
   switch(event.type)
     {
-      case SDL_QUIT:
-        std::cout << "Viewer: SDL_QUIT received" << std::endl;
-        quit = true;
-        break;
-
-      case SDL_VIDEOEXPOSE:
-        force_redraw = true;
-        break;
-
-      case SDL_VIDEORESIZE:
-        Framebuffer::resize(event.resize.w, event.resize.h);
-        force_redraw = true;
-        break;
-
       case SDL_KEYUP:
         switch(event.key.keysym.sym)
           {
@@ -150,7 +136,7 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_F11:
-              Framebuffer::toggle_fullscreen();
+              SDLFramebuffer::toggle_fullscreen();
               break;
 
             case SDLK_LEFT:
@@ -477,8 +463,6 @@ Viewer::draw()
 
   if (draw_grid)
     Framebuffer::draw_grid(3);
-
-  Framebuffer::flip();
 }
 
 void

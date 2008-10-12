@@ -8,6 +8,7 @@ galapix_sources = [
     'src/file_entry.cpp',
     'src/filesystem.cpp',
     'src/framebuffer.cpp',
+    'src/sdl_framebuffer.cpp',
     'src/file_reader.cpp',
     'src/lisp/getters.cpp',
     'src/lisp/lexer.cpp',

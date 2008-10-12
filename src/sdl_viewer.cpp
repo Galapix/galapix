@@ -21,7 +21,7 @@
 #include "math/rgba.hpp"
 #include "file_entry.hpp"
 #include "workspace.hpp"
-#include "framebuffer.hpp"
+#include "sdl_framebuffer.hpp"
 #include "viewer.hpp"
 #include "sdl_viewer.hpp"
 #include "tile_generator_thread.hpp"
@@ -33,7 +33,8 @@ SDLViewer* SDLViewer::current_ = 0;
 SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing)
   : geometry(geometry),
     fullscreen(fullscreen),
-    anti_aliasing(anti_aliasing)
+    anti_aliasing(anti_aliasing),
+    quit(false)
 {
   current_ = this;
 }
@@ -48,16 +49,41 @@ SDLViewer::receive_file(const FileEntry& entry)
   file_queue.push(entry);
 }
 
+void
+SDLViewer::process_event(const SDL_Event& event)
+{
+  //Uint8* keystates = SDL_GetKeyState(NULL);
+
+  switch(event.type)
+    {
+      case SDL_QUIT:
+        std::cout << "Viewer: SDL_QUIT received" << std::endl;
+        quit = true;
+        break;
+
+      case SDL_VIDEOEXPOSE:
+        break;
+
+      case SDL_VIDEORESIZE:
+        SDLFramebuffer::resize(event.resize.w, event.resize.h);
+        break;
+
+      default:
+        viewer->process_event(event);
+        break;
+    }
+}
+
 int
 SDLViewer::run()
 {
   Workspace workspace;
 
-  Framebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
+  SDLFramebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
 
   workspace.layout_aspect(4,3);
 
-  Viewer viewer(&workspace);
+  viewer = std::auto_ptr<Viewer>(new Viewer(&workspace));
 
   Uint32 ticks = SDL_GetTicks();
 
@@ -65,7 +91,7 @@ SDLViewer::run()
   SpaceNavigator space_navigator;
 #endif
 
-  while(!viewer.done())
+  while(!viewer->done())
     {     
       while (!file_queue.empty())
         {
@@ -75,21 +101,22 @@ SDLViewer::run()
         }
 
 #ifdef HAVE_SPACE_NAVIGATOR
-      space_navigator.poll(viewer);
+      space_navigator.poll(*viewer);
 #endif
 
       SDL_Event event;
       while (SDL_PollEvent(&event))
         {
-          viewer.process_event(event);
+          process_event(event);
         }
 
       Uint32 cticks = SDL_GetTicks();
       float delta = (cticks - ticks) / 1000.0f;
       ticks = cticks;
 
-      viewer.update(delta);
-      viewer.draw();
+      viewer->update(delta);
+      viewer->draw();
+      SDLFramebuffer::flip();
 
       SDL_Delay(30);
     }

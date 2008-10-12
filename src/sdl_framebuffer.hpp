@@ -16,53 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_VIEWER_THREAD_HPP
-#define HEADER_VIEWER_THREAD_HPP
+#ifndef HEADER_SDL_FRAMEBUFFER_HPP
+#define HEADER_SDL_FRAMEBUFFER_HPP
 
+#include "SDL.h"
 #include "math/size.hpp"
-#include "thread.hpp"
-#include "thread_message_queue.hpp"
-
-#include "image.hpp"
-#include "job_handle.hpp"
-#include "tile_entry.hpp"
 
-class Viewer;
-class FileEntry;
-class Image;
-class TileEntry;
-
-class SDLViewer
+/** SDL specific code to init the display */
+class SDLFramebuffer
 {
 private:
-  static SDLViewer* current_;
-public:
-  static SDLViewer* current() { return current_; }
-  
-private:
-  Size geometry;
-  bool fullscreen;
-  int  anti_aliasing;
-
-  bool quit;
-
-  ThreadMessageQueue<FileEntry>   file_queue;
-  std::auto_ptr<Viewer> viewer;
+  static SDL_Surface* screen;
+  static Uint32 flags;
+  static Size desktop_resolution;
+  static Size window_resolution;
 
 public:
-  SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing);
-  virtual ~SDLViewer();
+    static void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
 
-  int run();
+  static void toggle_fullscreen();
 
-  void receive_file(const FileEntry& entry);
+  static int  get_width()  { return screen->w; }
+  static int  get_height() { return screen->h; }
+  static Size get_size()   { return Size(screen->w, screen->h); }
 
-private:
-  void process_event(const SDL_Event& event);
+  static void resize(int w, int h);
+  static void flip();
 
-private:
-  SDLViewer (const SDLViewer&);
-  SDLViewer& operator= (const SDLViewer&);
 };
 
 #endif

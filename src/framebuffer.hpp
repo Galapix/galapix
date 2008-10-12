@@ -24,7 +24,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <math.h>
-#include "SDL.h"
 #include "math/size.hpp"
 
 class RGB;
@@ -43,28 +42,15 @@ static inline void assert_gl(const char* message)
   }
 }
 
+/** Generic OpenGL helper functions */
 class Framebuffer
 {
-private:
-  static SDL_Surface* screen;
-  static Uint32 flags;
-  static Size desktop_resolution;
-  static Size window_resolution;
-
 public:
-  static void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
+  static int  get_width();
+  static int  get_height();
+  static Size get_size()   { return Size(get_width(), get_height()); }
 
-  static void toggle_fullscreen();
-
-  static int  get_width()  { return screen->w; }
-  static int  get_height() { return screen->h; }
-  static Size get_size()   { return Size(screen->w, screen->h); }
-
-  static SDL_Surface* get_screen() { return screen; }
-  static void resize(int w, int h);
-  static void flip();
   static void clear(const RGBA& rgba);
-
   static void draw_rect(const Rectf& rect, const RGB& rgb);
   static void fill_rect(const Rectf& rect, const RGB& rgb);
   static void draw_grid(int num_cells);

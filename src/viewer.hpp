@@ -42,7 +42,6 @@ class Viewer
 private:
   Workspace* workspace;
   bool  quit;
-  bool  force_redraw;
   bool  draw_grid;
   float gamma;
 
