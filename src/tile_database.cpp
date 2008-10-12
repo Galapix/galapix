@@ -109,8 +109,6 @@ TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
 bool
 TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntry& tile)
 {
-  //SDL_Delay(100);
-
   get_stmt.bind_int(1, fileid);
   get_stmt.bind_int(2, scale);
   get_stmt.bind_int(3, pos.x);

@@ -281,13 +281,6 @@ Galapix::generate_tiles(const std::string& database,
 void
 Galapix::view(const std::string& database, const std::vector<URL>& urls, bool view_all, const std::string& pattern)
 {
-  if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
-      std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
-      exit(1);
-    }
-  atexit(SDL_Quit); 
-
   JPEGDecoderThread   jpeg_thread;
   DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;

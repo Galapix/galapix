@@ -77,6 +77,13 @@ SDLViewer::process_event(const SDL_Event& event)
 int
 SDLViewer::run()
 {
+  if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    {
+      std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
+      exit(1);
+    }
+  atexit(SDL_Quit); 
+
   Workspace workspace;
 
   SDLFramebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
