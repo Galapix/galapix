@@ -137,7 +137,7 @@ Workspace::layout_vertical()
 }
 
 void
-Workspace::layout(float aspect_w, float aspect_h)
+Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
   if (!images.empty())
     {
@@ -171,7 +171,7 @@ Workspace::layout(float aspect_w, float aspect_h)
 }
 
 void
-Workspace::tight_layout()
+Workspace::layout_tight()
 {
   float    width = Math::sqrt(images.size()) * 1024.0f;;
   Vector2f pos(0.0f, 0.0f);
@@ -239,7 +239,7 @@ Workspace::tight_layout()
 }
 
 void
-Workspace::random_layout()
+Workspace::layout_random()
 {
   int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
   for(Images::iterator i = images.begin(); i != images.end(); ++i)

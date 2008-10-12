@@ -335,15 +335,15 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_1:
-              workspace->layout(4, 3);
+              workspace->layout_aspect(4, 3);
               break;
 
             case SDLK_2:
-              workspace->layout(16, 9);
+              workspace->layout_aspect(16, 9);
               break;
 
             case SDLK_3:
-              workspace->random_layout();
+              workspace->layout_random();
               break;
 
             case SDLK_4:
@@ -351,7 +351,7 @@ Viewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_5:
-              workspace->tight_layout();
+              workspace->layout_tight();
               break;
 
             case SDLK_6:

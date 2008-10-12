@@ -45,15 +45,16 @@ class Workspace
 {
 private:
   typedef std::vector<Image> Images;
+  typedef std::vector<ImageRequest> ImageRequests;
+
   std::auto_ptr<QuadTree<Image> > quad_tree;
 
-  Images images;
+  Images    images;
   Selection selection;
   Vector2f  next_pos;
-  int   row_width;
-  float progress;
+  int       row_width;
+  float     progress;
  
-  typedef std::vector<ImageRequest> ImageRequests;
   ImageRequests image_requests;
 
 public:
@@ -63,12 +64,16 @@ public:
 
   // Layout hints
   void set_row_width(int w);
+
+  // Image order function
   void sort();
   void random_shuffle();
-  void tight_layout();
+
+  
+  void layout_tight();
   void layout_vertical();
-  void layout(float aspect_w, float aspect_h);
-  void random_layout();
+  void layout_aspect(float aspect_w, float aspect_h);
+  void layout_random();
   void solve_overlaps();
 
   // ---------------------------------------------

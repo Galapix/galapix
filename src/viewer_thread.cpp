@@ -55,7 +55,7 @@ ViewerThread::run()
 
   Framebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
 
-  workspace.layout(4,3);
+  workspace.layout_aspect(4,3);
 
   Viewer viewer(&workspace);
 

@@ -49,6 +49,7 @@ private:
   static SDL_Surface* screen;
   static Uint32 flags;
   static Size desktop_resolution;
+  static Size window_resolution;
 
 public:
   static void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);

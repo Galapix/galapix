@@ -33,7 +33,7 @@ public:
   ~Galapix();
 
   void print_usage();
-  int main(int argc, char** argv);
+  int  main(int argc, char** argv);
 
   void merge(const std::string& database, const std::vector<std::string>& filenames);
   void test(const std::vector<URL>& filenames);
