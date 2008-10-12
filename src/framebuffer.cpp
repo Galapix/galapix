@@ -30,6 +30,7 @@ SDL_SysWMinfo syswm;
 SDL_Surface* Framebuffer::screen = 0;
 Uint32 Framebuffer::flags = 0;
 Size Framebuffer::desktop_resolution;
+Size Framebuffer::window_resolution;
 
 void
 Framebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
@@ -53,6 +54,7 @@ Framebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing
 
   const SDL_VideoInfo* info = SDL_GetVideoInfo();
   desktop_resolution = Size(info->current_w, info->current_h);
+  window_resolution  = size;
 
   flags = SDL_RESIZABLE | SDL_OPENGL;
 
@@ -111,12 +113,14 @@ Framebuffer::toggle_fullscreen()
   if (flags & SDL_FULLSCREEN)
     {
       flags = SDL_OPENGL | SDL_RESIZABLE;
-      res = Size(800, 600);
+      res = window_resolution;
       std::cout << "Switching to fullscreen " 
                 << res.width << "x" << res.height << std::endl;
     }
   else
     {
+      window_resolution = Size(screen->w, screen->h);
+
       flags = SDL_OPENGL | SDL_FULLSCREEN;
       res = desktop_resolution;
       std::cout << "Switching to desktop " 
