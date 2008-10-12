@@ -23,14 +23,14 @@
 #include "workspace.hpp"
 #include "framebuffer.hpp"
 #include "viewer.hpp"
-#include "viewer_thread.hpp"
+#include "sdl_viewer.hpp"
 #include "tile_generator_thread.hpp"
 #include "space_navigator.hpp"
 #include "database_thread.hpp"
 
-ViewerThread* ViewerThread::current_ = 0;
+SDLViewer* SDLViewer::current_ = 0;
 
-ViewerThread::ViewerThread(const Size& geometry, bool fullscreen, int  anti_aliasing)
+SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing)
   : geometry(geometry),
     fullscreen(fullscreen),
     anti_aliasing(anti_aliasing)
@@ -38,18 +38,18 @@ ViewerThread::ViewerThread(const Size& geometry, bool fullscreen, int  anti_alia
   current_ = this;
 }
 
-ViewerThread::~ViewerThread()
+SDLViewer::~SDLViewer()
 {
 }
 
 void
-ViewerThread::receive_file(const FileEntry& entry)
+SDLViewer::receive_file(const FileEntry& entry)
 {
   file_queue.push(entry);
 }
 
 int
-ViewerThread::run()
+SDLViewer::run()
 {
   Workspace workspace;
 
@@ -94,7 +94,7 @@ ViewerThread::run()
       SDL_Delay(30);
     }
 
-  std::cout << "ViewerThread: done" << std::endl;
+  std::cout << "SDLViewer: done" << std::endl;
 
   return 0;
 }

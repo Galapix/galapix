@@ -17,7 +17,7 @@
 */
 
 #include <boost/bind.hpp>
-#include "viewer_thread.hpp"
+#include "sdl_viewer.hpp"
 #include "database_thread.hpp"
 #include "math/rect.hpp"
 #include "math/quad_tree.hpp"
@@ -62,7 +62,7 @@ Workspace::get_image(const Vector2f& pos) const
 void
 Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 {
-  DatabaseThread::current()->request_file(url, boost::bind(&ViewerThread::receive_file, ViewerThread::current(), _1));
+  DatabaseThread::current()->request_file(url, boost::bind(&SDLViewer::receive_file, SDLViewer::current(), _1));
   image_requests.push_back(ImageRequest(url, pos, scale));
 }
 

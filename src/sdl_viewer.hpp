@@ -31,12 +31,12 @@ class FileEntry;
 class Image;
 class TileEntry;
 
-class ViewerThread
+class SDLViewer
 {
 private:
-  static ViewerThread* current_;
+  static SDLViewer* current_;
 public:
-  static ViewerThread* current() { return current_; }
+  static SDLViewer* current() { return current_; }
   
 private:
   Size geometry;
@@ -46,16 +46,16 @@ private:
   ThreadMessageQueue<FileEntry>   file_queue;
 
 public:
-  ViewerThread(const Size& geometry, bool fullscreen, int  anti_aliasing);
-  virtual ~ViewerThread();
+  SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing);
+  virtual ~SDLViewer();
 
   int run();
 
   void receive_file(const FileEntry& entry);
 
 private:
-  ViewerThread (const ViewerThread&);
-  ViewerThread& operator= (const ViewerThread&);
+  SDLViewer (const SDLViewer&);
+  SDLViewer& operator= (const SDLViewer&);
 };
 
 #endif

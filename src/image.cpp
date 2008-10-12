@@ -24,7 +24,6 @@
 #include "math.hpp"
 #include "file_entry.hpp"
 #include "database_thread.hpp"
-#include "viewer_thread.hpp"
 #include "thread_message_queue.hpp"
 #include "image.hpp"
 

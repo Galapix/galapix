@@ -14,10 +14,73 @@ Release procedure:
 
 * test database compatibilty
 
-* check that all keyboard shortcuts are documented
+* check that all keyboard shortcuts are documented and sort them a bit to be logical
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* make keyboard bindings configurable
+
+* implement some fun recursive layout where images get constantly smaller
+
+* add SVG support via Inkscape maybe? maybe generic shell converter thing?
+
+* add tool to cut an image (simple rectangle or more complex polygonal shapes)
+
+* Table convert:
+  create table if not exists files_new (fileid INTEGER PRIMARY KEY  AUTOINCREMENT, url TEXT UNIQUE, size  INTEGER,  mtime     INTEGER, width INTEGER, height INTEGER);
+  insert into files_new (fileid, url, size, mtime, width, height) select fileid, filename, filesize, mtime, width, height from files;
+  alter table files rename to files_old
+  alter table files_new rename to files;
+
+* make stuff more event driven or better yet make it completly event
+  driven (how to handle dynamic animations?)
+
+* PRAGMA temp_store_directory = '/home/ingo/.galapix/tmp/'; 
+
+* Must run: 
+   PRAGMA auto_vacuum='full'; 
+  before any table is created to get auto_vacuum to work
+
+* play around with attaching databases to copy stuff around for compability
+
+* filename -> fileformat, ending only would be fasted
+
+* is it worth to have a get_size(filename) command? or is it better to
+  wait for a proper thumbnail to be there?
+  
+  -> get_size() has not much benefit, only real benefit is that you
+     can layot before a thumbnail is ready, but placeholder rects are
+     not pretty and it only works for a few formats anyway, so drop
+     and get the smallest possible thumbnail instead and only place
+     stuff on the workspace when it is ready
+
+* move file-extension -> plugin mapping into configuration file
+
+  -> didn't work out, file format handler have to much interdepedency
+     to make this practical
+
+* delete tile duplicates via:
+
+DELETE FROM tiles WHERE rowid IN 
+(SELECT b.rowid 
+ FROM tiles AS a, tiles AS b 
+ WHERE a.fileid = b.fileid AND 
+            a.x = b.x      AND
+            a.y = b.y      AND 
+        a.scale = b.scale  AND 
+        a.rowid < b.rowid);
+
+Then shrink via (do this in a seperate step, since it requires plenty
+of diskspace, 2x(!) times what the database uses):
+
+VACUUM;
+
+* invalid image causes Rect to become 'nan' ->
+  'file:///resources/flickr/flickr/farm1.static.flickr.com/1/97146_20ff533764_o.jpg'
+  -> width == 0, set_scale(.../width) -> inf -> nan
+
+* Add glob pattern URL support: glob:://file:///resources/flickr/*
+
 * merging databases causes reencoding of the JPEG data due to
   TileEntry storing SoftwareSurface instead of Blob
 
@@ -88,10 +151,6 @@ Release procedure:
 
 * add support for checkboard pattern and stuff in the background
 
-* added toggle for GL_LINEAR/GL_NEAREST
-
-* Merge TileGenerator and TileGeneratorThread code
-
 * How to detect file format: file extension (case-insensitive, magic byte)
 
 * add shift-click support to the MoveTool, also rename MoveTool to SelectTool
@@ -136,6 +195,7 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 
 * use a wider range of pictures
 
+* use Big Buck Bunny
 
 Galapix 0.0.4 Release ToDo:
 ---------------------------
@@ -145,6 +205,13 @@ Galapix 0.0.4 Release ToDo:
 //   FROM files, tiles 
 //   WHERE files.filename = 'file:///tmp/ssc2008-11a14.jpg' AND files.fileid = tiles.fileid;
 // When no tiles are available nothing is returned, which makes this call kind of useless for the intended purpose
+
+* small scales are displayed at the wrong size (thumbnail.size * scale
+  != image_size due to small values of thumbnail.size)
+
+* added toggle for GL_LINEAR/GL_NEAREST
+
+* Merge TileGenerator and TileGeneratorThread code
 
 * implement quadtree properly and do some testing on it (some bugs left)
 
@@ -181,13 +248,6 @@ Galapix 0.1.0 Release ToDo:
 
 * fix random layout so that all image sizes are handled equally,
   currently low-res images get really small
-
-* implement a function to delete all cached tiles and regenerate them (F5 - reload)
-
-* small scales are displayed at the wrong size (thumbnail.size * scale
-  != image_size due to small values of thumbnail.size)
-
-* implement workspace load&save
 
 * add function to relayout just the selection instead of all images
 

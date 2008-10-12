@@ -47,7 +47,7 @@
 #include "tile_generator.hpp"
 #include "tile_generator_thread.hpp"
 #include "workspace.hpp"
-#include "viewer_thread.hpp"
+#include "sdl_viewer.hpp"
 #include "viewer.hpp"
 #include "galapix.hpp"
 
@@ -291,7 +291,7 @@ Galapix::view(const std::string& database, const std::vector<URL>& urls, bool vi
   JPEGDecoderThread   jpeg_thread;
   DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;
-  ViewerThread        viewer_thread(geometry, fullscreen, anti_aliasing);
+  SDLViewer           sdl_viewer(geometry, fullscreen, anti_aliasing);
 
   jpeg_thread.start();
   database_thread.start();
@@ -302,21 +302,21 @@ Galapix::view(const std::string& database, const std::vector<URL>& urls, bool vi
       if (pattern.empty())
         {
           // When no files are given, display everything in the database
-          database_thread.request_all_files(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+          database_thread.request_all_files(boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1));
         }
       else 
         {
           std::cout << "Using pattern: '" << pattern << "'" << std::endl;
-          database_thread.request_files_by_pattern(boost::bind(&ViewerThread::receive_file, &viewer_thread, _1), pattern);
+          database_thread.request_files_by_pattern(boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1), pattern);
         }
     }
 
   for(std::vector<std::string>::size_type i = 0; i < urls.size(); ++i)
     {
-      database_thread.request_file(urls[i], boost::bind(&ViewerThread::receive_file, &viewer_thread, _1));
+      database_thread.request_file(urls[i], boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1));
     }
-
-  viewer_thread.run();
+  
+  sdl_viewer.run();
 
   tile_generator_thread.stop();
   database_thread.stop();

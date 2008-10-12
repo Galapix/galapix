@@ -5,7 +5,7 @@ VERSION='0.0.4'
 APPNAME='galapix'
 
 # these variables are mandatory ('/' are converted automatically)
-srcdir = 'src'
+srcdir = '.'
 blddir = 'build'
 
 def init():

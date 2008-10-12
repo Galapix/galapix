@@ -1,6 +1,8 @@
 Galapix 0.0.4 (??. Sep 2008)
 ============================
 
+* images are placed in a QuadTree to speed up large image collections
+* switched build system to Waf (maybe)
 * support for PNG images via libpng
 * support for ImageMagick via Magick++
 * support for Gimp/XCF via xcftools
