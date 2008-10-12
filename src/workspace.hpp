@@ -40,23 +40,30 @@ public:
     : url(url), pos(pos), scale(scale)
   {}
 };
-
+
 class Workspace
 {
 private:
   typedef std::vector<Image> Images;
   typedef std::vector<ImageRequest> ImageRequests;
 
+  /** Simple QuadTree to have a quicker way to figure out which images
+      are visible */
   std::auto_ptr<QuadTree<Image> > quad_tree;
 
-  Images    images;
-  Selection selection;
+  Images        images;
+  ImageRequests image_requests;
+  Selection     selection;
+
+  // Layout hints
+  // FIXME: ugly
   Vector2f  next_pos;
   int       row_width;
+
+  /** Progress of the animation when relayouting, must be set to 0 to
+      start animation */
   float     progress;
  
-  ImageRequests image_requests;
-
 public:
   Workspace();
 

@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <stdlib.h>
 #include <stdexcept>
 #include <iostream>
 #include <string>
@@ -553,7 +554,7 @@ Galapix::main(int argc, char** argv)
 
   return 0;
 }
-  
+  
 int main(int argc, char** argv)
 {
   try 
@@ -565,7 +566,10 @@ int main(int argc, char** argv)
   catch(const std::exception& err) 
     {
       std::cout << "Exception: " << err.what() << std::endl;
+      return EXIT_FAILURE;
     }
+
+  return EXIT_SUCCESS;
 }
   
-/* EOF */
+/* EOF */
