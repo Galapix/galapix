@@ -53,7 +53,7 @@ public:
   SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing);
   virtual ~SDLViewer();
 
-  int run();
+  void run();
 
   void receive_file(const FileEntry& entry);
 

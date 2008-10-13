@@ -17,7 +17,6 @@
 */
 
 #include <sstream>
-#include "SDL.h"
 #include "png.hpp"
 #include "jpeg.hpp"
 #include "tile_entry.hpp"

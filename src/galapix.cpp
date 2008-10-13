@@ -284,11 +284,12 @@ Galapix::view(const std::string& database, const std::vector<URL>& urls, bool vi
   JPEGDecoderThread   jpeg_thread;
   DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;
-  SDLViewer           sdl_viewer(geometry, fullscreen, anti_aliasing);
 
   jpeg_thread.start();
   database_thread.start();
   tile_generator_thread.start();
+
+  SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
 
   if (view_all)
     {

@@ -24,6 +24,7 @@
 
 static int busy_callback(void* , int)
 {
+  // FIXME: Is this a good idea?
   SDL_Delay(10);
   return 1;
 }

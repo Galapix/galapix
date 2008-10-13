@@ -68,13 +68,46 @@ SDLViewer::process_event(const SDL_Event& event)
         SDLFramebuffer::resize(event.resize.w, event.resize.h);
         break;
 
+      case SDL_MOUSEMOTION:
+        viewer->on_mouse_motion(Vector2i(event.motion.x,    event.motion.y),
+                                Vector2i(event.motion.xrel, event.motion.yrel));
+        break;
+
+        // FIXME: SDL Reverses the mouse buttons when a grab is active!
+      case SDL_MOUSEBUTTONDOWN:
+        viewer->on_mouse_button_down(Vector2i(event.button.x, event.button.y),
+                                     event.button.button);
+        break;
+
+      case SDL_MOUSEBUTTONUP:
+        viewer->on_mouse_button_up(Vector2i(event.button.x, event.button.y),
+                                   event.button.button);
+        break;
+
+      case SDL_KEYDOWN:
+        switch(event.key.keysym.sym)
+          {
+            case SDLK_ESCAPE:
+              quit = true;
+              break;
+
+            default:
+              viewer->on_key_down(event.key.keysym.sym);
+              break;
+          }
+        break;
+
+
+      case SDL_KEYUP:
+        viewer->on_key_up(event.key.keysym.sym);
+        break;                
+
       default:
-        viewer->process_event(event);
         break;
     }
 }
 
-int
+void
 SDLViewer::run()
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -98,7 +131,7 @@ SDLViewer::run()
   SpaceNavigator space_navigator;
 #endif
 
-  while(!viewer->done())
+  while(!quit)
     {     
       while (!file_queue.empty())
         {
@@ -129,8 +162,6 @@ SDLViewer::run()
     }
 
   std::cout << "SDLViewer: done" << std::endl;
-
-  return 0;
 }
 
 /* EOF */

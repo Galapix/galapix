@@ -24,7 +24,6 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include "SDL.h"
 
 #include "math/size.hpp"
 #include "math/rect.hpp"

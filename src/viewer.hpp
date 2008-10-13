@@ -21,7 +21,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include <memory>
-#include "SDL.h"
 #include "surface.hpp"
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
@@ -41,7 +40,6 @@ class Viewer
 {
 private:
   Workspace* workspace;
-  bool  quit;
   bool  draw_grid;
   float gamma;
 
@@ -73,11 +71,16 @@ public:
 
   void draw();
   void update(float delta);
-  void process_event(const SDL_Event& event);
-  bool done() const { return quit; }
 
   ViewerState& get_state() { return state; }
   Workspace*   get_workspace() { return workspace; }
+
+  void on_key_up(int key);
+  void on_key_down(int key);
+
+  void on_mouse_motion(const Vector2i& pos, const Vector2i& rel);
+  void on_mouse_button_down(const Vector2i& pos, int btn);
+  void on_mouse_button_up(const Vector2i& pos, int btn);
 private:
   Viewer (const Viewer&);
   Viewer& operator= (const Viewer&);
