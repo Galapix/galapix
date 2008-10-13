@@ -17,8 +17,9 @@
 */
 
 #include <iostream>
-#include <GL/glew.h>
-#include <GL/gl.h>
+#include <sstream>
+#include <stdexcept>
+#include <math.h>
 #include "../config.h"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
@@ -26,6 +27,37 @@
 #include "sdl_framebuffer.hpp"
 #include "framebuffer.hpp"
 
+#ifndef assert_gl
+void assert_gl(const char* message)
+{
+  GLenum error = glGetError();
+  if(error != GL_NO_ERROR) {
+    std::ostringstream msg;
+    msg << "OpenGLError while '" << message << "': "
+        << gluErrorString(error);
+    throw std::runtime_error(msg.str());
+  }
+}
+#endif
+
+void 
+Framebuffer::init()
+{
+  // Init Glew 
+  GLenum err = glewInit();
+  if (GLEW_OK != err)
+    {
+      std::ostringstream str;
+      str << "Error: " << glewGetErrorString(err) << std::endl;
+      throw std::runtime_error(str.str());
+    }
+  
+  if (!GLEW_ARB_texture_rectangle)
+    {
+      throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
+    }
+}
+
 void
 Framebuffer::reshape(const Size& size)
 { 
@@ -36,8 +68,12 @@ Framebuffer::reshape(const Size& size)
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  //static const float cl_pixelcenter_constant = 0.375;
-  //glTranslated(cl_pixelcenter_constant, cl_pixelcenter_constant, 0.0);
+  
+  // Magic Voodoo to get pixel perfect graphics, see:
+  //   http://www.opengl.org/resources/faq/technical/transformations.htm
+  // On Nvidia this seems to break things, instead of fixing them, so
+  // we don't use it, since the results are already perfect even without it.
+  // glTranslated(0.375, 0.375, 0.0);
 }
 
 void

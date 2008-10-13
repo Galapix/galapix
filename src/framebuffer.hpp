@@ -19,11 +19,10 @@
 #ifndef HEADER_DISPLAY_HPP
 #define HEADER_DISPLAY_HPP
 
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <sstream>
-#include <stdexcept>
-#include <math.h>
+
 #include "math/size.hpp"
 
 class RGB;
@@ -31,21 +30,17 @@ class RGBA;
 class Size;
 class Rectf;
 
-static inline void assert_gl(const char* message)
-{
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
-  }
-}
+#ifdef NDEBUG
+void assert_gl(const char* message);
+#else
+#  define assert_gl(x)
+#endif
 
 /** Generic OpenGL helper functions */
 class Framebuffer
 {
 public:
+  static void init();
   static void reshape(const Size& size);
   static int  get_width();
   static int  get_height();

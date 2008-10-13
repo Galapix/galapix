@@ -23,10 +23,6 @@
 **  02111-1307, USA.
 */
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-
 #include <sstream>
 #include <assert.h>
 #include <iostream>
@@ -86,21 +82,7 @@ SDLFramebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_alias
   SDL_WM_SetCaption("Galapix " VERSION, 0 /* icon */);
   SDL_EnableUNICODE(1);
 
-  { // Init Glew 
-    GLenum err = glewInit();
-    if (GLEW_OK != err)
-      {
-        std::ostringstream str;
-        str << "Error: " << glewGetErrorString(err) << std::endl;
-        throw std::runtime_error(str.str());
-      }
-  
-    if (!GLEW_ARB_texture_rectangle)
-      {
-        throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
-      }
-  }
-
+  Framebuffer::init();
   Framebuffer::reshape(Size(screen->w, screen->h));
 }
 
@@ -126,10 +108,7 @@ SDLFramebuffer::toggle_fullscreen()
     }
  
   screen = SDL_SetVideoMode(res.width, res.height, 0, flags); 
-  glViewport(0, 0, screen->w, screen->h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0.0, screen->w, screen->h, 0.0, 1000.0, -1000.0);
+  Framebuffer::reshape(Size(screen->w, screen->h));
 }
 
 void
