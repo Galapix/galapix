@@ -27,6 +27,20 @@
 #include "framebuffer.hpp"
 
 void
+Framebuffer::reshape(const Size& size)
+{ 
+  glViewport(0, 0, size.width, size.height);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0.0, size.width, size.height, 0.0, 1000.0, -1000.0);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  //static const float cl_pixelcenter_constant = 0.375;
+  //glTranslated(cl_pixelcenter_constant, cl_pixelcenter_constant, 0.0);
+}
+
+void
 Framebuffer::clear(const RGBA& rgba)
 {
   glClearColor(rgba.r/255.0f, rgba.g/255.0, rgba.b/255.0f, rgba.a/255.0f);

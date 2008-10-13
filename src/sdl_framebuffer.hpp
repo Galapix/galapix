@@ -40,7 +40,7 @@ public:
   static int  get_height() { return screen->h; }
   static Size get_size()   { return Size(screen->w, screen->h); }
 
-  static void resize(int w, int h);
+  static void reshape(const Size& size);
   static void flip();
 
 };

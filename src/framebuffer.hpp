@@ -46,6 +46,7 @@ static inline void assert_gl(const char* message)
 class Framebuffer
 {
 public:
+  static void reshape(const Size& size);
   static int  get_width();
   static int  get_height();
   static Size get_size()   { return Size(get_width(), get_height()); }

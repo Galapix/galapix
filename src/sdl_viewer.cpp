@@ -65,7 +65,7 @@ SDLViewer::process_event(const SDL_Event& event)
         break;
 
       case SDL_VIDEORESIZE:
-        SDLFramebuffer::resize(event.resize.w, event.resize.h);
+        SDLFramebuffer::reshape(Size(event.resize.w, event.resize.h));
         break;
 
       case SDL_MOUSEMOTION:

@@ -31,12 +31,11 @@
 #include <assert.h>
 #include <iostream>
 #include <stdexcept>
-#include "SDL_syswm.h"
 
 #include "../config.h"
+#include "framebuffer.hpp"
 #include "sdl_framebuffer.hpp"
 
-SDL_SysWMinfo syswm;
 SDL_Surface* SDLFramebuffer::screen = 0;
 Uint32 SDLFramebuffer::flags = 0;
 Size SDLFramebuffer::desktop_resolution;
@@ -84,36 +83,25 @@ SDLFramebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_alias
       exit(1);
     }
 
-  GLenum err = glewInit();
-  if (GLEW_OK != err)
-    {
-      std::ostringstream str;
-      str << "Error: " << glewGetErrorString(err) << std::endl;
-      throw std::runtime_error(str.str());
-    }
-  
-  if (!GLEW_ARB_texture_rectangle)
-    {
-      throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
-    }
-
   SDL_WM_SetCaption("Galapix " VERSION, 0 /* icon */);
   SDL_EnableUNICODE(1);
 
-  glViewport(0, 0, screen->w, screen->h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0.0, screen->w, screen->h, 0.0, 1000.0, -1000.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  //static const float cl_pixelcenter_constant = 0.375;
-  //glTranslated(cl_pixelcenter_constant, cl_pixelcenter_constant, 0.0);
+  { // Init Glew 
+    GLenum err = glewInit();
+    if (GLEW_OK != err)
+      {
+        std::ostringstream str;
+        str << "Error: " << glewGetErrorString(err) << std::endl;
+        throw std::runtime_error(str.str());
+      }
   
-  SDL_VERSION(&syswm.version); // this is important!
-  if (SDL_GetWMInfo(&syswm) == -1)
-    {
-      std::cout << "Couldn't get WM info " << std::endl;
-    }
+    if (!GLEW_ARB_texture_rectangle)
+      {
+        throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
+      }
+  }
+
+  Framebuffer::reshape(Size(screen->w, screen->h));
 }
 
 void
@@ -145,13 +133,10 @@ SDLFramebuffer::toggle_fullscreen()
 }
 
 void
-SDLFramebuffer::resize(int w, int h)
+SDLFramebuffer::reshape(const Size& size)
 {
-  screen = SDL_SetVideoMode(w, h, 0, SDL_OPENGL | SDL_RESIZABLE);
-  glViewport(0, 0, screen->w, screen->h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0.0, screen->w, screen->h, 0.0, 1000.0, -1000.0);
+  screen = SDL_SetVideoMode(size.width, size.height, 0, SDL_OPENGL | SDL_RESIZABLE);
+  Framebuffer::reshape(size);
 }
 
 void
