@@ -54,6 +54,10 @@ SoftwareSurface::get_fileformat(const URL& url)
     {
       return JPEG_FILEFORMAT;
     }
+  else if (Filesystem::has_extension(filename, ".CR2"))
+    {
+      return UFRAW_FILEFORMAT;
+    }
   else if (Filesystem::has_extension(filename, ".PNG")  ||
            Filesystem::has_extension(filename, ".png"))
     {

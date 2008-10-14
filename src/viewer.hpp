@@ -81,6 +81,7 @@ public:
   void on_mouse_motion(const Vector2i& pos, const Vector2i& rel);
   void on_mouse_button_down(const Vector2i& pos, int btn);
   void on_mouse_button_up(const Vector2i& pos, int btn);
+
 private:
   Viewer (const Viewer&);
   Viewer& operator= (const Viewer&);
