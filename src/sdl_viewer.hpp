@@ -45,6 +45,7 @@ private:
   int  anti_aliasing;
 
   bool quit;
+  bool spnav_allow_rotate;
 
   ThreadMessageQueue<FileEntry>   file_queue;
   std::auto_ptr<Viewer> viewer;

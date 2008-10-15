@@ -19,19 +19,17 @@
 #ifndef HEADER_SPNAV_HPP
 #define HEADER_SPNAV_HPP
 
+#include "thread.hpp"
+
 class Viewer;
 
-class SpaceNavigator
+class SpaceNavigator : public Thread
 {
-private:
-  bool usable;
-  bool allow_rotate;
-
 public:
   SpaceNavigator();
   ~SpaceNavigator();
 
-  void poll(Viewer& viewer);
+  int run();
 
 private:
   SpaceNavigator (const SpaceNavigator&);

@@ -27,6 +27,10 @@
 #include "tile_generator_thread.hpp"
 #include "space_navigator.hpp"
 #include "database_thread.hpp"
+
+#ifdef HAVE_SPACE_NAVIGATOR
+#  include <spnav.h>
+#endif
 
 SDLViewer* SDLViewer::current_ = 0;
 
@@ -34,7 +38,8 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing)
   : geometry(geometry),
     fullscreen(fullscreen),
     anti_aliasing(anti_aliasing),
-    quit(false)
+    quit(false),
+    spnav_allow_rotate(false)
 {
   current_ = this;
 }
@@ -56,6 +61,61 @@ SDLViewer::process_event(const SDL_Event& event)
 
   switch(event.type)
     {
+      case SDL_USEREVENT:
+        if (event.user.code == 0)
+          {
+            spnav_event* spnav_ev = static_cast<spnav_event*>(event.user.data1);
+
+            switch(spnav_ev->type)
+              {
+                case SPNAV_EVENT_MOTION:
+                  {
+                    if (0)
+                      std::cout << "MotionEvent: " 
+                                << "("
+                                << spnav_ev->motion.x << ", "
+                                << spnav_ev->motion.y << ", "
+                                << spnav_ev->motion.z
+                                << ") ("
+                                << spnav_ev->motion.rx << ", "
+                                << spnav_ev->motion.ry << ", "
+                                << spnav_ev->motion.rz
+                                << std::endl;              
+
+                    float factor = -abs(spnav_ev->motion.y)/10000.0f;
+
+                    if (spnav_ev->motion.y > 0)
+                      viewer->get_state().zoom(1.0f+factor);
+                    else if (spnav_ev->motion.y < 0)
+                      viewer->get_state().zoom(1.0f/(1.0f+factor));
+
+                    viewer->get_state().move(Vector2f(-spnav_ev->motion.x / 10.0f,
+                                                     +spnav_ev->motion.z / 10.0f));
+
+                    if (spnav_allow_rotate)
+                      viewer->get_state().rotate(spnav_ev->motion.ry / 200.0f);
+                  }
+                  break;
+            
+                case SPNAV_EVENT_BUTTON:
+                  if (0)
+                    std::cout << "ButtonEvent: " << spnav_ev->button.press << spnav_ev->button.bnum << std::endl;
+
+                  if (spnav_ev->button.bnum == 0 && spnav_ev->button.press)
+                    viewer->get_state().set_angle(0.0f);
+
+                  if (spnav_ev->button.bnum == 1 && spnav_ev->button.press)
+                    spnav_allow_rotate = !spnav_allow_rotate;
+                  break;
+
+                default:
+                  assert(!"SpaceNavigator: Unhandled event");
+              }
+
+            delete spnav_ev;
+          }
+        break;
+
       case SDL_QUIT:
         std::cout << "Viewer: SDL_QUIT received" << std::endl;
         quit = true;
@@ -129,6 +189,7 @@ SDLViewer::run()
 
 #ifdef HAVE_SPACE_NAVIGATOR
   SpaceNavigator space_navigator;
+  space_navigator.start();
 #endif
 
   while(!quit)
@@ -139,10 +200,6 @@ SDLViewer::run()
           workspace.add_image(entry);
           file_queue.pop();
         }
-
-#ifdef HAVE_SPACE_NAVIGATOR
-      space_navigator.poll(*viewer);
-#endif
 
       if (viewer->is_active())
         {
@@ -176,10 +233,15 @@ SDLViewer::run()
 
       SDLFramebuffer::flip();
 
-      std::cout << "." << std::flush;
+      // std::cout << "." << std::flush;
 
       SDL_Delay(30);
     }
+
+#ifdef HAVE_SPACE_NAVIGATOR
+  // How should be join stuff that is waiting for stuff?
+  // space_navigator.join();
+#endif
 
   std::cout << "SDLViewer: done" << std::endl;
 }
