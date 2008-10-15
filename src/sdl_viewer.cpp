@@ -144,19 +144,39 @@ SDLViewer::run()
       space_navigator.poll(*viewer);
 #endif
 
-      SDL_Event event;
-      while (SDL_PollEvent(&event))
+      if (viewer->is_active())
         {
-          process_event(event);
+          SDL_Event event;
+          while (SDL_PollEvent(&event))
+            {
+              process_event(event);
+            }
+
+          Uint32 cticks = SDL_GetTicks();
+          float delta = (cticks - ticks) / 1000.0f;
+          ticks = cticks;
+
+          viewer->update(delta);
+          viewer->draw();
+        }
+      else
+        {
+          SDL_Event event;
+          SDL_WaitEvent(NULL);
+          while (SDL_PollEvent(&event))
+            {
+              process_event(event);
+            }
+
+          // FIXME: We should try to detect if we need a redraw and
+          // only draw then, else we will redraw on each mouse motion
+          viewer->draw();          
+          ticks = SDL_GetTicks();
         }
 
-      Uint32 cticks = SDL_GetTicks();
-      float delta = (cticks - ticks) / 1000.0f;
-      ticks = cticks;
-
-      viewer->update(delta);
-      viewer->draw();
       SDLFramebuffer::flip();
+
+      std::cout << "." << std::flush;
 
       SDL_Delay(30);
     }

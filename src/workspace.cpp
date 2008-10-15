@@ -604,5 +604,11 @@ Workspace::get_bounding_rect() const
       return rect;
     }
 }
+
+bool
+Workspace::is_animated() const
+{
+  return progress != 1.0f;
+}
 
 /* EOF */

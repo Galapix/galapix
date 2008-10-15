@@ -74,10 +74,5 @@ ZoomRectTool::draw()
       Framebuffer::draw_rect(rect, RGB(255, 255, 255));
     }
 }
-
-void
-ZoomRectTool::update(const Vector2i& pos, float delta)
-{
-}
 
 /* EOF */

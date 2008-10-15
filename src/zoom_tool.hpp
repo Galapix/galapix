@@ -36,6 +36,8 @@ public:
 
   void draw();
   void update(const Vector2i& pos, float delta);
+
+  bool is_active() const;
 };
 
 #endif

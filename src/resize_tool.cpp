@@ -67,10 +67,5 @@ ResizeTool::down(const Vector2i& pos)
   resize_center    = viewer->get_state().screen2world(pos);
   selection_center = viewer->get_workspace()->get_selection().get_center();
 }
-
-void
-ResizeTool::update(const Vector2i& /*pos*/, float /*delta*/)
-{
-}
 
 /* EOF */

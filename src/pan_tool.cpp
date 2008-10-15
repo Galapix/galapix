@@ -67,20 +67,6 @@ PanTool::down(const Vector2i& pos)
   move_active = true;
 }
 
-void
-PanTool::update(const Vector2i& /*pos*/, float /*delta*/)
-{
-  if (trackball_mode)
-    {
-      /* FIXME: Integrate that somewhere 
-         if (zoom_in && !zoom_out)
-         viewer->get_state().zoom(1.0f / (1.0f + 4.0f * delta));
-         else if (!zoom_in && zoom_out)
-         viewer->get_state().zoom(1.0f + 4.0f * delta);
-      */
-    }
-}
-
 bool
 PanTool::get_trackball_mode() const
 {

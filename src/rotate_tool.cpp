@@ -64,10 +64,5 @@ RotateTool::down(const Vector2i& pos)
   start_angle = atan2(selection_center.y - mouse_pos.y,
                       selection_center.x - mouse_pos.x);
 }
-
-void
-RotateTool::update(const Vector2i& /*pos*/, float /*delta*/)
-{
-}
 
 /* EOF */

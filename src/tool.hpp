@@ -37,7 +37,6 @@ public:
   virtual void down(const Vector2i& pos) =0;
 
   virtual void draw() =0;
-  virtual void update(const Vector2i& pos, float delta) =0;
 
 private:
   Tool (const Tool&);

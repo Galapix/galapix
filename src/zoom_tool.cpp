@@ -59,5 +59,11 @@ void
 ZoomTool::draw()
 {
 }
+
+bool
+ZoomTool::is_active() const
+{
+  return zoom_active;
+}
 
 /* EOF */

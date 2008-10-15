@@ -132,6 +132,8 @@ public:
 
   Rectf get_bounding_rect() const;
 
+  bool is_animated() const;
+
 private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);

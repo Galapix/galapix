@@ -141,9 +141,8 @@ Viewer::update(float delta)
 {
   workspace->update(delta);
 
-  left_tool  ->update(mouse_pos, delta);
-  middle_tool->update(mouse_pos, delta);
-  right_tool ->update(mouse_pos, delta);
+  zoom_in_tool ->update(mouse_pos, delta);
+  zoom_out_tool->update(mouse_pos, delta);
 
   keyboard_zoom_in_tool ->update(mouse_pos, delta);
   keyboard_zoom_out_tool->update(mouse_pos, delta);
@@ -469,6 +468,17 @@ Viewer::on_key_down(int key)
       default:
         break;
     }
+}
+
+bool
+Viewer::is_active() const
+{
+  return
+    workspace->is_animated()   ||
+    zoom_in_tool ->is_active() ||
+    zoom_out_tool->is_active() ||
+    keyboard_zoom_in_tool ->is_active() ||
+    keyboard_zoom_out_tool->is_active();
 }
 
 /* EOF */

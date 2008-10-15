@@ -212,6 +212,16 @@ DatabaseThread::run()
 
   std::cout << "Connecting to the database..." << std::endl;
   SQLiteConnection db(database_filename);
+
+  /*
+  SQLiteStatement(&db)
+    .prepare("PRAGMA synchronous = OFF;")
+    .execute();
+
+  SQLiteStatement(&db)
+    .prepare("PRAGMA journal_mode = OFF;")
+    .execute();
+  */
   FileDatabase file_db(&db);
   TileDatabase tile_db(&db);
   std::cout << "Connecting to the database... done" << std::endl;
