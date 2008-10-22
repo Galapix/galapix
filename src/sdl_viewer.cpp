@@ -64,6 +64,9 @@ SDLViewer::process_event(const SDL_Event& event)
       case SDL_USEREVENT:
         if (event.user.code == 0)
           {
+#ifndef HAVE_SPACE_NAVIGATOR
+            assert(!"Broken build, this code should be unreachable");
+#else
             spnav_event* spnav_ev = static_cast<spnav_event*>(event.user.data1);
 
             switch(spnav_ev->type)
@@ -113,6 +116,11 @@ SDLViewer::process_event(const SDL_Event& event)
               }
 
             delete spnav_ev;
+#endif
+          }
+        else if (event.user.code == 1)
+          {
+            // New tile arrived
           }
         break;
 
