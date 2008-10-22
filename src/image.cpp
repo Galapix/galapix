@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "SDL.h"
 #include <boost/bind.hpp>
 #include "math/rgb.hpp"
 #include "math/rect.hpp"
@@ -541,6 +542,14 @@ Image::receive_tile(const TileEntry& tile)
 {
   assert(impl.get());
   impl->tile_queue.push(tile);
+
+  // FIXME: Wake up the display
+  SDL_Event event;
+  event.type = SDL_USEREVENT;
+  event.user.code  = 1;
+  event.user.data1 = 0;
+  event.user.data2 = 0;
+  SDL_PushEvent(&event);
 }
 
 void
