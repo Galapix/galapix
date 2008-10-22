@@ -49,11 +49,7 @@ SpaceNavigator::run()
       event.user.data1 = spnav_ev;
       event.user.data2 = 0;
 
-      if (SDL_PushEvent(&event))
-        {
-          std::cout << "SpaceNavigator: Couldn't do SDL_PushEvent()" << std::endl;
-          delete spnav_ev;
-        }
+      while (SDL_PushEvent(&event) != 0);
     }
 
   if (spnav_close() != 0)

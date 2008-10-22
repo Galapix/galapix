@@ -549,7 +549,8 @@ Image::receive_tile(const TileEntry& tile)
   event.user.code  = 1;
   event.user.data1 = 0;
   event.user.data2 = 0;
-  SDL_PushEvent(&event);
+
+  while (SDL_PushEvent(&event) != 0);
 }
 
 void
