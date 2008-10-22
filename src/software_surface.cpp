@@ -347,7 +347,54 @@ SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
 SoftwareSurface
 SoftwareSurface::halve() const
 {
-  return scale(Size(get_width()/2, get_height()/2));
+  SoftwareSurface dstsrc(impl->format, impl->size/2);
+  
+  uint8_t* dst = dstsrc.get_data();
+  uint8_t* src = get_data();
+
+  //int src_w = get_width();
+  //int src_h = get_height();
+  int src_p = get_pitch();
+
+  int dst_w = dstsrc.get_width();
+  int dst_h = dstsrc.get_height();
+  int dst_p = dstsrc.get_pitch();
+
+  switch(impl->format)
+    {
+      case RGB_FORMAT:
+        for(int y = 0; y < dst_h; ++y)
+          for(int x = 0; x < dst_w; ++x)
+            {
+              uint8_t* d = dst + (y*dst_p + 3*x);
+              uint8_t* s = src + (y*src_p + 3*x)*2;
+
+              d[0] = (s[0] + s[0+3] + s[0+src_p] + s[0+src_p+3])/4;
+              d[1] = (s[1] + s[1+3] + s[1+src_p] + s[1+src_p+3])/4;
+              d[2] = (s[2] + s[2+3] + s[2+src_p] + s[2+src_p+3])/4;
+            }
+        break;
+
+      case RGBA_FORMAT:
+        for(int y = 0; y < dst_h; ++y)
+          for(int x = 0; x < dst_w; ++x)
+            {
+              uint8_t* d = dst + (y*dst_p + 4*x);
+              uint8_t* s = src + (y*src_p + 4*x)*2;
+
+              d[0] = (s[0] + s[0+4] + s[0+src_p] + s[0+src_p+4])/4;
+              d[1] = (s[1] + s[1+4] + s[1+src_p] + s[1+src_p+4])/4;
+              d[2] = (s[2] + s[2+4] + s[2+src_p] + s[2+src_p+4])/4;
+              d[3] = (s[3] + s[3+4] + s[3+src_p] + s[3+src_p+4])/4;
+            }
+        break;
+        
+      default:
+        assert(!"Not reachable");
+        break;
+    }
+
+  return dstsrc;
 }
 
 SoftwareSurface
