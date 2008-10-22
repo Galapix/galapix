@@ -46,57 +46,65 @@ class Sizef;
 //- !header=core.h!
 class Size
 {
-//! Construction:
+  //! Construction:
 public:
-	//: Constructs a size structure.
-	//param width: Initial width of size structure.
-	//param height: Initial height of size structure.
-	//param size: Size structure to construct this one from.
-	Size() : width(0), height(0) { return; }
+  //: Constructs a size structure.
+  //param width: Initial width of size structure.
+  //param height: Initial height of size structure.
+  //param size: Size structure to construct this one from.
+  Size() : width(0), height(0) { return; }
 
-	Size(int width, int height)
-	: width(width), height(height) { }
+  Size(int width, int height)
+    : width(width), height(height) { }
 
-	Size(const Size &s)
-	{ width = s.width; height = s.height; }
+  Size(const Size &s)
+  { width = s.width; height = s.height; }
 
-	explicit Size(const Sizef& s);
+  explicit Size(const Sizef& s);
 
-//! Attributes:
+  //! Attributes:
 public:
-	//: Size width.
-	int width;
+  //: Size width.
+  int width;
 
-	//: Size height.
-	int height;
+  //: Size height.
+  int height;
 
-//! Operations:
+  //! Operations:
 public:
-	//: Size += Size operator.
-	Size &operator+=(const Size &s)
-	{ width += s.width; height += s.height; return *this; }
+  //: Size / int operator.
+  Size operator/(int a)
+  { return Size(width / a, height / a); }
 
-	//: Size -= Size operator.
-	Size &operator-=(const Size &s)
-	{ width -= s.width; height -= s.height; return *this; }
+  //: Size /= Size operator.
+  Size &operator/=(int a)
+  { width /= a; height /= a; return *this; }
+
+  //: Size += Size operator.
+  Size &operator+=(const Size &s)
+  { width += s.width; height += s.height; return *this; }
+
+  //: Size -= Size operator.
+  Size &operator-=(const Size &s)
+  { width -= s.width; height -= s.height; return *this; }
 	
-	//: Size + Size operator.
-	Size operator+(const Size &s) const
-	{ return Size(width + s.width, height + s.height); }
+  //: Size + Size operator.
+  Size operator+(const Size &s) const
+  { return Size(width + s.width, height + s.height); }
 
-	//: Size - Size operator.
-	Size operator-(const Size &s) const
-	{ return Size(width - s.width, height - s.height); }
+  //: Size - Size operator.
+  Size operator-(const Size &s) const
+  { return Size(width - s.width, height - s.height); }
 
-	//: Size == Size operator (deep compare).
-	bool operator==(const Size &s) const
-	{ return (width == s.width) && (height == s.height); }
+  //: Size == Size operator (deep compare).
+  bool operator==(const Size &s) const
+  { return (width == s.width) && (height == s.height); }
 
-	//: Size != Size operator (deep compare).
-	bool operator!=(const Size &s) const
-	{ return (width != s.width) || (height != s.height); }
+  //: Size != Size operator (deep compare).
+  bool operator!=(const Size &s) const
+  { return (width != s.width) || (height != s.height); }
   
-	int get_area() const { return width * height; }
+  int get_area() const { return width * height; }
 };
 
 //: 2D (width,height) floating point size structure.
