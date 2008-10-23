@@ -42,6 +42,8 @@ private:
   Workspace* workspace;
   bool  draw_grid;
   float gamma;
+  float brightness;
+  float contrast;
 
   ViewerState state;
 

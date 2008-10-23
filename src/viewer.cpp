@@ -40,7 +40,9 @@
 Viewer::Viewer(Workspace* workspace)
   : workspace(workspace),
     draw_grid(false),
-    gamma(1.0f)
+    gamma(1.0f),
+    brightness(0.0f),
+    contrast(1.0f)
 {
   pan_tool    = boost::shared_ptr<PanTool>(new PanTool(this));
   move_tool   = boost::shared_ptr<MoveTool>(new MoveTool(this));
@@ -233,6 +235,22 @@ Viewer::on_key_up(int key)
     }
 }
 
+void apply_gamma_ramp(float contrast, float brightness, float gamma)
+{
+  Uint16 tbl[256];
+  for(int i = 0; i < 256; ++i)
+    {
+      float c = i/255.0f;
+      c = c + brightness;
+      c = (c * contrast) - 0.5f * (contrast - 1.0f);
+      c = powf(c, 1.0f/gamma);
+      
+      tbl[i] = Math::clamp(0, (int)(c*65535.0f), 65535);
+    }
+  
+  SDL_SetGammaRamp(tbl, tbl, tbl);
+}
+
 void
 Viewer::on_key_down(int key)
 {
@@ -246,14 +264,49 @@ Viewer::on_key_down(int key)
         keyboard_zoom_in_tool->down(mouse_pos);
         break;
 
+      case SDLK_F6:
+        brightness -= 0.1f;
+        std::cout << "Brightness: " << brightness << std::endl;
+        apply_gamma_ramp(contrast, brightness, gamma);
+        break;
+
+      case SDLK_F7:
+        brightness += 0.1f;
+        std::cout << "Brightness: " << brightness << std::endl;
+        apply_gamma_ramp(contrast, brightness, gamma);
+        break;        
+
+      case SDLK_F8:
+        //contrast -= 0.1f;
+        contrast /= 1.1f;
+        std::cout << "Contrast: " << contrast << std::endl;
+        apply_gamma_ramp(contrast, brightness, gamma);
+        break;        
+
+      case SDLK_F9:
+        //contrast += 0.1f;
+        contrast *= 1.1f;
+        std::cout << "Contrast: " << contrast << std::endl;
+        apply_gamma_ramp(contrast, brightness, gamma);
+        break;        
+
+      case SDLK_F10:
+        brightness = 0.0f;
+        contrast   = 1.0f;
+        gamma      = 1.0f;
+        apply_gamma_ramp(contrast, brightness, gamma);
+        break;
+
       case SDLK_PAGEUP:
         gamma *= 1.1f;
-        SDL_SetGamma(gamma, gamma, gamma);
+        std::cout << "Gamma: " << gamma << std::endl;
+        apply_gamma_ramp(contrast, brightness, gamma);
         break;
 
       case SDLK_PAGEDOWN:
         gamma /= 1.1f;
-        SDL_SetGamma(gamma, gamma, gamma);
+        std::cout << "Gamma: " << gamma << std::endl;
+        apply_gamma_ramp(contrast, brightness, gamma);
         break;
 
       case SDLK_F11:
