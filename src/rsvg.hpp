@@ -27,8 +27,8 @@ class URL;
 class RSVG
 {
 public:
-  SoftwareSurface load_from_url(const URL& url);
-  SoftwareSurface load_from_file(const std::string& filename);
+  static SoftwareSurface load_from_url(const URL& url);
+  static SoftwareSurface load_from_file(const std::string& filename);
 };
 
 #endif

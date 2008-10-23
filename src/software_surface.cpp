@@ -121,7 +121,9 @@ SoftwareSurface::get_size(const URL& url, Size& size)
                 return Imagemagick::get_size(url.get_stdio_name(), size);
 
               default:
-                return Imagemagick::get_size(url.get_stdio_name(), size);
+                std::cout << "Warning: Using super slow get_size() for " << url.str() << std::endl;
+                size = SoftwareSurface::from_url(url).get_size();
+                return true;
             }
         }
       else
@@ -172,7 +174,9 @@ SoftwareSurface::get_size(const URL& url, Size& size)
                 }
 
               default:
-                return false;
+                std::cout << "Warning: Using super slow get_size() for " << url.str() << std::endl;
+                size = SoftwareSurface::from_url(url).get_size();
+                return true;
             }      
         }
     }
@@ -205,6 +209,9 @@ SoftwareSurface::from_url(const URL& url)
           case MAGICK_FILEFORMAT:
             return Imagemagick::load_from_file(url.get_stdio_name());
 
+          case SVG_FILEFORMAT:
+            return RSVG::load_from_file(url.get_stdio_name());
+            
           default:
             throw std::runtime_error(url.str() + ": unknown file type");
             return SoftwareSurface();
@@ -243,6 +250,14 @@ SoftwareSurface::from_url(const URL& url)
               Blob blob = url.get_blob();
               return Imagemagick::load_from_mem(blob.get_data(), blob.size());
             }
+            /*
+          case SVG_FILEFORMAT:
+            {
+              Blob blob = url.get_blob();
+              return RSVG::load_from_mem(blob.get_data(), blob.size());
+            }            
+            break;
+            */
 
           default:
             throw std::runtime_error("SoftwareSurface::from_url: " + url.str() + ": unknown file type");
