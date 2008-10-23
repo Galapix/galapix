@@ -25,6 +25,7 @@
 #include "imagemagick.hpp"
 #include "xcf.hpp"
 #include "kra.hpp"
+#include "rsvg.hpp"
 
 #include "blob.hpp"
 #include "math.hpp"
@@ -72,6 +73,10 @@ SoftwareSurface::get_fileformat(const URL& url)
   else if (Filesystem::has_extension(filename, ".kra"))
     {
       return KRA_FILEFORMAT;
+    }
+  else if (Filesystem::has_extension(filename, ".svg"))
+    {
+      return SVG_FILEFORMAT;
     }
   else if (Filesystem::has_extension(filename, ".gif") ||
            Filesystem::has_extension(filename, ".pnm") ||

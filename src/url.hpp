@@ -31,6 +31,9 @@ class URL
 {
 private:
   // URL: {PROTOCOL}://{PAYLOAD}//{PLUGIN}:{PLUGIN_PAYLOAD}
+  // Example:
+  // http://www.example.com/foobar.jpg
+  // file:///www.example.com/foobar.rar//rar:Filename.jpg
   std::string protocol;
   std::string payload;
   std::string plugin;

@@ -27,8 +27,8 @@
 #include <sys/time.h>
 #include <utime.h>
 #include <boost/format.hpp>
-//#include <attr/xattr.h>
 
+#include <sstream>
 #include "tar.hpp"
 #include "zip.hpp"
 #include "rar.hpp"
@@ -37,6 +37,36 @@
 #include "filesystem.hpp"
 
 std::string Filesystem::home_directory;
+
+std::string
+Filesystem::find_exe(const std::string& name)
+{
+  char* path_c = getenv("PATH");
+  if (path_c)
+    {
+      const char* delim = ":";
+      char* path = strdup(path_c);
+      char* state;
+
+      for(char* p = strtok_r(path, delim, &state); p != NULL; p = strtok_r(NULL, delim, &state))
+        {
+          std::ostringstream fullpath; 
+          fullpath << p << "/" << name;
+          if (access(fullpath.str().c_str(), X_OK) == 0)
+            {
+              return fullpath.str();
+            }
+        }
+      
+      free(path);
+
+      throw std::runtime_error("Couldn't find " + name + " in PATH");
+    }
+  else
+    {
+      throw std::runtime_error("Couldn't get PATH environment variable");
+    }
+}
 
 bool
 Filesystem::exist(const std::string& pathname)
@@ -257,6 +287,10 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
                   const std::vector<std::string>& lst = Tar::get_filenames(*i);
                   for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
                     file_list.push_back(URL::from_string(url.str() + "//tar:" + *j));
+                }
+              else if (has_extension(*i, ".galapix"))
+                {
+                  file_list.push_back(url);
                 }
               else
                 {

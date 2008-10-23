@@ -29,6 +29,8 @@ private:
   static std::string home_directory;
 
 public:
+  static std::string find_exe(const std::string& name);
+
   static bool is_directory(const std::string& pathname);
   static bool exist(const std::string& pathname);
   static void mkdir(const std::string& pathname);

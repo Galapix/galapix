@@ -279,7 +279,10 @@ Galapix::generate_tiles(const std::string& database,
 }
 
 void
-Galapix::view(const std::string& database, const std::vector<URL>& urls, bool view_all, const std::string& pattern)
+Galapix::view(const std::string& database, 
+              const std::vector<URL>& urls, 
+              bool view_all, 
+              const std::string& pattern)
 {
   JPEGDecoderThread   jpeg_thread;
   DatabaseThread      database_thread(database);
@@ -289,7 +292,10 @@ Galapix::view(const std::string& database, const std::vector<URL>& urls, bool vi
   database_thread.start();
   tile_generator_thread.start();
 
+  Workspace workspace;
   SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
+
+  sdl_viewer.set_workspace(&workspace);
 
   if (view_all)
     {
@@ -305,9 +311,16 @@ Galapix::view(const std::string& database, const std::vector<URL>& urls, bool vi
         }
     }
 
-  for(std::vector<std::string>::size_type i = 0; i < urls.size(); ++i)
+  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
     {
-      database_thread.request_file(urls[i], boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1));
+      if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))
+        {
+          workspace.load(i->get_stdio_name());
+        }
+      else
+        {
+          database_thread.request_file(*i, boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1));
+        }
     }
   
   sdl_viewer.run();

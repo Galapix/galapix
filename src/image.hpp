@@ -27,6 +27,7 @@
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "grid.hpp"
+#include "object.hpp"
 #include "surface.hpp"
 
 class Surface;
@@ -37,7 +38,7 @@ class ImageImpl;
 class FileEntry;
 class TileEntry;
 
-class Image
+class Image : public Object
 {
 public:
   // _____________________________________________________

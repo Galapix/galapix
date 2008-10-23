@@ -541,7 +541,7 @@ Workspace::load(const std::string& filename)
     }
   else
     {
-      clear();
+      //clear();
 
       std::vector<FileReader> image_sections = reader.read_section("images").get_sections();
 

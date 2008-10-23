@@ -178,6 +178,8 @@ SDLViewer::process_event(const SDL_Event& event)
 void
 SDLViewer::run()
 {
+  assert(workspace);
+
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
       std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
@@ -185,13 +187,11 @@ SDLViewer::run()
     }
   atexit(SDL_Quit); 
 
-  Workspace workspace;
-
   SDLFramebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
 
-  workspace.layout_aspect(4,3);
+  workspace->layout_aspect(4,3);
 
-  viewer = std::auto_ptr<Viewer>(new Viewer(&workspace));
+  viewer = std::auto_ptr<Viewer>(new Viewer(workspace));
 
   Uint32 ticks = SDL_GetTicks();
 
@@ -205,7 +205,7 @@ SDLViewer::run()
       while (!file_queue.empty())
         {
           const FileEntry& entry = file_queue.front();
-          workspace.add_image(entry);
+          workspace->add_image(entry);
           file_queue.pop();
         }
 

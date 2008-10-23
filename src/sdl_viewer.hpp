@@ -31,6 +31,7 @@ class Viewer;
 class FileEntry;
 class Image;
 class TileEntry;
+class Workspace;
 
 class SDLViewer
 {
@@ -49,14 +50,19 @@ private:
 
   ThreadMessageQueue<FileEntry>   file_queue;
   std::auto_ptr<Viewer> viewer;
+  
+  Workspace* workspace;
 
 public:
   SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing);
   virtual ~SDLViewer();
 
   void run();
+  void set_workspace(Workspace* workspace_) { workspace = workspace_; }
 
   void receive_file(const FileEntry& entry);
+
+  Viewer* get_viewer() const { return viewer.get(); }
 
 private:
   void process_event(const SDL_Event& event);
