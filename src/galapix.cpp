@@ -39,7 +39,6 @@
 #include "math/vector2i.hpp"
 #include "sqlite.hpp"
 #include "software_surface.hpp"
-#include "jpeg_decoder_thread.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "database_thread.hpp"
@@ -284,11 +283,9 @@ Galapix::view(const std::string& database,
               bool view_all, 
               const std::string& pattern)
 {
-  JPEGDecoderThread   jpeg_thread;
   DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;
 
-  jpeg_thread.start();
   database_thread.start();
   tile_generator_thread.start();
 
@@ -327,11 +324,9 @@ Galapix::view(const std::string& database,
 
   tile_generator_thread.stop();
   database_thread.stop();
-  jpeg_thread.stop();
-
+  
   tile_generator_thread.join(); 
   database_thread.join();
-  jpeg_thread.join();
 }
 
 void

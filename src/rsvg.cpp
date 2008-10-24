@@ -17,11 +17,17 @@
 */
 
 #include <stdexcept>
+#include "filesystem.hpp"
 #include "url.hpp"
 #include "exec.hpp"
 #include "png.hpp"
 #include "rsvg.hpp"
 
+RSVG::RSVG()
+{
+  rsvg_exe = Filesystem::find_exe("rsvg");
+}
+
 SoftwareSurface
 RSVG::load_from_url(const URL& url)
 {
@@ -41,6 +47,7 @@ SoftwareSurface
 RSVG::load_from_file(const std::string& filename)
 {
   Exec rsvg("rsvg");
+
   rsvg.arg("--format").arg("png");
   rsvg.arg(filename);
   rsvg.arg("/dev/stdout");

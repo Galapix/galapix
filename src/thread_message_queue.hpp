@@ -82,6 +82,11 @@ public:
     SDL_Delay(100);
   }
 
+  void wakeup()
+  {
+    // Implement me: Break the queue out of a wait()
+  }
+
 private:
   ThreadMessageQueue (const ThreadMessageQueue&);
   ThreadMessageQueue& operator= (const ThreadMessageQueue&);

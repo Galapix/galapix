@@ -16,26 +16,40 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_RSVG_HPP
-#define HEADER_RSVG_HPP
-
-#include <string>
-#include "software_surface.hpp"
+#include "job.hpp"
+#include "job_worker_thread.hpp"
+#include "job_manager.hpp"
 
-class URL;
-
-class RSVG
+JobManager::JobManager(int num_threads)
+  : next_thread(0)
 {
-private:
-  std::string rsvg_exe;
+  assert(num_threads > 0);
 
-public:
-  RSVG();
+  for(int i = 0; i < num_threads; ++i)
+    threads.push_back(new JobWorkerThread());
 
-  static SoftwareSurface load_from_url(const URL& url);
-  static SoftwareSurface load_from_file(const std::string& filename);
-};
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+      (*i)->run();
+}
+
+JobManager::~JobManager()
+{
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    (*i)->join();
+}
+
+JobHandle
+JobManager::request(Job* job, const boost::function<void (Job*)>& callback)
+{
+  threads[next_thread]->request(job, callback);
+  
+  next_thread += 1;
+  if (next_thread >= threads.size())
+    {
+      next_thread = 0;
+    }
+
+  return job->get_handle();
+}
 
-#endif
-
 /* EOF */

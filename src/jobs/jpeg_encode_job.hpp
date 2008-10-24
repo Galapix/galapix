@@ -16,24 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_RSVG_HPP
-#define HEADER_RSVG_HPP
+#ifndef HEADER_JPEG_ENCODE_JOB_HPP
+#define HEADER_JPEG_ENCODE_JOB_HPP
 
-#include <string>
-#include "software_surface.hpp"
 
-class URL;
-
-class RSVG
+class JPEGEncodeJob : public Job
 {
 private:
-  std::string rsvg_exe;
+  SoftwareSurface surface;
+  int quality;
+  Blob blob;
 
 public:
-  RSVG();
+  JPEGEncodeJob(const SoftwareSurface& surface, int quality)
+    : surface(surface),
+      quality(quality)
+  {}
+  
+  void run() {
+    blob = JPEG::save(surface, quality);
+  }
 
-  static SoftwareSurface load_from_url(const URL& url);
-  static SoftwareSurface load_from_file(const std::string& filename);
+  Blob get_blob() const { return blob; }
 };
 
 #endif

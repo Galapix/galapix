@@ -543,7 +543,7 @@ Image::receive_tile(const TileEntry& tile)
   assert(impl.get());
   impl->tile_queue.push(tile);
 
-  // FIXME: Wake up the display
+  // FIXME: Make this a SDLViewer::current()->wakeup() or so
   SDL_Event event;
   event.type = SDL_USEREVENT;
   event.user.code  = 1;

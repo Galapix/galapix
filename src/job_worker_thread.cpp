@@ -16,50 +16,52 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "software_surface.hpp"
-#include "jpeg_decoder_thread.hpp"
+#include "job.hpp"
+#include "job_worker_thread.hpp"
 
-JPEGDecoderThread* JPEGDecoderThread::current_ = 0;
-
-JPEGDecoderThread::JPEGDecoderThread()
-  : Thread("JPEGDecoderThread"),
+JobWorkerThread::JobWorkerThread()
+  : Thread("JobWorkerThread"),
     quit(false)
 {
-  current_ = 0;
-}
-
-void
-JPEGDecoderThread::request_decode(const Blob& blob,
-                                  const boost::function<void (const SoftwareSurface&)>& callback)
-{
-  JPEGDecoderThreadMessage msg;
-  msg.blob     = blob;
-  msg.callback = callback;
-  queue.push(msg);
-}
-
-void 
-JPEGDecoderThread::stop()
-{
-  quit = true;
 }
 
 int
-JPEGDecoderThread::run()
+JobWorkerThread::run()
 {
-  quit = false;
-  while (!quit)
+  while(!quit)
     {
       while(!queue.empty())
         {
-          JPEGDecoderThreadMessage msg = queue.front();
+          Task task = queue.front();
           queue.pop();
-          //msg.callback(SoftwareSurface::from_jpeg_data(msg.blob));
+
+          task.job->run();
+          task.callback(task.job);
+          delete task.job;
         }
       queue.wait();
     }
 
   return 0;
 }
+
+void
+JobWorkerThread::stop()
+{
+  quit = true;
+  queue.wakeup();
+}
+
+JobHandle
+JobWorkerThread::request(Job* job, const boost::function<void (Job*)>& callback)
+{
+  Task task;
+  task.job      = job;
+  task.callback = callback;
+  queue.push(task);
+  
+  return job->get_handle();
+}
+
 
 /* EOF */

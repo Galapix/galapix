@@ -16,47 +16,38 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_JPEG_DECODER_THREAD_HPP
-#define HEADER_JPEG_DECODER_THREAD_HPP
+#ifndef HEADER_JOB_WORKER_THREAD_HPP
+#define HEADER_JOB_WORKER_THREAD_HPP
 
 #include <boost/function.hpp>
 #include "thread_message_queue.hpp"
-#include "blob.hpp"
 #include "thread.hpp"
-
-class SoftwareSurface;
+#include "job_handle.hpp"
 
-/** Simple thread that takes a binary blob and decodes it to a
-    SoftwareSurface */
-class JPEGDecoderThread : public Thread
+class Job;
+
+class JobWorkerThread : public Thread
 {
 private:
-  static JPEGDecoderThread* current_;
-
-public:
-  static JPEGDecoderThread* current() { return current_; } 
-
-private:
-  struct JPEGDecoderThreadMessage 
-  {
-    Blob blob;
-    boost::function<void (const SoftwareSurface&)> callback;
+  struct Task {
+    Job* job;
+    boost::function<void (Job*)> callback;
   };
 
-  ThreadMessageQueue<JPEGDecoderThreadMessage> queue;
+  ThreadMessageQueue<Task> queue;
   bool quit;
-
-protected:
-  int run();
+  
 public:
-  JPEGDecoderThread();
+  JobWorkerThread();
 
-  void request_decode(const Blob& blob, const boost::function<void (const SoftwareSurface&)>& callback);
+  JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
+
+  int  run();
   void stop();
 
 private:
-  JPEGDecoderThread (const JPEGDecoderThread&);
-  JPEGDecoderThread& operator= (const JPEGDecoderThread&);
+  JobWorkerThread (const JobWorkerThread&);
+  JobWorkerThread& operator= (const JobWorkerThread&);
 };
 
 #endif
