@@ -27,6 +27,7 @@ class Exec
 {
 private:
   std::string program;
+  bool absolute_path;
   std::vector<std::string> arguments;
 
   std::vector<char> stdout_vec;
@@ -35,7 +36,9 @@ private:
   Blob stdin_data;
 
 public:
-  Exec(const std::string& program);
+  static const bool ABSOLUTE_PATH;
+
+  Exec(const std::string& program, bool absolute_path = false);
   Exec& arg(const std::string& argument);
   void set_stdin(const Blob& blob);
   int exec();

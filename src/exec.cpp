@@ -23,11 +23,13 @@
 #include <sys/types.h>
 #include <sstream>
 #include "exec.hpp"
+
+const bool Exec::ABSOLUTE_PATH = true;
 
-Exec::Exec(const std::string& program)
-  : program(program)
-{
-  
+Exec::Exec(const std::string& program, bool absolute_path)
+  : program(program),
+    absolute_path(absolute_path)
+{ 
 }
 
 Exec&
@@ -81,14 +83,28 @@ Exec::exec()
       dup2(stderr_fd[1], STDERR_FILENO);
       close(stderr_fd[1]);
 
-      const char** c_arguments = new const char*[arguments.size()+2];
-      c_arguments[0] = program.c_str();
+      // Create C-style array for arguments 
+      char** c_arguments = new char*[arguments.size()+2];
+      c_arguments[0] = strdup(program.c_str());
       for(std::vector<std::string>::size_type i = 0; i < arguments.size(); ++i)
-        c_arguments[i+1] = arguments[i].c_str();
+        c_arguments[i+1] = strdup(arguments[i].c_str());
       c_arguments[arguments.size()+1] = NULL;
-      execvp(c_arguments[0], const_cast<char**>(c_arguments));
+      
+      // Execute the program
+      if (absolute_path)
+        execv(c_arguments[0], c_arguments);
+      else
+        execvp(c_arguments[0], c_arguments);
+      
+      int error_code = errno;
+
+      // Cleanup
+      for(int i = 0; c_arguments[i] != NULL; ++i)
+        free(c_arguments[i]);
+      delete[] c_arguments;
+
       // execvp() only returns on failure 
-      throw std::runtime_error("Exec: " + program + ": " + strerror(errno));
+      throw std::runtime_error("Exec: " + program + ": " + strerror(error_code));
     }
   else // if (pid > 0)
     { // parent
