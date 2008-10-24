@@ -23,6 +23,8 @@
 #include <string>
 #include "blob.hpp"
 
+/** The Exec class allows to call external applications in a
+    conventient vasion. */
 class Exec
 {
 private:
@@ -38,14 +40,44 @@ private:
 public:
   static const bool ABSOLUTE_PATH;
 
+  /** Construct an Exec object 
+
+      @param program  The name or path of the program 
+
+      @param absolute_path Set to true if \a program is an absolute
+      path, if false $PATH will be searched for an application with
+      the given name
+  */
   Exec(const std::string& program, bool absolute_path = false);
+
+  /** Add an argument to the list of arguments which will be used on execution 
+
+      @param argument The argument to be passed, spaces and other
+      special characters are allow, shell escaping is not needed
+   */
   Exec& arg(const std::string& argument);
+
+  /** Set what will be passed to the process on stdin 
+
+      @param blob The data passed on stdin
+   */
   void set_stdin(const Blob& blob);
+
+  /** Start the external program 
+      
+      @return Returns the exit code of the external program 
+  */
   int exec();
 
+  /** Access the stdout output of the program */
   const std::vector<char>& get_stdout() const { return stdout_vec; }
+
+  /** Access the stderr output of the program */
   const std::vector<char>& get_stderr() const { return stderr_vec; }
 
+  /** Returns a representation of the command call in simple string
+      form, for visualitation only, no gurantee is made that arguments
+      are properly escaped for the given shell */
   std::string str() const;
 
 private:
