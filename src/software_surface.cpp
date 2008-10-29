@@ -471,6 +471,17 @@ SoftwareSurface::scale(const Size& size) const
 }
 
 SoftwareSurface
+SoftwareSurface::vflip() const
+{
+  SoftwareSurface out(impl->format, impl->size);
+
+  for(int y = 0; y < impl->size.height; ++y)
+    memcpy(out.get_row_data(impl->size.height - y - 1), get_row_data(y), impl->pitch);
+
+  return out;
+}
+
+SoftwareSurface
 SoftwareSurface::crop(const Rect& rect_in) const
 {
   // FIXME: We could do a crop without copying contain, simply

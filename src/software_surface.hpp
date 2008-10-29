@@ -65,6 +65,7 @@ public:
   SoftwareSurface halve() const;
   SoftwareSurface scale(const Size& size) const;
   SoftwareSurface crop(const Rect& rect) const;
+  SoftwareSurface vflip() const;
 
   Blob get_raw_data()  const;
    
