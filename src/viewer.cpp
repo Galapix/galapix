@@ -529,6 +529,16 @@ Viewer::on_key_down(int key)
       case SDLK_f:
         pin_grid = !pin_grid;
         std::cout << "Pin Grid: " << pin_grid << std::endl;
+        if (!pin_grid)
+          {
+            grid_offset = grid_offset * state.get_scale() + state.get_offset();
+            grid_size  *= state.get_scale();
+          }
+        else
+          {
+            grid_offset = (grid_offset - state.get_offset()) / state.get_scale();
+            grid_size  /= state.get_scale();            
+          }
         break;
 
       case SDLK_g:
@@ -586,8 +596,16 @@ Viewer::is_active() const
 void
 Viewer::set_grid(const Vector2f& offset, const Sizef& size)
 {
-  grid_offset = offset;
-  grid_size   = size;
+  if (pin_grid)
+    {
+      grid_offset = offset;
+      grid_size   = size;
+    }
+  else
+    {
+      grid_offset = offset * state.get_scale() + state.get_offset();
+      grid_size   = size * state.get_scale();
+    }
 }
 
 /* EOF */
