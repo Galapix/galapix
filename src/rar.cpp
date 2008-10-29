@@ -25,7 +25,7 @@ std::vector<std::string>
 Rar::get_filenames(const std::string& rar_filename)
 {
   Exec rar("rar");
-  rar.arg("vb").arg(rar_filename);
+  rar.arg("vb").arg("-p-").arg(rar_filename);
   if (rar.exec() == 0)
     {
       std::vector<std::string> lst;
@@ -52,7 +52,7 @@ Blob
 Rar::get_file(const std::string& rar_filename, const std::string& filename)
 {
   Exec rar("rar");
-  rar.arg("p").arg("-inul").arg(rar_filename).arg(filename);
+  rar.arg("p").arg("-inul").arg("-p-").arg(rar_filename).arg(filename);
   if (rar.exec() == 0)
     {
       // FIXME: Unneeded copy of data
