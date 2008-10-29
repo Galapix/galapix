@@ -82,22 +82,24 @@ TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
     {
       TileEntry tile(reader.get_int(0), // fileid
                      reader.get_int(1), // scale
-                     Vector2i(reader.get_int (2),
-                              reader.get_int (3)),
-                     SoftwareSurface());
+                     Vector2i(reader.get_int (2),  // x
+                              reader.get_int (3)), // y
+                     reader.get_blob(4),
+                     reader.get_int(6));
+      
       
       // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
       // Blob, so we don't do encode/decode when doing a database
       // merge
-      Blob blob = reader.get_blob(4);
-      switch(reader.get_int(6)) // format
+      Blob blob = tile.get_blob();
+      switch(tile.get_format())
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
-            tile.set_software_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
             break;
 
           case SoftwareSurface::PNG_FILEFORMAT:
-            tile.set_software_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
             break;
         }
 
@@ -121,21 +123,24 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
                        reader.get_int(1), // scale
                        Vector2i(reader.get_int(2), // pos
                                 reader.get_int(3)),
-                       SoftwareSurface());
+                       reader.get_blob(4),
+                       reader.get_int(6));
 
+      
       // FIXME: Do this in a DecoderThread
-      Blob blob = reader.get_blob(4);
-      switch(reader.get_int(6)) // format
+
+      Blob blob = tile.get_blob();
+      switch(tile.get_format())
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
-            tile.set_software_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
             break;
 
           case SoftwareSurface::PNG_FILEFORMAT:
-            tile.set_software_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
             break;
         }
-
+      
       return true;
     }
   else
@@ -147,23 +152,30 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
 }
 
 void
-TileDatabase::store_tile(const TileEntry& tile)
+TileDatabase::store_tile(const TileEntry& tile_)
 {
-  Blob blob;
+  TileEntry tile = tile_;
 
-  switch(tile.get_software_surface().get_format())
+  if (!tile.get_blob())
     {
-      case SoftwareSurface::RGB_FORMAT:
-        blob = JPEG::save(tile.get_software_surface(), 75);
-        break;
+      // Tile doesn't have a Blob, so we assume it has a surface and
+      // we generate the Blob from that
+      switch(tile.get_surface().get_format())
+        {
+          case SoftwareSurface::RGB_FORMAT:
+            tile.set_blob(JPEG::save(tile.get_surface(), 75));
+            tile.set_format(SoftwareSurface::JPEG_FILEFORMAT);
+            break;
 
-      case SoftwareSurface::RGBA_FORMAT:
-        blob = PNG::save(tile.get_software_surface());
-        break;
+          case SoftwareSurface::RGBA_FORMAT:
+            tile.set_blob(PNG::save(tile.get_surface()));
+            tile.set_format(SoftwareSurface::PNG_FILEFORMAT);
+            break;
 
-      default:
-        assert(!"TileDatabase::store_tile: Unhandled format");
-        break;
+          default:
+            assert(!"TileDatabase::store_tile: Unhandled format");
+            break;
+        }
     }
 
   // FIXME: We need to update a already existing record, instead of
@@ -172,9 +184,9 @@ TileDatabase::store_tile(const TileEntry& tile)
   store_stmt.bind_int (2, tile.get_scale());
   store_stmt.bind_int (3, tile.get_pos().x);
   store_stmt.bind_int (4, tile.get_pos().y);
-  store_stmt.bind_blob(5, blob);
+  store_stmt.bind_blob(5, tile.get_blob());
   store_stmt.bind_int (6, 0);
-  store_stmt.bind_int (7, tile.get_software_surface().get_format());
+  store_stmt.bind_int (7, tile.get_format());
 
   store_stmt.execute();
 }
