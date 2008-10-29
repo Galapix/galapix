@@ -143,6 +143,14 @@ public:
 	Sizef &operator+=(const Sizef &s)
 	{ width += s.width; height += s.height; return *this; }
 
+	//: Size *= Size operator.
+	Sizef &operator*=(float v)
+	{ width *= v; height *= v; return *this; }
+
+	//: Size /= Size operator.
+	Sizef &operator/=(float v)
+	{ width /= v; height /= v; return *this; }
+
 	//: Size -= Size operator.
 	Sizef &operator-=(const Sizef &s)
 	{ width -= s.width; height -= s.height; return *this; }
