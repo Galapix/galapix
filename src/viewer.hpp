@@ -35,6 +35,7 @@ class RotateTool;
 class ViewRotateTool;
 class ZoomRectTool;
 class Workspace;
+class GridTool;
 
 class Viewer
 {
@@ -59,6 +60,7 @@ private:
   boost::shared_ptr<ZoomTool>   zoom_out_tool;
   boost::shared_ptr<ResizeTool> resize_tool;
   boost::shared_ptr<RotateTool> rotate_tool;
+  boost::shared_ptr<GridTool>   grid_tool;
 
   Tool* left_tool;
   Tool* middle_tool;
@@ -68,6 +70,9 @@ private:
 
   int background_color;
   std::vector<RGBA> background_colors;
+
+  Vector2f grid_offset;
+  Sizef    grid_size;
 
 public:
   Viewer(Workspace* workspace);
@@ -86,6 +91,8 @@ public:
   void on_mouse_button_up(const Vector2i& pos, int btn);
 
   bool is_active() const;
+
+  void set_grid(const Vector2f& offset, const Sizef& size);
 
 private:
   Viewer (const Viewer&);

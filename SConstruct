@@ -34,6 +34,7 @@ galapix_sources = [
     'src/math/vector2i.cpp',
     'src/math/vector3f.cpp',
     'src/move_tool.cpp',
+    'src/grid_tool.cpp',
     'src/pan_tool.cpp',
     'src/png.cpp',
     'src/pnm.cpp',

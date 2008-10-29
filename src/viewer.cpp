@@ -35,6 +35,7 @@
 #include "zoom_rect_tool.hpp"
 #include "resize_tool.hpp"
 #include "rotate_tool.hpp"
+#include "grid_tool.hpp"
 #include "filesystem.hpp"
 #include "view_rotate_tool.hpp"
 #include "png.hpp"
@@ -46,13 +47,16 @@ Viewer::Viewer(Workspace* workspace)
     pin_grid(false),
     gamma(1.0f),
     brightness(0.0f),
-    contrast(1.0f)
+    contrast(1.0f),
+    grid_offset(0.0f, 0.0f),
+    grid_size(400.0f, 300.0f)
 {
-  pan_tool    = boost::shared_ptr<PanTool>(new PanTool(this));
-  move_tool   = boost::shared_ptr<MoveTool>(new MoveTool(this));
+  pan_tool       = boost::shared_ptr<PanTool>(new PanTool(this));
+  move_tool      = boost::shared_ptr<MoveTool>(new MoveTool(this));
   zoom_rect_tool = boost::shared_ptr<ZoomRectTool>(new ZoomRectTool(this));
-  resize_tool = boost::shared_ptr<ResizeTool>(new ResizeTool(this));
-  rotate_tool = boost::shared_ptr<RotateTool>(new RotateTool(this));
+  resize_tool    = boost::shared_ptr<ResizeTool>(new ResizeTool(this));
+  rotate_tool    = boost::shared_ptr<RotateTool>(new RotateTool(this));
+  grid_tool      = boost::shared_ptr<GridTool>(new GridTool(this));
 
   zoom_in_tool  = boost::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
   zoom_out_tool = boost::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
@@ -142,13 +146,13 @@ Viewer::draw()
     {
       if (pin_grid)
         {
-          Framebuffer::draw_grid(state.get_offset(), 
-                                 Sizef(256.0f, 256.0f) * state.get_scale(),
+          Framebuffer::draw_grid(grid_offset * state.get_scale() + state.get_offset(), 
+                                 grid_size * state.get_scale(),
                                  RGBA(255, 255, 255, 150));
         }
       else
         {
-          Framebuffer::draw_grid(Vector2f(0.0f, 0.0f), Sizef(256.0f, 256.0f), RGBA(255, 255, 255, 150));
+          Framebuffer::draw_grid(grid_offset, grid_size, RGBA(255, 255, 255, 150));
         }
     }
 }
@@ -532,6 +536,13 @@ Viewer::on_key_down(int key)
         std::cout << "Draw Grid: " << draw_grid << std::endl;
         break;
 
+      case SDLK_y:
+        std::cout << "Grid Tool selected" << std::endl;
+        left_tool   = grid_tool.get();
+        right_tool  = zoom_out_tool.get();
+        middle_tool = pan_tool.get();
+        break;
+
       case SDLK_1:
         workspace->layout_aspect(4, 3);
         break;
@@ -570,6 +581,13 @@ Viewer::is_active() const
     zoom_out_tool->is_active() ||
     keyboard_zoom_in_tool ->is_active() ||
     keyboard_zoom_out_tool->is_active();
+}
+
+void
+Viewer::set_grid(const Vector2f& offset, const Sizef& size)
+{
+  grid_offset = offset;
+  grid_size   = size;
 }
 
 /* EOF */

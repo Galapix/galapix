@@ -65,6 +65,9 @@ public:
   Rect(const Vector2i &p, const Size &size)
   { left = p.x; top = p.y; right = left + size.width; bottom = top + size.height; }
 
+  Rect(const Vector2i& p1, const Vector2i& p2)
+  { left = p1.x; top = p1.y; right = p2.x; bottom = p2.y; }
+
   Rect(const Rect &rect)
   { left = rect.left; top = rect.top; right = rect.right; bottom = rect.bottom; }
 
