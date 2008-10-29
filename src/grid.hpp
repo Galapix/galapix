@@ -22,8 +22,10 @@
 #include <iostream>
 #include <assert.h>
 #include <vector>
-
-/** */
+
+/** A std::vector like class that gives you a 2d grid into which you
+    can place your elements: "grid(x,y) = value;"
+ */
 template<typename T>
 class Grid
 {
@@ -79,7 +81,7 @@ public:
     height = h;
   }
 };
-
+
 #endif
 
 /* EOF */
