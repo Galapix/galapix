@@ -19,21 +19,29 @@
 #include "job.hpp"
 #include "job_worker_thread.hpp"
 #include "job_manager.hpp"
+
+JobManager* JobManager::current_ = 0;
 
 JobManager::JobManager(int num_threads)
   : next_thread(0)
 {
+  assert(current_ == 0);
+  current_ = this;
+
   assert(num_threads > 0);
 
   for(int i = 0; i < num_threads; ++i)
     threads.push_back(new JobWorkerThread());
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-      (*i)->run();
+      (*i)->start();
 }
 
 JobManager::~JobManager()
 {
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    (*i)->stop();
+
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->join();
 }

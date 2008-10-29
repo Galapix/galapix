@@ -35,8 +35,12 @@ JobWorkerThread::run()
           Task task = queue.front();
           queue.pop();
 
-          task.job->run();
-          task.callback(task.job);
+          if (!task.job->get_handle().is_aborted())
+            {
+              task.job->run();
+              task.callback(task.job);
+            }
+
           delete task.job;
         }
       queue.wait();

@@ -46,6 +46,7 @@
 #include "tile_generator.hpp"
 #include "tile_generator_thread.hpp"
 #include "workspace.hpp"
+#include "job_manager.hpp"
 #include "sdl_viewer.hpp"
 #include "viewer.hpp"
 #include "galapix.hpp"
@@ -283,6 +284,7 @@ Galapix::view(const std::string& database,
               bool view_all, 
               const std::string& pattern)
 {
+  JobManager job_manager(4);
   DatabaseThread      database_thread(database);
   TileGeneratorThread tile_generator_thread;
 

@@ -349,9 +349,9 @@ Image::process_queue()
   
       SurfaceStruct s;
   
-      if (tile.get_software_surface())
+      if (tile.get_surface())
         {
-          s.surface = Surface(tile.get_software_surface());
+          s.surface = Surface(tile.get_surface());
           s.status  = SurfaceStruct::SURFACE_OK;
         }
       else

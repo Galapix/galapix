@@ -268,7 +268,7 @@ DatabaseThread::run()
                     }
                   
                   // FIXME: Make some better error checking in case of loading failure
-                  if (tile_msg->tile.get_software_surface())
+                  if (tile_msg->tile.get_surface())
                     {
                       // FIXME: Need file_entry object for this:
                       //if (tile_msg->tile.scale == file_entry.thumbnail_scale)
@@ -378,7 +378,7 @@ DatabaseThread::run()
                           tile_queue.push_back(tile_msg);
 
                           //std::cout << tile_queue.size() << std::endl;
-                          msg = 0; // FIXME: HACK so that msg doesn't get deleted, used shared_ptr instead
+                          msg = 0; // FIXME: HACK so that msg doesn't get deleted, use shared_ptr instead
                         }
                     }
                 }
