@@ -18,6 +18,7 @@
 
 #include "SDL.h"
 #include <fstream>
+#include <boost/format.hpp>
 #include <iostream>
 #include <math.h>
 #include "math/rgb.hpp"
@@ -34,12 +35,15 @@
 #include "zoom_rect_tool.hpp"
 #include "resize_tool.hpp"
 #include "rotate_tool.hpp"
+#include "filesystem.hpp"
 #include "view_rotate_tool.hpp"
+#include "png.hpp"
 #include "viewer.hpp"
 
 Viewer::Viewer(Workspace* workspace)
   : workspace(workspace),
     draw_grid(false),
+    pin_grid(false),
     gamma(1.0f),
     brightness(0.0f),
     contrast(1.0f)
@@ -135,7 +139,18 @@ Viewer::draw()
   glPopMatrix();
 
   if (draw_grid)
-    Framebuffer::draw_grid(3);
+    {
+      if (pin_grid)
+        {
+          Framebuffer::draw_grid(state.get_offset(), 
+                                 Sizef(256.0f, 256.0f) * state.get_scale(),
+                                 RGBA(255, 255, 255, 150));
+        }
+      else
+        {
+          Framebuffer::draw_grid(Vector2f(0.0f, 0.0f), Sizef(256.0f, 256.0f), RGBA(255, 255, 255, 150));
+        }
+    }
 }
 
 void
@@ -437,6 +452,23 @@ Viewer::on_key_down(int key)
         std::cout << state.get_offset() << " " << state.get_scale() << std::endl;
         break;
 
+      case SDLK_F12:
+        {
+          SoftwareSurface surface = Framebuffer::screenshot();
+          // FIXME: Could do this in a worker thread to avoid pause on screenshotting
+          for(int i = 0; ; ++i)
+            {
+              std::string outfile = (boost::format("/tmp/galapix-screenshot-%04d.png") % i).str();
+              if (!Filesystem::exist(outfile.c_str()))
+                {
+                  PNG::save(surface, outfile);
+                  std::cout << "Screenshot written to " << outfile << std::endl;
+                  break;
+                }
+            }
+        }
+        break;
+        
       case SDLK_z:
         std::cout << "Zoom&Resize Tools selected" << std::endl;
         left_tool   = zoom_rect_tool.get();
@@ -490,8 +522,14 @@ Viewer::on_key_down(int key)
           background_color = 0;
         break;
 
+      case SDLK_f:
+        pin_grid = !pin_grid;
+        std::cout << "Pin Grid: " << pin_grid << std::endl;
+        break;
+
       case SDLK_g:
         draw_grid = !draw_grid;
+        std::cout << "Draw Grid: " << draw_grid << std::endl;
         break;
 
       case SDLK_1:

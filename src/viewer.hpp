@@ -41,6 +41,7 @@ class Viewer
 private:
   Workspace* workspace;
   bool  draw_grid;
+  bool  pin_grid;
   float gamma;
   float brightness;
   float contrast;

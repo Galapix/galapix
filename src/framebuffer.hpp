@@ -23,11 +23,14 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "software_surface.hpp"
 #include "math/size.hpp"
 
 class RGB;
 class RGBA;
 class Size;
+class Sizef;
+class Vector2f;
 class Rectf;
 
 #ifdef NDEBUG
@@ -50,6 +53,9 @@ public:
   static void draw_rect(const Rectf& rect, const RGB& rgb);
   static void fill_rect(const Rectf& rect, const RGB& rgb);
   static void draw_grid(int num_cells);
+  static void draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rgba);
+
+  static SoftwareSurface screenshot();
 };
 
 #endif
