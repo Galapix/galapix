@@ -24,6 +24,7 @@
 #include "surface.hpp"
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
+#include "math/rgba.hpp"
 #include "viewer_state.hpp"
 
 class Tool;
@@ -73,6 +74,7 @@ private:
 
   Vector2f grid_offset;
   Sizef    grid_size;
+  RGBA     grid_color;
 
 public:
   Viewer(Workspace* workspace);

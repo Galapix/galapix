@@ -49,7 +49,8 @@ Viewer::Viewer(Workspace* workspace)
     brightness(0.0f),
     contrast(1.0f),
     grid_offset(0.0f, 0.0f),
-    grid_size(400.0f, 300.0f)
+    grid_size(400.0f, 300.0f),
+    grid_color(255, 0, 0, 255)
 {
   pan_tool       = boost::shared_ptr<PanTool>(new PanTool(this));
   move_tool      = boost::shared_ptr<MoveTool>(new MoveTool(this));
@@ -148,11 +149,11 @@ Viewer::draw()
         {
           Framebuffer::draw_grid(grid_offset * state.get_scale() + state.get_offset(), 
                                  grid_size * state.get_scale(),
-                                 RGBA(255, 255, 255, 150));
+                                 grid_color);
         }
       else
         {
-          Framebuffer::draw_grid(grid_offset, grid_size, RGBA(255, 255, 255, 150));
+          Framebuffer::draw_grid(grid_offset, grid_size, grid_color);
         }
     }
 }
