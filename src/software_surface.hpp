@@ -22,6 +22,7 @@
 #include <boost/shared_ptr.hpp>
 #include "blob.hpp"
 
+class Vector2i;
 class URL;
 class RGB;
 class RGBA;
@@ -85,6 +86,8 @@ public:
   SoftwareSurface to_rgb() const;
 
   int get_bytes_per_pixel() const;
+
+  void blit(SoftwareSurface& dst, const Vector2i& pos);
 
   operator bool() const { return impl.get(); }
 

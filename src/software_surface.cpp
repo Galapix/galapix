@@ -79,11 +79,14 @@ SoftwareSurface::get_fileformat(const URL& url)
       return SVG_FILEFORMAT;
     }
   else if (Filesystem::has_extension(filename, ".gif") ||
+           Filesystem::has_extension(filename, ".GIF") ||
            Filesystem::has_extension(filename, ".pnm") ||
            Filesystem::has_extension(filename, ".pgm") ||
            Filesystem::has_extension(filename, ".tif") ||
            Filesystem::has_extension(filename, ".TIF") ||
-           Filesystem::has_extension(filename, ".tiff"))
+           Filesystem::has_extension(filename, ".tiff") ||
+           Filesystem::has_extension(filename, ".iff") ||
+           Filesystem::has_extension(filename, ".IFF"))
     // FIXME: Add more stuff
     {
       return MAGICK_FILEFORMAT;
@@ -631,6 +634,35 @@ SoftwareSurface::get_bytes_per_pixel() const
       default:
         assert(!"SoftwareSurface::get_bytes_per_pixel(): Unknown format");
         return 0;
+    }
+}
+
+void
+SoftwareSurface::blit(SoftwareSurface& dst, const Vector2i& pos)
+{
+  int start_x = std::max(0, -pos.x);
+  int start_y = std::max(0, -pos.y);
+
+  int end_x = std::min(impl->size.width,  dst.impl->size.width  - pos.x);
+  int end_y = std::min(impl->size.height, dst.impl->size.height - pos.y);
+
+  if (dst.impl->format == RGB_FORMAT && impl->format     == RGB_FORMAT)
+    {
+      for(int y = start_y; y < end_y; ++y)
+        memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*3, 
+               get_row_data(y) + start_x*3,
+               (end_x - start_x)*3);
+    }
+  else if (dst.impl->format == RGBA_FORMAT && impl->format     == RGBA_FORMAT)
+    {
+      for(int y = start_y; y < end_y; ++y)
+        memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*4, 
+               get_row_data(y) + start_x*4,
+               (end_x - start_x)*4);
+    }
+  else
+    {
+      assert(!"Not implemented");
     }
 }
   
