@@ -87,6 +87,7 @@ public:
 
   int get_bytes_per_pixel() const;
 
+  /** Performs a simple copy from this to \a test, no blending is performed */
   void blit(SoftwareSurface& dst, const Vector2i& pos);
 
   operator bool() const { return impl.get(); }

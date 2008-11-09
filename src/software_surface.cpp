@@ -660,6 +660,38 @@ SoftwareSurface::blit(SoftwareSurface& dst, const Vector2i& pos)
                get_row_data(y) + start_x*4,
                (end_x - start_x)*4);
     }
+  else if (dst.impl->format == RGBA_FORMAT && impl->format == RGB_FORMAT)
+    {
+      for(int y = start_y; y < end_y; ++y)
+        {
+          uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*4;
+          uint8_t* srcpx = get_row_data(y) + start_x*3;
+          
+          for(int x = 0; x < (end_x - start_x); ++x)
+            { 
+              dstpx[4*x+0] = srcpx[3*x+0];
+              dstpx[4*x+1] = srcpx[3*x+1];
+              dstpx[4*x+2] = srcpx[3*x+2];
+              dstpx[4*x+3] = 255;
+            }
+        }
+    }
+  else if (dst.impl->format == RGB_FORMAT && impl->format == RGBA_FORMAT)
+    {
+      for(int y = start_y; y < end_y; ++y)
+        {
+          uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*3;
+          uint8_t* srcpx = get_row_data(y) + start_x*4;
+          
+          for(int x = 0; x < (end_x - start_x); ++x)
+            { 
+              uint8_t alpha = srcpx[4*x+3];
+              dstpx[3*x+0] = srcpx[4*x+0] * alpha / 255;
+              dstpx[3*x+1] = srcpx[4*x+1] * alpha / 255;
+              dstpx[3*x+2] = srcpx[4*x+2] * alpha / 255;
+            }
+        }
+    }
   else
     {
       assert(!"Not implemented");
