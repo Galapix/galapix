@@ -32,7 +32,7 @@ private:
   static Size window_resolution;
 
 public:
-    static void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
+  static void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
 
   static void toggle_fullscreen();
 
@@ -42,7 +42,6 @@ public:
 
   static void reshape(const Size& size);
   static void flip();
-
 };
 
 #endif

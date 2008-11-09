@@ -49,7 +49,6 @@ private:
   SQLiteStatement get_by_file_id_stmt;
 
   FileEntry store_file_entry(const URL& url, const Size& size);
-  void delete_file_entry(uint32_t fileid);
   void update_file_entry(FileEntry& entry);
  
 public:

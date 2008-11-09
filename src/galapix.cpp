@@ -160,6 +160,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
           sprintf(filename, "/tmp/out/%04d.jpg", image_num);
           std::cout << "Writing result to: " << filename << std::endl;
           JPEG::save(target, 85, filename);
+          //PNG::save(target, filename);
           image_num += 1;
         }
     }

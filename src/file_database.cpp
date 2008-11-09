@@ -153,12 +153,6 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
 }
 
 void
-FileDatabase::delete_file_entry(uint32_t /*fileid*/)
-{
-  // DELETE FROM files WHERE fileid = ?fileid
-}
-
-void
 FileDatabase::update_file_entry(FileEntry& /*entry*/)
 {
   // UPDATE files SET mtime = ?entry.get_mtime() WHERE fileid = ?entry.fileid

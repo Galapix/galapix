@@ -41,6 +41,22 @@
 #include "png.hpp"
 #include "viewer.hpp"
 
+void apply_gamma_ramp(float contrast, float brightness, float gamma)
+{
+  Uint16 tbl[256];
+  for(int i = 0; i < 256; ++i)
+    {
+      float c = i/255.0f;
+      c = c + brightness;
+      c = (c * contrast) - 0.5f * (contrast - 1.0f);
+      c = powf(c, 1.0f/gamma);
+      
+      tbl[i] = Math::clamp(0, (int)(c*65535.0f), 65535);
+    }
+  
+  SDL_SetGammaRamp(tbl, tbl, tbl);
+}
+
 Viewer::Viewer(Workspace* workspace)
   : workspace(workspace),
     draw_grid(false),
@@ -135,7 +151,7 @@ Viewer::draw()
     Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));
   
   workspace->draw(cliprect,
-                 state.get_scale());
+                  state.get_scale());
 
   left_tool->draw();
   middle_tool->draw();
@@ -255,22 +271,6 @@ Viewer::on_key_up(int key)
     }
 }
 
-void apply_gamma_ramp(float contrast, float brightness, float gamma)
-{
-  Uint16 tbl[256];
-  for(int i = 0; i < 256; ++i)
-    {
-      float c = i/255.0f;
-      c = c + brightness;
-      c = (c * contrast) - 0.5f * (contrast - 1.0f);
-      c = powf(c, 1.0f/gamma);
-      
-      tbl[i] = Math::clamp(0, (int)(c*65535.0f), 65535);
-    }
-  
-  SDL_SetGammaRamp(tbl, tbl, tbl);
-}
-
 void
 Viewer::on_key_down(int key)
 {
@@ -284,73 +284,9 @@ Viewer::on_key_down(int key)
         keyboard_zoom_in_tool->down(mouse_pos);
         break;
 
-      case SDLK_F6:
-        brightness -= 0.1f;
-        std::cout << "Brightness: " << brightness << std::endl;
-        apply_gamma_ramp(contrast, brightness, gamma);
-        break;
-
-      case SDLK_F7:
-        brightness += 0.1f;
-        std::cout << "Brightness: " << brightness << std::endl;
-        apply_gamma_ramp(contrast, brightness, gamma);
-        break;        
-
-      case SDLK_F8:
-        //contrast -= 0.1f;
-        contrast /= 1.1f;
-        std::cout << "Contrast: " << contrast << std::endl;
-        apply_gamma_ramp(contrast, brightness, gamma);
-        break;        
-
-      case SDLK_F9:
-        //contrast += 0.1f;
-        contrast *= 1.1f;
-        std::cout << "Contrast: " << contrast << std::endl;
-        apply_gamma_ramp(contrast, brightness, gamma);
-        break;        
-
-      case SDLK_F10:
-        brightness = 0.0f;
-        contrast   = 1.0f;
-        gamma      = 1.0f;
-        apply_gamma_ramp(contrast, brightness, gamma);
-        break;
-
-      case SDLK_PAGEUP:
-        gamma *= 1.1f;
-        std::cout << "Gamma: " << gamma << std::endl;
-        apply_gamma_ramp(contrast, brightness, gamma);
-        break;
-
-      case SDLK_PAGEDOWN:
-        gamma /= 1.1f;
-        std::cout << "Gamma: " << gamma << std::endl;
-        apply_gamma_ramp(contrast, brightness, gamma);
-        break;
-
-      case SDLK_F11:
-        SDLFramebuffer::toggle_fullscreen();
-        break;
-
-      case SDLK_LEFT:
-        state.rotate(90.0f);
-        break;
-
-      case SDLK_RIGHT:
-        state.rotate(-90.0f);
-        break;
-
-      case SDLK_7:
-        workspace->get_selection().scale(1.0f/1.1f);
-        break;
-
-      case SDLK_8:
-        workspace->get_selection().scale(1.1f);
-        break;
-
-      case SDLK_DELETE:
-        workspace->delete_selection();
+      case SDLK_RSHIFT:
+      case SDLK_LSHIFT:
+        keyboard_view_rotate_tool->down(mouse_pos);
         break;
               
       case SDLK_SPACE:
@@ -358,19 +294,6 @@ Viewer::on_key_down(int key)
           Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
           workspace->print_images(cliprect);
         }
-        break;
-
-      case SDLK_RSHIFT:
-      case SDLK_LSHIFT:
-        keyboard_view_rotate_tool->down(mouse_pos);
-        break;
-
-      case SDLK_UP:
-        state.set_angle(0.0f);
-        break;
-
-      case SDLK_DOWN:
-        state.set_angle(0.0f);
         break;
 
       case SDLK_F2:
@@ -419,92 +342,12 @@ Viewer::on_key_down(int key)
         workspace->cache_cleanup();
         break;
 
-      case SDLK_t:
-        pan_tool->set_trackball_mode(!pan_tool->get_trackball_mode());
-        if (pan_tool->get_trackball_mode())
-          {
-            std::cout << "Trackball mode active, press 't' to leave" << std::endl;
-            SDL_ShowCursor(SDL_DISABLE);
-            SDL_WM_GrabInput(SDL_GRAB_ON);
-          }
-        else
-          {
-            std::cout << "Trackball mode deactivated" << std::endl;
-            SDL_ShowCursor(SDL_ENABLE);
-            SDL_WM_GrabInput(SDL_GRAB_OFF);
-          }
-        break;
-
       case SDLK_i:
         workspace->isolate_selection();
         break;
 
-      case SDLK_p:
-        std::cout << "Pan&Zoom Tools selected" << std::endl;
-        left_tool   = zoom_in_tool.get();
-        right_tool  = zoom_out_tool.get();              
-        middle_tool = pan_tool.get();
-        break;
-
-      case SDLK_r:
-        std::cout << "Move&Rotate Tools selected" << std::endl;
-        left_tool   = move_tool.get();
-        right_tool  = rotate_tool.get();
-        middle_tool = pan_tool.get();
-        break;
-
       case SDLK_l:
         std::cout << state.get_offset() << " " << state.get_scale() << std::endl;
-        break;
-
-      case SDLK_F12:
-        {
-          SoftwareSurface surface = Framebuffer::screenshot();
-          // FIXME: Could do this in a worker thread to avoid pause on screenshotting
-          for(int i = 0; ; ++i)
-            {
-              std::string outfile = (boost::format("/tmp/galapix-screenshot-%04d.png") % i).str();
-              if (!Filesystem::exist(outfile.c_str()))
-                {
-                  PNG::save(surface, outfile);
-                  std::cout << "Screenshot written to " << outfile << std::endl;
-                  break;
-                }
-            }
-        }
-        break;
-        
-      case SDLK_z:
-        std::cout << "Zoom&Resize Tools selected" << std::endl;
-        left_tool   = zoom_rect_tool.get();
-        right_tool  = zoom_out_tool.get();
-        middle_tool = pan_tool.get();
-        break;
-
-      case SDLK_m:
-        std::cout << "Move&Resize Tools selected" << std::endl;
-        left_tool   = move_tool.get();
-        right_tool  = resize_tool.get();              
-        middle_tool = pan_tool.get();
-        break;
-
-      case SDLK_d:
-        if (!workspace->get_selection().empty())
-          {
-            state.zoom_to(Framebuffer::get_size(),
-                          workspace->get_selection().get_bounding_rect());
-          }
-        else
-          {
-            state.zoom_to(Framebuffer::get_size(),
-                          workspace->get_bounding_rect());
-          }
-        break;
-              
-      case SDLK_h:
-        state.set_offset(Vector2f(0.0f, 0.0f));
-        state.set_angle(0.0f);
-        state.set_scale(1.0f);
         break;
 
       case SDLK_s:
@@ -519,63 +362,6 @@ Viewer::on_key_down(int key)
 
       case SDLK_0:
         workspace->print_info();
-        break;
-
-      case SDLK_b:
-        background_color += 1;
-        if (background_color >= int(background_colors.size()))
-          background_color = 0;
-        break;
-
-      case SDLK_f:
-        pin_grid = !pin_grid;
-        std::cout << "Pin Grid: " << pin_grid << std::endl;
-        if (!pin_grid)
-          {
-            grid_offset = grid_offset * state.get_scale() + state.get_offset();
-            grid_size  *= state.get_scale();
-          }
-        else
-          {
-            grid_offset = (grid_offset - state.get_offset()) / state.get_scale();
-            grid_size  /= state.get_scale();            
-          }
-        break;
-
-      case SDLK_g:
-        draw_grid = !draw_grid;
-        std::cout << "Draw Grid: " << draw_grid << std::endl;
-        break;
-
-      case SDLK_y:
-        std::cout << "Grid Tool selected" << std::endl;
-        left_tool   = grid_tool.get();
-        right_tool  = zoom_out_tool.get();
-        middle_tool = pan_tool.get();
-        break;
-
-      case SDLK_1:
-        workspace->layout_aspect(4, 3);
-        break;
-
-      case SDLK_2:
-        workspace->layout_aspect(16, 9);
-        break;
-
-      case SDLK_3:
-        workspace->layout_random();
-        break;
-
-      case SDLK_4:
-        workspace->solve_overlaps();
-        break;
-
-      case SDLK_5:
-        workspace->layout_tight();
-        break;
-
-      case SDLK_6:
-        workspace->layout_vertical();
         break;
 
       default:
@@ -606,6 +392,245 @@ Viewer::set_grid(const Vector2f& offset, const Sizef& size)
     {
       grid_offset = offset * state.get_scale() + state.get_offset();
       grid_size   = size * state.get_scale();
+    }
+}
+
+void
+Viewer::set_zoom_tool()
+{
+  std::cout << "Pan&Zoom Tools selected" << std::endl;
+  left_tool   = zoom_in_tool.get();
+  right_tool  = zoom_out_tool.get();              
+  middle_tool = pan_tool.get();
+}
+
+void
+Viewer::set_zoom_rect_tool()
+{
+  std::cout << "Zoom&Pan Tools selected" << std::endl;
+  left_tool   = zoom_rect_tool.get();
+  right_tool  = zoom_out_tool.get();
+  middle_tool = pan_tool.get();
+}
+
+void
+Viewer::set_grid_tool()
+{
+  std::cout << "Grid Tool selected" << std::endl;
+  left_tool   = grid_tool.get();
+  right_tool  = zoom_out_tool.get();
+  middle_tool = pan_tool.get();
+}
+
+void
+Viewer::set_move_resize_tool()
+{
+  std::cout << "Move&Resize Tools selected" << std::endl;
+  left_tool   = move_tool.get();
+  right_tool  = resize_tool.get();              
+  middle_tool = pan_tool.get();
+}
+
+void
+Viewer::set_move_rotate_tool()
+{
+  std::cout << "Move&Rotate Tools selected" << std::endl;
+  left_tool   = move_tool.get();
+  right_tool  = rotate_tool.get();
+  middle_tool = pan_tool.get();
+}
+
+void
+Viewer::increase_contrast()
+{
+  //contrast += 0.1f;
+  contrast *= 1.1f;
+  std::cout << "Contrast: " << contrast << std::endl;
+  apply_gamma_ramp(contrast, brightness, gamma);
+}
+
+void
+Viewer::decrease_contrast()
+{
+  //contrast -= 0.1f;
+  contrast /= 1.1f;
+  std::cout << "Contrast: " << contrast << std::endl;
+  apply_gamma_ramp(contrast, brightness, gamma);
+
+}
+
+void
+Viewer::increase_brightness()
+{
+  brightness += 0.1f;
+  std::cout << "Brightness: " << brightness << std::endl;
+  apply_gamma_ramp(contrast, brightness, gamma);
+
+}
+
+void
+Viewer::decrease_brightness()
+{
+  brightness -= 0.1f;
+  std::cout << "Brightness: " << brightness << std::endl;
+  apply_gamma_ramp(contrast, brightness, gamma);
+}
+
+void
+Viewer::increase_gamma()
+{
+  gamma *= 1.1f;
+  std::cout << "Gamma: " << gamma << std::endl;
+  apply_gamma_ramp(contrast, brightness, gamma);
+}
+
+void
+Viewer::decrease_gamma()
+{
+  gamma /= 1.1f;
+  std::cout << "Gamma: " << gamma << std::endl;
+  apply_gamma_ramp(contrast, brightness, gamma);
+}
+
+void
+Viewer::reset_gamma()
+{
+  brightness = 0.0f;
+  contrast   = 1.0f;
+  gamma      = 1.0f;
+  apply_gamma_ramp(contrast, brightness, gamma);
+}
+
+void
+Viewer::toggle_grid()
+{
+  draw_grid = !draw_grid;
+  std::cout << "Draw Grid: " << draw_grid << std::endl;
+}
+
+void
+Viewer::layout_4_3()
+{
+  workspace->layout_aspect(4, 3);
+}
+
+void
+Viewer::layout_16_9()
+{
+  workspace->layout_aspect(16, 9);
+}
+
+void
+Viewer::layout_random()
+{
+  workspace->layout_random();
+}
+
+void
+Viewer::layout_solve_overlaps()
+{
+  workspace->solve_overlaps();
+}
+
+void
+Viewer::layout_tight()
+{
+  workspace->layout_tight();
+}
+
+void
+Viewer::layout_vertical()
+{
+  workspace->layout_vertical();
+}
+
+void
+Viewer::toggle_pinned_grid()
+{
+  pin_grid = !pin_grid;
+  std::cout << "Pin Grid: " << pin_grid << std::endl;
+  if (!pin_grid)
+    {
+      grid_offset = grid_offset * state.get_scale() + state.get_offset();
+      grid_size  *= state.get_scale();
+    }
+  else
+    {
+      grid_offset = (grid_offset - state.get_offset()) / state.get_scale();
+      grid_size  /= state.get_scale();            
+    }
+}
+
+void
+Viewer::toggle_background_color()
+{
+  background_color += 1;
+  if (background_color >= int(background_colors.size()))
+    background_color = 0;
+}
+
+void
+Viewer::zoom_home()
+{
+  state.set_offset(Vector2f(0.0f, 0.0f));
+  state.set_angle(0.0f);
+  state.set_scale(1.0f);
+}
+
+void
+Viewer::zoom_to_selection()
+{
+  if (!workspace->get_selection().empty())
+    {
+      state.zoom_to(Framebuffer::get_size(),
+                    workspace->get_selection().get_bounding_rect());
+    }
+  else
+    {
+      state.zoom_to(Framebuffer::get_size(),
+                    workspace->get_bounding_rect());
+    }
+}
+
+void 
+Viewer::rotate_view_90()
+{
+  state.rotate(90.0f);
+}
+
+void 
+Viewer::rotate_view_270()
+{
+  state.rotate(-90.0f);
+}
+
+void
+Viewer::delete_selection()
+{
+  workspace->delete_selection();
+}
+
+void
+Viewer::reset_view_rotation()
+{
+  state.set_angle(0.0f);
+}
+
+void
+Viewer::toggle_trackball_mode()
+{
+  pan_tool->set_trackball_mode(!pan_tool->get_trackball_mode());
+  if (pan_tool->get_trackball_mode())
+    {
+      std::cout << "Trackball mode active, press 't' to leave" << std::endl;
+      SDL_ShowCursor(SDL_DISABLE);
+      SDL_WM_GrabInput(SDL_GRAB_ON);
+    }
+  else
+    {
+      std::cout << "Trackball mode deactivated" << std::endl;
+      SDL_ShowCursor(SDL_ENABLE);
+      SDL_WM_GrabInput(SDL_GRAB_OFF);
     }
 }
 

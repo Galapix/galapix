@@ -96,6 +96,48 @@ public:
 
   void set_grid(const Vector2f& offset, const Sizef& size);
 
+  // Tool Controls
+  void set_zoom_tool();
+  void set_zoom_rect_tool();
+  void set_grid_tool();
+  void set_move_resize_tool();
+  void set_move_rotate_tool();
+
+  // Gamma Controls
+  void increase_contrast();
+  void decrease_contrast();
+
+  void increase_brightness();
+  void decrease_brightness();
+
+  void increase_gamma();
+  void decrease_gamma();
+
+  void reset_gamma();
+
+  // View Controls
+  void zoom_to_selection();
+  void zoom_home();
+  void rotate_view_90();
+  void rotate_view_270();
+  void reset_view_rotation();
+
+  // Other stuff
+  void toggle_grid();
+  void toggle_pinned_grid();
+  
+  void toggle_background_color();
+
+  void layout_4_3();
+  void layout_16_9();
+  void layout_random();
+  void layout_solve_overlaps();
+  void layout_tight();
+  void layout_vertical();
+
+  void delete_selection();
+  void toggle_trackball_mode();
+
 private:
   Viewer (const Viewer&);
   Viewer& operator= (const Viewer&);

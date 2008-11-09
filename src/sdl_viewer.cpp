@@ -16,13 +16,17 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <boost/format.hpp>
 #include <boost/bind.hpp>
 #include "../config.h"
 #include "math/rgba.hpp"
+#include "filesystem.hpp"
 #include "file_entry.hpp"
 #include "workspace.hpp"
 #include "sdl_framebuffer.hpp"
 #include "viewer.hpp"
+#include "framebuffer.hpp"
+#include "png.hpp"
 #include "sdl_viewer.hpp"
 #include "tile_generator_thread.hpp"
 #include "space_navigator.hpp"
@@ -93,7 +97,7 @@ SDLViewer::process_event(const SDL_Event& event)
                       viewer->get_state().zoom(1.0f/(1.0f+factor));
 
                     viewer->get_state().move(Vector2f(-spnav_ev->motion.x / 10.0f,
-                                                     +spnav_ev->motion.z / 10.0f));
+                                                      +spnav_ev->motion.z / 10.0f));
 
                     if (spnav_allow_rotate)
                       viewer->get_state().rotate(spnav_ev->motion.ry / 200.0f);
@@ -158,13 +162,147 @@ SDLViewer::process_event(const SDL_Event& event)
             case SDLK_ESCAPE:
               quit = true;
               break;
+              
+            case SDLK_d:
+              viewer->zoom_to_selection();
+              break;
+
+            case SDLK_p:
+              viewer->set_zoom_tool();
+              break;
+
+            case SDLK_r:
+              viewer->set_move_rotate_tool();
+              break;
+        
+            case SDLK_z:
+              viewer->set_zoom_rect_tool();
+              break;
+
+            case SDLK_m:
+              viewer->set_move_resize_tool();
+              break;
+
+            case SDLK_h:
+              viewer->zoom_home();
+              break;
+
+
+            case SDLK_F12:
+              {
+                SoftwareSurface surface = Framebuffer::screenshot();
+                // FIXME: Could do this in a worker thread to avoid pause on screenshotting
+                for(int i = 0; ; ++i)
+                  {
+                    std::string outfile = (boost::format("/tmp/galapix-screenshot-%04d.png") % i).str();
+                    if (!Filesystem::exist(outfile.c_str()))
+                      {
+                        PNG::save(surface, outfile);
+                        std::cout << "Screenshot written to " << outfile << std::endl;
+                        break;
+                      }
+                  }
+              }
+              break;              
+
+            case SDLK_DELETE:
+              viewer->delete_selection();
+              break;
+
+            case SDLK_y:
+              viewer->set_grid_tool();
+              break;
+
+            case SDLK_F6:
+              viewer->increase_brightness();
+              break;
+
+            case SDLK_F7:
+              viewer->decrease_brightness();
+              break;        
+
+            case SDLK_F8:
+              viewer->increase_contrast();
+              break;        
+
+            case SDLK_F9:
+              viewer->decrease_contrast();
+              break;        
+
+            case SDLK_F10:
+              viewer->reset_gamma();
+              break;
+
+            case SDLK_PAGEUP:
+              viewer->increase_gamma();
+              break;
+
+            case SDLK_PAGEDOWN:
+              viewer->decrease_gamma();
+              break;
+
+            case SDLK_1:
+              viewer->layout_4_3();
+              break;
+
+            case SDLK_2:
+              viewer->layout_16_9();
+              break;
+
+            case SDLK_3:
+              viewer->layout_random();
+              break;
+
+            case SDLK_4:
+              viewer->layout_solve_overlaps();
+              break;
+
+            case SDLK_5:
+              viewer->layout_tight();
+              break;
+
+            case SDLK_6:
+              viewer->layout_vertical();
+              break;
+
+            case SDLK_g:
+              viewer->toggle_grid();
+              break;
+
+            case SDLK_f:
+              viewer->toggle_pinned_grid();
+              break;
+
+            case SDLK_F11:
+              SDLFramebuffer::toggle_fullscreen();
+              break;
+
+            case SDLK_t:
+              viewer->toggle_trackball_mode();
+              break;
+
+            case SDLK_UP:
+            case SDLK_DOWN:
+              viewer->reset_view_rotation();
+              break;
+
+            case SDLK_LEFT:
+              viewer->rotate_view_270();
+              break;
+
+            case SDLK_RIGHT:
+              viewer->rotate_view_90();
+              break;
+
+            case SDLK_b:
+              viewer->toggle_background_color();
+              break;
 
             default:
               viewer->on_key_down(event.key.keysym.sym);
               break;
           }
         break;
-
 
       case SDL_KEYUP:
         viewer->on_key_up(event.key.keysym.sym);
