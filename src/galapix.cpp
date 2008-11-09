@@ -120,6 +120,52 @@ Galapix::merge(const std::string& database,
 }
 
 void
+Galapix::export_images(const std::string& database, const std::vector<URL>& url)
+{
+  SQLiteConnection db(database);
+  FileDatabase file_db(&db);
+  TileDatabase tile_db(&db);
+  
+  int wish_size = 512;
+  int image_num = 0;
+  for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
+    {
+      FileEntry entry = file_db.get_file_entry(*i);
+      if (!entry)
+        {
+          std::cerr << "Error: Couldn't get file entry for " << *i << std::endl;
+        }
+      else
+        {
+          Size size = entry.get_image_size();
+          int scale = 0;
+          while(size.width > wish_size && size.height > wish_size)
+            {
+              scale += 1;
+              size /= 2;
+            }
+
+          SoftwareSurface target(SoftwareSurface::RGB_FORMAT, size);
+          for(int y = 0; y < (size.height+255)/256; ++y)
+            for(int x = 0; x < (size.width+255)/256; ++x)
+              {
+                TileEntry tile;
+                if (tile_db.get_tile(entry.get_fileid(), scale, Vector2i(x, y), tile))
+                  {
+                    tile.get_surface().blit(target, Vector2i(x, y) * 256);
+                  }
+              }
+
+          char filename[1024];
+          sprintf(filename, "/tmp/out/%04d.jpg", image_num);
+          std::cout << "Writing result to: " << filename << std::endl;
+          JPEG::save(target, 85, filename);
+          image_num += 1;
+        }
+    }
+}
+
+void
 Galapix::info(const std::vector<URL>& url)
 {
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
@@ -521,6 +567,10 @@ Galapix::main(int argc, char** argv)
       else if (strcmp(argv[1], "cleanup") == 0)
         {
           cleanup(database);
+        }
+      else if (strcmp(argv[1], "export") == 0)
+        {
+          export_images(database, urls);
         }
       else if (strcmp(argv[1], "merge") == 0)
         {

@@ -48,6 +48,7 @@ public:
                 const std::vector<URL>& filenames);
   void generate_tiles(const std::string& database, 
                       const std::vector<URL>& filenames);
+  void export_images(const std::string& database, const std::vector<URL>& url);
   void view(const std::string& database, 
             const std::vector<URL>& filenames,
             bool view_all,
