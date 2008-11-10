@@ -47,6 +47,22 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
     }
  
   set_gl_capability(glconfig);
+
+  add_events(Gdk::POINTER_MOTION_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK |
+             Gdk::KEY_PRESS_MASK      | Gdk::KEY_RELEASE_MASK | 
+             Gdk::ENTER_NOTIFY_MASK   | Gdk::LEAVE_NOTIFY_MASK);
+
+  
+  // Gdk::POINTER_MOTION_HINT_MASK |
+  // Gdk::BUTTON_MOTION_MASK | Gdk::BUTTON1_MOTION_MASK | Gdk::BUTTON2_MOTION_MASK |
+  // Gdk::BUTTON3_MOTION_MASK | 
+
+  signal_button_release_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_up));
+  signal_button_press_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_down));
+  signal_motion_notify_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_move));
+
+  signal_key_press_event().connect(sigc::mem_fun(this, &GtkViewerWidget::key_press));
+  signal_key_release_event().connect(sigc::mem_fun(this, &GtkViewerWidget::key_release));
 }
 
 GtkViewerWidget::~GtkViewerWidget()
@@ -56,55 +72,17 @@ GtkViewerWidget::~GtkViewerWidget()
 void
 GtkViewerWidget::on_realize()
 {
-  // We need to call the base on_realize()
   Gtk::DrawingArea::on_realize();
 
   Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
 
-  // *** OpenGL BEGIN ***
   if (!glwindow->gl_begin(get_gl_context()))
     return;
 
-  if (1)
-    {
-      Framebuffer::init();
-      Framebuffer::reshape(Size(get_width(), get_height()));
-    }
-  else
-    {
-      GLUquadricObj* qobj = gluNewQuadric();
-      gluQuadricDrawStyle(qobj, GLU_FILL);
-      glNewList(1, GL_COMPILE);
-      gluSphere(qobj, 1.0, 20, 20);
-      glEndList();
-
-      static GLfloat light_diffuse[] = {1.0, 0.0, 0.0, 1.0};
-      static GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
-      glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-      glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-      glEnable(GL_LIGHTING);
-      glEnable(GL_LIGHT0);
-      glEnable(GL_DEPTH_TEST);
-
-      glClearColor(1.0, 1.0, 1.0, 1.0);
-      glClearDepth(1.0);
-
-      glViewport(0, 0, get_width(), get_height());
-
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();
-      gluPerspective(40.0, 1.0, 1.0, 10.0);
-
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-      gluLookAt(0.0, 0.0, 3.0,
-                0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0);
-      glTranslatef(0.0, 0.0, -3.0);
-    }
+  Framebuffer::init();
+  Framebuffer::reshape(Size(get_width(), get_height()));
 
   glwindow->gl_end();
-  // *** OpenGL END ***
 }
 
 bool
@@ -116,7 +94,7 @@ GtkViewerWidget::on_configure_event(GdkEventConfigure* event)
   if (!glwindow->gl_begin(get_gl_context()))
     return false;
 
-  glViewport(0, 0, get_width(), get_height());
+  Framebuffer::reshape(Size(get_width(), get_height()));
 
   glwindow->gl_end();
   // *** OpenGL END ***
@@ -129,20 +107,10 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* event)
 {
   Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
 
-  // *** OpenGL BEGIN ***
   if (!glwindow->gl_begin(get_gl_context()))
     return false;
 
-  if (1)
-    {
-      viewer->draw();
-    }
-  else
-    {
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glCallList(1);
-    }
+  viewer->draw();
 
   // Swap buffers.
   if (glwindow->is_double_buffered())
@@ -151,8 +119,52 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* event)
     glFlush();
 
   glwindow->gl_end();
-  // *** OpenGL END ***
 
+  return true;
+}
+
+bool
+GtkViewerWidget::mouse_move(GdkEventMotion* event)
+{
+  std::cout << "Motion: " << event->x << ", " << event->y << std::endl;
+  Vector2i new_pos(event->x, event->y);
+  viewer->on_mouse_motion(new_pos, new_pos - mouse_pos);
+  mouse_pos = new_pos;
+  return true;
+}
+
+bool
+GtkViewerWidget::mouse_down(GdkEventButton* event)
+{
+  grab_focus();
+  std::cout << "Button Press: " << event->x << ", " << event->y << " - " << event->button << std::endl;
+  viewer->on_mouse_button_down(Vector2i(event->x, event->y), event->button);
+  return false;
+}
+
+bool
+GtkViewerWidget::mouse_up(GdkEventButton* event)
+{
+  std::cout << "Button Release: " << event->x << ", " << event->y << " - " << event->button << std::endl;
+
+  viewer->on_mouse_button_up(Vector2i(event->x, event->y), event->button);
+  return false;
+}
+
+bool
+GtkViewerWidget::key_press(GdkEventKey* event)
+{
+  std::cout << "KeyPress" << std::endl;
+  //std::cout << "v" << event->keyval << std::endl;
+  return true;
+}
+
+bool
+GtkViewerWidget::key_release(GdkEventKey* event)
+{
+  std::cout << "KeyRelease" << std::endl;
+  //std::cout << "^" << event->keyval << std::endl;
+  // event->hardware_keycode
   return true;
 }
 

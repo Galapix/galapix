@@ -30,7 +30,8 @@ class GtkViewerWidget
     public Gtk::GL::Widget<GtkViewerWidget>
 {
 private:
-  Viewer* viewer;
+  Viewer*  viewer;
+  Vector2i mouse_pos;
 
 public:
   GtkViewerWidget(Viewer* viewer);
@@ -40,6 +41,11 @@ public:
   virtual bool on_configure_event(GdkEventConfigure* event);
   virtual bool on_expose_event(GdkEventExpose* event);
 
+  virtual bool mouse_move(GdkEventMotion* event);
+  virtual bool mouse_down (GdkEventButton* event);
+  virtual bool mouse_up(GdkEventButton* event);
+  virtual bool key_press(GdkEventKey* event);
+  virtual bool key_release(GdkEventKey* event);
 private:
   GtkViewerWidget (const GtkViewerWidget&);
   GtkViewerWidget& operator= (const GtkViewerWidget&);
