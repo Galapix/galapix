@@ -20,6 +20,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include <gtkmm.h>
+
 #include "framebuffer.hpp"
 #include "viewer.hpp"
 #include "gtk_viewer_widget.hpp"
@@ -52,10 +54,11 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
              Gdk::KEY_PRESS_MASK      | Gdk::KEY_RELEASE_MASK | 
              Gdk::ENTER_NOTIFY_MASK   | Gdk::LEAVE_NOTIFY_MASK);
 
-  
   // Gdk::POINTER_MOTION_HINT_MASK |
   // Gdk::BUTTON_MOTION_MASK | Gdk::BUTTON1_MOTION_MASK | Gdk::BUTTON2_MOTION_MASK |
   // Gdk::BUTTON3_MOTION_MASK | 
+
+  set_flags(get_flags()|Gtk::CAN_FOCUS);
 
   signal_button_release_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_up));
   signal_button_press_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_down));
@@ -130,6 +133,10 @@ GtkViewerWidget::mouse_move(GdkEventMotion* event)
   Vector2i new_pos(event->x, event->y);
   viewer->on_mouse_motion(new_pos, new_pos - mouse_pos);
   mouse_pos = new_pos;
+
+  // Trigger redraw
+  queue_draw();
+
   return true;
 }
 
@@ -154,16 +161,36 @@ GtkViewerWidget::mouse_up(GdkEventButton* event)
 bool
 GtkViewerWidget::key_press(GdkEventKey* event)
 {
-  std::cout << "KeyPress" << std::endl;
-  //std::cout << "v" << event->keyval << std::endl;
+  //std::cout << "KeyPress" << std::endl;
+  std::cout << "v" << event->keyval << std::endl;
+  switch(event->keyval)
+    {
+      case GDK_space:
+        break;
+
+      case GDK_l:
+        viewer->print_state();
+        break;
+
+      case GDK_h:        
+        viewer->zoom_home();
+        break;
+
+      case GDK_f:
+        viewer->toggle_pinned_grid();
+        break;
+
+      default:
+        break;
+    }
   return true;
 }
 
 bool
 GtkViewerWidget::key_release(GdkEventKey* event)
-{
+{ // /usr/include/gtk-2.0/gdk/gdkkeysyms.h
   std::cout << "KeyRelease" << std::endl;
-  //std::cout << "^" << event->keyval << std::endl;
+  std::cout << "^" << event->keyval << std::endl;
   // event->hardware_keycode
   return true;
 }

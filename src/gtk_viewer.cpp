@@ -59,6 +59,7 @@ GtkViewer::run()
 
   viewer->set_grid(Vector2f(0,0), Sizef(16.0f, 16.0f));
   viewer->toggle_grid();
+  viewer->toggle_pinned_grid();
 
   GtkViewerWidget viewer_widget(viewer.get());
   hbox.add(viewer_widget);
