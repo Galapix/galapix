@@ -188,14 +188,6 @@ Viewer::on_mouse_button_down(const Vector2i& pos, int btn)
 
   switch(btn)
     {
-      case SDL_BUTTON_WHEELUP:
-        get_state().zoom(1.1f, pos);
-        break;
-        
-      case SDL_BUTTON_WHEELDOWN:
-        get_state().zoom(1.0f/1.1f, pos);
-        break;
-
       case SDL_BUTTON_LEFT:
         left_tool->down(pos);
         break;
@@ -248,9 +240,6 @@ Viewer::on_key_up(int key)
       case SDLK_LSHIFT:
         keyboard_view_rotate_tool->up(mouse_pos);
         break;
-
-      default:
-        break;
     }
 }
 
@@ -270,9 +259,6 @@ Viewer::on_key_down(int key)
       case SDLK_RSHIFT:
       case SDLK_LSHIFT:
         keyboard_view_rotate_tool->down(mouse_pos);
-        break;
-              
-      default:
         break;
     }
 }

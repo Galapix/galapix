@@ -16,8 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SDL.h"
-
+#include <unistd.h>
 #include <iostream>
 #include <sstream>
 #include "sqlite.hpp"
@@ -25,7 +24,7 @@
 static int busy_callback(void* , int)
 {
   // FIXME: Is this a good idea?
-  SDL_Delay(10);
+  usleep(1000*10);
   return 1;
 }
 

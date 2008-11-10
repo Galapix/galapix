@@ -16,7 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <string.h>
+#ifndef HEADER_GTK_VIEWER_WIDGET_HPP
+#define HEADER_GTK_VIEWER_WIDGET_HPP
+
 #include <gtkmm.h>
 #include <libglademm/xml.h>
 #include <glade/glade.h>
@@ -26,45 +28,25 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "gtk_viewer_widget.hpp"
-#include "gtk_viewer.hpp"
 
-GtkViewer::GtkViewer()
+class GtkViewerWidget 
+  : public Gtk::DrawingArea,
+    public Gtk::GL::Widget<GtkViewerWidget>
 {
-}
+private:
+public:
+  GtkViewerWidget();
+  virtual ~GtkViewerWidget();
 
-GtkViewer::~GtkViewer()
-{
-}
+  virtual void on_realize();
+  virtual bool on_configure_event(GdkEventConfigure* event);
+  virtual bool on_expose_event(GdkEventExpose* event);
 
-void
-GtkViewer::run()
-{
-  int    argc = 1;
-  char** argv;
-
-  argv = (char**)malloc(sizeof(char*) * 2);
-
-  argv[0] = strdup("galapix");
-  argv[1] = NULL;
-
-  Gtk::Main kit(&argc, &argv);
-  Gtk::GL::init(&argc, &argv);
-
-  Glib::RefPtr<Gnome::Glade::Xml> xml = Gnome::Glade::Xml::create("galapix-gtk.glade");
-
-  // start the event loop; exit when the specified window is closed
-  Gtk::Window& window = dynamic_cast<Gtk::Window&>(*xml->get_widget("MainWindow"));
-
-  Gtk::ScrolledWindow& hbox = dynamic_cast<Gtk::ScrolledWindow&>(*xml->get_widget("scrolledwindow1"));
-
-  GtkViewerWidget viewer_widget;
-  hbox.add(viewer_widget);
-  viewer_widget.show();
-      
-  Gtk::Main::run(window);
-
-  free(argv[0]);
-}
+private:
+  GtkViewerWidget (const GtkViewerWidget&);
+  GtkViewerWidget& operator= (const GtkViewerWidget&);
+};
 
+#endif
+
 /* EOF */

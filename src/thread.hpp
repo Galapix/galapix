@@ -39,7 +39,6 @@ private:
   Mutex& operator= (const Mutex&);
 };
 
-/** */
 class Thread
 {
 private:

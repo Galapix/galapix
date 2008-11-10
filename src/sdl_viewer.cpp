@@ -61,8 +61,6 @@ SDLViewer::receive_file(const FileEntry& entry)
 void
 SDLViewer::process_event(const SDL_Event& event)
 {
-  //Uint8* keystates = SDL_GetKeyState(NULL);
-
   switch(event.type)
     {
       case SDL_USEREVENT:
@@ -147,13 +145,31 @@ SDLViewer::process_event(const SDL_Event& event)
 
         // FIXME: SDL Reverses the mouse buttons when a grab is active!
       case SDL_MOUSEBUTTONDOWN:
-        viewer->on_mouse_button_down(Vector2i(event.button.x, event.button.y),
-                                     event.button.button);
+        switch(event.button.button)
+          {
+            case SDL_BUTTON_WHEELUP:
+              viewer->get_state().zoom(1.1f, Vector2i(event.button.x, event.button.y));
+              break;
+              
+            case SDL_BUTTON_WHEELDOWN:
+              viewer->get_state().zoom(1.0f/1.1f, Vector2i(event.button.x, event.button.y));
+              break;
+
+            default:
+              viewer->on_mouse_button_down(Vector2i(event.button.x, event.button.y),
+                                           event.button.button);
+              break;
+          }
         break;
 
       case SDL_MOUSEBUTTONUP:
-        viewer->on_mouse_button_up(Vector2i(event.button.x, event.button.y),
-                                   event.button.button);
+        switch(event.button.button)
+          {
+            default:
+              viewer->on_mouse_button_up(Vector2i(event.button.x, event.button.y),
+                                         event.button.button);
+              break;
+          }
         break;
 
       case SDL_KEYDOWN:

@@ -117,7 +117,12 @@ Exec::exec()
       char buffer[4096];
       
       if (stdin_data)
-        write(stdin_fd[1], stdin_data.get_data(), stdin_data.size());
+        {
+          if (write(stdin_fd[1], stdin_data.get_data(), stdin_data.size()) < 0)
+            {
+              throw std::runtime_error(strerror(errno));
+            }
+        }
 
       close(stdin_fd[1]);
 
