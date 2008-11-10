@@ -289,81 +289,6 @@ Viewer::on_key_down(int key)
         keyboard_view_rotate_tool->down(mouse_pos);
         break;
               
-      case SDLK_SPACE:
-        {
-          Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
-          workspace->print_images(cliprect);
-        }
-        break;
-
-      case SDLK_F2:
-        workspace->load("/tmp/workspace-dump.galapix");
-        break;
-
-      case SDLK_F3:
-        {
-          std::ofstream out("/tmp/workspace-dump.galapix");
-          workspace->save(out);
-          out.close();
-        }
-        break;
-
-      case SDLK_F5:
-        {
-          // FIXME: Make force on Shift-F5 and normal F5 only refresh if the file changed
-          std::cout << "Refreshing tiles..." << std::endl;
-          Selection selection = workspace->get_selection();
-          bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
-          for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
-            {
-              i->refresh(force);
-            }
-        }
-        break;
-
-      case SDLK_q:
-        std::cout << "Building QuadTree... " << std::flush;
-        workspace->build_quad_tree();
-        std::cout << "done" << std::endl;
-        break;
-              
-      case SDLK_j:
-        std::cout << "Killing QuadTree" << std::endl;
-        workspace->clear_quad_tree();              
-        break;
-                
-      case SDLK_c:
-        std::cout << "Workspace: Clearing cache" << std::endl;
-        workspace->clear_cache();
-        break;
-
-      case SDLK_k:
-        std::cout << "Workspace: Cache Cleanup" << std::endl;
-        workspace->cache_cleanup();
-        break;
-
-      case SDLK_i:
-        workspace->isolate_selection();
-        break;
-
-      case SDLK_l:
-        std::cout << state.get_offset() << " " << state.get_scale() << std::endl;
-        break;
-
-      case SDLK_s:
-        std::cout << "Workspace: Sorting" << std::endl;
-        workspace->sort();
-        break;
-
-      case SDLK_n:
-        std::cout << "Workspace: Random Shuffle" << std::endl;
-        workspace->random_shuffle();
-        break;
-
-      case SDLK_0:
-        workspace->print_info();
-        break;
-
       default:
         break;
     }
@@ -632,6 +557,101 @@ Viewer::toggle_trackball_mode()
       SDL_ShowCursor(SDL_ENABLE);
       SDL_WM_GrabInput(SDL_GRAB_OFF);
     }
+}
+
+void
+Viewer::load()
+{
+  workspace->load("/tmp/workspace-dump.galapix");
+}
+
+void
+Viewer::save()
+{
+  std::ofstream out("/tmp/workspace-dump.galapix");
+  workspace->save(out);
+  out.close();
+}
+
+void
+Viewer::refresh_selection()
+{
+  // FIXME: Make force on Shift-F5 and normal F5 only refresh if the file changed
+  std::cout << "Refreshing tiles..." << std::endl;
+  Selection selection = workspace->get_selection();
+  bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
+  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+    {
+      i->refresh(force);
+    }
+}
+
+void
+Viewer::clear_cache()
+{
+  std::cout << "Workspace: Clearing cache" << std::endl;
+  workspace->clear_cache();
+}
+
+void
+Viewer::cleanup_cache()
+{
+  std::cout << "Workspace: Cache Cleanup" << std::endl;
+  workspace->cache_cleanup();
+}
+
+void
+Viewer::build_quad_tree()
+{
+  std::cout << "Building QuadTree... " << std::flush;
+  workspace->build_quad_tree();
+  std::cout << "done" << std::endl;
+}
+
+void
+Viewer::clear_quad_tree()
+{
+  std::cout << "Killing QuadTree" << std::endl;
+  workspace->clear_quad_tree();                
+}
+
+void
+Viewer::sort_image_list()
+{
+  std::cout << "Workspace: Sorting" << std::endl;
+  workspace->sort();
+}
+
+void
+Viewer::shuffle_image_list()
+{
+  std::cout << "Workspace: Random Shuffle" << std::endl;
+  workspace->random_shuffle();
+}
+
+void
+Viewer::isolate_selection()
+{
+  workspace->isolate_selection();
+}
+
+void
+Viewer::print_images()
+{
+  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+  workspace->print_images(cliprect);
+}
+
+void
+Viewer::print_info()
+{
+  workspace->print_info();
+}
+
+void
+Viewer::print_state()
+{
+  std::cout << state.get_offset() << " " << state.get_scale() << std::endl;
 }
 
 /* EOF */

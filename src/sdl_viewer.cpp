@@ -174,6 +174,10 @@ SDLViewer::process_event(const SDL_Event& event)
             case SDLK_r:
               viewer->set_move_rotate_tool();
               break;
+
+            case SDLK_k:
+              viewer->cleanup_cache();
+              break;
         
             case SDLK_z:
               viewer->set_zoom_rect_tool();
@@ -187,6 +191,13 @@ SDLViewer::process_event(const SDL_Event& event)
               viewer->zoom_home();
               break;
 
+            case SDLK_s:
+              viewer->sort_image_list();
+              break;
+
+            case SDLK_n:
+              viewer->shuffle_image_list();
+              break;
 
             case SDLK_F12:
               {
@@ -204,6 +215,10 @@ SDLViewer::process_event(const SDL_Event& event)
                   }
               }
               break;              
+
+            case SDLK_i:
+              viewer->isolate_selection();
+              break;
 
             case SDLK_DELETE:
               viewer->delete_selection();
@@ -277,6 +292,30 @@ SDLViewer::process_event(const SDL_Event& event)
               SDLFramebuffer::toggle_fullscreen();
               break;
 
+            case SDLK_F2:
+              viewer->load();
+              break;
+
+            case SDLK_F3:
+              viewer->save();
+              break;
+
+            case SDLK_j:
+              viewer->clear_quad_tree();
+              break;
+                
+            case SDLK_c:
+              viewer->clear_cache();
+              break;
+
+            case SDLK_F5:
+              viewer->refresh_selection();
+              break;
+              
+            case SDLK_q:
+              viewer->build_quad_tree();
+              break;
+
             case SDLK_t:
               viewer->toggle_trackball_mode();
               break;
@@ -296,6 +335,18 @@ SDLViewer::process_event(const SDL_Event& event)
 
             case SDLK_b:
               viewer->toggle_background_color();
+              break;
+
+            case SDLK_SPACE:
+              viewer->print_images();
+              break;
+              
+            case SDLK_l:
+              viewer->print_state();
+              break;
+
+            case SDLK_0:
+              viewer->print_info();
               break;
 
             default:

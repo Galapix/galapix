@@ -138,6 +138,25 @@ public:
   void delete_selection();
   void toggle_trackball_mode();
 
+  void load();
+  void save();
+
+  void refresh_selection();
+
+  void clear_cache();
+  void cleanup_cache();
+  void build_quad_tree();
+  void clear_quad_tree();
+
+  void sort_image_list();
+  void shuffle_image_list();
+  
+  void isolate_selection();
+
+  void print_images();
+  void print_info();
+  void print_state();
+
 private:
   Viewer (const Viewer&);
   Viewer& operator= (const Viewer&);
