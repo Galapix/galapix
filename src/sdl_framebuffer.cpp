@@ -24,6 +24,8 @@
 */
 
 #include <sstream>
+#include <math.h>
+#include "math.hpp"
 #include <assert.h>
 #include <iostream>
 #include <stdexcept>
@@ -123,6 +125,23 @@ SDLFramebuffer::flip()
 {
   //SDL_Flip(screen);
   SDL_GL_SwapBuffers();
+}
+
+void
+SDLFramebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
+{
+  Uint16 tbl[256];
+  for(int i = 0; i < 256; ++i)
+    {
+      float c = i/255.0f;
+      c = c + brightness;
+      c = (c * contrast) - 0.5f * (contrast - 1.0f);
+      c = powf(c, 1.0f/gamma);
+      
+      tbl[i] = Math::clamp(0, (int)(c*65535.0f), 65535);
+    }
+  
+  SDL_SetGammaRamp(tbl, tbl, tbl);
 }
 
 /* EOF */

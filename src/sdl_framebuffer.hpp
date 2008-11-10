@@ -42,6 +42,8 @@ public:
 
   static void reshape(const Size& size);
   static void flip();
+
+  static void apply_gamma_ramp(float contrast, float brightness, float gamma);
 };
 
 #endif

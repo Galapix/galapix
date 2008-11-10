@@ -20,7 +20,6 @@
 #include <fstream>
 #include <boost/format.hpp>
 #include <iostream>
-#include <math.h>
 #include "math/rgb.hpp"
 #include "framebuffer.hpp"
 #include "sdl_framebuffer.hpp"
@@ -40,22 +39,6 @@
 #include "view_rotate_tool.hpp"
 #include "png.hpp"
 #include "viewer.hpp"
-
-void apply_gamma_ramp(float contrast, float brightness, float gamma)
-{
-  Uint16 tbl[256];
-  for(int i = 0; i < 256; ++i)
-    {
-      float c = i/255.0f;
-      c = c + brightness;
-      c = (c * contrast) - 0.5f * (contrast - 1.0f);
-      c = powf(c, 1.0f/gamma);
-      
-      tbl[i] = Math::clamp(0, (int)(c*65535.0f), 65535);
-    }
-  
-  SDL_SetGammaRamp(tbl, tbl, tbl);
-}
 
 Viewer::Viewer(Workspace* workspace)
   : workspace(workspace),
@@ -371,7 +354,7 @@ Viewer::increase_contrast()
   //contrast += 0.1f;
   contrast *= 1.1f;
   std::cout << "Contrast: " << contrast << std::endl;
-  apply_gamma_ramp(contrast, brightness, gamma);
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 }
 
 void
@@ -380,7 +363,7 @@ Viewer::decrease_contrast()
   //contrast -= 0.1f;
   contrast /= 1.1f;
   std::cout << "Contrast: " << contrast << std::endl;
-  apply_gamma_ramp(contrast, brightness, gamma);
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 
 }
 
@@ -389,8 +372,7 @@ Viewer::increase_brightness()
 {
   brightness += 0.1f;
   std::cout << "Brightness: " << brightness << std::endl;
-  apply_gamma_ramp(contrast, brightness, gamma);
-
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 }
 
 void
@@ -398,7 +380,7 @@ Viewer::decrease_brightness()
 {
   brightness -= 0.1f;
   std::cout << "Brightness: " << brightness << std::endl;
-  apply_gamma_ramp(contrast, brightness, gamma);
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 }
 
 void
@@ -406,7 +388,7 @@ Viewer::increase_gamma()
 {
   gamma *= 1.1f;
   std::cout << "Gamma: " << gamma << std::endl;
-  apply_gamma_ramp(contrast, brightness, gamma);
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 }
 
 void
@@ -414,7 +396,7 @@ Viewer::decrease_gamma()
 {
   gamma /= 1.1f;
   std::cout << "Gamma: " << gamma << std::endl;
-  apply_gamma_ramp(contrast, brightness, gamma);
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 }
 
 void
@@ -423,7 +405,7 @@ Viewer::reset_gamma()
   brightness = 0.0f;
   contrast   = 1.0f;
   gamma      = 1.0f;
-  apply_gamma_ramp(contrast, brightness, gamma);
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 }
 
 void
