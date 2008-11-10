@@ -18,16 +18,20 @@
 
 #ifndef HEADER_GTK_VIEWER_HPP
 #define HEADER_GTK_VIEWER_HPP
+
+class Workspace;
 
 class GtkViewer
 {
 private:
+  Workspace* workspace;
   
 public:
   GtkViewer();
   ~GtkViewer();
 
   void run();
+  void set_workspace(Workspace* workspace_) { workspace = workspace_; }
 
 private:
   GtkViewer (const GtkViewer&);

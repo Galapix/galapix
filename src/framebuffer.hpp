@@ -42,6 +42,9 @@ void assert_gl(const char* message);
 /** Generic OpenGL helper functions */
 class Framebuffer
 {
+private:
+  static Size size;
+
 public:
   static void init();
   static void reshape(const Size& size);

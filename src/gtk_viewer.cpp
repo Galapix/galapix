@@ -16,16 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <memory>
 #include <string.h>
 #include <gtkmm.h>
 #include <libglademm/xml.h>
-#include <glade/glade.h>
 #include <iostream>
-#include <gtkglmm.h>
-#include <gtkmm/gl/widget.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 
+#include "viewer.hpp"
 #include "gtk_viewer_widget.hpp"
 #include "gtk_viewer.hpp"
 
@@ -43,28 +40,36 @@ GtkViewer::run()
   int    argc = 1;
   char** argv;
 
+  // Fake command line argument construction
   argv = (char**)malloc(sizeof(char*) * 2);
-
   argv[0] = strdup("galapix");
   argv[1] = NULL;
 
   Gtk::Main kit(&argc, &argv);
   Gtk::GL::init(&argc, &argv);
 
-  Glib::RefPtr<Gnome::Glade::Xml> xml = Gnome::Glade::Xml::create("galapix-gtk.glade");
+  Glib::RefPtr<Gnome::Glade::Xml> xml = Gnome::Glade::Xml::create("src/galapix.glade");
 
   // start the event loop; exit when the specified window is closed
   Gtk::Window& window = dynamic_cast<Gtk::Window&>(*xml->get_widget("MainWindow"));
 
   Gtk::ScrolledWindow& hbox = dynamic_cast<Gtk::ScrolledWindow&>(*xml->get_widget("scrolledwindow1"));
 
-  GtkViewerWidget viewer_widget;
+  std::auto_ptr<Viewer> viewer = std::auto_ptr<Viewer>(new Viewer(workspace));
+
+  viewer->set_grid(Vector2f(0,0), Sizef(16.0f, 16.0f));
+  viewer->toggle_grid();
+
+  GtkViewerWidget viewer_widget(viewer.get());
   hbox.add(viewer_widget);
   viewer_widget.show();
       
   Gtk::Main::run(window);
 
-  free(argv[0]);
+  // Cleanup
+  for(int i = 0; i < argc; ++i)
+    free(argv[i]);
+  free(argv);
 }
 
 /* EOF */

@@ -19,23 +19,21 @@
 #ifndef HEADER_GTK_VIEWER_WIDGET_HPP
 #define HEADER_GTK_VIEWER_WIDGET_HPP
 
-#include <gtkmm.h>
-#include <libglademm/xml.h>
-#include <glade/glade.h>
 #include <iostream>
 #include <gtkglmm.h>
 #include <gtkmm/gl/widget.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 
+class Viewer;
 
 class GtkViewerWidget 
   : public Gtk::DrawingArea,
     public Gtk::GL::Widget<GtkViewerWidget>
 {
 private:
+  Viewer* viewer;
+
 public:
-  GtkViewerWidget();
+  GtkViewerWidget(Viewer* viewer);
   virtual ~GtkViewerWidget();
 
   virtual void on_realize();

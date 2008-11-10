@@ -24,8 +24,9 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
-#include "sdl_framebuffer.hpp"
 #include "framebuffer.hpp"
+
+Size Framebuffer::size;
 
 #ifndef assert_gl
 void assert_gl(const char* message)
@@ -59,8 +60,10 @@ Framebuffer::init()
 }
 
 void
-Framebuffer::reshape(const Size& size)
+Framebuffer::reshape(const Size& size_)
 { 
+  size = size_;
+
   glViewport(0, 0, size.width, size.height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -169,13 +172,13 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rg
 int
 Framebuffer::get_width()
 {
-  return SDLFramebuffer::get_width();
+  return size.width;
 }
 
 int
 Framebuffer::get_height()
 {
-  return SDLFramebuffer::get_height();
+  return size.height;
 }
 
 SoftwareSurface

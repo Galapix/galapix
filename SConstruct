@@ -70,7 +70,7 @@ galapix_sources = [
     + ['src/gtk_viewer.cpp',
        'src/gtk_viewer_widget.cpp']
 
-env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2'],
+env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
                   CPPDEFINES = [('HAVE_OPENGL', 1),
                                 ('HAVE_SPACE_NAVIGATOR', 1)],
                   LIBS = ['GL', 'GLEW', 'spnav', 'sqlite3', 'jpeg'])

@@ -48,6 +48,7 @@
 #include "workspace.hpp"
 #include "job_manager.hpp"
 #include "sdl_viewer.hpp"
+#include "gtk_viewer.hpp"
 #include "viewer.hpp"
 #include "galapix.hpp"
 
@@ -340,8 +341,11 @@ Galapix::view(const std::string& database,
 
   Workspace workspace;
   SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
+  GtkViewer gtk_viewer;
 
   sdl_viewer.set_workspace(&workspace);
+  
+  gtk_viewer.set_workspace(&workspace);
 
   if (view_all)
     {
@@ -368,8 +372,11 @@ Galapix::view(const std::string& database,
           database_thread.request_file(*i, boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1));
         }
     }
-  
-  sdl_viewer.run();
+
+  if (0)
+    sdl_viewer.run();
+  else
+    gtk_viewer.run();
 
   tile_generator_thread.stop();
   database_thread.stop();

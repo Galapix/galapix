@@ -16,13 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+
+#include "framebuffer.hpp"
+#include "viewer.hpp"
 #include "gtk_viewer_widget.hpp"
 
-GtkViewerWidget::GtkViewerWidget()
+GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
+  : viewer(viewer_)
 {
   Glib::RefPtr<Gdk::GL::Config> glconfig;
 
-  // Try double-buffered visual
   glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB    |
                                      Gdk::GL::MODE_DEPTH  |
                                      Gdk::GL::MODE_DOUBLE);
@@ -59,35 +65,43 @@ GtkViewerWidget::on_realize()
   if (!glwindow->gl_begin(get_gl_context()))
     return;
 
-  GLUquadricObj* qobj = gluNewQuadric();
-  gluQuadricDrawStyle(qobj, GLU_FILL);
-  glNewList(1, GL_COMPILE);
-  gluSphere(qobj, 1.0, 20, 20);
-  glEndList();
+  if (1)
+    {
+      Framebuffer::init();
+      Framebuffer::reshape(Size(get_width(), get_height()));
+    }
+  else
+    {
+      GLUquadricObj* qobj = gluNewQuadric();
+      gluQuadricDrawStyle(qobj, GLU_FILL);
+      glNewList(1, GL_COMPILE);
+      gluSphere(qobj, 1.0, 20, 20);
+      glEndList();
 
-  static GLfloat light_diffuse[] = {1.0, 0.0, 0.0, 1.0};
-  static GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_DEPTH_TEST);
+      static GLfloat light_diffuse[] = {1.0, 0.0, 0.0, 1.0};
+      static GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
+      glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+      glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+      glEnable(GL_LIGHTING);
+      glEnable(GL_LIGHT0);
+      glEnable(GL_DEPTH_TEST);
 
-  glClearColor(1.0, 1.0, 1.0, 1.0);
-  glClearDepth(1.0);
+      glClearColor(1.0, 1.0, 1.0, 1.0);
+      glClearDepth(1.0);
 
-  glViewport(0, 0, get_width(), get_height());
+      glViewport(0, 0, get_width(), get_height());
 
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(40.0, 1.0, 1.0, 10.0);
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      gluPerspective(40.0, 1.0, 1.0, 10.0);
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt(0.0, 0.0, 3.0,
-            0.0, 0.0, 0.0,
-            0.0, 1.0, 0.0);
-  glTranslatef(0.0, 0.0, -3.0);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+      gluLookAt(0.0, 0.0, 3.0,
+                0.0, 0.0, 0.0,
+                0.0, 1.0, 0.0);
+      glTranslatef(0.0, 0.0, -3.0);
+    }
 
   glwindow->gl_end();
   // *** OpenGL END ***
@@ -119,9 +133,16 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* event)
   if (!glwindow->gl_begin(get_gl_context()))
     return false;
 
+  if (1)
+    {
+      viewer->draw();
+    }
+  else
+    {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   glCallList(1);
+    }
 
   // Swap buffers.
   if (glwindow->is_double_buffered())
