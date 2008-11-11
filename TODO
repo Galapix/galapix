@@ -18,11 +18,61 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* updating an image with F5 doesn't update its size in the FileEntry
+
+* something useless: add puzzle mode that randomly places tiles on the
+  screen and let the user put them back together
+
+* brightness factor to extreme
+
+* seperate files and images tables so that information about archive
+  files can be saved and other stuff
+
+* write an auto-fit option: take all pictures fully visible on the
+  screen, select them then fit them to the screen
+
+* add option to subdived the given grid further
+
+* make get_size() work in a seperate worker thread and in general make
+  DatabaseThread only handle database request and dispatch everything
+  else
+
+* when a file is given as URL and refers to an archive it does not
+  work from command line, since URLs are assumed to refer to images
+
+* magic byte detection for archive files would be good
+
+* add X11 drag&drop support to SDL
+
+* always process get requests to the database before store requests
+
+* check that all file plugins can load from any URL
+
+* key stuck issues happens: SDL event queue getting filled up? and key-up events lost?
+
+* add command line option to not follow links and/or archive files
+
+* collect tiles and FileEntries before writing them to the database, might speed things up a bit
+   other speed improvements PRAGMA synchronous = OFF; 
+
+* Write a tempfile class that creates a tempfile from a Blob in cases
+  where a command line tool can't read from stdin or from /dev/stdin,
+  because it might depend on the file extension to figure out a type
+  (theoretical, don't think any app needs that at the moment)
+
+* make SpaceNavigator a seperate thread, do not poll events, but wait
+  for them, use SDL_PushEvent to push data as user event
+
+* write grid traversal thing so that we can detect the tiles to draw even on scaled or rotated images
+
+* add layout option that makes use of treemaps:
+  http://www.cs.umd.edu/hcil/treemap-history/
+
 * make keyboard bindings configurable
 
 * implement some fun recursive layout where images get constantly smaller
 
-* add SVG support via Inkscape maybe? maybe generic shell converter thing?
+* add SVG support via Inkscape maybe or rsvg? maybe generic shell converter thing?
 
 * add tool to cut an image (simple rectangle or more complex polygonal shapes)
 
@@ -31,9 +81,6 @@ Release procedure:
   insert into files_new (fileid, url, size, mtime, width, height) select fileid, filename, filesize, mtime, width, height from files;
   alter table files rename to files_old
   alter table files_new rename to files;
-
-* make stuff more event driven or better yet make it completly event
-  driven (how to handle dynamic animations?)
 
 * PRAGMA temp_store_directory = '/home/ingo/.galapix/tmp/'; 
 
@@ -206,6 +253,9 @@ Galapix 0.0.4 Release ToDo:
 //   WHERE files.filename = 'file:///tmp/ssc2008-11a14.jpg' AND files.fileid = tiles.fileid;
 // When no tiles are available nothing is returned, which makes this call kind of useless for the intended purpose
 
+* add support for RAW images via ufraw
+ ufraw-batch YO5Z9782.CR2 --silent  --out-type=jpeg --output=-
+
 * small scales are displayed at the wrong size (thumbnail.size * scale
   != image_size due to small values of thumbnail.size)
 
@@ -213,7 +263,8 @@ Galapix 0.0.4 Release ToDo:
 
 * Merge TileGenerator and TileGeneratorThread code
 
-* implement quadtree properly and do some testing on it (some bugs left)
+* implement QuadTree properly and do some testing on it (currently we
+  don't cancel jobs when images get out of view)
 
 * seperate loading of tiles from drawing, making loading/job-cancel
   event based instead of brute force as it is now
@@ -405,7 +456,7 @@ Possible Future Improvements:
 
 * basic exif support to get the orientation right (libexif)
 
-* no support for RGBA and greyscale in SoftwareSurface
+* no support for greyscale in SoftwareSurface
 
 
 Random Notes:

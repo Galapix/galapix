@@ -3,6 +3,8 @@ Galapix 0.0.4 (??. Sep 2008)
 
 * images are placed in a QuadTree to speed up large image collections
 * switched build system to Waf (maybe)
+* support for SVG via RSVG
+* support for RAW images via UFRaw
 * support for PNG images via libpng
 * support for ImageMagick via Magick++
 * support for Gimp/XCF via xcftools
@@ -11,9 +13,10 @@ Galapix 0.0.4 (??. Sep 2008)
 * support for zip archive files 
 * support for rar archive files 
 * support for http/ftp via libcurl
-* support for anti-aliasing
+* support for OpenGL anti-aliasing (--anti-aliasing N)
 * support for toggling background color
-* database format changed, for conversion do a:
+* a flexible grid overlay
+* database format changed, for conversion do a (incomplete):
 
   ALTER TABLE tiles add format INTEGER DEFAULT 0;
   UPDATE files SET filename = 'file://' || filename;

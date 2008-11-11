@@ -3,11 +3,11 @@ galapix - A Zoomable Image Viewer zoomview
 
 galapix is an image viewer that allows you to directly zoom into large
 collection of tens of thousand of images from tiny thumbnails down to
-the images original size fluently with short load times and no loss of
-interactivity. It accomplishes this by keeping a tile cache which
-stores not only thumbnails for one size, but thumbnails of many
+the images original size fluently with very short load times and no
+loss of interactivity. It accomplishes this by keeping a tile cache
+which stores not only thumbnails for one size, but thumbnails of many
 different sizes. This thumbnail cache requires at maximum 1.5x times
-as much storage as the images themselves. 
+as much storage as the images themselves.
 
 galapix can also be used to view gigapixel sized images, it however
 currently requires the tiles for that to be generated previously,
@@ -17,6 +17,16 @@ galapix supports a wide varity of image formats including JPEG, PNG,
 XCF (Gimp), KRA (Krita) and all stuff supported by ImageMagick.
 
 
+Portability:
+============
+
+galapix is written with GNU/Linux in mind, calls to external
+application, which are used to handle all kinds of file formats might
+not be portable to other platforms.  There are also plenty of other
+little details that will make portability to non-POSIX OSs problematic
+(thread and directory handling).
+
+
 Features:
 =========
 
@@ -24,9 +34,10 @@ Features:
 
   * support for extremely large images (gigapixel range)
 
-  * support for a wide varity of image formats
+  * support for a wide varity of image formats (png, jpeg, xcf, kra,
+    svg and everything supported by ImageMagick)
 
-  * support for a wide varity of archive formats
+  * support for a wide varity of archive formats (rar, zip, tar)
 
   * very fast once the cache is generated (3sec to load 150'000 images
     at once)
@@ -46,23 +57,38 @@ Features:
 Required Libraries and Tools:
 =============================
 
-  * SQlite  - http://www.sqlite.org/
-  * libjpeg - http://www.ijg.org/
-  * scons   - http://www.scons.org/ 
-  * OpenGL  - http://www.opengl.org 
-  * GLEW    - http://glew.sourceforge.net/
+  * OpenGL   - http://www.opengl.org 
+  * SQlite   - http://www.sqlite.org/
+  * libjpeg  - http://www.ijg.org/
+  * libpng   - http://www.libpng.org/pub/png/
+  * scons    - http://www.scons.org/ 
+  * GLEW     - http://glew.sourceforge.net/
+  * Magick++ - http://www.imagemagick.org/Magick%2B%2B/
+  * boost    - http://www.boost.org/
+  * librsvg  - http://librsvg.sourceforge.net/
 
-On Ubuntu you have to do a:
+On Ubuntu one can install all required libraries with this call:
 
-apt-get install \
+sudo apt-get install \
   libsqlite3-dev \
   libglew1.5-dev \
   libjpeg62-dev \
-  scons
+  libpng12-dev \
+  scons \
+  libmagick++9-dev
 
-And make sure you have OpenGL up and running. For other distributions
-library names might be a little different, but all the required
-libraries should be part of most distributions.
+The following packages are optional and used to handle some more
+exotic image formats:
+
+sudo apt-get install \
+  librsvg2-bin \
+  ufraw \
+  krita
+
+OpenGL is required as well, but not listed here, since installation
+might differ depending on the brand of graphics card. For other
+distributions library names might be slighly different, but all the
+required libraries should be part of most distributions.
 
 
 Compilation:
@@ -96,7 +122,7 @@ Running:
 ========
 
 galapix comes with a number of sub commands, allowing the user to either
-view images or pre generate thumbnails. The most basic command is:
+view images or pre-generate thumbnails. The most basic command is:
 
  ./galapix view [FILES]...
 
@@ -117,7 +143,7 @@ the database.
 
 Via the -d flag you can specifiy a database, so that you can have
 different databases for different files. If you give an empty string
--d "" no database file will be created, the database will resist in
+-d "", no database file will be created, the database will resist in
 memory only.
 
 
@@ -155,6 +181,7 @@ right     | rotate the view -90
 up        | reset view rotation to 0 degree
 escape    | exit galapix
 
+
 SpaceNavigator Support:
 =======================
 
@@ -169,9 +196,8 @@ directly reading from /dev/input/eventX.
 Issues:
 =======
 
-* Galapix is very picky about IO, so if you have updatedb running
-  around in the background or other indexing software, it gets
-  extremely slow.
+* Galapix is very picky about I/O, so if you have updatedb running in
+  the background or other indexing software, it can get very slow.
 
 * Incremental loading is not fully optimized, so you see more
   artifacts then you should.

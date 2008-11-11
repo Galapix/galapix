@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Tue Nov 11 12:53:11 2008 -->
+<!--Generated with glade3 3.4.5 on Tue Nov 11 18:30:17 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="MainWindow">
     <property name="title" translatable="yes">Galapix</property>
@@ -201,7 +201,7 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkToolButton" id="zoom-out">
+              <widget class="GtkToolButton" id="zoom-in">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-zoom-in</property>
               </widget>
@@ -210,7 +210,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="zoom-in">
+              <widget class="GtkToolButton" id="zoom-out">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-zoom-out</property>
               </widget>
@@ -219,7 +219,7 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="toolbutton3">
+              <widget class="GtkToolButton" id="zoom-home">
                 <property name="visible">True</property>
                 <property name="stock_id">gtk-home</property>
               </widget>
@@ -233,7 +233,25 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkToolButton" id="grid-toggle">
+              <widget class="GtkToggleToolButton" id="grid-toggle">
+                <property name="visible">True</property>
+                <property name="icon">grid.png</property>
+              </widget>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToggleToolButton" id="grid-pin-toggle">
+                <property name="visible">True</property>
+                <property name="icon">grid_pin.png</property>
+              </widget>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkSeparatorToolItem" id="toolbutton2">
                 <property name="visible">True</property>
               </widget>
               <packing>
@@ -241,8 +259,33 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkToolButton" id="grid-pin-toggle">
+              <widget class="GtkRadioToolButton" id="layout-regular">
                 <property name="visible">True</property>
+                <property name="icon">layout_regular.png</property>
+                <property name="active">True</property>
+              </widget>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkRadioToolButton" id="layout-tight">
+                <property name="visible">True</property>
+                <property name="icon">layout_tight.png</property>
+                <property name="active">True</property>
+                <property name="group">layout-regular</property>
+              </widget>
+              <packing>
+                <property name="expand">True</property>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkRadioToolButton" id="layout-random">
+                <property name="visible">True</property>
+                <property name="icon">layout_random.png</property>
+                <property name="active">True</property>
+                <property name="group">layout-regular</property>
               </widget>
               <packing>
                 <property name="homogeneous">True</property>
@@ -289,7 +332,7 @@
                   <widget class="GtkRadioToolButton" id="GridToolButton">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Grid Tool</property>
-                    <property name="icon">grid.png</property>
+                    <property name="icon">grid_tool.png</property>
                     <property name="active">True</property>
                     <property name="group">PanToolButton</property>
                   </widget>

@@ -48,7 +48,7 @@ GtkViewer::run()
   Gtk::Main kit(&argc, &argv);
   Gtk::GL::init(&argc, &argv);
 
-  Glib::RefPtr<Gnome::Glade::Xml> xml = Gnome::Glade::Xml::create("src/galapix.glade");
+  Glib::RefPtr<Gnome::Glade::Xml> xml = Gnome::Glade::Xml::create("data/glade/galapix.glade");
 
   // start the event loop; exit when the specified window is closed
   Gtk::Window& window = dynamic_cast<Gtk::Window&>(*xml->get_widget("MainWindow"));
@@ -57,14 +57,15 @@ GtkViewer::run()
 
   viewer = std::auto_ptr<Viewer>(new Viewer(workspace));
 
-  viewer->set_grid(Vector2f(0,0), Sizef(16.0f, 16.0f));
-  viewer->toggle_grid();
-  viewer->toggle_pinned_grid();
+  viewer->set_grid(Vector2f(0,0), Sizef(256.0f, 256.0f));
+  //viewer->toggle_grid();
+  //viewer->toggle_pinned_grid();
 
   GtkViewerWidget viewer_widget(viewer.get());
   hbox.add(viewer_widget);
   viewer_widget.show();
 
+  // Toolbox
   pan_tool_button  = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("PanToolButton"));
   zoom_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("ZoomToolButton"));
   grid_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("GridToolButton"));
@@ -74,7 +75,30 @@ GtkViewer::run()
   zoom_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_tool_toggled));
   grid_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_tool_toggled));
   move_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_move_tool_toggled));
-      
+
+  // Toolbar
+  zoom_in_button   = dynamic_cast<Gtk::ToolButton*>(xml->get_widget("zoom-in"));
+  zoom_out_button  = dynamic_cast<Gtk::ToolButton*>(xml->get_widget("zoom-out"));
+  zoom_home_button = dynamic_cast<Gtk::ToolButton*>(xml->get_widget("zoom-home"));
+
+  zoom_in_button->signal_clicked().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_in_clicked));
+  zoom_out_button->signal_clicked().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_out_clicked));
+  zoom_home_button->signal_clicked().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_home_clicked));
+
+  grid_toggle     = dynamic_cast<Gtk::ToggleToolButton*>(xml->get_widget("grid-toggle"));
+  grid_pin_toggle = dynamic_cast<Gtk::ToggleToolButton*>(xml->get_widget("grid-pin-toggle"));
+
+  grid_toggle->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_toggle));
+  grid_pin_toggle->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_pin_toggle));
+  
+  layout_regular_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-regular"));
+  layout_tight_button   = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-tight"));
+  layout_random_button  = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-random"));
+
+  layout_regular_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_layout_toggle));
+  layout_tight_button  ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_layout_toggle));
+  layout_random_button ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_layout_toggle));
+
   Gtk::Main::run(window);
 
   // Cleanup
@@ -109,6 +133,53 @@ GtkViewer::on_move_tool_toggled()
 {
   if (move_tool_button->get_active())
     viewer->set_move_resize_tool();
+}
+
+void
+GtkViewer::on_grid_toggle()
+{
+  viewer->toggle_grid();
+}
+
+void
+GtkViewer::on_grid_pin_toggle()
+{
+  viewer->toggle_pinned_grid();
+}
+
+void
+GtkViewer::on_layout_toggle()
+{
+  if (layout_regular_button->get_active())
+    {
+      viewer->layout_4_3();
+    }
+  else if (layout_tight_button->get_active())
+    {
+      viewer->layout_tight();
+    }
+  else if (layout_random_button->get_active())
+    {
+      viewer->layout_random();
+    }
+}
+
+void
+GtkViewer::on_zoom_in_clicked()
+{
+  viewer->get_state().zoom(1.5f);
+}
+
+void
+GtkViewer::on_zoom_out_clicked()
+{
+  viewer->get_state().zoom(1.0f/1.5f);
+}
+
+void
+GtkViewer::on_zoom_home_clicked()
+{
+  viewer->zoom_to_selection(); 
 }
 
 /* EOF */

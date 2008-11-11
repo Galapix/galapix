@@ -33,6 +33,17 @@ private:
   Gtk::RadioToolButton* grid_tool_button;
   Gtk::RadioToolButton* move_tool_button;
 
+  Gtk::ToolButton* zoom_in_button;
+  Gtk::ToolButton* zoom_out_button;
+  Gtk::ToolButton* zoom_home_button;
+
+  Gtk::ToggleToolButton* grid_toggle;
+  Gtk::ToggleToolButton* grid_pin_toggle;
+
+  Gtk::RadioToolButton* layout_regular_button;
+  Gtk::RadioToolButton* layout_tight_button;
+  Gtk::RadioToolButton* layout_random_button;
+
   std::auto_ptr<Viewer> viewer;
 
 public:
@@ -46,6 +57,15 @@ public:
   void on_zoom_tool_toggled();
   void on_grid_tool_toggled();
   void on_move_tool_toggled();
+
+  void on_grid_toggle();
+  void on_grid_pin_toggle();
+
+  void on_layout_toggle();
+
+  void on_zoom_in_clicked();
+  void on_zoom_out_clicked();
+  void on_zoom_home_clicked();
 
 private:
   GtkViewer (const GtkViewer&);
