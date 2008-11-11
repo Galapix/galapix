@@ -21,7 +21,6 @@
 
 #include "math/size.hpp"
 #include "thread.hpp"
-#include "thread_message_queue.hpp"
 
 #include "image.hpp"
 #include "job_handle.hpp"
@@ -48,7 +47,6 @@ private:
   bool quit;
   bool spnav_allow_rotate;
 
-  ThreadMessageQueue<FileEntry>   file_queue;
   std::auto_ptr<Viewer> viewer;
   
   Workspace* workspace;
@@ -59,8 +57,6 @@ public:
 
   void run();
   void set_workspace(Workspace* workspace_) { workspace = workspace_; }
-
-  void receive_file(const FileEntry& entry);
 
   Viewer* get_viewer() const { return viewer.get(); }
 

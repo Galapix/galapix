@@ -352,12 +352,12 @@ Galapix::view(const std::string& database,
       if (pattern.empty())
         {
           // When no files are given, display everything in the database
-          database_thread.request_all_files(boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1));
+          database_thread.request_all_files(boost::bind(&Workspace::receive_file, &workspace, _1));
         }
       else 
         {
           std::cout << "Using pattern: '" << pattern << "'" << std::endl;
-          database_thread.request_files_by_pattern(boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1), pattern);
+          database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), pattern);
         }
     }
 
@@ -369,7 +369,7 @@ Galapix::view(const std::string& database,
         }
       else
         {
-          database_thread.request_file(*i, boost::bind(&SDLViewer::receive_file, &sdl_viewer, _1));
+          database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
         }
     }
 

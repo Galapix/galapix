@@ -62,7 +62,7 @@ Workspace::get_image(const Vector2f& pos) const
 void
 Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 {
-  DatabaseThread::current()->request_file(url, boost::bind(&SDLViewer::receive_file, SDLViewer::current(), _1));
+  DatabaseThread::current()->request_file(url, boost::bind(&Workspace::receive_file, this, _1));
   image_requests.push_back(ImageRequest(url, pos, scale));
 }
 
@@ -304,6 +304,13 @@ Workspace::draw(const Rectf& cliprect, float scale)
 void
 Workspace::update(float delta)
 {
+  while (!file_queue.empty())
+    {
+      const FileEntry& entry = file_queue.front();
+      add_image(entry);
+      file_queue.pop();
+    }
+
   if (progress != 1.0f)
     {
       progress += delta * 2.0f;
@@ -609,6 +616,12 @@ bool
 Workspace::is_animated() const
 {
   return progress != 1.0f;
+}
+
+void
+Workspace::receive_file(const FileEntry& entry)
+{
+  file_queue.push(entry);
 }
 
 /* EOF */

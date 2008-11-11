@@ -113,6 +113,8 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* event)
   if (!glwindow->gl_begin(get_gl_context()))
     return false;
 
+  // FIXME: Add real time here
+  viewer->update(0.033f);
   viewer->draw();
 
   // Swap buffers.
@@ -129,7 +131,7 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* event)
 bool
 GtkViewerWidget::mouse_move(GdkEventMotion* event)
 {
-  std::cout << "Motion: " << event->x << ", " << event->y << std::endl;
+  //std::cout << "Motion: " << event->x << ", " << event->y << std::endl;
   Vector2i new_pos(event->x, event->y);
   viewer->on_mouse_motion(new_pos, new_pos - mouse_pos);
   mouse_pos = new_pos;

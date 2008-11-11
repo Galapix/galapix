@@ -53,12 +53,6 @@ SDLViewer::~SDLViewer()
 }
 
 void
-SDLViewer::receive_file(const FileEntry& entry)
-{
-  file_queue.push(entry);
-}
-
-void
 SDLViewer::process_event(const SDL_Event& event)
 {
   switch(event.type)
@@ -407,13 +401,6 @@ SDLViewer::run()
 
   while(!quit)
     {     
-      while (!file_queue.empty())
-        {
-          const FileEntry& entry = file_queue.front();
-          workspace->add_image(entry);
-          file_queue.pop();
-        }
-
       if (viewer->is_active())
         {
           SDL_Event event;

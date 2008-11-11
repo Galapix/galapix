@@ -22,6 +22,7 @@
 #include "url.hpp"
 #include "selection.hpp"
 #include "math/quad_tree.hpp"
+#include "thread_message_queue.hpp"
 #include "image.hpp"
 
 class Rectf;
@@ -63,6 +64,8 @@ private:
   /** Progress of the animation when relayouting, must be set to 0 to
       start animation */
   float     progress;
+
+  ThreadMessageQueue<FileEntry>   file_queue;
  
 public:
   Workspace();
@@ -133,6 +136,8 @@ public:
   Rectf get_bounding_rect() const;
 
   bool is_animated() const;
+
+  void receive_file(const FileEntry& entry);
 
 private:
   Workspace (const Workspace&);
