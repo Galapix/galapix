@@ -19,6 +19,8 @@
 #ifndef HEADER_GTK_VIEWER_HPP
 #define HEADER_GTK_VIEWER_HPP
 
+#include <gtkmm.h>
+
 class Workspace;
 
 class GtkViewer
@@ -26,12 +28,24 @@ class GtkViewer
 private:
   Workspace* workspace;
   
+  Gtk::RadioToolButton* pan_tool_button;
+  Gtk::RadioToolButton* zoom_tool_button;
+  Gtk::RadioToolButton* grid_tool_button;
+  Gtk::RadioToolButton* move_tool_button;
+
+  std::auto_ptr<Viewer> viewer;
+
 public:
   GtkViewer();
   ~GtkViewer();
 
   void run();
   void set_workspace(Workspace* workspace_) { workspace = workspace_; }
+
+  void on_pan_tool_toggled();
+  void on_zoom_tool_toggled();
+  void on_grid_tool_toggled();
+  void on_move_tool_toggled();
 
 private:
   GtkViewer (const GtkViewer&);

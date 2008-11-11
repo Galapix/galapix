@@ -79,7 +79,8 @@ GtkViewerWidget::~GtkViewerWidget()
 bool
 GtkViewerWidget::on_timeout()
 {
-  viewer->update(0.020f);
+  // FIXME: Calculate real time here
+  viewer->update(0.033f);
   
   // FIXME: Troublesome
   queue_draw();
@@ -159,7 +160,7 @@ bool
 GtkViewerWidget::mouse_down(GdkEventButton* event)
 {
   grab_focus();
-  std::cout << "Button Press: " << event->x << ", " << event->y << " - " << event->button << std::endl;
+  //std::cout << "Button Press: " << event->x << ", " << event->y << " - " << event->button << std::endl;
   viewer->on_mouse_button_down(Vector2i(event->x, event->y), event->button);
   return false;
 }
@@ -167,8 +168,7 @@ GtkViewerWidget::mouse_down(GdkEventButton* event)
 bool
 GtkViewerWidget::mouse_up(GdkEventButton* event)
 {
-  std::cout << "Button Release: " << event->x << ", " << event->y << " - " << event->button << std::endl;
-
+  //std::cout << "Button Release: " << event->x << ", " << event->y << " - " << event->button << std::endl;
   viewer->on_mouse_button_up(Vector2i(event->x, event->y), event->button);
   return false;
 }

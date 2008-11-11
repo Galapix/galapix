@@ -97,8 +97,8 @@ public:
   void set_grid(const Vector2f& offset, const Sizef& size);
 
   // Tool Controls
+  void set_pan_tool();
   void set_zoom_tool();
-  void set_zoom_rect_tool();
   void set_grid_tool();
   void set_move_resize_tool();
   void set_move_rotate_tool();

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Mon Nov 10 22:06:41 2008 -->
+<!--Generated with glade3 3.4.5 on Tue Nov 11 12:53:11 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="MainWindow">
-    <property name="default_width">800</property>
-    <property name="default_height">600</property>
+    <property name="title" translatable="yes">Galapix</property>
+    <property name="default_width">1024</property>
+    <property name="default_height">800</property>
     <child>
       <widget class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
@@ -231,6 +232,22 @@
                 <property name="visible">True</property>
               </widget>
             </child>
+            <child>
+              <widget class="GtkToolButton" id="grid-toggle">
+                <property name="visible">True</property>
+              </widget>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkToolButton" id="grid-pin-toggle">
+                <property name="visible">True</property>
+              </widget>
+              <packing>
+                <property name="homogeneous">True</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="expand">False</property>
@@ -245,32 +262,48 @@
                 <property name="visible">True</property>
                 <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
                 <child>
-                  <widget class="GtkRadioToolButton" id="Move">
+                  <widget class="GtkRadioToolButton" id="PanToolButton">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Test</property>
-                    <property name="stock_id">gtk-refresh</property>
+                    <property name="label" translatable="yes">Pan Tool</property>
+                    <property name="icon">pan_tool.png</property>
                     <property name="active">True</property>
+                    <property name="group">GridToolButton</property>
                   </widget>
                   <packing>
                     <property name="homogeneous">True</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkRadioToolButton" id="toolbutton1">
+                  <widget class="GtkRadioToolButton" id="ZoomToolButton">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Test</property>
-                    <property name="stock_id">gtk-missing-image</property>
+                    <property name="label" translatable="yes">Zoom Rect Tool</property>
+                    <property name="icon">zoom_rect_tool.png</property>
                     <property name="active">True</property>
+                    <property name="group">PanToolButton</property>
                   </widget>
                   <packing>
                     <property name="homogeneous">True</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkRadioToolButton" id="toolbutton2">
+                  <widget class="GtkRadioToolButton" id="GridToolButton">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Test</property>
+                    <property name="label" translatable="yes">Grid Tool</property>
+                    <property name="icon">grid.png</property>
                     <property name="active">True</property>
+                    <property name="group">PanToolButton</property>
+                  </widget>
+                  <packing>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkRadioToolButton" id="MoveToolButton">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Move Tool Button</property>
+                    <property name="icon">move_tool.png</property>
+                    <property name="active">True</property>
+                    <property name="group">PanToolButton</property>
                   </widget>
                   <packing>
                     <property name="homogeneous">True</property>
@@ -285,6 +318,8 @@
               <widget class="GtkHPaned" id="hpaned1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="position">800</property>
+                <property name="position_set">True</property>
                 <child>
                   <widget class="GtkScrolledWindow" id="scrolledwindow1">
                     <property name="visible">True</property>

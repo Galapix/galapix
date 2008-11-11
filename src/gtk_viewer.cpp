@@ -55,7 +55,7 @@ GtkViewer::run()
 
   Gtk::ScrolledWindow& hbox = dynamic_cast<Gtk::ScrolledWindow&>(*xml->get_widget("scrolledwindow1"));
 
-  std::auto_ptr<Viewer> viewer = std::auto_ptr<Viewer>(new Viewer(workspace));
+  viewer = std::auto_ptr<Viewer>(new Viewer(workspace));
 
   viewer->set_grid(Vector2f(0,0), Sizef(16.0f, 16.0f));
   viewer->toggle_grid();
@@ -64,6 +64,16 @@ GtkViewer::run()
   GtkViewerWidget viewer_widget(viewer.get());
   hbox.add(viewer_widget);
   viewer_widget.show();
+
+  pan_tool_button  = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("PanToolButton"));
+  zoom_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("ZoomToolButton"));
+  grid_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("GridToolButton"));
+  move_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("MoveToolButton"));
+  
+  pan_tool_button ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_pan_tool_toggled));
+  zoom_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_tool_toggled));
+  grid_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_tool_toggled));
+  move_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_move_tool_toggled));
       
   Gtk::Main::run(window);
 
@@ -71,6 +81,34 @@ GtkViewer::run()
   for(int i = 0; i < argc; ++i)
     free(argv[i]);
   free(argv);
+}
+
+void
+GtkViewer::on_pan_tool_toggled()
+{
+  if (pan_tool_button->get_active())
+    viewer->set_pan_tool();
+}
+
+void
+GtkViewer::on_zoom_tool_toggled()
+{
+  if (zoom_tool_button->get_active())
+    viewer->set_zoom_tool();
+}
+
+void
+GtkViewer::on_grid_tool_toggled()
+{
+  if (grid_tool_button->get_active())
+    viewer->set_grid_tool();
+}
+
+void
+GtkViewer::on_move_tool_toggled()
+{
+  if (move_tool_button->get_active())
+    viewer->set_move_resize_tool();
 }
 
 /* EOF */

@@ -290,7 +290,7 @@ Viewer::set_grid(const Vector2f& offset, const Sizef& size)
 }
 
 void
-Viewer::set_zoom_tool()
+Viewer::set_pan_tool()
 {
   std::cout << "Pan&Zoom Tools selected" << std::endl;
   left_tool   = zoom_in_tool.get();
@@ -299,7 +299,7 @@ Viewer::set_zoom_tool()
 }
 
 void
-Viewer::set_zoom_rect_tool()
+Viewer::set_zoom_tool()
 {
   std::cout << "Zoom&Pan Tools selected" << std::endl;
   left_tool   = zoom_rect_tool.get();

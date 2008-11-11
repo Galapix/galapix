@@ -340,12 +340,6 @@ Galapix::view(const std::string& database,
   tile_generator_thread.start();
 
   Workspace workspace;
-  SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
-  GtkViewer gtk_viewer;
-
-  sdl_viewer.set_workspace(&workspace);
-  
-  gtk_viewer.set_workspace(&workspace);
 
   if (view_all)
     {
@@ -374,9 +368,18 @@ Galapix::view(const std::string& database,
     }
 
   if (0)
-    sdl_viewer.run();
+    {
+      SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
+      sdl_viewer.set_workspace(&workspace);
+      sdl_viewer.run();  
+    }
   else
-    gtk_viewer.run();
+    {
+      GtkViewer gtk_viewer;
+      gtk_viewer.set_workspace(&workspace);
+      gtk_viewer.run();
+    }
+
 
   tile_generator_thread.stop();
   database_thread.stop();

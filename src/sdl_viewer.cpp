@@ -178,7 +178,7 @@ SDLViewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_p:
-              viewer->set_zoom_tool();
+              viewer->set_pan_tool();
               break;
 
             case SDLK_r:
@@ -190,7 +190,7 @@ SDLViewer::process_event(const SDL_Event& event)
               break;
         
             case SDLK_z:
-              viewer->set_zoom_rect_tool();
+              viewer->set_zoom_tool();
               break;
 
             case SDLK_m:
