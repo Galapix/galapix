@@ -544,13 +544,13 @@ Image::receive_tile(const TileEntry& tile)
   impl->tile_queue.push(tile);
 
   // FIXME: Make this a SDLViewer::current()->wakeup() or so
-  SDL_Event event;
-  event.type = SDL_USEREVENT;
-  event.user.code  = 1;
-  event.user.data1 = 0;
-  event.user.data2 = 0;
-
-  while (SDL_PushEvent(&event) != 0);
+  // SDL_Event event;
+  // event.type = SDL_USEREVENT;
+  // event.user.code  = 1;
+  // event.user.data1 = 0;
+  // event.user.data2 = 0;
+  // 
+  // while (SDL_PushEvent(&event) != 0);
 }
 
 void

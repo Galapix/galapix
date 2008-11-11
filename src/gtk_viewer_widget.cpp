@@ -178,6 +178,10 @@ GtkViewerWidget::key_press(GdkEventKey* event)
         viewer->zoom_home();
         break;
 
+      case GDK_g:
+        viewer->toggle_grid();
+        break;
+
       case GDK_f:
         viewer->toggle_pinned_grid();
         break;
