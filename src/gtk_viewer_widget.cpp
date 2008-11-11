@@ -66,10 +66,25 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
 
   signal_key_press_event().connect(sigc::mem_fun(this, &GtkViewerWidget::key_press));
   signal_key_release_event().connect(sigc::mem_fun(this, &GtkViewerWidget::key_release));
+
+
+  Glib::signal_timeout().connect(sigc::mem_fun(this, &GtkViewerWidget::on_timeout),
+                                 33);
 }
 
 GtkViewerWidget::~GtkViewerWidget()
 {
+}
+
+bool
+GtkViewerWidget::on_timeout()
+{
+  viewer->update(0.020f);
+  
+  // FIXME: Troublesome
+  queue_draw();
+  
+  return true;
 }
 
 void
@@ -113,8 +128,6 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* event)
   if (!glwindow->gl_begin(get_gl_context()))
     return false;
 
-  // FIXME: Add real time here
-  viewer->update(0.033f);
   viewer->draw();
 
   // Swap buffers.

@@ -38,6 +38,7 @@ public:
   virtual ~GtkViewerWidget();
 
   virtual void on_realize();
+  virtual bool on_timeout();
   virtual bool on_configure_event(GdkEventConfigure* event);
   virtual bool on_expose_event(GdkEventExpose* event);
 
