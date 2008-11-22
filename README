@@ -75,7 +75,9 @@ sudo apt-get install \
   libjpeg62-dev \
   libpng12-dev \
   scons \
-  libmagick++9-dev
+  libmagick++9-dev \
+  libglademm-2.4-dev \
+  libgtkglextmm-x11-dev
 
 The following packages are optional and used to handle some more
 exotic image formats:
