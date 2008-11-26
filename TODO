@@ -18,6 +18,8 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* make a layout_regular that uses the aspect ratio of the window
+
 * updating an image with F5 doesn't update its size in the FileEntry
 
 * something useless: add puzzle mode that randomly places tiles on the

@@ -340,7 +340,9 @@ Viewer::increase_contrast()
   //contrast += 0.1f;
   contrast *= 1.1f;
   std::cout << "Contrast: " << contrast << std::endl;
+#ifdef GALAPIX_SDL
   SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+#endif
 }
 
 void
@@ -349,8 +351,9 @@ Viewer::decrease_contrast()
   //contrast -= 0.1f;
   contrast /= 1.1f;
   std::cout << "Contrast: " << contrast << std::endl;
+#ifdef GALAPIX_SDL
   SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
-
+#endif
 }
 
 void
@@ -358,7 +361,9 @@ Viewer::increase_brightness()
 {
   brightness += 0.1f;
   std::cout << "Brightness: " << brightness << std::endl;
+#ifdef GALAPIX_SDL
   SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+#endif
 }
 
 void
@@ -366,7 +371,9 @@ Viewer::decrease_brightness()
 {
   brightness -= 0.1f;
   std::cout << "Brightness: " << brightness << std::endl;
+#ifdef GALAPIX_SDL
   SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+#endif
 }
 
 void
@@ -374,7 +381,9 @@ Viewer::increase_gamma()
 {
   gamma *= 1.1f;
   std::cout << "Gamma: " << gamma << std::endl;
+#ifdef GALAPIX_SDL
   SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+#endif
 }
 
 void
@@ -382,7 +391,9 @@ Viewer::decrease_gamma()
 {
   gamma /= 1.1f;
   std::cout << "Gamma: " << gamma << std::endl;
+#ifdef GALAPIX_SDL
   SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+#endif
 }
 
 void
@@ -391,7 +402,9 @@ Viewer::reset_gamma()
   brightness = 0.0f;
   contrast   = 1.0f;
   gamma      = 1.0f;
+#ifdef GALAPIX_SDL
   SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+#endif
 }
 
 void

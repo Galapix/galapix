@@ -76,6 +76,7 @@ sudo apt-get install \
   libpng12-dev \
   scons \
   libmagick++9-dev \
+  libcurl4-gnutls-dev
   libglademm-2.4-dev \
   libgtkglextmm-x11-dev
 

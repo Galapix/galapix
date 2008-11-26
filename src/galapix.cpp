@@ -47,8 +47,12 @@
 #include "tile_generator_thread.hpp"
 #include "workspace.hpp"
 #include "job_manager.hpp"
-#include "sdl_viewer.hpp"
-#include "gtk_viewer.hpp"
+#ifdef GALAPIX_SDL
+#  include "sdl_viewer.hpp"
+#endif
+#ifdef GALAPIX_GTK
+#  include "gtk_viewer.hpp"
+#endif
 #include "viewer.hpp"
 #include "galapix.hpp"
 
@@ -367,18 +371,17 @@ Galapix::view(const std::string& database,
         }
     }
 
-  if (0)
-    {
+#ifdef GALAPIX_SDL
       SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
       sdl_viewer.set_workspace(&workspace);
       sdl_viewer.run();  
-    }
-  else
-    {
+#endif
+
+#ifdef GALAPIX_GTK
       GtkViewer gtk_viewer;
       gtk_viewer.set_workspace(&workspace);
       gtk_viewer.run();
-    }
+#endif
 
 
   tile_generator_thread.stop();

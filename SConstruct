@@ -63,24 +63,46 @@ galapix_sources = [
     'src/zoom_tool.cpp',
     'src/zoom_rect_tool.cpp',
     'src/zip.cpp',
-    ] \
-    + ['src/space_navigator.cpp'] \
-    + ['src/sdl_framebuffer.cpp',
-       'src/sdl_viewer.cpp'] \
-    + ['src/gtk_viewer.cpp',
-       'src/gtk_viewer_widget.cpp']
+    ]
 
-env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
-                  CPPDEFINES = [('HAVE_OPENGL', 1),
-                                ('HAVE_SPACE_NAVIGATOR', 1)],
-                  LIBS = ['GL', 'GLEW', 'spnav', 'sqlite3', 'jpeg'])
-env.ParseConfig('pkg-config libpng --libs --cflags')
-env.ParseConfig('sdl-config --cflags --libs')
-env.ParseConfig('Magick++-config --libs --cppflags')
-env.ParseConfig('pkg-config --cflags --libs libcurl')
+spacenav_sources = ['src/space_navigator.cpp']
 
-env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2')
+sdl_sources = ['src/sdl_framebuffer.cpp',
+               'src/sdl_viewer.cpp']
 
-env.Program('galapix', galapix_sources)
+gtk_sources =['src/gtk_viewer.cpp',
+              'src/gtk_viewer_widget.cpp']
+
+compile_galapix_sdl = True
+compile_galapix_gtk = False
+
+if compile_galapix_sdl:
+    sdl_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
+                          CPPDEFINES = ['GALAPIX_SDL',
+                                        ('HAVE_OPENGL', 1),
+                                        ('HAVE_SPACE_NAVIGATOR', 1)],
+                          LIBS = ['GL', 'GLEW', 'spnav', 'sqlite3', 'jpeg'],
+                          OBJPREFIX = "sdl.")
+    sdl_env.ParseConfig('pkg-config libpng --libs --cflags')
+    sdl_env.ParseConfig('sdl-config --cflags --libs')
+    sdl_env.ParseConfig('Magick++-config --libs --cppflags')
+    sdl_env.ParseConfig('pkg-config --cflags --libs libcurl')
+    sdl_env.Program('galapix.sdl', 
+                    galapix_sources + spacenav_sources + sdl_sources)
+
+if compile_galapix_gtk:
+    gtk_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
+                          CPPDEFINES = ['GALAPIX_GTK',
+                                        ('HAVE_OPENGL', 1),
+                                        ('HAVE_SPACE_NAVIGATOR', 1)],
+                          LIBS = ['GL', 'GLEW', 'spnav', 'sqlite3', 'jpeg'],
+                          OBJPREFIX = "gtk.")
+    gtk_env.ParseConfig('pkg-config libpng --libs --cflags')
+    gtk_env.ParseConfig('sdl-config --cflags --libs')
+    gtk_env.ParseConfig('Magick++-config --libs --cppflags')
+    gtk_env.ParseConfig('pkg-config --cflags --libs libcurl')
+    gtk_env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2')
+    gtk_env.Program('galapix.gtk', 
+                    galapix_sources + spacenav_sources + gtk_sources)
 
 # EOF #
