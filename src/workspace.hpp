@@ -79,10 +79,9 @@ public:
   void sort();
   void random_shuffle();
 
-  
-  void layout_tight();
-  void layout_vertical();
+  void layout_tight(float aspect_w, float aspect_h);
   void layout_aspect(float aspect_w, float aspect_h);
+  void layout_vertical();
   void layout_random();
   void solve_overlaps();
 

@@ -435,7 +435,7 @@ Viewer::layout_solve_overlaps()
 void
 Viewer::layout_tight()
 {
-  workspace->layout_tight();
+  workspace->layout_tight(Framebuffer::get_width(), Framebuffer::get_height());
 }
 
 void
