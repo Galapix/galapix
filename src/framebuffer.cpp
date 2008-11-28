@@ -20,7 +20,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <math.h>
-#include "../config.h"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"

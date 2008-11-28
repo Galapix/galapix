@@ -18,7 +18,6 @@
 
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
-#include "../config.h"
 #include "math/rgba.hpp"
 #include "filesystem.hpp"
 #include "file_entry.hpp"
