@@ -73,29 +73,40 @@ sdl_sources = ['src/sdl_framebuffer.cpp',
 gtk_sources =['src/gtk_viewer.cpp',
               'src/gtk_viewer_widget.cpp']
 
+# Configure things here
+# ------------------------
 compile_galapix_sdl = True
-compile_galapix_gtk = False
+compile_galapix_gtk = True
+compile_spacenav    = False
+# ------------------------
+
+optional_sources = []
+optional_defines = []
+optional_libs    = []
+
+if compile_spacenav:
+    optional_sources += spacenav_sources
+    optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
+    optional_libs    += ['spanav']
 
 if compile_galapix_sdl:
     sdl_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
                           CPPDEFINES = ['GALAPIX_SDL',
-                                        ('HAVE_OPENGL', 1),
-                                        ('HAVE_SPACE_NAVIGATOR', 1)],
-                          LIBS = ['GL', 'GLEW', 'spnav', 'sqlite3', 'jpeg'],
+                                        ('HAVE_OPENGL', 1)] + optional_defines,
+                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg'] + optional_libs,
                           OBJPREFIX = "sdl.")
     sdl_env.ParseConfig('pkg-config libpng --libs --cflags')
     sdl_env.ParseConfig('sdl-config --cflags --libs')
     sdl_env.ParseConfig('Magick++-config --libs --cppflags')
     sdl_env.ParseConfig('pkg-config --cflags --libs libcurl')
     sdl_env.Program('galapix.sdl', 
-                    galapix_sources + spacenav_sources + sdl_sources)
+                    galapix_sources + sdl_sources + optional_sources)
 
 if compile_galapix_gtk:
     gtk_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
                           CPPDEFINES = ['GALAPIX_GTK',
-                                        ('HAVE_OPENGL', 1),
-                                        ('HAVE_SPACE_NAVIGATOR', 1)],
-                          LIBS = ['GL', 'GLEW', 'spnav', 'sqlite3', 'jpeg'],
+                                        ('HAVE_OPENGL', 1)] + optional_defines,
+                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg'] + optional_libs,
                           OBJPREFIX = "gtk.")
     gtk_env.ParseConfig('pkg-config libpng --libs --cflags')
     gtk_env.ParseConfig('sdl-config --cflags --libs')
@@ -103,6 +114,6 @@ if compile_galapix_gtk:
     gtk_env.ParseConfig('pkg-config --cflags --libs libcurl')
     gtk_env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2')
     gtk_env.Program('galapix.gtk', 
-                    galapix_sources + spacenav_sources + gtk_sources)
+                    galapix_sources + gtk_sources + optional_sources)
 
 # EOF #
