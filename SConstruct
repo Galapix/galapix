@@ -87,7 +87,7 @@ optional_libs    = []
 if compile_spacenav:
     optional_sources += spacenav_sources
     optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
-    optional_libs    += ['spanav']
+    optional_libs    += ['spnav']
 
 if compile_galapix_sdl:
     sdl_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
