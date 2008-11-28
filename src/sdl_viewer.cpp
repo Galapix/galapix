@@ -267,11 +267,11 @@ SDLViewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_1:
-              viewer->layout_4_3();
+              viewer->layout_auto();
               break;
 
             case SDLK_2:
-              viewer->layout_16_9();
+              viewer->layout_tight();
               break;
 
             case SDLK_3:
@@ -280,10 +280,6 @@ SDLViewer::process_event(const SDL_Event& event)
 
             case SDLK_4:
               viewer->layout_solve_overlaps();
-              break;
-
-            case SDLK_5:
-              viewer->layout_tight();
               break;
 
             case SDLK_6:

@@ -21,6 +21,7 @@
 
 #include <gtkmm.h>
 
+class Viewer;
 class Workspace;
 
 class GtkViewer
@@ -66,6 +67,9 @@ public:
   void on_zoom_in_clicked();
   void on_zoom_out_clicked();
   void on_zoom_home_clicked();
+
+  
+  void on_menu_file_new();
 
 private:
   GtkViewer (const GtkViewer&);

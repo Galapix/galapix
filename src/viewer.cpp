@@ -415,15 +415,9 @@ Viewer::toggle_grid()
 }
 
 void
-Viewer::layout_4_3()
+Viewer::layout_auto()
 {
-  workspace->layout_aspect(4, 3);
-}
-
-void
-Viewer::layout_16_9()
-{
-  workspace->layout_aspect(16, 9);
+  workspace->layout_aspect(Framebuffer::get_width(), Framebuffer::get_height());
 }
 
 void

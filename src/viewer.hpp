@@ -128,8 +128,7 @@ public:
   
   void toggle_background_color();
 
-  void layout_4_3();
-  void layout_16_9();
+  void layout_auto();
   void layout_random();
   void layout_solve_overlaps();
   void layout_tight();

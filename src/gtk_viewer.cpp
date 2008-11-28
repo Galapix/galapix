@@ -99,6 +99,42 @@ GtkViewer::run()
   layout_tight_button  ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_layout_toggle));
   layout_random_button ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_layout_toggle));
 
+  /*
+  // Action Group stuff
+  //  * http://www.gtkmm.org/docs/gtkmm-2.4/docs/tutorial/html/sec-printing-example.html
+  //  *  http://www.gtkmm.org/docs/gtkmm-2.4/docs/tutorial/html/ch11.html
+  Glib::RefPtr<Gtk::ActionGroup> action_group;
+  action_group = Gtk::ActionGroup::create();
+  
+  action_group->add(Gtk::Action::create("FileMenu", "_File"));
+
+  action_group->add(Gtk::Action::create("New", Gtk::Stock::NEW),
+                    sigc::mem_fun(*this, &GtkViewer::on_menu_file_new));
+
+  Glib::RefPtr<Gtk::UIManager> ui_manager = Gtk::UIManager::create();
+  ui_manager->insert_action_group(action_group);
+
+  Glib::ustring ui_info = 
+    "<ui>"
+    "  <menubar name='MenuBar'>"
+    "    <menu action='FileMenu'>"
+    "      <menuitem action='New'/>"
+    "    </menu>"
+    "  </menubar>"
+    "</ui>";
+
+  ui_manager->add_ui_from_string(ui_info);
+
+  // Gtk::Widget* menubar = ui_manager->get_widget("/MenuBar");
+  // if (menubar)
+  //    vbox.pack_start(*menubar, Gtk::PACK_SHRINK);
+
+  // Gtk::Widget* toolbar = ui_manager->get_widget("/ToolBar") ;
+  // if (toolbar)
+  //    vbox.pack_start(*pToolbar, Gtk::PACK_SHRINK);
+  */
+
+  // Run the thing
   Gtk::Main::run(window);
 
   // Cleanup
@@ -152,7 +188,7 @@ GtkViewer::on_layout_toggle()
 {
   if (layout_regular_button->get_active())
     {
-      viewer->layout_4_3();
+      viewer->layout_auto();
     }
   else if (layout_tight_button->get_active())
     {
@@ -180,6 +216,12 @@ void
 GtkViewer::on_zoom_home_clicked()
 {
   viewer->zoom_to_selection(); 
+}
+
+void
+GtkViewer::on_menu_file_new()
+{
+  
 }
 
 /* EOF */
