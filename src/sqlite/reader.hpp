@@ -16,37 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_TILE_DATABASE_HPP
-#define HEADER_TILE_DATABASE_HPP
+#ifndef HEADER_SQLITE_READER_HPP
+#define HEADER_SQLITE_READER_HPP
 
-#include "sqlite/connection.hpp"
-#include "sqlite/statement.hpp"
-#include "math/vector2i.hpp"
-#include "software_surface.hpp"
+#include <sqlite3.h>
+#include <string>
+#include "connection.hpp"
+#include "../blob.hpp"
 
-class TileEntry;
-
-class TileDatabase
+class SQLiteReader
 {
 private:
   SQLiteConnection* db;
-  SQLiteStatement store_stmt;
-  SQLiteStatement get_stmt;
-  SQLiteStatement get_all_by_fileid_stmt;
-  SQLiteStatement get_all_stmt;
-  SQLiteStatement has_stmt;
-
-public:
-  TileDatabase(SQLiteConnection* db);
+  sqlite3_stmt*   stmt;
   
-  bool has_tile(uint32_t file_id, const Vector2i& pos, int scale);
-  bool get_tile(uint32_t file_id, int scale, const Vector2i& pos, TileEntry& tile);
-  void get_tiles(uint32_t file_id, std::vector<TileEntry>& tiles);
-  void store_tile(const TileEntry& tile);
-  void check();
-private:
-  TileDatabase (const TileDatabase&);
-  TileDatabase& operator= (const TileDatabase&);
+public:
+  SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt);
+  ~SQLiteReader();
+
+  bool next();
+
+  bool        is_null(int column);
+  int         get_type(int column);
+  int         get_int(int column);
+  std::string get_text(int column);
+  Blob        get_blob(int column);
+
+  std::string get_column_name(int column);
 };
 
 #endif

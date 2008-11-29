@@ -16,65 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_SQLITE_HPP
-#define HEADER_SQLITE_HPP
+#ifndef HEADER_SQLITE_STATEMENT_HPP
+#define HEADER_SQLITE_STATEMENT_HPP
 
-#include <stdexcept>
-#include <sqlite3.h>
-
-#include "blob.hpp"
-
-class SQLiteError : public std::exception
-{
-private:
-  std::string err;
-
-public:
-  SQLiteError(const std::string& err);
-  virtual ~SQLiteError() throw () {}
-
-  const char* what() const throw () { return err.c_str(); }
-};
-
-class SQLiteConnection
-{
-private:
-  sqlite3* db;
-
-public:
-  SQLiteConnection(const std::string& filename);
-  ~SQLiteConnection();
-
-  void exec(const std::string& sqlstmt);
-
-  /** Do a VACCUM on the database to clean up collected garbage, this
-      call can take quite a while (~1min) for larger databases, since
-      the whole database gets copied in the process */
-  void vacuum();
-
-  sqlite3* get_db() const { return db; }
-};
-
-class SQLiteReader
-{
-private:
-  SQLiteConnection* db;
-  sqlite3_stmt*   stmt;
-  
-public:
-  SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt);
-  ~SQLiteReader();
-
-  bool next();
-
-  bool        is_null(int column);
-  int         get_type(int column);
-  int         get_int(int column);
-  std::string get_text(int column);
-  Blob        get_blob(int column);
-
-  std::string get_column_name(int column);
-};
+#include "reader.hpp"
 
 class SQLiteStatement
 {

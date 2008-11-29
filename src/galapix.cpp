@@ -25,7 +25,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <sqlite3.h>
 
 #include "jpeg.hpp"
 #include "png.hpp"
@@ -36,7 +35,7 @@
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
-#include "sqlite.hpp"
+#include "sqlite/connection.hpp"
 #include "software_surface.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"

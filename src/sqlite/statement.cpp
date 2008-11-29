@@ -16,67 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <unistd.h>
-#include <iostream>
 #include <sstream>
-#include "sqlite.hpp"
-
-static int busy_callback(void* , int)
-{
-  // FIXME: Is this a good idea?
-  usleep(1000*10);
-  return 1;
-}
-
-SQLiteError::SQLiteError(const std::string& err_)
-  : err(err_)
-{  
-}
-
-SQLiteConnection::SQLiteConnection(const std::string& filename)
-{
-  if (sqlite3_open(filename.c_str(), &db) != SQLITE_OK)
-    {
-      std::ostringstream str; 
-      str << "SQLiteConnection: can't open database: " << sqlite3_errmsg(db);
-      throw SQLiteError(str.str());
-    }
-
-  sqlite3_busy_handler(db, busy_callback, 0);
-}
-
-SQLiteConnection::~SQLiteConnection()
-{
-  sqlite3_close(db);
-}
-
-void
-SQLiteConnection::exec(const std::string& sqlstmt)
-{
-  char* errmsg;
-
-  //std::cout << "SQLiteConnection::exec: " << sqlstmt << std::endl;
-
-  if (sqlite3_exec(db, sqlstmt.c_str(), 0, 0, &errmsg) != SQLITE_OK)
-    {
-      std::ostringstream out;
-
-      out << "FileDatabase: " << errmsg << std::endl;
-
-      sqlite3_free(errmsg);
-      errmsg = 0;
-
-      throw SQLiteError(out.str());
-    }
-}
-
-void
-SQLiteConnection::vacuum()
-{
-  SQLiteStatement stmt(this);
-  stmt.prepare("VACUUM;");
-  stmt.execute();
-}
+#include "error.hpp"
+#include "statement.hpp"
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection* db)
   : db(db), 
@@ -218,94 +160,6 @@ SQLiteReader
 SQLiteStatement::execute_query()
 {
   return SQLiteReader(db, stmt);
-}
-
-SQLiteReader::SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt)
-  : db(db),
-    stmt(stmt)
-{
-}
-
-SQLiteReader::~SQLiteReader()
-{  
-  // FIXME: Not good, we likely clean up twice
-  
-  sqlite3_clear_bindings(stmt);  
-
-  if (sqlite3_reset(stmt) != SQLITE_OK)
-    {
-      std::ostringstream str;
-      str << "SQLiteReader::~SQLiteReader:" << sqlite3_errmsg(db->get_db());
-      throw SQLiteError(str.str());
-    }
-}
-
-bool
-SQLiteReader::next()
-{
- retry:
-
-  switch(sqlite3_step(stmt))
-    {
-      case SQLITE_DONE:
-        // cleanup here or in the destructor?!
-        return false;
-
-      case SQLITE_ROW:
-        return true;
-
-      case SQLITE_BUSY:
-        goto retry;        
-        
-      case SQLITE_ERROR:
-      case SQLITE_MISUSE:
-      default:
-        {
-          std::ostringstream str;
-          str << "SQLiteStatement::execute_query: " << sqlite3_errmsg(db->get_db());
-          throw SQLiteError(str.str());     
-          return false;
-        }
-    }
-}
-
-int
-SQLiteReader::get_int(int column)
-{
-  return sqlite3_column_int(stmt, column);
-}
-
-bool
-SQLiteReader::is_null(int column)
-{
-  return sqlite3_column_type(stmt, column) == SQLITE_NULL;
-}
-
-int
-SQLiteReader::get_type(int column)
-{
-  return sqlite3_column_type(stmt, column);
-}
-
-std::string
-SQLiteReader::get_text(int column)
-{
-  const void* data = sqlite3_column_text(stmt, column);
-  int len = sqlite3_column_bytes(stmt, column);
-  return std::string(static_cast<const char*>(data), len);
-}
-
-Blob
-SQLiteReader::get_blob(int column)
-{
-  return Blob::copy(sqlite3_column_blob(stmt, column),
-                    sqlite3_column_bytes(stmt, column));
-}
-
-std::string
-SQLiteReader::get_column_name(int column)
-{
-  return sqlite3_column_name(stmt, column);
 }
 
 /* EOF */

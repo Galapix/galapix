@@ -23,7 +23,8 @@
 #include <sqlite3.h>
 #include <string>
 
-#include "sqlite.hpp"
+#include "sqlite/connection.hpp"
+#include "sqlite/statement.hpp"
 #include "math/size.hpp"
 
 class URL;

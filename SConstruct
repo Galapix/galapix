@@ -44,7 +44,10 @@ galapix_sources = [
     'src/rar.cpp',
     'src/selection.cpp',
     'src/software_surface.cpp',
-    'src/sqlite.cpp',
+    'src/sqlite/statement.cpp',
+    'src/sqlite/connection.cpp',
+    'src/sqlite/error.cpp',
+    'src/sqlite/reader.cpp',
     'src/surface.cpp',
     'src/texture.cpp',
     'src/thread.cpp',
@@ -77,7 +80,7 @@ gtk_sources =['src/gtk_viewer.cpp',
 # ------------------------
 compile_galapix_sdl = True
 compile_galapix_gtk = True
-compile_spacenav    = False
+compile_spacenav    = True
 # ------------------------
 
 optional_sources = []
