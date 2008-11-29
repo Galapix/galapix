@@ -21,6 +21,8 @@
 
 #include "math/size.hpp"
 
+class GalapixOptions;
+
 class Galapix
 {
 private:
@@ -33,6 +35,8 @@ public:
   ~Galapix();
 
   void print_usage();
+  void parse_args(int argc, char** argv, GalapixOptions& options);
+  void run(const GalapixOptions& opts);
   int  main(int argc, char** argv);
 
   void merge(const std::string& database, const std::vector<std::string>& filenames);
