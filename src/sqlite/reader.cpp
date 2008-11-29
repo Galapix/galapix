@@ -35,7 +35,7 @@ SQLiteReader::~SQLiteReader()
   if (sqlite3_reset(stmt) != SQLITE_OK)
     {
       std::ostringstream str;
-      str << "SQLiteReader::~SQLiteReader:" << sqlite3_errmsg(db->get_db());
+      str << "SQLiteReader::~SQLiteReader:" << db->get_error_msg();
       throw SQLiteError(str.str());
     }
 }
@@ -62,7 +62,7 @@ SQLiteReader::next()
       default:
         {
           std::ostringstream str;
-          str << "SQLiteStatement::execute_query: " << sqlite3_errmsg(db->get_db());
+          str << "SQLiteStatement::execute_query: " << db->get_error_msg();
           throw SQLiteError(str.str());     
           return false;
         }

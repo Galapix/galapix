@@ -50,13 +50,11 @@ SQLiteConnection::exec(const std::string& sqlstmt)
 {
   char* errmsg;
 
-  //std::cout << "SQLiteConnection::exec: " << sqlstmt << std::endl;
-
   if (sqlite3_exec(db, sqlstmt.c_str(), 0, 0, &errmsg) != SQLITE_OK)
     {
       std::ostringstream out;
 
-      out << "FileDatabase: " << errmsg << std::endl;
+      out << "SQLiteConnection: " << errmsg << std::endl;
 
       sqlite3_free(errmsg);
       errmsg = 0;
@@ -68,9 +66,13 @@ SQLiteConnection::exec(const std::string& sqlstmt)
 void
 SQLiteConnection::vacuum()
 {
-  SQLiteStatement stmt(this);
-  stmt.prepare("VACUUM;");
-  stmt.execute();
+  exec("VACUUM;");
+}
+
+std::string
+SQLiteConnection::get_error_msg()
+{
+  return sqlite3_errmsg(db);
 }
 
 /* EOF */
