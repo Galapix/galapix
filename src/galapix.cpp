@@ -445,7 +445,11 @@ Galapix::main(int argc, char** argv)
   
   if (argc < 2)
     {
+#ifdef GALAPIX_SDL
       print_usage();
+#else
+      view(database, std::vector<URL>(), false, "");
+#endif
     }
   else
     {
