@@ -23,6 +23,7 @@ galapix_sources = [
     'src/imagemagick.cpp',
     'src/job_handle.cpp',
     # 'src/job.cpp',
+    'src/jobs/tile_generation_job.cpp',
     'src/job_manager.cpp',
     'src/job_worker_thread.cpp',
     'src/jpeg.cpp',
