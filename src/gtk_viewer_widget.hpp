@@ -45,6 +45,8 @@ public:
   virtual bool mouse_move(GdkEventMotion* event);
   virtual bool mouse_down (GdkEventButton* event);
   virtual bool mouse_up(GdkEventButton* event);
+  virtual bool scroll(GdkEventScroll* event);
+
   virtual bool key_press(GdkEventKey* event);
   virtual bool key_release(GdkEventKey* event);
 private:

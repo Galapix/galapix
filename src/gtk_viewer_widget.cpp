@@ -63,6 +63,7 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   signal_button_release_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_up));
   signal_button_press_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_down));
   signal_motion_notify_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_move));
+  signal_scroll_event().connect(sigc::mem_fun(this, &GtkViewerWidget::scroll));
 
   signal_key_press_event().connect(sigc::mem_fun(this, &GtkViewerWidget::key_press));
   signal_key_release_event().connect(sigc::mem_fun(this, &GtkViewerWidget::key_release));
@@ -162,6 +163,20 @@ GtkViewerWidget::mouse_down(GdkEventButton* event)
   grab_focus();
   //std::cout << "Button Press: " << event->x << ", " << event->y << " - " << event->button << std::endl;
   viewer->on_mouse_button_down(Vector2i(event->x, event->y), event->button);
+  return false;
+}
+
+bool
+GtkViewerWidget::scroll(GdkEventScroll* event)
+{
+  if (event->direction == GDK_SCROLL_UP)
+    {
+      viewer->get_state().zoom(1.1f, Vector2i(event->x, event->y));
+    }
+  else if (event->direction == GDK_SCROLL_DOWN)
+    {
+      viewer->get_state().zoom(1.0f/1.1f, Vector2i(event->x, event->y));
+    }
   return false;
 }
 
