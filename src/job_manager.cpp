@@ -40,11 +40,13 @@ JobManager::JobManager(int num_threads)
 
 JobManager::~JobManager()
 {
-  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+  /*
+ for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->finish();
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->join();
+  */
 }
 
 void
@@ -57,6 +59,9 @@ JobManager::finish()
 void
 JobManager::join()
 {
+ for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    (*i)->finish();
+
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->join();
 }
@@ -64,7 +69,6 @@ JobManager::join()
 JobHandle
 JobManager::request(Job* job, const boost::function<void (Job*)>& callback)
 {
-  std::cout << "JobManager::request" << std::endl;
   threads[next_thread]->request(job, callback);
   
   next_thread += 1;

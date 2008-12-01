@@ -45,7 +45,7 @@ TileGenerationJob::run()
       max_scale = entry.get_thumbnail_scale();
     }
 
-  std::cout << "TileGeneratorThread: Processing: scale: " << min_scale << "-" << max_scale << " " << entry.get_url() << "..." << std::flush;
+  std::cout << "TileGeneratorThread: processing scales " << min_scale << "-" << max_scale << ": " << entry.get_url() << std::endl;
 
   // Find scale at which the image fits on one tile
   int width  = entry.get_width();
@@ -109,7 +109,7 @@ TileGenerationJob::run()
 
     } while (scale <= max_scale);
 
-  std::cout << "done" << std::endl;
+  std::cout << "TileGeneratorThread: processing scales " << min_scale << "-" << max_scale << ": " << entry.get_url() << ": done" << std::endl;
 }
 
 /* EOF */
