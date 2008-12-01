@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "SDL.h"
 #include "job_handle.hpp"
 
 class JobHandleImpl
@@ -61,6 +62,17 @@ bool
 JobHandle::is_finished() const
 {
   return impl->finished;
+}
+
+void
+JobHandle::wait()
+{
+  // Waits till the job is finished
+  // FIXME: Ugly, use thread stuff
+  while(!impl->finished)
+    {
+      SDL_Delay(100);
+    }
 }
 
 /* EOF */

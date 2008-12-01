@@ -39,9 +39,9 @@
 #include "software_surface.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
+#include "jobs/tile_generation_job.hpp"
 #include "database_thread.hpp"
 #include "filesystem.hpp"
-#include "tile_generator.hpp"
 #include "tile_generator_thread.hpp"
 #include "workspace.hpp"
 #include "job_manager.hpp"
@@ -269,70 +269,43 @@ Galapix::filegen(const std::string& database,
 
 void
 Galapix::thumbgen(const std::string& database, 
-                  const std::vector<URL>& url)
+                  const std::vector<URL>& urls, 
+                  bool generate_all_tiles)
 {
-  SQLiteConnection db(database);
+  DatabaseThread database_thread(database);
+  JobManager     job_manager(2);
 
-  FileDatabase file_db(&db);
-  TileDatabase tile_db(&db);
+  database_thread.start();
 
-  TileGenerator tile_generator;
-
-  for(std::vector<std::string>::size_type i = 0; i < url.size(); ++i)
+  std::vector<FileEntry> file_entries;
+  std::vector<JobHandle> job_handles;
+  
+  std::cout << "Getting file entry... " << std::flush;
+  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
     {
-      try 
-        {
-          FileEntry entry = file_db.get_file_entry(url[i]);
-          // FIXME: Insert some checks if the tile already exist
-
-          // Generate Image Tiles
-          std::cout << "Generating tiles for " << url[i]  << std::endl;
-          if (entry)
-            {
-              try {
-                tile_generator.generate_quick(entry,
-                                              boost::bind(&TileDatabase::store_tile, &tile_db, _1));
-              } catch(std::exception& err) {
-                std::cout << err.what() << std::endl;
-              }
-            }
-        }
-      catch (std::exception& err) 
-        {
-          std::cout << "Couldn't find entry for " << url[i] << std::endl;
-        }
+      job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
     }
-}
+  std::cout << " ..waiting.. " << std::flush;
+  for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
+    i->wait();
+  std::cout << "done" << std::endl;
 
-void
-Galapix::generate_tiles(const std::string& database, 
-                        const std::vector<URL>& urls)
-{
-  SQLiteConnection db(database);
-
-  FileDatabase file_db(&db);
-  TileDatabase tile_db(&db);
-
-  TileGenerator tile_generator;
-
-  for(std::vector<URL>::size_type i = 0; i < urls.size(); ++i)
+  for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
-      std::cout << "Getting file entry..." << std::endl;
-      FileEntry entry = file_db.get_file_entry(urls[i]);
-      if (!entry)
-        {
-          std::cout << "Couldn't find entry for " << urls[i] << std::endl;
-        }
-      else
-        {
-          // Generate Image Tiles
-          std::cout << "Generating tiles... " << urls[i]  << std::endl;
-          SoftwareSurface surface = SoftwareSurface::from_url(urls[i]);
-          
-          tile_generator.generate_all(entry.get_fileid(), surface, 
-                                      boost::bind(&TileDatabase::store_tile, &tile_db, _1));
-        }
+      // Generate Image Tiles
+      SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
+      std::cout << "JobManager: request" << std::endl;
+      job_manager.request(new TileGenerationJob(*i, 0, i->get_thumbnail_scale(),
+                                                boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)),
+                          boost::function<void (Job*)>());
     }
+
+  std::cout << "Joining Worker Threads..." << std::endl;
+  job_manager.join();
+  std::cout << "Joining Worker Threads... DONE" << std::endl;
+
+  database_thread.stop();
+  database_thread.join();
 }
 
 void
@@ -538,11 +511,11 @@ Galapix::run(const GalapixOptions& opts)
         }
       else if (command == "prepare")
         {
-          generate_tiles(opts.database, urls);
+          thumbgen(opts.database, urls, true);
         }
       else if (command == "thumbgen")
         {
-          thumbgen(opts.database, urls);
+          thumbgen(opts.database, urls, false);
         }
       else if (command == "filegen")
         {

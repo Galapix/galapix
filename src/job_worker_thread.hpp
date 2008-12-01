@@ -43,8 +43,11 @@ public:
   JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
 
   int  run();
+
   void stop();
 
+  void finish();
+  
 private:
   JobWorkerThread (const JobWorkerThread&);
   JobWorkerThread& operator= (const JobWorkerThread&);

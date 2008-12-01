@@ -38,7 +38,8 @@ JobWorkerThread::run()
           if (!task.job->get_handle().is_aborted())
             {
               task.job->run();
-              task.callback(task.job);
+              if (task.callback)
+                task.callback(task.job);
             }
 
           delete task.job;
@@ -56,6 +57,13 @@ JobWorkerThread::stop()
   queue.wakeup();
 }
 
+void
+JobWorkerThread::finish()
+{
+  quit = true;
+  queue.wakeup();  
+}
+
 JobHandle
 JobWorkerThread::request(Job* job, const boost::function<void (Job*)>& callback)
 {
@@ -66,6 +74,5 @@ JobWorkerThread::request(Job* job, const boost::function<void (Job*)>& callback)
   
   return job->get_handle();
 }
-
 
 /* EOF */

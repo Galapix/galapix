@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 #include "job.hpp"
 #include "job_worker_thread.hpp"
 #include "job_manager.hpp"
@@ -40,8 +41,22 @@ JobManager::JobManager(int num_threads)
 JobManager::~JobManager()
 {
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->stop();
+    (*i)->finish();
 
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    (*i)->join();
+}
+
+void
+JobManager::finish()
+{
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    (*i)->finish();  
+}
+
+void
+JobManager::join()
+{
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->join();
 }
@@ -49,6 +64,7 @@ JobManager::~JobManager()
 JobHandle
 JobManager::request(Job* job, const boost::function<void (Job*)>& callback)
 {
+  std::cout << "JobManager::request" << std::endl;
   threads[next_thread]->request(job, callback);
   
   next_thread += 1;

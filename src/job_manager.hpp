@@ -42,7 +42,13 @@ public:
   JobManager(int num_threads);
   ~JobManager();
 
-  void add_thread();
+  /** Stops the worker thread at the next possible point */
+  void stop();
+
+  void join();
+
+  /** Waits till all jobs in the queue are finished, then returns */
+  void finish();
 
   JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
 };

@@ -39,6 +39,8 @@ public:
   void finish();
   bool is_finished() const;
 
+  void wait();
+
 private:
   boost::shared_ptr<JobHandleImpl> impl;
 };

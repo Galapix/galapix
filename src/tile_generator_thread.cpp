@@ -20,7 +20,6 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include "math/rect.hpp"
-#include "tile_generator.hpp"
 #include "math.hpp"
 #include "jpeg.hpp"
 #include "imagemagick.hpp"

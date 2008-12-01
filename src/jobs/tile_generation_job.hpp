@@ -16,11 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_TILE_GENERATION_JOB_HPP
-#define HEADER_TILE_GENERATION_JOB_HPP
+#ifndef HEADER_JOBS_TILE_GENERATION_JOB_HPP
+#define HEADER_JOBS_TILE_GENERATION_JOB_HPP
 
 #include <boost/function.hpp>
 #include "../job.hpp"
+#include "../file_entry.hpp"
 
 class TileEntry;
 
@@ -37,10 +38,6 @@ public:
   TileGenerationJob(const FileEntry& file_entry, int min_scale, int max_scale,
                     const boost::function<void (TileEntry)>& callback);
   void run();
-
-private:
-  TileGenerationJob (const TileGenerationJob&);
-  TileGenerationJob& operator= (const TileGenerationJob&);
 };
 
 #endif

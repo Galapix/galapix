@@ -75,12 +75,15 @@ public:
 class FileDatabaseMessage : public DatabaseMessage
 {
 public:
+  JobHandle job_handle;
   URL url;
   boost::function<void (FileEntry)> callback;
 
-  FileDatabaseMessage(const URL& url,
+  FileDatabaseMessage(const JobHandle& job_handle,
+                      const URL& url,
                       const boost::function<void (FileEntry)>& callback)
     : DatabaseMessage(DATABASE_FILE_MESSAGE),
+      job_handle(job_handle),
       url(url),
       callback(callback)
   {}
@@ -169,10 +172,12 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
   return job_handle;
 }
 
-void
-DatabaseThread::request_file(const URL& url, const boost::function<void (FileEntry)>& callback)
+JobHandle
+DatabaseThread::request_file(const URL& url, const boost::function<void (const FileEntry&)>& callback)
 {
-  queue.push(new FileDatabaseMessage(url, callback));
+  JobHandle job_handle;
+  queue.push(new FileDatabaseMessage(job_handle, url, callback));
+  return job_handle;
 }
 
 void
@@ -305,6 +310,7 @@ DatabaseThread::run()
                   else
                     {
                       file_msg->callback(entry);
+                      file_msg->job_handle.finish();
                     }
                 }
                 break;
