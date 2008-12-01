@@ -58,6 +58,7 @@ struct GalapixOptions
 {
   std::string database;
   std::string pattern;
+  int         threads;
   std::vector<std::string> rest;
 };
 
@@ -282,10 +283,8 @@ Galapix::thumbgen(const std::string& database,
   
   std::cout << "Getting file entry... " << std::flush;
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
-    {
-      job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
-    }
-  std::cout << " ..waiting.. " << std::flush;
+    job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
+
   for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
     i->wait();
   std::cout << "done" << std::endl;
@@ -294,7 +293,6 @@ Galapix::thumbgen(const std::string& database,
     {
       // Generate Image Tiles
       SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
-      std::cout << "JobManager: request" << std::endl;
       job_manager.request(new TileGenerationJob(*i, 0, i->get_thumbnail_scale(),
                                                 boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)),
                           boost::function<void (Job*)>());
@@ -398,6 +396,7 @@ Galapix::print_usage()
             << "Options:\n"
             << "  -d, --database FILE    Use FILE has database (default: none)\n"
             << "  -f, --fullscreen       Start in fullscreen mode\n"
+            << "  -t, --threads          Number of worker threads (default: 2)\n"
             << "  -F, --files-from FILE  Get urls from FILE\n"
             << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
             << "  -g, --geometry WxH     Start with window size WxH\n"        
@@ -424,6 +423,7 @@ Galapix::main(int argc, char** argv)
   try 
     {
       GalapixOptions opts;
+      opts.threads  = 2;
       opts.database = Filesystem::get_home() + "/.galapix/cache.sqlite";
       parse_args(argc, argv, opts);
       run(opts);
@@ -554,6 +554,19 @@ Galapix::parse_args(int argc, char** argv, GalapixOptions& opts)
                 {
                   throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
                 }
+            }
+          else if (strcmp(argv[i], "-t") == 0 ||
+                   strcmp(argv[i], "--threads") == 0)
+            {
+              ++i;
+              if (i < argc)
+                {
+                  opts.threads = atoi(argv[i]);
+                }
+              else
+                {
+                  throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+                }              
             }
           else if (strcmp(argv[i], "-F") == 0 ||
                    strcmp(argv[i], "--files-from") == 0)
