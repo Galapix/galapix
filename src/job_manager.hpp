@@ -50,6 +50,8 @@ public:
   /** Waits till all jobs in the queue are finished, then returns */
   void finish();
 
+  /** \a job is processed and once finished \a callback is called, \a
+      job will be deleted afterwards */
   JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
 };
 

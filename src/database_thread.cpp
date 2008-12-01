@@ -32,7 +32,6 @@ enum DatabaseMessageType
   DATABASE_FILE_MESSAGE,
   DATABASE_TILE_MESSAGE,
   DATABASE_STORE_TILE_MESSAGE,
-  DATABASE_THREAD_DONE_MESSAGE,
   DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE,
   DATABASE_DELETE_FILE_ENTRY_MESSAGE
 };
@@ -111,18 +110,6 @@ public:
     : DatabaseMessage(DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE),
       pattern(pattern),
       callback(callback)
-  {
-  }
-};
-
-class ThreadDoneDatabaseMessage : public DatabaseMessage
-{
-public: 
-  int threadid;
-
-  ThreadDoneDatabaseMessage(int threadid)
-    : DatabaseMessage(DATABASE_THREAD_DONE_MESSAGE),
-      threadid(threadid)
   {
   }
 };
@@ -285,17 +272,6 @@ DatabaseThread::run()
                     {
                       
                     }
-                }
-                break;
-
-              case DATABASE_THREAD_DONE_MESSAGE:
-                {
-                  //ThreadDoneDatabaseMessage* thread_msg = static_cast<ThreadDoneDatabaseMessage*>(msg);
-
-                  // get thread this message is refering too and mark it
-                  // as ready to take new jobs, or join() it to clean up
-
-                  // Also check if new jobs are in the queue to be given to the thread
                 }
                 break;
 
