@@ -40,30 +40,42 @@ JobManager::JobManager(int num_threads)
 
 JobManager::~JobManager()
 {
-  /*
- for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->finish();
-
-  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->join();
-  */
+  finish();
+  join();
 }
 
 void
 JobManager::finish()
 {
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->finish();  
+    {
+      if (*i)
+        {
+          (*i)->finish();  
+        }
+    }
 }
 
 void
 JobManager::join()
 {
- for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->finish();
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    {
+      if (*i)
+        {
+          (*i)->finish();
+        }
+    }
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->join();
+    {
+      if (*i)
+        {
+          (*i)->join();
+          delete *i;
+          *i = 0;
+        }
+    }
 }
 
 JobHandle
