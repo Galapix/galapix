@@ -46,13 +46,13 @@ public:
   void cleanup(const std::string& database);
   void check(const std::string& database);
   void list(const std::string& database);
-  void thumbgen(const std::string& database, 
+  void thumbgen(const GalapixOptions& opts,
                 const std::vector<URL>& filenames, 
                 bool generate_all_tiles);
   void filegen(const std::string& database, 
                 const std::vector<URL>& filenames);
   void export_images(const std::string& database, const std::vector<URL>& url);
-  void view(const std::string& database, 
+  void view(const GalapixOptions& opts,
             const std::vector<URL>& filenames,
             bool view_all,
             const std::string& pattern);

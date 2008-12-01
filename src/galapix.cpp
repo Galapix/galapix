@@ -269,12 +269,12 @@ Galapix::filegen(const std::string& database,
 }
 
 void
-Galapix::thumbgen(const std::string& database, 
+Galapix::thumbgen(const GalapixOptions& opts,
                   const std::vector<URL>& urls, 
                   bool generate_all_tiles)
 {
-  DatabaseThread database_thread(database);
-  JobManager     job_manager(2);
+  DatabaseThread database_thread(opts.database);
+  JobManager     job_manager(opts.threads);
 
   database_thread.start();
 
@@ -307,13 +307,13 @@ Galapix::thumbgen(const std::string& database,
 }
 
 void
-Galapix::view(const std::string& database, 
+Galapix::view(const GalapixOptions& opts,
               const std::vector<URL>& urls, 
               bool view_all, 
               const std::string& pattern)
 {
-  JobManager job_manager(4);
-  DatabaseThread      database_thread(database);
+  JobManager job_manager(opts.threads);
+  DatabaseThread      database_thread(opts.database);
   TileGeneratorThread tile_generator_thread;
 
   database_thread.start();
@@ -448,7 +448,7 @@ Galapix::run(const GalapixOptions& opts)
 #ifdef GALAPIX_SDL
       print_usage();
 #else
-      view(opts.database, std::vector<URL>(), false, "");
+      view(opts, std::vector<URL>(), false, "");
 #endif
     }
   else
@@ -469,13 +469,13 @@ Galapix::run(const GalapixOptions& opts)
       if (command == "view")
         {
           if (!urls.empty())
-            view(opts.database, urls, false, opts.pattern);
+            view(opts, urls, false, opts.pattern);
           else
             std::cout << "Error: No URLs given" << std::endl;
         }
       else if (command == "viewdb")
         {
-          view(opts.database, urls, true, opts.pattern);
+          view(opts, urls, true, opts.pattern);
         }
       else if (command == "check")
         {
@@ -511,11 +511,11 @@ Galapix::run(const GalapixOptions& opts)
         }
       else if (command == "prepare")
         {
-          thumbgen(opts.database, urls, true);
+          thumbgen(opts, urls, true);
         }
       else if (command == "thumbgen")
         {
-          thumbgen(opts.database, urls, false);
+          thumbgen(opts, urls, false);
         }
       else if (command == "filegen")
         {
