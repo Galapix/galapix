@@ -27,7 +27,6 @@
 #include "framebuffer.hpp"
 #include "png.hpp"
 #include "sdl_viewer.hpp"
-#include "tile_generator_thread.hpp"
 #include "space_navigator.hpp"
 #include "database_thread.hpp"
 

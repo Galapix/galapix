@@ -26,7 +26,6 @@
 #include "database.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
-#include "tile_generator_thread.hpp"
 #include "database_thread.hpp"
 
 class DatabaseMessage
@@ -338,6 +337,10 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
                               const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
                               const boost::function<void (TileEntry)>& callback)
 {
+  // FIXME: We don't check what tiles are already present, so some get
+  // generated multiple times! (3-5 then 0-5, while it should be 0-2)
+  // FIXME: Cancelation doesn't work either
+
   TileRequestGroups::iterator group = tile_request_groups.end();
   for(TileRequestGroups::iterator i = tile_request_groups.begin(); i != tile_request_groups.end(); ++i)
     {
@@ -388,7 +391,7 @@ DatabaseThread::process_tile(const TileEntry& tile_entry)
                 }
             }
         }
-    }  
+    }
 }
 
 /* EOF */

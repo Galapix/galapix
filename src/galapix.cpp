@@ -42,7 +42,6 @@
 #include "jobs/tile_generation_job.hpp"
 #include "database_thread.hpp"
 #include "filesystem.hpp"
-#include "tile_generator_thread.hpp"
 #include "workspace.hpp"
 #include "job_manager.hpp"
 #ifdef GALAPIX_SDL
@@ -314,10 +313,8 @@ Galapix::view(const GalapixOptions& opts,
 {
   JobManager job_manager(opts.threads);
   DatabaseThread      database_thread(opts.database);
-  TileGeneratorThread tile_generator_thread;
 
   database_thread.start();
-  tile_generator_thread.start();
 
   Workspace workspace;
 
@@ -359,11 +356,7 @@ Galapix::view(const GalapixOptions& opts,
       gtk_viewer.run();
 #endif
 
-
-  tile_generator_thread.stop();
   database_thread.stop();
-  
-  tile_generator_thread.join(); 
   database_thread.join();
 }
 
