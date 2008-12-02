@@ -44,7 +44,39 @@ private:
   bool quit;
   
   ThreadMessageQueue<DatabaseMessage*> queue;
-  std::list<TileDatabaseMessage*>      tile_queue;
+
+  struct TileRequest
+  {
+    JobHandle job_handle;
+    int scale;
+    Vector2i pos;
+    boost::function<void (TileEntry)> callback;
+    
+    TileRequest(const JobHandle& job_handle,
+                int scale, const Vector2i& pos,
+                const boost::function<void (TileEntry)>& callback)
+      : job_handle(job_handle),
+        scale(scale), pos(pos),
+        callback(callback)
+    {}
+  };
+
+  struct TileRequestGroup 
+  {
+    TileRequestGroup(uint32_t fileid, int min_scale, int max_scale)
+      : fileid(fileid),
+        min_scale(min_scale),
+        max_scale(max_scale)
+    {}
+    
+    uint32_t fileid; 
+    int min_scale;
+    int max_scale;
+    std::vector<TileRequest> requests;
+  };
+  
+  typedef std::list<TileRequestGroup> TileRequestGroups;
+  TileRequestGroups tile_request_groups;
 
 protected: 
   int run();
@@ -52,8 +84,13 @@ protected:
 public:
   DatabaseThread(const std::string&);
   virtual ~DatabaseThread();
-  
+
   void stop();
+
+  void process_tile(const TileEntry& tile_entry);
+  void generate_tile(const JobHandle& job_handle,
+                     const FileEntry&, int tilescale, const Vector2i& pos, 
+                     const boost::function<void (TileEntry)>& callback);
   
   /* @{ */ // syncronized functions to be used by other threads
   /** Request the tile for file \a tileid */

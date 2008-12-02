@@ -21,35 +21,27 @@
 #include <assert.h>
 #include "math.hpp"
 #include "url.hpp"
+#include "jobs/tile_generation_job.hpp"
+#include "job_manager.hpp"
+#include "database.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "tile_generator_thread.hpp"
 #include "database_thread.hpp"
 
-enum DatabaseMessageType 
-{
-  DATABASE_ALL_FILES_MESSAGE,
-  DATABASE_FILE_MESSAGE,
-  DATABASE_TILE_MESSAGE,
-  DATABASE_STORE_TILE_MESSAGE,
-  DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE,
-  DATABASE_DELETE_FILE_ENTRY_MESSAGE
-};
-
 class DatabaseMessage
 {
 public:
-  DatabaseMessageType type;
-
-  DatabaseMessage(DatabaseMessageType type_)
-    : type(type_)
+  DatabaseMessage()
   {}
 
   virtual ~DatabaseMessage()
   {}
+
+  virtual void run(Database& db) =0;
 };
 
-class TileDatabaseMessage : public DatabaseMessage
+class RequestTileDatabaseMessage : public DatabaseMessage
 {
 public:
   JobHandle job_handle;
@@ -59,33 +51,75 @@ public:
   Vector2i pos;
   boost::function<void (TileEntry)> callback;
 
-  TileDatabaseMessage(const JobHandle& job_handle,
-                      const FileEntry& file_entry, int tilescale, const Vector2i& pos,
-                      const boost::function<void (TileEntry)>& callback)
-    : DatabaseMessage(DATABASE_TILE_MESSAGE),
-      job_handle(job_handle),
+  RequestTileDatabaseMessage(const JobHandle& job_handle,
+                             const FileEntry& file_entry, int tilescale, const Vector2i& pos,
+                             const boost::function<void (TileEntry)>& callback)
+    : job_handle(job_handle),
       file_entry(file_entry),
       tilescale(tilescale),
       pos(pos),
       callback(callback)
   {}
+
+  void run(Database& db)
+  {
+    if (!job_handle.is_aborted())
+      {
+        TileEntry tile;
+        if (db.tiles.get_tile(file_entry.get_fileid(), tilescale, pos, tile))
+          {
+            // Tile has been found, so return it and finish up
+            callback(tile);
+            job_handle.finish();
+          }
+        else
+          {
+            // Tile hasn't been found, so we need to generate it
+            if (0)
+              std::cout << "Error: Couldn't get tile: " 
+                        << file_entry.get_fileid() << " "
+                        << pos.x << " "
+                        << pos.y << " "
+                        << tilescale
+                        << std::endl;
+                          
+            DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
+          }
+      }
+  }
 };
 
-class FileDatabaseMessage : public DatabaseMessage
+class RequestFileDatabaseMessage : public DatabaseMessage
 {
 public:
   JobHandle job_handle;
   URL url;
   boost::function<void (FileEntry)> callback;
 
-  FileDatabaseMessage(const JobHandle& job_handle,
+  RequestFileDatabaseMessage(const JobHandle& job_handle,
                       const URL& url,
                       const boost::function<void (FileEntry)>& callback)
-    : DatabaseMessage(DATABASE_FILE_MESSAGE),
-      job_handle(job_handle),
+    : job_handle(job_handle),
       url(url),
       callback(callback)
   {}
+
+  void run(Database& db)
+  {
+    if (!job_handle.is_aborted())
+      {
+        FileEntry entry = db.files.get_file_entry(url);
+        if (!entry)
+          {
+            std::cout << "Error: Couldn't get FileEntry for " << url << std::endl;
+          }
+        else
+          {
+            callback(entry);
+            job_handle.finish();
+          }
+      }
+  }
 };
 
 class AllFilesDatabaseMessage : public DatabaseMessage
@@ -94,9 +128,18 @@ public:
   boost::function<void (FileEntry)> callback;
 
   AllFilesDatabaseMessage(const boost::function<void (FileEntry)>& callback)
-    : DatabaseMessage(DATABASE_ALL_FILES_MESSAGE),
-      callback(callback)
+    : callback(callback)
   {
+  }
+
+  void run(Database& db)
+  {
+    std::vector<FileEntry> entries;
+    db.files.get_file_entries(entries);
+    for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+      {
+        callback(*i);
+      }
   }
 };
 
@@ -107,22 +150,73 @@ public:
   boost::function<void (FileEntry)> callback;
 
   FilesByPatternDatabaseMessage(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
-    : DatabaseMessage(DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE),
-      pattern(pattern),
+    : pattern(pattern),
       callback(callback)
   {
   }
+
+  void run(Database& db)
+  {
+    std::vector<FileEntry> entries;
+    db.files.get_file_entries(entries, pattern);
+    for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+      {
+        callback(*i);
+      }               
+  }
 };
 
-class StoreTileDatabaseMessage : public DatabaseMessage
+class ReceiveTileDatabaseMessage : public DatabaseMessage
 {
 public:
   TileEntry tile;
 
-  StoreTileDatabaseMessage(const TileEntry& tile)
-    : DatabaseMessage(DATABASE_STORE_TILE_MESSAGE),
-      tile(tile)
+  ReceiveTileDatabaseMessage(const TileEntry& tile)
+    : tile(tile)
   {}
+
+  void run(Database& db)
+  {
+    if (0)
+      std::cout << "Received Tile: "
+                << tile.get_fileid() << " pos: " 
+                << tile.get_pos()    << " scale: " 
+                << tile.get_scale()  << std::endl;
+
+    DatabaseThread::current()->process_tile(tile);
+#if 0
+      for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end(); )
+        {
+          if (tile.get_fileid() == (*i)->file_entry.get_fileid() &&
+              tile.get_scale()  == (*i)->tilescale &&
+              tile.get_pos()    == (*i)->pos)
+            {
+              (*i)->callback(tile);
+
+              // FIXME: Correct!?
+              delete *i;
+              i = tile_queue.erase(i);
+            }
+          else
+            {
+              ++i;
+            }
+        }
+#endif
+                  
+    // FIXME: Make some better error checking in case of loading failure
+    if (tile.get_surface())
+      {
+        // Avoid doubble store of tiles in the database
+        // FIXME: Test the performance of this
+        //if (!db.tiles.has_tile(tile.fileid, tile.pos, tile.scale))
+        db.tiles.store_tile(tile);
+      }
+    else
+      {
+        
+      }
+  }
 };
 
 class DeleteFileEntryDatabaseMessage : public DatabaseMessage
@@ -131,9 +225,26 @@ public:
   uint32_t fileid;
 
   DeleteFileEntryDatabaseMessage(uint32_t fileid)
-    : DatabaseMessage(DATABASE_DELETE_FILE_ENTRY_MESSAGE),
-      fileid(fileid)
+    : fileid(fileid)
   {}
+
+  void run(Database& db)
+  {
+    SQLiteStatement(&db.db)
+      .prepare("BEGIN;")
+      .execute();
+    SQLiteStatement(&db.db)
+      .prepare("DELETE FROM files WHERE fileid = ?1;")
+      .bind_int(1, fileid)
+      .execute();
+    SQLiteStatement(&db.db)
+      .prepare("DELETE FROM tiles WHERE fileid = ?1;")
+      .bind_int(1, fileid)
+      .execute();
+    SQLiteStatement(&db.db)
+      .prepare("END;")
+      .execute();
+  }
 };
 
 DatabaseThread* DatabaseThread::current_ = 0;
@@ -155,7 +266,7 @@ JobHandle
 DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback)
 {
   JobHandle job_handle;
-  queue.push(new TileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
+  queue.push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
   return job_handle;
 }
 
@@ -163,7 +274,7 @@ JobHandle
 DatabaseThread::request_file(const URL& url, const boost::function<void (const FileEntry&)>& callback)
 {
   JobHandle job_handle;
-  queue.push(new FileDatabaseMessage(job_handle, url, callback));
+  queue.push(new RequestFileDatabaseMessage(job_handle, url, callback));
   return job_handle;
 }
 
@@ -182,7 +293,7 @@ DatabaseThread::request_files_by_pattern(const boost::function<void (FileEntry)>
 void
 DatabaseThread::receive_tile(const TileEntry& tile)
 {
-  queue.push(new StoreTileDatabaseMessage(tile));
+  queue.push(new ReceiveTileDatabaseMessage(tile));
 }
 
 void
@@ -203,237 +314,81 @@ DatabaseThread::run()
   quit = false;
 
   std::cout << "Connecting to the database..." << std::endl;
-  SQLiteConnection db(database_filename);
-
-  /*
-  SQLiteStatement(&db)
-    .prepare("PRAGMA synchronous = OFF;")
-    .execute();
-
-  SQLiteStatement(&db)
-    .prepare("PRAGMA journal_mode = OFF;")
-    .execute();
-  */
-  FileDatabase file_db(&db);
-  TileDatabase tile_db(&db);
+  Database db(database_filename);
   std::cout << "Connecting to the database... done" << std::endl;
 
   std::vector<DatabaseMessage*> messages;
   while(!quit)
     {
-      //std::cout << "DatabaseThread: looping" << std::endl;
-      
-      // FIXME: Ugly hack to reverse the order of the queue
       while(!queue.empty() && !quit)
         {
           DatabaseMessage* msg = queue.front();
           queue.pop();
-
-          switch(msg->type)
-            {
-              case DATABASE_STORE_TILE_MESSAGE:
-                {
-                  StoreTileDatabaseMessage* tile_msg = static_cast<StoreTileDatabaseMessage*>(msg);
-                  
-                  if (0)
-                  std::cout << "Received Tile: "
-                            << tile_msg->tile.get_fileid() << " pos: " 
-                            << tile_msg->tile.get_pos()    << " scale: " 
-                            << tile_msg->tile.get_scale()  << std::endl;
-
-                  for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end();)
-                    {
-                      if (tile_msg->tile.get_fileid() == (*i)->file_entry.get_fileid() &&
-                          tile_msg->tile.get_scale()  == (*i)->tilescale &&
-                          tile_msg->tile.get_pos()    == (*i)->pos)
-                        {
-                          (*i)->callback(tile_msg->tile);
-
-                          // FIXME: Correct!?
-                          delete *i;
-                          i = tile_queue.erase(i);
-                        }
-                      else
-                        {
-                          ++i;
-                        }
-                    }
-                  
-                  // FIXME: Make some better error checking in case of loading failure
-                  if (tile_msg->tile.get_surface())
-                    {
-                      // FIXME: Need file_entry object for this:
-                      //if (tile_msg->tile.scale == file_entry.thumbnail_scale)
-                        //  file_db.store_tile(tile_msg->tile);
-                      //else
-                        tile_db.store_tile(tile_msg->tile);
-                    }
-                  else
-                    {
-                      
-                    }
-                }
-                break;
-
-              case DATABASE_FILE_MESSAGE:
-                {
-                  FileDatabaseMessage* file_msg = static_cast<FileDatabaseMessage*>(msg);
-                  FileEntry entry = file_db.get_file_entry(file_msg->url);
-                  if (!entry)
-                    {
-                      std::cout << "Error: Couldn't get FileEntry for " << file_msg->url << std::endl;
-                    }
-                  else
-                    {
-                      file_msg->callback(entry);
-                      file_msg->job_handle.finish();
-                    }
-                }
-                break;
-
-              case DATABASE_REQUEST_FILES_BY_PATTERN_MESSAGE:
-                {
-                  FilesByPatternDatabaseMessage* all_files_msg = static_cast<FilesByPatternDatabaseMessage*>(msg);
-                  std::vector<FileEntry> entries;
-                  file_db.get_file_entries(entries, all_files_msg->pattern);
-                  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
-                    {
-                      all_files_msg->callback(*i);
-                    }
-                }
-                break;
-
-              case DATABASE_ALL_FILES_MESSAGE:
-                {
-                  AllFilesDatabaseMessage* all_files_msg = static_cast<AllFilesDatabaseMessage*>(msg);
-                  std::vector<FileEntry> entries;
-                  file_db.get_file_entries(entries);
-                  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
-                    {
-                      all_files_msg->callback(*i);
-                    }
-                }
-                break;
-
-              case DATABASE_DELETE_FILE_ENTRY_MESSAGE:
-                {
-                  DeleteFileEntryDatabaseMessage* delete_msg = static_cast<DeleteFileEntryDatabaseMessage*>(msg);
-                  SQLiteStatement(&db)
-                    .prepare("BEGIN;")
-                    .execute();
-                  SQLiteStatement(&db)
-                    .prepare("DELETE FROM files WHERE fileid = ?1;")
-                    .bind_int(1, delete_msg->fileid)
-                    .execute();
-                  SQLiteStatement(&db)
-                    .prepare("DELETE FROM tiles WHERE fileid = ?1;")
-                    .bind_int(1, delete_msg->fileid)
-                    .execute();
-                  SQLiteStatement(&db)
-                    .prepare("END;")
-                    .execute();
-                }
-                break;
-
-              case DATABASE_TILE_MESSAGE:
-                {
-                  TileDatabaseMessage* tile_msg = static_cast<TileDatabaseMessage*>(msg);
-
-                  if (!tile_msg->job_handle.is_aborted())
-                    {
-                      TileEntry tile;
-                      if (tile_db.get_tile(tile_msg->file_entry.get_fileid(), tile_msg->tilescale, tile_msg->pos, tile))
-                        {
-                          tile_msg->callback(tile);
-                          tile_msg->job_handle.finish();
-                        }
-                      else
-                        {
-                          if (0)
-                            std::cout << "Error: Couldn't get tile: " 
-                                      << tile_msg->file_entry.get_fileid() << " "
-                                      << tile_msg->pos.x << " "
-                                      << tile_msg->pos.y << " "
-                                      << tile_msg->tilescale
-                                      << std::endl;
-                          
-                          tile_queue.push_back(tile_msg);
-
-                          //std::cout << tile_queue.size() << std::endl;
-                          msg = 0; // FIXME: HACK so that msg doesn't get deleted, use shared_ptr instead
-                        }
-                    }
-                }
-                break;
-
-              default:
-                assert(!"Unknown message type");
-            }
-
+          msg->run(db);
           delete msg;
         }
-      
       queue.wait();
-
-      //std::cout << tile_queue.size() << " vs " << queue.size() << std::endl;
-
-      // Check if job is still valid before starting to generate tiles
-      for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end();)
-        {
-          if ((*i)->job_handle.is_aborted())
-            {
-              delete *i;
-              i = tile_queue.erase(i);
-            }
-          else
-            {
-              ++i;
-            }
-        }
-
-      if (queue.empty() && // FIXME UGLY: to make load on demand somewhat usable
-          TileGeneratorThread::current() && !TileGeneratorThread::current()->is_working())
-        {
-          if (!tile_queue.empty())
-            {
-              // FIXME: Either buggy or not syncronized
-              TileDatabaseMessage& msg = *tile_queue.back();
-
-              int max_scale = msg.tilescale;
-
-              bool tiles_missing;
-              do
-                {
-                  tiles_missing = false;
-
-                  int width  = Math::ceil_div(msg.file_entry.get_width()  / Math::pow2(max_scale), 256);
-                  int height = Math::ceil_div(msg.file_entry.get_height() / Math::pow2(max_scale), 256);
-
-                  for(int y = 0; y < height; ++y)
-                    for(int x = 0; x < width; ++x)
-                      {
-                        if (!tile_db.has_tile(msg.file_entry.get_fileid(), Vector2i(x,y), max_scale+1))
-                          {
-                            tiles_missing = true;
-                            max_scale += 1;
-                            goto here;
-                          }
-                      }
-
-                here:
-                  ;
-                }
-              while(tiles_missing && max_scale < msg.file_entry.get_thumbnail_scale());
-              
-              TileGeneratorThread::current()->request_tiles(msg.file_entry,
-                                                            msg.tilescale,
-                                                            max_scale,
-                                                            boost::bind(&DatabaseThread::receive_tile, this, _1));
-            }
-        }
     }
 
   return 0;
+}
+
+void
+DatabaseThread::generate_tile(const JobHandle& job_handle,
+                              const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
+                              const boost::function<void (TileEntry)>& callback)
+{
+  TileRequestGroups::iterator group = tile_request_groups.end();
+  for(TileRequestGroups::iterator i = tile_request_groups.begin(); i != tile_request_groups.end(); ++i)
+    {
+      if (i->fileid    == file_entry.get_fileid() && 
+          i->min_scale <= tilescale &&
+          i->max_scale >= tilescale)
+        {
+          group = i;
+          break;
+        }
+    }
+
+  if (group == tile_request_groups.end())
+    {
+      int min_scale = tilescale;
+      int max_scale = file_entry.get_thumbnail_scale();
+      JobManager::current()->request(new TileGenerationJob(file_entry, min_scale, max_scale, 
+                                                           boost::bind(&DatabaseThread::receive_tile, this, _1)),
+                                     boost::function<void (Job*)>());
+      
+      TileRequestGroup request_group(file_entry.get_fileid(), min_scale, max_scale);
+      request_group.requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
+      tile_request_groups.push_back(request_group);
+    }
+  else
+    {
+      group->requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
+    }
+}
+
+void
+DatabaseThread::process_tile(const TileEntry& tile_entry)
+{
+  // FIXME: Could break/return here to do some less looping
+  for(TileRequestGroups::iterator i = tile_request_groups.begin(); i != tile_request_groups.end(); ++i)
+    {
+      if (i->fileid == tile_entry.get_fileid())
+        {
+          for(std::vector<TileRequest>::iterator j = i->requests.begin(); j != i->requests.end(); ++j)
+            {
+              if (tile_entry.get_scale() == j->scale &&
+                  tile_entry.get_pos()   == j->pos)
+                {
+                  j->callback(tile_entry);
+                  j->job_handle.finish();
+                  i->requests.erase(j);
+                  break;
+                }
+            }
+        }
+    }  
 }
 
 /* EOF */
