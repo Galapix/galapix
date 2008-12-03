@@ -16,36 +16,25 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MOVE_TOOL_HPP
-#define HEADER_MOVE_TOOL_HPP
+#ifndef HEADER_VIEW_ROTATE_TOOL_HPP
+#define HEADER_VIEW_ROTATE_TOOL_HPP
 
-#include <vector>
-#include "image.hpp"
-#include "tool.hpp"
+#include "../tool.hpp"
 
-class MoveTool : public Tool
+class ViewRotateTool : public Tool
 {
 private:
-  Vector2i mouse_pos;
-  bool drag_active;
-
-  bool move_active;
-  Vector2f click_pos;
-
+  bool active;
+  float start_angle;
 public:
-  MoveTool(Viewer* viewer);
-  ~MoveTool();
+  ViewRotateTool(Viewer* viewer);
 
   void move(const Vector2i& pos, const Vector2i& rel);
   void up  (const Vector2i& pos);
   void down(const Vector2i& pos);
 
-  void draw();
-  void update(const Vector2i& pos, float delta);
-
-private:
-  MoveTool (const MoveTool&);
-  MoveTool& operator= (const MoveTool&);
+  void draw() {}
+  void update(const Vector2i& /*pos*/, float /*delta*/) {}
 };
 
 #endif

@@ -23,60 +23,56 @@
 **  02111-1307, USA.
 */
 
-#include "viewer.hpp"
-#include "pan_tool.hpp"
+#include <iostream>
+#include "../framebuffer.hpp"
+#include "../viewer.hpp"
+#include "../math/rgb.hpp"
+#include "zoom_rect_tool.hpp"
 
-PanTool::PanTool(Viewer* viewer)
+ZoomRectTool::ZoomRectTool(Viewer* viewer)
   : Tool(viewer),
-    trackball_mode(false),
-    move_active(false)
-{
-}
-
-PanTool::~PanTool()
+    drag_active(false)    
 {
 }
 
 void
-PanTool::move(const Vector2i& pos, const Vector2i& rel)
+ZoomRectTool::move(const Vector2i& pos, const Vector2i& rel)
 {
   mouse_pos = pos;
+}
 
-  if (trackball_mode)
+void
+ZoomRectTool::up  (const Vector2i& pos)
+{
+  if (drag_active)
     {
-      viewer->get_state().move(rel * 4);
+      drag_active = false;
+      Rectf rect(click_pos,
+                 viewer->get_state().screen2world(mouse_pos));
+      rect.normalize();
+
+      viewer->get_state().zoom_to(Framebuffer::get_size(), rect);
+      std::cout << "Zooming to: " << rect << std::endl;
     }
-  else if (move_active)
-    { // FIXME: This is of course wrong, since depending on x/yrel will lead to drift
-      // Also we shouldn't use 4x speed, but 1x seems so useless
-      viewer->get_state().move(rel * 4);
+}
+
+void
+ZoomRectTool::down(const Vector2i& pos)
+{
+  click_pos = viewer->get_state().screen2world(pos);
+  drag_active = true;
+}
+
+void
+ZoomRectTool::draw()
+{
+  if (drag_active)
+    {
+      Rectf rect(click_pos,
+                 viewer->get_state().screen2world(mouse_pos));
+      rect.normalize();
+      Framebuffer::draw_rect(rect, RGB(255, 255, 255));
     }
-}
-
-void
-PanTool::up(const Vector2i& pos)
-{
-  mouse_pos   = pos;
-  move_active = false;
-}
-
-void
-PanTool::down(const Vector2i& pos)
-{
-  mouse_pos   = pos;
-  move_active = true;
-}
-
-bool
-PanTool::get_trackball_mode() const
-{
-  return trackball_mode;
-}
-
-void
-PanTool::set_trackball_mode(bool mode)
-{
-  trackball_mode = mode;
 }
 
 /* EOF */

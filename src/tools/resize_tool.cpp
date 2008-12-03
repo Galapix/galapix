@@ -23,56 +23,49 @@
 **  02111-1307, USA.
 */
 
-#include <iostream>
-#include "framebuffer.hpp"
-#include "viewer.hpp"
-#include "math/rgb.hpp"
-#include "zoom_rect_tool.hpp"
+#include "../viewer.hpp"
+#include "../workspace.hpp"
+#include "resize_tool.hpp"
 
-ZoomRectTool::ZoomRectTool(Viewer* viewer)
+ResizeTool::ResizeTool(Viewer* viewer)
   : Tool(viewer),
-    drag_active(false)    
-{
+    resize_active(false),
+    old_scale(1.0f)
+{  
 }
 
 void
-ZoomRectTool::move(const Vector2i& pos, const Vector2i& rel)
+ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
 {
-  mouse_pos = pos;
-}
-
-void
-ZoomRectTool::up  (const Vector2i& pos)
-{
-  if (drag_active)
+  if (resize_active)
     {
-      drag_active = false;
-      Rectf rect(click_pos,
-                 viewer->get_state().screen2world(mouse_pos));
-      rect.normalize();
+      Vector2f p = viewer->get_state().screen2world(pos);
 
-      viewer->get_state().zoom_to(Framebuffer::get_size(), rect);
-      std::cout << "Zooming to: " << rect << std::endl;
+      float a = (selection_center - p).length();
+      float b = (selection_center - resize_center).length();
+
+      if (b != 0.0f)
+        {
+          //std::cout << a << " " << b << " " << a / b << std::endl;
+          viewer->get_workspace()->get_selection().scale((1.0f/old_scale) * (a/b));
+          old_scale = a/b; // FIXME: Hack, should scale to original scale 
+        }
     }
 }
 
 void
-ZoomRectTool::down(const Vector2i& pos)
+ResizeTool::up(const Vector2i& /*pos*/)
 {
-  click_pos = viewer->get_state().screen2world(pos);
-  drag_active = true;
+  resize_active = false;
+  old_scale = 1.0f;
 }
 
 void
-ZoomRectTool::draw()
+ResizeTool::down(const Vector2i& pos)
 {
-  if (drag_active)
-    {
-      Rectf rect(click_pos,
-                 viewer->get_state().screen2world(mouse_pos));
-      rect.normalize();
-      Framebuffer::draw_rect(rect, RGB(255, 255, 255));
-    }
+  resize_active    = true;
+  resize_center    = viewer->get_state().screen2world(pos);
+  selection_center = viewer->get_workspace()->get_selection().get_center();
 }
 
 /* EOF */

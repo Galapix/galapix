@@ -23,49 +23,31 @@
 **  02111-1307, USA.
 */
 
-#include "viewer.hpp"
-#include "workspace.hpp"
-#include "resize_tool.hpp"
+#ifndef HEADER_RESIZE_TOOL_HPP
+#define HEADER_RESIZE_TOOL_HPP
+
+#include "../tool.hpp"
 
-ResizeTool::ResizeTool(Viewer* viewer)
-  : Tool(viewer),
-    resize_active(false),
-    old_scale(1.0f)
-{  
-}
-
-void
-ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
+class ResizeTool : public Tool
 {
-  if (resize_active)
-    {
-      Vector2f p = viewer->get_state().screen2world(pos);
+private:
+  bool     resize_active;
+  Vector2f resize_center;
+  Vector2f selection_center;
+  float    old_scale;
 
-      float a = (selection_center - p).length();
-      float b = (selection_center - resize_center).length();
+public:
+  ResizeTool(Viewer* viewer);
+  
+  void move(const Vector2i& pos, const Vector2i& rel);
+  void up  (const Vector2i& pos);
+  void down(const Vector2i& pos);
 
-      if (b != 0.0f)
-        {
-          //std::cout << a << " " << b << " " << a / b << std::endl;
-          viewer->get_workspace()->get_selection().scale((1.0f/old_scale) * (a/b));
-          old_scale = a/b; // FIXME: Hack, should scale to original scale 
-        }
-    }
-}
-
-void
-ResizeTool::up(const Vector2i& /*pos*/)
-{
-  resize_active = false;
-  old_scale = 1.0f;
-}
-
-void
-ResizeTool::down(const Vector2i& pos)
-{
-  resize_active    = true;
-  resize_center    = viewer->get_state().screen2world(pos);
-  selection_center = viewer->get_workspace()->get_selection().get_center();
-}
+  void draw() {}
+  void update(const Vector2i& pos, float delta);
+  
+};
 
+#endif
+
 /* EOF */

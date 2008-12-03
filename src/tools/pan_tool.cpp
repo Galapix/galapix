@@ -23,31 +23,60 @@
 **  02111-1307, USA.
 */
 
-#ifndef HEADER_RESIZE_TOOL_HPP
-#define HEADER_RESIZE_TOOL_HPP
-
-#include "tool.hpp"
+#include "../viewer.hpp"
+#include "pan_tool.hpp"
 
-class ResizeTool : public Tool
+PanTool::PanTool(Viewer* viewer)
+  : Tool(viewer),
+    trackball_mode(false),
+    move_active(false)
 {
-private:
-  bool     resize_active;
-  Vector2f resize_center;
-  Vector2f selection_center;
-  float    old_scale;
+}
 
-public:
-  ResizeTool(Viewer* viewer);
-  
-  void move(const Vector2i& pos, const Vector2i& rel);
-  void up  (const Vector2i& pos);
-  void down(const Vector2i& pos);
+PanTool::~PanTool()
+{
+}
 
-  void draw() {}
-  void update(const Vector2i& pos, float delta);
-  
-};
+void
+PanTool::move(const Vector2i& pos, const Vector2i& rel)
+{
+  mouse_pos = pos;
+
+  if (trackball_mode)
+    {
+      viewer->get_state().move(rel * 4);
+    }
+  else if (move_active)
+    { // FIXME: This is of course wrong, since depending on x/yrel will lead to drift
+      // Also we shouldn't use 4x speed, but 1x seems so useless
+      viewer->get_state().move(rel * 4);
+    }
+}
+
+void
+PanTool::up(const Vector2i& pos)
+{
+  mouse_pos   = pos;
+  move_active = false;
+}
+
+void
+PanTool::down(const Vector2i& pos)
+{
+  mouse_pos   = pos;
+  move_active = true;
+}
+
+bool
+PanTool::get_trackball_mode() const
+{
+  return trackball_mode;
+}
+
+void
+PanTool::set_trackball_mode(bool mode)
+{
+  trackball_mode = mode;
+}
 
-#endif
-
 /* EOF */

@@ -16,11 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "image.hpp"
-#include "workspace.hpp"
-#include "viewer.hpp"
-#include "framebuffer.hpp"
-#include "math/rgb.hpp"
+#include "../image.hpp"
+#include "../workspace.hpp"
+#include "../viewer.hpp"
+#include "../framebuffer.hpp"
+#include "../math/rgb.hpp"
 #include "move_tool.hpp"
 
 MoveTool::MoveTool(Viewer* viewer)

@@ -16,24 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PAN_TOOL_HPP
-#define HEADER_PAN_TOOL_HPP
+#ifndef HEADER_ROTATE_TOOL_HPP
+#define HEADER_ROTATE_TOOL_HPP
 
-#include "tool.hpp"
+#include "../tool.hpp"
 
-class Viewer;
-
-class PanTool : public Tool
+class RotateTool : public Tool
 {
 private:
-  bool trackball_mode;
-  bool move_active;
-
-  Vector2i mouse_pos;
+  bool     rotate_active;
+  Vector2f selection_center;
+  float    start_angle;
 
 public:
-  PanTool(Viewer* viewer);
-  ~PanTool();
+  RotateTool(Viewer* viewer);
 
   void move(const Vector2i& pos, const Vector2i& rel);
   void up  (const Vector2i& pos);
@@ -41,9 +37,6 @@ public:
 
   void draw() {}
   void update(const Vector2i& pos, float delta);
-
-  bool get_trackball_mode() const;
-  void set_trackball_mode(bool mode);
 };
 
 #endif

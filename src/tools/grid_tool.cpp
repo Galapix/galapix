@@ -17,10 +17,10 @@
 */
 
 #include <iostream>
-#include "framebuffer.hpp"
-#include "viewer.hpp"
-#include "math/rgb.hpp"
-#include "math/rgba.hpp"
+#include "../framebuffer.hpp"
+#include "../viewer.hpp"
+#include "../math/rgb.hpp"
+#include "../math/rgba.hpp"
 #include "grid_tool.hpp"
 
 GridTool::GridTool(Viewer* viewer)

@@ -17,8 +17,8 @@
 */
 
 #include <math.h>
-#include "viewer.hpp"
-#include "workspace.hpp"
+#include "../viewer.hpp"
+#include "../workspace.hpp"
 #include "rotate_tool.hpp"
 
 RotateTool::RotateTool(Viewer* viewer)

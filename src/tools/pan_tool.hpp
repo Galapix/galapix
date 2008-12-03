@@ -16,54 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "viewer.hpp"
-#include "zoom_tool.hpp"
+#ifndef HEADER_PAN_TOOL_HPP
+#define HEADER_PAN_TOOL_HPP
+
+#include "../tool.hpp"
 
-ZoomTool::ZoomTool(Viewer* viewer, float zoom_factor)
-  : Tool(viewer),
-    zoom_active(false),
-    zoom_factor(zoom_factor)
-{
-}
-
-void
-ZoomTool::move(const Vector2i& /*pos*/, const Vector2i& /*rel*/)
-{
-}
-
-void
-ZoomTool::up  (const Vector2i& /*pos*/)
-{
-  zoom_active = false;  
-}
-
-void
-ZoomTool::down(const Vector2i& /*pos*/)
-{
-  zoom_active = true;
-}
-
-void
-ZoomTool::update(const Vector2i& mouse_pos, float delta)
-{
-  if (zoom_active)
-    {
-      if (zoom_factor > 0)
-        viewer->get_state().zoom(1.0f / (1.0f + zoom_factor * delta), mouse_pos);
-      else
-        viewer->get_state().zoom(1.0f - zoom_factor * delta, mouse_pos);
-    }
-}
-
-void
-ZoomTool::draw()
-{
-}
-
-bool
-ZoomTool::is_active() const
-{
-  return zoom_active;
-}
+class Viewer;
 
+class PanTool : public Tool
+{
+private:
+  bool trackball_mode;
+  bool move_active;
+
+  Vector2i mouse_pos;
+
+public:
+  PanTool(Viewer* viewer);
+  ~PanTool();
+
+  void move(const Vector2i& pos, const Vector2i& rel);
+  void up  (const Vector2i& pos);
+  void down(const Vector2i& pos);
+
+  void draw() {}
+  void update(const Vector2i& pos, float delta);
+
+  bool get_trackball_mode() const;
+  void set_trackball_mode(bool mode);
+};
+
+#endif
+
 /* EOF */

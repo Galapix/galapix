@@ -16,27 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_ROTATE_TOOL_HPP
-#define HEADER_ROTATE_TOOL_HPP
+#ifndef HEADER_ZOOM_TOOL_HPP
+#define HEADER_ZOOM_TOOL_HPP
 
-#include "tool.hpp"
+#include "../tool.hpp"
 
-class RotateTool : public Tool
+class ZoomTool : public Tool
 {
 private:
-  bool     rotate_active;
-  Vector2f selection_center;
-  float    start_angle;
+  bool  zoom_active;
+  float zoom_factor;
 
 public:
-  RotateTool(Viewer* viewer);
+  ZoomTool(Viewer* viewer, float zoom_factor);
 
   void move(const Vector2i& pos, const Vector2i& rel);
   void up  (const Vector2i& pos);
   void down(const Vector2i& pos);
 
-  void draw() {}
+  void draw();
   void update(const Vector2i& pos, float delta);
+
+  bool is_active() const;
 };
 
 #endif

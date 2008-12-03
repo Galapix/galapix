@@ -16,19 +16,21 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_ZOOM_TOOL_HPP
-#define HEADER_ZOOM_TOOL_HPP
+#ifndef HEADER_ZOOM_RECT_TOOL_HPP
+#define HEADER_ZOOM_RECT_TOOL_HPP
 
-#include "tool.hpp"
+#include "../tool.hpp"
 
-class ZoomTool : public Tool
+/** */
+class ZoomRectTool : public Tool
 {
 private:
-  bool  zoom_active;
-  float zoom_factor;
-
+  Vector2i mouse_pos;
+  bool     drag_active;
+  Vector2f click_pos;
+  
 public:
-  ZoomTool(Viewer* viewer, float zoom_factor);
+  ZoomRectTool(Viewer* viewer);
 
   void move(const Vector2i& pos, const Vector2i& rel);
   void up  (const Vector2i& pos);
@@ -37,7 +39,9 @@ public:
   void draw();
   void update(const Vector2i& pos, float delta);
 
-  bool is_active() const;
+private:
+  ZoomRectTool (const ZoomRectTool&);
+  ZoomRectTool& operator= (const ZoomRectTool&);
 };
 
 #endif
