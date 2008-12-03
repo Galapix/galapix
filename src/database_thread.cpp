@@ -96,8 +96,8 @@ public:
   boost::function<void (FileEntry)> callback;
 
   RequestFileDatabaseMessage(const JobHandle& job_handle,
-                      const URL& url,
-                      const boost::function<void (FileEntry)>& callback)
+                             const URL& url,
+                             const boost::function<void (FileEntry)>& callback)
     : job_handle(job_handle),
       url(url),
       callback(callback)
@@ -184,23 +184,23 @@ public:
 
     DatabaseThread::current()->process_tile(tile);
 #if 0
-      for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end(); )
-        {
-          if (tile.get_fileid() == (*i)->file_entry.get_fileid() &&
-              tile.get_scale()  == (*i)->tilescale &&
-              tile.get_pos()    == (*i)->pos)
-            {
-              (*i)->callback(tile);
+    for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end(); )
+      {
+        if (tile.get_fileid() == (*i)->file_entry.get_fileid() &&
+            tile.get_scale()  == (*i)->tilescale &&
+            tile.get_pos()    == (*i)->pos)
+          {
+            (*i)->callback(tile);
 
-              // FIXME: Correct!?
-              delete *i;
-              i = tile_queue.erase(i);
-            }
-          else
-            {
-              ++i;
-            }
-        }
+            // FIXME: Correct!?
+            delete *i;
+            i = tile_queue.erase(i);
+          }
+        else
+          {
+            ++i;
+          }
+      }
 #endif
                   
     // FIXME: Make some better error checking in case of loading failure
