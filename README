@@ -86,7 +86,8 @@ exotic image formats:
 sudo apt-get install \
   librsvg2-bin \
   ufraw \
-  krita
+  krita \
+  xcftools
 
 OpenGL is required as well, but not listed here, since installation
 might differ depending on the brand of graphics card. For other
