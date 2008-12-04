@@ -18,14 +18,19 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
-* make a layout_regular that uses the aspect ratio of the window
+* use boost::bind() objects instead of costum ones in DatabaseThread
+
+* make the whole FileDatabaseMessage and the others work with virtual
+  functions, not with switch statements
+
+* rewrite Thread stuff for pthread and finish it up (remove the usleep() hacks) or try boost::thread
 
 * updating an image with F5 doesn't update its size in the FileEntry
 
 * something useless: add puzzle mode that randomly places tiles on the
   screen and let the user put them back together
 
-* brightness factor to extreme
+* brightness factor is to extreme
 
 * seperate files and images tables so that information about archive
   files can be saved and other stuff
@@ -423,9 +428,6 @@ Possible Future Improvements:
   redirected into another Exec(), could be a bit tricky to get the
   whole archive extraction to connected to the file extraction.
 
-* turn Galapix into a proper Gnome/Gtk or WxWidget Application with
-  proper GUI, instead of a raw SDL/OpenGL application
-
 * float isn't enough, on high zoom level it breaks apart, might need double
 
 * implement shader to change hue, saturation, contrast, brightness, etc.
@@ -433,8 +435,6 @@ Possible Future Improvements:
 * Toolpalette: Select picture, scale picture, move pictures, align
   selected picture into a group, maybe have a box into which one can
   drop pictures.
-
-* galapix can only handle JPEG files, no other format is supported. 
 
 * When zooming into an images beyond its original size one will see
   noticable seams at the areas where the tiles meet. This is an

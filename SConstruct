@@ -96,7 +96,7 @@ if compile_galapix_sdl:
     sdl_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
                           CPPDEFINES = ['GALAPIX_SDL',
                                         ('HAVE_OPENGL', 1)] + optional_defines,
-                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg'] + optional_libs,
+                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread'] + optional_libs,
                           OBJPREFIX = "sdl.")
     sdl_env.ParseConfig('pkg-config libpng --libs --cflags')
     sdl_env.ParseConfig('sdl-config --cflags --libs')
@@ -109,7 +109,7 @@ if compile_galapix_gtk:
     gtk_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
                           CPPDEFINES = ['GALAPIX_GTK',
                                         ('HAVE_OPENGL', 1)] + optional_defines,
-                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg'] + optional_libs,
+                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread'] + optional_libs,
                           OBJPREFIX = "gtk.")
     gtk_env.ParseConfig('pkg-config libpng --libs --cflags')
     gtk_env.ParseConfig('sdl-config --cflags --libs')

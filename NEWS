@@ -1,6 +1,7 @@
 Galapix 0.0.4 (??. ??? 2008)
 ============================
 
+* switched to boost::thread
 * a Gtk based GUI
 * images are placed in a QuadTree to speed up large image collections
 * switched build system to Waf (maybe)
