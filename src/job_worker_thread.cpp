@@ -50,13 +50,6 @@ JobWorkerThread::run()
 }
 
 void
-JobWorkerThread::stop()
-{
-  quit = true;
-  queue.wakeup();
-}
-
-void
 JobWorkerThread::finish()
 {
   quit = true;

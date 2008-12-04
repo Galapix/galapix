@@ -44,8 +44,6 @@ public:
 
   int  run();
 
-  void stop();
-
   void finish();
   
 private:

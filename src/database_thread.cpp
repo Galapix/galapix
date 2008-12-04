@@ -304,6 +304,7 @@ void
 DatabaseThread::stop()
 {
   quit = true;
+  queue.wakeup();
 }
 
 int

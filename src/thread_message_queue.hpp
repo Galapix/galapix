@@ -42,8 +42,11 @@ public:
 
   void push(const C& value)
   {
-    boost::mutex::scoped_lock lock(mutex);
-    values.push(value);
+    {
+      boost::mutex::scoped_lock lock(mutex);
+      values.push(value);
+    }
+    cond.notify_one();
   }
 
   void pop()
@@ -75,13 +78,14 @@ public:
 
   void wait()
   {
-    usleep(100 * 1000);
-    //cond.wait(mutex);
+    boost::mutex::scoped_lock lock(mutex);
+    cond.wait(lock);
   }
 
   void wakeup()
   {
-    cond.notify_all();
+    boost::mutex::scoped_lock lock(mutex);
+    cond.notify_one();   
   }
 
 private:

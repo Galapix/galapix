@@ -42,9 +42,6 @@ public:
   JobManager(int num_threads);
   ~JobManager();
 
-  /** Stops the worker thread at the next possible point */
-  void stop();
-
   void join();
 
   /** Waits till all jobs in the queue are finished, then returns */

@@ -311,8 +311,8 @@ Galapix::view(const GalapixOptions& opts,
               bool view_all, 
               const std::string& pattern)
 {
-  JobManager job_manager(opts.threads);
-  DatabaseThread      database_thread(opts.database);
+  JobManager     job_manager(opts.threads);
+  DatabaseThread database_thread(opts.database);
 
   database_thread.start();
 
@@ -345,15 +345,15 @@ Galapix::view(const GalapixOptions& opts,
     }
 
 #ifdef GALAPIX_SDL
-      SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
-      sdl_viewer.set_workspace(&workspace);
-      sdl_viewer.run();  
+  SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
+  sdl_viewer.set_workspace(&workspace);
+  sdl_viewer.run();  
 #endif
 
 #ifdef GALAPIX_GTK
-      GtkViewer gtk_viewer;
-      gtk_viewer.set_workspace(&workspace);
-      gtk_viewer.run();
+  GtkViewer gtk_viewer;
+  gtk_viewer.set_workspace(&workspace);
+  gtk_viewer.run();
 #endif
 
   database_thread.stop();
