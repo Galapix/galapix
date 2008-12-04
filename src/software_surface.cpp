@@ -20,12 +20,12 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "jpeg.hpp"
-#include "png.hpp"
-#include "imagemagick.hpp"
-#include "xcf.hpp"
-#include "kra.hpp"
-#include "rsvg.hpp"
+#include "plugins/jpeg.hpp"
+#include "plugins/png.hpp"
+#include "plugins/imagemagick.hpp"
+#include "plugins/xcf.hpp"
+#include "plugins/kra.hpp"
+#include "plugins/rsvg.hpp"
 
 #include "blob.hpp"
 #include "math.hpp"

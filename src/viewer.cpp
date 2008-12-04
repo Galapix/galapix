@@ -37,7 +37,6 @@
 #include "tools/grid_tool.hpp"
 #include "tools/view_rotate_tool.hpp"
 #include "filesystem.hpp"
-#include "png.hpp"
 #include "viewer.hpp"
 
 Viewer::Viewer(Workspace* workspace)

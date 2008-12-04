@@ -16,20 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_UFRAW_HPP
-#define HEADER_UFRAW_HPP
+#ifndef HEADER_ZIP_HPP
+#define HEADER_ZIP_HPP
 
 #include <string>
-#include "software_surface.hpp"
+#include <vector>
+#include "../blob.hpp"
 
-class URL;
-class Size;
-
-class UFRaw
+class Zip
 {
 public:
-  static SoftwareSurface load_from_url(const URL& url);
-  static SoftwareSurface load_from_file(const std::string& filename); 
+  static std::vector<std::string> get_filenames(const std::string& zip_filename);
+  static Blob get_file(const std::string& zip_filename, const std::string& filename);
 };
 
 #endif

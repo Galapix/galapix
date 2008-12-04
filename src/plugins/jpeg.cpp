@@ -23,7 +23,7 @@
 #include <boost/bind.hpp>
 #include <jpeglib.h>
 #include <setjmp.h>
-#include "math/size.hpp"
+#include "../math/size.hpp"
 #include "jpeg_memory_src.hpp"
 #include "jpeg_memory_dest.hpp"
 #include "jpeg.hpp"

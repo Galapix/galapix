@@ -16,18 +16,23 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_RAR_HPP
-#define HEADER_RAR_HPP
+#ifndef HEADER_IMAGEMAGICK_HPP
+#define HEADER_IMAGEMAGICK_HPP
 
-#include <vector>
 #include <string>
-#include "blob.hpp"
+#include "../software_surface.hpp"
+
+class URL;
+class Size;
 
-class Rar
+class Imagemagick
 {
 public:
-  static std::vector<std::string> get_filenames(const std::string& rar_filename);
-  static Blob get_file(const std::string& rar_filename, const std::string& filename);
+  static bool get_size(const std::string& filename, Size& size);
+  static SoftwareSurface load_from_file(const std::string& filename);
+  static SoftwareSurface load_from_mem(void* data, int len);
+  static SoftwareSurface load_from_url(const URL& url);
+  
 };
 
 #endif

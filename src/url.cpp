@@ -18,11 +18,11 @@
 
 #include <iostream>
 #include <stdexcept>
+#include "plugins/rar.hpp"
+#include "plugins/zip.hpp"
+#include "plugins/tar.hpp"
+#include "plugins/curl.hpp"
 #include "filesystem.hpp"
-#include "rar.hpp"
-#include "zip.hpp"
-#include "tar.hpp"
-#include "curl.hpp"
 #include "url.hpp"
 
 URL::URL()

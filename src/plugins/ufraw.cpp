@@ -17,8 +17,8 @@
 */
 
 #include <stdexcept>
-#include "exec.hpp"
-#include "url.hpp"
+#include "../exec.hpp"
+#include "../url.hpp"
 #include "pnm.hpp"
 #include "ufraw.hpp"
 

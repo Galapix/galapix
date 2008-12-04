@@ -16,24 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_RSVG_HPP
-#define HEADER_RSVG_HPP
+#ifndef HEADER_UFRAW_HPP
+#define HEADER_UFRAW_HPP
 
 #include <string>
-#include "software_surface.hpp"
+#include "../software_surface.hpp"
 
 class URL;
+class Size;
 
-class RSVG
+class UFRaw
 {
-private:
-  std::string rsvg_exe;
-
 public:
-  RSVG();
-
   static SoftwareSurface load_from_url(const URL& url);
-  static SoftwareSurface load_from_file(const std::string& filename);
+  static SoftwareSurface load_from_file(const std::string& filename); 
 };
 
 #endif

@@ -16,23 +16,25 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_IMAGEMAGICK_HPP
-#define HEADER_IMAGEMAGICK_HPP
+#ifndef HEADER_PNG_HPP
+#define HEADER_PNG_HPP
 
 #include <string>
-#include "software_surface.hpp"
-
-class URL;
-class Size;
+#include "../math/size.hpp"
+#include "../software_surface.hpp"
 
-class Imagemagick
+class PNG
 {
+private:
 public:
+  static bool get_size(void* data, int len, Size& size);
   static bool get_size(const std::string& filename, Size& size);
+
   static SoftwareSurface load_from_file(const std::string& filename);
-  static SoftwareSurface load_from_mem(void* data, int len);
-  static SoftwareSurface load_from_url(const URL& url);
-  
+  static SoftwareSurface load_from_mem(uint8_t* mem, int len);
+
+  static void save(const SoftwareSurface& surface, const std::string& filename);
+  static Blob save(const SoftwareSurface& surface);
 };
 
 #endif

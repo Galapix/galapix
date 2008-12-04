@@ -26,10 +26,10 @@
 #include <string>
 #include <vector>
 
-#include "jpeg.hpp"
-#include "png.hpp"
-#include "xcf.hpp"
-#include "imagemagick.hpp"
+#include "plugins/jpeg.hpp"
+#include "plugins/png.hpp"
+#include "plugins/xcf.hpp"
+#include "plugins/imagemagick.hpp"
 #include "surface.hpp"
 #include "framebuffer.hpp"
 #include "math/size.hpp"

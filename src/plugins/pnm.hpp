@@ -16,18 +16,16 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_KRA_HPP
-#define HEADER_KRA_HPP
+#ifndef HEADER_PNM_HPP
+#define HEADER_PNM_HPP
 
-#include <string>
-#include "software_surface.hpp"
+#include <stdint.h>
+#include "../software_surface.hpp"
 
-class KRA
+class PNM
 {
 public:
-  static bool get_size(const std::string& filename, Size& size);
-  static SoftwareSurface load_from_file(const std::string& filename);
-  //  static SoftwareSurface load_from_mem(uint8_t* data, int len);
+  static SoftwareSurface load_from_mem(const char* data, int len);
 };
 
 #endif

@@ -16,14 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_TAR_HPP
-#define HEADER_TAR_HPP
+#ifndef HEADER_RAR_HPP
+#define HEADER_RAR_HPP
 
-#include <string>
 #include <vector>
-#include "blob.hpp"
+#include <string>
+#include "../blob.hpp"
 
-class Tar
+class Rar
 {
 public:
   static std::vector<std::string> get_filenames(const std::string& rar_filename);

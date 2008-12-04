@@ -22,7 +22,7 @@
 #include <string>
 #include <jpeglib.h>
 #include <boost/function.hpp>
-#include "software_surface.hpp"
+#include "../software_surface.hpp"
 
 class JPEG
 {

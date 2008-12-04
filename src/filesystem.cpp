@@ -29,9 +29,9 @@
 #include <boost/format.hpp>
 
 #include <sstream>
-#include "tar.hpp"
-#include "zip.hpp"
-#include "rar.hpp"
+#include "plugins/tar.hpp"
+#include "plugins/zip.hpp"
+#include "plugins/rar.hpp"
 #include "url.hpp"
 #include "software_surface.hpp"
 #include "filesystem.hpp"

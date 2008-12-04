@@ -19,7 +19,7 @@
 #include <iostream>
 #include "../math/vector2i.hpp"
 #include "../math/rect.hpp"
-#include "../jpeg.hpp"
+#include "../plugins/jpeg.hpp"
 #include "../file_entry.hpp"
 #include "../tile_entry.hpp"
 #include "tile_generation_job.hpp"

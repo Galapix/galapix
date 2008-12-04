@@ -16,25 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PNG_HPP
-#define HEADER_PNG_HPP
+#ifndef HEADER_TAR_HPP
+#define HEADER_TAR_HPP
 
 #include <string>
-#include "math/size.hpp"
-#include "software_surface.hpp"
+#include <vector>
+#include "../blob.hpp"
 
-class PNG
+class Tar
 {
-private:
 public:
-  static bool get_size(void* data, int len, Size& size);
-  static bool get_size(const std::string& filename, Size& size);
-
-  static SoftwareSurface load_from_file(const std::string& filename);
-  static SoftwareSurface load_from_mem(uint8_t* mem, int len);
-
-  static void save(const SoftwareSurface& surface, const std::string& filename);
-  static Blob save(const SoftwareSurface& surface);
+  static std::vector<std::string> get_filenames(const std::string& rar_filename);
+  static Blob get_file(const std::string& rar_filename, const std::string& filename);
 };
 
 #endif

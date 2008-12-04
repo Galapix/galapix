@@ -16,16 +16,16 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PNM_HPP
-#define HEADER_PNM_HPP
+#ifndef HEADER_CURL_HPP
+#define HEADER_CURL_HPP
 
-#include <stdint.h>
-#include "software_surface.hpp"
+#include <string>
+#include "../blob.hpp"
 
-class PNM
+class CURLHandler
 {
 public:
-  static SoftwareSurface load_from_mem(const char* data, int len);
+  static Blob get_data(const std::string& url);
 };
 
 #endif

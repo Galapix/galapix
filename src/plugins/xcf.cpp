@@ -19,10 +19,10 @@
 #include <boost/tokenizer.hpp>
 #include <iostream>
 #include <stdexcept>
-#include "math/size.hpp"
-#include "exec.hpp"
+#include "../math/size.hpp"
+#include "../exec.hpp"
+#include "../url.hpp"
 #include "pnm.hpp"
-#include "url.hpp"
 #include "xcf.hpp"
 
 // Example xcfinfo output:

@@ -17,9 +17,9 @@
 */
 
 #include <stdexcept>
-#include "filesystem.hpp"
-#include "url.hpp"
-#include "exec.hpp"
+#include "../filesystem.hpp"
+#include "../url.hpp"
+#include "../exec.hpp"
 #include "png.hpp"
 #include "rsvg.hpp"
 

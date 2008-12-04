@@ -17,8 +17,8 @@
 */
 
 #include <stdexcept>
-#include "exec.hpp"
-#include "blob.hpp"
+#include "../exec.hpp"
+#include "../blob.hpp"
 #include "rar.hpp"
 
 std::vector<std::string>

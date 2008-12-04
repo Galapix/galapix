@@ -25,7 +25,7 @@
 
 #include <iostream>
 #include <stdexcept>
-#include "math/size.hpp"
+#include "../math/size.hpp"
 #include "pnm.hpp"
 
 class PNMMemReader

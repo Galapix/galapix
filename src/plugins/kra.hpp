@@ -16,16 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_CURL_HPP
-#define HEADER_CURL_HPP
+#ifndef HEADER_KRA_HPP
+#define HEADER_KRA_HPP
 
 #include <string>
-#include "blob.hpp"
+#include "../software_surface.hpp"
 
-class CURLHandler
+class KRA
 {
 public:
-  static Blob get_data(const std::string& url);
+  static bool get_size(const std::string& filename, Size& size);
+  static SoftwareSurface load_from_file(const std::string& filename);
+  //  static SoftwareSurface load_from_mem(uint8_t* data, int len);
 };
 
 #endif

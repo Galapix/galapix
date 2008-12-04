@@ -16,18 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_ZIP_HPP
-#define HEADER_ZIP_HPP
+#ifndef HEADER_RSVG_HPP
+#define HEADER_RSVG_HPP
 
 #include <string>
-#include <vector>
-#include "blob.hpp"
+#include "../software_surface.hpp"
 
-class Zip
+class URL;
+
+class RSVG
 {
+private:
+  std::string rsvg_exe;
+
 public:
-  static std::vector<std::string> get_filenames(const std::string& zip_filename);
-  static Blob get_file(const std::string& zip_filename, const std::string& filename);
+  RSVG();
+
+  static SoftwareSurface load_from_url(const URL& url);
+  static SoftwareSurface load_from_file(const std::string& filename);
 };
 
 #endif

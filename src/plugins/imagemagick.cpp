@@ -27,8 +27,8 @@
 #include <stdexcept>
 #include <Magick++.h>
 #include <iostream>
-#include "url.hpp"
-#include "math/size.hpp"
+#include "../url.hpp"
+#include "../math/size.hpp"
 #include "imagemagick.hpp"
 
 bool

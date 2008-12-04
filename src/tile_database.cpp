@@ -17,8 +17,10 @@
 */
 
 #include <sstream>
-#include "png.hpp"
-#include "jpeg.hpp"
+
+#include "plugins/png.hpp"
+#include "plugins/jpeg.hpp"
+
 #include "tile_entry.hpp"
 #include "tile_database.hpp"
 

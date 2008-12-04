@@ -25,7 +25,7 @@
 #include "sdl_framebuffer.hpp"
 #include "viewer.hpp"
 #include "framebuffer.hpp"
-#include "png.hpp"
+#include "plugins/png.hpp"
 #include "sdl_viewer.hpp"
 #include "space_navigator.hpp"
 #include "database_thread.hpp"
