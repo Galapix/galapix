@@ -24,12 +24,22 @@ JobWorkerThread::JobWorkerThread()
 {
 }
 
+JobWorkerThread::~JobWorkerThread()
+{
+  while(!queue.empty())
+    {
+      Task task = queue.front();
+      queue.pop();
+      delete task.job;
+    }
+}
+
 int
 JobWorkerThread::run()
 {
   while(!quit)
     {
-      while(!queue.empty())
+      while(!queue.empty() && !abort_instantly)
         {
           Task task = queue.front();
           queue.pop();
@@ -39,11 +49,14 @@ JobWorkerThread::run()
               task.job->run();
               if (task.callback)
                 task.callback(task.job);
+              task.job->get_handle().finish();
             }
 
           delete task.job;
         }
-      queue.wait();
+
+      if (!quit)
+        queue.wait();
     }
 
   return 0;
@@ -56,6 +69,14 @@ JobWorkerThread::finish()
   queue.wakeup();  
 }
 
+void
+JobWorkerThread::abort()
+{
+  quit = true;
+  abort_instantly = true;
+  queue.wakeup();  
+}
+
 JobHandle
 JobWorkerThread::request(Job* job, const boost::function<void (Job*)>& callback)
 {
@@ -63,7 +84,6 @@ JobWorkerThread::request(Job* job, const boost::function<void (Job*)>& callback)
   task.job      = job;
   task.callback = callback;
   queue.push(task);
-  
   return job->get_handle();
 }
 

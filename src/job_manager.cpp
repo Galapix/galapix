@@ -42,40 +42,32 @@ JobManager::~JobManager()
 {
   finish();
   join();
+
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    delete *i;
 }
 
 void
 JobManager::finish()
 {
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    {
-      if (*i)
-        {
-          (*i)->finish();  
-        }
-    }
+    (*i)->finish();  
 }
 
 void
 JobManager::join()
 {
+  std::cout << "JobManager::join()" << std::endl;
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     {
-      if (*i)
-        {
-          (*i)->finish();
-        }
+      std::cout << "JobManager::join: " << *i << std::endl;
+      (*i)->finish();
+      std::cout << "Done: JobManager::join: " << *i << std::endl;
     }
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    {
-      if (*i)
-        {
-          (*i)->join();
-          delete *i;
-          *i = 0;
-        }
-    }
+    (*i)->join();
+  std::cout << "Done: JobManager::join()" << std::endl;
 }
 
 JobHandle

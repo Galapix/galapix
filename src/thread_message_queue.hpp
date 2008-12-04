@@ -46,7 +46,7 @@ public:
       boost::mutex::scoped_lock lock(mutex);
       values.push(value);
     }
-    cond.notify_one();
+    cond.notify_all();
   }
 
   void pop()
@@ -58,6 +58,7 @@ public:
   C front()
   {
     boost::mutex::scoped_lock lock(mutex);
+    assert(!values.empty());
     C c(values.front());
     return c;
   }
@@ -85,7 +86,7 @@ public:
   void wakeup()
   {
     boost::mutex::scoped_lock lock(mutex);
-    cond.notify_one();   
+    cond.notify_all();   
   }
 
 private:

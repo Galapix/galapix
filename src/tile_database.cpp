@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 #include <sstream>
 
 #include "plugins/png.hpp"
@@ -157,6 +158,8 @@ void
 TileDatabase::store_tile(const TileEntry& tile_)
 {
   TileEntry tile = tile_;
+
+  std::cout << "store_tile(): " << tile.get_fileid() << " " << tile.get_pos() << std::endl;
 
   if (!tile.get_blob())
     {

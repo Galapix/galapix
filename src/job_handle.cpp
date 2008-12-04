@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition.hpp>
 #include "SDL.h"
 #include "job_handle.hpp"
 
@@ -29,6 +31,9 @@ public:
 
   bool aborted;
   bool finished;
+
+  boost::mutex     mutex;
+  boost::condition cond;
 };
 
 JobHandle::JobHandle()
@@ -44,6 +49,7 @@ void
 JobHandle::abort()
 {
   impl->aborted = true;
+  impl->cond.notify_all();
 }
 
 bool
@@ -56,6 +62,7 @@ void
 JobHandle::finish()
 {
   impl->finished = true;
+  impl->cond.notify_all();
 }
 
 bool
@@ -67,12 +74,7 @@ JobHandle::is_finished() const
 void
 JobHandle::wait()
 {
-  // Waits till the job is finished
-  // FIXME: Ugly, use thread stuff
-  while(!impl->finished)
-    {
-      SDL_Delay(100);
-    }
+  impl->cond.wait(impl->mutex);
 }
 
 /* EOF */

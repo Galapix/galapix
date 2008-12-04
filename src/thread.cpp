@@ -36,8 +36,6 @@ void
 Thread::join()
 {
   thread->join();
-  delete thread;
-  thread = 0;
 }
 
 void

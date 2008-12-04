@@ -36,15 +36,18 @@ private:
 
   ThreadMessageQueue<Task> queue;
   bool quit;
+  bool abort_instantly;
   
 public:
   JobWorkerThread();
+  ~JobWorkerThread();
 
   JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
 
   int  run();
 
   void finish();
+  void abort();
   
 private:
   JobWorkerThread (const JobWorkerThread&);

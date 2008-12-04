@@ -283,25 +283,27 @@ Galapix::thumbgen(const GalapixOptions& opts,
   std::cout << "Getting file entry... " << std::flush;
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
     job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
-
   for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
     i->wait();
   std::cout << "done" << std::endl;
 
+  job_handles.clear();
   for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
       // Generate Image Tiles
       SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
-      job_manager.request(new TileGenerationJob(*i, 0, i->get_thumbnail_scale(),
-                                                boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)),
-                          boost::function<void (Job*)>());
+      job_handles.push_back(job_manager.request(new TileGenerationJob(*i, 0, i->get_thumbnail_scale(),
+                                                                      boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)),
+                                                boost::function<void (Job*)>()));
     }
+  for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
+    i->wait();
 
   std::cout << "Joining Worker Threads..." << std::endl;
   job_manager.join();
   std::cout << "Joining Worker Threads... DONE" << std::endl;
 
-  database_thread.stop();
+  database_thread.finish();
   database_thread.join();
 }
 

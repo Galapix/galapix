@@ -250,6 +250,7 @@ DatabaseThread* DatabaseThread::current_ = 0;
 
 DatabaseThread::DatabaseThread(const std::string& filename_)
   : database_filename(filename_),
+    abort_instantly(false),
     quit(false)
 {
   assert(current_ == 0);
@@ -304,13 +305,24 @@ void
 DatabaseThread::stop()
 {
   quit = true;
+  abort_instantly = true;
+  std::cout << "DB: stop" << std::endl;
+  queue.wakeup();
+}
+
+void
+DatabaseThread::finish()
+{
+  quit = true;
+  std::cout << "DB: stop" << std::endl;
   queue.wakeup();
 }
 
 int
 DatabaseThread::run()
 {
-  quit = false;
+  abort_instantly = false;
+  quit            = false;
 
   std::cout << "Connecting to the database..." << std::endl;
   Database db(database_filename);
@@ -319,14 +331,17 @@ DatabaseThread::run()
   std::vector<DatabaseMessage*> messages;
   while(!quit)
     {
-      while(!queue.empty() && !quit)
+      while(!queue.empty() && !abort_instantly)
         {
           DatabaseMessage* msg = queue.front();
           queue.pop();
           msg->run(db);
           delete msg;
         }
-      queue.wait();
+      std::cout << "DB: Wait" << std::endl;
+      if (!quit)
+        queue.wait();
+      std::cout << "DB: End of Wait" << std::endl;
     }
 
   return 0;

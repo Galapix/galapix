@@ -41,6 +41,7 @@ public:
   
 private:
   std::string database_filename;
+  bool abort_instantly;
   bool quit;
   
   ThreadMessageQueue<DatabaseMessage*> queue;
@@ -86,6 +87,7 @@ public:
   virtual ~DatabaseThread();
 
   void stop();
+  void finish();
 
   void process_tile(const TileEntry& tile_entry);
   void generate_tile(const JobHandle& job_handle,
