@@ -19,91 +19,32 @@
 #include <iostream>
 #include <assert.h>
 #include <stdexcept>
+#include <boost/bind.hpp>
 #include "thread.hpp"
 
-/*
-  SDL_mutex* mutex;
-  SDL_CreateMutex();
-  SDL_DestroyMutex(mutex);
-*/
-
-Mutex::Mutex()
-{
-  mutex = SDL_CreateMutex();
-}
-
-Mutex::~Mutex()
-{
-  SDL_DestroyMutex(mutex);
-}
-
-void
-Mutex::lock()
-{
-  SDL_LockMutex(mutex);
-}
-
-void
-Mutex::unlock()
-{
-  SDL_UnlockMutex(mutex);
-}
-
-int launch_thread(void* thread_ptr)
-{
-  Thread* thread = static_cast<Thread*>(thread_ptr);
-  try 
-    {
-      return thread->run();
-    }
-  catch(std::exception& err)
-    {
-      std::cout << "\nFatal Error: " << thread->get_name() << " (" << thread->get_id() << "): " << err.what() << std::endl;
-      return EXIT_FAILURE;
-    }
-}
-
-Thread::Thread(const std::string& name_)
-  : thread(0),
-    name(name_)
+Thread::Thread()
+  : thread(0)
 {
 }
 
 Thread::~Thread()
 {
+  delete thread;
 }
 
-std::string
-Thread::get_name() const
-{
-  return name;
-}
-
-int
+void
 Thread::join()
 {
-  int ret = 0;
-  SDL_WaitThread(thread, &ret);
-  return ret;
-}
-
-Uint32
-Thread::get_id()
-{
-  return SDL_GetThreadID(thread);
-}
-
-Uint32
-Thread::get_thread_id()
-{
-  return SDL_ThreadID();
+  thread->join();
+  delete thread;
+  thread = 0;
 }
 
 void
 Thread::start()
 {
   assert(thread == 0);
-  thread = SDL_CreateThread(launch_thread, this);
+  thread = new boost::thread(boost::bind(&Thread::run, this));
 }
 
 /* EOF */

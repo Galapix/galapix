@@ -19,11 +19,9 @@
 #ifndef HEADER_SPNAV_HPP
 #define HEADER_SPNAV_HPP
 
-#include "thread.hpp"
-
 class Viewer;
 
-class SpaceNavigator : public Thread
+class SpaceNavigator
 {
 public:
   SpaceNavigator();

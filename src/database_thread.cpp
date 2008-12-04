@@ -249,8 +249,7 @@ public:
 DatabaseThread* DatabaseThread::current_ = 0;
 
 DatabaseThread::DatabaseThread(const std::string& filename_)
-  : Thread("DatabaseThread"),
-    database_filename(filename_),
+  : database_filename(filename_),
     quit(false)
 {
   assert(current_ == 0);

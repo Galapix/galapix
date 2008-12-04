@@ -22,11 +22,11 @@
 #include <boost/function.hpp>
 #include <list>
 #include <string>
+#include "thread.hpp"
 #include "thread_message_queue.hpp"
 #include "file_entry.hpp"
 #include "tile_entry.hpp"
 #include "job_handle.hpp"
-#include "thread.hpp"
 
 class URL;
 class DatabaseMessage;

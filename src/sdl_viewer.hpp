@@ -19,8 +19,9 @@
 #ifndef HEADER_VIEWER_THREAD_HPP
 #define HEADER_VIEWER_THREAD_HPP
 
+#include <SDL.h>
+
 #include "math/size.hpp"
-#include "thread.hpp"
 
 #include "image.hpp"
 #include "job_handle.hpp"

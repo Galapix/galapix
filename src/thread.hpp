@@ -20,43 +20,22 @@
 #define HEADER_THREAD_HPP
 
 #include <string>
-#include "SDL.h"
-
-class Mutex 
-{
-private:
-  SDL_mutex* mutex;
-
-public:
-  Mutex();
-  ~Mutex();
-
-  void lock();
-  void unlock();
-
-private:
-  Mutex (const Mutex&);
-  Mutex& operator= (const Mutex&);
-};
+#include <boost/thread.hpp>
 
 class Thread
 {
 private:
-  SDL_Thread* thread;
-  std::string name;
+  boost::thread* thread;
 
 public:
-  Thread(const std::string& name);
+  Thread();
   virtual ~Thread();
 
   void start();
-  int  join();
-  Uint32 get_id();
+  void  join();
   std::string get_name() const; 
   
   virtual int run() =0;
-
-  static Uint32 get_thread_id();
 
 private:
   Thread (const Thread&);

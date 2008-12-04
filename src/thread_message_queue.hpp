@@ -20,14 +20,16 @@
 #define HEADER_THREAD_MESSAGE_QUEUE_HPP
 
 #include <queue>
-#include "thread.hpp"
+#include <boost/thread/condition.hpp>
+#include <boost/thread/mutex.hpp>
 
 template<class C>
 class ThreadMessageQueue
 {
 private:
-  Mutex mutex;
-  std::queue<C> values;
+  boost::mutex     mutex;
+  boost::condition cond;
+  std::queue<C>    values;
 
 public:
   ThreadMessageQueue()
@@ -40,51 +42,46 @@ public:
 
   void push(const C& value)
   {
-    mutex.lock();
+    boost::mutex::scoped_lock lock(mutex);
     values.push(value);
-    mutex.unlock();
   }
 
   void pop()
   {
-    mutex.lock();
+    boost::mutex::scoped_lock lock(mutex);
     values.pop();
-    mutex.unlock();
   }
 
   C front()
   {
-    mutex.lock();
+    boost::mutex::scoped_lock lock(mutex);
     C c(values.front());
-    mutex.unlock();
     return c;
   }
 
   int size()
   {
-    mutex.lock();
+    boost::mutex::scoped_lock lock(mutex);
     int s = values.size();
-    mutex.unlock();
     return s;
   }
 
   bool empty() 
   {
-    mutex.lock();
+    boost::mutex::scoped_lock lock(mutex);
     bool e = values.empty();
-    mutex.unlock();
     return e;
   }
 
   void wait()
   {
-    // FIXME: implement me properly
-    SDL_Delay(100);
+    usleep(100 * 1000);
+    //cond.wait(mutex);
   }
 
   void wakeup()
   {
-    // Implement me: Break the queue out of a wait()
+    cond.notify_all();
   }
 
 private:

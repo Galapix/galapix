@@ -17,6 +17,7 @@
 */
 
 #include <boost/format.hpp>
+#include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include "math/rgba.hpp"
 #include "filesystem.hpp"
@@ -390,7 +391,7 @@ SDLViewer::run()
 
 #ifdef HAVE_SPACE_NAVIGATOR
   SpaceNavigator space_navigator;
-  space_navigator.start();
+  boost::thread  space_navigator_thread(boost::bind(&SpaceNavigator::run, &space_navigator));
 #endif
 
   while(!quit)
@@ -434,7 +435,7 @@ SDLViewer::run()
 
 #ifdef HAVE_SPACE_NAVIGATOR
   // How should be join stuff that is waiting for stuff?
-  // space_navigator.join();
+  // space_navigator_thread.join();
 #endif
 
   std::cout << "SDLViewer: done" << std::endl;

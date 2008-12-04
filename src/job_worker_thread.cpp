@@ -20,8 +20,7 @@
 #include "job_worker_thread.hpp"
 
 JobWorkerThread::JobWorkerThread()
-  : Thread("JobWorkerThread"),
-    quit(false)
+ : quit(false)
 {
 }
 

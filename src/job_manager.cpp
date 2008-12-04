@@ -35,7 +35,7 @@ JobManager::JobManager(int num_threads)
     threads.push_back(new JobWorkerThread());
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-      (*i)->start();
+    (*i)->start();
 }
 
 JobManager::~JobManager()
