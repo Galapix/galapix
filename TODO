@@ -22,22 +22,16 @@ Release procedure:
 
 * use boost::bind() objects instead of costum ones in DatabaseThread
 
-* group up database store request into a transaction instead of storing them one by one
-
 * updating an image with F5 doesn't update its size in the FileEntry
 
 * something useless: add puzzle mode that randomly places tiles on the
   screen and let the user put them back together
-
-* brightness factor is to extreme
 
 * seperate files and images tables so that information about archive
   files can be saved and other stuff
 
 * write an auto-fit option: take all pictures fully visible on the
   screen, select them then fit them to the screen
-
-* add option to subdived the given grid further
 
 * make get_size() work in a seperate worker thread and in general make
   DatabaseThread only handle database request and dispatch everything
@@ -78,8 +72,6 @@ Release procedure:
 
 * implement some fun recursive layout where images get constantly smaller
 
-* add SVG support via Inkscape maybe or rsvg? maybe generic shell converter thing?
-
 * add tool to cut an image (simple rectangle or more complex polygonal shapes)
 
 * Table convert:
@@ -102,7 +94,7 @@ Release procedure:
   wait for a proper thumbnail to be there?
   
   -> get_size() has not much benefit, only real benefit is that you
-     can layot before a thumbnail is ready, but placeholder rects are
+     can layout before a thumbnail is ready, but placeholder rects are
      not pretty and it only works for a few formats anyway, so drop
      and get the smallest possible thumbnail instead and only place
      stuff on the workspace when it is ready
@@ -457,7 +449,7 @@ Possible Future Improvements:
 
 * basic exif support to get the orientation right (libexif)
 
-* no support for greyscale in SoftwareSurface
+* no support for greyscale in SoftwareSurface (not really important)
 
 
 Random Notes:

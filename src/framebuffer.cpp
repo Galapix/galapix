@@ -23,6 +23,7 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
+#include "sdl_framebuffer.hpp"
 #include "framebuffer.hpp"
 
 Size Framebuffer::size;
@@ -186,6 +187,14 @@ Framebuffer::screenshot()
   SoftwareSurface surface(SoftwareSurface::RGB_FORMAT, get_size());
   glReadPixels(0, 0, surface.get_width(), surface.get_height(), GL_RGB, GL_UNSIGNED_BYTE, surface.get_data());
   return surface.vflip();
+}
+
+void
+Framebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
+{
+#ifdef GALAPIX_SDL
+  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+#endif
 }
 
 /* EOF */
