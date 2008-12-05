@@ -33,6 +33,9 @@ public:
 
 public:
   Database(const std::string& filename);
+  ~Database();
+
+  void cleanup();
 
 private:
   Database (const Database&);

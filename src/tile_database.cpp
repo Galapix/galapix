@@ -155,6 +155,17 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
 }
 
 void
+TileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
+{
+  db->exec("BEGIN;");
+  for(std::vector<TileEntry>::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
+    {
+      store_tile(*i);
+    }
+  db->exec("COMMIT;");
+}
+
+void
 TileDatabase::store_tile(const TileEntry& tile_)
 {
   TileEntry tile = tile_;

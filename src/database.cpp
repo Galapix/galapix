@@ -33,5 +33,15 @@ Database::Database(const std::string& filename)
     .execute();
   */
 }
+
+Database::~Database()
+{
+}
+
+void
+Database::cleanup()
+{
+  db.vacuum();
+}
 
 /* EOF */

@@ -296,16 +296,12 @@ DatabaseThread::run()
 {
   quit = false;
 
-  std::cout << "connecting to the database {" << std::endl;
   Database db(database_filename);
-  std::cout << "} connecting to the database" << std::endl;
 
   std::vector<DatabaseMessage*> messages;
   while(!quit)
     {
-      std::cout << "database wait {" << std::endl;
       queue.wait();
-      std::cout << "} database wait" << std::endl;
 
       while(!queue.empty())
         {

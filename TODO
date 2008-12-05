@@ -20,10 +20,7 @@ Release procedure:
 
 * use boost::bind() objects instead of costum ones in DatabaseThread
 
-* make the whole FileDatabaseMessage and the others work with virtual
-  functions, not with switch statements
-
-* rewrite Thread stuff for pthread and finish it up (remove the usleep() hacks) or try boost::thread
+* group up database store request into a transaction instead of storing them one by one
 
 * updating an image with F5 doesn't update its size in the FileEntry
 

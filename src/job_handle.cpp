@@ -63,8 +63,6 @@ JobHandle::is_aborted() const
 void
 JobHandle::finish()
 {
-  std::cout << "Fireing wakeup: " << this << std::endl;
-
   boost::mutex::scoped_lock lock(impl->mutex);
   impl->finished = true;
   impl->cond.notify_all();

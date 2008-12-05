@@ -42,8 +42,12 @@ public:
   bool has_tile(uint32_t file_id, const Vector2i& pos, int scale);
   bool get_tile(uint32_t file_id, int scale, const Vector2i& pos, TileEntry& tile);
   void get_tiles(uint32_t file_id, std::vector<TileEntry>& tiles);
+
   void store_tile(const TileEntry& tile);
+  void store_tiles(const std::vector<TileEntry>& tiles);
+
   void check();
+
 private:
   TileDatabase (const TileDatabase&);
   TileDatabase& operator= (const TileDatabase&);

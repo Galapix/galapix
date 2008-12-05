@@ -35,10 +35,8 @@
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
-#include "sqlite/connection.hpp"
 #include "software_surface.hpp"
-#include "file_database.hpp"
-#include "tile_database.hpp"
+#include "database.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "jobs/test_job.hpp"
 #include "database_thread.hpp"
@@ -109,33 +107,29 @@ void
 Galapix::merge(const std::string& database,
                const std::vector<std::string>& filenames)
 {
-  SQLiteConnection db(database);
-  FileDatabase out_file_db(&db);
-  TileDatabase out_tile_db(&db);
+  Database out_db(database);
 
   for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
     {
-      SQLiteConnection in_db(*i);
-      FileDatabase in_file_db(&in_db);
-      TileDatabase in_tile_db(&in_db);
+      Database in_db(*i);
           
       std::vector<FileEntry> entries;
-      in_file_db.get_file_entries(entries);
+      in_db.files.get_file_entries(entries);
       for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
         {
           try {
             std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
 
             // FIXME: Must catch URL collisions here (or maybe not?)
-            FileEntry entry = out_file_db.store_file_entry(*i);
+            FileEntry entry = out_db.files.store_file_entry(*i);
 
             std::vector<TileEntry> tiles;
-            in_tile_db.get_tiles(i->get_fileid(), tiles);
+            in_db.tiles.get_tiles(i->get_fileid(), tiles);
             for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
               {
                 // Change the fileid
                 j->set_fileid(entry.get_fileid());
-                out_tile_db.store_tile(*j);
+                out_db.tiles.store_tile(*j);
               }
           } catch(std::exception& err) {
             std::cout << "Error: " << err.what() << std::endl;
@@ -148,15 +142,13 @@ Galapix::merge(const std::string& database,
 void
 Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 {
-  SQLiteConnection db(database);
-  FileDatabase file_db(&db);
-  TileDatabase tile_db(&db);
+  Database db(database);
   
   int wish_size = 512;
   int image_num = 0;
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
     {
-      FileEntry entry = file_db.get_file_entry(*i);
+      FileEntry entry = db.files.get_file_entry(*i);
       if (!entry)
         {
           std::cerr << "Error: Couldn't get file entry for " << *i << std::endl;
@@ -176,7 +168,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
             for(int x = 0; x < (size.width+255)/256; ++x)
               {
                 TileEntry tile;
-                if (tile_db.get_tile(entry.get_fileid(), scale, Vector2i(x, y), tile))
+                if (db.tiles.get_tile(entry.get_fileid(), scale, Vector2i(x, y), tile))
                   {
                     tile.get_surface().blit(target, Vector2i(x, y) * 256);
                   }
@@ -227,22 +219,20 @@ Galapix::downscale(const std::vector<URL>& url)
 void
 Galapix::cleanup(const std::string& database)
 {
-  SQLiteConnection db(database); 
+  Database db(database); 
   std::cout << "Running database cleanup routines, this process can take multiple minutes." << std::endl;
   std::cout << "You can interrupt it via Ctrl-c, which won't do harm, but will throw away all the cleanup work done till that point" << std::endl;
-  db.vacuum();
+  db.cleanup();
   std::cout << "Running database cleanup routines done" << std::endl;
 }
 
 void
 Galapix::list(const std::string& database)
 {
-  SQLiteConnection db(database);
-
-  FileDatabase file_db(&db);
+  Database db(database);
 
   std::vector<FileEntry> entries;
-  file_db.get_file_entries(entries);
+  db.files.get_file_entries(entries);
 
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {
@@ -253,25 +243,20 @@ Galapix::list(const std::string& database)
 void
 Galapix::check(const std::string& database)
 {
-  SQLiteConnection db(database);
-
-  FileDatabase file_db(&db);
-  TileDatabase tile_db(&db);
-
-  file_db.check();
-  tile_db.check();
+  Database db(database);
+  db.files.check();
+  db.tiles.check();
 }
 
 void
 Galapix::filegen(const std::string& database, 
                  const std::vector<URL>& url)
 {
-  SQLiteConnection db(database);
-  FileDatabase file_db(&db);  
-
+  Database db(database);
+  
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
     {
-      FileEntry entry = file_db.get_file_entry(url[i]);
+      FileEntry entry = db.files.get_file_entry(url[i]);
       if (!entry)
         {
           std::cout << "Couldn't get entry for " << url[i] << std::endl;
@@ -297,12 +282,10 @@ Galapix::thumbgen(const GalapixOptions& opts,
   std::vector<FileEntry> file_entries;
   {
     std::vector<JobHandle> job_handles;
-    std::cout << "getting file entry { " << std::endl;
     for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
       job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
     for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
       i->wait();
-    std::cout << "} getting file entry" << std::endl;
   }
 
   {
@@ -315,16 +298,9 @@ Galapix::thumbgen(const GalapixOptions& opts,
                                                                         boost::bind(&DatabaseThread::receive_tile, &database_thread, _1))));
       }
 
-    std::cout << "waiting for jobs to finish {" << std::endl;
     for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
       i->wait();
-    std::cout << "} waiting for jobs to finish" << std::endl;
   }
-
-  std::cout << "------------ Sleeping ------------" << std::endl;
-  //usleep(2000 * 1000);
-
-  std::cout << "XXXXXXXXXXXXXX Cleaning things up XXXXXXXXXXXXXXXXXXXXXX" << std::endl;
 
   job_manager.stop_thread();
   database_thread.stop_thread();
@@ -387,6 +363,9 @@ Galapix::view(const GalapixOptions& opts,
 
   job_manager.stop_thread();
   database_thread.stop_thread();
+
+  job_manager.join_thread();
+  database_thread.join_thread();
 }
 
 void
