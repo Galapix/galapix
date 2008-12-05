@@ -55,6 +55,11 @@ TileDatabase::TileDatabase(SQLiteConnection* db)
   get_all_stmt.prepare("SELECT * FROM tiles ORDER BY fileid;");
 }
 
+TileDatabase::~TileDatabase()
+{
+  flush_cache();
+}
+
 bool
 TileDatabase::has_tile(uint32_t fileid, const Vector2i& pos, int scale)
 {
@@ -71,6 +76,17 @@ TileDatabase::has_tile(uint32_t fileid, const Vector2i& pos, int scale)
     }  
   else
     {
+      // Check cache
+      for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
+        {
+          if (i->get_fileid() == fileid &&
+              i->get_scale()  == scale  &&
+              i->get_pos()    == pos)
+            {
+              return true;
+            }
+        }
+
       return false;
     }
 }
@@ -88,8 +104,7 @@ TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
                      Vector2i(reader.get_int (2),  // x
                               reader.get_int (3)), // y
                      reader.get_blob(4),
-                     reader.get_int(6));
-      
+                     reader.get_int(6));     
       
       // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
       // Blob, so we don't do encode/decode when doing a database
@@ -107,6 +122,15 @@ TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
         }
 
       tiles.push_back(tile);
+    }
+
+  // Check cache
+  for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
+    {
+      if (i->get_fileid() == fileid)
+        {
+          tiles.push_back(*i);
+        }
     }
 }
 
@@ -148,10 +172,30 @@ TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntr
     }
   else
     {
-      // Tile missing
+      // Check cache
+      for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
+        {
+          if (i->get_fileid() == fileid &&
+              i->get_scale()  == scale  &&
+              i->get_pos()    == pos)
+            {
+              tile = *i;
+              return true;
+            }
+        }
 
+      // Tile missing
       return false;
     }
+}
+
+void
+TileDatabase::store_tile_in_cache(const TileEntry& tile)
+{
+  tile_cache.push_back(tile);
+
+  if (tile_cache.size() > 128)
+    flush_cache();
 }
 
 void
@@ -169,11 +213,12 @@ void
 TileDatabase::store_tile(const TileEntry& tile_)
 {
   TileEntry tile = tile_;
-
-  std::cout << "store_tile("
-            << "fileid: " << tile.get_fileid() 
-            << ", scale: " << tile.get_scale() 
-            << ", pos: " << tile.get_pos() << ")" << std::endl;
+  
+  if (0)
+    std::cout << "store_tile("
+              << "fileid: " << tile.get_fileid() 
+              << ", scale: " << tile.get_scale() 
+              << ", pos: " << tile.get_pos() << ")" << std::endl;
 
   if (!tile.get_blob())
     {
@@ -226,5 +271,17 @@ TileDatabase::check()
       */
     }
 }
-  
+
+void
+TileDatabase::flush_cache()
+{
+  std::cout << "Flushing TileCache" << std::endl;
+
+  if (!tile_cache.empty())
+    {
+      store_tiles(tile_cache);
+      tile_cache.clear();
+    }
+}
+
 /* EOF */

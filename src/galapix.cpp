@@ -129,7 +129,7 @@ Galapix::merge(const std::string& database,
               {
                 // Change the fileid
                 j->set_fileid(entry.get_fileid());
-                out_db.tiles.store_tile(*j);
+                out_db.tiles.store_tile_in_cache(*j);
               }
           } catch(std::exception& err) {
             std::cout << "Error: " << err.what() << std::endl;

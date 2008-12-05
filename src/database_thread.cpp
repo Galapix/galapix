@@ -192,7 +192,7 @@ public:
         // Avoid doubble store of tiles in the database
         // FIXME: Test the performance of this
         //if (!db.tiles.has_tile(tile.fileid, tile.pos, tile.scale))
-        db.tiles.store_tile(tile);
+        db.tiles.store_tile_in_cache(tile);
       }
     else
       {

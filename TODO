@@ -18,6 +18,8 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* tile_cache order is wrong
+
 * use boost::bind() objects instead of costum ones in DatabaseThread
 
 * group up database store request into a transaction instead of storing them one by one
