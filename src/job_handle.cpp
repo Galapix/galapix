@@ -17,6 +17,7 @@
 */
 
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 #include "SDL.h"
 #include "job_handle.hpp"
@@ -48,6 +49,7 @@ JobHandle::~JobHandle()
 void
 JobHandle::abort()
 {
+  boost::mutex::scoped_lock lock(impl->mutex);
   impl->aborted = true;
   impl->cond.notify_all();
 }
@@ -61,6 +63,9 @@ JobHandle::is_aborted() const
 void
 JobHandle::finish()
 {
+  std::cout << "Fireing wakeup: " << this << std::endl;
+
+  boost::mutex::scoped_lock lock(impl->mutex);
   impl->finished = true;
   impl->cond.notify_all();
 }
@@ -74,7 +79,9 @@ JobHandle::is_finished() const
 void
 JobHandle::wait()
 {
-  impl->cond.wait(impl->mutex);
+  boost::mutex::scoped_lock lock(impl->mutex);
+  if (!impl->finished)
+    impl->cond.wait(lock);
 }
 
 /* EOF */

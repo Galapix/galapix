@@ -27,15 +27,21 @@ class Thread
 private:
   boost::thread* thread;
 
+  void run_wrap();
+
 public:
   Thread();
   virtual ~Thread();
 
-  void start();
-  void  join();
-  std::string get_name() const; 
+  /** Launch the run() function in a seperate Thread */
+  virtual void start_thread();
+
+  virtual void join_thread();
+
+  /** Set conditions so that the run() function can terminate, joining is done in the destructor, not here */
+  virtual void stop_thread() =0;
   
-  virtual int run() =0;
+  virtual void run() =0;
 
 private:
   Thread (const Thread&);

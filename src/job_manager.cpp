@@ -33,55 +33,54 @@ JobManager::JobManager(int num_threads)
 
   for(int i = 0; i < num_threads; ++i)
     threads.push_back(new JobWorkerThread());
-
-  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->start();
 }
 
 JobManager::~JobManager()
 {
-  finish();
-  join();
-
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     delete *i;
 }
 
-void
-JobManager::finish()
+void 
+JobManager::start_thread()
 {
+  boost::mutex::scoped_lock lock(mutex);
+
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->finish();  
+    (*i)->start_thread();
 }
 
 void
-JobManager::join()
+JobManager::stop_thread()
 {
-  std::cout << "JobManager::join()" << std::endl;
-  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    {
-      std::cout << "JobManager::join: " << *i << std::endl;
-      (*i)->finish();
-      std::cout << "Done: JobManager::join: " << *i << std::endl;
-    }
+  boost::mutex::scoped_lock lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
-    (*i)->join();
-  std::cout << "Done: JobManager::join()" << std::endl;
+    (*i)->stop_thread();
+}
+
+void
+JobManager::join_thread()
+{
+  boost::mutex::scoped_lock lock(mutex);
+
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    (*i)->join_thread();
 }
 
 JobHandle
 JobManager::request(Job* job, const boost::function<void (Job*)>& callback)
 {
+  boost::mutex::scoped_lock lock(mutex);
+
+  JobHandle handle = job->get_handle();
   threads[next_thread]->request(job, callback);
   
   next_thread += 1;
   if (next_thread >= threads.size())
-    {
-      next_thread = 0;
-    }
+    next_thread = 0;
 
-  return job->get_handle();
+  return handle;
 }
 
 /* EOF */

@@ -16,28 +16,22 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_JOBS_TILE_GENERATION_JOB_HPP
-#define HEADER_JOBS_TILE_GENERATION_JOB_HPP
+#ifndef HEADER_TEST_JOB_HPP
+#define HEADER_TEST_JOB_HPP
 
-#include <boost/function.hpp>
 #include "../job.hpp"
-#include "../file_entry.hpp"
 
-class TileEntry;
-
-class TileGenerationJob : public Job
+class TestJob : public Job
 {
-private: 
-  FileEntry entry;
-  int       min_scale;
-  int       max_scale;
-  
-  boost::function<void (TileEntry)> callback;
-
+private:
 public:
-  TileGenerationJob(const FileEntry& file_entry, int min_scale, int max_scale,
-                    const boost::function<void (TileEntry)>& callback = boost::function<void (TileEntry)>());
+  TestJob();
+  
   void run();
+
+private:
+  TestJob (const TestJob&);
+  TestJob& operator= (const TestJob&);
 };
 
 #endif

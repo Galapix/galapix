@@ -18,6 +18,7 @@ galapix_sources = [
     'src/job_manager.cpp',
     'src/job_worker_thread.cpp',
     'src/jobs/tile_generation_job.cpp',
+    'src/jobs/test_job.cpp',
     'src/lisp/getters.cpp',
     'src/lisp/lexer.cpp',
     'src/lisp/lisp.cpp',

@@ -16,47 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <SDL.h>
-#include <math.h>
-#include <assert.h>
 #include <iostream>
-#include <spnav.h>
-#include "viewer.hpp"
-#include "space_navigator.hpp"
+#include "test_job.hpp"
 
-SpaceNavigator::SpaceNavigator()
-{
-}
-
-SpaceNavigator::~SpaceNavigator()
+TestJob::TestJob()
 {
 }
 
 void
-SpaceNavigator::run()
+TestJob::run()
 {
-  if (spnav_open() != 0)
+  for(int i = 0; i < 10; ++i)
     {
-      std::cout << "Error: SpaceNavigator: open failed" << std::endl;
-    }
-  else
-    {
-      spnav_event* spnav_ev;
-      while(spnav_wait_event(spnav_ev = new spnav_event))
-        {
-          SDL_Event event;
-          event.type = SDL_USEREVENT;
-          event.user.code  = 0;
-          event.user.data1 = spnav_ev;
-          event.user.data2 = 0;
-
-          while (SDL_PushEvent(&event) != 0);
-        }
-
-      if (spnav_close() != 0)
-        {
-          std::cout << "Error: SpaceNavigator: close" << std::endl;
-        }
+      std::cout << i << std::endl;
+      usleep(100000);
     }
 }
 

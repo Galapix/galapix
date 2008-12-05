@@ -40,6 +40,7 @@
 #include "file_database.hpp"
 #include "tile_database.hpp"
 #include "jobs/tile_generation_job.hpp"
+#include "jobs/test_job.hpp"
 #include "database_thread.hpp"
 #include "filesystem.hpp"
 #include "workspace.hpp"
@@ -75,17 +76,32 @@ Galapix::~Galapix()
 }
 
 void
-Galapix::test(const std::vector<URL>& url)
+Galapix::test(const GalapixOptions& opts,
+              const std::vector<URL>& url)
 {
-  for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
-    {
-      std::vector<std::string> layer =  XCF::get_layers(*i);
-      std::cout << *i << ":" << std::endl;
-      for(std::vector<std::string>::iterator j = layer.begin(); j != layer.end(); ++j)
-        {
-          std::cout << "  '" << *j << "'" << std::endl;
-        }
-    }
+  std::cout << "Running test case" << std::endl;
+
+  DatabaseThread database_thread(opts.database);
+  JobManager job_manager(2);
+
+  database_thread.start_thread();
+  job_manager.start_thread();
+
+  std::cout << "<<<--- launching jobs" << std::endl;
+  JobHandle handle1 = job_manager.request(new TestJob(), boost::function<void (Job*)>());
+  JobHandle handle2 = job_manager.request(new TestJob(), boost::function<void (Job*)>());
+  std::cout << "--->>> waiting for jobs" << std::endl;
+  handle1.wait();
+  std::cout << "handle1 finished" << std::endl;
+  handle2.wait();
+  std::cout << "handle2 finished" << std::endl;
+  std::cout << "--->>> waiting for jobs DONE" << std::endl;
+
+  database_thread.stop_thread();
+  job_manager.stop_thread();
+
+  database_thread.join_thread();
+  job_manager.join_thread();
 }
 
 /** Merge content of the databases given by filenames into database */
@@ -108,19 +124,19 @@ Galapix::merge(const std::string& database,
       for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
         {
           try {
-          std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
+            std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
 
-          // FIXME: Must catch URL collisions here (or maybe not?)
-          FileEntry entry = out_file_db.store_file_entry(*i);
+            // FIXME: Must catch URL collisions here (or maybe not?)
+            FileEntry entry = out_file_db.store_file_entry(*i);
 
-          std::vector<TileEntry> tiles;
-          in_tile_db.get_tiles(i->get_fileid(), tiles);
-          for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
-            {
-              // Change the fileid
-              j->set_fileid(entry.get_fileid());
-              out_tile_db.store_tile(*j);
-            }
+            std::vector<TileEntry> tiles;
+            in_tile_db.get_tiles(i->get_fileid(), tiles);
+            for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
+              {
+                // Change the fileid
+                j->set_fileid(entry.get_fileid());
+                out_tile_db.store_tile(*j);
+              }
           } catch(std::exception& err) {
             std::cout << "Error: " << err.what() << std::endl;
           }
@@ -275,36 +291,46 @@ Galapix::thumbgen(const GalapixOptions& opts,
   DatabaseThread database_thread(opts.database);
   JobManager     job_manager(opts.threads);
 
-  database_thread.start();
+  database_thread.start_thread();
+  job_manager.start_thread();
 
   std::vector<FileEntry> file_entries;
-  std::vector<JobHandle> job_handles;
-  
-  std::cout << "Getting file entry... " << std::flush;
-  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
-    job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
-  for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
-    i->wait();
-  std::cout << "done" << std::endl;
+  {
+    std::vector<JobHandle> job_handles;
+    std::cout << "getting file entry { " << std::endl;
+    for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
+      job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
+    for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
+      i->wait();
+    std::cout << "} getting file entry" << std::endl;
+  }
 
-  job_handles.clear();
-  for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
-    {
-      // Generate Image Tiles
-      SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
-      job_handles.push_back(job_manager.request(new TileGenerationJob(*i, 0, i->get_thumbnail_scale(),
-                                                                      boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)),
-                                                boost::function<void (Job*)>()));
-    }
-  for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
-    i->wait();
+  {
+    std::vector<JobHandle> job_handles;
+    for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
+      {
+        // Generate Image Tiles
+        SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
+        job_handles.push_back(job_manager.request(new TileGenerationJob(*i, 0, i->get_thumbnail_scale(),
+                                                                        boost::bind(&DatabaseThread::receive_tile, &database_thread, _1))));
+      }
 
-  std::cout << "Joining Worker Threads..." << std::endl;
-  job_manager.join();
-  std::cout << "Joining Worker Threads... DONE" << std::endl;
+    std::cout << "waiting for jobs to finish {" << std::endl;
+    for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
+      i->wait();
+    std::cout << "} waiting for jobs to finish" << std::endl;
+  }
 
-  database_thread.finish();
-  database_thread.join();
+  std::cout << "------------ Sleeping ------------" << std::endl;
+  //usleep(2000 * 1000);
+
+  std::cout << "XXXXXXXXXXXXXX Cleaning things up XXXXXXXXXXXXXXXXXXXXXX" << std::endl;
+
+  job_manager.stop_thread();
+  database_thread.stop_thread();
+
+  job_manager.join_thread();
+  database_thread.join_thread();
 }
 
 void
@@ -313,10 +339,11 @@ Galapix::view(const GalapixOptions& opts,
               bool view_all, 
               const std::string& pattern)
 {
-  JobManager     job_manager(opts.threads);
   DatabaseThread database_thread(opts.database);
+  JobManager     job_manager(opts.threads);
 
-  database_thread.start();
+  database_thread.start_thread();
+  job_manager.start_thread();
 
   Workspace workspace;
 
@@ -358,8 +385,8 @@ Galapix::view(const GalapixOptions& opts,
   gtk_viewer.run();
 #endif
 
-  database_thread.stop();
-  database_thread.join();
+  job_manager.stop_thread();
+  database_thread.stop_thread();
 }
 
 void
@@ -407,7 +434,7 @@ Galapix::print_usage()
 #endif
             << std::endl;
 }
-
+  
 int
 Galapix::main(int argc, char** argv)
 {
@@ -430,7 +457,7 @@ Galapix::main(int argc, char** argv)
       return EXIT_FAILURE;
     }
 }
-
+  
 void
 Galapix::run(const GalapixOptions& opts)
 {
@@ -498,7 +525,7 @@ Galapix::run(const GalapixOptions& opts)
         }
       else if (command == "test")
         {
-          test(urls);
+          test(opts, urls);
         }
       else if (command == "downscale")
         {
@@ -631,10 +658,10 @@ Galapix::parse_args(int argc, char** argv, GalapixOptions& opts)
         }
     }
 }
-  
+  
 int main(int argc, char** argv)
 {
   Galapix app;
   return app.main(argc, argv);
 }  
-/* EOF */
+/* EOF */

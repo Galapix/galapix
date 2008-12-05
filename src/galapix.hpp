@@ -40,7 +40,7 @@ public:
   int  main(int argc, char** argv);
 
   void merge(const std::string& database, const std::vector<std::string>& filenames);
-  void test(const std::vector<URL>& filenames);
+  void test(const GalapixOptions& opts, const std::vector<URL>& filenames);
   void info(const std::vector<URL>& filenames);
   void downscale(const std::vector<URL>& filenames);
   void cleanup(const std::string& database);

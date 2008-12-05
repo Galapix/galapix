@@ -68,7 +68,8 @@ public:
         if (db.tiles.get_tile(file_entry.get_fileid(), tilescale, pos, tile))
           {
             // Tile has been found, so return it and finish up
-            callback(tile);
+            if (callback)
+              callback(tile);
             job_handle.finish();
           }
         else
@@ -111,6 +112,7 @@ public:
         if (!entry)
           {
             std::cout << "Error: Couldn't get FileEntry for " << url << std::endl;
+            job_handle.finish();
           }
         else
           {
@@ -183,26 +185,7 @@ public:
                 << tile.get_scale()  << std::endl;
 
     DatabaseThread::current()->process_tile(tile);
-#if 0
-    for(std::list<TileDatabaseMessage*>::iterator i = tile_queue.begin(); i != tile_queue.end(); )
-      {
-        if (tile.get_fileid() == (*i)->file_entry.get_fileid() &&
-            tile.get_scale()  == (*i)->tilescale &&
-            tile.get_pos()    == (*i)->pos)
-          {
-            (*i)->callback(tile);
 
-            // FIXME: Correct!?
-            delete *i;
-            i = tile_queue.erase(i);
-          }
-        else
-          {
-            ++i;
-          }
-      }
-#endif
-                  
     // FIXME: Make some better error checking in case of loading failure
     if (tile.get_surface())
       {
@@ -250,7 +233,6 @@ DatabaseThread* DatabaseThread::current_ = 0;
 
 DatabaseThread::DatabaseThread(const std::string& filename_)
   : database_filename(filename_),
-    abort_instantly(false),
     quit(false)
 {
   assert(current_ == 0);
@@ -259,6 +241,7 @@ DatabaseThread::DatabaseThread(const std::string& filename_)
 
 DatabaseThread::~DatabaseThread()
 {
+  assert(quit);
 }
 
 JobHandle
@@ -302,49 +285,36 @@ DatabaseThread::delete_file_entry(uint32_t fileid)
 }
 
 void
-DatabaseThread::stop()
+DatabaseThread::stop_thread()
 {
-  quit = true;
-  abort_instantly = true;
-  std::cout << "DB: stop" << std::endl;
-  queue.wakeup();
-}
-
-void
-DatabaseThread::finish()
-{
-  quit = true;
-  std::cout << "DB: stop" << std::endl;
+  quit  = true;
   queue.wakeup();
 }
 
-int
+void
 DatabaseThread::run()
 {
-  abort_instantly = false;
-  quit            = false;
+  quit = false;
 
-  std::cout << "Connecting to the database..." << std::endl;
+  std::cout << "connecting to the database {" << std::endl;
   Database db(database_filename);
-  std::cout << "Connecting to the database... done" << std::endl;
+  std::cout << "} connecting to the database" << std::endl;
 
   std::vector<DatabaseMessage*> messages;
   while(!quit)
     {
-      while(!queue.empty() && !abort_instantly)
+      std::cout << "database wait {" << std::endl;
+      queue.wait();
+      std::cout << "} database wait" << std::endl;
+
+      while(!queue.empty())
         {
           DatabaseMessage* msg = queue.front();
           queue.pop();
           msg->run(db);
           delete msg;
         }
-      std::cout << "DB: Wait" << std::endl;
-      if (!quit)
-        queue.wait();
-      std::cout << "DB: End of Wait" << std::endl;
     }
-
-  return 0;
 }
 
 void
@@ -399,7 +369,9 @@ DatabaseThread::process_tile(const TileEntry& tile_entry)
               if (tile_entry.get_scale() == j->scale &&
                   tile_entry.get_pos()   == j->pos)
                 {
-                  j->callback(tile_entry);
+                  if (j->callback)
+                    j->callback(tile_entry);
+
                   j->job_handle.finish();
                   i->requests.erase(j);
                   break;

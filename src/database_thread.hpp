@@ -80,14 +80,13 @@ private:
   TileRequestGroups tile_request_groups;
 
 protected: 
-  int run();
+  void run();
 
 public:
   DatabaseThread(const std::string&);
   virtual ~DatabaseThread();
 
-  void stop();
-  void finish();
+  void stop_thread();
 
   void process_tile(const TileEntry& tile_entry);
   void generate_tile(const JobHandle& job_handle,

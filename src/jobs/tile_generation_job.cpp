@@ -102,12 +102,14 @@ TileGenerationJob::run()
                                                                Size(256, 256)));
 
             // FIXME: This is slow, should group all tiles into a single sqlite transaction
-            callback(TileEntry(entry.get_fileid(), scale, Vector2i(x, y), croped_surface));
+            if (callback)
+              callback(TileEntry(entry.get_fileid(), scale, Vector2i(x, y), croped_surface));
           }
 
       scale += 1;
 
-    } while (scale <= max_scale);
+    } 
+  while (scale <= max_scale);
 
   std::cout << "TileGeneratorThread: processing scales " << min_scale << "-" << max_scale << ": " << entry.get_url() << ": done" << std::endl;
 }

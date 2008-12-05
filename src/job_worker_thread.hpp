@@ -36,7 +36,6 @@ private:
 
   ThreadMessageQueue<Task> queue;
   bool quit;
-  bool abort_instantly;
   
 public:
   JobWorkerThread();
@@ -44,10 +43,9 @@ public:
 
   JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
 
-  int  run();
+  void run();
 
-  void finish();
-  void abort();
+  void stop_thread();
   
 private:
   JobWorkerThread (const JobWorkerThread&);

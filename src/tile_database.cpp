@@ -159,7 +159,10 @@ TileDatabase::store_tile(const TileEntry& tile_)
 {
   TileEntry tile = tile_;
 
-  std::cout << "store_tile(): " << tile.get_fileid() << " " << tile.get_pos() << std::endl;
+  std::cout << "store_tile("
+            << "fileid: " << tile.get_fileid() 
+            << ", scale: " << tile.get_scale() 
+            << ", pos: " << tile.get_pos() << ")" << std::endl;
 
   if (!tile.get_blob())
     {

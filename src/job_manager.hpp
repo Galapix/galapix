@@ -19,6 +19,7 @@
 #ifndef HEADER_JOB_MANAGER_HPP
 #define HEADER_JOB_MANAGER_HPP
 
+#include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
 #include <vector>
 #include "job_handle.hpp"
@@ -38,18 +39,19 @@ private:
   Threads threads;
   Threads::size_type next_thread;
 
+  boost::mutex mutex;
+
 public:
   JobManager(int num_threads);
   ~JobManager();
 
-  void join();
-
-  /** Waits till all jobs in the queue are finished, then returns */
-  void finish();
+  void start_thread();
+  void stop_thread();
+  void join_thread();
 
   /** \a job is processed and once finished \a callback is called, \a
       job will be deleted afterwards */
-  JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
+  JobHandle request(Job* job, const boost::function<void (Job*)>& callback = boost::function<void (Job*)>());
 };
 
 #endif

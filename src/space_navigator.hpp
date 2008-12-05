@@ -27,7 +27,7 @@ public:
   SpaceNavigator();
   ~SpaceNavigator();
 
-  int run();
+  void run();
 
 private:
   SpaceNavigator (const SpaceNavigator&);

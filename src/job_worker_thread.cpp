@@ -20,12 +20,14 @@
 #include "job_worker_thread.hpp"
 
 JobWorkerThread::JobWorkerThread()
- : quit(false)
+  : quit(false)
 {
 }
 
 JobWorkerThread::~JobWorkerThread()
 {
+  assert(quit);
+
   while(!queue.empty())
     {
       Task task = queue.front();
@@ -34,57 +36,51 @@ JobWorkerThread::~JobWorkerThread()
     }
 }
 
-int
+void
 JobWorkerThread::run()
 {
   while(!quit)
     {
-      while(!queue.empty() && !abort_instantly)
+      queue.wait();
+
+      while(!queue.empty())
         {
           Task task = queue.front();
           queue.pop();
 
           if (!task.job->get_handle().is_aborted())
             {
+              std::cout << "start job: " << task.job << std::endl;
               task.job->run();
               if (task.callback)
                 task.callback(task.job);
               task.job->get_handle().finish();
+              std::cout << "done job: " << task.job << std::endl;
             }
 
           delete task.job;
         }
-
-      if (!quit)
-        queue.wait();
     }
-
-  return 0;
 }
 
 void
-JobWorkerThread::finish()
+JobWorkerThread::stop_thread()
 {
   quit = true;
-  queue.wakeup();  
-}
-
-void
-JobWorkerThread::abort()
-{
-  quit = true;
-  abort_instantly = true;
   queue.wakeup();  
 }
 
 JobHandle
 JobWorkerThread::request(Job* job, const boost::function<void (Job*)>& callback)
 {
+  JobHandle handle = job->get_handle();
+  
   Task task;
   task.job      = job;
   task.callback = callback;
   queue.push(task);
-  return job->get_handle();
+
+  return handle;
 }
 
 /* EOF */

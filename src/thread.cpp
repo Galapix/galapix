@@ -29,20 +29,35 @@ Thread::Thread()
 
 Thread::~Thread()
 {
-  delete thread;
 }
 
 void
-Thread::join()
+Thread::join_thread()
 {
+  assert(thread);
+  assert(thread->joinable());
+  
   thread->join();
+
+  delete thread;
+  thread = 0;
 }
 
 void
-Thread::start()
+Thread::start_thread()
 {
   assert(thread == 0);
-  thread = new boost::thread(boost::bind(&Thread::run, this));
+  thread = new boost::thread(boost::bind(&Thread::run_wrap, this));
+}
+
+void
+Thread::run_wrap()
+{
+  try {
+    run();
+  } catch(std::exception& err) {
+    std::cout << "Error: " << err.what() << std::endl;
+  }
 }
 
 /* EOF */
