@@ -39,8 +39,11 @@
 #include "filesystem.hpp"
 #include "viewer.hpp"
 
+Viewer* Viewer::current_ = 0;
+
 Viewer::Viewer(Workspace* workspace)
   : workspace(workspace),
+    mark_for_redraw(false),
     draw_grid(false),
     pin_grid(false),
     gamma(1.0f),
@@ -50,6 +53,8 @@ Viewer::Viewer(Workspace* workspace)
     grid_size(400.0f, 300.0f),
     grid_color(255, 0, 0, 255)
 {
+  current_ = this;
+
   pan_tool       = boost::shared_ptr<PanTool>(new PanTool(this));
   move_tool      = boost::shared_ptr<MoveTool>(new MoveTool(this));
   zoom_rect_tool = boost::shared_ptr<ZoomRectTool>(new ZoomRectTool(this));
@@ -92,8 +97,28 @@ Viewer::Viewer(Workspace* workspace)
 }
 
 void
+Viewer::redraw()
+{
+  if (!mark_for_redraw)
+    {
+      mark_for_redraw = true;
+  
+#ifdef GALAPIX_SDL
+      SDL_Event event;
+      event.type = SDL_USEREVENT;
+      event.user.code  = 1;
+      event.user.data1 = 0;
+      event.user.data2 = 0;
+  
+      while (SDL_PushEvent(&event) != 0);
+#endif
+    }
+}
+
+void
 Viewer::draw()
 {
+  mark_for_redraw = false;
   Framebuffer::clear(background_colors[background_color]);
 
   bool clip_debug = false;

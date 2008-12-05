@@ -194,7 +194,8 @@ TileDatabase::store_tile_in_cache(const TileEntry& tile)
 {
   tile_cache.push_back(tile);
 
-  if (tile_cache.size() > 128)
+  // A single tile is ~10KB
+  if (tile_cache.size() > 256)
     flush_cache();
 }
 

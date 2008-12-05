@@ -27,6 +27,7 @@
 #include "database_thread.hpp"
 #include "thread_message_queue.hpp"
 #include "image.hpp"
+#include "viewer.hpp"
 
 uint32_t make_cache_id(int x, int y, int tile_scale)
 {
@@ -543,14 +544,7 @@ Image::receive_tile(const TileEntry& tile)
   assert(impl.get());
   impl->tile_queue.push(tile);
 
-  // FIXME: Make this a SDLViewer::current()->wakeup() or so
-  // SDL_Event event;
-  // event.type = SDL_USEREVENT;
-  // event.user.code  = 1;
-  // event.user.data1 = 0;
-  // event.user.data2 = 0;
-  // 
-  // while (SDL_PushEvent(&event) != 0);
+  Viewer::current()->redraw();
 }
 
 void

@@ -41,7 +41,14 @@ class GridTool;
 class Viewer
 {
 private:
+  static Viewer* current_;
+ 
+public:
+  static Viewer* current() { return current_; }
+
+private:
   Workspace* workspace;
+  bool  mark_for_redraw;
   bool  draw_grid;
   bool  pin_grid;
   float gamma;
@@ -81,6 +88,8 @@ public:
 
   void draw();
   void update(float delta);
+
+  void redraw();
 
   ViewerState& get_state() { return state; }
   Workspace*   get_workspace() { return workspace; }
