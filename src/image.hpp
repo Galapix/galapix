@@ -70,7 +70,7 @@ public:
 
   // _____________________________________________________
   // Drawing stuff
-  void draw(const Rectf& cliprect, float scale);
+  void draw(const Rectf& cliprect, float fscale);
   void draw_mark();
 
   // _____________________________________________________

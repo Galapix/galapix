@@ -16,6 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
 #include "job.hpp"
 #include "job_worker_thread.hpp"
 
@@ -50,12 +51,12 @@ JobWorkerThread::run()
 
           if (!task.job->get_handle().is_aborted())
             {
-              //std::cout << "start job: " << task.job << std::endl;
+              std::cout << "start job: " << task.job << std::endl;
               task.job->run();
               if (task.callback)
                 task.callback(task.job);
               task.job->get_handle().finish();
-              //std::cout << "done job: " << task.job << std::endl;
+              std::cout << "done job: " << task.job << std::endl;
             }
 
           delete task.job;

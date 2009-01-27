@@ -430,7 +430,10 @@ SDLViewer::run()
 
       // std::cout << "." << std::flush;
 
-      SDL_Delay(30);
+      // FIXME: Higher values mean less CPU use for drawing and more
+      // for loading, which is nice for low-end CPUs, but not so nice
+      // for high-end CPUs, maybe make this configurable
+      SDL_Delay(10);
     }
 
 #ifdef HAVE_SPACE_NAVIGATOR

@@ -18,6 +18,13 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+* build in a file magic detector: .xcf.bz2 doesn't work for xcfinfo if it ends in .xcf
+
+* There seems to be a conflict between libboost-thread1.34 and
+  libboost-thread1.35 (thread joinable(), maybe others)
+
+* implement search for higher scales for Images
+
 * tile_cache order is wrong
 
 * use boost::bind() objects instead of costum ones in DatabaseThread

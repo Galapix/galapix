@@ -29,9 +29,9 @@
 #include "image.hpp"
 #include "viewer.hpp"
 
-uint32_t make_cache_id(int x, int y, int tile_scale)
+uint32_t make_cache_id(int x, int y, int scale)
 {
-  return x | (y << 8) | (tile_scale << 16);
+  return x | (y << 8) | (scale << 16);
 }
 
 class ImageImpl
@@ -213,9 +213,9 @@ Image::get_original_height() const
 }
 
 Surface
-Image::get_tile(int x, int y, int tile_scale)
+Image::get_tile(int x, int y, int scale)
 {
-  uint32_t cache_id = make_cache_id(x, y, tile_scale);
+  uint32_t cache_id = make_cache_id(x, y, scale);
   Cache::iterator i = impl->cache.find(cache_id);
 
   if (i == impl->cache.end())
@@ -224,8 +224,8 @@ Image::get_tile(int x, int y, int tile_scale)
       // pointer might disappear any time, its only the impl that
       // stays and which we can link to by making a copy of the Image
       // object via *this.
-      //std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << tile_scale << std::endl;
-      impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, tile_scale, Vector2i(x, y), 
+      // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
+      impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, scale, Vector2i(x, y), 
                                                                    boost::bind(&Image::receive_tile, *this, _1)));
 
       // FIXME: Something to try: Request the next smaller tile too,
@@ -235,9 +235,8 @@ Image::get_tile(int x, int y, int tile_scale)
       // DatabaseThread, we should request the whole group of lower
       // res tiles at once, instead of one by one, since that eats up
       // the possible speed up
-      //impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, tile_scale+1, Vector2i(x, y), 
-      //                                                             boost::bind(&Image::receive_tile, *this, _1)));
-
+      // impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, scale+1, Vector2i(x, y), 
+      //                                                              boost::bind(&Image::receive_tile, *this, _1)));
       SurfaceStruct s;
       
       s.surface = Surface();
@@ -275,15 +274,16 @@ Image::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale)
 }
 
 void
-Image::draw_tile(int x, int y, int tiledb_scale, 
-                 const Vector2f& pos, float scale)
+Image::draw_tile(int x, int y, int scale, 
+                 const Vector2f& pos, float fscale)
 {
-  Surface surface = get_tile(x, y, tiledb_scale);
+  Surface surface = get_tile(x, y, scale);
   if (surface)
     {
       // FIXME: surface.get_size() * scale does not give the correct
       // size of a tile due to rounding errors
-      surface.draw(Rectf(pos, surface.get_size() * scale));
+      surface.draw(Rectf(pos, surface.get_size() * fscale));
+      //surface.draw(Rectf(pos, get_tile_size(x, y, scale)));
       //Framebuffer::draw_rect(Rectf(pos, surface.get_size() * scale), RGB(100, 100, 100));
     }
   else
@@ -291,11 +291,11 @@ Image::draw_tile(int x, int y, int tiledb_scale,
       // Look for the next smaller tile
       // FIXME: Rewrite this to work all smaller tiles, not just the next     
       int downscale;
-      surface = find_smaller_tile(x, y, tiledb_scale, downscale);
+      surface = find_smaller_tile(x, y, scale, downscale);
 
       // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
-      Size tile_size(Math::min(256, (impl->file_entry.get_width()  / Math::pow2(tiledb_scale)) - 256 * x),
-                     Math::min(256, (impl->file_entry.get_height() / Math::pow2(tiledb_scale)) - 256 * y));
+      Size tile_size(Math::min(256, (impl->file_entry.get_width()  / Math::pow2(scale)) - 256 * x),
+                     Math::min(256, (impl->file_entry.get_height() / Math::pow2(scale)) - 256 * y));
 
 
       if (surface)
@@ -309,11 +309,11 @@ Image::draw_tile(int x, int y, int tiledb_scale,
           surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
                              s),
                        //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
-                       Rectf(pos, s * scale * downscale));
+                       Rectf(pos, s * fscale * downscale));
         }
       else // draw replacement rect when no tile could be loaded
         {         
-          Framebuffer::fill_rect(Rectf(pos, tile_size*scale), RGB(155, 0, 155)); // impl->file_entry.color);
+          Framebuffer::fill_rect(Rectf(pos, tile_size * fscale), RGB(155, 0, 155)); // impl->file_entry.color);
         }
 
       //Framebuffer::draw_rect(Rectf(pos, s*scale), RGB(255, 255, 255)); // impl->file_entry.color);
@@ -321,19 +321,17 @@ Image::draw_tile(int x, int y, int tiledb_scale,
 }
 
 void 
-Image::draw_tiles(const Rect& rect, int tiledb_scale, 
-                  const Vector2f& /*pos*/, float scale)
+Image::draw_tiles(const Rect& rect, int scale, 
+                  const Vector2f& /*pos*/, float fscale)
 {
-  //std::cout << " drawtiles: " << rect << " scale: " << tiledb_scale << std::endl;
-
-  float tilesize = 256.0f * scale;
+  float tilesize = 256.0f * fscale;
 
   for(int y = rect.top; y < rect.bottom; ++y)
     for(int x = rect.left; x < rect.right; ++x)
       {
-        draw_tile(x, y, tiledb_scale, 
+        draw_tile(x, y, scale, 
                   get_top_left_pos() + Vector2f(x,y) * tilesize,
-                  scale);
+                  fscale);
       }
 }
 
