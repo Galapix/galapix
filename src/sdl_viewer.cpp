@@ -28,6 +28,7 @@
 #include "framebuffer.hpp"
 #include "plugins/png.hpp"
 #include "sdl_viewer.hpp"
+#include "viewer_state.hpp"
 #include "space_navigator.hpp"
 #include "database_thread.hpp"
 
@@ -174,6 +175,30 @@ SDLViewer::process_event(const SDL_Event& event)
               
             case SDLK_d:
               viewer->zoom_to_selection();
+              break;
+
+            case SDLK_KP_PLUS:
+              viewer->get_state().zoom(1.25f);
+              break;
+
+            case SDLK_KP_MINUS:
+              viewer->get_state().zoom(1.0f/1.25f);
+              break;
+
+            case SDLK_KP8:
+              viewer->get_state().set_offset(viewer->get_state().get_offset() + Vector2f(0.0f, +128.0f));
+              break;
+
+            case SDLK_KP2:
+              viewer->get_state().set_offset(viewer->get_state().get_offset() + Vector2f(0.0f, -128.0f));
+              break;
+
+            case SDLK_KP4:
+              viewer->get_state().set_offset(viewer->get_state().get_offset() + Vector2f(+128.0f, 0.0f));
+              break;
+
+            case SDLK_KP6:
+              viewer->get_state().set_offset(viewer->get_state().get_offset() + Vector2f(-128.0f, 0.0f));
               break;
 
             case SDLK_p:
