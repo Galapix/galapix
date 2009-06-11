@@ -173,16 +173,22 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
-  // FIXME: aspect ratio isn't well handled and the resulting layout
-  // is always off by quite a bit. Should actually check image
-  // dimensions instead of just assuming that they are on average square.
-  float    width = (Math::sqrt(images.size()) * 1024.0f) * aspect_w / aspect_h;
+  float spacing = 24.0f;
+
+  float width = 0;  
+  // calculate the total width 
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      const float scale = (1000.0f + spacing) / i->get_original_height();
+      width += i->get_original_width() * scale;
+    }
+
+  width /= Math::sqrt(width / ((aspect_w / aspect_h) * (1000.0f + spacing)));
+
   Vector2f pos(0.0f, 0.0f);
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
   
-  float spacing = 24.0f;
-
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       Image& image = *i;
