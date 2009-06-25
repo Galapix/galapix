@@ -67,7 +67,7 @@ Required Libraries and Tools:
   * boost    - http://www.boost.org/
   * librsvg  - http://librsvg.sourceforge.net/
 
-On Ubuntu one can install all required libraries with this call:
+On Ubuntu 9.04 one can install all required libraries with this call:
 
 sudo apt-get install \
   libsqlite3-dev \
@@ -75,7 +75,7 @@ sudo apt-get install \
   libjpeg62-dev \
   libpng12-dev \
   scons \
-  libmagick++9-dev \
+  libmagick++-dev \
   libcurl4-gnutls-dev
   libglademm-2.4-dev \
   libgtkglextmm-x11-dev \
