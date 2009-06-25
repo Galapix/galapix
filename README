@@ -79,7 +79,8 @@ sudo apt-get install \
   libcurl4-gnutls-dev \
   libglademm-2.4-dev \
   libgtkglextmm-x11-1.2-dev \
-  libboost-thread-dev
+  libboost-thread-dev \
+  libspnav-dev
 
 The following packages are optional and used to handle some more
 exotic image formats:
