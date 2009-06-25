@@ -35,7 +35,7 @@ void
 Thread::join_thread()
 {
   assert(thread);
-  assert(thread->joinable());
+  //assert(thread->joinable());
   
   thread->join();
 
