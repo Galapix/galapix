@@ -269,7 +269,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 
           try 
             {
-              if (has_extension(*i, ".rar") || has_extension(*i, ".cbr"))
+              if (has_extension(*i, ".rar") || has_extension(*i, ".rar.part") || has_extension(*i, ".cbr"))
                 {
                   const std::vector<std::string>& lst = Rar::get_filenames(*i);
                   for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)

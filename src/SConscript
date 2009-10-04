@@ -1,5 +1,36 @@
 # -*- mode: python -*-
 
+preset_cxxflags = {
+    'release':     [ "-O3", "-s"  ],
+    'profile':     [ "-O2", "-g3", "-pg" ],
+    'debug':       [ "-O0", "-g3" ],
+    'development': [ "-O2", "-g3",
+                     "-ansi",
+                     "-pedantic",
+                     "-Wall",
+                     "-Wextra",
+                     "-Wnon-virtual-dtor",
+                     # "-Weffc++",
+                     # "-Wconversion",
+                     "-Werror",
+                     # "-Wshadow",
+                     "-Wcast-qual",
+                     # "-Winit-self", # only works with >= -O1
+                     "-Wno-unused-parameter",
+                     
+                     # "-Winline",
+                     # "-Wfloat-equal",
+                     # "-Wunreachable-code",
+                     ]
+    }
+
+preset_linkflags = {
+    'release': [],
+    'profile': [ "-pg" ],
+    'debug':   [],
+    'development': []
+    }
+
 Import("compile_galapix_gtk",
        "compile_galapix_sdl",
        "compile_spacenav")
@@ -96,20 +127,19 @@ if compile_spacenav:
 BuildDir('build', 'src')
 
 # build the base library
-libgalapix_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
-                             CPPDEFINES = [('HAVE_OPENGL', 1)] + optional_defines,
+libgalapix_env = Environment(CXXFLAGS=preset_cxxflags['development'],
+                             CPPDEFINES = optional_defines,
                              LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs)
-libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags')
-libgalapix_env.ParseConfig('sdl-config --cflags --libs')
-libgalapix_env.ParseConfig('Magick++-config --libs --cppflags')
-libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl')
+libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
+libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
+libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
+libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
 libgalapix = libgalapix_env.StaticLibrary('galapix.sdl', 
                                           libgalapix_sources + optional_sources)
 
 if compile_galapix_sdl:
-    sdl_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
-                          CPPDEFINES = ['GALAPIX_SDL',
-                                        ('HAVE_OPENGL', 1)] + optional_defines,
+    sdl_env = Environment(CXXFLAGS=preset_cxxflags['development'],
+                          CPPDEFINES = ['GALAPIX_SDL'] + optional_defines,
                           LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,
                           OBJPREFIX="sdl.")
     sdl_env.ParseConfig('pkg-config libpng --libs --cflags')
@@ -120,9 +150,8 @@ if compile_galapix_sdl:
                     galapix_sources + sdl_sources + optional_sources)
 
 if compile_galapix_gtk:
-    gtk_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
-                          CPPDEFINES = ['GALAPIX_GTK',
-                                        ('HAVE_OPENGL', 1)] + optional_defines,
+    gtk_env = Environment(CXXFLAGS=preset_cxxflags['development'],
+                          CPPDEFINES = ['GALAPIX_GTK'] + optional_defines,
                           LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,
                           OBJPREFIX="gtk.")
     gtk_env.ParseConfig('pkg-config libpng --libs --cflags')

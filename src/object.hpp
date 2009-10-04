@@ -25,6 +25,7 @@
 class Object
 {
 public:
+  virtual ~Object() {}
   virtual void draw(const Rectf& cliprect, float scale) =0;
 };
 

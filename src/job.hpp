@@ -28,6 +28,7 @@ private:
 
 public:
   Job() {}
+  virtual ~Job() {}
 
   JobHandle get_handle() const { return handle; }
 

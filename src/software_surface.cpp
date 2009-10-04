@@ -81,7 +81,8 @@ SoftwareSurface::get_fileformat(const URL& url)
   else if (Filesystem::has_extension(filename, ".gif") ||
            Filesystem::has_extension(filename, ".GIF") ||
            Filesystem::has_extension(filename, ".pnm") ||
-           Filesystem::has_extension(filename, ".pgm") ||
+           Filesystem::has_extension(filename, ".bmp") ||
+           Filesystem::has_extension(filename, ".BMP") ||
            Filesystem::has_extension(filename, ".tif") ||
            Filesystem::has_extension(filename, ".TIF") ||
            Filesystem::has_extension(filename, ".tiff") ||
@@ -91,6 +92,10 @@ SoftwareSurface::get_fileformat(const URL& url)
     {
       return MAGICK_FILEFORMAT;
     }
+  //else if (Filesystem::has_extension(filename, ".cmx")) ||
+  //    {
+  //    return CMX_FILEFORMAT;
+  //  }
   else
     {
       return UNKNOWN_FILEFORMAT;
