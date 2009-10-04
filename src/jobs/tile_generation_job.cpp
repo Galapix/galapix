@@ -24,9 +24,10 @@
 #include "../tile_entry.hpp"
 #include "tile_generation_job.hpp"
 
-TileGenerationJob::TileGenerationJob(const FileEntry& entry, int min_scale, int max_scale,
+TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const FileEntry& entry, int min_scale, int max_scale,
                                      const boost::function<void (TileEntry)>& callback)
-  : entry(entry),
+  : Job(job_handle),
+    entry(entry),
     min_scale(min_scale),
     max_scale(max_scale),
     callback(callback)

@@ -245,7 +245,8 @@ DatabaseThread::~DatabaseThread()
 }
 
 JobHandle
-DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback)
+DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
+                             const boost::function<void (TileEntry)>& callback)
 {
   JobHandle job_handle;
   queue.push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
@@ -338,7 +339,8 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     {
       int min_scale = tilescale;
       int max_scale = file_entry.get_thumbnail_scale();
-      JobManager::current()->request(new TileGenerationJob(file_entry, min_scale, max_scale, 
+      JobManager::current()->request(new TileGenerationJob(job_handle, 
+                                                           file_entry, min_scale, max_scale, 
                                                            boost::bind(&DatabaseThread::receive_tile, this, _1)),
                                      boost::function<void (Job*)>());
       

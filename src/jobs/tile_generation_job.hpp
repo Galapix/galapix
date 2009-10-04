@@ -35,7 +35,7 @@ private:
   boost::function<void (TileEntry)> callback;
 
 public:
-  TileGenerationJob(const FileEntry& file_entry, int min_scale, int max_scale,
+  TileGenerationJob(const JobHandle& job_handle, const FileEntry& file_entry, int min_scale, int max_scale,
                     const boost::function<void (TileEntry)>& callback = boost::function<void (TileEntry)>());
   void run();
 };

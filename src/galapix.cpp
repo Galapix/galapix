@@ -294,8 +294,11 @@ Galapix::thumbgen(const GalapixOptions& opts,
       {
         // Generate Image Tiles
         SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
-        job_handles.push_back(job_manager.request(new TileGenerationJob(*i, 0, i->get_thumbnail_scale(),
-                                                                        boost::bind(&DatabaseThread::receive_tile, &database_thread, _1))));
+        
+        JobHandle job_handle;
+        job_manager.request(new TileGenerationJob(job_handle, *i, 0, i->get_thumbnail_scale(),
+                                                  boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)));
+        job_handles.push_back(job_handle);
       }
 
     for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)

@@ -24,13 +24,14 @@
 class Job
 {
 private:
-  JobHandle handle;
+  JobHandle m_handle;
 
 public:
   Job() {}
+  Job(JobHandle handle) : m_handle(handle) {}
   virtual ~Job() {}
 
-  JobHandle get_handle() const { return handle; }
+  JobHandle get_handle() const { return m_handle; }
 
   virtual void run() =0;
 
