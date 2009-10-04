@@ -4,9 +4,9 @@ Import("compile_galapix_gtk",
        "compile_galapix_sdl",
        "compile_spacenav")
 
-galapix_sources = [
-    #    'md5.cpp',
+libgalapix_sources = [
     # 'job.cpp',
+    # 'md5.cpp',
     'blob.cpp',
     'database.cpp',
     'database_thread.cpp',
@@ -15,14 +15,12 @@ galapix_sources = [
     'file_entry.cpp',
     'file_reader.cpp',
     'filesystem.cpp',
-    'framebuffer.cpp',
-    'galapix.cpp',
     'image.cpp',
     'job_handle.cpp',
     'job_manager.cpp',
     'job_worker_thread.cpp',
-    'jobs/tile_generation_job.cpp',
     'jobs/test_job.cpp',
+    'jobs/tile_generation_job.cpp',
     'lisp/getters.cpp',
     'lisp/lexer.cpp',
     'lisp/lisp.cpp',
@@ -68,9 +66,14 @@ galapix_sources = [
     'tools/zoom_rect_tool.cpp',
     'tools/zoom_tool.cpp',
     'url.cpp',
-    'viewer.cpp',
     'viewer_state.cpp',
     'workspace.cpp',
+    ]
+
+galapix_sources = [
+    'framebuffer.cpp',
+    'galapix.cpp',
+    'viewer.cpp',
     ]
 
 spacenav_sources = ['space_navigator.cpp']
@@ -92,11 +95,22 @@ if compile_spacenav:
 
 BuildDir('build', 'src')
 
+# build the base library
+libgalapix_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
+                             CPPDEFINES = [('HAVE_OPENGL', 1)] + optional_defines,
+                             LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs)
+libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags')
+libgalapix_env.ParseConfig('sdl-config --cflags --libs')
+libgalapix_env.ParseConfig('Magick++-config --libs --cppflags')
+libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl')
+libgalapix = libgalapix_env.StaticLibrary('galapix.sdl', 
+                                          libgalapix_sources + optional_sources)
+
 if compile_galapix_sdl:
     sdl_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
                           CPPDEFINES = ['GALAPIX_SDL',
                                         ('HAVE_OPENGL', 1)] + optional_defines,
-                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread'] + optional_libs,
+                          LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,
                           OBJPREFIX="sdl.")
     sdl_env.ParseConfig('pkg-config libpng --libs --cflags')
     sdl_env.ParseConfig('sdl-config --cflags --libs')
@@ -109,7 +123,7 @@ if compile_galapix_gtk:
     gtk_env = Environment(CXXFLAGS=['-Wall', '-Werror', '-O2', '-g'],
                           CPPDEFINES = ['GALAPIX_GTK',
                                         ('HAVE_OPENGL', 1)] + optional_defines,
-                          LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread'] + optional_libs,
+                          LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,
                           OBJPREFIX="gtk.")
     gtk_env.ParseConfig('pkg-config libpng --libs --cflags')
     gtk_env.ParseConfig('sdl-config --cflags --libs')
