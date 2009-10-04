@@ -17,6 +17,8 @@
 */
 
 #include <sstream>
+#include <iostream>
+
 #include "error.hpp"
 #include "statement.hpp"
 #include "connection.hpp"
@@ -38,6 +40,8 @@ SQLiteConnection::SQLiteConnection(const std::string& filename)
     }
 
   sqlite3_busy_handler(db, busy_callback, 0);
+
+  exec("PRAGMA auto_vacuum = 1");
 }
 
 SQLiteConnection::~SQLiteConnection()
@@ -60,6 +64,10 @@ SQLiteConnection::exec(const std::string& sqlstmt)
       errmsg = 0;
 
       throw SQLiteError(out.str());
+    }
+  else
+    {
+      // std::cout << "Executed: " << sqlstmt << std::endl;
     }
 }
 
