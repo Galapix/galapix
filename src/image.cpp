@@ -85,9 +85,7 @@ Image::Image(const FileEntry& file_entry)
 {
   impl->file_entry = file_entry;
 
-  impl->angle = 0.0f; 
-  impl->alpha = 1.0f;
-
+  impl->angle        = 0.0f; 
   impl->scale        = 1.0f;
   impl->last_scale   = 1.0f;
   impl->target_scale = 1.0f;
@@ -96,18 +94,6 @@ Image::Image(const FileEntry& file_entry)
   impl->min_keep_scale = impl->max_scale - 2;
 
   assert(impl->max_scale >= 0);
-}
-
-void
-Image::set_alpha(float alpha)
-{
-  impl->alpha = alpha;
-}
-
-float
-Image::get_alpha() const
-{
-  return impl->alpha;
 }
 
 Vector2f
@@ -443,19 +429,18 @@ Image::overlaps(const Rectf& cliprect) const
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
-  if (!impl->file_entry)
-    return;
-
-  process_queue();
+  if (impl->file_entry)
+  {
+    process_queue();
   
-  Rectf image_rect = get_image_rect();
-  Vector2f top_left(image_rect.left, image_rect.top);
+    Rectf image_rect = get_image_rect();
+    Vector2f top_left(image_rect.left, image_rect.top);
 
-  if (!cliprect.is_overlapped(image_rect))
+    if (!cliprect.is_overlapped(image_rect))
     {
       cache_cleanup();
     }
-  else
+    else
     {
       // scale factor for requesting the tile from the TileDatabase
       // FIXME: Can likely be done without float
@@ -473,34 +458,35 @@ Image::draw(const Rectf& cliprect, float fscale)
       int scaled_height = impl->file_entry.get_height() / scale_factor;
 
       if (scaled_width  < 256 && scaled_height < 256)
-        { // So small that only one tile is to be drawn
-          draw_tile(0, 0, tiledb_scale, 
-                    top_left,
-                    scale_factor * impl->scale);
-        }
+      { // So small that only one tile is to be drawn
+        draw_tile(0, 0, tiledb_scale, 
+                  top_left,
+                  scale_factor * impl->scale);
+      }
       else
-        {
-          Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
+      {
+        Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
 
-          image_region.left   = (image_region.left   - top_left.x) / impl->scale;
-          image_region.right  = (image_region.right  - top_left.x) / impl->scale;
-          image_region.top    = (image_region.top    - top_left.y) / impl->scale;
-          image_region.bottom = (image_region.bottom - top_left.y) / impl->scale;
+        image_region.left   = (image_region.left   - top_left.x) / impl->scale;
+        image_region.right  = (image_region.right  - top_left.x) / impl->scale;
+        image_region.top    = (image_region.top    - top_left.y) / impl->scale;
+        image_region.bottom = (image_region.bottom - top_left.y) / impl->scale;
 
-          int   itilesize = 256 * scale_factor;
+        int   itilesize = 256 * scale_factor;
           
-          int start_x = image_region.left  / itilesize;
-          int end_x   = Math::ceil_div(image_region.right, itilesize);
+        int start_x = image_region.left  / itilesize;
+        int end_x   = Math::ceil_div(image_region.right, itilesize);
 
-          int start_y = image_region.top / itilesize;
-          int end_y   = Math::ceil_div(image_region.bottom, itilesize);
+        int start_y = image_region.top / itilesize;
+        int end_y   = Math::ceil_div(image_region.bottom, itilesize);
 
-          draw_tiles(Rect(start_x, start_y, end_x, end_y), 
-                     tiledb_scale, 
-                     top_left,
-                     scale_factor * impl->scale);
-        }
+        draw_tiles(Rect(start_x, start_y, end_x, end_y), 
+                   tiledb_scale, 
+                   top_left,
+                   scale_factor * impl->scale);
+      }
     }
+  }
 }
 
 URL
