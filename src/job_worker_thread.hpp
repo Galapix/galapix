@@ -30,9 +30,10 @@ class Job;
 class JobWorkerThread : public Thread
 {
 private:
-  struct Task {
-    Job* job;
-    boost::function<void (Job*)> callback;
+  struct Task 
+  {
+    boost::shared_ptr<Job> job;
+    boost::function<void (boost::shared_ptr<Job>)> callback;
   };
 
   ThreadMessageQueue<Task> queue;
@@ -42,7 +43,7 @@ public:
   JobWorkerThread();
   ~JobWorkerThread();
 
-  JobHandle request(Job* job, const boost::function<void (Job*)>& callback);
+  JobHandle request(boost::shared_ptr<Job> job, const boost::function<void (boost::shared_ptr<Job>)>& callback);
 
   void run();
 

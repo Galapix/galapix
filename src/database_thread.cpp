@@ -339,10 +339,10 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     {
       int min_scale = tilescale;
       int max_scale = file_entry.get_thumbnail_scale();
-      JobManager::current()->request(new TileGenerationJob(job_handle, 
+      boost::shared_ptr<Job> job_ptr(new TileGenerationJob(job_handle, 
                                                            file_entry, min_scale, max_scale, 
-                                                           boost::bind(&DatabaseThread::receive_tile, this, _1)),
-                                     boost::function<void (Job*)>());
+                                                           boost::bind(&DatabaseThread::receive_tile, this, _1)));
+      JobManager::current()->request(job_ptr, boost::function<void (boost::shared_ptr<Job>)>());
       
       TileRequestGroup request_group(file_entry.get_fileid(), min_scale, max_scale);
       request_group.requests.push_back(TileRequest(job_handle, tilescale, pos, callback));

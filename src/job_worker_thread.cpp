@@ -33,7 +33,6 @@ JobWorkerThread::~JobWorkerThread()
     {
       Task task = queue.front();
       queue.pop();
-      delete task.job;
     }
 }
 
@@ -58,8 +57,6 @@ JobWorkerThread::run()
               task.job->get_handle().finish();
               //std::cout << "done job: " << task.job << std::endl;
             }
-
-          delete task.job;
         }
     }
 }
@@ -72,7 +69,7 @@ JobWorkerThread::stop_thread()
 }
 
 JobHandle
-JobWorkerThread::request(Job* job, const boost::function<void (Job*)>& callback)
+JobWorkerThread::request(boost::shared_ptr<Job> job, const boost::function<void (boost::shared_ptr<Job>)>& callback)
 {
   JobHandle handle = job->get_handle();
   

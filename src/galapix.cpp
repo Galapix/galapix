@@ -86,8 +86,10 @@ Galapix::test(const GalapixOptions& opts,
   job_manager.start_thread();
 
   std::cout << "<<<--- launching jobs" << std::endl;
-  JobHandle handle1 = job_manager.request(new TestJob(), boost::function<void (Job*)>());
-  JobHandle handle2 = job_manager.request(new TestJob(), boost::function<void (Job*)>());
+  JobHandle handle1 = job_manager.request(boost::shared_ptr<Job>(new TestJob()),
+                                          boost::function<void (boost::shared_ptr<Job>)>());
+  JobHandle handle2 = job_manager.request(boost::shared_ptr<Job>(new TestJob()), 
+                                          boost::function<void (boost::shared_ptr<Job>)>());
   std::cout << "--->>> waiting for jobs" << std::endl;
   handle1.wait();
   std::cout << "handle1 finished" << std::endl;
@@ -299,8 +301,9 @@ Galapix::thumbgen(const GalapixOptions& opts,
         SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
         
         JobHandle job_handle;
-        job_manager.request(new TileGenerationJob(job_handle, *i, 0, i->get_thumbnail_scale(),
-                                                  boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)));
+        boost::shared_ptr<Job> job_ptr(new TileGenerationJob(job_handle, *i, 0, i->get_thumbnail_scale(),
+                                                             boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)));
+        job_manager.request(job_ptr);
         job_handles.push_back(job_handle);
       }
 
