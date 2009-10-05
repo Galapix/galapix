@@ -27,8 +27,8 @@
 #include "../workspace.hpp"
 #include "resize_tool.hpp"
 
-ResizeTool::ResizeTool(Viewer* viewer)
-  : Tool(viewer),
+ResizeTool::ResizeTool(Viewer* viewer_)
+  : Tool(viewer_),
     resize_active(false),
     old_scale(1.0f)
 {  

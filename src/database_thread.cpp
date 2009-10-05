@@ -50,14 +50,14 @@ public:
   Vector2i pos;
   boost::function<void (TileEntry)> callback;
 
-  RequestTileDatabaseMessage(const JobHandle& job_handle,
-                             const FileEntry& file_entry, int tilescale, const Vector2i& pos,
-                             const boost::function<void (TileEntry)>& callback)
-    : job_handle(job_handle),
-      file_entry(file_entry),
-      tilescale(tilescale),
-      pos(pos),
-      callback(callback)
+  RequestTileDatabaseMessage(const JobHandle& job_handle_,
+                             const FileEntry& file_entry_, int tilescale_, const Vector2i& pos_,
+                             const boost::function<void (TileEntry)>& callback_)
+    : job_handle(job_handle_),
+      file_entry(file_entry_),
+      tilescale(tilescale_),
+      pos(pos_),
+      callback(callback_)
   {}
 
   void run(Database& db)
@@ -96,12 +96,12 @@ public:
   URL url;
   boost::function<void (FileEntry)> callback;
 
-  RequestFileDatabaseMessage(const JobHandle& job_handle,
-                             const URL& url,
-                             const boost::function<void (FileEntry)>& callback)
-    : job_handle(job_handle),
-      url(url),
-      callback(callback)
+  RequestFileDatabaseMessage(const JobHandle& job_handle_,
+                             const URL& url_,
+                             const boost::function<void (FileEntry)>& callback_)
+    : job_handle(job_handle_),
+      url(url_),
+      callback(callback_)
   {}
 
   void run(Database& db)
@@ -128,8 +128,8 @@ class AllFilesDatabaseMessage : public DatabaseMessage
 public:
   boost::function<void (FileEntry)> callback;
 
-  AllFilesDatabaseMessage(const boost::function<void (FileEntry)>& callback)
-    : callback(callback)
+  AllFilesDatabaseMessage(const boost::function<void (FileEntry)>& callback_)
+    : callback(callback_)
   {
   }
 
@@ -172,8 +172,8 @@ class ReceiveTileDatabaseMessage : public DatabaseMessage
 public:
   TileEntry tile;
 
-  ReceiveTileDatabaseMessage(const TileEntry& tile)
-    : tile(tile)
+  ReceiveTileDatabaseMessage(const TileEntry& tile_)
+    : tile(tile_)
   {}
 
   void run(Database& db)
@@ -206,8 +206,8 @@ class DeleteFileEntryDatabaseMessage : public DatabaseMessage
 public:
   int64_t fileid;
 
-  DeleteFileEntryDatabaseMessage(int64_t fileid)
-    : fileid(fileid)
+  DeleteFileEntryDatabaseMessage(int64_t fileid_)
+    : fileid(fileid_)
   {}
 
   void run(Database& db)

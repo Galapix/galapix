@@ -35,10 +35,10 @@ public:
   float    scale;
 
 public:
-  ImageRequest(const URL&      url,
-               const Vector2f& pos,
-               float           scale)
-    : url(url), pos(pos), scale(scale)
+  ImageRequest(const URL&      url_,
+               const Vector2f& pos_,
+               float           scale_)
+    : url(url_), pos(pos_), scale(scale_)
   {}
 };
 

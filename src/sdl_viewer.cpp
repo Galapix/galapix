@@ -38,10 +38,10 @@
 
 SDLViewer* SDLViewer::current_ = 0;
 
-SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing)
-  : geometry(geometry),
-    fullscreen(fullscreen),
-    anti_aliasing(anti_aliasing),
+SDLViewer::SDLViewer(const Size& geometry_, bool fullscreen_, int  anti_aliasing_)
+  : geometry(geometry_),
+    fullscreen(fullscreen_),
+    anti_aliasing(anti_aliasing_),
     quit(false),
     spnav_allow_rotate(false)
 {

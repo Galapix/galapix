@@ -40,8 +40,8 @@
 
 Viewer* Viewer::current_ = 0;
 
-Viewer::Viewer(Workspace* workspace)
-  : workspace(workspace),
+Viewer::Viewer(Workspace* workspace_)
+  : workspace(workspace_),
     mark_for_redraw(false),
     draw_grid(false),
     pin_grid(false),

@@ -78,8 +78,8 @@ Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float sca
 struct ImageRequestFinder {
   std::string str;
 
-  ImageRequestFinder(const std::string& str)
-    : str(str)
+  ImageRequestFinder(const std::string& str_)
+    : str(str_)
   {}
 
   bool operator()(const ImageRequest& lhs) const {
@@ -463,8 +463,8 @@ struct ImagesMemberOf
 {
   Selection selection;
 
-  ImagesMemberOf(const Selection& selection)
-    : selection(selection)
+  ImagesMemberOf(const Selection& selection_)
+    : selection(selection_)
   {}
 
   bool operator()(const Image& image)

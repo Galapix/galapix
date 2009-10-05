@@ -53,21 +53,21 @@ private:
     Vector2i pos;
     boost::function<void (TileEntry)> callback;
     
-    TileRequest(const JobHandle& job_handle,
-                int scale, const Vector2i& pos,
-                const boost::function<void (TileEntry)>& callback)
-      : job_handle(job_handle),
-        scale(scale), pos(pos),
-        callback(callback)
+    TileRequest(const JobHandle& job_handle_,
+                int scale_, const Vector2i& pos_,
+                const boost::function<void (TileEntry)>& callback_)
+      : job_handle(job_handle_),
+        scale(scale_), pos(pos_),
+        callback(callback_)
     {}
   };
 
   struct TileRequestGroup 
   {
-    TileRequestGroup(int64_t fileid, int min_scale, int max_scale)
-      : fileid(fileid),
-        min_scale(min_scale),
-        max_scale(max_scale)
+    TileRequestGroup(int64_t fileid_, int min_scale_, int max_scale_)
+      : fileid(fileid_),
+        min_scale(min_scale_),
+        max_scale(max_scale_)
     {}
     
     int64_t fileid; 

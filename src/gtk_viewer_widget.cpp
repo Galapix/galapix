@@ -106,7 +106,7 @@ GtkViewerWidget::on_realize()
 }
 
 bool
-GtkViewerWidget::on_configure_event(GdkEventConfigure* event)
+GtkViewerWidget::on_configure_event(GdkEventConfigure* ev)
 {
   Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
 
@@ -123,7 +123,7 @@ GtkViewerWidget::on_configure_event(GdkEventConfigure* event)
 }
 
 bool
-GtkViewerWidget::on_expose_event(GdkEventExpose* event)
+GtkViewerWidget::on_expose_event(GdkEventExpose* ev)
 {
   Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
 
@@ -144,10 +144,10 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* event)
 }
 
 bool
-GtkViewerWidget::mouse_move(GdkEventMotion* event)
+GtkViewerWidget::mouse_move(GdkEventMotion* ev)
 {
-  //std::cout << "Motion: " << event->x << ", " << event->y << std::endl;
-  Vector2i new_pos(static_cast<int>(event->x), static_cast<int>(event->y));
+  //std::cout << "Motion: " << ev->x << ", " << ev->y << std::endl;
+  Vector2i new_pos(static_cast<int>(ev->x), static_cast<int>(ev->y));
   viewer->on_mouse_motion(new_pos, new_pos - mouse_pos);
   mouse_pos = new_pos;
 
@@ -158,42 +158,42 @@ GtkViewerWidget::mouse_move(GdkEventMotion* event)
 }
 
 bool
-GtkViewerWidget::mouse_down(GdkEventButton* event)
+GtkViewerWidget::mouse_down(GdkEventButton* ev)
 {
   grab_focus();
-  //std::cout << "Button Press: " << event->x << ", " << event->y << " - " << event->button << std::endl;
-  viewer->on_mouse_button_down(Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)), event->button);
+  //std::cout << "Button Press: " << ev->x << ", " << ev->y << " - " << ev->button << std::endl;
+  viewer->on_mouse_button_down(Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)), ev->button);
   return false;
 }
 
 bool
-GtkViewerWidget::scroll(GdkEventScroll* event)
+GtkViewerWidget::scroll(GdkEventScroll* ev)
 {
-  if (event->direction == GDK_SCROLL_UP)
+  if (ev->direction == GDK_SCROLL_UP)
     {
-      viewer->get_state().zoom(1.1f, Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)));
+      viewer->get_state().zoom(1.1f, Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)));
     }
-  else if (event->direction == GDK_SCROLL_DOWN)
+  else if (ev->direction == GDK_SCROLL_DOWN)
     {
-      viewer->get_state().zoom(1.0f/1.1f, Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)));
+      viewer->get_state().zoom(1.0f/1.1f, Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)));
     }
   return false;
 }
 
 bool
-GtkViewerWidget::mouse_up(GdkEventButton* event)
+GtkViewerWidget::mouse_up(GdkEventButton* ev)
 {
-  //std::cout << "Button Release: " << event->x << ", " << event->y << " - " << event->button << std::endl;
-  viewer->on_mouse_button_up(Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)), event->button);
+  //std::cout << "Button Release: " << ev->x << ", " << ev->y << " - " << ev->button << std::endl;
+  viewer->on_mouse_button_up(Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)), ev->button);
   return false;
 }
 
 bool
-GtkViewerWidget::key_press(GdkEventKey* event)
+GtkViewerWidget::key_press(GdkEventKey* ev)
 {
   //std::cout << "KeyPress" << std::endl;
-  std::cout << "v" << event->keyval << std::endl;
-  switch(event->keyval)
+  std::cout << "v" << ev->keyval << std::endl;
+  switch(ev->keyval)
     {
       case GDK_space:
         break;
@@ -221,11 +221,11 @@ GtkViewerWidget::key_press(GdkEventKey* event)
 }
 
 bool
-GtkViewerWidget::key_release(GdkEventKey* event)
+GtkViewerWidget::key_release(GdkEventKey* ev)
 { // /usr/include/gtk-2.0/gdk/gdkkeysyms.h
   std::cout << "KeyRelease" << std::endl;
-  std::cout << "^" << event->keyval << std::endl;
-  // event->hardware_keycode
+  std::cout << "^" << ev->keyval << std::endl;
+  // ev->hardware_keycode
   return true;
 }
 

@@ -20,9 +20,9 @@
 #include "error.hpp"
 #include "reader.hpp"
 
-SQLiteReader::SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt)
-  : db(db),
-    stmt(stmt)
+SQLiteReader::SQLiteReader(SQLiteConnection* db_, sqlite3_stmt* stmt_)
+  : db(db_),
+    stmt(stmt_)
 {
 }
 

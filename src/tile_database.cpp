@@ -25,8 +25,8 @@
 #include "tile_entry.hpp"
 #include "tile_database.hpp"
 
-TileDatabase::TileDatabase(SQLiteConnection* db)
-  : db(db),
+TileDatabase::TileDatabase(SQLiteConnection* db_)
+  : db(db_),
     store_stmt(db),
     get_stmt(db),
     get_all_by_fileid_stmt(db),

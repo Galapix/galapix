@@ -147,23 +147,23 @@ Framebuffer::draw_grid(int num_cells)
 }
 
 void
-Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rgba)
+Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
 {
   glDisable(GL_TEXTURE_RECTANGLE_ARB);
  
   glBegin(GL_LINES);
   glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
 
-  float start_x = fmodf(offset.x, size.width);
-  float start_y = fmodf(offset.y, size.height);
+  float start_x = fmodf(offset.x, size_.width);
+  float start_y = fmodf(offset.y, size_.height);
 
-  for(float x = start_x; x < Framebuffer::get_width(); x += size.width)
+  for(float x = start_x; x < Framebuffer::get_width(); x += size_.width)
     {
       glVertex2f(x, 0);
       glVertex2f(x, static_cast<float>(Framebuffer::get_height()));
     }
 
-  for(float y = start_y; y < Framebuffer::get_height(); y += size.height)
+  for(float y = start_y; y < Framebuffer::get_height(); y += size_.height)
     {
       glVertex2f(0, y);
       glVertex2f(static_cast<float>(Framebuffer::get_width()), y);

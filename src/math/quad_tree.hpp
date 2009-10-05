@@ -52,9 +52,10 @@ private:
   boost::scoped_ptr<QuadTreeNode<C> > se;
 
 public:
-  QuadTreeNode(int depth, const Rectf& bounding_rect_)
+  QuadTreeNode(int depth_, const Rectf& bounding_rect_)
     : bounding_rect(bounding_rect_),
       center(bounding_rect.get_center()),
+      depth(depth_),
       nw(0), ne(0), sw(0), se(0)
   {
   }

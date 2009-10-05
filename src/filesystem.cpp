@@ -251,13 +251,14 @@ Filesystem::get_mtime(const std::string& filename)
 void
 Filesystem::generate_image_file_list(const std::string& pathname, std::vector<URL>& file_list)
 {
-  std::vector<std::string> lst;
   if (!exist(pathname))
     {
       std::cout << "Filesystem::generate_jpeg_file_list: Error: " << pathname << " does not exist" << std::endl;
     }
   else
     {
+      std::vector<std::string> lst;
+
       if (is_directory(pathname))
         open_directory_recursivly(pathname, lst);
       else
@@ -271,21 +272,21 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
             {
               if (has_extension(*i, ".rar") || has_extension(*i, ".rar.part") || has_extension(*i, ".cbr"))
                 {
-                  const std::vector<std::string>& lst = Rar::get_filenames(*i);
-                  for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                  const std::vector<std::string>& files = Rar::get_filenames(*i);
+                  for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
                     file_list.push_back(URL::from_string(url.str() + "//rar:" + *j));
                 }
               else if (has_extension(*i, ".zip") || has_extension(*i, ".cbz"))
                 {
-                  const std::vector<std::string>& lst = Zip::get_filenames(*i);
-                  for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                  const std::vector<std::string>& files = Zip::get_filenames(*i);
+                  for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
                     file_list.push_back(URL::from_string(url.str() + "//zip:" + *j));
                 }
               else if (has_extension(*i, ".tar") || has_extension(*i, ".tar.bz") || has_extension(*i, ".tar.gz") ||
                        has_extension(*i, ".tgz") || has_extension(*i, ".tbz"))
                 {
-                  const std::vector<std::string>& lst = Tar::get_filenames(*i);
-                  for(std::vector<std::string>::const_iterator j = lst.begin(); j != lst.end(); ++j)
+                  const std::vector<std::string>& files = Tar::get_filenames(*i);
+                  for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
                     file_list.push_back(URL::from_string(url.str() + "//tar:" + *j));
                 }
               else if (has_extension(*i, ".galapix"))

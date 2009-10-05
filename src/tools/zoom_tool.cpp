@@ -19,10 +19,10 @@
 #include "../viewer.hpp"
 #include "zoom_tool.hpp"
 
-ZoomTool::ZoomTool(Viewer* viewer, float zoom_factor)
-  : Tool(viewer),
+ZoomTool::ZoomTool(Viewer* viewer_, float zoom_factor_)
+  : Tool(viewer_),
     zoom_active(false),
-    zoom_factor(zoom_factor)
+    zoom_factor(zoom_factor_)
 {
 }
 

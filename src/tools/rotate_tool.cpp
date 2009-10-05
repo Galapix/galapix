@@ -21,8 +21,8 @@
 #include "../workspace.hpp"
 #include "rotate_tool.hpp"
 
-RotateTool::RotateTool(Viewer* viewer)
-  : Tool(viewer),
+RotateTool::RotateTool(Viewer* viewer_)
+  : Tool(viewer_),
     rotate_active(false),
     start_angle(0.0f)
 {

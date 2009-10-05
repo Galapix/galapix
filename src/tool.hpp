@@ -29,7 +29,7 @@ protected:
   Viewer* viewer;
 
 public:
-  Tool(Viewer* viewer) : viewer(viewer) {}
+  Tool(Viewer* viewer_) : viewer(viewer_) {}
   virtual ~Tool() {}
 
   virtual void move(const Vector2i& pos, const Vector2i& rel) =0;

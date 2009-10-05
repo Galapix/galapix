@@ -40,8 +40,8 @@ public:
     : r(0), g(0), b(0), a(0)
   {}
 
-  RGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255)
-    : r(r), g(g), b(b), a(a)
+  RGBA(uint8_t r_, uint8_t g_, uint8_t b_, uint8_t a_ = 255)
+    : r(r_), g(g_), b(b_), a(a_)
   {}
 
   RGBA(uint32_t c)

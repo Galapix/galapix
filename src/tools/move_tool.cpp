@@ -23,8 +23,8 @@
 #include "../math/rgb.hpp"
 #include "move_tool.hpp"
 
-MoveTool::MoveTool(Viewer* viewer)
-  : Tool(viewer),
+MoveTool::MoveTool(Viewer* viewer_)
+  : Tool(viewer_),
     drag_active(false),
     move_active(false)
 {

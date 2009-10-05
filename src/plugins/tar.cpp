@@ -29,9 +29,9 @@ Tar::get_filenames(const std::string& tar_filename)
   if (tar.exec() == 0)
     {
       std::vector<std::string> lst;
-      const std::vector<char>& stdout = tar.get_stdout();
-      std::vector<char>::const_iterator start = stdout.begin();
-      for(std::vector<char>::const_iterator i = stdout.begin(); i != stdout.end(); ++i)
+      const std::vector<char>& stdout_lst = tar.get_stdout();
+      std::vector<char>::const_iterator start = stdout_lst.begin();
+      for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
         {
           if (*i == '\n')
             {

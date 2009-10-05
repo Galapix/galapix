@@ -26,8 +26,8 @@
 #include "../viewer.hpp"
 #include "pan_tool.hpp"
 
-PanTool::PanTool(Viewer* viewer)
-  : Tool(viewer),
+PanTool::PanTool(Viewer* viewer_)
+  : Tool(viewer_),
     trackball_mode(false),
     move_active(false)
 {

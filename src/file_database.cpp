@@ -28,8 +28,8 @@
 #include "tile_entry.hpp"
 #include "file_database.hpp"
 
-FileDatabase::FileDatabase(SQLiteConnection* db)
-  : db(db),
+FileDatabase::FileDatabase(SQLiteConnection* db_)
+  : db(db_),
     store_stmt(db),
     get_by_url_stmt(db),
     get_all_stmt(db),

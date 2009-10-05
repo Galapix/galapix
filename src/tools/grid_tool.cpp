@@ -23,8 +23,8 @@
 #include "../math/rgba.hpp"
 #include "grid_tool.hpp"
 
-GridTool::GridTool(Viewer* viewer)
-  : Tool(viewer),
+GridTool::GridTool(Viewer* viewer_)
+  : Tool(viewer_),
     drag_active(false)    
 {
 }

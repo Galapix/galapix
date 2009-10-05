@@ -83,16 +83,16 @@ XCF::get_layers(const URL& url)
 
   if (xcfinfo.exec() == 0)
     {
-      const std::vector<char>& stdout = xcfinfo.get_stdout();
-      std::vector<char>::const_iterator line_end = std::find(stdout.begin(), stdout.end(), '\n');
-      if (line_end == stdout.end())
+      const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
+      std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
+      if (line_end == stdout_lst.end())
         {
           throw std::runtime_error("XCF::get_layer: Couldn't parse output");
           return std::vector<std::string>();
         }
       else
         {
-          return xcfinfo_get_layer(line_end+1, stdout.end());
+          return xcfinfo_get_layer(line_end+1, stdout_lst.end());
         }
     }
   else
@@ -109,16 +109,16 @@ XCF::get_size(const std::string& filename, Size& size)
   xcfinfo.arg(filename);
   if (xcfinfo.exec() == 0)
     {
-      const std::vector<char>& stdout = xcfinfo.get_stdout();
-      std::vector<char>::const_iterator line_end = std::find(stdout.begin(), stdout.end(), '\n');
-      if (line_end == stdout.end())
+      const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
+      std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
+      if (line_end == stdout_lst.end())
         {
           std::cout << "Error: XCF: couldn't parse xcfinfo output" << std::endl;
           return false;
         }
       else
         {
-          std::string line(stdout.begin(), line_end);
+          std::string line(stdout_lst.begin(), line_end);
           int version, width, height;          
           if (sscanf(line.c_str(), "Version %d, %dx%d", &version, &width, &height) == 3)
             {

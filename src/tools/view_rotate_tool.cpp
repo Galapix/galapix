@@ -22,8 +22,8 @@
 #include "../viewer.hpp"
 #include "view_rotate_tool.hpp"
 
-ViewRotateTool::ViewRotateTool(Viewer* viewer)
-  : Tool(viewer),
+ViewRotateTool::ViewRotateTool(Viewer* viewer_)
+  : Tool(viewer_),
     active(false),
     start_angle(0.0f)
 {

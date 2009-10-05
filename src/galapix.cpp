@@ -111,9 +111,9 @@ Galapix::merge(const std::string& database,
 {
   Database out_db(database);
 
-  for(std::vector<std::string>::const_iterator i = filenames.begin(); i != filenames.end(); ++i)
+  for(std::vector<std::string>::const_iterator db_it = filenames.begin(); db_it != filenames.end(); ++db_it)
     {
-      Database in_db(*i);
+      Database in_db(*db_it);
           
       std::vector<FileEntry> entries;
       in_db.files.get_file_entries(entries);

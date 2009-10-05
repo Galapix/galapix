@@ -103,10 +103,10 @@ private:
   }
 
 public:
-  PNMMemReader(const char* data, int len)
-    : data(data),
-      len(len),
-      ptr(data)
+  PNMMemReader(const char* data_, int len_)
+    : data(data_),
+      len(len_),
+      ptr(data_)
   {
     parse();
   }

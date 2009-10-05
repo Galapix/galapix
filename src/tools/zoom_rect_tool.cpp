@@ -29,8 +29,8 @@
 #include "../math/rgb.hpp"
 #include "zoom_rect_tool.hpp"
 
-ZoomRectTool::ZoomRectTool(Viewer* viewer)
-  : Tool(viewer),
+ZoomRectTool::ZoomRectTool(Viewer* viewer_)
+  : Tool(viewer_),
     drag_active(false)    
 {
 }

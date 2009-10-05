@@ -13,9 +13,9 @@ preset_cxxflags = {
                      # "-Weffc++",
                      "-Wconversion",
                      "-Werror",
-                     # "-Wshadow",
+                     "-Wshadow",
                      "-Wcast-qual",
-                     # "-Winit-self", # only works with >= -O1
+                     "-Winit-self", # only works with >= -O1
                      "-Wno-unused-parameter",
                      
                      # "-Winline",
