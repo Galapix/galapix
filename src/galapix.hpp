@@ -45,7 +45,7 @@ public:
   void downscale(const std::vector<URL>& filenames);
   void cleanup(const std::string& database);
   void check(const std::string& database);
-  void list(const std::string& database);
+  void list(const std::string& database, const std::string& pattern);
   void thumbgen(const GalapixOptions& opts,
                 const std::vector<URL>& filenames, 
                 bool generate_all_tiles);

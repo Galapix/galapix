@@ -227,12 +227,15 @@ Galapix::cleanup(const std::string& database)
 }
 
 void
-Galapix::list(const std::string& database)
+Galapix::list(const std::string& database, const std::string& pattern)
 {
   Database db(database);
 
   std::vector<FileEntry> entries;
-  db.files.get_file_entries(entries);
+  if (pattern.empty())
+    db.files.get_file_entries(entries);
+  else
+    db.files.get_file_entries(entries, pattern);
 
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {
@@ -487,7 +490,7 @@ Galapix::run(const GalapixOptions& opts)
         }
       else if (command == "list")
         {
-          list(opts.database);
+          list(opts.database, opts.pattern);
         }
       else if (command == "cleanup")
         {
