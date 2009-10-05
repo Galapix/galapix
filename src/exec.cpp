@@ -85,7 +85,7 @@ Exec::exec()
       close(stderr_fd[1]);
 
       // Create C-style array for arguments 
-      char** c_arguments = new char*[arguments.size()+2];
+      boost::scoped_array<char*> c_arguments(new char*[arguments.size()+2]);
       c_arguments[0] = strdup(program.c_str());
       for(std::vector<std::string>::size_type i = 0; i < arguments.size(); ++i)
         c_arguments[i+1] = strdup(arguments[i].c_str());
@@ -93,16 +93,15 @@ Exec::exec()
       
       // Execute the program
       if (absolute_path)
-        execv(c_arguments[0], c_arguments);
+        execv(c_arguments[0], c_arguments.get());
       else
-        execvp(c_arguments[0], c_arguments);
+        execvp(c_arguments[0], c_arguments.get());
       
       int error_code = errno;
 
       // Cleanup
       for(int i = 0; c_arguments[i] != NULL; ++i)
         free(c_arguments[i]);
-      delete[] c_arguments;
 
       // execvp() only returns on failure 
       throw std::runtime_error("Exec: " + program + ": " + strerror(error_code));
