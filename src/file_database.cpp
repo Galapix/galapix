@@ -17,15 +17,15 @@
 */
 
 #include <iostream>
-#include <sstream>
-#include <stdexcept>
-#include <assert.h>
+//#include <sstream>
+//#include <stdexcept>
+//#include <assert.h>
 
-#include "math/math.hpp"
+//#include "math/math.hpp"
 #include "filesystem.hpp"
 #include "software_surface.hpp"
 #include "file_entry.hpp"
-#include "tile_entry.hpp"
+//#include "tile_entry.hpp"
 #include "file_database.hpp"
 
 FileDatabase::FileDatabase(SQLiteConnection* db_)

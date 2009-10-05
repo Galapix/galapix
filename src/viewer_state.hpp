@@ -19,7 +19,7 @@
 #ifndef HEADER_VIEWER_STATE_HPP
 #define HEADER_VIEWER_STATE_HPP
 
-#include "math/vector2f.hpp"
+//#include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
 class ViewerState

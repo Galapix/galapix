@@ -17,7 +17,7 @@
 #ifndef HEADER_SEXPR_FILE_WRITER_HPP
 #define HEADER_SEXPR_FILE_WRITER_HPP
 
-#include <iosfwd>
+//#include <iosfwd>
 #include "file_writer.hpp"
 #include "math/rgba.hpp"
 #include "math/vector3f.hpp"

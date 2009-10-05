@@ -17,7 +17,7 @@
 */
 
 #include <png.h>
-#include <string.h>
+//#include <string.h>
 #include <iostream>
 #include <stdexcept>
 #include "png.hpp"

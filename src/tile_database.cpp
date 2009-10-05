@@ -17,7 +17,7 @@
 */
 
 #include <iostream>
-#include <sstream>
+//#include <sstream>
 
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"

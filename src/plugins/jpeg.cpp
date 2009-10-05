@@ -17,11 +17,11 @@
 */
 
 #include <iostream>
-#include <fstream>
+//#include <fstream>
 #include <sstream>
-#include <stdexcept>
+//#include <stdexcept>
 #include <boost/bind.hpp>
-#include <jpeglib.h>
+//#include <jpeglib.h>
 #include <setjmp.h>
 #include "../math/size.hpp"
 #include "jpeg_memory_src.hpp"

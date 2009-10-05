@@ -16,10 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <assert.h>
+//#include <assert.h>
 #include <iostream>
-#include <stdexcept>
-#include <boost/scoped_ptr.hpp>
+//#include <stdexcept>
+//#include <boost/scoped_ptr.hpp>
 
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
@@ -28,15 +28,15 @@
 #include "plugins/kra.hpp"
 #include "plugins/rsvg.hpp"
 
-#include "blob.hpp"
-#include "math/math.hpp"
+//#include "blob.hpp"
+//#include "math/math.hpp"
 #include "math/rect.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
-#include "math/size.hpp"
+//#include "math/size.hpp"
 
 #include "filesystem.hpp"
-#include "software_surface.hpp"
+//#include "software_surface.hpp"
 
 // FIXME: Stuff in this file is currently written to just work, not to
 // be fast

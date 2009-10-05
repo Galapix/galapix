@@ -37,7 +37,7 @@
 #pragma once
 #endif
 
-#include <iosfwd>
+//#include <iosfwd>
 
 class Sizef;
 

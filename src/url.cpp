@@ -16,14 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#include "url.hpp"
+
+//#include <iostream>
 #include <stdexcept>
 #include "plugins/rar.hpp"
 #include "plugins/zip.hpp"
 #include "plugins/tar.hpp"
 #include "plugins/curl.hpp"
 #include "filesystem.hpp"
-#include "url.hpp"
 
 URL::URL()
 {
@@ -198,7 +199,7 @@ bool operator<(const URL& lhs, const URL& rhs)
 
 #ifdef __URL_TEST__
 
-#include <iostream>
+//#include <iostream>
 
 int main(int argc, char** argv)
 {

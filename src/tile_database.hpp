@@ -19,10 +19,10 @@
 #ifndef HEADER_TILE_DATABASE_HPP
 #define HEADER_TILE_DATABASE_HPP
 
-#include "sqlite/connection.hpp"
+//#include "sqlite/connection.hpp"
 #include "sqlite/statement.hpp"
 #include "math/vector2i.hpp"
-#include "software_surface.hpp"
+//#include "software_surface.hpp"
 
 class TileEntry;
 

@@ -19,7 +19,7 @@
 #ifndef HEADER_PNG_HPP
 #define HEADER_PNG_HPP
 
-#include <string>
+//#include <string>
 #include "../math/size.hpp"
 #include "../software_surface.hpp"
 

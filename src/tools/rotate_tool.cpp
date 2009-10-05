@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <math.h>
+//#include <math.h>
 #include "../viewer.hpp"
 #include "../workspace.hpp"
 #include "rotate_tool.hpp"

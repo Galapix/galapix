@@ -16,16 +16,16 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
-#include <boost/bind.hpp>
-#include <assert.h>
-#include "math/math.hpp"
-#include "url.hpp"
+//#include <iostream>
+//#include <boost/bind.hpp>
+//#include <assert.h>
+//#include "math/math.hpp"
+//#include "url.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "job/job_manager.hpp"
 #include "database.hpp"
-#include "file_database.hpp"
-#include "tile_database.hpp"
+//#include "file_database.hpp"
+//#include "tile_database.hpp"
 #include "database_thread.hpp"
 
 class DatabaseMessage

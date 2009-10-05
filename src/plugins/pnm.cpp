@@ -23,7 +23,7 @@
 **  02111-1307, USA.
 */
 
-#include <iostream>
+//#include <iostream>
 #include <stdexcept>
 #include "../math/size.hpp"
 #include "pnm.hpp"
@@ -157,8 +157,8 @@ PNM::load_from_mem(const char* data, int len)
 
 // g++ -Wall -Werror -ansi -pedantic blob.cpp pnm.cpp -o myexec -D__TEST__
 
-#include <iostream>
-#include "blob.hpp"
+//#include <iostream>
+//#include "blob.hpp"
 
 int main(int argc, char** argv)
 {

@@ -19,7 +19,7 @@
 #ifndef HEADER_CURL_HPP
 #define HEADER_CURL_HPP
 
-#include <string>
+//#include <string>
 #include "../blob.hpp"
 
 class CURLHandler

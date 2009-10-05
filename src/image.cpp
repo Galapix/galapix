@@ -16,18 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SDL.h"
-#include <boost/bind.hpp>
+#include "image.hpp"
+
+//#include "SDL.h"
+//#include <boost/bind.hpp>
 
 #include "math/rgb.hpp"
-#include "math/rect.hpp"
+//#include "math/rect.hpp"
 #include "display/framebuffer.hpp"
-#include "display/surface.hpp"
-#include "math/math.hpp"
+//#include "display/surface.hpp"
+//#include "math/math.hpp"
 #include "file_entry.hpp"
 #include "database_thread.hpp"
-#include "thread_message_queue.hpp"
-#include "image.hpp"
+//#include "thread_message_queue.hpp"
 #include "viewer.hpp"
 
 uint32_t make_cache_id(int x, int y, int scale)

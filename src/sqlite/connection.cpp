@@ -16,12 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "sqlite/connection.hpp"
+
 #include <sstream>
-#include <iostream>
+//#include <iostream>
 
 #include "error.hpp"
-#include "statement.hpp"
-#include "connection.hpp"
+//#include "statement.hpp"
 
 static int busy_callback(void* , int)
 {

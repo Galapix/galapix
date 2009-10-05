@@ -17,11 +17,11 @@
 */
 
 #include <SDL.h>
-#include <math.h>
-#include <assert.h>
+//#include <math.h>
+//#include <assert.h>
 #include <iostream>
 #include <spnav.h>
-#include "viewer.hpp"
+//#include "viewer.hpp"
 #include "space_navigator.hpp"
 
 SpaceNavigator::SpaceNavigator()

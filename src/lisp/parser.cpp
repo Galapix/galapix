@@ -18,11 +18,11 @@
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <sstream>
-#include <cassert>
-#include <iostream>
-#include <string>
+//#include <cassert>
+//#include <iostream>
+//#include <string>
 #include <fstream>
-#include <exception>
+//#include <exception>
 #include <string.h>
 
 //#include "physfs/physfs_stream.hpp"

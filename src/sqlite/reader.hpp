@@ -19,8 +19,8 @@
 #ifndef HEADER_SQLITE_READER_HPP
 #define HEADER_SQLITE_READER_HPP
 
-#include <sqlite3.h>
-#include <string>
+//#include <sqlite3.h>
+//#include <string>
 #include "connection.hpp"
 #include "../blob.hpp"
 

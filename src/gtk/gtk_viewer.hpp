@@ -20,6 +20,7 @@
 #define HEADER_GTK_VIEWER_HPP
 
 #include <gtkmm.h>
+#include <boost/scoped_ptr.hpp>
 
 class Viewer;
 class Workspace;

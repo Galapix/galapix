@@ -18,7 +18,7 @@
 
 #include "tools/move_tool.hpp"
 
-#include "image.hpp"
+//#include "image.hpp"
 #include "workspace.hpp"
 #include "viewer.hpp"
 #include "display/framebuffer.hpp"

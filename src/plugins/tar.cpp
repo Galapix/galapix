@@ -18,7 +18,7 @@
 
 #include <stdexcept>
 #include "../exec.hpp"
-#include "../blob.hpp"
+//#include "../blob.hpp"
 #include "tar.hpp"
 
 std::vector<std::string>

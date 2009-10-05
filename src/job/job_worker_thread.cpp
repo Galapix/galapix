@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+//#include <iostream>
 #include "job.hpp"
 #include "job_worker_thread.hpp"
 

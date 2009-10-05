@@ -16,19 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <assert.h>
-#include <iostream>
-#include <stdexcept>
-#include <boost/format.hpp>
-#include <string.h>
+//#include <assert.h>
+//#include <iostream>
+//#include <stdexcept>
+//#include <boost/format.hpp>
+//#include <string.h>
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+//#include <GL/gl.h>
+//#include <GL/glu.h>
 
-#include "math/size.hpp"
+//#include "math/size.hpp"
 #include "math/rect.hpp"
 #include "framebuffer.hpp"
-#include "software_surface.hpp"
+//#include "software_surface.hpp"
 #include "texture.hpp"
 
 class TextureImpl

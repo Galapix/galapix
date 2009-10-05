@@ -18,7 +18,7 @@
 
 #include <stdexcept>
 #include "../exec.hpp"
-#include "../blob.hpp"
+//#include "../blob.hpp"
 #include "rar.hpp"
 
 std::vector<std::string>
@@ -69,7 +69,7 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
 
 // g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp rar.cpp -o myrar -D__TEST_RAR__  
 
-#include <iostream>
+//#include <iostream>
 
 int main(int argc, char** argv)
 {

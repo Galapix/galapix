@@ -16,10 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/mutex.hpp>
+//#include <boost/thread/mutex.hpp>
+//#include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
-#include "SDL.h"
+//#include "SDL.h"
 #include "job_handle.hpp"
 
 class JobHandleImpl

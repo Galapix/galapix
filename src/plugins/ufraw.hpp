@@ -19,8 +19,8 @@
 #ifndef HEADER_UFRAW_HPP
 #define HEADER_UFRAW_HPP
 
-#include <string>
-#include "../software_surface.hpp"
+//#include <string>
+//#include "../software_surface.hpp"
 
 class URL;
 class Size;

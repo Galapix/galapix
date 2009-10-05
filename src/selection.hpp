@@ -19,7 +19,7 @@
 #ifndef HEADER_SELECTION_HPP
 #define HEADER_SELECTION_HPP
 
-#include "math/vector2f.hpp"
+//#include "math/vector2f.hpp"
 #include "image.hpp"
 
 class SelectionImpl;

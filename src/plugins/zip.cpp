@@ -18,7 +18,7 @@
 
 #include <stdexcept>
 #include "../exec.hpp"
-#include "../blob.hpp"
+//#include "../blob.hpp"
 #include "zip.hpp"
 
 
@@ -112,7 +112,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename)
 
 // g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp zip.cpp -o myzip -D__TEST_ZIP__  
 
-#include <iostream>
+//#include <iostream>
 
 int main(int argc, char** argv)
 {

@@ -23,8 +23,8 @@
 **  02111-1307, USA.
 */
 
-#include <assert.h>
-#include <stdexcept>
+//#include <assert.h>
+//#include <stdexcept>
 #include <Magick++.h>
 #include <iostream>
 #include "../url.hpp"

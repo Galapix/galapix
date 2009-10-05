@@ -19,10 +19,10 @@
 #ifndef HEADER_SURFACE_HPP
 #define HEADER_SURFACE_HPP
 
-#include <boost/smart_ptr.hpp>
+//#include <boost/smart_ptr.hpp>
 #include "texture.hpp"
-#include "math/size.hpp"
-#include "software_surface.hpp"
+//#include "math/size.hpp"
+//#include "software_surface.hpp"
 
 class SurfaceImpl;
 class Rect;

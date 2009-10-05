@@ -19,12 +19,12 @@
 #ifndef HEADER_DATABASE_THREAD_HPP
 #define HEADER_DATABASE_THREAD_HPP
 
-#include <boost/function.hpp>
-#include <list>
-#include <string>
+//#include <boost/function.hpp>
+//#include <list>
+//#include <string>
 #include "thread.hpp"
 #include "thread_message_queue.hpp"
-#include "file_entry.hpp"
+//#include "file_entry.hpp"
 #include "tile_entry.hpp"
 #include "job/job_handle.hpp"
 
