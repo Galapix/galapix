@@ -19,7 +19,7 @@
 #include <iostream>
 #include <assert.h>
 #include "framebuffer.hpp"
-#include "math.hpp"
+#include "math/math.hpp"
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 #include "math/size.hpp"

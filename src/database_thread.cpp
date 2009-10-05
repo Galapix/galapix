@@ -19,7 +19,7 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <assert.h>
-#include "math.hpp"
+#include "math/math.hpp"
 #include "url.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "job_manager.hpp"

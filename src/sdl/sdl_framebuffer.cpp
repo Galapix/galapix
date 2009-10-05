@@ -18,11 +18,11 @@
 
 #include <sstream>
 #include <math.h>
-#include "math.hpp"
 #include <assert.h>
 #include <iostream>
 #include <stdexcept>
 
+#include "math/math.hpp"
 #include "display/framebuffer.hpp"
 #include "sdl/sdl_framebuffer.hpp"
 

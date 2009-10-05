@@ -19,9 +19,9 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-
 #include <assert.h>
-#include "math.hpp"
+
+#include "math/math.hpp"
 #include "filesystem.hpp"
 #include "software_surface.hpp"
 #include "file_entry.hpp"

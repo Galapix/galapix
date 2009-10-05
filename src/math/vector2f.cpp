@@ -1,4 +1,3 @@
-
 //  SuperTux -  A Jump'n Run
 //  Copyright (C) 2004 Matthias Braun <matze@braunis.de
 //
@@ -15,9 +14,11 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "math/vector2f.hpp"
+
 #include <iostream>
-#include "../math.hpp"
-#include "vector2f.hpp"
+
+#include "math/math.hpp"
 
 void
 Vector2f::normalize()

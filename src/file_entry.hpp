@@ -23,7 +23,7 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 #include "url.hpp"
-#include "math.hpp"
+#include "math/math.hpp"
 #include "math/size.hpp"
 #include "math/rgb.hpp"
 #include "software_surface.hpp"

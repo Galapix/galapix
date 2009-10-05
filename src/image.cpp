@@ -23,7 +23,7 @@
 #include "math/rect.hpp"
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
-#include "math.hpp"
+#include "math/math.hpp"
 #include "file_entry.hpp"
 #include "database_thread.hpp"
 #include "thread_message_queue.hpp"

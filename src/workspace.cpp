@@ -23,7 +23,7 @@
 #include "database_thread.hpp"
 #include "math/rect.hpp"
 #include "math/quad_tree.hpp"
-#include "math.hpp"
+#include "math/math.hpp"
 #include "file_entry.hpp"
 #include "file_reader.hpp"
 #include "display/framebuffer.hpp"

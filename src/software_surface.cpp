@@ -29,7 +29,7 @@
 #include "plugins/rsvg.hpp"
 
 #include "blob.hpp"
-#include "math.hpp"
+#include "math/math.hpp"
 #include "math/rect.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"

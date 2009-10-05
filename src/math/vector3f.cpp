@@ -15,7 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <iostream>
-#include "../math.hpp"
+#include "math/math.hpp"
 #include "vector3f.hpp"
 #include "vector2f.hpp"
 
