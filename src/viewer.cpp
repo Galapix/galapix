@@ -471,11 +471,20 @@ Viewer::toggle_pinned_grid()
 }
 
 void
-Viewer::toggle_background_color()
+Viewer::toggle_background_color(bool backwards)
 {
-  background_color += 1;
-  if (background_color >= int(background_colors.size()))
-    background_color = 0;
+  if (backwards)
+  {
+    background_color -= 1;
+    if (background_color < 0)
+      background_color = static_cast<int>(background_colors.size()) - 1;
+  }
+  else
+  {
+    background_color += 1;
+    if (background_color >= static_cast<int>(background_colors.size()))
+      background_color = 0;
+  }
 }
 
 void

@@ -55,6 +55,8 @@ SDLViewer::~SDLViewer()
 void
 SDLViewer::process_event(const SDL_Event& event)
 {
+  Uint8* keystate = SDL_GetKeyState(0);
+
   switch(event.type)
     {
       case SDL_USEREVENT:
@@ -364,7 +366,14 @@ SDLViewer::process_event(const SDL_Event& event)
               break;
 
             case SDLK_b:
-              viewer->toggle_background_color();
+              if (keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT])
+              {
+                viewer->toggle_background_color(true);
+              }
+              else
+              {
+                viewer->toggle_background_color();
+              }
               break;
 
             case SDLK_SPACE:

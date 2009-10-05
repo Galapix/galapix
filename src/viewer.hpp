@@ -135,7 +135,7 @@ public:
   void toggle_grid();
   void toggle_pinned_grid();
   
-  void toggle_background_color();
+  void toggle_background_color(bool backwards = false);
 
   void layout_auto();
   void layout_random();
