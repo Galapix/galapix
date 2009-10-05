@@ -55,7 +55,7 @@ GtkViewer::run()
 
   Gtk::ScrolledWindow& hbox = dynamic_cast<Gtk::ScrolledWindow&>(*xml->get_widget("scrolledwindow1"));
 
-  viewer = std::auto_ptr<Viewer>(new Viewer(workspace));
+  viewer.reset(new Viewer(workspace));
 
   viewer->set_grid(Vector2f(0,0), Sizef(256.0f, 256.0f));
   //viewer->toggle_grid();

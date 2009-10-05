@@ -20,6 +20,7 @@
 #define HEADER_JOB_WORKER_THREAD_HPP
 
 #include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
 #include "thread_message_queue.hpp"
 #include "thread.hpp"
 #include "job_handle.hpp"
@@ -51,6 +52,8 @@ private:
   JobWorkerThread (const JobWorkerThread&);
   JobWorkerThread& operator= (const JobWorkerThread&);
 };
+
+typedef boost::shared_ptr<JobWorkerThread> JobWorkerThreadHandle;
 
 #endif
 

@@ -21,6 +21,7 @@
 
 #include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 #include "job_handle.hpp"
 
@@ -35,7 +36,7 @@ public:
   static JobManager* current() { return current_; }
 
 private:
-  typedef std::vector<JobWorkerThread*> Threads;
+  typedef std::vector<boost::shared_ptr<JobWorkerThread> > Threads;
   Threads threads;
   Threads::size_type next_thread;
 

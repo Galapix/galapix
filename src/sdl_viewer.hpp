@@ -20,6 +20,7 @@
 #define HEADER_VIEWER_THREAD_HPP
 
 #include <SDL.h>
+#include <boost/scoped_ptr.hpp>
 
 #include "math/size.hpp"
 
@@ -48,7 +49,7 @@ private:
   bool quit;
   bool spnav_allow_rotate;
 
-  std::auto_ptr<Viewer> viewer;
+  boost::scoped_ptr<Viewer> viewer;
   
   Workspace* workspace;
 

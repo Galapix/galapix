@@ -45,7 +45,7 @@ private:
   Gtk::RadioToolButton* layout_tight_button;
   Gtk::RadioToolButton* layout_random_button;
 
-  std::auto_ptr<Viewer> viewer;
+  boost::scoped_ptr<Viewer> viewer;
 
 public:
   GtkViewer();

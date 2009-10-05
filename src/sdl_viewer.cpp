@@ -410,7 +410,7 @@ SDLViewer::run()
 
   workspace->layout_aspect(4,3);
 
-  viewer = std::auto_ptr<Viewer>(new Viewer(workspace));
+  viewer.reset(new Viewer(workspace));
 
   Uint32 ticks = SDL_GetTicks();
 

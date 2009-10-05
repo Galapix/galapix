@@ -46,10 +46,10 @@ private:
   Items    items;
   int      depth;
 
-  std::auto_ptr<QuadTreeNode<C> > nw;
-  std::auto_ptr<QuadTreeNode<C> > ne;
-  std::auto_ptr<QuadTreeNode<C> > sw;
-  std::auto_ptr<QuadTreeNode<C> > se;
+  boost::scoped_ptr<QuadTreeNode<C> > nw;
+  boost::scoped_ptr<QuadTreeNode<C> > ne;
+  boost::scoped_ptr<QuadTreeNode<C> > sw;
+  boost::scoped_ptr<QuadTreeNode<C> > se;
 
 public:
   QuadTreeNode(int depth, const Rectf& bounding_rect_)
@@ -85,14 +85,14 @@ public:
                 if(rect.top >= center.y)
                   { // south
                     if (!sw.get())
-                      sw = std::auto_ptr<QuadTreeNode>(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
+                      sw.reset(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
                                                                                        center.x, center.y)));
                     sw->add(rect, c);
                   }
                 else // (rect.top < center.y)
                   { // north
                     if (!nw.get())
-                      nw = std::auto_ptr<QuadTreeNode>(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
+                      nw.reset(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
                                                                                        center.x, center.y)));
                     nw->add(rect, c);
                   }
@@ -102,14 +102,14 @@ public:
                 if(rect.top >= center.y)
                   { // south
                     if (!se.get())
-                      se = std::auto_ptr<QuadTreeNode>(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
+                      se.reset(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
                                                                                        center.x, center.y)));
                     se->add(rect, c);
                   }
                 else // (rect.top < center.y)
                   { // north
                     if (!ne.get())
-                      ne = std::auto_ptr<QuadTreeNode>(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
+                      ne.reset(new QuadTreeNode(depth+1, Rectf(bounding_rect.left, bounding_rect.top,
                                                                                        center.x, center.y)));
                     ne->add(rect, c);
                   }
@@ -156,7 +156,7 @@ template<class C>
 class QuadTree 
 {
 private:
-  std::auto_ptr<QuadTreeNode<C> > main_node;
+  boost::scoped_ptr<QuadTreeNode<C> > main_node;
 
 public: 
   QuadTree(const Rectf& bounding_rect)
