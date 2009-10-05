@@ -20,8 +20,9 @@
 #define HEADER_JOBS_TILE_GENERATION_JOB_HPP
 
 #include <boost/function.hpp>
-#include "../job.hpp"
-#include "../file_entry.hpp"
+
+#include "job/job.hpp"
+#include "file_entry.hpp"
 
 class TileEntry;
 

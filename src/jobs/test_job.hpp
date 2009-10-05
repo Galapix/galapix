@@ -19,7 +19,7 @@
 #ifndef HEADER_TEST_JOB_HPP
 #define HEADER_TEST_JOB_HPP
 
-#include "../job.hpp"
+#include "job/job.hpp"
 
 class TestJob : public Job
 {

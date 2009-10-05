@@ -26,7 +26,7 @@
 #include "thread_message_queue.hpp"
 #include "file_entry.hpp"
 #include "tile_entry.hpp"
-#include "job_handle.hpp"
+#include "job/job_handle.hpp"
 
 class URL;
 class DatabaseMessage;

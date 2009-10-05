@@ -22,7 +22,7 @@
 #include "math/math.hpp"
 #include "url.hpp"
 #include "jobs/tile_generation_job.hpp"
-#include "job_manager.hpp"
+#include "job/job_manager.hpp"
 #include "database.hpp"
 #include "file_database.hpp"
 #include "tile_database.hpp"

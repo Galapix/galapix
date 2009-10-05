@@ -42,7 +42,7 @@
 #include "database_thread.hpp"
 #include "filesystem.hpp"
 #include "workspace.hpp"
-#include "job_manager.hpp"
+#include "job/job_manager.hpp"
 #ifdef GALAPIX_SDL
 #  include "sdl/sdl_viewer.hpp"
 #endif

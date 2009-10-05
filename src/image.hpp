@@ -23,7 +23,7 @@
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <string>
-#include "job_handle.hpp"
+#include "job/job_handle.hpp"
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "grid.hpp"

@@ -25,7 +25,6 @@
 #include "math/size.hpp"
 
 #include "image.hpp"
-#include "job_handle.hpp"
 #include "tile_entry.hpp"
 
 class Viewer;
