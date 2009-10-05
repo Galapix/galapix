@@ -373,14 +373,18 @@ Workspace::cache_cleanup()
 }
 
 void
-Workspace::print_info()
+Workspace::print_info(const Rectf& rect)
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  {
+    if (i->overlaps(rect))
     {
       i->print_info();
+      std::cout << std::endl;
     }
+  }
   std::cout << "  Number of Images: " << images.size() << std::endl;
   std::cout << "-------------------------------------------------------" << std::endl;
 }
