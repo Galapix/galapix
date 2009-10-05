@@ -19,33 +19,31 @@
 #include <stdexcept>
 #include <fstream>
 #include <string.h>
+#include <boost/scoped_array.hpp>
 #include "blob.hpp"
 
 class BlobImpl
 {
 public:
-  uint8_t* data;
-  int      len;
+  boost::scoped_array<uint8_t> m_data;
+  int      m_len;
   
-  BlobImpl(const void* data_, int len_)
+  BlobImpl(const void* data, int len) :
+    m_data(new uint8_t[len]),
+    m_len(len)
   {
-    data = new uint8_t[len_];
-    len  = len_;
-
-    memcpy(data, data_, len);
+    memcpy(m_data.get(), data, m_len);
   }
 
-  BlobImpl(const std::vector<uint8_t>& data_in)
+  BlobImpl(const std::vector<uint8_t>& data_in) :
+    m_data(new uint8_t[data_in.size()]),
+    m_len(data_in.size())
   {
-    data = new uint8_t[data_in.size()];
-    len  = data_in.size();
-
-    memcpy(data, &*data_in.begin(), len);
+    memcpy(m_data.get(), &*data_in.begin(), m_len);
   }
 
   ~BlobImpl()
   {
-    delete[] data;
   }
 };
 
@@ -64,7 +62,7 @@ int
 Blob::size() const 
 {
   if (impl.get())
-    return impl->len; 
+    return impl->m_len;
   else
     return 0;
 }
@@ -73,7 +71,7 @@ uint8_t*
 Blob::get_data() const 
 {
   if (impl.get())
-    return impl->data; 
+    return impl->m_data.get();
   else
     return 0;
 }
@@ -82,7 +80,7 @@ std::string
 Blob::str() const
 {
   if (impl.get())
-    return std::string(reinterpret_cast<char*>(impl->data), impl->len);
+    return std::string(reinterpret_cast<char*>(impl->m_data.get()), impl->m_len);
   else
     return std::string();
 }
@@ -91,7 +89,7 @@ void
 Blob::write_to_file(const std::string& filename)
 {
   std::ofstream out(filename.c_str(), std::ios::binary);
-  out.write(reinterpret_cast<char*>(impl->data), impl->len);
+  out.write(reinterpret_cast<char*>(impl->m_data.get()), impl->m_len);
 }
 
 Blob
