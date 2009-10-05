@@ -21,6 +21,8 @@ Release procedure:
 Problems:
 =========
 
+* rounding error causes pictures to disappear
+
 * viewdb -p PATTERN doesn't work, as the viewer isn't updated in
   SDLViewer::run(), pressing '1' works as a workaround
 
@@ -46,6 +48,11 @@ Problems:
 * implement auto-pilot
 
 * trackball mode in window mode doesn't zoom to center, but some abitary point
+
+* pressing Escape doesn't stop any jobs, instead it waits for them to finish, should be changed
+
+* make the database versioned by filename (easiest to implement):
+  ~/.galapix/cache-1.sqlite
 
 * Corel CMX Support
 
