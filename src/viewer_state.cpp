@@ -68,8 +68,8 @@ void
 ViewerState::move(const Vector2f& pos)
 {
   // FIXME: Implement a proper 2D Matrix instead of this hackery
-  offset.x += pos.x * cosf(angle/180.0f*M_PI) +  pos.y * sinf(angle/180.0f*M_PI);
-  offset.y -= pos.x * sinf(angle/180.0f*M_PI) -  pos.y * cosf(angle/180.0f*M_PI);
+  offset.x += pos.x * cosf(angle/180.0f*Math::pi) +  pos.y * sinf(angle/180.0f*Math::pi);
+  offset.y -= pos.x * sinf(angle/180.0f*Math::pi) -  pos.y * cosf(angle/180.0f*Math::pi);
 }
 
 Vector2f
@@ -81,10 +81,10 @@ ViewerState::screen2world(const Vector2i& pos) const
 Rectf
 ViewerState::screen2world(const Rect& rect) const
 {
-  return Rectf((rect.left   - offset.x) / scale,
-               (rect.top    - offset.y) / scale,
-               (rect.right  - offset.x) / scale,
-               (rect.bottom - offset.y) / scale);
+  return Rectf((static_cast<float>(rect.left)   - offset.x) / scale,
+               (static_cast<float>(rect.top)    - offset.y) / scale,
+               (static_cast<float>(rect.right)  - offset.x) / scale,
+               (static_cast<float>(rect.bottom) - offset.y) / scale);
 }
 
 void

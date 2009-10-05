@@ -64,10 +64,10 @@ void
 SExprFileWriter::write_rgba(const char* name, const RGBA& rgba)
 {
   (*out) << "\n" << indent() << "(" << name << " "
-         << rgba.r/255.0f << " " 
-         << rgba.g/255.0f << " "
-         << rgba.b/255.0f << " " 
-         << rgba.a/255.0f << ")";
+         << static_cast<float>(rgba.r)/255.0f << " " 
+         << static_cast<float>(rgba.g)/255.0f << " "
+         << static_cast<float>(rgba.b)/255.0f << " " 
+         << static_cast<float>(rgba.a)/255.0f << ")";
 }
 
 void

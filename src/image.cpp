@@ -177,13 +177,13 @@ Image::get_scale() const
 float
 Image::get_scaled_width() const
 {
-  return impl->file_entry.get_width() * impl->scale;
+  return static_cast<float>(impl->file_entry.get_width()) * impl->scale;
 }
 
 float
 Image::get_scaled_height() const
 {
-  return impl->file_entry.get_height() * impl->scale;
+  return static_cast<float>(impl->file_entry.get_height()) * impl->scale;
 }
 
 int
@@ -292,10 +292,11 @@ Image::draw_tile(int x, int y, int scale,
           s.width  = Math::min(surface.get_width(),  s.width);
           s.height = Math::min(surface.get_height(), s.height);
           
-          surface.draw(Rectf(Vector2f(x%downscale, y%downscale) * 256/downscale, 
+          surface.draw(Rectf(Vector2f(static_cast<float>(x % downscale), 
+                                      static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
                              s),
                        //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
-                       Rectf(pos, s * fscale * downscale));
+                       Rectf(pos, s * fscale * static_cast<float>(downscale)));
         }
       else // draw replacement rect when no tile could be loaded
         {         
@@ -308,7 +309,7 @@ Image::draw_tile(int x, int y, int scale,
 
 void 
 Image::draw_tiles(const Rect& rect, int scale, 
-                  const Vector2f& /*pos*/, float fscale)
+                  const Vector2f& pos, float fscale)
 {
   float tilesize = 256.0f * fscale;
 
@@ -316,7 +317,7 @@ Image::draw_tiles(const Rect& rect, int scale,
     for(int x = rect.left; x < rect.right; ++x)
       {
         draw_tile(x, y, scale, 
-                  get_top_left_pos() + Vector2f(x,y) * tilesize,
+                  get_top_left_pos() + Vector2f(static_cast<float>(x), static_cast<float>(y)) * tilesize,
                   fscale);
       }
 }
@@ -461,7 +462,7 @@ Image::draw(const Rectf& cliprect, float fscale)
       { // So small that only one tile is to be drawn
         draw_tile(0, 0, tiledb_scale, 
                   top_left,
-                  scale_factor * impl->scale);
+                  static_cast<float>(scale_factor) * impl->scale);
       }
       else
       {
@@ -474,16 +475,16 @@ Image::draw(const Rectf& cliprect, float fscale)
 
         int   itilesize = 256 * scale_factor;
           
-        int start_x = image_region.left  / itilesize;
-        int end_x   = Math::ceil_div(image_region.right, itilesize);
+        int start_x = static_cast<int>(image_region.left)  / itilesize;
+        int end_x   = Math::ceil_div(static_cast<int>(image_region.right), itilesize);
 
-        int start_y = image_region.top / itilesize;
-        int end_y   = Math::ceil_div(image_region.bottom, itilesize);
+        int start_y = static_cast<int>(image_region.top) / itilesize;
+        int end_y   = Math::ceil_div(static_cast<int>(image_region.bottom), itilesize);
 
         draw_tiles(Rect(start_x, start_y, end_x, end_y), 
                    tiledb_scale, 
                    top_left,
-                   scale_factor * impl->scale);
+                   static_cast<float>(scale_factor) * impl->scale);
       }
     }
   }

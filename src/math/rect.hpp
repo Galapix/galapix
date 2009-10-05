@@ -338,8 +338,8 @@ public:
   //: Sets the size of the rectangle, maintaining top/left position.
   void set_size(const Size &size)
   {
-    right = left + size.width;
-    bottom = top + size.height;
+    right  = left + static_cast<float>(size.width);
+    bottom = top  + static_cast<float>(size.height);
   }
 
   //: Calculates and returns the union of two rectangles.

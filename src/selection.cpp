@@ -107,7 +107,7 @@ Selection::get_center() const
         {
           pos += i->get_pos();
         }
-      return pos / impl->images.size();
+      return pos / static_cast<float>(impl->images.size());
     }
 }
 

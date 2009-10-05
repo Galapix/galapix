@@ -75,6 +75,12 @@ SQLiteReader::get_int(int column)
   return sqlite3_column_int(stmt, column);
 }
 
+int64_t
+SQLiteReader::get_int64(int column)
+{
+  return sqlite3_column_int64(stmt, column);
+}
+
 bool
 SQLiteReader::is_null(int column)
 {

@@ -11,7 +11,7 @@ preset_cxxflags = {
                      "-Wextra",
                      "-Wnon-virtual-dtor",
                      # "-Weffc++",
-                     # "-Wconversion",
+                     "-Wconversion",
                      "-Werror",
                      # "-Wshadow",
                      "-Wcast-qual",

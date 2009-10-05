@@ -90,10 +90,10 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
           for(int x = 0; x < width; ++x)
             {
-              dst_pixels[4*x + 0] = src_pixels[x].red     >> shift;
-              dst_pixels[4*x + 1] = src_pixels[x].green   >> shift;
-              dst_pixels[4*x + 2] = src_pixels[x].blue    >> shift;
-              dst_pixels[4*x + 3] = 255 - (src_pixels[x].opacity >> shift);
+              dst_pixels[4*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
+              dst_pixels[4*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
+              dst_pixels[4*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
+              dst_pixels[4*x + 3] = static_cast<uint8_t>(255 - (src_pixels[x].opacity >> shift));
             }
         }
     }
@@ -108,9 +108,9 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
           for(int x = 0; x < width; ++x)
             {
-              dst_pixels[3*x + 0] = src_pixels[x].red     >> shift;
-              dst_pixels[3*x + 1] = src_pixels[x].green   >> shift;
-              dst_pixels[3*x + 2] = src_pixels[x].blue    >> shift;
+              dst_pixels[3*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
+              dst_pixels[3*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
+              dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
             }
         }
     }  

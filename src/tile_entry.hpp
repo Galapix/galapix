@@ -25,7 +25,7 @@
 class TileEntry
 {
 private:
-  uint32_t fileid;
+  int64_t  fileid;
   int      scale;
   Vector2i pos;
   Blob     blob;
@@ -36,7 +36,7 @@ public:
   TileEntry()
   {}
 
-  TileEntry(uint32_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_)
+  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_)
     : fileid(fileid_),
       scale(scale_),
       pos(pos_),
@@ -44,7 +44,7 @@ public:
       format(-1)
   {}
 
-  TileEntry(uint32_t fileid_, int scale_, const Vector2i& pos_, const Blob& blob_, int format_)
+  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const Blob& blob_, int format_)
     : fileid(fileid_),
       scale(scale_),
       pos(pos_),
@@ -54,12 +54,12 @@ public:
 
   SoftwareSurface get_surface() const { return surface; }
   Blob     get_blob()   const { return blob; }
-  uint32_t get_fileid() const { return fileid; }
+  int64_t  get_fileid() const { return fileid; }
   int      get_scale()  const { return scale; }
   Vector2i get_pos()    const { return pos; }
   int      get_format() const { return format; }
 
-  void set_fileid(uint32_t fileid_) { fileid = fileid_; }
+  void set_fileid(int64_t fileid_) { fileid = fileid_; }
   void set_surface(const SoftwareSurface& surface_)  { surface = surface_; }
   void set_blob(const Blob& blob_) { blob = blob_; }
   void set_format(int format_) { format = format_; }

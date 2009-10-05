@@ -83,18 +83,18 @@ SDLViewer::process_event(const SDL_Event& event)
                                 << spnav_ev->motion.rz
                                 << std::endl;              
 
-                    float factor = -abs(spnav_ev->motion.y)/10000.0f;
+                    float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
 
                     if (spnav_ev->motion.y > 0)
                       viewer->get_state().zoom(1.0f+factor);
                     else if (spnav_ev->motion.y < 0)
                       viewer->get_state().zoom(1.0f/(1.0f+factor));
 
-                    viewer->get_state().move(Vector2f(-spnav_ev->motion.x / 10.0f,
-                                                      +spnav_ev->motion.z / 10.0f));
+                    viewer->get_state().move(Vector2f(static_cast<float>(-spnav_ev->motion.x) / 10.0f,
+                                                      static_cast<float>(+spnav_ev->motion.z) / 10.0f));
 
                     if (spnav_allow_rotate)
-                      viewer->get_state().rotate(spnav_ev->motion.ry / 200.0f);
+                      viewer->get_state().rotate(static_cast<float>(spnav_ev->motion.ry) / 200.0f);
                   }
                   break;
             
@@ -439,7 +439,7 @@ SDLViewer::run()
             }
 
           Uint32 cticks = SDL_GetTicks();
-          float delta = (cticks - ticks) / 1000.0f;
+          float delta = static_cast<float>(cticks - ticks) / 1000.0f;
           ticks = cticks;
 
           viewer->update(delta);

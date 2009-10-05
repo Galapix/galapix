@@ -147,7 +147,7 @@ bool
 GtkViewerWidget::mouse_move(GdkEventMotion* event)
 {
   //std::cout << "Motion: " << event->x << ", " << event->y << std::endl;
-  Vector2i new_pos(event->x, event->y);
+  Vector2i new_pos(static_cast<int>(event->x), static_cast<int>(event->y));
   viewer->on_mouse_motion(new_pos, new_pos - mouse_pos);
   mouse_pos = new_pos;
 
@@ -162,7 +162,7 @@ GtkViewerWidget::mouse_down(GdkEventButton* event)
 {
   grab_focus();
   //std::cout << "Button Press: " << event->x << ", " << event->y << " - " << event->button << std::endl;
-  viewer->on_mouse_button_down(Vector2i(event->x, event->y), event->button);
+  viewer->on_mouse_button_down(Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)), event->button);
   return false;
 }
 
@@ -171,11 +171,11 @@ GtkViewerWidget::scroll(GdkEventScroll* event)
 {
   if (event->direction == GDK_SCROLL_UP)
     {
-      viewer->get_state().zoom(1.1f, Vector2i(event->x, event->y));
+      viewer->get_state().zoom(1.1f, Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)));
     }
   else if (event->direction == GDK_SCROLL_DOWN)
     {
-      viewer->get_state().zoom(1.0f/1.1f, Vector2i(event->x, event->y));
+      viewer->get_state().zoom(1.0f/1.1f, Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)));
     }
   return false;
 }
@@ -184,7 +184,7 @@ bool
 GtkViewerWidget::mouse_up(GdkEventButton* event)
 {
   //std::cout << "Button Release: " << event->x << ", " << event->y << " - " << event->button << std::endl;
-  viewer->on_mouse_button_up(Vector2i(event->x, event->y), event->button);
+  viewer->on_mouse_button_up(Vector2i(static_cast<int>(event->x), static_cast<int>(event->y)), event->button);
   return false;
 }
 

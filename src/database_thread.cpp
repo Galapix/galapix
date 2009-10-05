@@ -204,9 +204,9 @@ public:
 class DeleteFileEntryDatabaseMessage : public DatabaseMessage
 {
 public:
-  uint32_t fileid;
+  int64_t fileid;
 
-  DeleteFileEntryDatabaseMessage(uint32_t fileid)
+  DeleteFileEntryDatabaseMessage(int64_t fileid)
     : fileid(fileid)
   {}
 
@@ -217,11 +217,11 @@ public:
       .execute();
     SQLiteStatement(&db.db)
       .prepare("DELETE FROM files WHERE fileid = ?1;")
-      .bind_int(1, fileid)
+      .bind_int64(1, fileid)
       .execute();
     SQLiteStatement(&db.db)
       .prepare("DELETE FROM tiles WHERE fileid = ?1;")
-      .bind_int(1, fileid)
+      .bind_int64(1, fileid)
       .execute();
     SQLiteStatement(&db.db)
       .prepare("END;")
@@ -280,7 +280,7 @@ DatabaseThread::receive_tile(const TileEntry& tile)
 }
 
 void
-DatabaseThread::delete_file_entry(uint32_t fileid)
+DatabaseThread::delete_file_entry(int64_t fileid)
 {
   queue.push(new DeleteFileEntryDatabaseMessage(fileid));
 }

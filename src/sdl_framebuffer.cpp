@@ -125,12 +125,12 @@ SDLFramebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
   Uint16 tbl[256];
   for(int i = 0; i < 256; ++i)
     {
-      float c = i/255.0f;
+      float c = static_cast<float>(i)/255.0f;
       c = c + brightness;
       c = (c * contrast) - 0.5f * (contrast - 1.0f);
       c = powf(c, 1.0f/gamma);
       
-      tbl[i] = Math::clamp(0, (int)(c*65535.0f), 65535);
+      tbl[i] = static_cast<Uint16>(Math::clamp(0, (int)(c*65535.0f), 65535));
     }
   
   SDL_SetGammaRamp(tbl, tbl, tbl);

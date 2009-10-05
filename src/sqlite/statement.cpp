@@ -88,6 +88,21 @@ SQLiteStatement::bind_int(int n, int i)
   return *this;
 }
 
+
+SQLiteStatement&
+SQLiteStatement::bind_int64(int n, int64_t i)
+{
+  if (sqlite3_bind_int64(stmt, n, i) != SQLITE_OK)
+    {
+      std::ostringstream str;
+      str << "SQLiteStatement::bind_int: " << db->get_error_msg();
+      str << "\n" << stmt_str;
+      throw SQLiteError(str.str());
+    }
+
+  return *this;
+}
+
 SQLiteStatement&
 SQLiteStatement::bind_text(int n, const std::string& text)
 {

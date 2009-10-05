@@ -64,13 +64,13 @@ private:
 
   struct TileRequestGroup 
   {
-    TileRequestGroup(uint32_t fileid, int min_scale, int max_scale)
+    TileRequestGroup(int64_t fileid, int min_scale, int max_scale)
       : fileid(fileid),
         min_scale(min_scale),
         max_scale(max_scale)
     {}
     
-    uint32_t fileid; 
+    int64_t fileid; 
     int min_scale;
     int max_scale;
     std::vector<TileRequest> requests;
@@ -111,7 +111,7 @@ public:
   void      receive_tiles(const std::vector<TileEntry>& tiles);
 
   /** Delete the given FileEntry along with all TileEntry refering to it */
-  void      delete_file_entry(uint32_t fileid);
+  void      delete_file_entry(int64_t fileid);
   /* @} */
 
 private:

@@ -82,7 +82,10 @@ Framebuffer::reshape(const Size& size_)
 void
 Framebuffer::clear(const RGBA& rgba)
 {
-  glClearColor(rgba.r/255.0f, rgba.g/255.0, rgba.b/255.0f, rgba.a/255.0f);
+  glClearColor(static_cast<float>(rgba.r)/255.0f,
+               static_cast<float>(rgba.g)/255.0f,
+               static_cast<float>(rgba.b)/255.0f,
+               static_cast<float>(rgba.a)/255.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -129,15 +132,15 @@ Framebuffer::draw_grid(int num_cells)
     int cell_width = Framebuffer::get_width()/num_cells;
     for(int x = 1; x < num_cells; ++x)
       {
-        glVertex2f(x*cell_width, 0);
-        glVertex2f(x*cell_width, Framebuffer::get_height());
+        glVertex2i(x*cell_width, 0);
+        glVertex2i(x*cell_width, Framebuffer::get_height());
       }
 
     int cell_height = Framebuffer::get_height()/num_cells;
     for(int y = 1; y < num_cells; ++y)
       {
-        glVertex2f(0, y*cell_height);
-        glVertex2f(Framebuffer::get_width(), y*cell_height);
+        glVertex2i(0, y*cell_height);
+        glVertex2i(Framebuffer::get_width(), y*cell_height);
       }
 
   glEnd();
@@ -157,13 +160,13 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rg
   for(float x = start_x; x < Framebuffer::get_width(); x += size.width)
     {
       glVertex2f(x, 0);
-      glVertex2f(x, Framebuffer::get_height());
+      glVertex2f(x, static_cast<float>(Framebuffer::get_height()));
     }
 
   for(float y = start_y; y < Framebuffer::get_height(); y += size.height)
     {
       glVertex2f(0, y);
-      glVertex2f(Framebuffer::get_width(), y);
+      glVertex2f(static_cast<float>(Framebuffer::get_width()), y);
     }
 
   glEnd();  

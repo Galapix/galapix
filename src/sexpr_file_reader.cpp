@@ -193,10 +193,10 @@ public:
     boost::shared_ptr<lisp::Lisp> sub = get_subsection(name);
     if (sub && sub->get_list_size() == 5)
       {
-        v = RGBA(int(sub->get_list_elem(1)->get_float() * 255),
-                 int(sub->get_list_elem(2)->get_float() * 255),
-                 int(sub->get_list_elem(3)->get_float() * 255),
-                 int(sub->get_list_elem(4)->get_float() * 255));
+        v = RGBA(static_cast<uint8_t>(sub->get_list_elem(1)->get_float() * 255),
+                 static_cast<uint8_t>(sub->get_list_elem(2)->get_float() * 255),
+                 static_cast<uint8_t>(sub->get_list_elem(3)->get_float() * 255),
+                 static_cast<uint8_t>(sub->get_list_elem(4)->get_float() * 255));
         return true;
       }
     return false;

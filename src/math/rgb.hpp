@@ -44,9 +44,9 @@ public:
   {}
 
   RGB(uint32_t c)
-    : r((c>> 0) & 0xFF), 
-      g((c>> 8) & 0xFF),
-      b((c>>16) & 0xFF)
+    : r(static_cast<uint8_t>((c>> 0) & 0xFF)), 
+      g(static_cast<uint8_t>((c>> 8) & 0xFF)),
+      b(static_cast<uint8_t>((c>>16) & 0xFF))
   {}
 
   uint32_t get_uint32() const {

@@ -397,9 +397,9 @@ SoftwareSurface::halve() const
               uint8_t* d = dst + (y*dst_p + 3*x);
               uint8_t* s = src + (y*src_p + 3*x)*2;
 
-              d[0] = (s[0] + s[0+3] + s[0+src_p] + s[0+src_p+3])/4;
-              d[1] = (s[1] + s[1+3] + s[1+src_p] + s[1+src_p+3])/4;
-              d[2] = (s[2] + s[2+3] + s[2+src_p] + s[2+src_p+3])/4;
+              d[0] = static_cast<uint8_t>((s[0] + s[0+3] + s[0+src_p] + s[0+src_p+3])/4);
+              d[1] = static_cast<uint8_t>((s[1] + s[1+3] + s[1+src_p] + s[1+src_p+3])/4);
+              d[2] = static_cast<uint8_t>((s[2] + s[2+3] + s[2+src_p] + s[2+src_p+3])/4);
             }
         break;
 
@@ -410,10 +410,10 @@ SoftwareSurface::halve() const
               uint8_t* d = dst + (y*dst_p + 4*x);
               uint8_t* s = src + (y*src_p + 4*x)*2;
 
-              d[0] = (s[0] + s[0+4] + s[0+src_p] + s[0+src_p+4])/4;
-              d[1] = (s[1] + s[1+4] + s[1+src_p] + s[1+src_p+4])/4;
-              d[2] = (s[2] + s[2+4] + s[2+src_p] + s[2+src_p+4])/4;
-              d[3] = (s[3] + s[3+4] + s[3+src_p] + s[3+src_p+4])/4;
+              d[0] = static_cast<uint8_t>((s[0] + s[0+4] + s[0+src_p] + s[0+src_p+4])/4);
+              d[1] = static_cast<uint8_t>((s[1] + s[1+4] + s[1+src_p] + s[1+src_p+4])/4);
+              d[2] = static_cast<uint8_t>((s[2] + s[2+4] + s[2+src_p] + s[2+src_p+4])/4);
+              d[3] = static_cast<uint8_t>((s[3] + s[3+4] + s[3+src_p] + s[3+src_p+4])/4);
             }
         break;
         
@@ -587,9 +587,9 @@ SoftwareSurface::get_average_color() const
       }
 
   int num_pixels = get_width() * get_height();
-  return RGB(r / num_pixels,
-             g / num_pixels,
-             b / num_pixels);
+  return RGB(static_cast<uint8_t>(r / num_pixels),
+             static_cast<uint8_t>(g / num_pixels),
+             static_cast<uint8_t>(b / num_pixels));
 }
 
 SoftwareSurface
@@ -690,9 +690,9 @@ SoftwareSurface::blit(SoftwareSurface& dst, const Vector2i& pos)
           for(int x = 0; x < (end_x - start_x); ++x)
             { 
               uint8_t alpha = srcpx[4*x+3];
-              dstpx[3*x+0] = srcpx[4*x+0] * alpha / 255;
-              dstpx[3*x+1] = srcpx[4*x+1] * alpha / 255;
-              dstpx[3*x+2] = srcpx[4*x+2] * alpha / 255;
+              dstpx[3*x+0] = static_cast<uint8_t>(srcpx[4*x+0] * alpha / 255);
+              dstpx[3*x+1] = static_cast<uint8_t>(srcpx[4*x+1] * alpha / 255);
+              dstpx[3*x+2] = static_cast<uint8_t>(srcpx[4*x+2] * alpha / 255);
             }
         }
     }

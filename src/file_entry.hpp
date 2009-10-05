@@ -33,7 +33,7 @@ class FileEntryImpl
 public:
   /** Unique id by which one can refer to this FileEntry, used in the
       'tile' table in the database */
-  uint32_t fileid;
+  int64_t fileid;
 
   /** The URL of the image file */
   URL url;
@@ -53,7 +53,7 @@ public:
   FileEntry()
   {}
 
-  FileEntry(uint32_t fileid, 
+  FileEntry(int64_t fileid, 
             const URL& url,
             int size,
             int mtime,
@@ -76,8 +76,8 @@ public:
       }
   }
 
-  void        set_fileid(int fileid) { impl->fileid = fileid; }
-  uint32_t    get_fileid()     const { return impl->fileid; }
+  void        set_fileid(int64_t fileid) { impl->fileid = fileid; }
+  int64_t     get_fileid()     const { return impl->fileid; }
   URL         get_url()        const { return impl->url; }
   int         get_width()      const { return impl->image_size.width; }
   int         get_height()     const { return impl->image_size.height; }

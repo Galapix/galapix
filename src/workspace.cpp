@@ -106,8 +106,8 @@ Workspace::add_image(const FileEntry& file_entry)
     }
 
   {
-    image.set_scale(Math::min(1000.0f / file_entry.get_width(),
-                              1000.0f / file_entry.get_height()));
+    image.set_scale(Math::min(1000.0f / static_cast<float>(file_entry.get_width()),
+                              1000.0f / static_cast<float>(file_entry.get_height())));
 
     image.set_pos(next_pos * 1024.0f);
 
@@ -130,7 +130,7 @@ Workspace::layout_vertical()
     {
       i->set_target_scale(1.0f);
       i->set_target_pos(next_pos);
-      next_pos.y += i->get_original_height() + spacing;
+      next_pos.y += static_cast<float>(i->get_original_height()) + spacing;
     }
   
   progress = 0.0f;
@@ -141,26 +141,26 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
   if (!images.empty())
     {
-      int w = int(Math::sqrt(aspect_w * images.size() / aspect_h));
+      int w = int(Math::sqrt(aspect_w * static_cast<float>(images.size()) / aspect_h));
       
       row_width = w;
 
       for(int i = 0; i < int(images.size()); ++i)
         {
-          float target_scale = Math::min(1000.0f / images[i].get_original_width(),
-                                         1000.0f / images[i].get_original_height());
+          float target_scale = Math::min(1000.0f / static_cast<float>(images[i].get_original_width()),
+                                         1000.0f / static_cast<float>(images[i].get_original_height()));
 
           images[i].set_target_scale(target_scale);
 
           if ((i/w) % 2 == 0)
             {
-              images[i].set_target_pos(Vector2f((i % w) * 1024.0f,
-                                                (i / w) * 1024.0f));
+              images[i].set_target_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
+                                                static_cast<float>(i / w) * 1024.0f));
             }
           else
             {
-              images[i].set_target_pos(Vector2f((w - (i % w)-1) * 1024.0f,
-                                                (i / w)         * 1024.0f));
+              images[i].set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
+                                                static_cast<float>(i / w)         * 1024.0f));
             }
 
           next_pos = Vector2i(i % w, i / w);
@@ -179,8 +179,8 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
   // calculate the total width 
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      const float scale = (1000.0f + spacing) / i->get_original_height();
-      width += i->get_original_width() * scale;
+      const float scale = (1000.0f + spacing) / static_cast<float>(i->get_original_height());
+      width += static_cast<float>(i->get_original_width()) * scale;
     }
 
   width /= Math::sqrt(width / ((aspect_w / aspect_h) * (1000.0f + spacing)));
@@ -193,12 +193,12 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
     {
       Image& image = *i;
 
-      const float scale = 1000.0f / image.get_original_height();
+      const float scale = 1000.0f / static_cast<float>(image.get_original_height());
       image.set_target_scale(scale);
 
       if (go_right)
         {
-          if (pos.x + (image.get_original_width()*scale) > width)
+          if (pos.x + (static_cast<float>(image.get_original_width())*scale) > width)
             {
               pos.x = last_pos.x;
               pos.y += 1000.0f + spacing;   
@@ -206,39 +206,39 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
               go_right = false;
 
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(image.get_original_width(),
-                                                  image.get_original_height()) * scale / 2.0f);
+              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
+                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
             }
           else
             {
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(image.get_original_width(),
-                                                  image.get_original_height()) * scale / 2.0f);
+              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
+                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
             
-              pos.x += image.get_original_width()*scale + spacing;
+              pos.x += static_cast<float>(image.get_original_width()) * scale + spacing;
             }
         }
       else
         {
-          if (pos.x - (image.get_original_width()*scale) < 0)
+          if (pos.x - (static_cast<float>(image.get_original_width()) * scale) < 0)
             {
               //pos.x = 0;
               pos.y += 1000.0f + spacing;   
               go_right = true;
 
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(image.get_original_width(),
-                                                  image.get_original_height()) * scale / 2.0f);
+              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
+                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
 
-              pos.x += image.get_original_width()*scale + spacing;
+              pos.x += static_cast<float>(image.get_original_width()) * scale + spacing;
             }
           else
             {
-              pos.x -= image.get_original_width()*scale + spacing;
+              pos.x -= static_cast<float>(image.get_original_width()) * scale + spacing;
 
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(image.get_original_width(),
-                                                  image.get_original_height()) * scale / 2.0f);
+              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
+                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
             }
         }
     }
@@ -253,8 +253,8 @@ Workspace::layout_random()
   int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      i->set_target_pos(Vector2f(rand()%width, rand()%width));
-      i->set_target_scale((rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
+      i->set_target_pos(Vector2f(static_cast<float>(rand()%width), static_cast<float>(rand()%width)));
+      i->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
     }
   progress = 0.0f;
 }

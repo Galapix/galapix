@@ -61,9 +61,9 @@ TileDatabase::~TileDatabase()
 }
 
 bool
-TileDatabase::has_tile(uint32_t fileid, const Vector2i& pos, int scale)
+TileDatabase::has_tile(int64_t fileid, const Vector2i& pos, int scale)
 {
-  has_stmt.bind_int(1, fileid);
+  has_stmt.bind_int64(1, fileid);
   has_stmt.bind_int(2, scale);
   has_stmt.bind_int(3, pos.x);
   has_stmt.bind_int(4, pos.y);
@@ -92,9 +92,9 @@ TileDatabase::has_tile(uint32_t fileid, const Vector2i& pos, int scale)
 }
 
 void
-TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
+TileDatabase::get_tiles(int64_t fileid, std::vector<TileEntry>& tiles)
 {
-  get_all_by_fileid_stmt.bind_int(1, fileid);
+  get_all_by_fileid_stmt.bind_int64(1, fileid);
 
   SQLiteReader reader = get_all_by_fileid_stmt.execute_query();
   while(reader.next())
@@ -135,9 +135,9 @@ TileDatabase::get_tiles(uint32_t fileid, std::vector<TileEntry>& tiles)
 }
 
 bool
-TileDatabase::get_tile(uint32_t fileid, int scale, const Vector2i& pos, TileEntry& tile)
+TileDatabase::get_tile(int64_t fileid, int scale, const Vector2i& pos, TileEntry& tile)
 {
-  get_stmt.bind_int(1, fileid);
+  get_stmt.bind_int64(1, fileid);
   get_stmt.bind_int(2, scale);
   get_stmt.bind_int(3, pos.x);
   get_stmt.bind_int(4, pos.y);
@@ -245,7 +245,7 @@ TileDatabase::store_tile(const TileEntry& tile_)
 
   // FIXME: We need to update a already existing record, instead of
   // just storing a duplicate
-  store_stmt.bind_int (1, tile.get_fileid());
+  store_stmt.bind_int64(1, tile.get_fileid());
   store_stmt.bind_int (2, tile.get_scale());
   store_stmt.bind_int (3, tile.get_pos().x);
   store_stmt.bind_int (4, tile.get_pos().y);
@@ -264,7 +264,7 @@ TileDatabase::check()
   while(reader.next())
     {
       /*
-        uint32_t fileid = reader.get_int(0);
+        int64_t fileid = reader.get_int64(0);
         int scale  = reader.get_int(1);
         int x      = reader.get_int(2);
         int y      = reader.get_int(3);

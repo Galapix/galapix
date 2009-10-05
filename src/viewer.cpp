@@ -126,18 +126,18 @@ Viewer::draw()
 
   if (clip_debug)
     {
-      glTranslatef(Framebuffer::get_width()/2, Framebuffer::get_height()/2, 0.0f);
+      glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
       glScalef(0.5f, 0.5f, 1.0f);
-      glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
+      glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
     }
 
   Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
 
   if (state.get_angle() != 0.0f)
     {
-      glTranslatef(Framebuffer::get_width()/2, Framebuffer::get_height()/2, 0.0f);
+      glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
       glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
-      glTranslatef(-Framebuffer::get_width()/2, -Framebuffer::get_height()/2, 0.0f);
+      glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
 
       // FIXME: We enlarge the cliprect so much that we can rotate
       // freely, however this enlargement creates a cliprect that
@@ -426,7 +426,8 @@ Viewer::toggle_grid()
 void
 Viewer::layout_auto()
 {
-  workspace->layout_aspect(Framebuffer::get_width(), Framebuffer::get_height());
+  workspace->layout_aspect(static_cast<float>(Framebuffer::get_width()),
+                           static_cast<float>(Framebuffer::get_height()));
 }
 
 void
@@ -444,7 +445,8 @@ Viewer::layout_solve_overlaps()
 void
 Viewer::layout_tight()
 {
-  workspace->layout_tight(Framebuffer::get_width(), Framebuffer::get_height());
+  workspace->layout_tight(static_cast<float>(Framebuffer::get_width()),
+                          static_cast<float>(Framebuffer::get_height()));
 }
 
 void
