@@ -44,10 +44,10 @@
 #include "workspace.hpp"
 #include "job_manager.hpp"
 #ifdef GALAPIX_SDL
-#  include "sdl_viewer.hpp"
+#  include "sdl/sdl_viewer.hpp"
 #endif
 #ifdef GALAPIX_GTK
-#  include "gtk_viewer.hpp"
+#  include "gtk/gtk_viewer.hpp"
 #endif
 #include "viewer.hpp"
 #include "galapix.hpp"

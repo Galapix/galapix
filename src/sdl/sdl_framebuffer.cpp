@@ -24,7 +24,7 @@
 #include <stdexcept>
 
 #include "framebuffer.hpp"
-#include "sdl_framebuffer.hpp"
+#include "sdl/sdl_framebuffer.hpp"
 
 SDL_Surface* SDLFramebuffer::screen = 0;
 Uint32 SDLFramebuffer::flags = 0;

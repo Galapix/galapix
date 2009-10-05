@@ -23,8 +23,8 @@
 #include <iostream>
 
 #include "viewer.hpp"
-#include "gtk_viewer_widget.hpp"
-#include "gtk_viewer.hpp"
+#include "gtk/gtk_viewer_widget.hpp"
+#include "gtk/gtk_viewer.hpp"
 
 GtkViewer::GtkViewer()
 {

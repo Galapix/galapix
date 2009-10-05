@@ -23,7 +23,7 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
-#include "sdl_framebuffer.hpp"
+#include "sdl/sdl_framebuffer.hpp"
 #include "framebuffer.hpp"
 
 Size Framebuffer::size;

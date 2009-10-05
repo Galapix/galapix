@@ -109,11 +109,11 @@ galapix_sources = [
 
 spacenav_sources = ['space_navigator.cpp']
 
-sdl_sources = ['sdl_framebuffer.cpp',
-               'sdl_viewer.cpp']
+sdl_sources = ['sdl/sdl_framebuffer.cpp',
+               'sdl/sdl_viewer.cpp']
 
-gtk_sources =['gtk_viewer.cpp',
-              'gtk_viewer_widget.cpp']
+gtk_sources =['gtk/gtk_viewer.cpp',
+              'gtk/gtk_viewer_widget.cpp']
 
 optional_sources = []
 optional_defines = []
@@ -128,6 +128,7 @@ BuildDir('build', 'src')
 
 # build the base library
 libgalapix_env = Environment(CXXFLAGS=preset_cxxflags['development'],
+                             CPPPATH=['.'],
                              CPPDEFINES = optional_defines,
                              LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs)
 libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
@@ -139,6 +140,7 @@ libgalapix = libgalapix_env.StaticLibrary('galapix.sdl',
 
 if compile_galapix_sdl:
     sdl_env = Environment(CXXFLAGS=preset_cxxflags['development'],
+                          CPPPATH=['.'],
                           CPPDEFINES = ['GALAPIX_SDL'] + optional_defines,
                           LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,
                           OBJPREFIX="sdl.")
@@ -151,6 +153,7 @@ if compile_galapix_sdl:
 
 if compile_galapix_gtk:
     gtk_env = Environment(CXXFLAGS=preset_cxxflags['development'],
+                          CPPPATH=['.'],
                           CPPDEFINES = ['GALAPIX_GTK'] + optional_defines,
                           LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,
                           OBJPREFIX="gtk.")

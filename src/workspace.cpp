@@ -16,8 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "workspace.hpp"
+
 #include <boost/bind.hpp>
-#include "sdl_viewer.hpp"
+
 #include "database_thread.hpp"
 #include "math/rect.hpp"
 #include "math/quad_tree.hpp"
@@ -25,7 +27,6 @@
 #include "file_entry.hpp"
 #include "file_reader.hpp"
 #include "framebuffer.hpp"
-#include "workspace.hpp"
 
 Workspace::Workspace()
 {

@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_VIEWER_THREAD_HPP
-#define HEADER_VIEWER_THREAD_HPP
+#ifndef HEADER_SDL_VIEWER_HPP
+#define HEADER_SDL_VIEWER_HPP
 
 #include <SDL.h>
 #include <boost/scoped_ptr.hpp>

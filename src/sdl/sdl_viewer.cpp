@@ -19,11 +19,12 @@
 #include <boost/format.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
+
 #include "math/rgba.hpp"
 #include "filesystem.hpp"
 #include "file_entry.hpp"
 #include "workspace.hpp"
-#include "sdl_framebuffer.hpp"
+#include "sdl/sdl_framebuffer.hpp"
 #include "viewer.hpp"
 #include "framebuffer.hpp"
 #include "plugins/png.hpp"

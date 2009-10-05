@@ -24,7 +24,7 @@
 
 #include "framebuffer.hpp"
 #include "viewer.hpp"
-#include "gtk_viewer_widget.hpp"
+#include "gtk/gtk_viewer_widget.hpp"
 
 GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   : viewer(viewer_)
