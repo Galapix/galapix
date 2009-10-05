@@ -16,8 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "framebuffer.hpp"
 #include "viewer_state.hpp"
+
+#include "display/framebuffer.hpp"
 
 ViewerState::ViewerState()
   : scale(1.0f),

@@ -18,10 +18,11 @@
 
 #include "SDL.h"
 #include <boost/bind.hpp>
+
 #include "math/rgb.hpp"
 #include "math/rect.hpp"
-#include "framebuffer.hpp"
-#include "surface.hpp"
+#include "display/framebuffer.hpp"
+#include "display/surface.hpp"
 #include "math.hpp"
 #include "file_entry.hpp"
 #include "database_thread.hpp"

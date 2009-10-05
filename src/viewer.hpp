@@ -21,7 +21,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <memory>
-#include "surface.hpp"
+#include "display/surface.hpp"
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 #include "math/rgba.hpp"

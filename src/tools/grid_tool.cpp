@@ -16,12 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "tools/grid_tool.hpp"
+
 #include <iostream>
-#include "../framebuffer.hpp"
-#include "../viewer.hpp"
-#include "../math/rgb.hpp"
-#include "../math/rgba.hpp"
-#include "grid_tool.hpp"
+
+#include "display/framebuffer.hpp"
+#include "viewer.hpp"
+#include "math/rgb.hpp"
+#include "math/rgba.hpp"
 
 GridTool::GridTool(Viewer* viewer_)
   : Tool(viewer_),

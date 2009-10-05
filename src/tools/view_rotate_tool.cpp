@@ -17,9 +17,9 @@
 */
 
 #include <math.h>
-#include "../math/vector2i.hpp"
-#include "../framebuffer.hpp"
-#include "../viewer.hpp"
+#include "math/vector2i.hpp"
+#include "display/framebuffer.hpp"
+#include "viewer.hpp"
 #include "view_rotate_tool.hpp"
 
 ViewRotateTool::ViewRotateTool(Viewer* viewer_)

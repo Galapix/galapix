@@ -23,11 +23,13 @@
 **  02111-1307, USA.
 */
 
+#include "tools/zoom_rect_tool.hpp"
+
 #include <iostream>
-#include "../framebuffer.hpp"
-#include "../viewer.hpp"
-#include "../math/rgb.hpp"
-#include "zoom_rect_tool.hpp"
+
+#include "display/framebuffer.hpp"
+#include "viewer.hpp"
+#include "math/rgb.hpp"
 
 ZoomRectTool::ZoomRectTool(Viewer* viewer_)
   : Tool(viewer_),

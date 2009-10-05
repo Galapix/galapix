@@ -23,7 +23,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "framebuffer.hpp"
+#include "display/framebuffer.hpp"
 #include "sdl/sdl_framebuffer.hpp"
 
 SDL_Surface* SDLFramebuffer::screen = 0;

@@ -28,7 +28,7 @@
 #include "math/size.hpp"
 #include "grid.hpp"
 #include "object.hpp"
-#include "surface.hpp"
+#include "display/surface.hpp"
 
 class Surface;
 class Size;

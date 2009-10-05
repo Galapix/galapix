@@ -26,7 +26,7 @@
 #include "math.hpp"
 #include "file_entry.hpp"
 #include "file_reader.hpp"
-#include "framebuffer.hpp"
+#include "display/framebuffer.hpp"
 
 Workspace::Workspace()
 {

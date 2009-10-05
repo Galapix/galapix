@@ -26,7 +26,7 @@
 #include "workspace.hpp"
 #include "sdl/sdl_framebuffer.hpp"
 #include "viewer.hpp"
-#include "framebuffer.hpp"
+#include "display/framebuffer.hpp"
 #include "plugins/png.hpp"
 #include "sdl_viewer.hpp"
 #include "viewer_state.hpp"

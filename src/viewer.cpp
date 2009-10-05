@@ -20,8 +20,9 @@
 #include <fstream>
 #include <boost/format.hpp>
 #include <iostream>
+
 #include "math/rgb.hpp"
-#include "framebuffer.hpp"
+#include "display/framebuffer.hpp"
 #include "software_surface.hpp"
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"

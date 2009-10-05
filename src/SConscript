@@ -84,8 +84,8 @@ libgalapix_sources = [
     'sqlite/error.cpp',
     'sqlite/reader.cpp',
     'sqlite/statement.cpp',
-    'surface.cpp',
-    'texture.cpp',
+    'display/surface.cpp',
+    'display/texture.cpp',
     'thread.cpp',
     'tile_database.cpp',
     'tools/grid_tool.cpp',
@@ -102,7 +102,7 @@ libgalapix_sources = [
     ]
 
 galapix_sources = [
-    'framebuffer.cpp',
+    'display/framebuffer.cpp',
     'galapix.cpp',
     'viewer.cpp',
     ]

@@ -22,7 +22,7 @@
 
 #include <gtkmm.h>
 
-#include "framebuffer.hpp"
+#include "display/framebuffer.hpp"
 #include "viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
 
