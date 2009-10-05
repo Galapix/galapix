@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <iostream>
 #include <stdexcept>
+#include <boost/scoped_ptr.hpp>
 
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
@@ -280,7 +281,7 @@ public:
   SoftwareSurface::Format format;
   Size     size;
   int      pitch;
-  uint8_t* pixels;
+  boost::scoped_array<uint8_t> pixels;
   
   SoftwareSurfaceImpl(SoftwareSurface::Format format_, const Size& size_)
     : format(format_),
@@ -290,12 +291,12 @@ public:
       {
         case SoftwareSurface::RGB_FORMAT:
           pitch  = size.width * 3;
-          pixels = new uint8_t[pitch * size.height];
+          pixels.reset(new uint8_t[pitch * size.height]);
           break;
           
         case SoftwareSurface::RGBA_FORMAT:
           pitch  = size.width * 4;
-          pixels = new uint8_t[pitch * size.height];
+          pixels.reset(new uint8_t[pitch * size.height]);
           break;
 
         default:
@@ -305,7 +306,6 @@ public:
 
   ~SoftwareSurfaceImpl() 
   {
-    delete[] pixels;
   }
 };
 
@@ -543,20 +543,19 @@ Blob
 SoftwareSurface::get_raw_data() const
 {
   assert(impl->pitch != impl->size.width*3);
-  return Blob::copy(impl->pixels, impl->size.height * impl->pitch);
+  return Blob::copy(impl->pixels.get(), impl->size.height * impl->pitch);
 }
 
 uint8_t*
 SoftwareSurface::get_data() const
 {
-  return impl->pixels;
+  return impl->pixels.get();
 }
 
 uint8_t*
 SoftwareSurface::get_row_data(int y) const
 {
-  return impl->pixels + (y * impl->pitch);
-  
+  return impl->pixels.get() + (y * impl->pitch);
 }
 
 SoftwareSurface::Format
