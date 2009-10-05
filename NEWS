@@ -1,10 +1,9 @@
-Galapix 0.0.4 (??. ??? 2008)
+Galapix 0.1.0 (??. ??? 2009)
 ============================
 
 * switched to boost::thread
 * a Gtk based GUI
 * images are placed in a QuadTree to speed up large image collections
-* switched build system to Waf (maybe)
 * support for SVG via RSVG
 * support for RAW images via UFRaw
 * support for PNG images via libpng

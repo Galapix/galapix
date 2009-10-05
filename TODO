@@ -18,6 +18,56 @@ Release procedure:
 
 * svn cp trunk@REV tags/galapix-0.0.X
 
+Problems:
+=========
+
+* viewdb -p PATTERN doesn't work, as the viewer isn't updated in
+  SDLViewer::run(), pressing '1' works as a workaround
+
+* some jobs seem to stall and never get completed or never launched
+
+* some images don't seem to cleanup their jobs when they go out of
+  view (caused by Quadtree, which discards objects before their draw()
+  method is called)
+
+* implement some proper stuff to report the current status (what jobs
+  are running, what an image is doing, etc)
+
+* use graphic indicator for loading (alpha flashing)
+
+* add a is_queued() is_running() to the Job handle
+
+* generate quadtree automatically when the scene is no longer animated
+
+* use framebuffer_object to speed up the drawing
+
+* use highres tiles when they are in cache when zooming out
+
+* implement auto-pilot
+
+* trackball mode in window mode doesn't zoom to center, but some abitary point
+
+* Corel CMX Support
+
+* Cleanup higher zoom levels of jpg files (takes hours to run):
+
+  delete from tiles where rowid in (
+    select tiles.rowid from files,tiles
+       where files.fileid = tiles.fileid AND files.url glob "*.jpg" AND tiles.scale = 0
+  );
+
+* Cleanup stuff from the database (quite slow):
+
+  Slow:
+  delete from files where url glob "file:///tmp/*";
+  delete from tiles where fileid not in (select fileid from files);
+
+  Faster(?):
+  delete from tiles where fileid in (select fileid from files where url glob "file:///tmp/*");
+  delete from files where url glob "file:///tmp/*";
+
+* add --size option to 'galapix export'
+
 * build in a file magic detector: .xcf.bz2 doesn't work for xcfinfo if it ends in .xcf
 
 * There seems to be a conflict between libboost-thread1.34 and
@@ -27,7 +77,7 @@ Release procedure:
 
 * tile_cache order is wrong
 
-* use boost::bind() objects instead of costum ones in DatabaseThread
+* use boost::bind() objects instead of custum ones in DatabaseThread
 
 * updating an image with F5 doesn't update its size in the FileEntry
 
