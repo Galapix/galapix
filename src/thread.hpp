@@ -21,11 +21,12 @@
 
 #include <string>
 #include <boost/thread.hpp>
+#include <boost/scoped_ptr.hpp>
 
 class Thread
 {
 private:
-  boost::thread* thread;
+  boost::scoped_ptr<boost::thread> m_thread;
 
   void run_wrap();
 

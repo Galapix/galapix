@@ -23,7 +23,7 @@
 #include "thread.hpp"
 
 Thread::Thread()
-  : thread(0)
+  : m_thread()
 {
 }
 
@@ -34,28 +34,30 @@ Thread::~Thread()
 void
 Thread::join_thread()
 {
-  assert(thread);
+  assert(m_thread);
   //assert(thread->joinable());
   
-  thread->join();
+  m_thread->join();
 
-  delete thread;
-  thread = 0;
+  m_thread.reset();
 }
 
 void
 Thread::start_thread()
 {
-  assert(thread == 0);
-  thread = new boost::thread(boost::bind(&Thread::run_wrap, this));
+  assert(!m_thread);
+  m_thread.reset(new boost::thread(boost::bind(&Thread::run_wrap, this)));
 }
 
 void
 Thread::run_wrap()
 {
-  try {
+  try 
+  {
     run();
-  } catch(std::exception& err) {
+  }
+  catch(std::exception& err) 
+  {
     std::cout << "Error: " << err.what() << std::endl;
   }
 }
