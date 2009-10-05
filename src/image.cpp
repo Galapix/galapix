@@ -475,10 +475,10 @@ Image::draw(const Rectf& cliprect, float fscale)
 
         int   itilesize = 256 * scale_factor;
           
-        int start_x = static_cast<int>(image_region.left)  / itilesize;
+        int start_x = static_cast<int>(image_region.left / static_cast<float>(itilesize));
         int end_x   = Math::ceil_div(static_cast<int>(image_region.right), itilesize);
 
-        int start_y = static_cast<int>(image_region.top) / itilesize;
+        int start_y = static_cast<int>(image_region.top / static_cast<float>(itilesize));
         int end_y   = Math::ceil_div(static_cast<int>(image_region.bottom), itilesize);
 
         draw_tiles(Rect(start_x, start_y, end_x, end_y), 
