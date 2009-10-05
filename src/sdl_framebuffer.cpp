@@ -73,7 +73,7 @@ SDLFramebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_alias
       exit(1);
     }
 
-  SDL_WM_SetCaption("Galapix 0.0.4", 0 /* icon */);
+  SDL_WM_SetCaption("Galapix 0.1.0", 0 /* icon */);
   SDL_EnableUNICODE(1);
 
   Framebuffer::init();
