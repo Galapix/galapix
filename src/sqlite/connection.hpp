@@ -41,6 +41,10 @@ public:
   std::string get_error_msg();
 
   sqlite3* get_db() const { return db; }
+
+private:
+  SQLiteConnection(const SQLiteConnection&);
+  SQLiteConnection& operator=(const SQLiteConnection&);
 };
 
 #endif

@@ -49,8 +49,9 @@ public:
   std::string str() const { return stmt_str; }
 
 private:
-  SQLiteStatement(const SQLiteStatement&);
   SQLiteStatement();
+  SQLiteStatement(const SQLiteStatement&);
+  SQLiteStatement& operator=(const SQLiteStatement&);
 };
 
 #endif

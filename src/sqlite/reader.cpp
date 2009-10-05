@@ -29,7 +29,6 @@ SQLiteReader::SQLiteReader(SQLiteConnection* db_, sqlite3_stmt* stmt_)
 SQLiteReader::~SQLiteReader()
 {  
   // FIXME: Not good, we likely clean up twice
-  
   sqlite3_clear_bindings(stmt);  
 
   if (sqlite3_reset(stmt) != SQLITE_OK)

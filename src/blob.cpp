@@ -56,6 +56,7 @@ Blob::Blob(const void* data, int len)
 {}
 
 Blob::Blob()
+  : impl()
 {}
 
 int

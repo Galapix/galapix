@@ -44,6 +44,10 @@ public:
   Blob        get_blob(int column);
 
   std::string get_column_name(int column);
+
+private:
+  //  SQLiteReader(const SQLiteReader&);
+  //  SQLiteReader& operator=(const SQLiteReader&);
 };
 
 #endif
