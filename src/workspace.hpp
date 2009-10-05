@@ -122,7 +122,7 @@ public:
   // Debug stuff
   void clear_cache();
   void cache_cleanup();
-  void print_info();
+  void print_info(const Rectf& rect);
   void print_images(const Rectf& rect);
 
   // ---------------------------------------------
