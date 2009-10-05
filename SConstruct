@@ -11,7 +11,6 @@ Export("compile_galapix_gtk",
        "compile_galapix_sdl",
        "compile_spacenav")
 
-VariantDir('build', 'src', duplicate=0)
-SConscript('build/SConscript')
+SConscript('SConscript', variant_dir='build', duplicate=0)
 
 # EOF #
