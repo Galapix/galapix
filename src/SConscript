@@ -56,7 +56,7 @@ libgalapix_sources = [
     'lisp/lexer.cpp',
     'lisp/lisp.cpp',
     'lisp/parser.cpp',
-    'math.cpp',
+    'math/math.cpp',
     'math/rect.cpp',
     'math/size.cpp',
     'math/vector2f.cpp',
