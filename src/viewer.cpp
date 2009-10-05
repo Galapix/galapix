@@ -629,7 +629,8 @@ Viewer::print_images()
 void
 Viewer::print_info()
 {
-  workspace->print_info();
+  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+  workspace->print_info(cliprect);
 }
 
 void

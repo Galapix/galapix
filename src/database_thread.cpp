@@ -147,22 +147,22 @@ public:
 class FilesByPatternDatabaseMessage : public DatabaseMessage
 {
 public:
-  std::string pattern;
-  boost::function<void (FileEntry)> callback;
+  std::string m_pattern;
+  boost::function<void (FileEntry)> m_callback;
 
   FilesByPatternDatabaseMessage(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
-    : pattern(pattern),
-      callback(callback)
+    : m_pattern(pattern),
+      m_callback(callback)
   {
   }
 
   void run(Database& db)
   {
     std::vector<FileEntry> entries;
-    db.files.get_file_entries(entries, pattern);
+    db.files.get_file_entries(entries, m_pattern);
     for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
-        callback(*i);
+        m_callback(*i);
       }               
   }
 };
