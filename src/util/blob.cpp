@@ -19,7 +19,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <string.h>
-//#include <boost/scoped_array.hpp>
+
 #include "blob.hpp"
 
 class BlobImpl

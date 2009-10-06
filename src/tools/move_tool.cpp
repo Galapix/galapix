@@ -18,7 +18,6 @@
 
 #include "tools/move_tool.hpp"
 
-//#include "image.hpp"
 #include "galapix/workspace.hpp"
 #include "galapix/viewer.hpp"
 #include "display/framebuffer.hpp"

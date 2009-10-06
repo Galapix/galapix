@@ -17,7 +17,7 @@
 #ifndef HEADER_VECTOR2_HPP
 #define HEADER_VECTOR2_HPP
 
-//#include <iosfwd>
+#include <iosfwd>
 
 class Vector2f;
 

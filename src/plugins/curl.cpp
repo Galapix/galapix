@@ -18,8 +18,6 @@
 
 #include "plugins/curl.hpp"
 
-//#include <vector>
-//#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <curl/curl.h>

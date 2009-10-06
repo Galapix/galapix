@@ -19,7 +19,7 @@
 #ifndef HEADER_TAR_HPP
 #define HEADER_TAR_HPP
 
-//#include <string>
+#include <string>
 #include <vector>
 
 #include "util/blob.hpp"

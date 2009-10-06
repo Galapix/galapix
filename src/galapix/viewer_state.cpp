@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "viewer_state.hpp"
+#include "galapix/viewer_state.hpp"
 
 #include "display/framebuffer.hpp"
 

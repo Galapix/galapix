@@ -16,20 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <assert.h>
-//#include <iostream>
-//#include <stdexcept>
-//#include <boost/format.hpp>
-//#include <string.h>
-#include <GL/glew.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
+#include "display/texture.hpp"
 
-//#include "math/size.hpp"
+#include <GL/glew.h>
+
 #include "math/rect.hpp"
-#include "framebuffer.hpp"
-//#include "software_surface.hpp"
-#include "texture.hpp"
+#include "display/framebuffer.hpp"
 
 class TextureImpl
 {

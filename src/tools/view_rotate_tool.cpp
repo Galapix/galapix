@@ -16,11 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <math.h>
-//#include "math/vector2i.hpp"
+#include "tools/view_rotate_tool.hpp"
+
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
-#include "view_rotate_tool.hpp"
 
 ViewRotateTool::ViewRotateTool(Viewer* viewer_)
   : Tool(viewer_),

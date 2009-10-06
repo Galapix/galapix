@@ -16,13 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "jobs/tile_generation_job.hpp"
+
 #include <iostream>
-//#include "../math/vector2i.hpp"
-#include "../math/rect.hpp"
-#include "../plugins/jpeg.hpp"
-//#include "../file_entry.hpp"
+
+#include "math/rect.hpp"
+#include "plugins/jpeg.hpp"
 #include "database/tile_entry.hpp"
-#include "tile_generation_job.hpp"
 
 TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const FileEntry& entry_, int min_scale_, int max_scale_,
                                      const boost::function<void (TileEntry)>& callback_)

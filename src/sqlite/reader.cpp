@@ -16,9 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "sqlite/reader.hpp"
+
 #include <sstream>
-#include "error.hpp"
-#include "reader.hpp"
+
+#include "sqlite/error.hpp"
 
 SQLiteReader::SQLiteReader(SQLiteConnection* db_, sqlite3_stmt* stmt_)
   : db(db_),

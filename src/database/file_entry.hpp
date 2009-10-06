@@ -19,14 +19,11 @@
 #ifndef HEADER_FILE_ENTRY_HPP
 #define HEADER_FILE_ENTRY_HPP
 
-//#include <stdint.h>
-//#include <string>
 #include <boost/shared_ptr.hpp>
+
 #include "util/url.hpp"
 #include "math/math.hpp"
 #include "math/size.hpp"
-//#include "math/rgb.hpp"
-//#include "software_surface.hpp"
 
 class FileEntryImpl
 {

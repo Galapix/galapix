@@ -21,9 +21,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdexcept>
-//#include <unistd.h>
 #include <sys/wait.h>
-//#include <sys/types.h>
 #include <sstream>
 
 const bool Exec::ABSOLUTE_PATH = true;
@@ -167,7 +165,7 @@ Exec::str() const
 // g++ -Wall -Werror -ansi -pedantic exec.cpp blob.cpp -o myexec -D__EXEC_TEST__
 
 
-//#include <iostream>
+#include <iostream>
 
 int main(int argc, char** argv)
 {

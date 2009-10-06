@@ -16,10 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <iostream>
-#include "job.hpp"
-#include "job_worker_thread.hpp"
-#include "job_manager.hpp"
+#include "job/job_manager.hpp"
+
+#include "job/job.hpp"
+#include "job/job_worker_thread.hpp"
 
 JobManager* JobManager::current_ = 0;
 

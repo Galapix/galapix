@@ -16,14 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "database/tile_database.hpp"
+
 #include <iostream>
-//#include <sstream>
 
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
-
-#include "tile_entry.hpp"
-#include "tile_database.hpp"
+#include "database/tile_entry.hpp"
 
 TileDatabase::TileDatabase(SQLiteConnection* db_)
   : db(db_),

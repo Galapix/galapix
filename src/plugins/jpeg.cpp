@@ -17,16 +17,14 @@
 */
 
 #include <iostream>
-//#include <fstream>
 #include <sstream>
-//#include <stdexcept>
 #include <boost/bind.hpp>
-//#include <jpeglib.h>
 #include <setjmp.h>
-#include "../math/size.hpp"
-#include "jpeg_memory_src.hpp"
-#include "jpeg_memory_dest.hpp"
-#include "jpeg.hpp"
+
+#include "math/size.hpp"
+#include "plugins/jpeg_memory_src.hpp"
+#include "plugins/jpeg_memory_dest.hpp"
+#include "plugins/jpeg.hpp"
 
 jmp_buf setjmp_buffer;
 

@@ -25,10 +25,11 @@
 
 #include "plugins/imagemagick.hpp"
 
-//#include <assert.h>
-//#include <stdexcept>
+#include <assert.h>
+#include <stdexcept>
 #include <Magick++.h>
 #include <iostream>
+
 #include "util/url.hpp"
 #include "math/size.hpp"
 

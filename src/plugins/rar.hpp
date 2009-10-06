@@ -19,9 +19,10 @@
 #ifndef HEADER_RAR_HPP
 #define HEADER_RAR_HPP
 
-//#include <vector>
-//#include <string>
-//#include "../blob.hpp"
+#include <vector>
+#include <string>
+
+#include "util/blob.hpp"
 
 class Rar
 {

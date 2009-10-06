@@ -16,9 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include "image.hpp"
-//#include "math/rect.hpp"
-#include "selection.hpp"
+#include "galapix/selection.hpp"
 
 class SelectionImpl
 {

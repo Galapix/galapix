@@ -16,17 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "workspace.hpp"
+#include "galapix/workspace.hpp"
 
-//#include <boost/bind.hpp>
-
-#include "database_thread.hpp"
-//#include "math/rect.hpp"
-//#include "math/quad_tree.hpp"
-//#include "math/math.hpp"
 #include "database/file_entry.hpp"
+#include "galapix/database_thread.hpp"
 #include "util/file_reader.hpp"
-//#include "display/framebuffer.hpp"
 
 Workspace::Workspace()
 {

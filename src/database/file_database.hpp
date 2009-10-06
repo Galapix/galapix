@@ -19,11 +19,6 @@
 #ifndef HEADER_FILE_DATABASE_HPP
 #define HEADER_FILE_DATABASE_HPP
 
-//#include <stdint.h>
-//#include <sqlite3.h>
-//#include <string>
-
-//#include "sqlite/connection.hpp"
 #include <vector>
 
 #include "sqlite/statement.hpp"

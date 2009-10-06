@@ -16,7 +16,6 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <iostream>
 #include "jpeg_memory_dest.hpp"
 
 #define OUTPUT_BUF_SIZE 4096
@@ -39,8 +38,6 @@ void jpeg_memory_init_destination(j_compress_ptr cinfo)
 
 boolean jpeg_memory_empty_output_buffer(j_compress_ptr cinfo)
 {
-  //std::cout << "jpeg_memory_empty_output_buffer(j_compress_ptr cinfo)" << std::endl;
-
   struct jpeg_memory_destination_mgr* mgr = (struct jpeg_memory_destination_mgr*)cinfo->dest;
   
   // This function always gets OUTPUT_BUF_SIZE bytes,
@@ -58,8 +55,6 @@ boolean jpeg_memory_empty_output_buffer(j_compress_ptr cinfo)
 
 void jpeg_memory_term_destination(j_compress_ptr cinfo)
 {
-  //std::cout << "jpeg_memory_term_destination)" << std::endl;
-
   struct jpeg_memory_destination_mgr* mgr = (struct jpeg_memory_destination_mgr*)cinfo->dest;
   size_t datacount = OUTPUT_BUF_SIZE - cinfo->dest->free_in_buffer;
 

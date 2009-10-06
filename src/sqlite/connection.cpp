@@ -19,10 +19,8 @@
 #include "sqlite/connection.hpp"
 
 #include <sstream>
-//#include <iostream>
 
 #include "error.hpp"
-//#include "statement.hpp"
 
 static int busy_callback(void* , int)
 {

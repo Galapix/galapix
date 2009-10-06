@@ -16,16 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <iostream>
-//#include <assert.h>
-#include "framebuffer.hpp"
-//#include "math/math.hpp"
-//#include "math/vector2i.hpp"
-//#include "math/vector2f.hpp"
-//#include "math/size.hpp"
+#include "display/surface.hpp"
+
+#include "display/framebuffer.hpp"
 #include "math/rect.hpp"
-//#include "software_surface.hpp"
-#include "surface.hpp"
 
 class SurfaceImpl
 {

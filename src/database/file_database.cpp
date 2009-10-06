@@ -19,15 +19,10 @@
 #include "database/file_database.hpp"
 
 #include <iostream>
-//#include <sstream>
-//#include <stdexcept>
-//#include <assert.h>
 
 #include "database/file_entry.hpp"
 #include "util/software_surface.hpp"
 #include "util/filesystem.hpp"
-//#include "math/math.hpp"
-//#include "tile_entry.hpp"
 
 FileDatabase::FileDatabase(SQLiteConnection* db_)
   : db(db_),

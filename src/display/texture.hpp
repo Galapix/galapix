@@ -19,7 +19,7 @@
 #ifndef HEADER_TEXTURE_HPP
 #define HEADER_TEXTURE_HPP
 
-//#include <boost/shared_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 class Rect;
 class Size;

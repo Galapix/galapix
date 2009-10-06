@@ -19,8 +19,8 @@
 #include "plugins/zip.hpp"
 
 #include <stdexcept>
+
 #include "util/exec.hpp"
-//#include "util/blob.hpp"
 
 void unzip_parse_line(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end,
                       std::vector<std::string>& lst)
@@ -112,7 +112,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename)
 
 // g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp zip.cpp -o myzip -D__TEST_ZIP__  
 
-//#include <iostream>
+#include <iostream>
 
 int main(int argc, char** argv)
 {

@@ -19,12 +19,8 @@
 #include "spnav/space_navigator.hpp"
 
 #include <SDL.h>
-//#include <math.h>
-//#include <assert.h>
 #include <iostream>
 #include <spnav.h>
-
-//#include "viewer.hpp"
 
 SpaceNavigator::SpaceNavigator()
 {

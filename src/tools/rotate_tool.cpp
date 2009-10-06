@@ -18,7 +18,8 @@
 
 #include "tools/rotate_tool.hpp"
 
-//#include <math.h>
+#include <math.h>
+
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 

@@ -16,9 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <iostream>
-#include "job.hpp"
-#include "job_worker_thread.hpp"
+#include "job/job_worker_thread.hpp"
+
+#include "job/job.hpp"
 
 JobWorkerThread::JobWorkerThread()
   : quit(false)

@@ -19,7 +19,6 @@
 #ifndef HEADER_THREAD_HPP
 #define HEADER_THREAD_HPP
 
-//#include <string>
 #include <boost/thread.hpp>
 #include <boost/scoped_ptr.hpp>
 

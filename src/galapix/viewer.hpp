@@ -24,10 +24,10 @@
 #include <vector>
 
 #include "display/surface.hpp"
-#include "math/vector2i.hpp"
-#include "math/vector2f.hpp"
+#include "galapix/viewer_state.hpp"
 #include "math/rgba.hpp"
-#include "viewer_state.hpp"
+#include "math/vector2f.hpp"
+#include "math/vector2i.hpp"
 
 class Tool;
 class PanTool;

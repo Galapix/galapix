@@ -17,13 +17,13 @@
 #ifndef HEADER_SEXPR_FILE_WRITER_HPP
 #define HEADER_SEXPR_FILE_WRITER_HPP
 
-//#include <iosfwd>
-#include "file_writer.hpp"
+#include <ostream>
+
+#include "util/file_writer.hpp"
 #include "math/rgba.hpp"
 #include "math/vector3f.hpp"
 #include "math/size.hpp"
 
-/** */
 class SExprFileWriter : public FileWriter
 {
 private:

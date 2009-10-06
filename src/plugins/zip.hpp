@@ -19,8 +19,9 @@
 #ifndef HEADER_ZIP_HPP
 #define HEADER_ZIP_HPP
 
-//#include <string>
-//#include <vector>
+#include <string>
+#include <vector>
+
 #include "util/blob.hpp"
 
 class Zip

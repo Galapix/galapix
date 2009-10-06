@@ -16,9 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "url.hpp"
+#include "util/url.hpp"
 
-//#include <iostream>
 #include <stdexcept>
 #include "plugins/rar.hpp"
 #include "plugins/zip.hpp"
@@ -199,7 +198,7 @@ bool operator<(const URL& lhs, const URL& rhs)
 
 #ifdef __URL_TEST__
 
-//#include <iostream>
+#include <iostream>
 
 int main(int argc, char** argv)
 {

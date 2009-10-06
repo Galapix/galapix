@@ -19,9 +19,8 @@
 #ifndef HEADER_DATABASE_HPP
 #define HEADER_DATABASE_HPP
 
-//#include "sqlite/connection.hpp"
-#include "tile_database.hpp"
-#include "file_database.hpp"
+#include "database/tile_database.hpp"
+#include "database/file_database.hpp"
 
 /** */
 class Database

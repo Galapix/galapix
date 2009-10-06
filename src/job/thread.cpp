@@ -16,11 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <iostream>
-//#include <assert.h>
-//#include <stdexcept>
-//#include <boost/bind.hpp>
-#include "thread.hpp"
+#include "job/thread.hpp"
 
 Thread::Thread()
   : m_thread()

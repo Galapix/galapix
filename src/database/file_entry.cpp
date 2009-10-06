@@ -16,8 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "database/file_entry.hpp"
+
 #include <iostream>
-#include "file_entry.hpp"
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
