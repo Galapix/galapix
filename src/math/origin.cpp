@@ -27,66 +27,76 @@
 **    (if your name is missing here, please add it)
 */
 
-#include "origin.hpp"
-
-Origin string2origin(const std::string& str)
-{
-  if (str == "top_left")
-    return origin_top_left;
-  else if (str == "top_center")
-    return origin_top_center;
-  else if (str == "top_right")
-    return origin_top_right;
-  else if (str == "center_left")
-    return origin_center_left;
-  else if (str == "center")
-    return origin_center;
-  else if (str == "center_right")
-    return origin_center_right;
-  else if (str == "bottom_left")
-    return origin_bottom_left;
-  else if (str == "bottom_center")
-    return origin_bottom_center;
-  else if (str == "bottom_right")
-    return origin_bottom_right;
-  else 
-    return origin_top_left;
-}
+#include "math/origin.hpp"
 
 Vector2i calc_origin(Origin origin, const Size &size)
 {
-  switch(origin)
-    {
-    case origin_top_left:
-    default:
-      return Vector2i(0, 0);
-      break;
-    case origin_top_center:
-      return Vector2i(size.width / 2, 0);
-      break;
-    case origin_top_right:
-      return Vector2i(size.width, 0);
-      break;
-    case origin_center_left:
-      return Vector2i(0, size.height / 2);
-      break;
-    case origin_center:
-      return Vector2i(size.width / 2, size.height / 2);
-      break;
-    case origin_center_right:
-      return Vector2i(size.width, size.height / 2);
-      break;
-    case origin_bottom_left:
-      return Vector2i(0, size.height);
-      break;
-    case origin_bottom_center:
-      return Vector2i(size.width / 2, size.height);
-      break;
-    case origin_bottom_right:
-      return Vector2i(size.width, size.height);
-      break;
-    }
+	switch(origin)
+	{
+	case origin::top_left:
+	default:
+		return Vector2i(0, 0);
+		break;
+	case origin::top_center:
+		return Vector2i(size.width / 2, 0);
+		break;
+	case origin::top_right:
+		return Vector2i(size.width, 0);
+		break;
+	case origin::center_left:
+		return Vector2i(0, size.height / 2);
+		break;
+	case origin::center:
+		return Vector2i(size.width / 2, size.height / 2);
+		break;
+	case origin::center_right:
+		return Vector2i(size.width, size.height / 2);
+		break;
+	case origin::bottom_left:
+		return Vector2i(0, size.height);
+		break;
+	case origin::bottom_center:
+		return Vector2i(size.width / 2, size.height);
+		break;
+	case origin::bottom_right:
+		return Vector2i(size.width, size.height);
+		break;
+	}
+}
+
+Vector2f calc_origin(Origin origin, const Sizef &size)
+{
+	switch(origin)
+	{
+	case origin::top_left:
+	default:
+		return Vector2f(0, 0);
+		break;
+	case origin::top_center:
+		return Vector2f(size.width / 2, 0);
+		break;
+	case origin::top_right:
+		return Vector2f(size.width, 0);
+		break;
+	case origin::center_left:
+		return Vector2f(0, size.height / 2);
+		break;
+	case origin::center:
+		return Vector2f(size.width / 2, size.height / 2);
+		break;
+	case origin::center_right:
+		return Vector2f(size.width, size.height / 2);
+		break;
+	case origin::bottom_left:
+		return Vector2f(0, size.height);
+		break;
+	case origin::bottom_center:
+		return Vector2f(size.width / 2, size.height);
+		break;
+	case origin::bottom_right:
+		return Vector2f(size.width, size.height);
+		break;
+	}
 }
 
 /* EOF */
-
