@@ -21,6 +21,11 @@ Release procedure:
 Problems:
 =========
 
+* create BlobHandle, SoftwareSurfaceHandle, etc., no not let Blob,
+  SoftwareSurface do the refcounting internally
+
+* Database::tile_request_groups is never emptied
+
 * quadtree error causes pictures to not be displayed at the top border
   (only in some seldome edge cases)
 
@@ -28,6 +33,7 @@ Problems:
   SDLViewer::run(), pressing '1' works as a workaround
 
 * some jobs seem to stall and never get completed or never launched
+  (TileRequest might be guilty)
 
 * some images don't seem to cleanup their jobs when they go out of
   view (caused by Quadtree, which discards objects before their draw()
@@ -58,6 +64,23 @@ Problems:
 * add:
 
    galapix.sdl split -d infile.sqlite -p "glob-patern" outfile.sqlite
+
+ manual way to split the database:
+
+# Create the tables
+PRAGMA auto_vacuum = 1;
+CREATE TABLE files (fileid INTEGER PRIMARY KEY AUTOINCREMENT,url TEXT UNIQUE, size INTEGER, mtime INTEGER, width INTEGER, height INTEGER);
+CREATE UNIQUE INDEX files_index ON files ( url );
+CREATE TABLE tiles (fileid INTEGER, scale INTEGER, x INTEGER, y INTEGER, data BLOB, quality INTEGER, format INTEGER);
+CREATE INDEX tiles_index ON tiles ( fileid, x, y, scale );
+
+# Attach the orignal
+ATTACH "/home/ingo/.galapix/cache.sqlite" as galapix;
+
+# Copy the data
+INSERT INTO files select * from galapix.files where url glob "*comics/*";
+INSERT INTO tiles select * from galapix.tiles where fileid in (select fileid from files);
+
 
 * Corel CMX Support
 
