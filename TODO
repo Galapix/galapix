@@ -54,6 +54,10 @@ Problems:
 
 * make the database versioned by filename (easiest to implement):
   ~/.galapix/cache-1.sqlite
+
+* add:
+
+   galapix.sdl split -d infile.sqlite -p "glob-patern" outfile.sqlite
 
 * Corel CMX Support
 
