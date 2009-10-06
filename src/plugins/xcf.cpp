@@ -16,15 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-//#include <boost/tokenizer.hpp>
+#include "plugins/xcf.hpp"
+
 #include <iostream>
 #include <stdexcept>
 
-#include "../math/size.hpp"
-#include "../exec.hpp"
-#include "../url.hpp"
-#include "pnm.hpp"
-#include "xcf.hpp"
+#include "math/size.hpp"
+#include "plugins/pnm.hpp"
+#include "util/exec.hpp"
+#include "util/url.hpp"
 
 // Example xcfinfo output:
 // Version 0, 800x800 RGB color, 6 layers, compressed RLE

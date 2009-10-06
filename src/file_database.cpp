@@ -21,12 +21,12 @@
 //#include <stdexcept>
 //#include <assert.h>
 
-//#include "math/math.hpp"
-#include "filesystem.hpp"
-#include "software_surface.hpp"
-#include "file_entry.hpp"
-//#include "tile_entry.hpp"
 #include "file_database.hpp"
+#include "file_entry.hpp"
+#include "software_surface.hpp"
+#include "util/filesystem.hpp"
+//#include "math/math.hpp"
+//#include "tile_entry.hpp"
 
 FileDatabase::FileDatabase(SQLiteConnection* db_)
   : db(db_),

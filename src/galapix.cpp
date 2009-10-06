@@ -40,7 +40,7 @@
 #include "jobs/tile_generation_job.hpp"
 #include "jobs/test_job.hpp"
 #include "database_thread.hpp"
-#include "filesystem.hpp"
+#include "util/filesystem.hpp"
 #include "workspace.hpp"
 #include "job/job_manager.hpp"
 #ifdef GALAPIX_SDL

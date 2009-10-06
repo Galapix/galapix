@@ -28,7 +28,7 @@
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "grid.hpp"
-#include "url.hpp"
+#include "util/url.hpp"
 #include "object.hpp"
 #include "display/surface.hpp"
 

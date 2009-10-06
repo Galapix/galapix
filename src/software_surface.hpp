@@ -19,8 +19,7 @@
 #ifndef HEADER_SOFTWARE_SURFACE_HPP
 #define HEADER_SOFTWARE_SURFACE_HPP
 
-//#include <boost/shared_ptr.hpp>
-#include "blob.hpp"
+#include "util/blob.hpp"
 
 class Vector2i;
 class URL;

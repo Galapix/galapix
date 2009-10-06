@@ -19,8 +19,9 @@
 #ifndef HEADER_XCF_HPP
 #define HEADER_XCF_HPP
 
-//#include <string>
-//#include "../software_surface.hpp"
+#include <string>
+#include "software_surface.hpp"
+#include <vector>
 
 class URL;
 class Size;

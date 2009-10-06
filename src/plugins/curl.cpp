@@ -16,12 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "plugins/curl.hpp"
+
 //#include <vector>
 //#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <curl/curl.h>
-#include "curl.hpp"
 
 static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void* userdata)
 {

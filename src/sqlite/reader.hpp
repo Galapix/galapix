@@ -22,7 +22,7 @@
 //#include <sqlite3.h>
 //#include <string>
 #include "connection.hpp"
-#include "../blob.hpp"
+#include "util/blob.hpp"
 
 class SQLiteReader
 {

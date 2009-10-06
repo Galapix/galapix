@@ -158,7 +158,7 @@ PNM::load_from_mem(const char* data, int len)
 // g++ -Wall -Werror -ansi -pedantic blob.cpp pnm.cpp -o myexec -D__TEST__
 
 //#include <iostream>
-//#include "blob.hpp"
+//#include "util/blob.hpp"
 
 int main(int argc, char** argv)
 {

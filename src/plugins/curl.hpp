@@ -20,7 +20,7 @@
 #define HEADER_CURL_HPP
 
 //#include <string>
-#include "../blob.hpp"
+#include "util/blob.hpp"
 
 class CURLHandler
 {

@@ -18,7 +18,7 @@
 #define HEADER_PINGUS_FILE_READER_HPP
 
 //#include <string>
-//#include <vector>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 
 class RGBA;

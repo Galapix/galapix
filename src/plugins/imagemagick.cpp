@@ -23,13 +23,14 @@
 **  02111-1307, USA.
 */
 
+#include "plugins/imagemagick.hpp"
+
 //#include <assert.h>
 //#include <stdexcept>
 #include <Magick++.h>
 #include <iostream>
-#include "../url.hpp"
-#include "../math/size.hpp"
-#include "imagemagick.hpp"
+#include "util/url.hpp"
+#include "math/size.hpp"
 
 bool
 Imagemagick::get_size(const std::string& filename, Size& size)

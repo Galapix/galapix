@@ -16,9 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../exec.hpp"
-#include "png.hpp"
-#include "kra.hpp"
+#include "plugins/kra.hpp"
+
+#include "util/exec.hpp"
+#include "plugins/png.hpp"
 
 bool
 KRA::get_size(const std::string& filename, Size& size)

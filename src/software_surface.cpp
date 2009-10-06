@@ -35,7 +35,7 @@
 #include "math/rgba.hpp"
 //#include "math/size.hpp"
 
-#include "filesystem.hpp"
+#include "util/filesystem.hpp"
 //#include "software_surface.hpp"
 
 // FIXME: Stuff in this file is currently written to just work, not to

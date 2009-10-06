@@ -24,6 +24,8 @@
 //#include <string>
 
 //#include "sqlite/connection.hpp"
+#include <vector>
+
 #include "sqlite/statement.hpp"
 #include "math/size.hpp"
 

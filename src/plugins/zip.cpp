@@ -16,12 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <stdexcept>
-#include "../exec.hpp"
-//#include "../blob.hpp"
-#include "zip.hpp"
-
+#include "plugins/zip.hpp"
 
+#include <stdexcept>
+#include "util/exec.hpp"
+//#include "util/blob.hpp"
+
 void unzip_parse_line(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end,
                       std::vector<std::string>& lst)
 {

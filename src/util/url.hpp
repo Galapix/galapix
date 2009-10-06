@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "blob.hpp"
+#include "util/blob.hpp"
 
 /** Use Cases: 
     - normal system filename

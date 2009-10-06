@@ -31,6 +31,7 @@
 class URL;
 class DatabaseMessage;
 class TileDatabaseMessage;
+class FileEntry;
 
 class DatabaseThread : public Thread
 {

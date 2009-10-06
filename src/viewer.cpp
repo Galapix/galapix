@@ -36,7 +36,7 @@
 #include "tools/rotate_tool.hpp"
 #include "tools/grid_tool.hpp"
 #include "tools/view_rotate_tool.hpp"
-#include "filesystem.hpp"
+#include "util/filesystem.hpp"
 #include "viewer.hpp"
 
 Viewer* Viewer::current_ = 0;

@@ -16,12 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "plugins/rsvg.hpp"
+
 #include <stdexcept>
-#include "../filesystem.hpp"
-//#include "../url.hpp"
-#include "../exec.hpp"
-#include "png.hpp"
-#include "rsvg.hpp"
+
+#include "util/filesystem.hpp"
+#include "util/exec.hpp"
+#include "plugins/png.hpp"
 
 RSVG::RSVG()
 {

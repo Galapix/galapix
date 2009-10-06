@@ -20,18 +20,18 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-#include "math/rgba.hpp"
-#include "filesystem.hpp"
-#include "file_entry.hpp"
-#include "workspace.hpp"
-#include "sdl/sdl_framebuffer.hpp"
-#include "viewer.hpp"
-#include "display/framebuffer.hpp"
-#include "plugins/png.hpp"
-#include "sdl_viewer.hpp"
-#include "viewer_state.hpp"
-#include "space_navigator.hpp"
 #include "database_thread.hpp"
+#include "display/framebuffer.hpp"
+#include "file_entry.hpp"
+#include "math/rgba.hpp"
+#include "plugins/png.hpp"
+#include "sdl/sdl_framebuffer.hpp"
+#include "sdl_viewer.hpp"
+#include "space_navigator.hpp"
+#include "util/filesystem.hpp"
+#include "viewer.hpp"
+#include "viewer_state.hpp"
+#include "workspace.hpp"
 
 #ifdef HAVE_SPACE_NAVIGATOR
 #  include <spnav.h>

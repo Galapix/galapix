@@ -16,11 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "plugins/ufraw.hpp"
+
 #include <stdexcept>
-#include "../exec.hpp"
-#include "../url.hpp"
-#include "pnm.hpp"
-#include "ufraw.hpp"
+
+#include "util/exec.hpp"
+#include "util/url.hpp"
+#include "plugins/pnm.hpp"
 
 SoftwareSurface
 UFRaw::load_from_url(const URL& url)

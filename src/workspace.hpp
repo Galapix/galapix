@@ -19,7 +19,7 @@
 #ifndef HEADER_WORKSPACE_HPP
 #define HEADER_WORKSPACE_HPP
 
-#include "url.hpp"
+#include "util/url.hpp"
 #include "selection.hpp"
 #include "math/quad_tree.hpp"
 #include "thread_message_queue.hpp"
