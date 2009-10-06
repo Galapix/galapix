@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_SELECTION_HPP
-#define HEADER_SELECTION_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_SELECTION_HPP
+#define HEADER_GALAPIX_GALAPIX_SELECTION_HPP
 
 #include "galapix/image.hpp"
 

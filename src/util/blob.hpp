@@ -16,11 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_BLOB_HPP
-#define HEADER_BLOB_HPP
+#ifndef HEADER_GALAPIX_UTIL_BLOB_HPP
+#define HEADER_GALAPIX_UTIL_BLOB_HPP
 
 #include <boost/smart_ptr.hpp>
 #include <vector>
+#include <stdint.h>
 
 class BlobImpl;
 

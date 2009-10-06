@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_SQLITE_ERROR_HPP
-#define HEADER_SQLITE_ERROR_HPP
+#ifndef HEADER_GALAPIX_SQLITE_ERROR_HPP
+#define HEADER_GALAPIX_SQLITE_ERROR_HPP
 
 #include <string>
 #include <stdexcept>

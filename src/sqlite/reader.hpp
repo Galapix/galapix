@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_SQLITE_READER_HPP
-#define HEADER_SQLITE_READER_HPP
+#ifndef HEADER_GALAPIX_SQLITE_READER_HPP
+#define HEADER_GALAPIX_SQLITE_READER_HPP
 
 #include "sqlite/connection.hpp"
 #include "util/blob.hpp"

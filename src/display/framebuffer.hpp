@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_DISPLAY_HPP
-#define HEADER_DISPLAY_HPP
+#ifndef HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
+#define HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
 
 #include <GL/glew.h>
 #include <GL/gl.h>

@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XCF_HPP
-#define HEADER_XCF_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_XCF_HPP
+#define HEADER_GALAPIX_PLUGINS_XCF_HPP
 
 #include <string>
 #include <vector>

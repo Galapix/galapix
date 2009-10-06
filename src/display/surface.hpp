@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_SURFACE_HPP
-#define HEADER_SURFACE_HPP
+#ifndef HEADER_GALAPIX_DISPLAY_SURFACE_HPP
+#define HEADER_GALAPIX_DISPLAY_SURFACE_HPP
 
 #include "display/texture.hpp"
 

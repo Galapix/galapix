@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_SPNAV_HPP
-#define HEADER_SPNAV_HPP
+#ifndef HEADER_GALAPIX_SPNAV_SPACE_NAVIGATOR_HPP
+#define HEADER_GALAPIX_SPNAV_SPACE_NAVIGATOR_HPP
 
 class Viewer;
 

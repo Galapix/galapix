@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_TEXTURE_HPP
-#define HEADER_TEXTURE_HPP
+#ifndef HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
+#define HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 
 #include <boost/shared_ptr.hpp>
 

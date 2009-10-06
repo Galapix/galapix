@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_VIEW_ROTATE_TOOL_HPP
-#define HEADER_VIEW_ROTATE_TOOL_HPP
+#ifndef HEADER_GALAPIX_TOOLS_VIEW_ROTATE_TOOL_HPP
+#define HEADER_GALAPIX_TOOLS_VIEW_ROTATE_TOOL_HPP
 
 #include "galapix/tool.hpp"
 

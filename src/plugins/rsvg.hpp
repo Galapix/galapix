@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_RSVG_HPP
-#define HEADER_RSVG_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_RSVG_HPP
+#define HEADER_GALAPIX_PLUGINS_RSVG_HPP
 
 #include <string>
 

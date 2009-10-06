@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <stdio.h>
 
 #include "math/size.hpp"
 #include "plugins/pnm.hpp"

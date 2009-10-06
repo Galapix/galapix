@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_JPEG_HPP
-#define HEADER_JPEG_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_JPEG_HPP
+#define HEADER_GALAPIX_PLUGINS_JPEG_HPP
 
 #include <string>
 #include <jpeglib.h>

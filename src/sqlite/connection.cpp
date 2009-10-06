@@ -41,6 +41,7 @@ SQLiteConnection::SQLiteConnection(const std::string& filename)
 
   sqlite3_busy_handler(db, busy_callback, 0);
 
+  // FIXME: Kind of the complete wrong place for this
   exec("PRAGMA auto_vacuum = 1");
 }
 

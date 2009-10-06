@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GTK_VIEWER_WIDGET_HPP
-#define HEADER_GTK_VIEWER_WIDGET_HPP
+#ifndef HEADER_GALAPIX_GTK_GTK_VIEWER_WIDGET_HPP
+#define HEADER_GALAPIX_GTK_GTK_VIEWER_WIDGET_HPP
 
 #include <iostream>
 #include <gtkglmm.h>

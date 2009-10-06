@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_EXEC_HPP
-#define HEADER_EXEC_HPP
+#ifndef HEADER_GALAPIX_UTIL_EXEC_HPP
+#define HEADER_GALAPIX_UTIL_EXEC_HPP
 
 #include <vector>
 #include <string>

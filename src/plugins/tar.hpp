@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_TAR_HPP
-#define HEADER_TAR_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_TAR_HPP
+#define HEADER_GALAPIX_PLUGINS_TAR_HPP
 
 #include <string>
 #include <vector>

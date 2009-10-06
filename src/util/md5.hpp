@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MD5_HPP
-#define HEADER_MD5_HPP
+#ifndef HEADER_GALAPIX_UTIL_MD5_HPP
+#define HEADER_GALAPIX_UTIL_MD5_HPP
 
 #include <string>
 

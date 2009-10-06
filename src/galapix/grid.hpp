@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GRID_HPP
-#define HEADER_GRID_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_GRID_HPP
+#define HEADER_GALAPIX_GALAPIX_GRID_HPP
 
 #include <iostream>
 #include <assert.h>

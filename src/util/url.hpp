@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_URL_HPP
-#define HEADER_URL_HPP
+#ifndef HEADER_GALAPIX_UTIL_URL_HPP
+#define HEADER_GALAPIX_UTIL_URL_HPP
 
 #include <string>
 

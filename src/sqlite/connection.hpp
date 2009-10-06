@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_SQLITE_CONNECTION_HPP
-#define HEADER_SQLITE_CONNECTION_HPP
+#ifndef HEADER_GALAPIX_SQLITE_CONNECTION_HPP
+#define HEADER_GALAPIX_SQLITE_CONNECTION_HPP
 
 #include <sqlite3.h>
 #include <string>

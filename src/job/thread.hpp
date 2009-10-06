@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_THREAD_HPP
-#define HEADER_THREAD_HPP
+#ifndef HEADER_GALAPIX_JOB_THREAD_HPP
+#define HEADER_GALAPIX_JOB_THREAD_HPP
 
 #include <boost/thread.hpp>
 #include <boost/scoped_ptr.hpp>

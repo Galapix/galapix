@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_JPEG_MEMORY_SRC_HPP
-#define HEADER_JPEG_MEMORY_SRC_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_JPEG_MEMORY_SRC_HPP
+#define HEADER_GALAPIX_PLUGINS_JPEG_MEMORY_SRC_HPP
 
 #include <stdint.h>
 #include <stdio.h>

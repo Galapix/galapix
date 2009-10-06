@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_RAR_HPP
-#define HEADER_RAR_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_RAR_HPP
+#define HEADER_GALAPIX_PLUGINS_RAR_HPP
 
 #include <vector>
 #include <string>

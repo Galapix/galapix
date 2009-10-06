@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_DATABASE_HPP
-#define HEADER_DATABASE_HPP
+#ifndef HEADER_GALAPIX_DATABASE_DATABASE_HPP
+#define HEADER_GALAPIX_DATABASE_DATABASE_HPP
 
 #include "database/tile_database.hpp"
 #include "database/file_database.hpp"

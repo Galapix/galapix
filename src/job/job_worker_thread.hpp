@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_JOB_WORKER_THREAD_HPP
-#define HEADER_JOB_WORKER_THREAD_HPP
+#ifndef HEADER_GALAPIX_JOB_JOB_WORKER_THREAD_HPP
+#define HEADER_GALAPIX_JOB_JOB_WORKER_THREAD_HPP
 
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>

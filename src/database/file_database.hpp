@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_FILE_DATABASE_HPP
-#define HEADER_FILE_DATABASE_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_DATABASE_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_DATABASE_HPP
 
 #include <vector>
 

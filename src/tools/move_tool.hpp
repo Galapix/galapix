@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_MOVE_TOOL_HPP
-#define HEADER_MOVE_TOOL_HPP
+#ifndef HEADER_GALAPIX_TOOLS_MOVE_TOOL_HPP
+#define HEADER_GALAPIX_TOOLS_MOVE_TOOL_HPP
 
 #include <vector>
 

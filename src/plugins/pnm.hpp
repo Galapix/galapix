@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PNM_HPP
-#define HEADER_PNM_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_PNM_HPP
+#define HEADER_GALAPIX_PLUGINS_PNM_HPP
 
 #include "util/software_surface.hpp"
 

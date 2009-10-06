@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_TEST_JOB_HPP
-#define HEADER_TEST_JOB_HPP
+#ifndef HEADER_GALAPIX_JOBS_TEST_JOB_HPP
+#define HEADER_GALAPIX_JOBS_TEST_JOB_HPP
 
 #include "job/job.hpp"
 

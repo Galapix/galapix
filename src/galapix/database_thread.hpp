@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_DATABASE_THREAD_HPP
-#define HEADER_DATABASE_THREAD_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
+#define HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
 
 #include "job/thread.hpp"
 #include "job/thread_message_queue.hpp"

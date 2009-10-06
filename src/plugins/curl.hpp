@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_CURL_HPP
-#define HEADER_CURL_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_CURL_HPP
+#define HEADER_GALAPIX_PLUGINS_CURL_HPP
 
 #include <string>
 

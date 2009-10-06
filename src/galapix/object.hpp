@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_OBJECT_HPP
-#define HEADER_OBJECT_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_OBJECT_HPP
+#define HEADER_GALAPIX_GALAPIX_OBJECT_HPP
 
 #include "math/rect.hpp"
 

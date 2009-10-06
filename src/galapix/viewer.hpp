@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_VIEWER_HPP
-#define HEADER_VIEWER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_VIEWER_HPP
+#define HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 
 #include <boost/shared_ptr.hpp>
 #include <memory>

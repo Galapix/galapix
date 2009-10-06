@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_PNG_HPP
-#define HEADER_PNG_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_PNG_HPP
+#define HEADER_GALAPIX_PLUGINS_PNG_HPP
 
 #include <string>
 
