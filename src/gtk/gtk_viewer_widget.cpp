@@ -27,7 +27,8 @@
 #include "gtk/gtk_viewer_widget.hpp"
 
 GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
-  : viewer(viewer_)
+  : viewer(viewer_),
+    mouse_pos()
 {
   Glib::RefPtr<Gdk::GL::Config> glconfig;
 

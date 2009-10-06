@@ -27,7 +27,10 @@ DatabaseThread* DatabaseThread::current_ = 0;
 
 DatabaseThread::DatabaseThread(const std::string& filename_)
   : database_filename(filename_),
-    quit(false)
+    abort_instantly(),
+    quit(false),
+    queue(),
+    tile_request_groups()
 {
   assert(current_ == 0);
   current_ = this;

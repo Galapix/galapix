@@ -27,6 +27,20 @@
 #include "gtk/gtk_viewer.hpp"
 
 GtkViewer::GtkViewer()
+  : workspace(),
+    pan_tool_button(),
+    zoom_tool_button(),
+    grid_tool_button(),
+    move_tool_button(),
+    zoom_in_button(),
+    zoom_out_button(),
+    zoom_home_button(),
+    grid_toggle(),
+    grid_pin_toggle(),
+    layout_regular_button(),
+    layout_tight_button(),
+    layout_random_button(),
+    viewer()
 {
 }
 

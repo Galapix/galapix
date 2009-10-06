@@ -25,7 +25,9 @@ class JobHandleImpl
 public:
   JobHandleImpl()
     : aborted(false),
-      finished(false)
+      finished(false),
+      mutex(),
+      cond()
   {}
 
   bool aborted;

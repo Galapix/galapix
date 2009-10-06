@@ -52,12 +52,20 @@
 #include "viewer.hpp"
 #include "galapix.hpp"
 
-struct GalapixOptions
+class GalapixOptions
 {
+public:
   std::string database;
   std::string pattern;
   int         threads;
   std::vector<std::string> rest;
+
+  GalapixOptions()
+    : database(),
+      pattern(),
+      threads(),
+      rest()
+  {}
 };
 
 Galapix::Galapix()

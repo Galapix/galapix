@@ -36,7 +36,10 @@ public:
     //std::cout << uv << std::endl;
   }
 
-  SurfaceImpl(const SoftwareSurface& src, const Rect& srcrect)
+  SurfaceImpl(const SoftwareSurface& src, const Rect& srcrect) :
+    texture(),
+    uv(),
+    size()
   {
     assert(src);
 
@@ -108,17 +111,18 @@ public:
   }
 };
 
-Surface::Surface()
+Surface::Surface() :
+  impl()
 {
 }
 
-Surface::Surface(boost::shared_ptr<SurfaceImpl> impl_)
-  : impl(impl_)
+Surface::Surface(boost::shared_ptr<SurfaceImpl> impl_) :
+  impl(impl_)
 {
 }
 
-Surface::Surface(const SoftwareSurface& src)
-  : impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src.get_size())))
+Surface::Surface(const SoftwareSurface& src) :
+  impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src.get_size())))
 {
 }
 

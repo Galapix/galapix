@@ -25,7 +25,11 @@
 #include "plugins/curl.hpp"
 #include "filesystem.hpp"
 
-URL::URL()
+URL::URL() :
+  protocol(),
+  payload(),
+  plugin(),
+  plugin_payload()
 {
 }
 

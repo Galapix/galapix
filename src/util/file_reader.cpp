@@ -23,12 +23,13 @@
 #include "util/sexpr_file_reader.hpp"
 #include "util/url.hpp"
 
-FileReader::FileReader(boost::shared_ptr<FileReaderImpl> impl_)
-  : impl(impl_)
+FileReader::FileReader(boost::shared_ptr<FileReaderImpl> impl_) :
+  impl(impl_)
 {
 }
 
-FileReader::FileReader()
+FileReader::FileReader() :
+  impl()
 {
 }
 

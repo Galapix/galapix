@@ -24,6 +24,8 @@
 ResizeTool::ResizeTool(Viewer* viewer_)
   : Tool(viewer_),
     resize_active(false),
+    resize_center(),
+    selection_center(),
     old_scale(1.0f)
 {  
 }

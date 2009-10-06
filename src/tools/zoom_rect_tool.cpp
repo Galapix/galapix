@@ -26,7 +26,9 @@
 
 ZoomRectTool::ZoomRectTool(Viewer* viewer_)
   : Tool(viewer_),
-    drag_active(false)    
+    mouse_pos(),
+    drag_active(false),
+    click_pos()
 {
 }
 

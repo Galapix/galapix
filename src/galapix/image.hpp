@@ -56,6 +56,11 @@ public:
     
     Status  status;
     Surface surface;
+
+    SurfaceStruct() :
+      status(),
+      surface()
+    {}
   };
 
   typedef std::map<uint32_t, SurfaceStruct> Cache; 

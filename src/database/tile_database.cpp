@@ -30,7 +30,8 @@ TileDatabase::TileDatabase(SQLiteConnection* db_)
     get_stmt(db),
     get_all_by_fileid_stmt(db),
     get_all_stmt(db),
-    has_stmt(db)
+    has_stmt(db),
+    tile_cache()
 {
   db->exec("CREATE TABLE IF NOT EXISTS tiles ("
            "fileid  INTEGER, " // link to to files.rowid

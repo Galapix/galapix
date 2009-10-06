@@ -26,6 +26,7 @@
 RotateTool::RotateTool(Viewer* viewer_)
   : Tool(viewer_),
     rotate_active(false),
+    selection_center(),
     start_angle(0.0f)
 {
 }

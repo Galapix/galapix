@@ -302,9 +302,14 @@ PNG::save(const SoftwareSurface& surface, const std::string& filename)
     }
 }
 
-struct PNGWriteMemory
+class PNGWriteMemory
 {
+public:
   std::vector<uint8_t> data;
+
+  PNGWriteMemory() :
+    data()
+  {}
 };
 
 void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)

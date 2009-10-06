@@ -33,23 +33,31 @@ private:
   int      format;
   
 public:  
-  TileEntry()
+  TileEntry() :
+    fileid(),
+    scale(),
+    pos(),
+    blob(),
+    surface(),
+    format()
   {}
 
-  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_)
-    : fileid(fileid_),
-      scale(scale_),
-      pos(pos_),
-      surface(surface_),
-      format(-1)
+  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_) :
+    fileid(fileid_),
+    scale(scale_),
+    pos(pos_),
+    blob(),
+    surface(surface_),
+    format(-1)
   {}
 
-  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const Blob& blob_, int format_)
-    : fileid(fileid_),
-      scale(scale_),
-      pos(pos_),
-      blob(blob_),
-      format(format_)
+  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const Blob& blob_, int format_) :
+    fileid(fileid_),
+    scale(scale_),
+    pos(pos_),
+    blob(blob_),
+    surface(),
+    format(format_)
   {}
 
   SoftwareSurface get_surface() const { return surface; }

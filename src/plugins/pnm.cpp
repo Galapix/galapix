@@ -42,63 +42,68 @@ private:
     token_count = 0;
 
     while(!eof())
+    {
+      if (*ptr == '#')
       {
-        if (*ptr == '#')
-          {
-            // skip comment
-            forward();
-            while(!eof() && *ptr != '\n')
-              forward();
-          }
-        else if (isspace(*ptr))
-          {
-            // skip whitespace
-            forward();
-            while(!eof() && isspace(*ptr))
-              forward();
-          }
-        else
-          {
-            const char* start = ptr;
-            forward();
-            while(!eof() && !isspace(*ptr) && *ptr != '#')
-              {
-                forward();
-              }
-
-            std::string token(start, ptr);
-            switch(token_count)
-              {
-                case 0:
-                  magic = token;
-                  break;
-
-                case 1:
-                  size.width = atoi(token.c_str());
-                  break;
-
-                case 2:
-                  size.height = atoi(token.c_str());
-                  break;
-
-                case 3:
-                  maxval = atoi(token.c_str());
-                  forward();
-                  pixel_data = ptr;
-                  ptr = data+len; // set ptr to EOF 
-                  break;
-              }
-
-            token_count += 1;
-          }
+        // skip comment
+        forward();
+        while(!eof() && *ptr != '\n')
+          forward();
       }
+      else if (isspace(*ptr))
+      {
+        // skip whitespace
+        forward();
+        while(!eof() && isspace(*ptr))
+          forward();
+      }
+      else
+      {
+        const char* start = ptr;
+        forward();
+        while(!eof() && !isspace(*ptr) && *ptr != '#')
+        {
+          forward();
+        }
+
+        std::string token(start, ptr);
+        switch(token_count)
+        {
+          case 0:
+            magic = token;
+            break;
+
+          case 1:
+            size.width = atoi(token.c_str());
+            break;
+
+          case 2:
+            size.height = atoi(token.c_str());
+            break;
+
+          case 3:
+            maxval = atoi(token.c_str());
+            forward();
+            pixel_data = ptr;
+            ptr = data+len; // set ptr to EOF 
+            break;
+        }
+
+        token_count += 1;
+      }
+    }
   }
 
 public:
-  PNMMemReader(const char* data_, int len_)
-    : data(data_),
-      len(len_),
-      ptr(data_)
+  PNMMemReader(const char* data_, int len_) :
+    data(data_),
+    len(len_),
+    ptr(data_),
+    token_count(),
+    magic(),
+    size(),
+    maxval(),
+    pixel_data()
   {
     parse();
   }
@@ -107,6 +112,10 @@ public:
   const char* get_pixel_data() const { return pixel_data; }
   Size get_size() const { return size; }
   int  get_maxval() const { return maxval; }
+
+private:
+  PNMMemReader(const PNMMemReader&);
+  PNMMemReader& operator=(const PNMMemReader&);
 };
 
 SoftwareSurface

@@ -39,6 +39,11 @@ private:
   struct Object {
     Rectf rect;
     C    data;
+
+    Object() :
+      rect(), 
+      data()
+    {}
   };
 
   typedef std::vector<Object> Items;
@@ -57,6 +62,7 @@ public:
   QuadTreeNode(int depth_, const Rectf& bounding_rect_)
     : bounding_rect(bounding_rect_),
       center(bounding_rect.get_center()),
+      items(),
       depth(depth_),
       nw(0), ne(0), sw(0), se(0)
   {
@@ -162,8 +168,8 @@ private:
   boost::scoped_ptr<QuadTreeNode<C> > main_node;
 
 public: 
-  QuadTree(const Rectf& bounding_rect)
-    : main_node(new QuadTreeNode<C>(0, bounding_rect))
+  QuadTree(const Rectf& bounding_rect) :
+    main_node(new QuadTreeNode<C>(0, bounding_rect))
   {
   }
 

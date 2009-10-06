@@ -30,6 +30,8 @@ private:
   
 public:
   SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt);
+  SQLiteReader(const SQLiteReader&);
+  SQLiteReader& operator=(const SQLiteReader&);
   ~SQLiteReader();
 
   bool next();
@@ -42,10 +44,6 @@ public:
   Blob        get_blob(int column);
 
   std::string get_column_name(int column);
-
-private:
-  //  SQLiteReader(const SQLiteReader&);
-  //  SQLiteReader& operator=(const SQLiteReader&);
 };
 
 #endif

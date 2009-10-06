@@ -20,6 +20,7 @@
 
 #include <string.h>
 
+#include "math/vector3f.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
 #include "util/file_reader_impl.hpp"

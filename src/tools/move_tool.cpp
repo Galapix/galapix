@@ -25,8 +25,10 @@
 
 MoveTool::MoveTool(Viewer* viewer_)
   : Tool(viewer_),
+    mouse_pos(),
     drag_active(false),
-    move_active(false)
+    move_active(false),
+    click_pos()
 {
 }
 

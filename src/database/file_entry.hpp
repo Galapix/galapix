@@ -42,12 +42,22 @@ public:
   int file_mtime;
 
   int thumbnail_size;
+
+  FileEntryImpl()
+    : fileid(),
+      url(),
+      image_size(),
+      file_size(),
+      file_mtime(),
+      thumbnail_size()
+  {}
 };
 
 class FileEntry 
 {
 public:
   FileEntry()
+    : impl()
   {}
 
   FileEntry(int64_t fileid, 

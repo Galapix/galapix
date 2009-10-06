@@ -276,9 +276,11 @@ public:
   int      pitch;
   boost::scoped_array<uint8_t> pixels;
   
-  SoftwareSurfaceImpl(SoftwareSurface::Format format_, const Size& size_)
-    : format(format_),
-      size(size_)
+  SoftwareSurfaceImpl(SoftwareSurface::Format format_, const Size& size_) :
+    format(format_),
+    size(size_),
+    pitch(),
+    pixels()
   {
     switch(format)
       {
@@ -302,12 +304,13 @@ public:
   }
 };
 
-SoftwareSurface::SoftwareSurface()
+SoftwareSurface::SoftwareSurface() :
+impl()
 {
 }
 
-SoftwareSurface::SoftwareSurface(Format format_, const Size& size_)
-  : impl(new SoftwareSurfaceImpl(format_, size_))
+SoftwareSurface::SoftwareSurface(Format format_, const Size& size_) :
+  impl(new SoftwareSurfaceImpl(format_, size_))
 {
 }
 

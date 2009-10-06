@@ -23,8 +23,10 @@
 
 JobManager* JobManager::current_ = 0;
 
-JobManager::JobManager(int num_threads)
-  : next_thread(0)
+JobManager::JobManager(int num_threads) :
+  threads(),
+  next_thread(0),
+  mutex()
 {
   assert(current_ == 0);
   current_ = this;

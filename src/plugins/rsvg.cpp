@@ -20,15 +20,10 @@
 
 #include <stdexcept>
 
-#include "util/filesystem.hpp"
+#include "util/url.hpp"
 #include "util/exec.hpp"
 #include "plugins/png.hpp"
 
-RSVG::RSVG()
-{
-  rsvg_exe = Filesystem::find_exe("rsvg");
-}
-
 SoftwareSurface
 RSVG::load_from_url(const URL& url)
 {

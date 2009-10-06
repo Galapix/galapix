@@ -62,7 +62,21 @@ public:
 
   ThreadMessageQueue<TileEntry> tile_queue;
 
-  ImageImpl() 
+  ImageImpl() :
+    file_entry(),
+    min_keep_scale(), 
+    max_scale(),
+    alpha(),
+    pos(),
+    last_pos(),
+    target_pos(),
+    scale(),
+    last_scale(),
+    target_scale(),
+    angle(),
+    cache(),
+    jobs(),  
+    tile_queue()
   {
   }
 
@@ -72,6 +86,7 @@ public:
 };
 
 Image::Image()
+  : impl()
 {
 }
 

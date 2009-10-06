@@ -22,7 +22,15 @@
 #include "galapix/database_thread.hpp"
 #include "util/file_reader.hpp"
 
-Workspace::Workspace()
+Workspace::Workspace() :
+  quad_tree(),
+  images(),
+  image_requests(),
+  selection(),
+  next_pos(),
+  row_width(),
+  progress(),
+  file_queue()
 {
   next_pos = Vector2i(0, 0);
   row_width = 20;

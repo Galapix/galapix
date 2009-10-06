@@ -21,7 +21,8 @@
 #include "job/job.hpp"
 
 JobWorkerThread::JobWorkerThread()
-  : quit(false)
+  : queue(),
+    quit(false)
 {
 }
 

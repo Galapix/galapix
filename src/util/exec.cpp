@@ -26,10 +26,14 @@
 
 const bool Exec::ABSOLUTE_PATH = true;
 
-Exec::Exec(const std::string& program_, bool absolute_path_)
-  : program(program_),
-    absolute_path(absolute_path_)
-{ 
+Exec::Exec(const std::string& program_, bool absolute_path_) :
+  program(program_),
+  absolute_path(absolute_path_),
+  arguments(),
+  stdout_vec(),
+  stderr_vec(),
+  stdin_data()
+{
 }
 
 Exec&

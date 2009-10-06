@@ -22,6 +22,10 @@ class SelectionImpl
 {
 public:
   Selection::Images images;
+  
+  SelectionImpl() :
+    images()
+  {}
 };
 
 Selection::Selection()

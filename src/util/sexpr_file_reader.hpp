@@ -22,10 +22,8 @@
 #include "file_reader.hpp"
 #include "lisp/lisp.hpp"
 
-/** */
 class SExprFileReader : public FileReader
 {
-private:
 public:
   SExprFileReader(boost::shared_ptr<lisp::Lisp> lisp);
 };

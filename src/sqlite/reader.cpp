@@ -22,10 +22,24 @@
 
 #include "sqlite/error.hpp"
 
-SQLiteReader::SQLiteReader(SQLiteConnection* db_, sqlite3_stmt* stmt_)
-  : db(db_),
-    stmt(stmt_)
+SQLiteReader::SQLiteReader(SQLiteConnection* db_, sqlite3_stmt* stmt_) :
+  db(db_),
+  stmt(stmt_)
 {
+}
+
+SQLiteReader::SQLiteReader(const SQLiteReader& rhs) :
+  db(rhs.db),
+  stmt(rhs.stmt)
+{ // FIXME: WRONG, leads to double free
+}
+
+SQLiteReader&
+SQLiteReader::operator=(const SQLiteReader& rhs)
+{ // FIXME: WRONG, leads to double free
+  db   = rhs.db;
+  stmt = rhs.stmt;  
+  return *this;
 }
 
 SQLiteReader::~SQLiteReader()

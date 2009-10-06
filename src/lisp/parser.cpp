@@ -34,13 +34,15 @@ namespace lisp
 class ParseError : public std::exception
 {
 public:
-  ParseError(const Parser* parser, const std::string& message) throw()
+  ParseError(const Parser* parser, const std::string& message) throw() :
+    string()
   {
     std::ostringstream msg;
     msg << "Parse error in file '" << parser->filename << "' line "
       << parser->lexer->getLineNumber() << ": " << message;
     string = msg.str();
   }
+
   ~ParseError() throw()
   {}
 
@@ -54,7 +56,9 @@ private:
 };
 
 Parser::Parser()
-  : lexer(0)
+  : filename(),
+    lexer(0),
+    token()
 {
 }
 

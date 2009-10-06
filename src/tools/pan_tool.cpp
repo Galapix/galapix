@@ -23,7 +23,8 @@
 PanTool::PanTool(Viewer* viewer_)
   : Tool(viewer_),
     trackball_mode(false),
-    move_active(false)
+    move_active(false),
+    mouse_pos()
 {
 }
 

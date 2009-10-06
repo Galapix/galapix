@@ -33,6 +33,9 @@ private:
 
 public:
   ThreadMessageQueue()
+    : mutex(),
+      cond(),
+      values()
   {
   }
 

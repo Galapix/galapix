@@ -31,7 +31,7 @@ class EOFException
 };
 
 Lexer::Lexer(std::istream& newstream)
-    : stream(newstream), eof(false), linenumber(0)
+  : stream(newstream), eof(false), linenumber(0), buffer(), bufend(), c(), token_string(), token_length()
 {
   try {
     // trigger a refill of the buffer

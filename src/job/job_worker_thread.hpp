@@ -34,6 +34,11 @@ private:
   {
     boost::shared_ptr<Job> job;
     boost::function<void (boost::shared_ptr<Job>)> callback;
+
+    Task() :
+      job(),
+      callback()
+    {}
   };
 
   ThreadMessageQueue<Task> queue;

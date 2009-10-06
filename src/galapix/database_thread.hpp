@@ -64,7 +64,8 @@ private:
     TileRequestGroup(int64_t fileid_, int min_scale_, int max_scale_)
       : fileid(fileid_),
         min_scale(min_scale_),
-        max_scale(max_scale_)
+        max_scale(max_scale_),
+        requests()
     {}
     
     int64_t fileid; 
