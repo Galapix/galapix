@@ -185,7 +185,7 @@ XCF::load_from_mem(void* data, int len)
   Exec xcf2pnm("xcf2pnm");
   xcf2pnm.arg("--background").arg("#000"); // Makes transparent pixels black
   xcf2pnm.arg("-"); // Read from stdin
-  xcf2pnm.set_stdin(Blob::wrap(data, len));
+  xcf2pnm.set_stdin(Blob::copy(data, len));
   if (xcf2pnm.exec() != 0)
     {
       throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
