@@ -132,19 +132,5 @@ Blob::copy(const std::vector<uint8_t>& data)
 {
   return Blob(data);
 }
-
-Blob
-Blob::wrap(const void* data, int len)
-{
-  // FIXME: Implement me
-  return Blob(data, len);
-}
-
-Blob
-Blob::wrap(const std::vector<uint8_t>& data)
-{
-  // FIXME: Implement me
-  return Blob(data);
-}
 
 /* EOF */

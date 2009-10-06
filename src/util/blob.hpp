@@ -52,11 +52,6 @@ public:
   static Blob copy(const void* data, int len);
   static Blob copy(const std::vector<uint8_t>& data);
 
-  /** Wrap the given pointer or vector into a Blob without copying it,
-      the Blob is only valid as long as the parent object is valid */
-  static Blob wrap(const void* data, int len);
-  static Blob wrap(const std::vector<uint8_t>& data);
-
 private: 
   boost::shared_ptr<BlobImpl> impl;
 };
