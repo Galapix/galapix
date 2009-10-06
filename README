@@ -39,8 +39,7 @@ Features:
 
   * support for a wide varity of archive formats (rar, zip, tar)
 
-  * very fast once the cache is generated (3sec to load 150'000 images
-    at once)
+  * very fast once the cache is generated
 
   * flexible layouting functions
 

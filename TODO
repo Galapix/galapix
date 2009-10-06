@@ -21,7 +21,8 @@ Release procedure:
 Problems:
 =========
 
-* rounding error causes pictures to disappear
+* quadtree error causes pictures to not be displayed at the top border
+  (only in some seldome edge cases)
 
 * viewdb -p PATTERN doesn't work, as the viewer isn't updated in
   SDLViewer::run(), pressing '1' works as a workaround
@@ -30,7 +31,7 @@ Problems:
 
 * some images don't seem to cleanup their jobs when they go out of
   view (caused by Quadtree, which discards objects before their draw()
-  method is called)
+  method is called, need event based enter_screen/leave_screen calls)
 
 * implement some proper stuff to report the current status (what jobs
   are running, what an image is doing, etc)
