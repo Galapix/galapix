@@ -20,8 +20,9 @@
 #define HEADER_MOVE_TOOL_HPP
 
 #include <vector>
-#include "../image.hpp"
-#include "../tool.hpp"
+
+#include "galapix/image.hpp"
+#include "galapix/tool.hpp"
 
 class MoveTool : public Tool
 {

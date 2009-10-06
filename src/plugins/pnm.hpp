@@ -20,7 +20,7 @@
 #define HEADER_PNM_HPP
 
 //#include <stdint.h>
-#include "../software_surface.hpp"
+#include "util/software_surface.hpp"
 
 class PNM
 {

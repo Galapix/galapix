@@ -20,7 +20,8 @@
 #define HEADER_RSVG_HPP
 
 #include <string>
-#include "../software_surface.hpp"
+
+#include "util/software_surface.hpp"
 
 class URL;
 

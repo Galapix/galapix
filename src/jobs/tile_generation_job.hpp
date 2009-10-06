@@ -22,7 +22,7 @@
 #include <boost/function.hpp>
 
 #include "job/job.hpp"
-#include "file_entry.hpp"
+#include "database/file_entry.hpp"
 
 class TileEntry;
 

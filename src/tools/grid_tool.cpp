@@ -18,12 +18,9 @@
 
 #include "tools/grid_tool.hpp"
 
-//#include <iostream>
-
 #include "display/framebuffer.hpp"
-#include "viewer.hpp"
+#include "galapix/viewer.hpp"
 #include "math/rgb.hpp"
-//#include "math/rgba.hpp"
 
 GridTool::GridTool(Viewer* viewer_)
   : Tool(viewer_),

@@ -19,7 +19,7 @@
 #ifndef HEADER_ROTATE_TOOL_HPP
 #define HEADER_ROTATE_TOOL_HPP
 
-#include "../tool.hpp"
+#include "galapix/tool.hpp"
 
 class RotateTool : public Tool
 {

@@ -19,7 +19,7 @@
 #ifndef HEADER_ZOOM_TOOL_HPP
 #define HEADER_ZOOM_TOOL_HPP
 
-#include "../tool.hpp"
+#include "galapix/tool.hpp"
 
 class ZoomTool : public Tool
 {

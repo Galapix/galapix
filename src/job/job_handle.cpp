@@ -19,7 +19,7 @@
 //#include <boost/thread/mutex.hpp>
 //#include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
-//#include "SDL.h"
+//#include <SDL.h>
 #include "job_handle.hpp"
 
 class JobHandleImpl

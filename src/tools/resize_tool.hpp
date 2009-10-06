@@ -26,7 +26,7 @@
 #ifndef HEADER_RESIZE_TOOL_HPP
 #define HEADER_RESIZE_TOOL_HPP
 
-#include "../tool.hpp"
+#include "galapix/tool.hpp"
 
 class ResizeTool : public Tool
 {

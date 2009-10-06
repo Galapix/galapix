@@ -23,8 +23,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#include "software_surface.hpp"
 #include "math/size.hpp"
+#include "util/software_surface.hpp"
 
 class RGB;
 class RGBA;

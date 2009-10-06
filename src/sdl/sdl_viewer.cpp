@@ -16,22 +16,23 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "sdl_viewer.hpp"
+
 #include <boost/format.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-#include "database_thread.hpp"
+#include "database/file_entry.hpp"
 #include "display/framebuffer.hpp"
-#include "file_entry.hpp"
+#include "galapix/database_thread.hpp"
+#include "galapix/viewer.hpp"
+#include "galapix/viewer_state.hpp"
+#include "galapix/workspace.hpp"
 #include "math/rgba.hpp"
 #include "plugins/png.hpp"
 #include "sdl/sdl_framebuffer.hpp"
-#include "sdl_viewer.hpp"
-#include "space_navigator.hpp"
+#include "spnav/space_navigator.hpp"
 #include "util/filesystem.hpp"
-#include "viewer.hpp"
-#include "viewer_state.hpp"
-#include "workspace.hpp"
 
 #ifdef HAVE_SPACE_NAVIGATOR
 #  include <spnav.h>

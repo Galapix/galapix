@@ -24,13 +24,11 @@
 
 #include "math/size.hpp"
 
-#include "image.hpp"
-#include "tile_entry.hpp"
+#include "galapix/image.hpp"
 
 class Viewer;
 class FileEntry;
 class Image;
-class TileEntry;
 class Workspace;
 
 class SDLViewer

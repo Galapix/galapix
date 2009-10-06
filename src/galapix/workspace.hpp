@@ -22,7 +22,7 @@
 #include "util/url.hpp"
 #include "selection.hpp"
 #include "math/quad_tree.hpp"
-#include "thread_message_queue.hpp"
+#include "job/thread_message_queue.hpp"
 #include "image.hpp"
 
 class Rectf;

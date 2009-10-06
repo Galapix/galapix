@@ -16,10 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "tools/rotate_tool.hpp"
+
 //#include <math.h>
-#include "../viewer.hpp"
-#include "../workspace.hpp"
-#include "rotate_tool.hpp"
+#include "galapix/viewer.hpp"
+#include "galapix/workspace.hpp"
 
 RotateTool::RotateTool(Viewer* viewer_)
   : Tool(viewer_),

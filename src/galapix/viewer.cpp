@@ -16,14 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "SDL.h"
+#include <SDL.h>
 #include <fstream>
 #include <boost/format.hpp>
 #include <iostream>
 
 #include "math/rgb.hpp"
 #include "display/framebuffer.hpp"
-#include "software_surface.hpp"
+#include "util/software_surface.hpp"
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 #include "math/rgba.hpp"

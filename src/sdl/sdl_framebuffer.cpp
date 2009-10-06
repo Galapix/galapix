@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "sdl/sdl_framebuffer.hpp"
+
 #include <sstream>
 #include <math.h>
 #include <assert.h>
@@ -24,7 +26,6 @@
 
 #include "math/math.hpp"
 #include "display/framebuffer.hpp"
-#include "sdl/sdl_framebuffer.hpp"
 
 SDL_Surface* SDLFramebuffer::screen = 0;
 Uint32 SDLFramebuffer::flags = 0;

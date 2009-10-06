@@ -21,7 +21,7 @@
 #include "../math/rect.hpp"
 #include "../plugins/jpeg.hpp"
 //#include "../file_entry.hpp"
-#include "../tile_entry.hpp"
+#include "database/tile_entry.hpp"
 #include "tile_generation_job.hpp"
 
 TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const FileEntry& entry_, int min_scale_, int max_scale_,

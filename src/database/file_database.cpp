@@ -16,14 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "database/file_database.hpp"
+
 #include <iostream>
 //#include <sstream>
 //#include <stdexcept>
 //#include <assert.h>
 
-#include "file_database.hpp"
-#include "file_entry.hpp"
-#include "software_surface.hpp"
+#include "database/file_entry.hpp"
+#include "util/software_surface.hpp"
 #include "util/filesystem.hpp"
 //#include "math/math.hpp"
 //#include "tile_entry.hpp"

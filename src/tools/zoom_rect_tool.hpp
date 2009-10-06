@@ -19,7 +19,7 @@
 #ifndef HEADER_ZOOM_RECT_TOOL_HPP
 #define HEADER_ZOOM_RECT_TOOL_HPP
 
-#include "../tool.hpp"
+#include "galapix/tool.hpp"
 
 /** */
 class ZoomRectTool : public Tool

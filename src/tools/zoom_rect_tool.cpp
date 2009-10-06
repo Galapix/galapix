@@ -28,7 +28,7 @@
 #include <iostream>
 
 #include "display/framebuffer.hpp"
-#include "viewer.hpp"
+#include "galapix/viewer.hpp"
 #include "math/rgb.hpp"
 
 ZoomRectTool::ZoomRectTool(Viewer* viewer_)

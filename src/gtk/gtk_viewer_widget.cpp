@@ -23,7 +23,7 @@
 #include <gtkmm.h>
 
 #include "display/framebuffer.hpp"
-#include "viewer.hpp"
+#include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
 
 GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)

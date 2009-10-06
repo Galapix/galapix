@@ -20,7 +20,7 @@
 
 #include "math/rgb.hpp"
 #include "display/framebuffer.hpp"
-#include "file_entry.hpp"
+#include "database/file_entry.hpp"
 #include "database_thread.hpp"
 #include "viewer.hpp"
 

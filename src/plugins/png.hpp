@@ -20,8 +20,8 @@
 #define HEADER_PNG_HPP
 
 //#include <string>
-#include "../math/size.hpp"
-#include "../software_surface.hpp"
+#include "math/size.hpp"
+#include "util/software_surface.hpp"
 
 class PNG
 {

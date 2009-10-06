@@ -16,8 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../viewer.hpp"
-#include "zoom_tool.hpp"
+#include "tools/zoom_tool.hpp"
+
+#include "galapix/viewer.hpp"
 
 ZoomTool::ZoomTool(Viewer* viewer_, float zoom_factor_)
   : Tool(viewer_),

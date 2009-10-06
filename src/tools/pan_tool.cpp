@@ -23,8 +23,9 @@
 **  02111-1307, USA.
 */
 
-#include "../viewer.hpp"
-#include "pan_tool.hpp"
+#include "tools/pan_tool.hpp"
+
+#include "galapix/viewer.hpp"
 
 PanTool::PanTool(Viewer* viewer_)
   : Tool(viewer_),

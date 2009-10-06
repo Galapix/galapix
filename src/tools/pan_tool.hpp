@@ -19,7 +19,7 @@
 #ifndef HEADER_PAN_TOOL_HPP
 #define HEADER_PAN_TOOL_HPP
 
-#include "../tool.hpp"
+#include "galapix/tool.hpp"
 
 class Viewer;
 

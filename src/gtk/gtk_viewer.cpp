@@ -22,7 +22,7 @@
 #include <libglademm/xml.h>
 #include <iostream>
 
-#include "viewer.hpp"
+#include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
 #include "gtk/gtk_viewer.hpp"
 

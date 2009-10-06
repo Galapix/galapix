@@ -20,7 +20,7 @@
 #define HEADER_TILE_ENTRY_HPP
 
 #include "math/vector2i.hpp"
-#include "software_surface.hpp"
+#include "util/software_surface.hpp"
 
 class TileEntry
 {

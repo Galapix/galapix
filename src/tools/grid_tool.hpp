@@ -19,7 +19,7 @@
 #ifndef HEADER_GRID_TOOL_HPP
 #define HEADER_GRID_TOOL_HPP
 
-#include "../tool.hpp"
+#include "galapix/tool.hpp"
 
 /** */
 class GridTool : public Tool

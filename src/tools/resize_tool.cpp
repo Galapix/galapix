@@ -23,9 +23,10 @@
 **  02111-1307, USA.
 */
 
-#include "../viewer.hpp"
-#include "../workspace.hpp"
-#include "resize_tool.hpp"
+#include "tools/resize_tool.hpp"
+
+#include "galapix/viewer.hpp"
+#include "galapix/workspace.hpp"
 
 ResizeTool::ResizeTool(Viewer* viewer_)
   : Tool(viewer_),

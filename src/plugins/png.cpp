@@ -16,11 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "plugins/png.hpp"
+
 #include <png.h>
-//#include <string.h>
 #include <iostream>
 #include <stdexcept>
-#include "png.hpp"
 
 struct PNGReadMemory
 {

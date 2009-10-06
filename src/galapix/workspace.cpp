@@ -24,8 +24,8 @@
 //#include "math/rect.hpp"
 //#include "math/quad_tree.hpp"
 //#include "math/math.hpp"
-#include "file_entry.hpp"
-#include "file_reader.hpp"
+#include "database/file_entry.hpp"
+#include "util/file_reader.hpp"
 //#include "display/framebuffer.hpp"
 
 Workspace::Workspace()

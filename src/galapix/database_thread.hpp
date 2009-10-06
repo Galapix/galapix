@@ -22,10 +22,10 @@
 //#include <boost/function.hpp>
 //#include <list>
 //#include <string>
-#include "thread.hpp"
-#include "thread_message_queue.hpp"
+#include "job/thread.hpp"
+#include "job/thread_message_queue.hpp"
 //#include "file_entry.hpp"
-#include "tile_entry.hpp"
+#include "database/tile_entry.hpp"
 #include "job/job_handle.hpp"
 
 class URL;

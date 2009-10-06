@@ -19,7 +19,8 @@
 #ifndef HEADER_SDL_FRAMEBUFFER_HPP
 #define HEADER_SDL_FRAMEBUFFER_HPP
 
-#include "SDL.h"
+#include <SDL.h>
+
 #include "math/size.hpp"
 
 /** SDL specific code to init the display */
