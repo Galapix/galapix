@@ -26,8 +26,8 @@ Problems:
 
 * shared_ptr<> impl is evil
 
-* create BlobHandle, SoftwareSurfaceHandle, etc., do not let Blob,
-  SoftwareSurface do the refcounting internally
+* create SoftwareSurfaceHandle, etc., do not let SoftwareSurface do
+  the refcounting internally
 
 * Database::tile_request_groups is never emptied
 
@@ -37,18 +37,12 @@ Problems:
 * some jobs seem to stall and never get completed or never launched
   (TileRequest might be guilty)
 
-* some images don't seem to cleanup their jobs when they go out of
-  view (caused by Quadtree, which discards objects before their draw()
-  method is called, need event based enter_screen/leave_screen calls)
-
 * implement some proper stuff to report the current status (what jobs
   are running, what an image is doing, etc)
 
 * use graphic indicator for loading (alpha flashing)
 
 * add a is_queued() is_running() to the Job handle
-
-* generate quadtree automatically when the scene is no longer animated
 
 * use framebuffer_object to speed up the drawing
 
@@ -354,9 +348,6 @@ Galapix 0.0.4 Release ToDo:
 * added toggle for GL_LINEAR/GL_NEAREST
 
 * Merge TileGenerator and TileGeneratorThread code
-
-* implement QuadTree properly and do some testing on it (currently we
-  don't cancel jobs when images get out of view)
 
 * seperate loading of tiles from drawing, making loading/job-cancel
   event based instead of brute force as it is now

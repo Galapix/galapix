@@ -102,7 +102,6 @@ void
 ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image& m_image)
 {
   Rectf image_rect = m_image.get_image_rect();
-  Vector2f top_left(image_rect.left, image_rect.top);
 
   if (!cliprect.is_overlapped(image_rect))
   {
@@ -110,6 +109,8 @@ ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image
   }
   else
   {
+    Vector2f top_left(image_rect.left, image_rect.top);
+
     // scale factor for requesting the tile from the TileDatabase
     // FIXME: Can likely be done without float
     int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (fscale*impl_scale)) /

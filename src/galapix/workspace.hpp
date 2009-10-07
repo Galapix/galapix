@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_GALAPIX_WORKSPACE_HPP
 
 #include <boost/scoped_ptr.hpp>
+#include <set>
 
 #include "util/url.hpp"
 #include "selection.hpp"
@@ -69,7 +70,8 @@ private:
   float     progress;
 
   ThreadMessageQueue<FileEntry>   file_queue;
- 
+  std::set<ImageHandle> m_images_on_screen;
+
 public:
   Workspace();
 

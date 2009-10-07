@@ -22,6 +22,27 @@
 #include "galapix/database_thread.hpp"
 #include "util/file_reader.hpp"
 
+struct ImageSorter
+{
+  bool operator()(const ImageHandle& lhs, const ImageHandle& rhs)
+  {
+    return lhs->get_url() < rhs->get_url();
+  }
+};
+
+struct ImageRequestFinder
+{
+  std::string str;
+
+  ImageRequestFinder(const std::string& str_)
+    : str(str_)
+  {}
+
+  bool operator()(const ImageRequest& lhs) const {
+    return str == lhs.url.str();
+  }
+};
+
 Workspace::Workspace() :
   quad_tree(),
   images(),
@@ -30,7 +51,8 @@ Workspace::Workspace() :
   next_pos(0, 0),
   row_width(20),
   progress(0.0f),
-  file_queue()
+  file_queue(),
+  m_images_on_screen()
 {
 }
 
@@ -74,18 +96,6 @@ Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float sca
   image->set_scale(scale);
   image->set_pos(pos);
 }
-
-struct ImageRequestFinder {
-  std::string str;
-
-  ImageRequestFinder(const std::string& str_)
-    : str(str_)
-  {}
-
-  bool operator()(const ImageRequest& lhs) const {
-    return str == lhs.url.str();
-  }
-};
 
 void
 Workspace::add_image(const FileEntry& file_entry)
@@ -301,27 +311,37 @@ void
 Workspace::draw(const Rectf& cliprect, float scale)
 {
   if (quad_tree.get())
+  {
+    std::set<ImageHandle> new_images_on_screen;
+    const Images& current_images = quad_tree->get_items_at(cliprect);
+    for(Images::const_iterator i = current_images.begin(); i != current_images.end(); ++i)
     {
-      Images current_images = quad_tree->get_items_at(cliprect);
-      for(Images::iterator i = current_images.begin(); i != current_images.end(); ++i)
-        {
-          (*i)->draw(cliprect, scale);
-        }
-    }
-  else
-    {
-      //std::cout << Math::clamp(1, static_cast<int>(1.0f / scale), 32) << " -> " << scale << std::endl;
-        
-      for(Images::iterator i = images.begin(); i != images.end(); ++i)
-        {
-          (*i)->draw(cliprect, scale);
-        }
+      (*i)->draw(cliprect, scale);
+      new_images_on_screen.insert(*i);
     }
 
-  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+    for(std::set<ImageHandle>::const_iterator i = m_images_on_screen.begin(); i != m_images_on_screen.end(); ++i)
     {
-      (*i)->draw_mark();
+      if (new_images_on_screen.find(*i) == new_images_on_screen.end())
+      {
+        (*i)->cache_cleanup();
+      }
     }
+
+    m_images_on_screen = new_images_on_screen;
+  }
+  else
+  {
+    for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    {
+      (*i)->draw(cliprect, scale);
+    }
+  }
+
+  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+  {
+    (*i)->draw_mark();
+  }
 }
 
 void
@@ -354,14 +374,6 @@ Workspace::update(float delta)
       }
     }
 }
-
-struct ImageSorter
-{
-  bool operator()(const ImageHandle& lhs, const ImageHandle& rhs)
-  {
-    return lhs->get_url() < rhs->get_url();
-  }
-};
 
 void
 Workspace::sort()
