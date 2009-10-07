@@ -212,7 +212,7 @@ JPEG::save(const SoftwareSurface& surface, int quality, const std::string& filen
     }
 }
 
-Blob
+BlobHandle
 JPEG::save(const SoftwareSurface& surface, int quality)
 {
   std::vector<uint8_t> data;

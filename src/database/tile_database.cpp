@@ -109,15 +109,15 @@ TileDatabase::get_tiles(int64_t fileid, std::vector<TileEntry>& tiles)
       // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
       // Blob, so we don't do encode/decode when doing a database
       // merge
-      Blob blob = tile.get_blob();
+      BlobHandle blob = tile.get_blob();
       switch(tile.get_format())
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
-            tile.set_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
             break;
 
           case SoftwareSurface::PNG_FILEFORMAT:
-            tile.set_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
             break;
         }
 
@@ -156,15 +156,15 @@ TileDatabase::get_tile(int64_t fileid, int scale, const Vector2i& pos, TileEntry
       
       // FIXME: Do this in a DecoderThread
 
-      Blob blob = tile.get_blob();
+      BlobHandle blob = tile.get_blob();
       switch(tile.get_format())
         {
           case SoftwareSurface::JPEG_FILEFORMAT:
-            tile.set_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
             break;
 
           case SoftwareSurface::PNG_FILEFORMAT:
-            tile.set_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
+            tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
             break;
         }
       
@@ -268,7 +268,7 @@ TileDatabase::check()
         int scale  = reader.get_int(1);
         int x      = reader.get_int(2);
         int y      = reader.get_int(3);
-        Blob blob  = reader.get_blob(4);
+        BlobHandle blob  = reader.get_blob(4);
       */
     }
 }

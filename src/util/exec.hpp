@@ -22,7 +22,7 @@
 #include <vector>
 #include <string>
 
-#include "blob.hpp"
+#include "util/blob.hpp"
 
 /** The Exec class allows to call external applications in a
     conventient vasion. */
@@ -36,7 +36,7 @@ private:
   std::vector<char> stdout_vec;
   std::vector<char> stderr_vec;
 
-  Blob stdin_data;
+  BlobHandle stdin_data;
 
 public:
   static const bool ABSOLUTE_PATH;
@@ -62,7 +62,7 @@ public:
 
       @param blob The data passed on stdin
    */
-  void set_stdin(const Blob& blob);
+  void set_stdin(const BlobHandle& blob);
 
   /** Start the external program 
       

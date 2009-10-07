@@ -69,8 +69,8 @@ TileGenerationJob::run()
             }
           else
             {
-              Blob blob = entry.get_url().get_blob();
-              surface = JPEG::load_from_mem(blob.get_data(), blob.size(), jpeg_scale);
+              BlobHandle blob = entry.get_url().get_blob();
+              surface = JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale);
             }
       
           surface = surface.scale(Size(width  / Math::pow2(scale),

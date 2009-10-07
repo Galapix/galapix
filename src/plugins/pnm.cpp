@@ -171,7 +171,7 @@ int main(int argc, char** argv)
     {
       for(int i = 1; i < argc; ++i)
         {
-          Blob blob = Blob::from_file(argv[i]);
+          BlobHandle blob = Blob::from_file(argv[i]);
           PNMMemReader reader((char*)blob.get_data(), blob.size());
         }
     }

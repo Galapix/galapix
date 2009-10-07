@@ -23,11 +23,11 @@
 class JPEGDecodeJob : public Job
 {
 private:
-  Blob blob;
+  BlobHandle blob;
   SoftwareSurface surface;
 
 public:
-  JPEGDecodeJob(const Blob& blob)
+  JPEGDecodeJob(const BlobHandle& blob)
     : blob(blob)
   {}
   

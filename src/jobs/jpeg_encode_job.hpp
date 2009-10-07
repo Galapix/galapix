@@ -25,7 +25,7 @@ class JPEGEncodeJob : public Job
 private:
   SoftwareSurface surface;
   int quality;
-  Blob blob;
+  BlobHandle blob;
 
 public:
   JPEGEncodeJob(const SoftwareSurface& surface, int quality)
@@ -37,7 +37,7 @@ public:
     blob = JPEG::save(surface, quality);
   }
 
-  Blob get_blob() const { return blob; }
+  BlobHandle get_blob() const { return blob; }
 };
 
 #endif

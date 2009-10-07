@@ -51,8 +51,8 @@ Imagemagick::load_from_url(const URL& url)
     }
   else
     {
-      Blob blob = url.get_blob();
-      return load_from_mem(blob.get_data(), blob.size());
+      BlobHandle blob = url.get_blob();
+      return load_from_mem(blob->get_data(), blob->size());
     }
 }
 

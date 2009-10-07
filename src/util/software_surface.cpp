@@ -135,32 +135,32 @@ SoftwareSurface::get_size(const URL& url, Size& size)
             {
               case JPEG_FILEFORMAT:
                 {
-                  Blob blob = url.get_blob();
-                  SoftwareSurface surface = JPEG::load_from_mem(blob.get_data(), blob.size());
+                  BlobHandle blob = url.get_blob();
+                  SoftwareSurface surface = JPEG::load_from_mem(blob->get_data(), blob->size());
                   size = surface.get_size();
                   return true;
                 }
 
               case PNG_FILEFORMAT:
                 {
-                  Blob blob = url.get_blob();
-                  SoftwareSurface surface = PNG::load_from_mem(blob.get_data(), blob.size());
+                  BlobHandle blob = url.get_blob();
+                  SoftwareSurface surface = PNG::load_from_mem(blob->get_data(), blob->size());
                   size = surface.get_size();
                   return true;
                 }
 
               case XCF_FILEFORMAT:
                 {
-                  Blob blob = url.get_blob();
-                  SoftwareSurface surface = XCF::load_from_mem(blob.get_data(), blob.size());
+                  BlobHandle blob = url.get_blob();
+                  SoftwareSurface surface = XCF::load_from_mem(blob->get_data(), blob->size());
                   size = surface.get_size();
                   return true;
                 }
 
               case KRA_FILEFORMAT:
                 //             {
-                //               Blob blob = url.get_blob();
-                //               SoftwareSurface surface = KRA::load_from_mem(blob.get_data(), blob.size());
+                //               BlobHandle blob = url.get_blob();
+                //               SoftwareSurface surface = KRA::load_from_mem(blob->get_data(), blob->size());
                 //               size = surface.get_size();
                 //               return false;
                 //             }
@@ -169,8 +169,8 @@ SoftwareSurface::get_size(const URL& url, Size& size)
 
               case MAGICK_FILEFORMAT:
                 {
-                  Blob blob = url.get_blob();
-                  SoftwareSurface surface = Imagemagick::load_from_mem(blob.get_data(), blob.size());
+                  BlobHandle blob = url.get_blob();
+                  SoftwareSurface surface = Imagemagick::load_from_mem(blob->get_data(), blob->size());
                   size = surface.get_size();
                   return true;
                 }
@@ -225,38 +225,38 @@ SoftwareSurface::from_url(const URL& url)
         {
           case JPEG_FILEFORMAT:
             {
-              Blob blob = url.get_blob();
-              return JPEG::load_from_mem(blob.get_data(), blob.size());
+              BlobHandle blob = url.get_blob();
+              return JPEG::load_from_mem(blob->get_data(), blob->size());
             }
 
           case PNG_FILEFORMAT:
             {
-              Blob blob = url.get_blob();
-              return PNG::load_from_mem(blob.get_data(), blob.size());
+              BlobHandle blob = url.get_blob();
+              return PNG::load_from_mem(blob->get_data(), blob->size());
             }
 
           case XCF_FILEFORMAT:
             {
-              Blob blob = url.get_blob();
-              return XCF::load_from_mem(blob.get_data(), blob.size());
+              BlobHandle blob = url.get_blob();
+              return XCF::load_from_mem(blob->get_data(), blob->size());
             }
 
 //           case KRA_FILEFORMAT:
 //             {
-//               Blob blob = url.get_blob();
-//               return KRA::load_from_mem(blob.get_data(), blob.size());
+//               BlobHandle blob = url.get_blob();
+//               return KRA::load_from_mem(blob->get_data(), blob->size());
 //             }
 
           case MAGICK_FILEFORMAT:
             {
-              Blob blob = url.get_blob();
-              return Imagemagick::load_from_mem(blob.get_data(), blob.size());
+              BlobHandle blob = url.get_blob();
+              return Imagemagick::load_from_mem(blob->get_data(), blob->size());
             }
             /*
           case SVG_FILEFORMAT:
             {
-              Blob blob = url.get_blob();
-              return RSVG::load_from_mem(blob.get_data(), blob.size());
+              BlobHandle blob = url.get_blob();
+              return RSVG::load_from_mem(blob->get_data(), blob->size());
             }            
             break;
             */
@@ -535,7 +535,7 @@ SoftwareSurface::get_pitch()  const
   return impl->pitch;
 }
 
-Blob
+BlobHandle
 SoftwareSurface::get_raw_data() const
 {
   assert(impl->pitch != impl->size.width*3);

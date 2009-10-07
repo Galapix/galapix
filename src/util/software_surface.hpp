@@ -69,7 +69,7 @@ public:
   SoftwareSurface crop(const Rect& rect) const;
   SoftwareSurface vflip() const;
 
-  Blob get_raw_data()  const;
+  BlobHandle get_raw_data()  const;
    
   void put_pixel(int x, int y, const RGB& rgb);
   void get_pixel(int x, int y, RGB& rgb) const;

@@ -49,7 +49,7 @@ Tar::get_filenames(const std::string& tar_filename)
     }
 }
 
-Blob
+BlobHandle
 Tar::get_file(const std::string& tar_filename, const std::string& filename)
 {
   Exec tar("tar");
@@ -62,7 +62,6 @@ Tar::get_file(const std::string& tar_filename, const std::string& filename)
   else
     {
       throw std::runtime_error("Tar: " + tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
-      return Blob();
     }
 
 }

@@ -16,84 +16,70 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "util/blob.hpp"
+
 #include <stdexcept>
 #include <fstream>
 #include <string.h>
-
-#include "blob.hpp"
 
-class BlobImpl
+Blob::Blob(const std::vector<uint8_t>& data) :
+  m_data(new uint8_t[data.size()]),
+  m_len(data.size())  
 {
-public:
-  boost::scoped_array<uint8_t> m_data;
-  int      m_len;
-  
-  BlobImpl(const void* data, int len) :
-    m_data(new uint8_t[len]),
-    m_len(len)
-  {
-    memcpy(m_data.get(), data, m_len);
-  }
+  memcpy(m_data.get(), &*data.begin(), m_len);
+}
 
-  BlobImpl(const std::vector<uint8_t>& data_in) :
-    m_data(new uint8_t[data_in.size()]),
-    m_len(data_in.size())
-  {
-    memcpy(m_data.get(), &*data_in.begin(), m_len);
-  }
+Blob::Blob(const void* data, int len) :
+  m_data(new uint8_t[len]),
+  m_len(len)
+{
+  memcpy(m_data.get(), data, m_len);
+}
 
-  ~BlobImpl()
-  {
-  }
-};
-
-Blob::Blob(const std::vector<uint8_t>& data)
-  : impl(new BlobImpl(data))
-{}
-
-Blob::Blob(const void* data, int len)
-  : impl(new BlobImpl(data, len))
-{}
-
-Blob::Blob()
-  : impl()
-{}
+Blob::Blob(int len) :
+  m_data(new uint8_t[len]),
+  m_len(len)
+{  
+}
 
 int
 Blob::size() const 
 {
-  if (impl.get())
-    return impl->m_len;
-  else
-    return 0;
+  return m_len;
 }
 
 uint8_t* 
 Blob::get_data() const 
 {
-  if (impl.get())
-    return impl->m_data.get();
-  else
-    return 0;
+  return m_data.get();
 }
 
 std::string
 Blob::str() const
 {
-  if (impl.get())
-    return std::string(reinterpret_cast<char*>(impl->m_data.get()), impl->m_len);
-  else
-    return std::string();
+  return std::string(reinterpret_cast<char*>(m_data.get()), m_len);
 }
 
 void
 Blob::write_to_file(const std::string& filename)
 {
   std::ofstream out(filename.c_str(), std::ios::binary);
-  out.write(reinterpret_cast<char*>(impl->m_data.get()), impl->m_len);
+  out.write(reinterpret_cast<char*>(m_data.get()), m_len);
 }
 
-Blob
+void
+Blob::append(const void* data, int len)
+{
+  assert(!"Blob::append(const void* data, int len): Implement me");
+}
+
+BlobHandle
+Blob::create(int len)
+{
+  return BlobHandle(new Blob(len));  
+}
+
+BlobHandle
 Blob::from_file(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::binary);
@@ -110,27 +96,22 @@ Blob::from_file(const std::string& filename)
           int len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
           std::copy(buffer, buffer+len, std::back_inserter(data));
         }
-      // FIXME: Useless copy again
-      return Blob(data);
+      
+      // FIXME: useless copy, should read directly into the blob
+      return Blob::copy(data);
     }
 }
 
-void
-Blob::append(const void* data, int len)
-{
-  assert(!"Blob::append(const void* data, int len): Implement me");
-}
-
-Blob
+BlobHandle
 Blob::copy(const void* data, int len)
 {
-  return Blob(data, len);
+  return BlobHandle(new Blob(data, len));
 }
 
-Blob
+BlobHandle
 Blob::copy(const std::vector<uint8_t>& data)
 {
-  return Blob(data);
+  return BlobHandle(new Blob(data));
 }
 
 /* EOF */

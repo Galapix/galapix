@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "exec.hpp"
+#include "util/exec.hpp"
 
 #include <string.h>
 #include <errno.h>
@@ -44,7 +44,7 @@ Exec::arg(const std::string& argument)
 }
 
 void
-Exec::set_stdin(const Blob& blob)
+Exec::set_stdin(const BlobHandle& blob)
 {
   stdin_data = blob;
 }
@@ -120,7 +120,7 @@ Exec::exec()
       
       if (stdin_data)
         {
-          if (write(stdin_fd[1], stdin_data.get_data(), stdin_data.size()) < 0)
+          if (write(stdin_fd[1], stdin_data->get_data(), stdin_data->size()) < 0)
             {
               throw std::runtime_error(strerror(errno));
             }
@@ -182,20 +182,18 @@ int main(int argc, char** argv)
       {
         Exec prgn(argv[1]);
         std::string stdin = "-- Stdin Test Data --\n";
-        prgn.set_stdin(Blob(stdin.c_str(), stdin.length()));
+        prgn.set_stdin(Blob::copy(stdin.c_str(), stdin.length()));
         for(int i = 2; i < argc; ++i)
           prgn.arg(argv[i]);
         std::cout << "ExitCode: " << prgn.exec() << std::endl;
 
-        std::cout << "stdout: " << std::endl;
+        std::cout << "### STDOUT BEGIN" << std::endl;
         std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
-        std::cout << "EOF" << std::endl;
-
-        std::cout << "stderr: " << std::endl;
+        std::cout << "### STDOUT END" << std::endl;
+        std::cout << std::endl;
+        std::cout << "### STERR BEGIN: " << std::endl;
         std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
-        std::cout << "EOF" << std::endl;
-
-        std::cout << "END" << std::endl;
+        std::cout << "### STDERR END" << std::endl;
       }
   }
   catch(std::exception& err)

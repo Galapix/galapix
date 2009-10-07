@@ -167,6 +167,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 {
   if (m_file_entry)
   {
+    m_cache->process_queue();
     m_renderer->draw(cliprect, fscale, m_scale, *this);
   }
 }

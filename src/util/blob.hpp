@@ -22,40 +22,44 @@
 #include <boost/smart_ptr.hpp>
 #include <vector>
 #include <stdint.h>
-
-class BlobImpl;
-
+
+class Blob;
+
+typedef boost::shared_ptr<Blob> BlobHandle;
+
 class Blob
 {
 private:
+  boost::scoped_array<uint8_t> m_data;
+  int m_len;
+
+private:
   Blob(const std::vector<uint8_t>& data); 
   Blob(const void* data, int len);
+  Blob(int len);
 
 public:
-  Blob();
-
   int size() const;
   uint8_t* get_data() const;
 
   std::string str() const;
-  operator bool() const { return impl.get(); }
-
+  
   void write_to_file(const std::string& filename);
 
-  static Blob from_file(const std::string& filename);
-  
   /** Append data to the given Blob, only possible for non-wrap Blobs
       (will invalidade the pointer returned by get_data() */
   void append(const void* data, int len);
 
-  /** Copy the given data into a Blob object */
-  static Blob copy(const void* data, int len);
-  static Blob copy(const std::vector<uint8_t>& data);
+public:
+  static BlobHandle create(int len);
 
-private: 
-  boost::shared_ptr<BlobImpl> impl;
+  static BlobHandle from_file(const std::string& filename);
+ 
+  /** Copy the given data into a Blob object */
+  static BlobHandle copy(const void* data, int len);
+  static BlobHandle copy(const std::vector<uint8_t>& data);
 };
-
+
 #endif
 
 /* EOF */

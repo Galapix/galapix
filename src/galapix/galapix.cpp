@@ -219,8 +219,8 @@ Galapix::downscale(const std::vector<URL>& url)
 
       std::ostringstream out;
       out << "/tmp/out-" << num << ".jpg";
-      Blob blob = JPEG::save(surface, 75);
-      blob.write_to_file(out.str());
+      BlobHandle blob = JPEG::save(surface, 75);
+      blob->write_to_file(out.str());
 
       std::cout << "Wrote: " << out.str() << std::endl;
     }  

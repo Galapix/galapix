@@ -132,9 +132,9 @@ SQLiteStatement::bind_null(int n)
 }
 
 SQLiteStatement&
-SQLiteStatement::bind_blob(int n, const Blob& blob)
+SQLiteStatement::bind_blob(int n, const BlobHandle& blob)
 {
-  if (sqlite3_bind_blob(stmt, n, blob.get_data(), blob.size(), SQLITE_TRANSIENT) != SQLITE_OK)
+  if (sqlite3_bind_blob(stmt, n, blob->get_data(), blob->size(), SQLITE_TRANSIENT) != SQLITE_OK)
     {
       std::ostringstream out;
       out << "SQLiteStatement::bind_blob: " << db->get_error_msg();

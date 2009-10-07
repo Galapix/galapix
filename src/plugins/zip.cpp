@@ -87,11 +87,10 @@ Zip::get_filenames(const std::string& zip_filename)
   else
     {
       throw std::runtime_error("Zip: " + std::string(unzip.get_stderr().begin(), unzip.get_stderr().end()));
-      return std::vector<std::string>();
     }
 }
 
-Blob
+BlobHandle
 Zip::get_file(const std::string& zip_filename, const std::string& filename)
 {
   Exec unzip("unzip");
@@ -104,7 +103,6 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename)
   else
     {
       throw std::runtime_error("Zip: " + std::string(unzip.get_stderr().begin(), unzip.get_stderr().end()));
-      return Blob();
     }
 }
 
@@ -128,7 +126,7 @@ int main(int argc, char** argv)
         }
       else if (argc == 3)
         {
-          Blob blob = Zip::get_file(argv[1], argv[2]);
+          BlobHandle blob = Zip::get_file(argv[1], argv[2]);
           blob.write_to_file("/tmp/out.file");
           std::cout << "Writting /tmp/out.file" << std::endl;
         }

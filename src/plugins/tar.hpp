@@ -28,7 +28,7 @@ class Tar
 {
 public:
   static std::vector<std::string> get_filenames(const std::string& rar_filename);
-  static Blob get_file(const std::string& rar_filename, const std::string& filename);
+  static BlobHandle get_file(const std::string& rar_filename, const std::string& filename);
 };
 
 #endif

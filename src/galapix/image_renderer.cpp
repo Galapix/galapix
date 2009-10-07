@@ -101,8 +101,6 @@ ImageRenderer::draw_tiles(const Rect& rect, int scale,
 void
 ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image& m_image)
 {
-  m_cache.process_queue();
-  
   Rectf image_rect = m_image.get_image_rect();
   Vector2f top_left(image_rect.left, image_rect.top);
 
@@ -114,12 +112,6 @@ ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image
   {
     // scale factor for requesting the tile from the TileDatabase
     // FIXME: Can likely be done without float
-      
-    //std::cout << 0 << " " 
-    //          << static_cast<int>(log(1.0f / (fscale*impl_scale)) / log(2)) << " "
-    //          << impl->max_scale << std::endl;
-  
-    //assert(m_image.impl->max_scale >= 0);
     int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (fscale*impl_scale)) /
                                                        log(2)), m_cache.get_max_scale());
     int scale_factor = Math::pow2(tiledb_scale);

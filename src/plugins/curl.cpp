@@ -29,7 +29,7 @@ static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void*
   return nmemb * size;
 }
 
-Blob
+BlobHandle
 CURLHandler::get_data(const std::string& url)
 {
   CURL* handle = curl_easy_init();
@@ -67,7 +67,7 @@ CURLHandler::get_data(const std::string& url)
   else
     {
       throw std::runtime_error("Error: CURLHandler::get_data(): " + std::string(errbuf));
-      return Blob();
+      return BlobHandle();
     }
 }
 
