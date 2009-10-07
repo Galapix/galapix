@@ -21,13 +21,15 @@ Release procedure:
 Problems:
 =========
 
-* create BlobHandle, SoftwareSurfaceHandle, etc., no not let Blob,
+* add test case for util/exec.cpp, rar, zip, etc. many have already
+  test code in their .cpp file
+
+* shared_ptr<> impl is evil
+
+* create BlobHandle, SoftwareSurfaceHandle, etc., do not let Blob,
   SoftwareSurface do the refcounting internally
 
 * Database::tile_request_groups is never emptied
-
-* quadtree error causes pictures to not be displayed at the top border
-  (only in some seldome edge cases)
 
 * viewdb -p PATTERN doesn't work, as the viewer isn't updated in
   SDLViewer::run(), pressing '1' works as a workaround
