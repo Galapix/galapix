@@ -28,18 +28,19 @@ class Vector2f;
 class ImageRenderer
 {
 private:
+  Image& m_image;
   ImageTileCache& m_cache;
 
 public:
-  ImageRenderer(ImageTileCache& cache);
+  ImageRenderer(Image& image, ImageTileCache& cache);
 
   /** Return true if something was drawn to the screen, false when
    *  image was outside the cliprect */
-  bool draw(const Rectf& cliprect, float fscale, Image& m_image);
+  bool draw(const Rectf& cliprect, float zoom);
 
 private:
-  void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale, Image& m_image);
-  void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float scale, Image& m_image);
+  void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float zoom);
+  void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float zoom);
 
 private:
   ImageRenderer(const ImageRenderer&);

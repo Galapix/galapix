@@ -43,7 +43,7 @@ Image::Image(const FileEntry& file_entry) :
   m_target_scale(1.0f),
   m_angle(0.0f),
   m_cache(new ImageTileCache(m_file_entry)),
-  m_renderer(new ImageRenderer(*m_cache))
+  m_renderer(new ImageRenderer(*this, *m_cache))
 {
   assert(m_max_scale >= 0);
 }
@@ -168,7 +168,7 @@ Image::draw(const Rectf& cliprect, float zoom)
   if (m_file_entry)
   {
     m_cache->process_queue();
-    return m_renderer->draw(cliprect, zoom, *this);
+    return m_renderer->draw(cliprect, zoom);
   }
   else
   {

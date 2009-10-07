@@ -27,15 +27,15 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 
-ImageRenderer::ImageRenderer(ImageTileCache& cache)
-  : m_cache(cache)
+ImageRenderer::ImageRenderer(Image& image, ImageTileCache& cache)
+  : m_image(image),
+    m_cache(cache)
 {
 }
 
 void
 ImageRenderer::draw_tile(int x, int y, int scale, 
-                         const Vector2f& pos, float zoom, 
-                         Image& m_image)
+                         const Vector2f& pos, float zoom)
 {
   Surface surface = m_cache.request_tile(x, y, scale);
   if (surface)
@@ -93,8 +93,7 @@ ImageRenderer::draw_tile(int x, int y, int scale,
 
 void 
 ImageRenderer::draw_tiles(const Rect& rect, int scale, 
-                          const Vector2f& pos, float zoom, 
-                          Image& m_image)
+                          const Vector2f& pos, float zoom)
 {
   float tilesize = 256.0f * zoom;
 
@@ -103,13 +102,12 @@ ImageRenderer::draw_tiles(const Rect& rect, int scale,
     {
       draw_tile(x, y, scale, 
                 m_image.get_top_left_pos() + Vector2f(static_cast<float>(x), static_cast<float>(y)) * tilesize,
-                zoom,
-                m_image);
+                zoom);
     }
 }
 
 bool
-ImageRenderer::draw(const Rectf& cliprect, float zoom, Image& m_image)
+ImageRenderer::draw(const Rectf& cliprect, float zoom)
 {
   Rectf image_rect = m_image.get_image_rect();
 
@@ -135,8 +133,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom, Image& m_image)
     { // So small that only one tile is to be drawn
       draw_tile(0, 0, tiledb_scale, 
                 top_left,
-                static_cast<float>(scale_factor) * m_image.get_scale(),
-                m_image);
+                static_cast<float>(scale_factor) * m_image.get_scale());
     }
     else
     {
@@ -158,8 +155,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom, Image& m_image)
       draw_tiles(Rect(start_x, start_y, end_x, end_y), 
                  tiledb_scale, 
                  top_left,
-                 static_cast<float>(scale_factor) * m_image.get_scale(),
-                 m_image);
+                 static_cast<float>(scale_factor) * m_image.get_scale());
     }
 
     return true;
