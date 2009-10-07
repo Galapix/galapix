@@ -42,6 +42,29 @@ ImageTileCache::ImageTileCache(const FileEntry& file_entry_) :
 Surface
 ImageTileCache::get_tile(int x, int y, int scale)
 {
+  if (x < 0 || y < 0 || scale < 0)
+  {
+    return Surface();
+  }
+  else
+  {
+    unsigned int cache_id = make_cache_id(x, y, scale);
+    Cache::iterator i = cache.find(cache_id);
+
+    if (i != cache.end())
+    {
+      return i->second.surface;
+    }
+    else
+    {
+      return Surface();
+    }
+  }
+}
+
+Surface
+ImageTileCache::request_tile(int x, int y, int scale)
+{
   unsigned int cache_id = make_cache_id(x, y, scale);
   Cache::iterator i = cache.find(cache_id);
 
@@ -122,15 +145,17 @@ ImageTileCache::cleanup()
 }
 
 Surface
-ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale)
+ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
   int  downscale_factor = 1;
 
-  // FIXME: Replace this loop with a 'find_next_best_smaller_tile()' function
   while(downscale_factor < max_scale)
     {
-      downscale = Math::pow2(downscale_factor);
-      uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+downscale_factor);
+      downscale_out = Math::pow2(downscale_factor);
+
+      uint32_t cache_id = make_cache_id(x / downscale_out, y / downscale_out,
+                                        tiledb_scale+downscale_factor);
+
       Cache::iterator i = cache.find(cache_id);
       if (i != cache.end() && i->second.surface)
         {
@@ -139,6 +164,7 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
 
       downscale_factor += 1;
     }
+
   return Surface();
 }
 

@@ -21,6 +21,10 @@ Release procedure:
 Problems:
 =========
 
+* getting small tiles on startup should be much faster then getting
+  them later, as it would need much less sql calls (one select vs one
+  for each of thousands of pictures)
+
 * when view is rotated, zooming in position is not rotated with it
 
 * add test case for util/exec.cpp, rar, zip, etc. many have already

@@ -71,8 +71,9 @@ public:
 public:
   ImageTileCache(const FileEntry& file_entry);
 
+  Surface request_tile(int x, int y, int scale);
   Surface get_tile(int x, int y, int scale);
-  Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale);
+  Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
 
   void process_queue();
 

@@ -37,47 +37,57 @@ ImageRenderer::draw_tile(int x, int y, int scale,
                          const Vector2f& pos, float zoom, 
                          Image& m_image)
 {
-  Surface surface = m_cache.get_tile(x, y, scale);
+  Surface surface = m_cache.request_tile(x, y, scale);
   if (surface)
   {
     // FIXME: surface.get_size() * scale does not give the correct
     // size of a tile due to rounding errors
     surface.draw(Rectf(pos, surface.get_size() * zoom));
-    //surface.draw(Rectf(pos, get_tile_size(x, y, scale)));
-    //Framebuffer::draw_rect(Rectf(pos, surface.get_size() * scale), RGB(100, 100, 100));
   }
-  else
+  else // tile not found, so find a replacement
   {
-    // Look for the next smaller tile
-    // FIXME: Rewrite this to work all smaller tiles, not just the next     
-    int downscale;
-    surface = m_cache.find_smaller_tile(x, y, scale, downscale);
+    // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
+    Surface nw = m_cache.get_tile(x*2,   y*2,   scale - 1);
+    Surface ne = m_cache.get_tile(x*2+1, y*2,   scale - 1);
+    Surface sw = m_cache.get_tile(x*2,   y*2+1, scale - 1);
+    Surface se = m_cache.get_tile(x*2+1, y*2+1, scale - 1);
 
-    // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
-    Size tile_size(Math::min(256, (m_image.get_original_width()  / Math::pow2(scale)) - 256 * x),
-                   Math::min(256, (m_image.get_original_height() / Math::pow2(scale)) - 256 * y));
+    if (!nw || !ne || !sw || !se)
+    {
+      // draw lower resolution tiles
+      int downscale;
+      surface = m_cache.find_smaller_tile(x, y, scale, downscale);
 
+      // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
+      Size tile_size(Math::min(256, (m_image.get_original_width()  / Math::pow2(scale)) - 256 * x),
+                     Math::min(256, (m_image.get_original_height() / Math::pow2(scale)) - 256 * y));
 
-    if (surface)
-    { // Must only draw relevant section!
-      Size s((x%downscale) ? (surface.get_width()  - 256/downscale * (x%downscale)) : 256/downscale,
-             (y%downscale) ? (surface.get_height() - 256/downscale * (y%downscale)) : 256/downscale);
+      if (surface)
+      { 
+        // Must only draw relevant section!
+        Size s((x % downscale) ? (surface.get_width()  - 256/downscale * (x % downscale)) : 256 / downscale,
+               (y % downscale) ? (surface.get_height() - 256/downscale * (y % downscale)) : 256 / downscale);
 
-      s.width  = Math::min(surface.get_width(),  s.width);
-      s.height = Math::min(surface.get_height(), s.height);
+        s.width  = Math::min(surface.get_width(),  s.width);
+        s.height = Math::min(surface.get_height(), s.height);
           
-      surface.draw(Rectf(Vector2f(static_cast<float>(x % downscale), 
-                                  static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
-                         s),
-                   //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
-                   Rectf(pos, s * zoom * static_cast<float>(downscale)));
-    }
-    else // draw replacement rect when no tile could be loaded
-    {         
-      Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 155)); // impl->file_entry.color);
+        surface.draw(Rectf(Vector2f(static_cast<float>(x % downscale), 
+                                    static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
+                           s),
+                     //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
+                     Rectf(pos, s * zoom * static_cast<float>(downscale)));
+      }
+      else // draw replacement rect when no tile could be loaded
+      {         
+        Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 155));
+      }
     }
 
-    //Framebuffer::draw_rect(Rectf(pos, s*scale), RGB(255, 255, 255)); // impl->file_entry.color);
+    // draw higher resolution tiles
+    if (nw) nw.draw(Rectf(pos, nw.get_size() * zoom * 0.5f));
+    if (ne) ne.draw(Rectf(pos + Vector2f(256*zoom/2, 0), ne.get_size() * zoom * 0.5f));
+    if (sw) sw.draw(Rectf(pos + Vector2f(0, 256*zoom/2), sw.get_size() * zoom * 0.5f));
+    if (se) se.draw(Rectf(pos + Vector2f(256*zoom/2, 256*zoom/2), se.get_size() * zoom * 0.5f));
   }
 }
 
