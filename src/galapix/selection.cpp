@@ -34,20 +34,20 @@ Selection::Selection()
 }
 
 void
-Selection::add_image(const Image& image)
+Selection::add_image(const ImageHandle& image)
 {
   impl->images.push_back(image);
 }
 
 void
-Selection::add_images(const std::vector<Image>& images)
+Selection::add_images(const std::vector<ImageHandle>& images)
 {
   for(Images::const_iterator i = images.begin(); i != images.end(); ++i)
     impl->images.push_back(*i);
 }
 
 void
-Selection::remove_image(const Image& image)
+Selection::remove_image(const ImageHandle& image)
 {
   impl->images.push_back(image);
 }
@@ -58,14 +58,14 @@ Selection::scale(float factor)
   Vector2f center = get_center();
   for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
     {
-      i->set_scale(i->get_scale() * factor);
+      (*i)->set_scale((*i)->get_scale() * factor);
 
-      i->set_pos(center + (i->get_pos() - center) * factor);
+      (*i)->set_pos(center + ((*i)->get_pos() - center) * factor);
     }
 }
 
 bool
-Selection::has(const Image& image) const
+Selection::has(const ImageHandle& image) const
 {
   for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
     {
@@ -107,7 +107,7 @@ Selection::get_center() const
       Vector2f pos;
       for(Images::const_iterator i = impl->images.begin(); i != impl->images.end(); ++i)
         {
-          pos += i->get_pos();
+          pos += (*i)->get_pos();
         }
       return pos / static_cast<float>(impl->images.size());
     }
@@ -146,11 +146,11 @@ Selection::get_bounding_rect() const
     }
   else
     {
-      Rectf rect = impl->images.front().get_image_rect();
+      Rectf rect = impl->images.front()->get_image_rect();
 
       for(Images::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
         {
-          const Rectf& image_rect = i->get_image_rect(); 
+          const Rectf& image_rect = (*i)->get_image_rect(); 
           
           rect.left   = Math::min(rect.left,   image_rect.left);
           rect.right  = Math::max(rect.right,  image_rect.right);

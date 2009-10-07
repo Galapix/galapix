@@ -45,7 +45,7 @@ RotateTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
       Selection selection = viewer->get_workspace()->get_selection();
       for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
         {
-          i->set_angle(start_angle - angle);
+          (*i)->set_angle(start_angle - angle);
         }
     }
 }

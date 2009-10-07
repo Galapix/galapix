@@ -19,36 +19,55 @@
 #ifndef HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 #define HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 
-#include <iostream>
+#include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <string>
 
+#include "database/file_entry.hpp"
 #include "job/job_handle.hpp"
 #include "math/vector2f.hpp"
-#include "math/size.hpp"
-#include "grid.hpp"
-#include "util/url.hpp"
 #include "object.hpp"
-#include "display/surface.hpp"
-
-class Surface;
-class Size;
-class Rectf;
-class Vector2f;
-class ImageImpl;
-class FileEntry;
-class TileEntry;
-
+#include "util/url.hpp"
+#include "galapix/image_renderer.hpp"
+#include "galapix/image_tile_cache.hpp"
+
+class ImageTileCache;
+class ImageRenderer;
+class Image;
+
+typedef boost::shared_ptr<Image> ImageHandle;
+
 class Image : public Object
 {
 private:
+  FileEntry m_file_entry;
+
+  /** The maximum scale for which tiles exist */
+  int m_max_scale;
+
+  /** Position refers to the center of the image */
+  Vector2f m_pos;
+  Vector2f m_last_pos;
+  Vector2f m_target_pos;
+
+  /** Scale of the image */
+  float m_scale;
+  float m_last_scale;
+  float m_target_scale;
+
+  /** Rotation angle */
+  float m_angle;
+
+  boost::scoped_ptr<ImageTileCache> m_cache;
+  boost::scoped_ptr<ImageRenderer>  m_renderer;
+
+  Image(const FileEntry& file_entry);
 
 public:
   friend class ImageRenderer;
 
-  Image();
-  Image(const FileEntry& file_entry);
+  static ImageHandle create(const FileEntry& file_entry);
 
   // _____________________________________________________
   // Drawing stuff
@@ -99,21 +118,10 @@ public:
 
   Rectf get_image_rect() const;
 
-  // _____________________________________________________
-  // SharedPtr/impl stuff
-  operator bool() const { return impl.get(); }
-  bool operator==(const Image& rhs) const { 
-    // FIXME: Shouldn't really use operator==, should use equal() instead
-    return impl.get() == rhs.impl.get(); 
-  }
-  
   /** Syncronized function to acquire data from other threads */
   //void receive_file_entry(const FileEntry& file_entry);
-
-private:
-  boost::shared_ptr<ImageImpl> impl;
 };
-
+
 #endif
 
 /* EOF */

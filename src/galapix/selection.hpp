@@ -26,19 +26,19 @@ class SelectionImpl;
 class Selection
 {
 public:
-  typedef std::vector<Image> Images;
-  typedef std::vector<Image>::iterator iterator;
-  typedef std::vector<Image>::const_iterator const_iterator;
+  typedef std::vector<ImageHandle> Images;
+  typedef std::vector<ImageHandle>::iterator iterator;
+  typedef std::vector<ImageHandle>::const_iterator const_iterator;
 
   Selection();
 
-  void   add_image(const Image& image);
-  void   add_images(const std::vector<Image>& images);
-  void   remove_image(const Image& image);
+  void   add_image(const ImageHandle& image);
+  void   add_images(const std::vector<ImageHandle>& images);
+  void   remove_image(const ImageHandle& image);
   void   clear();
   Images get_images() const;
   bool   empty() const;
-  bool   has(const Image& image) const;
+  bool   has(const ImageHandle& image) const;
 
   void scale(float factor);
 

@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_WORKSPACE_HPP
 #define HEADER_GALAPIX_GALAPIX_WORKSPACE_HPP
 
+#include <boost/scoped_ptr.hpp>
+
 #include "util/url.hpp"
 #include "selection.hpp"
 #include "math/quad_tree.hpp"
@@ -45,14 +47,14 @@ public:
 class Workspace
 {
 private:
-  typedef std::vector<Image> Images;
+  typedef std::vector<ImageHandle> Images;
   typedef std::vector<ImageRequest> ImageRequests;
 
 private:
   /** Simple QuadTree to have a quicker way to figure out which images
       are visible */
-  std::auto_ptr<QuadTree<Image> > quad_tree;
-
+  boost::scoped_ptr<QuadTree<ImageHandle> > quad_tree;
+  
   Images        images;
   ImageRequests image_requests;
   Selection     selection;
@@ -90,8 +92,8 @@ public:
 
   // Image Query Functions (dangerous: need to now when Image position
   // changes) -> Return "const Image"? -> can't do breaks due to impl
-  std::vector<Image> get_images(const Rectf& rect) const;
-  Image get_image(const Vector2f& pos) const;
+  std::vector<ImageHandle> get_images(const Rectf& rect) const;
+  ImageHandle get_image(const Vector2f& pos) const;
 
   // ---------------------------------------------
 
@@ -102,7 +104,7 @@ public:
   // Selection Commands
   Selection get_selection() const { return selection; }
   bool selection_clicked(const Vector2f& pos) const;
-  void select_images(const std::vector<Image>& images);
+  void select_images(const std::vector<ImageHandle>& images);
   void clear_selection();
   void move_selection(const Vector2f& rel);
   void clear();

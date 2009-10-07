@@ -26,108 +26,60 @@
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/image_renderer.hpp"
 
-class ImageImpl
+ImageHandle
+Image::create(const FileEntry& file_entry)
 {
-public:
-  FileEntry file_entry;
-
-  /** The smallest scale that is stored permanently */
-  int min_keep_scale; 
-
-  /** The maximum scale for which tiles exist */
-  int max_scale;
-
-  float alpha;
-
-  /** Position refers to the center of the image */
-  Vector2f pos;
-  Vector2f last_pos;
-  Vector2f target_pos;
-
-  /** Scale of the image */
-  float scale;
-  float last_scale;
-  float target_scale;
-
-  /** Rotation angle */
-  float angle;
-
-  ImageTileCache cache;
-  ImageRenderer  renderer;
-
-  ImageImpl(const FileEntry& file_entry_) :
-    file_entry(file_entry_),
-    min_keep_scale(), 
-    max_scale(),
-    alpha(),
-    pos(),
-    last_pos(),
-    target_pos(),
-    scale(),
-    last_scale(),
-    target_scale(),
-    angle(),
-    cache(file_entry_),
-    renderer(cache)
-  {
-  }
-
-  ~ImageImpl()
-  {
-  }
-};
-
-Image::Image()
-  : impl()
-{
+  return ImageHandle(new Image(file_entry));
 }
-
-Image::Image(const FileEntry& file_entry)
-  : impl(new ImageImpl(file_entry))
+
+Image::Image(const FileEntry& file_entry) :
+  m_file_entry(file_entry),
+  m_max_scale(m_file_entry.get_thumbnail_scale()),
+  m_pos(),
+  m_last_pos(),
+  m_target_pos(),
+  m_scale(1.0f),
+  m_last_scale(1.0f),
+  m_target_scale(1.0f),
+  m_angle(0.0f),
+  m_cache(new ImageTileCache(m_file_entry)),
+  m_renderer(new ImageRenderer(*m_cache))
 {
-  impl->angle        = 0.0f; 
-  impl->scale        = 1.0f;
-  impl->last_scale   = 1.0f;
-  impl->target_scale = 1.0f;
-
-  impl->max_scale = impl->file_entry.get_thumbnail_scale();
-  impl->min_keep_scale = impl->max_scale - 2;
-
-  assert(impl->max_scale >= 0);
+  assert(m_max_scale >= 0);
 }
 
 Vector2f
 Image::get_top_left_pos() const
 {
-  return impl->pos - Vector2f(get_scaled_width()/2, get_scaled_height()/2);
+  return m_pos - Vector2f(get_scaled_width()/2, get_scaled_height()/2);
 }
 
 void
 Image::set_pos(const Vector2f& pos)
 {
-  impl->pos        = pos;
-  impl->last_pos   = pos;
-  impl->target_pos = pos;
+  m_pos        = pos;
+  m_last_pos   = pos;
+  m_target_pos = pos;
 }
 
 Vector2f
 Image::get_pos() const
 {
-  return impl->pos;
+  return m_pos;
 }
 
 void
 Image::set_target_pos(const Vector2f& target_pos)
 {
-  impl->last_pos   = impl->pos;
-  impl->target_pos = target_pos;
+  m_last_pos   = m_pos;
+  m_target_pos = target_pos;
 }
 
 void
 Image::set_target_scale(float target_scale)
 {
-  impl->last_scale   = impl->scale;
-  impl->target_scale = target_scale;  
+  m_last_scale   = m_scale;
+  m_target_scale = target_scale;  
 }
 
 void
@@ -138,94 +90,94 @@ Image::update_pos(float progress)
 
   if (progress == 1.0f)
     {
-      set_pos(impl->target_pos);
-      set_scale(impl->target_scale);
+      set_pos(m_target_pos);
+      set_scale(m_target_scale);
     }
   else
     {
-      impl->pos   = (impl->last_pos   * (1.0f - progress)) + (impl->target_pos   * progress);
-      impl->scale = (impl->last_scale * (1.0f - progress)) + (impl->target_scale * progress);
+      m_pos   = (m_last_pos   * (1.0f - progress)) + (m_target_pos   * progress);
+      m_scale = (m_last_scale * (1.0f - progress)) + (m_target_scale * progress);
     }
 }
 
 void
 Image::set_angle(float a)
 {
-  impl->angle = a;
+  m_angle = a;
 }
 
 float
 Image::get_angle() const
 {
-  return impl->angle;
+  return m_angle;
 }
 
 void
 Image::set_scale(float f)
 {
-  impl->scale        = f;
-  impl->last_scale   = f;
-  impl->target_scale = f;
+  m_scale        = f;
+  m_last_scale   = f;
+  m_target_scale = f;
 }
 
 float
 Image::get_scale() const
 {
-  return impl->scale;
+  return m_scale;
 }
 
 float
 Image::get_scaled_width() const
 {
-  return static_cast<float>(impl->file_entry.get_width()) * impl->scale;
+  return static_cast<float>(m_file_entry.get_width()) * m_scale;
 }
 
 float
 Image::get_scaled_height() const
 {
-  return static_cast<float>(impl->file_entry.get_height()) * impl->scale;
+  return static_cast<float>(m_file_entry.get_height()) * m_scale;
 }
 
 int
 Image::get_original_width() const
 {
-  return impl->file_entry.get_width();
+  return m_file_entry.get_width();
 }
 
 int
 Image::get_original_height() const
 {
-  return impl->file_entry.get_height();
+  return m_file_entry.get_height();
 }
 
 void
 Image::clear_cache()
 {
-  impl->cache.clear();
+  m_cache->clear();
 }
 
 void
 Image::cache_cleanup()
 {
-  impl->cache.cleanup();
+  m_cache->cleanup();
 }
 
 void
 Image::draw(const Rectf& cliprect, float fscale)
 {
-  if (impl->file_entry)
+  if (m_file_entry)
   {
-    impl->renderer.draw(cliprect, fscale, impl->scale, *this);
+    m_renderer->draw(cliprect, fscale, m_scale, *this);
   }
 }
 
 void
 Image::refresh(bool force)
 {
-  if (force || impl->file_entry.get_url().get_mtime() != impl->file_entry.get_mtime())
+  if (force || m_file_entry.get_url().get_mtime() != m_file_entry.get_mtime())
     {
       clear_cache();
-      DatabaseThread::current()->delete_file_entry(impl->file_entry.get_fileid());
+      DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
 
       // FIXME: Add this point the FileEntry is invalid and points to
       // something that no longer exists, newly generated Tiles point
@@ -237,9 +189,9 @@ Image::refresh(bool force)
 void
 Image::print_info() const
 {
-  std::cout << "  Image: " << impl.get() << std::endl;
-  //std::cout << "    Cache Size: " << impl->cache.size() << std::endl;
-  //std::cout << "    Job Size:   " << impl->jobs.size() << std::endl;
+  std::cout << "  Image: " << this << std::endl;
+  //std::cout << "    Cache Size: " << m_cache.size() << std::endl;
+  //std::cout << "    Job Size:   " << m_jobs.size() << std::endl;
 }
 
 bool
@@ -257,7 +209,7 @@ Image::overlaps(const Rectf& cliprect) const
 URL
 Image::get_url() const
 {
-  return impl->file_entry.get_url();
+  return m_file_entry.get_url();
 }
 
 void
@@ -269,20 +221,20 @@ Image::draw_mark()
 Rectf
 Image::get_image_rect() const
 {
-  if (!impl->file_entry)
+  if (!m_file_entry)
     {
-      return Rectf(impl->pos, Size(0, 0));
+      return Rectf(m_pos, Size(0, 0));
     }
   else
     {
-      if (impl->file_entry.get_image_size() == Size(0,0))
+      if (m_file_entry.get_image_size() == Size(0,0))
         {
-          return Rectf(impl->pos, impl->file_entry.get_image_size());
+          return Rectf(m_pos, m_file_entry.get_image_size());
         }
       else
         {
-          Sizef image_size(impl->file_entry.get_image_size() * impl->scale);
-          return Rectf(impl->pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
+          Sizef image_size(m_file_entry.get_image_size() * m_scale);
+          return Rectf(m_pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
         }
     }
 }
@@ -291,12 +243,11 @@ Image::get_image_rect() const
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
-  assert(!impl->file_entry);
+  assert(!m_file_entry);
 
-  impl->file_entry = file_entry;
+  m_file_entry = file_entry;
 
-  impl->max_scale      = impl->file_entry.get_thumbnail_scale();
-  impl->min_keep_scale = impl->max_scale - 2;
+  m_max_scale      = m_file_entry.get_thumbnail_scale();
 }
 */
 

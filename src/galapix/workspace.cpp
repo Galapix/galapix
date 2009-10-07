@@ -37,13 +37,13 @@ Workspace::Workspace() :
   progress = 0.0f;
 }
 
-std::vector<Image>
+std::vector<ImageHandle>
 Workspace::get_images(const Rectf& rect) const
 {
-  std::vector<Image> result;
+  std::vector<ImageHandle> result;
   for(Images::const_iterator i = images.begin(); i != images.end(); ++i)
     {
-      if (rect.contains(i->get_image_rect()))
+      if (rect.contains((*i)->get_image_rect()))
         {
           result.push_back(*i);
         }
@@ -51,15 +51,15 @@ Workspace::get_images(const Rectf& rect) const
   return result;
 }
 
-Image
+ImageHandle
 Workspace::get_image(const Vector2f& pos) const
 {
   for(Images::const_reverse_iterator i = images.rbegin(); i != images.rend(); ++i)
     {
-      if (i->overlaps(pos))
+      if ((*i)->overlaps(pos))
         return *i;
     }  
-  return Image();
+  return ImageHandle();
 }
 
 void
@@ -72,10 +72,10 @@ Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 void
 Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float scale)
 {
-  Image image(file_entry);
+  ImageHandle image = Image::create(file_entry);
   images.push_back(image);
-  image.set_scale(scale);
-  image.set_pos(pos);
+  image->set_scale(scale);
+  image->set_pos(pos);
 }
 
 struct ImageRequestFinder {
@@ -93,7 +93,7 @@ struct ImageRequestFinder {
 void
 Workspace::add_image(const FileEntry& file_entry)
 {
-  Image image(file_entry);
+  ImageHandle image = Image::create(file_entry);
   images.push_back(image);
 
   if (!image_requests.empty())
@@ -102,17 +102,17 @@ Workspace::add_image(const FileEntry& file_entry)
                                                ImageRequestFinder(file_entry.get_url().str()));
       if (i != image_requests.end())
         {
-          image.set_pos(i->pos);
-          image.set_scale(i->scale);
+          image->set_pos(i->pos);
+          image->set_scale(i->scale);
           return;
         }
     }
 
   {
-    image.set_scale(Math::min(1000.0f / static_cast<float>(file_entry.get_width()),
+    image->set_scale(Math::min(1000.0f / static_cast<float>(file_entry.get_width()),
                               1000.0f / static_cast<float>(file_entry.get_height())));
 
-    image.set_pos(next_pos * 1024.0f);
+    image->set_pos(next_pos * 1024.0f);
 
     // FIXME: Ugly, instead we should relayout once a second or so
     next_pos.x += 1;
@@ -131,9 +131,9 @@ Workspace::layout_vertical()
   next_pos = Vector2f(0.0f, 0.0f);
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      i->set_target_scale(1.0f);
-      i->set_target_pos(next_pos);
-      next_pos.y += static_cast<float>(i->get_original_height()) + spacing;
+      (*i)->set_target_scale(1.0f);
+      (*i)->set_target_pos(next_pos);
+      next_pos.y += static_cast<float>((*i)->get_original_height()) + spacing;
     }
   
   progress = 0.0f;
@@ -150,19 +150,19 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
 
       for(int i = 0; i < int(images.size()); ++i)
         {
-          float target_scale = Math::min(1000.0f / static_cast<float>(images[i].get_original_width()),
-                                         1000.0f / static_cast<float>(images[i].get_original_height()));
+          float target_scale = Math::min(1000.0f / static_cast<float>(images[i]->get_original_width()),
+                                         1000.0f / static_cast<float>(images[i]->get_original_height()));
 
-          images[i].set_target_scale(target_scale);
+          images[i]->set_target_scale(target_scale);
 
           if ((i/w) % 2 == 0)
             {
-              images[i].set_target_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
+              images[i]->set_target_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
                                                 static_cast<float>(i / w) * 1024.0f));
             }
           else
             {
-              images[i].set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
+              images[i]->set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
                                                 static_cast<float>(i / w)         * 1024.0f));
             }
 
@@ -182,8 +182,8 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
   // calculate the total width 
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      const float scale = (1000.0f + spacing) / static_cast<float>(i->get_original_height());
-      width += static_cast<float>(i->get_original_width()) * scale;
+      const float scale = (1000.0f + spacing) / static_cast<float>((*i)->get_original_height());
+      width += static_cast<float>((*i)->get_original_width()) * scale;
     }
 
   width /= Math::sqrt(width / ((aspect_w / aspect_h) * (1000.0f + spacing)));
@@ -194,14 +194,14 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
   
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      Image& image = *i;
+      ImageHandle& image = *i;
 
-      const float scale = 1000.0f / static_cast<float>(image.get_original_height());
-      image.set_target_scale(scale);
+      const float scale = 1000.0f / static_cast<float>(image->get_original_height());
+      image->set_target_scale(scale);
 
       if (go_right)
         {
-          if (pos.x + (static_cast<float>(image.get_original_width())*scale) > width)
+          if (pos.x + (static_cast<float>(image->get_original_width())*scale) > width)
             {
               pos.x = last_pos.x;
               pos.y += 1000.0f + spacing;   
@@ -209,39 +209,39 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
               go_right = false;
 
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
+              image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                                  static_cast<float>(image->get_original_height())) * scale / 2.0f);
             }
           else
             {
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
+              image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                                  static_cast<float>(image->get_original_height())) * scale / 2.0f);
             
-              pos.x += static_cast<float>(image.get_original_width()) * scale + spacing;
+              pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
             }
         }
       else
         {
-          if (pos.x - (static_cast<float>(image.get_original_width()) * scale) < 0)
+          if (pos.x - (static_cast<float>(image->get_original_width()) * scale) < 0)
             {
               //pos.x = 0;
               pos.y += 1000.0f + spacing;   
               go_right = true;
 
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
+              image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                                  static_cast<float>(image->get_original_height())) * scale / 2.0f);
 
-              pos.x += static_cast<float>(image.get_original_width()) * scale + spacing;
+              pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
             }
           else
             {
-              pos.x -= static_cast<float>(image.get_original_width()) * scale + spacing;
+              pos.x -= static_cast<float>(image->get_original_width()) * scale + spacing;
 
               last_pos = pos;
-              image.set_target_pos(pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                                  static_cast<float>(image.get_original_height())) * scale / 2.0f);
+              image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                                  static_cast<float>(image->get_original_height())) * scale / 2.0f);
             }
         }
     }
@@ -256,8 +256,8 @@ Workspace::layout_random()
   int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      i->set_target_pos(Vector2f(static_cast<float>(rand()%width), static_cast<float>(rand()%width)));
-      i->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
+      (*i)->set_target_pos(Vector2f(static_cast<float>(rand()%width), static_cast<float>(rand()%width)));
+      (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
     }
   progress = 0.0f;
 }
@@ -271,11 +271,11 @@ Workspace::build_quad_tree()
 
       std::cout << "QuadTree: " << rect << std::endl;
 
-      quad_tree = std::auto_ptr<QuadTree<Image> >(new QuadTree<Image>(rect));
+      quad_tree.reset(new QuadTree<ImageHandle>(rect));
       
       for(Images::iterator i = images.begin(); i != images.end(); ++i)
         {
-          quad_tree->add(i->get_image_rect(), *i);
+          quad_tree->add((*i)->get_image_rect(), *i);
         }
     }
 }
@@ -283,7 +283,7 @@ Workspace::build_quad_tree()
 void
 Workspace::clear_quad_tree()
 {
-  quad_tree = std::auto_ptr<QuadTree<Image> >();
+  quad_tree.reset();
 }
 
 void
@@ -294,7 +294,7 @@ Workspace::draw(const Rectf& cliprect, float scale)
       Images current_images = quad_tree->get_items_at(cliprect);
       for(Images::iterator i = current_images.begin(); i != current_images.end(); ++i)
         {
-          i->draw(cliprect, scale);
+          (*i)->draw(cliprect, scale);
         }
     }
   else
@@ -303,13 +303,13 @@ Workspace::draw(const Rectf& cliprect, float scale)
         
       for(Images::iterator i = images.begin(); i != images.end(); ++i)
         {
-          i->draw(cliprect, scale);
+          (*i)->draw(cliprect, scale);
         }
     }
 
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
-      i->draw_mark();
+      (*i)->draw_mark();
     }
 }
 
@@ -332,16 +332,16 @@ Workspace::update(float delta)
 
       for(Images::iterator i = images.begin(); i != images.end(); ++i)
         {
-          i->update_pos(progress);
+          (*i)->update_pos(progress);
         }
     }
 }
 
 struct ImageSorter
 {
-  bool operator()(const Image& lhs, const Image& rhs)
+  bool operator()(const ImageHandle& lhs, const ImageHandle& rhs)
   {
-    return lhs.get_url() < rhs.get_url();
+    return lhs->get_url() < rhs->get_url();
   }
 };
 
@@ -362,7 +362,7 @@ Workspace::clear_cache()
 {
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      i->clear_cache();
+      (*i)->clear_cache();
     }  
 }
 
@@ -371,7 +371,7 @@ Workspace::cache_cleanup()
 {
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      i->cache_cleanup();
+      (*i)->cache_cleanup();
     }   
 }
 
@@ -382,9 +382,9 @@ Workspace::print_info(const Rectf& rect)
   std::cout << "Workspace Info:" << std::endl;
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
   {
-    if (i->overlaps(rect))
+    if ((*i)->overlaps(rect))
     {
-      i->print_info();
+      (*i)->print_info();
       std::cout << std::endl;
     }
   }
@@ -398,10 +398,10 @@ Workspace::print_images(const Rectf& rect)
   std::cout << "-- Visible images --------------------------------------" << std::endl;
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      if (i->overlaps(rect))
+      if ((*i)->overlaps(rect))
         {
-          std::cout << i->get_url() << " "
-                    << i->get_original_width() << "x" << i->get_original_height()
+          std::cout << (*i)->get_url() << " "
+                    << (*i)->get_original_width() << "x" << (*i)->get_original_height()
                     << std::endl;
         }
     }
@@ -415,7 +415,7 @@ Workspace::set_row_width(int w)
 }
 
 void
-Workspace::select_images(const std::vector<Image>& lst)
+Workspace::select_images(const std::vector<ImageHandle>& lst)
 {
   selection.clear();
   selection.add_images(lst);
@@ -426,7 +426,7 @@ Workspace::selection_clicked(const Vector2f& pos) const
 {
   for(Selection::const_iterator i = selection.begin(); i != selection.end(); ++i)
     {
-      if (i->overlaps(pos))
+      if ((*i)->overlaps(pos))
         return true;
     }
   return false;
@@ -451,7 +451,7 @@ Workspace::move_selection(const Vector2f& rel)
 {
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
-      i->set_pos(i->get_pos() + rel);
+      (*i)->set_pos((*i)->get_pos() + rel);
     }
 }
 
@@ -470,7 +470,7 @@ struct ImagesMemberOf
     : selection(selection_)
   {}
 
-  bool operator()(const Image& image)
+  bool operator()(const ImageHandle& image)
   {
     for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
       {
@@ -500,12 +500,12 @@ Workspace::solve_overlaps()
     {
       num_overlappings = 0;
       // Use QuadTree to make this fast
-      for(std::vector<Image>::iterator i = images.begin(); i != images.end(); ++i)
+      for(std::vector<ImageHandle>::iterator i = images.begin(); i != images.end(); ++i)
         {
-          for(std::vector<Image>::iterator j = i+1; j != images.end(); ++j)
+          for(std::vector<ImageHandle>::iterator j = i+1; j != images.end(); ++j)
             {
-              Rectf irect = i->get_image_rect();
-              Rectf jrect = j->get_image_rect();
+              Rectf irect = (*i)->get_image_rect();
+              Rectf jrect = (*j)->get_image_rect();
 
               if (irect.is_overlapped(jrect))
                 {
@@ -516,13 +516,13 @@ Workspace::solve_overlaps()
                   // FIXME: This only works if one rect isn't completly within the other
                   if (clip.get_width() > clip.get_height())
                     {
-                      i->set_pos(i->get_pos() - Vector2f(0.0f, clip.get_height()/2 + 16.0f));
-                      j->set_pos(j->get_pos() + Vector2f(0.0f, clip.get_height()/2 + 16.0f));
+                      (*i)->set_pos((*i)->get_pos() - Vector2f(0.0f, clip.get_height()/2 + 16.0f));
+                      (*j)->set_pos((*j)->get_pos() + Vector2f(0.0f, clip.get_height()/2 + 16.0f));
                     }
                   else
                     {
-                      i->set_pos(i->get_pos() - Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
-                      j->set_pos(j->get_pos() + Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
+                      (*i)->set_pos((*i)->get_pos() - Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
+                      (*j)->set_pos((*j)->get_pos() + Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
                     }
                 }
             }
@@ -541,11 +541,11 @@ Workspace::save(std::ostream& out)
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
       // FIXME: Must escape the filename!
-      out  << "    (image (url   \"" << i->get_url() << "\")\n"
-           << "           (pos   " << i->get_pos().x << " " << i->get_pos().y << ")\n"
-           << "           (scale " << i->get_scale() << ")"
-        // << "           (angle " << i->get_angle() << ")"
-        // << "           (alpha " << i->get_alpha() << ")"
+      out  << "    (image (url   \"" << (*i)->get_url() << "\")\n"
+           << "           (pos   " << (*i)->get_pos().x << " " << (*i)->get_pos().y << ")\n"
+           << "           (scale " << (*i)->get_scale() << ")"
+        // << "           (angle " << (*i)->get_angle() << ")"
+        // << "           (alpha " << (*i)->get_alpha() << ")"
            << ")\n";
     }
 
@@ -597,17 +597,17 @@ Workspace::get_bounding_rect() const
     }
   else
     {
-      Rectf rect = images.front().get_image_rect();
+      Rectf rect = images.front()->get_image_rect();
 
-      std::cout << images.front().get_url() << " " << images.front().get_pos() << " " 
-                << images.front().get_scale() << " "
-                << images.front().get_scaled_width() << " "
-                << images.front().get_scaled_height()
+      std::cout << images.front()->get_url() << " " << images.front()->get_pos() << " " 
+                << images.front()->get_scale() << " "
+                << images.front()->get_scaled_width() << " "
+                << images.front()->get_scaled_height()
                 << std::endl;
 
       for(Images::const_iterator i = images.begin()+1; i != images.end(); ++i)
         {
-          const Rectf& image_rect = i->get_image_rect(); 
+          const Rectf& image_rect = (*i)->get_image_rect(); 
           
           rect.left   = Math::min(rect.left,   image_rect.left);
           rect.right  = Math::max(rect.right,  image_rect.right);
@@ -619,7 +619,7 @@ Workspace::get_bounding_rect() const
               isnan(rect.top) ||
               isnan(rect.bottom))
             {
-              std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
+              std::cout << (*i)->get_url() << " " << (*i)->get_pos() << " " << image_rect << std::endl;
               assert(0);
             }
         }

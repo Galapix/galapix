@@ -578,7 +578,7 @@ Viewer::refresh_selection()
   bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
-      i->refresh(force);
+      (*i)->refresh(force);
     }
 }
 
