@@ -163,12 +163,12 @@ Image::cache_cleanup()
 }
 
 bool
-Image::draw(const Rectf& cliprect, float fscale)
+Image::draw(const Rectf& cliprect, float zoom)
 {
   if (m_file_entry)
   {
     m_cache->process_queue();
-    return m_renderer->draw(cliprect, fscale, m_scale, *this);
+    return m_renderer->draw(cliprect, zoom, *this);
   }
   else
   {

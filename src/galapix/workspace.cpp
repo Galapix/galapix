@@ -316,7 +316,7 @@ Workspace::clear_quad_tree()
 }
 
 void
-Workspace::draw(const Rectf& cliprect, float scale)
+Workspace::draw(const Rectf& cliprect, float zoom)
 {
   if (quad_tree.get())
   {
@@ -324,7 +324,7 @@ Workspace::draw(const Rectf& cliprect, float scale)
     const Images& current_images = quad_tree->get_items_at(cliprect);
     for(Images::const_iterator i = current_images.begin(); i != current_images.end(); ++i)
     {
-      if ((*i)->draw(cliprect, scale))
+      if ((*i)->draw(cliprect, zoom))
       {
         new_images_on_screen.insert(*i);
       }
@@ -344,7 +344,7 @@ Workspace::draw(const Rectf& cliprect, float scale)
   {
     for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      (*i)->draw(cliprect, scale);
+      (*i)->draw(cliprect, zoom);
     }
   }
 
@@ -569,6 +569,8 @@ Workspace::solve_overlaps()
         }
       std::cout << "NumOverlappings: " << num_overlappings << std::endl; 
     }
+
+  build_quad_tree();
 }
 
 void

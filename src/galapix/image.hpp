@@ -69,7 +69,7 @@ public:
 
   // _____________________________________________________
   // Drawing stuff
-  bool draw(const Rectf& cliprect, float fscale);
+  bool draw(const Rectf& cliprect, float zoom);
   void draw_mark();
 
   // _____________________________________________________

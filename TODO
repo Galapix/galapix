@@ -21,6 +21,8 @@ Release procedure:
 Problems:
 =========
 
+* when view is rotated, zooming in position is not rotated with it
+
 * add test case for util/exec.cpp, rar, zip, etc. many have already
   test code in their .cpp file
 

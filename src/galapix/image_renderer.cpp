@@ -34,7 +34,7 @@ ImageRenderer::ImageRenderer(ImageTileCache& cache)
 
 void
 ImageRenderer::draw_tile(int x, int y, int scale, 
-                         const Vector2f& pos, float fscale, 
+                         const Vector2f& pos, float zoom, 
                          Image& m_image)
 {
   Surface surface = m_cache.get_tile(x, y, scale);
@@ -42,7 +42,7 @@ ImageRenderer::draw_tile(int x, int y, int scale,
   {
     // FIXME: surface.get_size() * scale does not give the correct
     // size of a tile due to rounding errors
-    surface.draw(Rectf(pos, surface.get_size() * fscale));
+    surface.draw(Rectf(pos, surface.get_size() * zoom));
     //surface.draw(Rectf(pos, get_tile_size(x, y, scale)));
     //Framebuffer::draw_rect(Rectf(pos, surface.get_size() * scale), RGB(100, 100, 100));
   }
@@ -70,11 +70,11 @@ ImageRenderer::draw_tile(int x, int y, int scale,
                                   static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
                          s),
                    //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
-                   Rectf(pos, s * fscale * static_cast<float>(downscale)));
+                   Rectf(pos, s * zoom * static_cast<float>(downscale)));
     }
     else // draw replacement rect when no tile could be loaded
     {         
-      Framebuffer::fill_rect(Rectf(pos, tile_size * fscale), RGB(155, 0, 155)); // impl->file_entry.color);
+      Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 155)); // impl->file_entry.color);
     }
 
     //Framebuffer::draw_rect(Rectf(pos, s*scale), RGB(255, 255, 255)); // impl->file_entry.color);
@@ -83,23 +83,23 @@ ImageRenderer::draw_tile(int x, int y, int scale,
 
 void 
 ImageRenderer::draw_tiles(const Rect& rect, int scale, 
-                          const Vector2f& pos, float fscale, 
+                          const Vector2f& pos, float zoom, 
                           Image& m_image)
 {
-  float tilesize = 256.0f * fscale;
+  float tilesize = 256.0f * zoom;
 
   for(int y = rect.top; y < rect.bottom; ++y)
     for(int x = rect.left; x < rect.right; ++x)
     {
       draw_tile(x, y, scale, 
                 m_image.get_top_left_pos() + Vector2f(static_cast<float>(x), static_cast<float>(y)) * tilesize,
-                fscale,
+                zoom,
                 m_image);
     }
 }
 
 bool
-ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image& m_image)
+ImageRenderer::draw(const Rectf& cliprect, float zoom, Image& m_image)
 {
   Rectf image_rect = m_image.get_image_rect();
 
@@ -114,7 +114,7 @@ ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image
 
     // scale factor for requesting the tile from the TileDatabase
     // FIXME: Can likely be done without float
-    int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (fscale*impl_scale)) /
+    int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (zoom * m_image.get_scale())) /
                                                        log(2)), m_cache.get_max_scale());
     int scale_factor = Math::pow2(tiledb_scale);
 
@@ -125,17 +125,17 @@ ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image
     { // So small that only one tile is to be drawn
       draw_tile(0, 0, tiledb_scale, 
                 top_left,
-                static_cast<float>(scale_factor) * impl_scale,
+                static_cast<float>(scale_factor) * m_image.get_scale(),
                 m_image);
     }
     else
     {
       Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
 
-      image_region.left   = (image_region.left   - top_left.x) / impl_scale;
-      image_region.right  = (image_region.right  - top_left.x) / impl_scale;
-      image_region.top    = (image_region.top    - top_left.y) / impl_scale;
-      image_region.bottom = (image_region.bottom - top_left.y) / impl_scale;
+      image_region.left   = (image_region.left   - top_left.x) / m_image.get_scale();
+      image_region.right  = (image_region.right  - top_left.x) / m_image.get_scale();
+      image_region.top    = (image_region.top    - top_left.y) / m_image.get_scale();
+      image_region.bottom = (image_region.bottom - top_left.y) / m_image.get_scale();
 
       int   itilesize = 256 * scale_factor;
           
@@ -148,7 +148,7 @@ ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image
       draw_tiles(Rect(start_x, start_y, end_x, end_y), 
                  tiledb_scale, 
                  top_left,
-                 static_cast<float>(scale_factor) * impl_scale,
+                 static_cast<float>(scale_factor) * m_image.get_scale(),
                  m_image);
     }
 
