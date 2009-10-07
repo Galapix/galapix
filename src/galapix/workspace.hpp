@@ -142,6 +142,10 @@ public:
   void receive_file(const FileEntry& entry);
 
 private:
+  void start_animation();
+  void animation_finished();
+
+private:
   Workspace (const Workspace&);
   Workspace& operator= (const Workspace&);
 };

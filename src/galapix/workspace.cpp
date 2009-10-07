@@ -27,14 +27,11 @@ Workspace::Workspace() :
   images(),
   image_requests(),
   selection(),
-  next_pos(),
-  row_width(),
-  progress(),
+  next_pos(0, 0),
+  row_width(20),
+  progress(0.0f),
   file_queue()
 {
-  next_pos = Vector2i(0, 0);
-  row_width = 20;
-  progress = 0.0f;
 }
 
 std::vector<ImageHandle>
@@ -125,6 +122,21 @@ Workspace::add_image(const FileEntry& file_entry)
 }
 
 void
+Workspace::start_animation()
+{
+  std::cout << "Start Animation" << std::endl;
+  progress = 0.0f;  
+  clear_quad_tree(); 
+}
+
+void
+Workspace::animation_finished()
+{
+  std::cout << "Animation Finished" << std::endl;
+  build_quad_tree();
+}
+
+void
 Workspace::layout_vertical()
 {
   float spacing = 10.0f;
@@ -136,7 +148,7 @@ Workspace::layout_vertical()
       next_pos.y += static_cast<float>((*i)->get_original_height()) + spacing;
     }
   
-  progress = 0.0f;
+  start_animation();
 }
 
 void
@@ -170,7 +182,7 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
         }
     }
 
-  progress = 0.0f;
+  start_animation();
 }
 
 void
@@ -246,8 +258,7 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
         }
     }
 
-  // Cause a smooth relayout
-  progress = 0.0f;
+  start_animation();
 }
 
 void
@@ -259,7 +270,7 @@ Workspace::layout_random()
       (*i)->set_target_pos(Vector2f(static_cast<float>(rand()%width), static_cast<float>(rand()%width)));
       (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
     }
-  progress = 0.0f;
+  start_animation();
 }
 
 void
@@ -328,12 +339,19 @@ Workspace::update(float delta)
       progress += delta * 2.0f;
 
       if (progress > 1.0f)
+      {
         progress = 1.0f;
+      }
 
       for(Images::iterator i = images.begin(); i != images.end(); ++i)
         {
           (*i)->update_pos(progress);
         }
+
+      if (progress == 1.0f)
+      {
+        animation_finished();
+      }
     }
 }
 
