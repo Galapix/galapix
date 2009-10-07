@@ -19,6 +19,10 @@
 #ifndef HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
 #define HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
 
+#include <vector>
+#include <string>
+
+#include "util/url.hpp"
 #include "math/size.hpp"
 
 class GalapixOptions;

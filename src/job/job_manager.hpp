@@ -23,7 +23,8 @@
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <vector>
-#include "job_handle.hpp"
+
+#include "job/job_handle.hpp"
 
 class JobWorkerThread;
 class Job;

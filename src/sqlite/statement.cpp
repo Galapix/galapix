@@ -17,8 +17,9 @@
 */
 
 #include <sstream>
-#include "error.hpp"
-#include "statement.hpp"
+
+#include "sqlite/error.hpp"
+#include "sqlite/statement.hpp"
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection* db_)
   : db(db_), 

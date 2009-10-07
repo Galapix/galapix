@@ -16,9 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <jerror.h>
+#include "plugins/jpeg_memory_src.hpp"
 
-#include "jpeg_memory_src.hpp"
+#include <jerror.h>
 
 struct jpeg_memory_source_mgr {
   struct jpeg_source_mgr pub;	/* public fields */

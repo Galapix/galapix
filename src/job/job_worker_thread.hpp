@@ -21,9 +21,10 @@
 
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
-#include "thread_message_queue.hpp"
-#include "thread.hpp"
-#include "job_handle.hpp"
+
+#include "job/thread_message_queue.hpp"
+#include "job/thread.hpp"
+#include "job/job_handle.hpp"
 
 class Job;
 

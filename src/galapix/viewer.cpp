@@ -27,7 +27,7 @@
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 #include "math/rgba.hpp"
-#include "workspace.hpp"
+#include "galapix/workspace.hpp"
 #include "tools/pan_tool.hpp"
 #include "tools/move_tool.hpp"
 #include "tools/zoom_tool.hpp"
@@ -37,7 +37,7 @@
 #include "tools/grid_tool.hpp"
 #include "tools/view_rotate_tool.hpp"
 #include "util/filesystem.hpp"
-#include "viewer.hpp"
+#include "galapix/viewer.hpp"
 
 Viewer* Viewer::current_ = 0;
 

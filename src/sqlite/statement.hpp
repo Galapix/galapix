@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_SQLITE_STATEMENT_HPP
 #define HEADER_GALAPIX_SQLITE_STATEMENT_HPP
 
-#include "reader.hpp"
+#include "sqlite/reader.hpp"
 
 class SQLiteStatement
 {

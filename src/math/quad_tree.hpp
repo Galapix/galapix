@@ -23,7 +23,7 @@
 #include <memory>
 #include <boost/scoped_ptr.hpp>
 
-#include "rect.hpp"
+#include "math/rect.hpp"
 
 /** 
     +----+----+

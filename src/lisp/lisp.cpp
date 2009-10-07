@@ -20,7 +20,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "lisp.hpp"
+#include "lisp/lisp.hpp"
 
 namespace lisp
 {

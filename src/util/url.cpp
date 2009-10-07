@@ -23,7 +23,7 @@
 #include "plugins/zip.hpp"
 #include "plugins/tar.hpp"
 #include "plugins/curl.hpp"
-#include "filesystem.hpp"
+#include "util/filesystem.hpp"
 
 URL::URL() :
   protocol(),

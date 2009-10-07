@@ -17,7 +17,8 @@
 */
 
 #include <iostream>
-#include "test_job.hpp"
+
+#include "jobs/test_job.hpp"
 
 TestJob::TestJob()
 {

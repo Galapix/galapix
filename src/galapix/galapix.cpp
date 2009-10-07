@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "galapix/galapix.hpp"
+
 #include <boost/bind.hpp>
 #include <algorithm>
 #include <fstream>
@@ -39,9 +41,9 @@
 #include "database/database.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "jobs/test_job.hpp"
-#include "database_thread.hpp"
+#include "galapix/database_thread.hpp"
 #include "util/filesystem.hpp"
-#include "workspace.hpp"
+#include "galapix/workspace.hpp"
 #include "job/job_manager.hpp"
 #ifdef GALAPIX_SDL
 #  include "sdl/sdl_viewer.hpp"
@@ -49,8 +51,7 @@
 #ifdef GALAPIX_GTK
 #  include "gtk/gtk_viewer.hpp"
 #endif
-#include "viewer.hpp"
-#include "galapix.hpp"
+#include "galapix/viewer.hpp"
 
 class GalapixOptions
 {

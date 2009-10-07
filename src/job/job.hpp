@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_JOB_JOB_HPP
 #define HEADER_GALAPIX_JOB_JOB_HPP
 
-#include "job_handle.hpp"
+#include "job/job_handle.hpp"
 
 class Job
 {

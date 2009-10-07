@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "sdl_viewer.hpp"
+#include "sdl/sdl_viewer.hpp"
 
 #include <boost/format.hpp>
 #include <boost/thread.hpp>

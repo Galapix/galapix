@@ -20,7 +20,7 @@
 
 #include <sstream>
 
-#include "error.hpp"
+#include "sqlite/error.hpp"
 
 static int busy_callback(void* , int)
 {

@@ -21,7 +21,8 @@
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
-#include "md5.hpp"
+
+#include "util/md5.hpp"
 
 std::string
 MD5::md5_string(const std::string& str)

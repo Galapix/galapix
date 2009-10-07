@@ -16,12 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "image.hpp"
+#include "galapix/image.hpp"
 
 #include "math/rgb.hpp"
 #include "display/framebuffer.hpp"
 #include "database/file_entry.hpp"
-#include "database_thread.hpp"
+#include "galapix/database_thread.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/image_renderer.hpp"

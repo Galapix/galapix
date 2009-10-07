@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_UTIL_SEXPR_FILE_READER_HPP
 #define HEADER_GALAPIX_UTIL_SEXPR_FILE_READER_HPP
 
-#include "file_reader.hpp"
+#include "util/file_reader.hpp"
 #include "lisp/lisp.hpp"
 
 class SExprFileReader : public FileReader

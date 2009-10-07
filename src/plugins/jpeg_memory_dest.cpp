@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "jpeg_memory_dest.hpp"
+#include "plugins/jpeg_memory_dest.hpp"
 
 #define OUTPUT_BUF_SIZE 4096
 

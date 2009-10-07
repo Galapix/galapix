@@ -16,9 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "plugins/pnm.hpp"
+
 #include <stdexcept>
-#include "../math/size.hpp"
-#include "pnm.hpp"
+
+#include "math/size.hpp"
 
 class PNMMemReader
 {

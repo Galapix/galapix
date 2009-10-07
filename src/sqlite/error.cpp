@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "error.hpp"
+#include "sqlite/error.hpp"
 
 SQLiteError::SQLiteError(const std::string& err_)
   : err(err_)

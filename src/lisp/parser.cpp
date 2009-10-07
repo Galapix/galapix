@@ -25,8 +25,8 @@
 #include <exception>
 #include <string.h>
 
-#include "parser.hpp"
-#include "lisp.hpp"
+#include "lisp/parser.hpp"
+#include "lisp/lisp.hpp"
 
 namespace lisp
 {

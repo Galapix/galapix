@@ -22,11 +22,11 @@
 #include <boost/scoped_ptr.hpp>
 #include <set>
 
-#include "util/url.hpp"
-#include "selection.hpp"
-#include "math/quad_tree.hpp"
+#include "galapix/image.hpp"
+#include "galapix/selection.hpp"
 #include "job/thread_message_queue.hpp"
-#include "image.hpp"
+#include "math/quad_tree.hpp"
+#include "util/url.hpp"
 
 class Rectf;
 

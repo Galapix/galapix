@@ -20,7 +20,7 @@
 
 #include <string>
 #include <boost/shared_ptr.hpp>
-#include "lexer.hpp"
+#include "lisp/lexer.hpp"
 
 namespace lisp
 {

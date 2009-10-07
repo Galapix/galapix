@@ -16,6 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "display/framebuffer.hpp"
+
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -25,7 +27,6 @@
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
 #include "sdl/sdl_framebuffer.hpp"
-#include "framebuffer.hpp"
 
 Size Framebuffer::size;
 
