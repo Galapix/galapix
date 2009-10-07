@@ -63,8 +63,6 @@ private:
   Image(const FileEntry& file_entry);
 
 public:
-  friend class ImageRenderer;
-
   static ImageHandle create(const FileEntry& file_entry);
 
   // _____________________________________________________
