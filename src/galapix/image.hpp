@@ -29,8 +29,6 @@
 #include "math/vector2f.hpp"
 #include "object.hpp"
 #include "util/url.hpp"
-#include "galapix/image_renderer.hpp"
-#include "galapix/image_tile_cache.hpp"
 
 class ImageTileCache;
 class ImageRenderer;
