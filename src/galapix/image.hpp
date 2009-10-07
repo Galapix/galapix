@@ -42,34 +42,10 @@ class TileEntry;
 
 class Image : public Object
 {
-public:
-  // _____________________________________________________
-  // Type Definition 
-  struct SurfaceStruct 
-  {
-    enum Status 
-    {
-      SURFACE_OK,
-      SURFACE_REQUESTED,
-      SURFACE_FAILED 
-    };
-    
-    Status  status;
-    Surface surface;
-
-    SurfaceStruct() :
-      status(),
-      surface()
-    {}
-  };
-
-  typedef std::map<uint32_t, SurfaceStruct> Cache; 
-  typedef std::vector<JobHandle> Jobs;
 
 private:
   Surface get_tile(int x, int y, int tile_scale);
 
-  void process_queue();
   Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_in);
   void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
   void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float scale);
@@ -135,8 +111,7 @@ public:
     return impl.get() == rhs.impl.get(); 
   }
   
-  /** Syncronized function to require data from other threads */
-  void receive_tile(const TileEntry& tile_entry);
+  /** Syncronized function to acquire data from other threads */
   void receive_file_entry(const FileEntry& file_entry);
 
 private:

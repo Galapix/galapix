@@ -48,6 +48,7 @@ private:
   typedef std::vector<Image> Images;
   typedef std::vector<ImageRequest> ImageRequests;
 
+private:
   /** Simple QuadTree to have a quicker way to figure out which images
       are visible */
   std::auto_ptr<QuadTree<Image> > quad_tree;

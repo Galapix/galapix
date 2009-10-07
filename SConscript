@@ -47,6 +47,7 @@ libgalapix_sources = [
     'src/display/texture.cpp',
     'src/galapix/database_thread.cpp',
     'src/galapix/image.cpp',
+    'src/galapix/image_tile_cache.cpp',
     'src/galapix/selection.cpp',
     'src/galapix/viewer_state.cpp',
     'src/galapix/workspace.cpp',

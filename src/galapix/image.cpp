@@ -22,12 +22,8 @@
 #include "display/framebuffer.hpp"
 #include "database/file_entry.hpp"
 #include "database_thread.hpp"
-#include "viewer.hpp"
-
-uint32_t make_cache_id(int x, int y, int scale)
-{
-  return x | (y << 8) | (scale << 16);
-}
+#include "galapix/viewer.hpp"
+#include "galapix/image_tile_cache.hpp"
 
 class ImageImpl
 {
@@ -55,15 +51,10 @@ public:
   /** Rotation angle */
   float angle;
 
-  Image::Cache cache;
+  ImageTileCache cache;
 
-  /** FIXME: Jobs array does not get cleared after jobs are done */
-  Image::Jobs jobs;  
-
-  ThreadMessageQueue<TileEntry> tile_queue;
-
-  ImageImpl() :
-    file_entry(),
+  ImageImpl(const FileEntry& file_entry_) :
+    file_entry(file_entry_),
     min_keep_scale(), 
     max_scale(),
     alpha(),
@@ -74,9 +65,7 @@ public:
     last_scale(),
     target_scale(),
     angle(),
-    cache(),
-    jobs(),  
-    tile_queue()
+    cache(file_entry_)
   {
   }
 
@@ -91,10 +80,8 @@ Image::Image()
 }
 
 Image::Image(const FileEntry& file_entry)
-  : impl(new ImageImpl())
+  : impl(new ImageImpl(file_entry))
 {
-  impl->file_entry = file_entry;
-
   impl->angle        = 0.0f; 
   impl->scale        = 1.0f;
   impl->last_scale   = 1.0f;
@@ -208,72 +195,11 @@ Image::get_original_height() const
   return impl->file_entry.get_height();
 }
 
-Surface
-Image::get_tile(int x, int y, int scale)
-{
-  uint32_t cache_id = make_cache_id(x, y, scale);
-  Cache::iterator i = impl->cache.find(cache_id);
-
-  if (i == impl->cache.end())
-    {
-      // Important: it must be '*this', not 'this', since the 'this'
-      // pointer might disappear any time, its only the impl that
-      // stays and which we can link to by making a copy of the Image
-      // object via *this.
-      // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
-      impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, scale, Vector2i(x, y), 
-                                                                   boost::bind(&Image::receive_tile, *this, _1)));
-
-      // FIXME: Something to try: Request the next smaller tile too,
-      // so we get a lower quality image fast and a higher quality one
-      // soon after FIXME: Its unclear if this actually improves
-      // things, also the order of request gets mungled in the
-      // DatabaseThread, we should request the whole group of lower
-      // res tiles at once, instead of one by one, since that eats up
-      // the possible speed up
-      // impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, scale+1, Vector2i(x, y), 
-      //                                                              boost::bind(&Image::receive_tile, *this, _1)));
-      SurfaceStruct s;
-      
-      s.surface = Surface();
-      s.status  = SurfaceStruct::SURFACE_REQUESTED;
-
-      impl->cache[cache_id] = s;
-
-      return Surface();
-    }
-  else
-    {
-      return i->second.surface;
-    }
-}
-
-Surface
-Image::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale)
-{
-  int  downscale_factor = 1;
-
-  // FIXME: Replace this loop with a 'find_next_best_smaller_tile()' function
-  while(downscale_factor < impl->max_scale)
-    {
-      downscale = Math::pow2(downscale_factor);
-      uint32_t cache_id = make_cache_id(x/downscale, y/downscale, tiledb_scale+downscale_factor);
-      Cache::iterator i = impl->cache.find(cache_id);
-      if (i != impl->cache.end() && i->second.surface)
-        {
-          return i->second.surface;
-        }
-
-      downscale_factor += 1;
-    }
-  return Surface();
-}
-
 void
 Image::draw_tile(int x, int y, int scale, 
                  const Vector2f& pos, float fscale)
 {
-  Surface surface = get_tile(x, y, scale);
+  Surface surface = impl->cache.get_tile(x, y, scale);
   if (surface)
     {
       // FIXME: surface.get_size() * scale does not give the correct
@@ -287,7 +213,7 @@ Image::draw_tile(int x, int y, int scale,
       // Look for the next smaller tile
       // FIXME: Rewrite this to work all smaller tiles, not just the next     
       int downscale;
-      surface = find_smaller_tile(x, y, scale, downscale);
+      surface = impl->cache.find_smaller_tile(x, y, scale, downscale);
 
       // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
       Size tile_size(Math::min(256, (impl->file_entry.get_width()  / Math::pow2(scale)) - 256 * x),
@@ -333,73 +259,15 @@ Image::draw_tiles(const Rect& rect, int scale,
 }
 
 void
-Image::process_queue()
+Image::clear_cache()
 {
-  // Check the queue for newly arrived tiles
-  while (!impl->tile_queue.empty())
-    {
-      TileEntry tile = impl->tile_queue.front();
-      impl->tile_queue.pop();
-
-      int tile_id = make_cache_id(tile.get_pos().x, tile.get_pos().y, tile.get_scale());
-  
-      SurfaceStruct s;
-  
-      if (tile.get_surface())
-        {
-          s.surface = Surface(tile.get_surface());
-          s.status  = SurfaceStruct::SURFACE_OK;
-        }
-      else
-        {
-          s.surface = Surface();
-          s.status  = SurfaceStruct::SURFACE_FAILED;
-        }
-
-      impl->cache[tile_id] = s;
-    }
+  impl->cache.clear();
 }
 
 void
 Image::cache_cleanup()
 {
-  // FIXME: Cache cleanup should happen based on if the Tile is
-  // visible, not if the image is visible
-
-  // Image is not visible, so cancel all jobs
-  for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
-    i->abort();
-  impl->jobs.clear();
-        
-  // FIXME: We also need to purge the cache more often, since with
-  // big gigapixel images we would end up never clearing it
-      
-  // Erase all tiles larger then 32x32
-
-  // FIXME: Could make this more clever and relative to the number
-  // of the images we display, since with large collections 32x32
-  // might be to much for memory while with small collections it
-  // will lead to unnecessary loading artifacts.      
-
-  // FIXME: Code can hang here for some reason
-  for(Cache::iterator i = impl->cache.begin(); i != impl->cache.end();)
-    {
-      int tiledb_scale = (i->first >> 16);
-      if (tiledb_scale < impl->min_keep_scale)
-        impl->cache.erase(i++);
-      else
-        ++i;
-    }
-}
-
-void
-Image::clear_cache()
-{
- for(Jobs::iterator i = impl->jobs.begin(); i != impl->jobs.end(); ++i)
-    i->abort();
-  impl->jobs.clear();
-
-  impl->cache.clear();
+  impl->cache.cleanup();
 }
 
 void
@@ -421,8 +289,8 @@ void
 Image::print_info() const
 {
   std::cout << "  Image: " << impl.get() << std::endl;
-  std::cout << "    Cache Size: " << impl->cache.size() << std::endl;
-  std::cout << "    Job Size:   " << impl->jobs.size() << std::endl;
+  //std::cout << "    Cache Size: " << impl->cache.size() << std::endl;
+  //std::cout << "    Job Size:   " << impl->jobs.size() << std::endl;
 }
 
 bool
@@ -442,7 +310,7 @@ Image::draw(const Rectf& cliprect, float fscale)
 {
   if (impl->file_entry)
   {
-    process_queue();
+    impl->cache.process_queue();
   
     Rectf image_rect = get_image_rect();
     Vector2f top_left(image_rect.left, image_rect.top);
@@ -533,15 +401,6 @@ Image::get_image_rect() const
     }
 }
 
-void
-Image::receive_tile(const TileEntry& tile)
-{
-  assert(impl.get());
-  impl->tile_queue.push(tile);
-
-  Viewer::current()->redraw();
-}
-
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
