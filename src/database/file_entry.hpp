@@ -56,8 +56,8 @@ public:
 class FileEntry 
 {
 public:
-  FileEntry()
-    : impl()
+  FileEntry() :
+    impl()
   {}
 
   FileEntry(int64_t fileid, 

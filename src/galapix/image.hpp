@@ -42,15 +42,11 @@ class TileEntry;
 
 class Image : public Object
 {
-
 private:
-  Surface get_tile(int x, int y, int tile_scale);
-
-  Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_in);
-  void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale);
-  void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float scale);
 
 public:
+  friend class ImageRenderer;
+
   Image();
   Image(const FileEntry& file_entry);
 
@@ -112,7 +108,7 @@ public:
   }
   
   /** Syncronized function to acquire data from other threads */
-  void receive_file_entry(const FileEntry& file_entry);
+  //void receive_file_entry(const FileEntry& file_entry);
 
 private:
   boost::shared_ptr<ImageImpl> impl;

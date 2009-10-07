@@ -84,6 +84,8 @@ public:
 
   void receive_tile(const TileEntry& tile);
 
+  int get_max_scale() const { return max_scale; }
+
 private:
   ImageTileCache(const ImageTileCache&);
   ImageTileCache& operator=(const ImageTileCache&);
