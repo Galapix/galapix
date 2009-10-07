@@ -316,8 +316,10 @@ Workspace::draw(const Rectf& cliprect, float scale)
     const Images& current_images = quad_tree->get_items_at(cliprect);
     for(Images::const_iterator i = current_images.begin(); i != current_images.end(); ++i)
     {
-      (*i)->draw(cliprect, scale);
-      new_images_on_screen.insert(*i);
+      if ((*i)->draw(cliprect, scale))
+      {
+        new_images_on_screen.insert(*i);
+      }
     }
 
     for(std::set<ImageHandle>::const_iterator i = m_images_on_screen.begin(); i != m_images_on_screen.end(); ++i)

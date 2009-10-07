@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database.hpp"
+#include "database/database.hpp"
 
 Database::Database(const std::string& filename)
   : db(filename),

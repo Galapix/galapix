@@ -98,7 +98,7 @@ ImageRenderer::draw_tiles(const Rect& rect, int scale,
     }
 }
 
-void
+bool
 ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image& m_image)
 {
   Rectf image_rect = m_image.get_image_rect();
@@ -106,6 +106,7 @@ ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image
   if (!cliprect.is_overlapped(image_rect))
   {
     m_cache.cleanup();
+    return false;
   }
   else
   {
@@ -150,6 +151,8 @@ ImageRenderer::draw(const Rectf& cliprect, float fscale, float impl_scale, Image
                  static_cast<float>(scale_factor) * impl_scale,
                  m_image);
     }
+
+    return true;
   }
 }
 

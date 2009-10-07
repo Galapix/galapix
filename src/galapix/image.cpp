@@ -162,13 +162,17 @@ Image::cache_cleanup()
   m_cache->cleanup();
 }
 
-void
+bool
 Image::draw(const Rectf& cliprect, float fscale)
 {
   if (m_file_entry)
   {
     m_cache->process_queue();
-    m_renderer->draw(cliprect, fscale, m_scale, *this);
+    return m_renderer->draw(cliprect, fscale, m_scale, *this);
+  }
+  else
+  {
+    return false;
   }
 }
 

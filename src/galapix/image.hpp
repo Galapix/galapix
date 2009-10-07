@@ -27,16 +27,16 @@
 #include "database/file_entry.hpp"
 #include "job/job_handle.hpp"
 #include "math/vector2f.hpp"
-#include "object.hpp"
 #include "util/url.hpp"
 
 class ImageTileCache;
 class ImageRenderer;
 class Image;
+class Rectf;
 
 typedef boost::shared_ptr<Image> ImageHandle;
 
-class Image : public Object
+class Image
 {
 private:
   FileEntry m_file_entry;
@@ -69,7 +69,7 @@ public:
 
   // _____________________________________________________
   // Drawing stuff
-  void draw(const Rectf& cliprect, float fscale);
+  bool draw(const Rectf& cliprect, float fscale);
   void draw_mark();
 
   // _____________________________________________________

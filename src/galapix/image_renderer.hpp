@@ -33,7 +33,9 @@ private:
 public:
   ImageRenderer(ImageTileCache& cache);
 
-  void draw(const Rectf& cliprect, float fscale, float impl_scale, Image& m_image);
+  /** Return true if something was drawn to the screen, false when
+   *  image was outside the cliprect */
+  bool draw(const Rectf& cliprect, float fscale, float impl_scale, Image& m_image);
 
 private:
   void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float scale, Image& m_image);
