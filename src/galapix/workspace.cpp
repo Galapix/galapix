@@ -100,34 +100,42 @@ Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float sca
 void
 Workspace::add_image(const FileEntry& file_entry)
 {
-  ImageHandle image = Image::create(file_entry);
-  images.push_back(image);
+  if (file_entry.get_width()  == 0 ||
+      file_entry.get_height() == 0)
+  {
+    std::cout << "Workspace: Error: ignoring " << file_entry.get_url() << " as its size is (0, 0)" << std::endl;
+  }
+  else
+  {
+    ImageHandle image = Image::create(file_entry);
+    images.push_back(image);
 
-  if (!image_requests.empty())
+    if (!image_requests.empty())
     {
       ImageRequests::iterator i = std::find_if(image_requests.begin(), image_requests.end(), 
                                                ImageRequestFinder(file_entry.get_url().str()));
       if (i != image_requests.end())
-        {
-          image->set_pos(i->pos);
-          image->set_scale(i->scale);
-          return;
-        }
+      {
+        image->set_pos(i->pos);
+        image->set_scale(i->scale);
+        return;
+      }
     }
 
-  {
-    image->set_scale(Math::min(1000.0f / static_cast<float>(file_entry.get_width()),
-                              1000.0f / static_cast<float>(file_entry.get_height())));
+    {
+      image->set_scale(Math::min(1000.0f / static_cast<float>(file_entry.get_width()),
+                                 1000.0f / static_cast<float>(file_entry.get_height())));
 
-    image->set_pos(next_pos * 1024.0f);
+      image->set_pos(next_pos * 1024.0f);
 
-    // FIXME: Ugly, instead we should relayout once a second or so
-    next_pos.x += 1;
-    if (next_pos.x >= row_width)
+      // FIXME: Ugly, instead we should relayout once a second or so
+      next_pos.x += 1;
+      if (next_pos.x >= row_width)
       {
         next_pos.x  = 0;
         next_pos.y += 1;
       }
+    }
   }
 }
 
@@ -641,19 +649,19 @@ Workspace::get_bounding_rect() const
         {
           const Rectf& image_rect = (*i)->get_image_rect(); 
           
+          if (isnan(image_rect.left) ||
+              isnan(image_rect.right) ||
+              isnan(image_rect.top) ||
+              isnan(image_rect.bottom))
+            {
+              std::cout << "NAN ERROR: " << (*i)->get_url() << " " << (*i)->get_pos() << " " << image_rect << std::endl;
+              assert(0);
+            }
+
           rect.left   = Math::min(rect.left,   image_rect.left);
           rect.right  = Math::max(rect.right,  image_rect.right);
           rect.top    = Math::min(rect.top,    image_rect.top);
           rect.bottom = Math::max(rect.bottom, image_rect.bottom);
-
-          if (isnan(rect.left) ||
-              isnan(rect.right) ||
-              isnan(rect.top) ||
-              isnan(rect.bottom))
-            {
-              std::cout << (*i)->get_url() << " " << (*i)->get_pos() << " " << image_rect << std::endl;
-              assert(0);
-            }
         }
   
       return rect;
