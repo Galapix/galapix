@@ -39,12 +39,12 @@ ImageTileCache::ImageTileCache(const FileEntry& file_entry_) :
 {
 }
 
-Surface
+SurfaceHandle
 ImageTileCache::get_tile(int x, int y, int scale)
 {
   if (x < 0 || y < 0 || scale < 0)
   {
-    return Surface();
+    return SurfaceHandle();
   }
   else
   {
@@ -57,12 +57,12 @@ ImageTileCache::get_tile(int x, int y, int scale)
     }
     else
     {
-      return Surface();
+      return SurfaceHandle();
     }
   }
 }
 
-Surface
+SurfaceHandle
 ImageTileCache::request_tile(int x, int y, int scale)
 {
   unsigned int cache_id = make_cache_id(x, y, scale);
@@ -89,12 +89,12 @@ ImageTileCache::request_tile(int x, int y, int scale)
       //                                                              boost::bind(&Image::receive_tile, *this, _1)));
       SurfaceStruct s;
       
-      s.surface = Surface();
+      s.surface = SurfaceHandle();
       s.status  = SurfaceStruct::SURFACE_REQUESTED;
 
       cache[cache_id] = s;
 
-      return Surface();
+      return SurfaceHandle();
     }
   else
     {
@@ -144,7 +144,7 @@ ImageTileCache::cleanup()
     }
 }
 
-Surface
+SurfaceHandle
 ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
   int  downscale_factor = 1;
@@ -165,7 +165,7 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
       downscale_factor += 1;
     }
 
-  return Surface();
+  return SurfaceHandle();
 }
 
 void
@@ -183,12 +183,12 @@ ImageTileCache::process_queue()
   
       if (tile.get_surface())
         {
-          s.surface = Surface(tile.get_surface());
+          s.surface = Surface::create(tile.get_surface());
           s.status  = SurfaceStruct::SURFACE_OK;
         }
       else
         {
-          s.surface = Surface();
+          s.surface = SurfaceHandle();
           s.status  = SurfaceStruct::SURFACE_FAILED;
         }
 

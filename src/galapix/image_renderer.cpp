@@ -37,20 +37,20 @@ void
 ImageRenderer::draw_tile(int x, int y, int scale, 
                          const Vector2f& pos, float zoom)
 {
-  Surface surface = m_cache.request_tile(x, y, scale);
+  SurfaceHandle surface = m_cache.request_tile(x, y, scale);
   if (surface)
   {
     // FIXME: surface.get_size() * scale does not give the correct
     // size of a tile due to rounding errors
-    surface.draw(Rectf(pos, surface.get_size() * zoom));
+    surface->draw(Rectf(pos, surface->get_size() * zoom));
   }
   else // tile not found, so find a replacement
   {
     // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
-    Surface nw = m_cache.get_tile(x*2,   y*2,   scale - 1);
-    Surface ne = m_cache.get_tile(x*2+1, y*2,   scale - 1);
-    Surface sw = m_cache.get_tile(x*2,   y*2+1, scale - 1);
-    Surface se = m_cache.get_tile(x*2+1, y*2+1, scale - 1);
+    SurfaceHandle nw = m_cache.get_tile(x*2,   y*2,   scale - 1);
+    SurfaceHandle ne = m_cache.get_tile(x*2+1, y*2,   scale - 1);
+    SurfaceHandle sw = m_cache.get_tile(x*2,   y*2+1, scale - 1);
+    SurfaceHandle se = m_cache.get_tile(x*2+1, y*2+1, scale - 1);
 
     if (!nw || !ne || !sw || !se)
     {
@@ -65,13 +65,13 @@ ImageRenderer::draw_tile(int x, int y, int scale,
       if (surface)
       { 
         // Must only draw relevant section!
-        Size s((x % downscale) ? (surface.get_width()  - 256/downscale * (x % downscale)) : 256 / downscale,
-               (y % downscale) ? (surface.get_height() - 256/downscale * (y % downscale)) : 256 / downscale);
+        Size s((x % downscale) ? (surface->get_width()  - 256/downscale * (x % downscale)) : 256 / downscale,
+               (y % downscale) ? (surface->get_height() - 256/downscale * (y % downscale)) : 256 / downscale);
 
-        s.width  = Math::min(surface.get_width(),  s.width);
-        s.height = Math::min(surface.get_height(), s.height);
+        s.width  = Math::min(surface->get_width(),  s.width);
+        s.height = Math::min(surface->get_height(), s.height);
           
-        surface.draw(Rectf(Vector2f(static_cast<float>(x % downscale), 
+        surface->draw(Rectf(Vector2f(static_cast<float>(x % downscale), 
                                     static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
                            s),
                      //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
@@ -84,10 +84,10 @@ ImageRenderer::draw_tile(int x, int y, int scale,
     }
 
     // draw higher resolution tiles
-    if (nw) nw.draw(Rectf(pos, nw.get_size() * zoom * 0.5f));
-    if (ne) ne.draw(Rectf(pos + Vector2f(256*zoom/2, 0), ne.get_size() * zoom * 0.5f));
-    if (sw) sw.draw(Rectf(pos + Vector2f(0, 256*zoom/2), sw.get_size() * zoom * 0.5f));
-    if (se) se.draw(Rectf(pos + Vector2f(256*zoom/2, 256*zoom/2), se.get_size() * zoom * 0.5f));
+    if (nw) nw->draw(Rectf(pos, nw->get_size() * zoom * 0.5f));
+    if (ne) ne->draw(Rectf(pos + Vector2f(256*zoom/2, 0), ne->get_size() * zoom * 0.5f));
+    if (sw) sw->draw(Rectf(pos + Vector2f(0, 256*zoom/2), sw->get_size() * zoom * 0.5f));
+    if (se) se->draw(Rectf(pos + Vector2f(256*zoom/2, 256*zoom/2), se->get_size() * zoom * 0.5f));
   }
 }
 

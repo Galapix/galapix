@@ -80,17 +80,14 @@ public:
   }
 };
 
-Texture::Texture() :
-  impl()
+TextureHandle
+Texture::create(const SoftwareSurface& src, const Rect& srcrect)
 {
+  return TextureHandle(new Texture(src, srcrect));
 }
-
+
 Texture::Texture(const SoftwareSurface& src, const Rect& srcrect) :
   impl(new TextureImpl(src, srcrect))
-{
-}
-
-Texture::~Texture()
 {
 }
 

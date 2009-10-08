@@ -25,20 +25,22 @@ class Rect;
 class Size;
 class SoftwareSurface;
 class TextureImpl;
+class Texture;
+
+typedef boost::shared_ptr<Texture> TextureHandle;
 
 class Texture
 {
-public:
-  Texture();
+private:
   Texture(const SoftwareSurface& src, const Rect& srcrect);
-  ~Texture();
+
+public:
+  static TextureHandle create(const SoftwareSurface& src, const Rect& srcrect);
 
   int get_width() const;
   int get_height() const;
   
   void bind();
-
-  operator bool() const { return impl.get(); }
 
 private:
   boost::shared_ptr<TextureImpl> impl;

@@ -24,11 +24,11 @@
 class SurfaceImpl
 {
 public:
-  Texture texture;
+  TextureHandle texture;
   Rectf   uv;
   Size    size;
   
-  SurfaceImpl(const Texture& texture_, const Rectf& uv_, const Size& size_)
+  SurfaceImpl(const TextureHandle& texture_, const Rectf& uv_, const Size& size_)
     : texture(texture_),
       uv(uv_),
       size(size_)
@@ -43,7 +43,7 @@ public:
   {
     assert(src);
 
-    texture = Texture(src, srcrect);
+    texture = Texture::create(src, srcrect);
     
     uv = Rectf(Vector2f(0, 0), srcrect.get_size());
 
@@ -58,7 +58,7 @@ public:
   {
     if (texture)
       {
-        texture.bind();
+        texture->bind();
         glEnable(GL_BLEND);
         glEnable(GL_TEXTURE_RECTANGLE_ARB);
         glColor3f(1.0f, 1.0f, 1.0f);       
@@ -83,7 +83,7 @@ public:
   {
     if (texture)
       {
-        texture.bind();
+        texture->bind();
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_TEXTURE_RECTANGLE_ARB);
@@ -111,6 +111,18 @@ public:
   }
 };
 
+SurfaceHandle
+Surface::create(const SoftwareSurface& src, const Rect& srcrect)
+{
+  return SurfaceHandle(new Surface(src, srcrect));
+}
+
+SurfaceHandle
+Surface::create(const SoftwareSurface& src)
+{
+  return SurfaceHandle(new Surface(src));
+}
+
 Surface::Surface() :
   impl()
 {
@@ -128,10 +140,6 @@ Surface::Surface(const SoftwareSurface& src) :
 
 Surface::Surface(const SoftwareSurface& src, const Rect& srcrect)
   : impl(new SurfaceImpl(src, srcrect))
-{
-}
-
-Surface::~Surface()
 {
 }
 

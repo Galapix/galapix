@@ -25,16 +25,19 @@ class SurfaceImpl;
 class Rect;
 class Rectf;
 class Vector2f;
+class Surface;
+
+typedef boost::shared_ptr<Surface> SurfaceHandle;
 
 class Surface
 {
-public:
+private:
   Surface();
   explicit Surface(boost::shared_ptr<SurfaceImpl> impl);
   explicit Surface(const SoftwareSurface& src, const Rect& srcrect);
   explicit Surface(const SoftwareSurface& src);
-  ~Surface();
 
+public:
   void draw(const Vector2f& pos);
   void draw(const Rectf& dstrect);
   void draw(const Rectf& srcrect, const Rectf& dstrect);
@@ -43,7 +46,8 @@ public:
   int  get_height() const;
   Size get_size() const;
 
-  operator bool() const { return impl.get(); }
+  static SurfaceHandle create(const SoftwareSurface& src, const Rect& srcrect);
+  static SurfaceHandle create(const SoftwareSurface& src);
 
 private:
   boost::shared_ptr<SurfaceImpl> impl;
