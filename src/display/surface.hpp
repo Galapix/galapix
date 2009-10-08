@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_DISPLAY_SURFACE_HPP
 #define HEADER_GALAPIX_DISPLAY_SURFACE_HPP
 
+#include <boost/scoped_ptr.hpp>
+
 #include "display/texture.hpp"
 
 class SurfaceImpl;
@@ -32,10 +34,8 @@ typedef boost::shared_ptr<Surface> SurfaceHandle;
 class Surface
 {
 private:
-  Surface();
-  explicit Surface(boost::shared_ptr<SurfaceImpl> impl);
-  explicit Surface(const SoftwareSurface& src, const Rect& srcrect);
-  explicit Surface(const SoftwareSurface& src);
+  explicit Surface(const SoftwareSurfaceHandle& src, const Rect& srcrect);
+  explicit Surface(const SoftwareSurfaceHandle& src);
 
 public:
   void draw(const Vector2f& pos);
@@ -46,11 +46,11 @@ public:
   int  get_height() const;
   Size get_size() const;
 
-  static SurfaceHandle create(const SoftwareSurface& src, const Rect& srcrect);
-  static SurfaceHandle create(const SoftwareSurface& src);
+  static SurfaceHandle create(const SoftwareSurfaceHandle& src, const Rect& srcrect);
+  static SurfaceHandle create(const SoftwareSurfaceHandle& src);
 
 private:
-  boost::shared_ptr<SurfaceImpl> impl;
+  boost::scoped_ptr<SurfaceImpl> impl;
 };
 
 #endif

@@ -111,7 +111,7 @@ PNG::get_size(const std::string& filename, Size& size)
     }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 PNG::load_from_file(const std::string& filename)
 {
   FILE* in = fopen(filename.c_str(), "rb");
@@ -149,17 +149,17 @@ PNG::load_from_file(const std::string& filename)
       int height = png_get_image_height(png_ptr, info_ptr);
       //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
-      SoftwareSurface surface;
+      SoftwareSurfaceHandle surface;
 
       switch(png_get_color_type(png_ptr, info_ptr))
         {
           case PNG_COLOR_TYPE_RGBA:
             {
-              surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
+              surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
               boost::scoped_array<png_bytep> row_pointers(new png_bytep[height]);
               for (int y = 0; y < height; ++y)
-                row_pointers[y] = surface.get_row_data(y);
+                row_pointers[y] = surface->get_row_data(y);
             
               png_read_image(png_ptr, row_pointers.get());
             }
@@ -167,11 +167,11 @@ PNG::load_from_file(const std::string& filename)
 
           case PNG_COLOR_TYPE_RGB:
             {
-              surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
+              surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
               boost::scoped_array<png_bytep> row_pointers(new png_bytep[height]);
               for (int y = 0; y < height; ++y)
-                row_pointers[y] = surface.get_row_data(y);
+                row_pointers[y] = surface->get_row_data(y);
             
               png_read_image(png_ptr, row_pointers.get());
             }
@@ -186,7 +186,7 @@ PNG::load_from_file(const std::string& filename)
     }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 PNG::load_from_mem(uint8_t* data, int len)
 {
   // FIXME: Merge this with load_from_file
@@ -223,17 +223,17 @@ PNG::load_from_mem(uint8_t* data, int len)
   int height = png_get_image_height(png_ptr, info_ptr);
   //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
-  SoftwareSurface surface;
+  SoftwareSurfaceHandle surface;
 
   switch(png_get_color_type(png_ptr, info_ptr))
     {
       case PNG_COLOR_TYPE_RGBA:
         {
-          surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, Size(width, height));
+          surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
           boost::scoped_array<png_bytep> row_pointers(new png_bytep[height]);
           for (int y = 0; y < height; ++y)
-            row_pointers[y] = surface.get_row_data(y);
+            row_pointers[y] = surface->get_row_data(y);
             
           png_read_image(png_ptr, row_pointers.get());
         }
@@ -241,11 +241,11 @@ PNG::load_from_mem(uint8_t* data, int len)
 
       case PNG_COLOR_TYPE_RGB:
         {
-          surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, Size(width, height));
+          surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
           
           boost::scoped_array<png_bytep> row_pointers(new png_bytep[height]);
           for (int y = 0; y < height; ++y)
-            row_pointers[y] = surface.get_row_data(y);
+            row_pointers[y] = surface->get_row_data(y);
             
           png_read_image(png_ptr, row_pointers.get());
         }
@@ -258,7 +258,7 @@ PNG::load_from_mem(uint8_t* data, int len)
 }
 
 void
-PNG::save(const SoftwareSurface& surface, const std::string& filename)
+PNG::save(const SoftwareSurfaceHandle& surface, const std::string& filename)
 {
   FILE* out = fopen(filename.c_str(), "wb");
   if (!out)
@@ -283,16 +283,16 @@ PNG::save(const SoftwareSurface& surface, const std::string& filename)
       png_init_io(png_ptr, out);
 
       png_set_IHDR(png_ptr, info_ptr, 
-                   surface.get_width(), surface.get_height(), 8,
-                   (surface.get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA, 
+                   surface->get_width(), surface->get_height(), 8,
+                   (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA, 
                    PNG_INTERLACE_NONE, 
                    PNG_COMPRESSION_TYPE_DEFAULT,
                    PNG_FILTER_TYPE_DEFAULT);
 
       png_write_info(png_ptr, info_ptr);
 
-      for (int y = 0; y < surface.get_height(); ++y)
-        png_write_row(png_ptr, surface.get_row_data(y));
+      for (int y = 0; y < surface->get_height(); ++y)
+        png_write_row(png_ptr, surface->get_row_data(y));
 
       png_write_end(png_ptr, info_ptr);
 
@@ -319,7 +319,7 @@ void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
 }
 
 BlobHandle
-PNG::save(const SoftwareSurface& surface)
+PNG::save(const SoftwareSurfaceHandle& surface)
 {
   // FIXME: Merge this with the save to file function
   png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -336,16 +336,16 @@ PNG::save(const SoftwareSurface& surface)
   png_set_write_fn(png_ptr, &mem, &writePNGMemory, NULL);
 
   png_set_IHDR(png_ptr, info_ptr, 
-               surface.get_width(), surface.get_height(), 8,
-               (surface.get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA, 
+               surface->get_width(), surface->get_height(), 8,
+               (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA, 
                PNG_INTERLACE_NONE, 
                PNG_COMPRESSION_TYPE_DEFAULT,
                PNG_FILTER_TYPE_DEFAULT);
 
   png_write_info(png_ptr, info_ptr);
 
-  for (int y = 0; y < surface.get_height(); ++y)
-    png_write_row(png_ptr, surface.get_row_data(y));
+  for (int y = 0; y < surface->get_height(); ++y)
+    png_write_row(png_ptr, surface->get_row_data(y));
 
   png_write_end(png_ptr, info_ptr);
 

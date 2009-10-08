@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_HPP
 
 #include <stdint.h>
+#include <boost/enable_shared_from_this.hpp>
 
 #include "util/blob.hpp"
 
@@ -30,8 +31,12 @@ class RGBA;
 class Rect;
 class Size;
 class SoftwareSurfaceImpl;
+class SoftwareSurface;
 
-class SoftwareSurface
+typedef boost::shared_ptr<SoftwareSurface> SoftwareSurfaceHandle;
+
+class SoftwareSurface : public boost::enable_shared_from_this<SoftwareSurface>
+
 {
 public:
   // Do not change the value of these, since they are stored in the database
@@ -49,25 +54,26 @@ public:
   static FileFormat get_fileformat(const URL& url);
   static bool       get_size(const URL& url, Size& size);
 
-  static SoftwareSurface from_url(const URL& url);
+  static SoftwareSurfaceHandle from_url(const URL& url);
 
 public:
   enum Format { RGB_FORMAT, RGBA_FORMAT };
 
-  SoftwareSurface();
+private:
   SoftwareSurface(Format format, const Size& size);
 
-  ~SoftwareSurface();
+public:
+  static SoftwareSurfaceHandle create(Format format, const Size& size);
 
   Size get_size()   const;
   int  get_width()  const;
   int  get_height() const;
   int  get_pitch()  const;
 
-  SoftwareSurface halve() const;
-  SoftwareSurface scale(const Size& size) const;
-  SoftwareSurface crop(const Rect& rect) const;
-  SoftwareSurface vflip() const;
+  SoftwareSurfaceHandle halve();
+  SoftwareSurfaceHandle scale(const Size& size);
+  SoftwareSurfaceHandle crop(const Rect& rect);
+  SoftwareSurfaceHandle vflip();
 
   BlobHandle get_raw_data()  const;
    
@@ -84,17 +90,15 @@ public:
 
   Format get_format() const;
 
-  SoftwareSurface to_rgb() const;
+  SoftwareSurfaceHandle to_rgb();
 
   int get_bytes_per_pixel() const;
 
   /** Performs a simple copy from this to \a test, no blending is performed */
-  void blit(SoftwareSurface& dst, const Vector2i& pos);
-
-  operator bool() const { return impl.get(); }
+  void blit(SoftwareSurfaceHandle& dst, const Vector2i& pos);
 
 private:
-  boost::shared_ptr<SoftwareSurfaceImpl> impl;
+  boost::scoped_ptr<SoftwareSurfaceImpl> impl;
 };
 
 #endif

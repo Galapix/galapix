@@ -225,7 +225,7 @@ TileDatabase::store_tile(const TileEntry& tile_)
     {
       // Tile doesn't have a Blob, so we assume it has a surface and
       // we generate the Blob from that
-      switch(tile.get_surface().get_format())
+      switch(tile.get_surface()->get_format())
         {
           case SoftwareSurface::RGB_FORMAT:
             tile.set_blob(JPEG::save(tile.get_surface(), 75));

@@ -186,12 +186,12 @@ Framebuffer::get_height()
   return size.height;
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 Framebuffer::screenshot()
 {
-  SoftwareSurface surface(SoftwareSurface::RGB_FORMAT, get_size());
-  glReadPixels(0, 0, surface.get_width(), surface.get_height(), GL_RGB, GL_UNSIGNED_BYTE, surface.get_data());
-  return surface.vflip();
+  SoftwareSurfaceHandle surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, get_size());
+  glReadPixels(0, 0, surface->get_width(), surface->get_height(), GL_RGB, GL_UNSIGNED_BYTE, surface->get_data());
+  return surface->vflip();
 }
 
 void

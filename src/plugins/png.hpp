@@ -31,11 +31,11 @@ public:
   static bool get_size(void* data, int len, Size& size);
   static bool get_size(const std::string& filename, Size& size);
 
-  static SoftwareSurface load_from_file(const std::string& filename);
-  static SoftwareSurface load_from_mem(uint8_t* mem, int len);
+  static SoftwareSurfaceHandle load_from_file(const std::string& filename);
+  static SoftwareSurfaceHandle load_from_mem(uint8_t* mem, int len);
 
-  static void save(const SoftwareSurface& surface, const std::string& filename);
-  static BlobHandle save(const SoftwareSurface& surface);
+  static void save(const SoftwareSurfaceHandle& surface, const std::string& filename);
+  static BlobHandle save(const SoftwareSurfaceHandle& surface);
 };
 
 #endif

@@ -142,7 +142,7 @@ XCF::get_size(const std::string& filename, Size& size)
     }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 XCF::load_from_url(const URL& url)
 {
   Exec xcf2pnm("xcf2pnm");
@@ -163,7 +163,7 @@ XCF::load_from_url(const URL& url)
     }  
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 XCF::load_from_file(const std::string& filename)
 {
   Exec xcf2pnm("xcf2pnm");
@@ -179,7 +179,7 @@ XCF::load_from_file(const std::string& filename)
     }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 XCF::load_from_mem(void* data, int len)
 {
   Exec xcf2pnm("xcf2pnm");

@@ -29,7 +29,7 @@ private:
   int        scale;
   Vector2i   pos;
   BlobHandle blob;
-  SoftwareSurface surface;
+  SoftwareSurfaceHandle surface;
   int        format;
   
 public:  
@@ -42,7 +42,7 @@ public:
     format()
   {}
 
-  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurface& surface_) :
+  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurfaceHandle& surface_) :
     fileid(fileid_),
     scale(scale_),
     pos(pos_),
@@ -60,7 +60,7 @@ public:
     format(format_)
   {}
 
-  SoftwareSurface get_surface() const { return surface; }
+  SoftwareSurfaceHandle get_surface() const { return surface; }
   BlobHandle get_blob()   const { return blob; }
   int64_t  get_fileid() const { return fileid; }
   int      get_scale()  const { return scale; }
@@ -68,7 +68,7 @@ public:
   int      get_format() const { return format; }
 
   void set_fileid(int64_t fileid_) { fileid = fileid_; }
-  void set_surface(const SoftwareSurface& surface_)  { surface = surface_; }
+  void set_surface(SoftwareSurfaceHandle surface_)  { surface = surface_; }
   void set_blob(const BlobHandle& blob_) { blob = blob_; }
   void set_format(int format_) { format = format_; }
 };

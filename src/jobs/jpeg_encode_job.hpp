@@ -23,12 +23,12 @@
 class JPEGEncodeJob : public Job
 {
 private:
-  SoftwareSurface surface;
+  SoftwareSurfaceHandle surface;
   int quality;
   BlobHandle blob;
 
 public:
-  JPEGEncodeJob(const SoftwareSurface& surface, int quality)
+  JPEGEncodeJob(const SoftwareSurfaceHandle& surface, int quality)
     : surface(surface),
       quality(quality)
   {}

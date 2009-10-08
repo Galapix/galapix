@@ -53,7 +53,7 @@ TileGenerationJob::run()
   int height = entry.get_height();
   int scale  = min_scale;
 
-  SoftwareSurface surface;
+  SoftwareSurfaceHandle surface;
 
   switch(format)
     {
@@ -73,8 +73,8 @@ TileGenerationJob::run()
               surface = JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale);
             }
       
-          surface = surface.scale(Size(width  / Math::pow2(scale),
-                                       height / Math::pow2(scale)));
+          surface = surface->scale(Size(width  / Math::pow2(scale),
+                                        height / Math::pow2(scale)));
         }
         break;
 
@@ -83,8 +83,8 @@ TileGenerationJob::run()
           // FIXME: This is terrible, min/max_scale are meaningless
           // for non-jpeg formats, so we should just forget them
           surface = SoftwareSurface::from_url(entry.get_url());
-          surface = surface.scale(Size(width  / Math::pow2(scale),
-                                       height / Math::pow2(scale)));
+          surface = surface->scale(Size(width  / Math::pow2(scale),
+                                        height / Math::pow2(scale)));
         }
         break;
     }
@@ -93,14 +93,14 @@ TileGenerationJob::run()
     {
       if (scale != min_scale)
         {
-          surface = surface.halve();
+          surface = surface->halve();
         }
 
-      for(int y = 0; 256*y < surface.get_height(); ++y)
-        for(int x = 0; 256*x < surface.get_width(); ++x)
+      for(int y = 0; 256*y < surface->get_height(); ++y)
+        for(int x = 0; 256*x < surface->get_width(); ++x)
           {
-            SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
-                                                               Size(256, 256)));
+            SoftwareSurfaceHandle croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
+                                                                      Size(256, 256)));
 
             // FIXME: This is slow, should group all tiles into a single sqlite transaction
             if (callback)

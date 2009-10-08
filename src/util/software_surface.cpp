@@ -124,7 +124,7 @@ SoftwareSurface::get_size(const URL& url, Size& size)
 
               default:
                 std::cout << "Warning: Using super slow get_size() for " << url.str() << std::endl;
-                size = SoftwareSurface::from_url(url).get_size();
+                size = SoftwareSurface::from_url(url)->get_size();
                 return true;
             }
         }
@@ -136,24 +136,24 @@ SoftwareSurface::get_size(const URL& url, Size& size)
               case JPEG_FILEFORMAT:
                 {
                   BlobHandle blob = url.get_blob();
-                  SoftwareSurface surface = JPEG::load_from_mem(blob->get_data(), blob->size());
-                  size = surface.get_size();
+                  SoftwareSurfaceHandle surface = JPEG::load_from_mem(blob->get_data(), blob->size());
+                  size = surface->get_size();
                   return true;
                 }
 
               case PNG_FILEFORMAT:
                 {
                   BlobHandle blob = url.get_blob();
-                  SoftwareSurface surface = PNG::load_from_mem(blob->get_data(), blob->size());
-                  size = surface.get_size();
+                  SoftwareSurfaceHandle surface = PNG::load_from_mem(blob->get_data(), blob->size());
+                  size = surface->get_size();
                   return true;
                 }
 
               case XCF_FILEFORMAT:
                 {
                   BlobHandle blob = url.get_blob();
-                  SoftwareSurface surface = XCF::load_from_mem(blob->get_data(), blob->size());
-                  size = surface.get_size();
+                  SoftwareSurfaceHandle surface = XCF::load_from_mem(blob->get_data(), blob->size());
+                  size = surface->get_size();
                   return true;
                 }
 
@@ -161,7 +161,7 @@ SoftwareSurface::get_size(const URL& url, Size& size)
                 //             {
                 //               BlobHandle blob = url.get_blob();
                 //               SoftwareSurface surface = KRA::load_from_mem(blob->get_data(), blob->size());
-                //               size = surface.get_size();
+                //               size = surface->get_size();
                 //               return false;
                 //             }
                 std::cout << "Krita from non file source not supported" << std::endl;
@@ -170,14 +170,14 @@ SoftwareSurface::get_size(const URL& url, Size& size)
               case MAGICK_FILEFORMAT:
                 {
                   BlobHandle blob = url.get_blob();
-                  SoftwareSurface surface = Imagemagick::load_from_mem(blob->get_data(), blob->size());
-                  size = surface.get_size();
+                  SoftwareSurfaceHandle surface = Imagemagick::load_from_mem(blob->get_data(), blob->size());
+                  size = surface->get_size();
                   return true;
                 }
 
               default:
                 std::cout << "Warning: Using super slow get_size() for " << url.str() << std::endl;
-                size = SoftwareSurface::from_url(url).get_size();
+                size = SoftwareSurface::from_url(url)->get_size();
                 return true;
             }      
         }
@@ -189,7 +189,7 @@ SoftwareSurface::get_size(const URL& url, Size& size)
     }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 SoftwareSurface::from_url(const URL& url)
 {
   if (url.has_stdio_name())
@@ -216,7 +216,7 @@ SoftwareSurface::from_url(const URL& url)
             
           default:
             throw std::runtime_error(url.str() + ": unknown file type");
-            return SoftwareSurface();
+            return SoftwareSurfaceHandle();
         }  
     }
   else
@@ -263,7 +263,7 @@ SoftwareSurface::from_url(const URL& url)
 
           default:
             throw std::runtime_error("SoftwareSurface::from_url: " + url.str() + ": unknown file type");
-            return SoftwareSurface();
+            return SoftwareSurfaceHandle();
         }      
     }
 }
@@ -298,23 +298,16 @@ public:
           assert(!"SoftwareSurfaceImpl: Unknown color format");
       }
   }
-
-  ~SoftwareSurfaceImpl() 
-  {
-  }
 };
 
-SoftwareSurface::SoftwareSurface() :
-impl()
+SoftwareSurfaceHandle
+SoftwareSurface::create(Format format, const Size& size)
 {
+  return SoftwareSurfaceHandle(new SoftwareSurface(format, size));
 }
-
+
 SoftwareSurface::SoftwareSurface(Format format_, const Size& size_) :
   impl(new SoftwareSurfaceImpl(format_, size_))
-{
-}
-
-SoftwareSurface::~SoftwareSurface()
 {
 }
 
@@ -368,21 +361,21 @@ SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
   rgb.b = impl->pixels[y * impl->pitch + x*3 + 2];
 }
 
-SoftwareSurface
-SoftwareSurface::halve() const
+SoftwareSurfaceHandle
+SoftwareSurface::halve()
 {
-  SoftwareSurface dstsrc(impl->format, impl->size/2);
+  SoftwareSurfaceHandle dstsrc = SoftwareSurface::create(impl->format, impl->size/2);
   
-  uint8_t* dst = dstsrc.get_data();
+  uint8_t* dst = dstsrc->get_data();
   uint8_t* src = get_data();
 
   //int src_w = get_width();
   //int src_h = get_height();
   int src_p = get_pitch();
 
-  int dst_w = dstsrc.get_width();
-  int dst_h = dstsrc.get_height();
-  int dst_p = dstsrc.get_pitch();
+  int dst_w = dstsrc->get_width();
+  int dst_h = dstsrc->get_height();
+  int dst_p = dstsrc->get_pitch();
 
   switch(impl->format)
     {
@@ -421,30 +414,30 @@ SoftwareSurface::halve() const
   return dstsrc;
 }
 
-SoftwareSurface
-SoftwareSurface::scale(const Size& size) const
+SoftwareSurfaceHandle
+SoftwareSurface::scale(const Size& size)
 {
   if (size == impl->size)
     {
-      return *this;
+      return shared_from_this();
     }
   else
     {
-      SoftwareSurface surface(impl->format, size);
+      SoftwareSurfaceHandle surface = SoftwareSurface::create(impl->format, size);
       // FIXME: very much non-fast
       switch(impl->format)
         {
           case RGB_FORMAT:
             {
               RGB rgb;
-              for(int y = 0; y < surface.get_height(); ++y)
-                for(int x = 0; x < surface.get_width(); ++x)
+              for(int y = 0; y < surface->get_height(); ++y)
+                for(int x = 0; x < surface->get_width(); ++x)
                   {
-                    get_pixel(x * impl->size.width  / surface.impl->size.width,
-                              y * impl->size.height / surface.impl->size.height,
+                    get_pixel(x * impl->size.width  / surface->impl->size.width,
+                              y * impl->size.height / surface->impl->size.height,
                               rgb);
                 
-                    surface.put_pixel(x, y, rgb);
+                    surface->put_pixel(x, y, rgb);
                   }
             }
             break;
@@ -452,14 +445,14 @@ SoftwareSurface::scale(const Size& size) const
           case RGBA_FORMAT:
             {
               RGBA rgba;
-              for(int y = 0; y < surface.get_height(); ++y)
-                for(int x = 0; x < surface.get_width(); ++x)
+              for(int y = 0; y < surface->get_height(); ++y)
+                for(int x = 0; x < surface->get_width(); ++x)
                   {
-                    get_pixel(x * impl->size.width  / surface.impl->size.width,
-                              y * impl->size.height / surface.impl->size.height,
+                    get_pixel(x * impl->size.width  / surface->impl->size.width,
+                              y * impl->size.height / surface->impl->size.height,
                               rgba);
                 
-                    surface.put_pixel(x, y, rgba);
+                    surface->put_pixel(x, y, rgba);
                   }
             }
             break;
@@ -473,19 +466,19 @@ SoftwareSurface::scale(const Size& size) const
     }
 }
 
-SoftwareSurface
-SoftwareSurface::vflip() const
+SoftwareSurfaceHandle
+SoftwareSurface::vflip()
 {
-  SoftwareSurface out(impl->format, impl->size);
+  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
 
   for(int y = 0; y < impl->size.height; ++y)
-    memcpy(out.get_row_data(impl->size.height - y - 1), get_row_data(y), impl->pitch);
+    memcpy(out->get_row_data(impl->size.height - y - 1), get_row_data(y), impl->pitch);
 
   return out;
 }
 
-SoftwareSurface
-SoftwareSurface::crop(const Rect& rect_in) const
+SoftwareSurfaceHandle
+SoftwareSurface::crop(const Rect& rect_in)
 {
   // FIXME: We could do a crop without copying contain, simply
   // reference the old SoftwareSurfaceImpl and have a different pitch
@@ -498,11 +491,11 @@ SoftwareSurface::crop(const Rect& rect_in) const
             Math::clamp(0, rect_in.right,  get_width()), 
             Math::clamp(0, rect_in.bottom, get_height()));
 
-  SoftwareSurface surface(impl->format, rect.get_size());
+  SoftwareSurfaceHandle surface = SoftwareSurface::create(impl->format, rect.get_size());
 
   for(int y = rect.top; y < rect.bottom; ++y)
     {
-      memcpy(surface.get_row_data(y - rect.top), 
+      memcpy(surface->get_row_data(y - rect.top), 
              get_row_data(y) + rect.left * get_bytes_per_pixel(),
              rect.get_width() * get_bytes_per_pixel());
     }
@@ -587,21 +580,21 @@ SoftwareSurface::get_average_color() const
              static_cast<uint8_t>(b / num_pixels));
 }
 
-SoftwareSurface
-SoftwareSurface::to_rgb() const
+SoftwareSurfaceHandle
+SoftwareSurface::to_rgb()
 {
   switch(impl->format)
     {
       case RGB_FORMAT:
-        return *this;
+        return shared_from_this();
         
       case RGBA_FORMAT:
         {
-          SoftwareSurface surface(RGB_FORMAT, impl->size);
+          SoftwareSurfaceHandle surface = SoftwareSurface::create(RGB_FORMAT, impl->size);
 
           int num_pixels      = get_width() * get_height();
           uint8_t* src_pixels = get_data();
-          uint8_t* dst_pixels = surface.get_data();
+          uint8_t* dst_pixels = surface->get_data();
 
           for(int i = 0; i < num_pixels; ++i)
             {
@@ -615,7 +608,7 @@ SoftwareSurface::to_rgb() const
         
       default:
         assert(!"SoftwareSurface::to_rgb: Unknown format");
-        return SoftwareSurface();
+        return SoftwareSurfaceHandle();
     }
 }
 
@@ -637,33 +630,33 @@ SoftwareSurface::get_bytes_per_pixel() const
 }
 
 void
-SoftwareSurface::blit(SoftwareSurface& dst, const Vector2i& pos)
+SoftwareSurface::blit(SoftwareSurfaceHandle& dst, const Vector2i& pos)
 {
   int start_x = std::max(0, -pos.x);
   int start_y = std::max(0, -pos.y);
 
-  int end_x = std::min(impl->size.width,  dst.impl->size.width  - pos.x);
-  int end_y = std::min(impl->size.height, dst.impl->size.height - pos.y);
+  int end_x = std::min(impl->size.width,  dst->impl->size.width  - pos.x);
+  int end_y = std::min(impl->size.height, dst->impl->size.height - pos.y);
 
-  if (dst.impl->format == RGB_FORMAT && impl->format == RGB_FORMAT)
+  if (dst->impl->format == RGB_FORMAT && impl->format == RGB_FORMAT)
     {
       for(int y = start_y; y < end_y; ++y)
-        memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*3, 
+        memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*3, 
                get_row_data(y) + start_x*3,
                (end_x - start_x)*3);
     }
-  else if (dst.impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
+  else if (dst->impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
     {
       for(int y = start_y; y < end_y; ++y)
-        memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*4, 
+        memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*4, 
                get_row_data(y) + start_x*4,
                (end_x - start_x)*4);
     }
-  else if (dst.impl->format == RGBA_FORMAT && impl->format == RGB_FORMAT)
+  else if (dst->impl->format == RGBA_FORMAT && impl->format == RGB_FORMAT)
     {
       for(int y = start_y; y < end_y; ++y)
         {
-          uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*4;
+          uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*4;
           uint8_t* srcpx = get_row_data(y) + start_x*3;
           
           for(int x = 0; x < (end_x - start_x); ++x)
@@ -675,11 +668,11 @@ SoftwareSurface::blit(SoftwareSurface& dst, const Vector2i& pos)
             }
         }
     }
-  else if (dst.impl->format == RGB_FORMAT && impl->format == RGBA_FORMAT)
+  else if (dst->impl->format == RGB_FORMAT && impl->format == RGBA_FORMAT)
     {
       for(int y = start_y; y < end_y; ++y)
         {
-          uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*3;
+          uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*3;
           uint8_t* srcpx = get_row_data(y) + start_x*4;
           
           for(int x = 0; x < (end_x - start_x); ++x)

@@ -19,7 +19,10 @@
 #ifndef HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 #define HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 
+#include <boost/scoped_ptr.hpp>
 #include <boost/shared_ptr.hpp>
+
+#include "util/software_surface.hpp"
 
 class Rect;
 class Size;
@@ -32,10 +35,10 @@ typedef boost::shared_ptr<Texture> TextureHandle;
 class Texture
 {
 private:
-  Texture(const SoftwareSurface& src, const Rect& srcrect);
+  Texture(const SoftwareSurfaceHandle& src, const Rect& srcrect);
 
 public:
-  static TextureHandle create(const SoftwareSurface& src, const Rect& srcrect);
+  static TextureHandle create(const SoftwareSurfaceHandle& src, const Rect& srcrect);
 
   int get_width() const;
   int get_height() const;
@@ -43,7 +46,7 @@ public:
   void bind();
 
 private:
-  boost::shared_ptr<TextureImpl> impl;
+  boost::scoped_ptr<TextureImpl> impl;
 };
 
 #endif

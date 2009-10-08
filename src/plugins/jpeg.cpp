@@ -73,7 +73,7 @@ JPEG::get_size(const std::string& filename, Size& size)
     }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
            int scale)
 {
@@ -113,16 +113,16 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
 
   jpeg_start_decompress(&cinfo);
 
-  SoftwareSurface surface(SoftwareSurface::RGB_FORMAT,
-                          Size(cinfo.output_width,
-                               cinfo.output_height));
+  SoftwareSurfaceHandle surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
+                                                          Size(cinfo.output_width,
+                                                               cinfo.output_height));
   
   if (cinfo.output_components == 3)
     { // RGB Image
       boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
 
       for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
-        scanlines[y] = surface.get_row_data(y);
+        scanlines[y] = surface->get_row_data(y);
 
       while (cinfo.output_scanline < cinfo.output_height) 
         {
@@ -135,7 +135,7 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
       boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
 
       for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
-        scanlines[y] = surface.get_row_data(y);
+        scanlines[y] = surface->get_row_data(y);
 
       while (cinfo.output_scanline < cinfo.output_height) 
         {
@@ -146,10 +146,10 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
       // Expand the greyscale data to RGB
       // FIXME: Could be made faster if SoftwareSurface would support
       // other color formats
-      for(int y = 0; y < surface.get_height(); ++y)
+      for(int y = 0; y < surface->get_height(); ++y)
         {
-          uint8_t* rowptr = surface.get_row_data(y);
-          for(int x = surface.get_width()-1; x >= 0; --x)
+          uint8_t* rowptr = surface->get_row_data(y);
+          for(int x = surface->get_width()-1; x >= 0; --x)
             {
               rowptr[3*x+0] = rowptr[x];
               rowptr[3*x+1] = rowptr[x];
@@ -169,7 +169,7 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
   return surface;
 }  
 
-SoftwareSurface
+SoftwareSurfaceHandle
 JPEG::load_from_file(const std::string& filename, int scale)
 {
   FILE* in = fopen(filename.c_str(), "rb");
@@ -179,8 +179,8 @@ JPEG::load_from_file(const std::string& filename, int scale)
     }
   else
     {
-      SoftwareSurface surface = JPEG::load(boost::bind(jpeg_stdio_src, _1, in),
-                                           scale);
+      SoftwareSurfaceHandle surface = JPEG::load(boost::bind(jpeg_stdio_src, _1, in),
+                                                 scale);
 
       fclose(in); 
 
@@ -188,14 +188,14 @@ JPEG::load_from_file(const std::string& filename, int scale)
     }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 JPEG::load_from_mem(uint8_t* mem, int len, int scale)
 {
   return JPEG::load(boost::bind(jpeg_memory_src, _1, mem, len), scale);
 }
 
 void
-JPEG::save(const SoftwareSurface& surface, int quality, const std::string& filename)
+JPEG::save(const SoftwareSurfaceHandle& surface, int quality, const std::string& filename)
 {
   FILE* out = fopen(filename.c_str(), "wb");
   if (!out)
@@ -213,7 +213,7 @@ JPEG::save(const SoftwareSurface& surface, int quality, const std::string& filen
 }
 
 BlobHandle
-JPEG::save(const SoftwareSurface& surface, int quality)
+JPEG::save(const SoftwareSurfaceHandle& surface, int quality)
 {
   std::vector<uint8_t> data;
 
@@ -225,11 +225,11 @@ JPEG::save(const SoftwareSurface& surface, int quality)
 
 
 void
-JPEG::save(const SoftwareSurface& surface_in, 
+JPEG::save(const SoftwareSurfaceHandle& surface_in, 
            const boost::function<void (j_compress_ptr)>& setup_dest_mgr, 
            int quality)
 {
-  SoftwareSurface surface = surface_in.to_rgb();
+  SoftwareSurfaceHandle surface = surface_in->to_rgb();
 
   struct jpeg_compress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -241,8 +241,8 @@ JPEG::save(const SoftwareSurface& surface_in,
   // Setup output manager
   setup_dest_mgr(&cinfo);
 
-  cinfo.image_width  = surface.get_width();
-  cinfo.image_height = surface.get_height();
+  cinfo.image_width  = surface->get_width();
+  cinfo.image_height = surface->get_height();
 
   cinfo.input_components = 3;		/* # of color components per pixel */
   cinfo.in_color_space   = JCS_RGB; 	/* colorspace of input image */
@@ -252,15 +252,15 @@ JPEG::save(const SoftwareSurface& surface_in,
  
   jpeg_start_compress(&cinfo, TRUE);
 
-  boost::scoped_array<JSAMPROW> row_pointer(new JSAMPROW[surface.get_height()]);
+  boost::scoped_array<JSAMPROW> row_pointer(new JSAMPROW[surface->get_height()]);
   
-  for(int y = 0; y < surface.get_height(); ++y)
-    row_pointer[y] = static_cast<JSAMPLE*>(surface.get_row_data(y));
+  for(int y = 0; y < surface->get_height(); ++y)
+    row_pointer[y] = static_cast<JSAMPLE*>(surface->get_row_data(y));
 
   while(cinfo.next_scanline < cinfo.image_height)
     {
       jpeg_write_scanlines(&cinfo, &row_pointer[cinfo.next_scanline], 
-                           surface.get_height() - cinfo.next_scanline);
+                           surface->get_height() - cinfo.next_scanline);
     }
   
   jpeg_finish_compress(&cinfo);

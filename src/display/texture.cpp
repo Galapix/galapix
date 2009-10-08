@@ -29,7 +29,7 @@ public:
   GLuint handle;
   Size   size;
 
-  TextureImpl(const SoftwareSurface& src, const Rect& srcrect) :
+  TextureImpl(const SoftwareSurfaceHandle& src, const Rect& srcrect) :
     handle(),
     size(srcrect.get_size())
   {
@@ -40,10 +40,10 @@ public:
     glEnable(GL_TEXTURE_RECTANGLE_ARB);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
     
     int gl_format = GL_RGB;
-    switch(src.get_format())
+    switch(src->get_format())
       {
         case SoftwareSurface::RGB_FORMAT:
           gl_format = GL_RGB;
@@ -62,7 +62,7 @@ public:
                  0, /* border */
                  gl_format,
                  GL_UNSIGNED_BYTE,
-                 src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left*src.get_bytes_per_pixel()));
+                 src->get_data() + (src->get_pitch() * srcrect.top) + (srcrect.left * src->get_bytes_per_pixel()));
 
     assert_gl("packing image texture");
     
@@ -81,12 +81,12 @@ public:
 };
 
 TextureHandle
-Texture::create(const SoftwareSurface& src, const Rect& srcrect)
+Texture::create(const SoftwareSurfaceHandle& src, const Rect& srcrect)
 {
   return TextureHandle(new Texture(src, srcrect));
 }
 
-Texture::Texture(const SoftwareSurface& src, const Rect& srcrect) :
+Texture::Texture(const SoftwareSurfaceHandle& src, const Rect& srcrect) :
   impl(new TextureImpl(src, srcrect))
 {
 }

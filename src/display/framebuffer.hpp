@@ -58,7 +58,7 @@ public:
   static void draw_grid(int num_cells);
   static void draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rgba);
 
-  static SoftwareSurface screenshot();
+  static SoftwareSurfaceHandle screenshot();
   static void apply_gamma_ramp(float contrast, float brightness, float gamma);
 };
 

@@ -36,7 +36,7 @@ public:
     //std::cout << uv << std::endl;
   }
 
-  SurfaceImpl(const SoftwareSurface& src, const Rect& srcrect) :
+  SurfaceImpl(const SoftwareSurfaceHandle& src, const Rect& srcrect) :
     texture(),
     uv(),
     size()
@@ -112,33 +112,23 @@ public:
 };
 
 SurfaceHandle
-Surface::create(const SoftwareSurface& src, const Rect& srcrect)
+Surface::create(const SoftwareSurfaceHandle& src, const Rect& srcrect)
 {
   return SurfaceHandle(new Surface(src, srcrect));
 }
 
 SurfaceHandle
-Surface::create(const SoftwareSurface& src)
+Surface::create(const SoftwareSurfaceHandle& src)
 {
   return SurfaceHandle(new Surface(src));
 }
 
-Surface::Surface() :
-  impl()
+Surface::Surface(const SoftwareSurfaceHandle& src) :
+  impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src->get_size())))
 {
 }
 
-Surface::Surface(boost::shared_ptr<SurfaceImpl> impl_) :
-  impl(impl_)
-{
-}
-
-Surface::Surface(const SoftwareSurface& src) :
-  impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src.get_size())))
-{
-}
-
-Surface::Surface(const SoftwareSurface& src, const Rect& srcrect)
+Surface::Surface(const SoftwareSurfaceHandle& src, const Rect& srcrect)
   : impl(new SurfaceImpl(src, srcrect))
 {
 }

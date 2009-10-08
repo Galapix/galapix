@@ -239,7 +239,7 @@ SDLViewer::process_event(const SDL_Event& event)
 
             case SDLK_F12:
               {
-                SoftwareSurface surface = Framebuffer::screenshot();
+                SoftwareSurfaceHandle surface = Framebuffer::screenshot();
                 // FIXME: Could do this in a worker thread to avoid pause on screenshotting
                 for(int i = 0; ; ++i)
                   {

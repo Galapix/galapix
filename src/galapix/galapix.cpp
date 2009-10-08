@@ -174,14 +174,14 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
               size /= 2;
             }
 
-          SoftwareSurface target(SoftwareSurface::RGB_FORMAT, size);
+          SoftwareSurfaceHandle target = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, size);
           for(int y = 0; y < (size.height+255)/256; ++y)
             for(int x = 0; x < (size.width+255)/256; ++x)
               {
                 TileEntry tile;
                 if (db.tiles.get_tile(entry.get_fileid(), scale, Vector2i(x, y), tile))
                   {
-                    tile.get_surface().blit(target, Vector2i(x, y) * 256);
+                    tile.get_surface()->blit(target, Vector2i(x, y) * 256);
                   }
               }
 
@@ -216,7 +216,7 @@ Galapix::downscale(const std::vector<URL>& url)
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i, ++num)
     {
       std::cout << *i << std::endl;
-      SoftwareSurface surface = JPEG::load_from_file(i->get_stdio_name(), 8);
+      SoftwareSurfaceHandle surface = JPEG::load_from_file(i->get_stdio_name(), 8);
 
       std::ostringstream out;
       out << "/tmp/out-" << num << ".jpg";
@@ -307,7 +307,7 @@ Galapix::thumbgen(const GalapixOptions& opts,
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
       {
         // Generate Image Tiles
-        SoftwareSurface surface = SoftwareSurface::from_url(i->get_url());
+        SoftwareSurfaceHandle surface = SoftwareSurface::from_url(i->get_url());
         
         JobHandle job_handle;
         boost::shared_ptr<Job> job_ptr(new TileGenerationJob(job_handle, *i, 0, i->get_thumbnail_scale(),

@@ -27,7 +27,7 @@ class KRA
 {
 public:
   static bool get_size(const std::string& filename, Size& size);
-  static SoftwareSurface load_from_file(const std::string& filename);
+  static SoftwareSurfaceHandle load_from_file(const std::string& filename);
   //  static SoftwareSurface load_from_mem(uint8_t* data, int len);
 };
 

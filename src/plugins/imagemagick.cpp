@@ -42,7 +42,7 @@ Imagemagick::get_size(const std::string& filename, Size& size)
   }
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 Imagemagick::load_from_url(const URL& url)
 {
   if (url.has_stdio_name())
@@ -57,10 +57,10 @@ Imagemagick::load_from_url(const URL& url)
 }
 
 static 
-SoftwareSurface
+SoftwareSurfaceHandle
 MagickImage2SoftwareSurface(const Magick::Image& image)
 {
-  SoftwareSurface surface;
+  SoftwareSurfaceHandle surface;
 
   int width  = image.columns();
   int height = image.rows();
@@ -75,13 +75,13 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
   if (image.matte())
     {
-      surface = SoftwareSurface(SoftwareSurface::RGBA_FORMAT, 
-                                Size(width, height));
+      surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, 
+                                        Size(width, height));
 
       for(int y = 0; y < height; ++y)
         {
           const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
-          uint8_t* dst_pixels = surface.get_row_data(y);
+          uint8_t* dst_pixels = surface->get_row_data(y);
 
           for(int x = 0; x < width; ++x)
             {
@@ -94,11 +94,11 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
     }
   else
     {
-      surface = SoftwareSurface(SoftwareSurface::RGB_FORMAT, 
-                                Size(width, height));
+      surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, 
+                                        Size(width, height));
       for(int y = 0; y < height; ++y)
         {
-          uint8_t* dst_pixels = surface.get_row_data(y);
+          uint8_t* dst_pixels = surface->get_row_data(y);
           const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
 
           for(int x = 0; x < width; ++x)
@@ -113,14 +113,14 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
   return surface;
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 Imagemagick::load_from_mem(void* data, int len)
 {
   // FIXME: Magick::Blob creates an unneeded copy of the data
   return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len))); 
 }
 
-SoftwareSurface
+SoftwareSurfaceHandle
 Imagemagick::load_from_file(const std::string& filename)
 {
   return MagickImage2SoftwareSurface(Magick::Image(filename));
