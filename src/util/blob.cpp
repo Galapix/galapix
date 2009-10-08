@@ -24,7 +24,7 @@
 
 Blob::Blob(const std::vector<uint8_t>& data) :
   m_data(new uint8_t[data.size()]),
-  m_len(data.size())  
+  m_len(data.size())
 {
   memcpy(m_data.get(), &*data.begin(), m_len);
 }

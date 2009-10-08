@@ -431,8 +431,7 @@ SoftwareSurface::scale(const Size& size) const
   else
     {
       SoftwareSurface surface(impl->format, size);
-      // FIXME: very much non-fast, needs replacement with proper
-
+      // FIXME: very much non-fast
       switch(impl->format)
         {
           case RGB_FORMAT:
@@ -646,14 +645,14 @@ SoftwareSurface::blit(SoftwareSurface& dst, const Vector2i& pos)
   int end_x = std::min(impl->size.width,  dst.impl->size.width  - pos.x);
   int end_y = std::min(impl->size.height, dst.impl->size.height - pos.y);
 
-  if (dst.impl->format == RGB_FORMAT && impl->format     == RGB_FORMAT)
+  if (dst.impl->format == RGB_FORMAT && impl->format == RGB_FORMAT)
     {
       for(int y = start_y; y < end_y; ++y)
         memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*3, 
                get_row_data(y) + start_x*3,
                (end_x - start_x)*3);
     }
-  else if (dst.impl->format == RGBA_FORMAT && impl->format     == RGBA_FORMAT)
+  else if (dst.impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
     {
       for(int y = start_y; y < end_y; ++y)
         memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*4, 

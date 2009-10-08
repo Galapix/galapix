@@ -34,7 +34,7 @@ TileDatabase::TileDatabase(SQLiteConnection* db_)
     tile_cache()
 {
   db->exec("CREATE TABLE IF NOT EXISTS tiles ("
-           "fileid  INTEGER, " // link to to files.rowid
+           "fileid  INTEGER, " // refers to files.fileid
            "scale   INTEGER, " // zoom level
            "x       INTEGER, " // X position in tiles
            "y       INTEGER, " // Y position in tiles
