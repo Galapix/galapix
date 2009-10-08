@@ -21,6 +21,13 @@ Release procedure:
 Problems:
 =========
 
+* Quadtree stuff in Workspace could be speed up by recycling the
+  std::vector object and by using marks on Image instead of a std::set
+  to find things no longer on screen
+
+* quality of small thumbnails is very bad, should start with larger
+  thumbnails and then halve() them down instead of using scale()
+
 * getting small tiles on startup should be much faster then getting
   them later, as it would need much less sql calls (one select vs one
   for each of thousands of pictures)
@@ -394,21 +401,12 @@ Galapix 0.1.0 Release ToDo:
 * make middle button exit trackball mode
 
 * add check for boost header files and make scons somewhat more solid
-* replace SCons with WAF?
 
 * check with sqlite3_table_column_metadata() that the table has the
   right format
 
-* pointing galapix to an empty directory is weird (directory is empty,
-  galapix displays files in database, but can't create new thumbnails due
-  to missing files). It should give an error that no images could be found
-  should do something special if in-filenames are smaller then out-filenames 
-
 * need to display the thread status graphically somehow (graphical
   rotating wheel? per image or overall?)
-
-* when the current tiles aren't available only higher scales (smallerones) are
-  searched, not lower ones (bigger)
 
 * seperate galapix from the thumbgen code, so that there is a
   galapix-tool and a galapix program
