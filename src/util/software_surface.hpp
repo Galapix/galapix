@@ -25,7 +25,6 @@
 #include "util/blob.hpp"
 
 class Vector2i;
-class URL;
 class RGB;
 class RGBA;
 class Rect;

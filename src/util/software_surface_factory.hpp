@@ -21,6 +21,8 @@
 
 #include "util/software_surface.hpp"
 
+class URL;
+
 class SoftwareSurfaceFactory
 {
 public:

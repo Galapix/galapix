@@ -27,6 +27,7 @@
 #include "plugins/rsvg.hpp"
 #include "plugins/xcf.hpp"
 #include "util/filesystem.hpp"
+#include "util/url.hpp"
 
 SoftwareSurfaceFactory::FileFormat
 SoftwareSurfaceFactory::get_fileformat(const URL& url)
