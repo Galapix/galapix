@@ -1,6 +1,7 @@
 # -*- mode: python -*-
 
 compile_galapix_tests = True
+build_mode = 'development'
 
 preset_cxx = "g++-4.4"
 
@@ -78,8 +79,8 @@ if compile_spacenav:
 BuildDir('build', 'src')
 
 libgalapix_env = Environment(CXX=preset_cxx,
-                             CXXFLAGS=preset_cxxflags['development'],
-                             LINKFLAGS=preset_linkflags['development'],
+                             CXXFLAGS=preset_cxxflags[build_mode],
+                             LINKFLAGS=preset_linkflags[build_mode],
                              CPPPATH=['src'],
                              CPPDEFINES = optional_defines,
                              LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs)
@@ -102,8 +103,8 @@ if compile_galapix_tests:
 
 if compile_galapix_sdl:
     sdl_env = Environment(CXX=preset_cxx,
-                          CXXFLAGS=preset_cxxflags['development'],
-                          LINKFLAGS=preset_linkflags['development'],
+                          CXXFLAGS=preset_cxxflags[build_mode],
+                          LINKFLAGS=preset_linkflags[build_mode],
                           CPPPATH=['src'],
                           CPPDEFINES = ['GALAPIX_SDL'] + optional_defines,
                           LIBS = [libgalapix, libgalapix_util,
@@ -118,8 +119,8 @@ if compile_galapix_sdl:
 
 if compile_galapix_gtk:
     gtk_env = Environment(CXX=preset_cxx,
-                          CXXFLAGS=preset_cxxflags['development'],
-                          LINKFLAGS=preset_linkflags['development'],
+                          CXXFLAGS=preset_cxxflags[build_mode],
+                          LINKFLAGS=preset_linkflags[build_mode],
                           CPPPATH=['src'],
                           CPPDEFINES = ['GALAPIX_GTK'] + optional_defines,
                           LIBS = [libgalapix, libgalapix_util,
