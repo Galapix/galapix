@@ -679,7 +679,15 @@ Workspace::is_animated() const
 void
 Workspace::receive_file(const FileEntry& entry)
 {
-  file_queue.push(entry);
+  if (entry)
+  {
+    std::cout << "Got file entry: " << entry.get_url() << std::endl;
+    file_queue.push(entry);
+  }
+  else
+  {
+    // FIXME: Don't have any info for a meaningfull error message
+  }
 }
 
 /* EOF */

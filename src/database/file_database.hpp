@@ -46,7 +46,6 @@ private:
   SQLiteStatement get_by_pattern_stmt;
   SQLiteStatement get_by_file_id_stmt;
 
-  FileEntry store_file_entry(const URL& url, const Size& size);
   void update_file_entry(FileEntry& entry);
  
 public:
@@ -68,6 +67,7 @@ public:
   void get_file_entries(std::vector<FileEntry>& entries, const std::string& pattern);
 
   FileEntry store_file_entry(const FileEntry& entry);
+  FileEntry store_file_entry(const URL& url, const Size& size);
 
   void check();
 

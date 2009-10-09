@@ -22,6 +22,7 @@
 #include "galapix/database_message.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/tile_generation_job.hpp"
+#include "jobs/file_entry_generation_job.hpp"
 
 DatabaseThread* DatabaseThread::current_ = 0;
 
@@ -149,6 +150,22 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     {
       group->requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
     }
+}
+
+void
+DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
+                                    const boost::function<void (FileEntry)>& callback)
+{
+  boost::shared_ptr<Job> job(new FileEntryGenerationJob(job_handle, url, callback));
+  JobManager::current()->request(job,
+                                 boost::function<void (boost::shared_ptr<Job>)>());
+}
+
+void
+DatabaseThread::store_file_entry(const URL& url, const Size& size,
+                                 const boost::function<void (FileEntry)>& callback)
+{
+  queue.push(new StoreFileEntryDatabaseMessage(url, size, callback));
 }
 
 void

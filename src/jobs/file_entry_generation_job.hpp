@@ -16,23 +16,31 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/database.hpp"
-
-Database::Database(const std::string& filename)
-  : db(filename),
-    files(&db),
-    tiles(&db)
-{
-}
+#ifndef HEADER_GALAPIX_JOB_FILE_ENTRY_GENERATION_JOB_HPP
+#define HEADER_GALAPIX_JOB_FILE_ENTRY_GENERATION_JOB_HPP
 
-Database::~Database()
-{
-}
+#include <boost/function.hpp>
 
-void
-Database::cleanup()
+#include "job/job.hpp"
+#include "database/file_entry.hpp"
+
+class FileEntryGenerationJob : public Job
 {
-  db.vacuum();
-}
-
+private:
+  JobHandle m_job_handle;
+  URL m_url;
+  boost::function<void (const FileEntry&)> m_callback;
+
+public:
+  FileEntryGenerationJob(const JobHandle& job_handle, const URL& url,
+                         const boost::function<void (const FileEntry&)>& callback);
+  void run();
+
+private:
+  FileEntryGenerationJob(const FileEntryGenerationJob&);
+  FileEntryGenerationJob& operator=(const FileEntryGenerationJob&);
+};
+
+#endif
+
 /* EOF */

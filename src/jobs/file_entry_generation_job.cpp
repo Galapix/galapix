@@ -16,23 +16,31 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/database.hpp"
-
-Database::Database(const std::string& filename)
-  : db(filename),
-    files(&db),
-    tiles(&db)
-{
-}
+#include "jobs/file_entry_generation_job.hpp"
 
-Database::~Database()
+#include "galapix/database_thread.hpp"
+#include "util/software_surface_factory.hpp"
+
+FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url,
+                                               const boost::function<void (const FileEntry&)>& callback)
+  : m_job_handle(job_handle),
+    m_url(url),
+    m_callback(callback)
 {
 }
 
 void
-Database::cleanup()
+FileEntryGenerationJob::run()
 {
-  db.vacuum();
+  Size size;
+  if (SoftwareSurfaceFactory::get_size(m_url, size))
+  {
+    DatabaseThread::current()->store_file_entry(m_url, size, m_callback);
+  }
+  else
+  {
+    m_callback(FileEntry());
+  }
 }
-
+
 /* EOF */

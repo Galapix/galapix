@@ -90,6 +90,9 @@ public:
   void generate_tile(const JobHandle& job_handle,
                      const FileEntry&, int tilescale, const Vector2i& pos, 
                      const boost::function<void (TileEntry)>& callback);
+
+  void generate_file_entry(const JobHandle& job_handle, const URL& url,
+                           const boost::function<void (FileEntry)>& callback);
   
   /* @{ */ // syncronized functions to be used by other threads
   /** Request the tile for file \a tileid */
@@ -103,6 +106,9 @@ public:
 
   /** Request all FileEntrys available in the database */
   void      request_all_files(const boost::function<void (FileEntry)>& callback);
+
+  void      store_file_entry(const URL& url, const Size& size, 
+                             const boost::function<void (FileEntry)>& callback);
 
   /** Place tile into the database */
   void      receive_tile(const TileEntry& tile);

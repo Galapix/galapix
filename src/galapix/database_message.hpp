@@ -104,8 +104,9 @@ public:
         FileEntry entry = db.files.get_file_entry(url);
         if (!entry)
           {
-            std::cout << "Error: Couldn't get FileEntry for " << url << std::endl;
-            job_handle.finish();
+            DatabaseThread::current()->generate_file_entry(job_handle, url, callback);
+            //std::cout << "Error: Couldn't get FileEntry for " << url << std::endl;
+            //job_handle.finish();
           }
         else
           {
@@ -219,6 +220,31 @@ public:
     SQLiteStatement(&db.db)
       .prepare("END;")
       .execute();
+  }
+};
+
+class StoreFileEntryDatabaseMessage : public DatabaseMessage
+{
+private:
+  URL  m_url;
+  Size m_size;
+  boost::function<void (FileEntry)> m_callback;
+
+public:
+  StoreFileEntryDatabaseMessage(const URL& url, const Size& size,
+                                const boost::function<void (FileEntry)>& callback)
+    : m_url(url),
+      m_size(size),
+      m_callback(callback)
+  {}
+
+  void run(Database& db)
+  {
+    FileEntry file_entry = db.files.store_file_entry(m_url, m_size);
+    if (m_callback)
+    {
+      m_callback(file_entry);
+    }
   }
 };
 

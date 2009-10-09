@@ -271,7 +271,7 @@ Galapix::filegen(const std::string& database,
   
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
     {
-      FileEntry entry = db.files.get_file_entry(url[i]);
+      FileEntry entry = db.files.get_file_entry(url[i]); //FIXME: Fri Oct  9 13:08:44 2009
       if (!entry)
         {
           std::cout << "Couldn't get entry for " << url[i] << std::endl;

@@ -21,7 +21,17 @@ Release procedure:
 Problems:
 =========
 
-* current use of cURL is not thread safe
+* maybe have something like JobHandle->spawn_child_job()
+
+* add optional cross to indicate cursor position
+
+* process tiles earlier then fileentries,
+
+  FileEntry FileDatabase::get_file_entry(const URL& url)
+
+  is the wrong place to browse the filesystem
+
+* current use of cURL is not thread safe due to curl_global_init()
 
 * write tcl/tk script to convert old database to new database
 

@@ -90,26 +90,18 @@ FileDatabase::get_file_entry(const URL& url)
   SQLiteReader reader = get_by_url_stmt.execute_query();
 
   if (reader.next())
-    {
-      return FileEntry(reader.get_int (0),  // fileid
-                       URL::from_string(reader.get_text(1)),  // url
-                       reader.get_int(2),
-                       reader.get_int(3),
-                       reader.get_int (4),  // width
-                       reader.get_int (5)); // height
-    }
+  {
+    return FileEntry(reader.get_int (0),  // fileid
+                     URL::from_string(reader.get_text(1)),  // url
+                     reader.get_int(2),
+                     reader.get_int(3),
+                     reader.get_int (4),  // width
+                     reader.get_int (5)); // height
+  }
   else
-    {
-      Size size;
-      if (SoftwareSurfaceFactory::get_size(url, size))
-        {
-          return store_file_entry(url, size);
-        }
-      else
-        {
-          return FileEntry();
-        }
-    }
+  {
+    return FileEntry();
+  }
 }
 
 void
