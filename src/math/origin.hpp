@@ -30,8 +30,8 @@
 //! clanCore="Math"
 //! header=core.h
 
-#ifndef HEADER_WINDSTILLE_MATH_ORIGIN_HPP
-#define HEADER_WINDSTILLE_MATH_ORIGIN_HPP
+#ifndef HEADER_GALAPIX_MATH_ORIGIN_HPP
+#define HEADER_GALAPIX_MATH_ORIGIN_HPP
 
 #include "math/size.hpp"
 #include "math/vector2i.hpp"

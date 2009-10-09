@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_WINDSTILLE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
-#define HEADER_WINDSTILLE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
 
 #include "database/file_entry.hpp"
 

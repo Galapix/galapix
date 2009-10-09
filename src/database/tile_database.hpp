@@ -21,6 +21,13 @@
 
 #include "sqlite/statement.hpp"
 #include "math/vector2i.hpp"
+
+#include "database/tiles_table.hpp"
+#include "database/tile_entry_get_all_by_file_entry_statement.hpp"
+#include "database/tile_entry_has_statement.hpp"
+#include "database/tile_entry_get_all_statement.hpp"
+#include "database/tile_entry_store_statement.hpp"
+#include "database/tile_entry_get_by_file_entry_statement.hpp"
 
 class TileEntry;
 class FileEntry;
@@ -29,11 +36,12 @@ class TileDatabase
 {
 private:
   SQLiteConnection* db;
-  SQLiteStatement store_stmt;
-  SQLiteStatement get_stmt;
-  SQLiteStatement get_all_by_fileid_stmt;
-  SQLiteStatement get_all_stmt;
-  SQLiteStatement has_stmt;
+
+  TilesTable m_tiles_table;
+  TileEntryStoreStatement             m_tile_entry_store;
+  TileEntryGetAllByFileEntryStatement m_tile_entry_get_all_by_file_entry;
+  TileEntryHasStatement               m_tile_entry_has;
+  TileEntryGetByFileEntryStatement    m_tile_entry_get_by_file_entry;
 
   std::vector<TileEntry> tile_cache;
 
