@@ -23,6 +23,12 @@
 
 #include "sqlite/statement.hpp"
 #include "math/size.hpp"
+#include "database/file_table.hpp"
+#include "database/file_entry_get_all_statement.hpp"
+#include "database/file_entry_get_by_url_statement.hpp"
+#include "database/file_entry_get_by_file_id_statement.hpp"
+#include "database/file_entry_store_statement.hpp"
+#include "database/file_entry_get_by_pattern_statement.hpp"
 
 class URL;
 class FileEntry;
@@ -39,18 +45,18 @@ class TileEntry;
 class FileDatabase
 {
 private:
-  SQLiteConnection* db;
-  SQLiteStatement store_stmt;
-  SQLiteStatement get_by_url_stmt;
-  SQLiteStatement get_all_stmt;
-  SQLiteStatement get_by_pattern_stmt;
-  SQLiteStatement get_by_file_id_stmt;
+  SQLiteConnection& m_db;
+  FileTable m_file_table;
+  FileEntryGetAllStatement       m_file_entry_get_all;
+  FileEntryGetByFileIdStatement  m_file_entry_get_by_fileid;
+  FileEntryGetByPatternStatement m_file_entry_get_by_pattern;
+  FileEntryGetByUrlStatement     m_file_entry_get_by_url;
+  FileEntryStoreStatement        m_file_entry_store;
 
   void update_file_entry(FileEntry& entry);
  
 public:
-  FileDatabase(SQLiteConnection* db);
-  ~FileDatabase();
+  FileDatabase(SQLiteConnection& db);
   
   /** Lookup a FileEntry by its url. If there is no corresponding
       url, then the file will be looked up in the filesystem and

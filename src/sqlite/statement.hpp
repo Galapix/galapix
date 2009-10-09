@@ -33,6 +33,7 @@ private:
 public:
   SQLiteStatement(SQLiteConnection* db);
   SQLiteStatement(SQLiteConnection* db, const std::string& sqlstmt);
+  SQLiteStatement(SQLiteConnection& db, const std::string& sqlstmt);
   ~SQLiteStatement();
 
   SQLiteStatement& prepare(const std::string& sqlstmt);

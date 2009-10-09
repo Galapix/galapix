@@ -36,6 +36,14 @@ SQLiteStatement::SQLiteStatement(SQLiteConnection* db_, const std::string& sqlst
   prepare(sqlstmt);
 }
 
+SQLiteStatement::SQLiteStatement(SQLiteConnection& db_, const std::string& sqlstmt)
+  : db(&db_),
+    stmt(0),
+    stmt_str()
+{
+  prepare(sqlstmt);
+}
+
 SQLiteStatement::~SQLiteStatement()
 {
  retry: 

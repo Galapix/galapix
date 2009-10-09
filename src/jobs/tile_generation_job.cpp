@@ -113,7 +113,8 @@ TileGenerationJob::run()
     } 
   while (scale <= max_scale);
 
-  std::cout << "TileGeneratorThread: processing scales " << min_scale << "-" << max_scale << ": " << entry.get_url() << ": done" << std::endl;
+  std::cout << "TileGeneratorThread: processing scales "
+            << min_scale << "-" << max_scale << ": " << entry.get_url() << ": done" << std::endl;
 }
 
 /* EOF */
