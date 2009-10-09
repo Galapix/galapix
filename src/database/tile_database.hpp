@@ -23,6 +23,7 @@
 #include "math/vector2i.hpp"
 
 class TileEntry;
+class FileEntry;
 
 class TileDatabase
 {
@@ -35,13 +36,14 @@ private:
   SQLiteStatement has_stmt;
 
   std::vector<TileEntry> tile_cache;
+
 public:
   TileDatabase(SQLiteConnection* db);
   ~TileDatabase();
   
-  bool has_tile(int64_t file_id, const Vector2i& pos, int scale);
-  bool get_tile(int64_t file_id, int scale, const Vector2i& pos, TileEntry& tile);
-  void get_tiles(int64_t file_id, std::vector<TileEntry>& tiles);
+  bool has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale);
+  bool get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out);
+  void get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles);
 
   void store_tile_in_cache(const TileEntry& tile);
   void store_tile(const TileEntry& tile);

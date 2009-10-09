@@ -21,6 +21,10 @@ Release procedure:
 Problems:
 =========
 
+* replace all SQlitestamentes with dedicated objects that wrap the query
+
+* need to handle mtime properly
+
 * DatabaseThread is very similar to JobWorkerThread, maybe merge them
 
 * galapix crashes when 

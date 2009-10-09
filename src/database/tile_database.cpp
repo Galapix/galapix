@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "database/tile_entry.hpp"
+#include "database/file_entry.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "util/software_surface_factory.hpp"
@@ -62,9 +63,9 @@ TileDatabase::~TileDatabase()
 }
 
 bool
-TileDatabase::has_tile(int64_t fileid, const Vector2i& pos, int scale)
+TileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale)
 {
-  has_stmt.bind_int64(1, fileid);
+  has_stmt.bind_int64(1, file_entry.get_fileid());
   has_stmt.bind_int(2, scale);
   has_stmt.bind_int(3, pos.x);
   has_stmt.bind_int(4, pos.y);
@@ -80,7 +81,7 @@ TileDatabase::has_tile(int64_t fileid, const Vector2i& pos, int scale)
       // Check cache
       for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
         {
-          if (i->get_fileid() == fileid &&
+          if (i->get_fileid() == file_entry.get_fileid() &&
               i->get_scale()  == scale  &&
               i->get_pos()    == pos)
             {
@@ -93,9 +94,9 @@ TileDatabase::has_tile(int64_t fileid, const Vector2i& pos, int scale)
 }
 
 void
-TileDatabase::get_tiles(int64_t fileid, std::vector<TileEntry>& tiles)
+TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles)
 {
-  get_all_by_fileid_stmt.bind_int64(1, fileid);
+  get_all_by_fileid_stmt.bind_int64(1, file_entry.get_fileid());
 
   SQLiteReader reader = get_all_by_fileid_stmt.execute_query();
   while(reader.next())
@@ -128,7 +129,7 @@ TileDatabase::get_tiles(int64_t fileid, std::vector<TileEntry>& tiles)
   // Check cache
   for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
     {
-      if (i->get_fileid() == fileid)
+      if (i->get_fileid() == file_entry.get_fileid())
         {
           tiles.push_back(*i);
         }
@@ -136,9 +137,9 @@ TileDatabase::get_tiles(int64_t fileid, std::vector<TileEntry>& tiles)
 }
 
 bool
-TileDatabase::get_tile(int64_t fileid, int scale, const Vector2i& pos, TileEntry& tile)
+TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile)
 {
-  get_stmt.bind_int64(1, fileid);
+  get_stmt.bind_int64(1, file_entry.get_fileid());
   get_stmt.bind_int(2, scale);
   get_stmt.bind_int(3, pos.x);
   get_stmt.bind_int(4, pos.y);
@@ -176,7 +177,7 @@ TileDatabase::get_tile(int64_t fileid, int scale, const Vector2i& pos, TileEntry
       // Check cache
       for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
         {
-          if (i->get_fileid() == fileid &&
+          if (i->get_fileid() == file_entry.get_fileid() &&
               i->get_scale()  == scale  &&
               i->get_pos()    == pos)
             {

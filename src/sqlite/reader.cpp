@@ -45,7 +45,7 @@ SQLiteReader::operator=(const SQLiteReader& rhs)
 SQLiteReader::~SQLiteReader()
 {  
   // FIXME: Not good, we likely clean up twice
-  sqlite3_clear_bindings(stmt);  
+  sqlite3_clear_bindings(stmt);
 
   if (sqlite3_reset(stmt) != SQLITE_OK)
     {

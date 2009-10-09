@@ -136,7 +136,7 @@ Galapix::merge(const std::string& database,
             FileEntry entry = out_db.files.store_file_entry(*i);
 
             std::vector<TileEntry> tiles;
-            in_db.tiles.get_tiles(i->get_fileid(), tiles);
+            in_db.tiles.get_tiles(*i, tiles);
             for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
               {
                 // Change the fileid
@@ -180,7 +180,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
             for(int x = 0; x < (size.width+255)/256; ++x)
               {
                 TileEntry tile;
-                if (db.tiles.get_tile(entry.get_fileid(), scale, Vector2i(x, y), tile))
+                if (db.tiles.get_tile(entry, scale, Vector2i(x, y), tile))
                   {
                     tile.get_surface()->blit(target, Vector2i(x, y) * 256);
                   }

@@ -55,11 +55,7 @@ public:
 
 class FileEntry 
 {
-public:
-  FileEntry() :
-    impl()
-  {}
-
+private:
   FileEntry(int64_t fileid, 
             const URL& url,
             int size,
@@ -77,12 +73,37 @@ public:
     int s = Math::max(width, height);
     impl->thumbnail_size = 0;
     while(s > 8)
-      {
-        s /= 2;
-        impl->thumbnail_size += 1;
-      }
+    {
+      s /= 2;
+      impl->thumbnail_size += 1;
+    }
   }
 
+public:
+  FileEntry() :
+    impl()
+  {}
+
+  static FileEntry create_without_fileid(const URL& url,
+                                         int size,
+                                         int mtime,
+                                         int width,
+                                         int height)
+  {
+    return FileEntry(0, url, size, mtime, width, height);
+  }
+
+  static FileEntry create(int64_t fileid, 
+                          const URL& url,
+                          int size,
+                          int mtime,
+                          int width,
+                          int height)
+  {
+    return FileEntry(fileid, url, size, mtime, width, height);
+  }
+
+  bool        has_fileid() const { return impl->fileid != 0; }
   void        set_fileid(int64_t fileid) { impl->fileid = fileid; }
   int64_t     get_fileid()     const { return impl->fileid; }
   URL         get_url()        const { return impl->url; }

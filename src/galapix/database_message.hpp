@@ -58,7 +58,7 @@ public:
     if (!job_handle.is_aborted())
       {
         TileEntry tile;
-        if (db.tiles.get_tile(file_entry.get_fileid(), tilescale, pos, tile))
+        if (db.tiles.get_tile(file_entry, tilescale, pos, tile))
           {
             // Tile has been found, so return it and finish up
             if (callback)
