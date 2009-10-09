@@ -21,7 +21,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <curl/curl.h>
-
+
 static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   std::vector<uint8_t>* data = static_cast<std::vector<uint8_t>*>(userdata);
@@ -71,36 +71,4 @@ CURLHandler::get_data(const std::string& url)
     }
 }
 
-
-#ifdef __CURL_TEST__
-
-// g++ -Wall -Werror -ansi -pedantic curl.cpp blob.cpp -o mycurl -D__CURL_TEST__  `pkg-config --libs --cflags libcurl`
-
-int main(int argc, char** argv)
-{
-  try 
-    {
-      if (curl_global_init(CURL_GLOBAL_ALL) != 0)
-        {
-          throw std::runtime_error("Couldn't init cURL");
-        }
-
-      for(int i = 1; i < argc; ++i)
-        {
-          std::cout << "Trying to get: " << argv[i] << std::endl;
-          CURLHandler::get_data(argv[i]).write_to_file("/tmp/out");
-        }
-  
-      curl_global_cleanup(); 
-    }
-  catch(std::exception& err)
-    {
-      std::cout << "Error: " << err.what() << std::endl;
-    }
-
-  return 0;
-}
-
-#endif
-
 /* EOF */

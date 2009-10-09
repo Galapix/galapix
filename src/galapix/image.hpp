@@ -60,6 +60,7 @@ private:
   boost::scoped_ptr<ImageTileCache> m_cache;
   boost::scoped_ptr<ImageRenderer>  m_renderer;
 
+private:
   Image(const FileEntry& file_entry);
 
 public:

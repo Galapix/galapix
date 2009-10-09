@@ -163,46 +163,5 @@ Exec::str() const
 
   return out.str();
 }
-
-#ifdef __EXEC_TEST__
-
-// g++ -Wall -Werror -ansi -pedantic exec.cpp blob.cpp -o myexec -D__EXEC_TEST__
-
-
-#include <iostream>
-
-int main(int argc, char** argv)
-{
-  try {
-    if (argc < 2)
-      {
-        std::cout << "Usage: " << argv[0] << " PROGRAM [ARGUMENTS]..." << std::endl;
-      }
-    else
-      {
-        Exec prgn(argv[1]);
-        std::string stdin = "-- Stdin Test Data --\n";
-        prgn.set_stdin(Blob::copy(stdin.c_str(), stdin.length()));
-        for(int i = 2; i < argc; ++i)
-          prgn.arg(argv[i]);
-        std::cout << "ExitCode: " << prgn.exec() << std::endl;
-
-        std::cout << "### STDOUT BEGIN" << std::endl;
-        std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
-        std::cout << "### STDOUT END" << std::endl;
-        std::cout << std::endl;
-        std::cout << "### STERR BEGIN: " << std::endl;
-        std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
-        std::cout << "### STDERR END" << std::endl;
-      }
-  }
-  catch(std::exception& err)
-    {
-      std::cout << "Exception: " << err.what() << std::endl;
-    }
-  return 0;
-}
-
-#endif
 
 /* EOF */

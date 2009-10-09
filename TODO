@@ -21,6 +21,8 @@ Release procedure:
 Problems:
 =========
 
+* current use of cURL is not thread safe
+
 * write tcl/tk script to convert old database to new database
 
 * add two button mode: hold-right button for drag&drop zoom
