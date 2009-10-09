@@ -22,17 +22,18 @@
 
 #include "database/tile_entry.hpp"
 #include "database/file_entry.hpp"
+#include "database/database.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "util/software_surface_factory.hpp"
 
-TileDatabase::TileDatabase(SQLiteConnection* db_)
-  : db(db_),
-    m_tiles_table(*db),
-    m_tile_entry_store(*db),
-    m_tile_entry_get_all_by_file_entry(*db),
-    m_tile_entry_has(*db),
-    m_tile_entry_get_by_file_entry(*db),
+TileDatabase::TileDatabase(Database& db)
+  : m_db(db),
+    m_tiles_table(m_db.get_db()),
+    m_tile_entry_store(m_db.get_db()),
+    m_tile_entry_get_all_by_file_entry(m_db.get_db()),
+    m_tile_entry_has(m_db.get_db()),
+    m_tile_entry_get_by_file_entry(m_db.get_db()),
     tile_cache()
 {}
 
@@ -119,12 +120,12 @@ TileDatabase::store_tile_in_cache(const TileEntry& tile)
 void
 TileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 {
-  db->exec("BEGIN;");
+  m_db.get_db().exec("BEGIN;");
   for(std::vector<TileEntry>::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
     {
       store_tile(*i);
     }
-  db->exec("COMMIT;");
+  m_db.get_db().exec("COMMIT;");
 }
 
 void

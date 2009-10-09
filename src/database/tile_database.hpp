@@ -31,11 +31,12 @@
 
 class TileEntry;
 class FileEntry;
+class Database;
 
 class TileDatabase
 {
 private:
-  SQLiteConnection* db;
+  Database& m_db;
 
   TilesTable m_tiles_table;
   TileEntryStoreStatement             m_tile_entry_store;
@@ -46,7 +47,7 @@ private:
   std::vector<TileEntry> tile_cache;
 
 public:
-  TileDatabase(SQLiteConnection* db);
+  TileDatabase(Database& db);
   ~TileDatabase();
   
   bool has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale);

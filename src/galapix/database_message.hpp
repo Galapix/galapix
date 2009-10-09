@@ -205,18 +205,18 @@ public:
 
   void run(Database& db)
   {
-    SQLiteStatement(&db.db)
+    SQLiteStatement(&db.get_db())
       .prepare("BEGIN;")
       .execute();
-    SQLiteStatement(&db.db)
+    SQLiteStatement(&db.get_db())
       .prepare("DELETE FROM files WHERE fileid = ?1;")
       .bind_int64(1, fileid)
       .execute();
-    SQLiteStatement(&db.db)
+    SQLiteStatement(&db.get_db())
       .prepare("DELETE FROM tiles WHERE fileid = ?1;")
       .bind_int64(1, fileid)
       .execute();
-    SQLiteStatement(&db.db)
+    SQLiteStatement(&db.get_db())
       .prepare("END;")
       .execute();
   }

@@ -26,13 +26,15 @@
 class Database
 {
 public:
-  SQLiteConnection db;
+  SQLiteConnection m_db;
   FileDatabase     files;
   TileDatabase     tiles;
 
 public:
   Database(const std::string& filename);
   ~Database();
+
+  SQLiteConnection& get_db() { return m_db; }
 
   void cleanup();
 

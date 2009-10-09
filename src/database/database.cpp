@@ -19,9 +19,9 @@
 #include "database/database.hpp"
 
 Database::Database(const std::string& filename) :
-  db(filename),
-  files(db),
-  tiles(&db)
+  m_db(filename),
+  files(*this),
+  tiles(*this)
 {
 }
 
@@ -32,7 +32,7 @@ Database::~Database()
 void
 Database::cleanup()
 {
-  db.vacuum();
+  m_db.vacuum();
 }
 
 /* EOF */

@@ -33,6 +33,7 @@
 class URL;
 class FileEntry;
 class TileEntry;
+class Database;
 
 /** The FileDatabase keeps a record of all files that have been
     view. It keeps information on the last modification time and
@@ -45,7 +46,7 @@ class TileEntry;
 class FileDatabase
 {
 private:
-  SQLiteConnection& m_db;
+  Database& m_db;
   FileTable m_file_table;
   FileEntryGetAllStatement       m_file_entry_get_all;
   FileEntryGetByFileIdStatement  m_file_entry_get_by_fileid;
@@ -56,7 +57,7 @@ private:
   void update_file_entry(FileEntry& entry);
  
 public:
-  FileDatabase(SQLiteConnection& db);
+  FileDatabase(Database& db);
   
   /** Lookup a FileEntry by its url. If there is no corresponding
       url, then the file will be looked up in the filesystem and

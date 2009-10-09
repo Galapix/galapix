@@ -21,18 +21,19 @@
 #include <iostream>
 
 #include "database/file_entry.hpp"
+#include "database/database.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 
-FileDatabase::FileDatabase(SQLiteConnection& db) :
+FileDatabase::FileDatabase(Database& db) :
   m_db(db),
-  m_file_table(m_db),
-  m_file_entry_get_all(m_db),
-  m_file_entry_get_by_fileid(m_db),
-  m_file_entry_get_by_pattern(m_db),
-  m_file_entry_get_by_url(m_db),
-  m_file_entry_store(m_db)
+  m_file_table(m_db.get_db()),
+  m_file_entry_get_all(m_db.get_db()),
+  m_file_entry_get_by_fileid(m_db.get_db()),
+  m_file_entry_get_by_pattern(m_db.get_db()),
+  m_file_entry_get_by_url(m_db.get_db()),
+  m_file_entry_store(m_db.get_db())
 {
 }
 
