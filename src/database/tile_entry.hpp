@@ -25,52 +25,52 @@
 class TileEntry
 {
 private:
-  int64_t    fileid;
-  int        scale;
-  Vector2i   pos;
-  BlobHandle blob;
-  SoftwareSurfaceHandle surface;
-  int        format;
+  int64_t    m_fileid;
+  int        m_scale;
+  Vector2i   m_pos;
+  BlobHandle m_blob;
+  SoftwareSurfaceHandle m_surface;
+  int        m_format;
   
 public:  
   TileEntry() :
-    fileid(),
-    scale(),
-    pos(),
-    blob(),
-    surface(),
-    format()
+    m_fileid(),
+    m_scale(),
+    m_pos(),
+    m_blob(),
+    m_surface(),
+    m_format()
   {}
 
-  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const SoftwareSurfaceHandle& surface_) :
-    fileid(fileid_),
-    scale(scale_),
-    pos(pos_),
-    blob(),
-    surface(surface_),
-    format(-1)
+  TileEntry(int64_t fileid, int scale, const Vector2i& pos, const SoftwareSurfaceHandle& surface) :
+    m_fileid(fileid),
+    m_scale(scale),
+    m_pos(pos),
+    m_blob(),
+    m_surface(surface),
+    m_format(-1)
+  {}
+  
+  TileEntry(int64_t fileid, int scale, const Vector2i& pos, const BlobHandle& blob, int format) :
+    m_fileid(fileid),
+    m_scale(scale),
+    m_pos(pos),
+    m_blob(blob),
+    m_surface(),
+    m_format(format)
   {}
 
-  TileEntry(int64_t fileid_, int scale_, const Vector2i& pos_, const BlobHandle& blob_, int format_) :
-    fileid(fileid_),
-    scale(scale_),
-    pos(pos_),
-    blob(blob_),
-    surface(),
-    format(format_)
-  {}
+  SoftwareSurfaceHandle get_surface() const { return m_surface; }
+  BlobHandle get_blob()   const { return m_blob; }
+  int64_t  get_fileid() const { return m_fileid; }
+  int      get_scale()  const { return m_scale; }
+  Vector2i get_pos()    const { return m_pos; }
+  int      get_format() const { return m_format; }
 
-  SoftwareSurfaceHandle get_surface() const { return surface; }
-  BlobHandle get_blob()   const { return blob; }
-  int64_t  get_fileid() const { return fileid; }
-  int      get_scale()  const { return scale; }
-  Vector2i get_pos()    const { return pos; }
-  int      get_format() const { return format; }
-
-  void set_fileid(int64_t fileid_) { fileid = fileid_; }
-  void set_surface(SoftwareSurfaceHandle surface_)  { surface = surface_; }
-  void set_blob(const BlobHandle& blob_) { blob = blob_; }
-  void set_format(int format_) { format = format_; }
+  void set_fileid(int64_t fileid) { m_fileid = fileid; }
+  void set_surface(SoftwareSurfaceHandle surface)  { m_surface = surface; }
+  void set_blob(const BlobHandle& blob) { m_blob = blob; }
+  void set_format(int format) { m_format = format; }
 };
 
 #endif
