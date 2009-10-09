@@ -21,11 +21,12 @@
 
 #include "math/vector2i.hpp"
 #include "util/software_surface.hpp"
+#include "database/file_entry.hpp"
 
 class TileEntry
 {
 private:
-  int64_t    m_fileid;
+  FileEntry  m_file_entry;
   int        m_scale;
   Vector2i   m_pos;
   BlobHandle m_blob;
@@ -34,7 +35,7 @@ private:
   
 public:  
   TileEntry() :
-    m_fileid(),
+    m_file_entry(),
     m_scale(),
     m_pos(),
     m_blob(),
@@ -42,8 +43,8 @@ public:
     m_format()
   {}
 
-  TileEntry(int64_t fileid, int scale, const Vector2i& pos, const SoftwareSurfaceHandle& surface) :
-    m_fileid(fileid),
+  TileEntry(const FileEntry& file_entry, int scale, const Vector2i& pos, const SoftwareSurfaceHandle& surface) :
+    m_file_entry(file_entry),
     m_scale(scale),
     m_pos(pos),
     m_blob(),
@@ -51,8 +52,8 @@ public:
     m_format(-1)
   {}
   
-  TileEntry(int64_t fileid, int scale, const Vector2i& pos, const BlobHandle& blob, int format) :
-    m_fileid(fileid),
+  TileEntry(const FileEntry& file_entry, int scale, const Vector2i& pos, const BlobHandle& blob, int format) :
+    m_file_entry(file_entry),
     m_scale(scale),
     m_pos(pos),
     m_blob(blob),
@@ -62,12 +63,12 @@ public:
 
   SoftwareSurfaceHandle get_surface() const { return m_surface; }
   BlobHandle get_blob()   const { return m_blob; }
-  int64_t  get_fileid() const { return m_fileid; }
+  int64_t  get_fileid() const { return m_file_entry.get_fileid(); }
   int      get_scale()  const { return m_scale; }
   Vector2i get_pos()    const { return m_pos; }
   int      get_format() const { return m_format; }
 
-  void set_fileid(int64_t fileid) { m_fileid = fileid; }
+  void set_file_entry(const FileEntry& file_entry) { m_file_entry = file_entry; }
   void set_surface(SoftwareSurfaceHandle surface)  { m_surface = surface; }
   void set_blob(const BlobHandle& blob) { m_blob = blob; }
   void set_format(int format) { m_format = format; }

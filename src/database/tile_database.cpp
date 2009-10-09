@@ -101,7 +101,7 @@ TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& til
   SQLiteReader reader = get_all_by_fileid_stmt.execute_query();
   while(reader.next())
     {
-      TileEntry tile(reader.get_int(0), // fileid
+      TileEntry tile(file_entry,
                      reader.get_int(1), // scale
                      Vector2i(reader.get_int (2),  // x
                               reader.get_int (3)), // y
@@ -148,7 +148,7 @@ TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& p
 
   if (reader.next())
     {
-      tile = TileEntry(reader.get_int(0), // fileid
+      tile = TileEntry(file_entry,
                        reader.get_int(1), // scale
                        Vector2i(reader.get_int(2), // pos
                                 reader.get_int(3)),

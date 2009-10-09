@@ -105,7 +105,7 @@ TileGenerationJob::run()
 
             // FIXME: This is slow, should group all tiles into a single sqlite transaction
             if (callback)
-              callback(TileEntry(entry.get_fileid(), scale, Vector2i(x, y), croped_surface));
+              callback(TileEntry(entry, scale, Vector2i(x, y), croped_surface));
           }
 
       scale += 1;

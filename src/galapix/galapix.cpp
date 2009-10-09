@@ -140,7 +140,7 @@ Galapix::merge(const std::string& database,
             for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
               {
                 // Change the fileid
-                j->set_fileid(entry.get_fileid());
+                j->set_file_entry(entry);
                 out_db.tiles.store_tile_in_cache(*j);
               }
           } catch(std::exception& err) {
