@@ -22,6 +22,7 @@
 
 #include "math/rect.hpp"
 #include "plugins/jpeg.hpp"
+#include "util/software_surface_factory.hpp"
 #include "database/tile_entry.hpp"
 
 TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const FileEntry& entry_, int min_scale_, int max_scale_,
@@ -37,10 +38,10 @@ TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const FileEntr
 void
 TileGenerationJob::run()
 {
-  SoftwareSurface::FileFormat format = SoftwareSurface::get_fileformat(entry.get_url());
+  SoftwareSurfaceFactory::FileFormat format = SoftwareSurfaceFactory::get_fileformat(entry.get_url());
 
   // FIXME: Need to check for files in archives too
-  if (format != SoftwareSurface::JPEG_FILEFORMAT)
+  if (format != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
     { // Generate all tiles instead of just the requested for non-jpeg formats
       min_scale = 0;
       max_scale = entry.get_thumbnail_scale();
@@ -57,7 +58,7 @@ TileGenerationJob::run()
 
   switch(format)
     {
-      case SoftwareSurface::JPEG_FILEFORMAT:
+      case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
         {
           // The JPEG class can only scale down by factor 2,4,8, so we have to
           // limit things (FIXME: is that true? if so, why?)
@@ -82,7 +83,7 @@ TileGenerationJob::run()
         {
           // FIXME: This is terrible, min/max_scale are meaningless
           // for non-jpeg formats, so we should just forget them
-          surface = SoftwareSurface::from_url(entry.get_url());
+          surface = SoftwareSurfaceFactory::from_url(entry.get_url());
           surface = surface->scale(Size(width  / Math::pow2(scale),
                                         height / Math::pow2(scale)));
         }

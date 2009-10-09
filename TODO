@@ -21,6 +21,12 @@ Release procedure:
 Problems:
 =========
 
+* write tcl/tk script to convert old database to new database
+
+* add two button mode: hold-right button for drag&drop zoom
+
+* add custom sorter (sort by date, name, reverse, shuffle, ...)
+
 * Quadtree stuff in Workspace could be speed up by recycling the
   std::vector object and by using marks on Image instead of a std::set
   to find things no longer on screen
@@ -38,9 +44,6 @@ Problems:
   test code in their .cpp file
 
 * shared_ptr<> impl is evil
-
-* create SoftwareSurfaceHandle, etc., do not let SoftwareSurface do
-  the refcounting internally
 
 * Database::tile_request_groups is never emptied
 
@@ -458,7 +461,8 @@ _______________________________________________________________________________
 
 * Displaying 75'000 images at once gets really slow, OpenGL
   bottleneck, texture packing might help, sending vertex array instead
-  of glBegin/glEnd of course too
+  of glBegin/glEnd of course too (unlikely that anything of that will
+  be enough -> framebuffer should be used to only redraw the needed parts)
 
 * implement smooth scale in SoftwareSurface (like LINEAR instead of NEAREST),
 
@@ -471,9 +475,6 @@ _______________________________________________________________________________
 
 * File stuff should really be seperate from Tile getting -> Seperate
   worker thread?
-
-* Jobs are only canceled when the image is no longer visible, but not
-  when the images zoom level has changed.
 
 
 Database Stuff:
@@ -538,7 +539,7 @@ Possible Future Improvements:
 
 * basic exif support to get the orientation right (libexif)
 
-* no support for greyscale in SoftwareSurface (not really important)
+* support for greyscale in SoftwareSurface (not really important)
 
 
 Random Notes:

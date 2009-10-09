@@ -22,6 +22,7 @@
 
 #include "database/file_entry.hpp"
 #include "util/software_surface.hpp"
+#include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 
 FileDatabase::FileDatabase(SQLiteConnection* db_)
@@ -100,7 +101,7 @@ FileDatabase::get_file_entry(const URL& url)
   else
     {
       Size size;
-      if (SoftwareSurface::get_size(url, size))
+      if (SoftwareSurfaceFactory::get_size(url, size))
         {
           return store_file_entry(url, size);
         }

@@ -32,6 +32,7 @@
 #include "plugins/zip.hpp"
 #include "plugins/rar.hpp"
 #include "util/software_surface.hpp"
+#include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 
 std::string Filesystem::home_directory;
@@ -293,7 +294,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
                 }
               else
                 {
-                  if (SoftwareSurface::get_fileformat(url) != SoftwareSurface::UNKNOWN_FILEFORMAT)
+                  if (SoftwareSurfaceFactory::get_fileformat(url) != SoftwareSurfaceFactory::UNKNOWN_FILEFORMAT)
                     {
                       file_list.push_back(url);
                     }

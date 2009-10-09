@@ -1,3 +1,4 @@
+#if 0
 /*
 **  Galapix - an image viewer for large image collections
 **  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
@@ -76,3 +77,4 @@ MD5::md5_file(const std::string& filename)
 }
 
 /* EOF */
+#endif

@@ -20,9 +20,10 @@
 
 #include <iostream>
 
-#include "plugins/png.hpp"
-#include "plugins/jpeg.hpp"
 #include "database/tile_entry.hpp"
+#include "plugins/jpeg.hpp"
+#include "plugins/png.hpp"
+#include "util/software_surface_factory.hpp"
 
 TileDatabase::TileDatabase(SQLiteConnection* db_)
   : db(db_),
@@ -112,11 +113,11 @@ TileDatabase::get_tiles(int64_t fileid, std::vector<TileEntry>& tiles)
       BlobHandle blob = tile.get_blob();
       switch(tile.get_format())
         {
-          case SoftwareSurface::JPEG_FILEFORMAT:
+          case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
             tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
             break;
 
-          case SoftwareSurface::PNG_FILEFORMAT:
+          case SoftwareSurfaceFactory::PNG_FILEFORMAT:
             tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
             break;
         }
@@ -159,11 +160,11 @@ TileDatabase::get_tile(int64_t fileid, int scale, const Vector2i& pos, TileEntry
       BlobHandle blob = tile.get_blob();
       switch(tile.get_format())
         {
-          case SoftwareSurface::JPEG_FILEFORMAT:
+          case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
             tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
             break;
 
-          case SoftwareSurface::PNG_FILEFORMAT:
+          case SoftwareSurfaceFactory::PNG_FILEFORMAT:
             tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
             break;
         }
@@ -229,12 +230,12 @@ TileDatabase::store_tile(const TileEntry& tile_)
         {
           case SoftwareSurface::RGB_FORMAT:
             tile.set_blob(JPEG::save(tile.get_surface(), 75));
-            tile.set_format(SoftwareSurface::JPEG_FILEFORMAT);
+            tile.set_format(SoftwareSurfaceFactory::JPEG_FILEFORMAT);
             break;
 
           case SoftwareSurface::RGBA_FORMAT:
             tile.set_blob(PNG::save(tile.get_surface()));
-            tile.set_format(SoftwareSurface::PNG_FILEFORMAT);
+            tile.set_format(SoftwareSurfaceFactory::PNG_FILEFORMAT);
             break;
 
           default:

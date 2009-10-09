@@ -38,6 +38,7 @@
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 #include "util/software_surface.hpp"
+#include "util/software_surface_factory.hpp"
 #include "database/database.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "jobs/test_job.hpp"
@@ -202,7 +203,7 @@ Galapix::info(const std::vector<URL>& url)
     {
       Size size;
 
-      if (SoftwareSurface::get_size(*i, size))
+      if (SoftwareSurfaceFactory::get_size(*i, size))
         std::cout << *i << " " << size.width << "x" << size.height << std::endl;
       else
         std::cout << "Error reading " << *i << std::endl;
@@ -307,7 +308,7 @@ Galapix::thumbgen(const GalapixOptions& opts,
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
       {
         // Generate Image Tiles
-        SoftwareSurfaceHandle surface = SoftwareSurface::from_url(i->get_url());
+        SoftwareSurfaceHandle surface = SoftwareSurfaceFactory::from_url(i->get_url());
         
         JobHandle job_handle;
         boost::shared_ptr<Job> job_ptr(new TileGenerationJob(job_handle, *i, 0, i->get_thumbnail_scale(),

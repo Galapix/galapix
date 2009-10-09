@@ -12,7 +12,7 @@ preset_cxxflags = {
                      "-Wall",
                      "-Wextra",
                      "-Wnon-virtual-dtor",
-                     "-Weffc++",
+                     # "-Weffc++",
                      "-Wconversion",
                      "-Werror",
                      "-Wshadow",
@@ -37,72 +37,17 @@ Import("compile_galapix_gtk",
        "compile_galapix_sdl",
        "compile_spacenav")
 
-libgalapix_sources = [
-    # 'src/util/md5.cpp',
-    'src/database/database.cpp',
-    'src/database/file_database.cpp',
-    'src/database/file_entry.cpp',
-    'src/database/tile_database.cpp',
-    'src/display/surface.cpp',
-    'src/display/texture.cpp',
-    'src/galapix/database_thread.cpp',
-    'src/galapix/image.cpp',
-    'src/galapix/image_tile_cache.cpp',
-    'src/galapix/image_renderer.cpp',
-    'src/galapix/selection.cpp',
-    'src/galapix/viewer_state.cpp',
-    'src/galapix/workspace.cpp',
-    'src/job/job_handle.cpp',
-    'src/job/job_manager.cpp',
-    'src/job/job_worker_thread.cpp',
-    'src/job/thread.cpp',
-    'src/jobs/test_job.cpp',
-    'src/jobs/tile_generation_job.cpp',
-    'src/lisp/getters.cpp',
-    'src/lisp/lexer.cpp',
-    'src/lisp/lisp.cpp',
-    'src/lisp/parser.cpp',
-    'src/math/math.cpp',
-    'src/math/rect.cpp',
-    'src/math/size.cpp',
-    'src/math/vector2f.cpp',
-    'src/math/vector2i.cpp',
-    'src/math/vector3f.cpp',
-    'src/plugins/curl.cpp',
-    'src/plugins/imagemagick.cpp',
-    'src/plugins/jpeg.cpp',
-    'src/plugins/jpeg_memory_dest.cpp',
-    'src/plugins/jpeg_memory_src.cpp',
-    'src/plugins/kra.cpp',
-    'src/plugins/png.cpp',
-    'src/plugins/pnm.cpp',
-    'src/plugins/rar.cpp',
-    'src/plugins/rsvg.cpp',
-    'src/plugins/tar.cpp',
-    'src/plugins/ufraw.cpp',
-    'src/plugins/xcf.cpp',
-    'src/plugins/zip.cpp',
-    'src/sqlite/connection.cpp',
-    'src/sqlite/error.cpp',
-    'src/sqlite/reader.cpp',
-    'src/sqlite/statement.cpp',
-    'src/tools/grid_tool.cpp',
-    'src/tools/move_tool.cpp',
-    'src/tools/pan_tool.cpp',
-    'src/tools/resize_tool.cpp',
-    'src/tools/rotate_tool.cpp',
-    'src/tools/view_rotate_tool.cpp',
-    'src/tools/zoom_rect_tool.cpp',
-    'src/tools/zoom_tool.cpp',
-    'src/util/blob.cpp',
-    'src/util/exec.cpp',
-    'src/util/file_reader.cpp',
-    'src/util/filesystem.cpp',
-    'src/util/sexpr_file_reader.cpp',
-    'src/util/sexpr_file_writer.cpp',
-    'src/util/software_surface.cpp',
-    'src/util/url.cpp',
-    ]
+libgalapix_sources = Glob("src/database/*.cpp") + \
+                     Glob("src/display/*.cpp") + \
+                     Glob("src/galapix/*.cpp") + \
+                     Glob("src/job/*.cpp") + \
+                     Glob("src/jobs/*.cpp") + \
+                     Glob("src/lisp/*.cpp") + \
+                     Glob("src/math/*.cpp") + \
+                     Glob("src/plugins/*.cpp") + \
+                     Glob("src/sqlite/*.cpp") + \
+                     Glob("src/tools/*.cpp") + \
+                     Glob("src/util/*.cpp")
 
 galapix_sources = [
     'src/display/framebuffer.cpp',
@@ -132,6 +77,7 @@ BuildDir('build', 'src')
 # build the base library
 libgalapix_env = Environment(CXX=preset_cxx,
                              CXXFLAGS=preset_cxxflags['development'],
+                             LINKFLAGS=preset_linkflags['development'],
                              CPPPATH=['src'],
                              CPPDEFINES = optional_defines,
                              LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs)
@@ -145,6 +91,7 @@ libgalapix = libgalapix_env.StaticLibrary('galapix.sdl',
 if compile_galapix_sdl:
     sdl_env = Environment(CXX=preset_cxx,
                           CXXFLAGS=preset_cxxflags['development'],
+                          LINKFLAGS=preset_linkflags['development'],
                           CPPPATH=['src'],
                           CPPDEFINES = ['GALAPIX_SDL'] + optional_defines,
                           LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,
@@ -159,6 +106,7 @@ if compile_galapix_sdl:
 if compile_galapix_gtk:
     gtk_env = Environment(CXX=preset_cxx,
                           CXXFLAGS=preset_cxxflags['development'],
+                          LINKFLAGS=preset_linkflags['development'],
                           CPPPATH=['src'],
                           CPPDEFINES = ['GALAPIX_GTK'] + optional_defines,
                           LIBS = [libgalapix, 'GL', 'GLEW', 'sqlite3', 'jpeg', 'boost_thread-mt'] + optional_libs,

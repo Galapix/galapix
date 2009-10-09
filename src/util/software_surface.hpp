@@ -39,24 +39,6 @@ class SoftwareSurface : public boost::enable_shared_from_this<SoftwareSurface>
 
 {
 public:
-  // Do not change the value of these, since they are stored in the database
-  enum FileFormat { 
-    JPEG_FILEFORMAT = 0,
-    PNG_FILEFORMAT  = 1, 
-    XCF_FILEFORMAT, 
-    KRA_FILEFORMAT, 
-    SVG_FILEFORMAT, 
-    MAGICK_FILEFORMAT, 
-    UFRAW_FILEFORMAT, 
-    UNKNOWN_FILEFORMAT 
-  };
-
-  static FileFormat get_fileformat(const URL& url);
-  static bool       get_size(const URL& url, Size& size);
-
-  static SoftwareSurfaceHandle from_url(const URL& url);
-
-public:
   enum Format { RGB_FORMAT, RGBA_FORMAT };
 
 private:

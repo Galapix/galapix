@@ -28,6 +28,7 @@
 */
 
 #include "math/origin.hpp"
+#include "math/vector2f.hpp"
 
 Vector2i calc_origin(Origin origin, const Size &size)
 {
