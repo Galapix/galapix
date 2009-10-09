@@ -23,6 +23,7 @@
 #include "job/thread_message_queue.hpp"
 #include "database/tile_entry.hpp"
 #include "job/job_handle.hpp"
+#include "job/job_manager.hpp"
 
 class URL;
 class DatabaseMessage;
@@ -37,6 +38,9 @@ public:
   static DatabaseThread* current() { return current_; }
   
 private:
+  JobManager& m_tile_job_manager;
+  JobManager& m_file_entry_job_manager;
+
   std::string database_filename;
   bool abort_instantly;
   bool quit;
@@ -81,7 +85,9 @@ protected:
   void run();
 
 public:
-  DatabaseThread(const std::string&);
+  DatabaseThread(const std::string& db_filename,
+                 JobManager& tile_job_manager,
+                 JobManager& file_entry_job_manager);
   virtual ~DatabaseThread();
 
   void stop_thread();

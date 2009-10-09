@@ -21,16 +21,11 @@
 #include "job/job.hpp"
 #include "job/job_worker_thread.hpp"
 
-JobManager* JobManager::current_ = 0;
-
 JobManager::JobManager(int num_threads) :
   threads(),
   next_thread(0),
   mutex()
 {
-  assert(current_ == 0);
-  current_ = this;
-
   assert(num_threads > 0);
 
   for(int i = 0; i < num_threads; ++i)
@@ -83,5 +78,5 @@ JobManager::request(boost::shared_ptr<Job> job,
 
   return handle;
 }
-
+
 /* EOF */

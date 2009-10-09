@@ -89,8 +89,8 @@ Galapix::test(const GalapixOptions& opts,
 {
   std::cout << "Running test case" << std::endl;
 
-  DatabaseThread database_thread(opts.database);
   JobManager job_manager(2);
+  DatabaseThread database_thread(opts.database, job_manager, job_manager);
 
   database_thread.start_thread();
   job_manager.start_thread();
@@ -288,9 +288,9 @@ Galapix::thumbgen(const GalapixOptions& opts,
                   const std::vector<URL>& urls, 
                   bool generate_all_tiles)
 {
-  DatabaseThread database_thread(opts.database);
   JobManager     job_manager(opts.threads);
-
+  DatabaseThread database_thread(opts.database, job_manager, job_manager);
+  
   database_thread.start_thread();
   job_manager.start_thread();
 
@@ -334,11 +334,13 @@ Galapix::view(const GalapixOptions& opts,
               bool view_all, 
               const std::string& pattern)
 {
-  DatabaseThread database_thread(opts.database);
-  JobManager     job_manager(opts.threads);
+  JobManager     tile_job_manager(opts.threads);
+  JobManager     file_entry_job_manager(opts.threads);
+  DatabaseThread database_thread(opts.database, tile_job_manager, file_entry_job_manager);
 
+  tile_job_manager.start_thread();  
+  file_entry_job_manager.start_thread();  
   database_thread.start_thread();
-  job_manager.start_thread();
 
   Workspace workspace;
 
@@ -380,10 +382,12 @@ Galapix::view(const GalapixOptions& opts,
   gtk_viewer.run();
 #endif
 
-  job_manager.stop_thread();
+  tile_job_manager.stop_thread();
+  file_entry_job_manager.stop_thread();
   database_thread.stop_thread();
 
-  job_manager.join_thread();
+  tile_job_manager.join_thread();
+  file_entry_job_manager.join_thread();
   database_thread.join_thread();
 }
 

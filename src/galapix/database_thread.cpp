@@ -26,8 +26,12 @@
 
 DatabaseThread* DatabaseThread::current_ = 0;
 
-DatabaseThread::DatabaseThread(const std::string& filename_)
-  : database_filename(filename_),
+DatabaseThread::DatabaseThread(const std::string& filename_,
+                               JobManager& tile_job_manager,
+                               JobManager& file_entry_job_manager)
+  : m_tile_job_manager(tile_job_manager),
+    m_file_entry_job_manager(file_entry_job_manager),
+    database_filename(filename_),
     abort_instantly(),
     quit(false),
     queue(),
@@ -140,7 +144,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
       boost::shared_ptr<Job> job_ptr(new TileGenerationJob(job_handle, 
                                                            file_entry, min_scale, max_scale, 
                                                            boost::bind(&DatabaseThread::receive_tile, this, _1)));
-      JobManager::current()->request(job_ptr, boost::function<void (boost::shared_ptr<Job>)>());
+      m_tile_job_manager.request(job_ptr, boost::function<void (boost::shared_ptr<Job>)>());
       
       TileRequestGroup request_group(file_entry.get_fileid(), min_scale, max_scale);
       request_group.requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
@@ -157,8 +161,8 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
                                     const boost::function<void (FileEntry)>& callback)
 {
   boost::shared_ptr<Job> job(new FileEntryGenerationJob(job_handle, url, callback));
-  JobManager::current()->request(job,
-                                 boost::function<void (boost::shared_ptr<Job>)>());
+  m_file_entry_job_manager.request(job,
+                                   boost::function<void (boost::shared_ptr<Job>)>());
 }
 
 void

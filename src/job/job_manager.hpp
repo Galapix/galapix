@@ -32,11 +32,6 @@ class Job;
 class JobManager
 {
 private:
-  static JobManager* current_; 
-public:
-  static JobManager* current() { return current_; }
-
-private:
   typedef std::vector<boost::shared_ptr<JobWorkerThread> > Threads;
   Threads threads;
   Threads::size_type next_thread;
