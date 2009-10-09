@@ -42,8 +42,10 @@ private:
     {}
   };
 
-  ThreadMessageQueue<Task> queue;
-  bool quit;
+private:
+  ThreadMessageQueue<Task> m_queue;
+  bool m_quit;
+  bool m_abort;
   
 public:
   JobWorkerThread();
@@ -54,6 +56,7 @@ public:
   void run();
 
   void stop_thread();
+  void abort_thread();
   
 private:
   JobWorkerThread (const JobWorkerThread&);

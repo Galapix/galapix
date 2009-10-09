@@ -382,8 +382,8 @@ Galapix::view(const GalapixOptions& opts,
   gtk_viewer.run();
 #endif
 
-  tile_job_manager.stop_thread();
-  file_entry_job_manager.stop_thread();
+  tile_job_manager.abort_thread();
+  file_entry_job_manager.abort_thread();
   database_thread.stop_thread();
 
   tile_job_manager.join_thread();

@@ -55,6 +55,15 @@ JobManager::stop_thread()
 }
 
 void
+JobManager::abort_thread()
+{
+  boost::mutex::scoped_lock lock(mutex);
+
+  for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+    (*i)->abort_thread();
+}
+
+void
 JobManager::join_thread()
 {
   boost::mutex::scoped_lock lock(mutex);

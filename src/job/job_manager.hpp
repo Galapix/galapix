@@ -44,6 +44,7 @@ public:
 
   void start_thread();
   void stop_thread();
+  void abort_thread();
   void join_thread();
 
   /** \a job is processed and once finished \a callback is called, \a

@@ -21,33 +21,28 @@
 #include "job/job.hpp"
 
 JobWorkerThread::JobWorkerThread()
-  : queue(),
-    quit(false)
+  : m_queue(),
+    m_quit(false),
+    m_abort(false)
 {
 }
 
 JobWorkerThread::~JobWorkerThread()
 {
-  assert(quit);
-
-  while(!queue.empty())
-    {
-      Task task = queue.front();
-      queue.pop();
-    }
+  assert(m_quit);
 }
 
 void
 JobWorkerThread::run()
 {
-  while(!quit)
+  while(!m_quit)
     {
-      queue.wait();
+      m_queue.wait();
 
-      while(!queue.empty())
+      while(!m_abort && !m_queue.empty())
         {
-          Task task = queue.front();
-          queue.pop();
+          Task task = m_queue.front();
+          m_queue.pop();
 
           if (!task.job->get_handle().is_aborted())
             {
@@ -63,10 +58,18 @@ JobWorkerThread::run()
 }
 
 void
+JobWorkerThread::abort_thread()
+{
+  m_quit = true;
+  m_abort = true;
+  m_queue.wakeup();
+}
+
+void
 JobWorkerThread::stop_thread()
 {
-  quit = true;
-  queue.wakeup();  
+  m_quit = true;
+  m_queue.wakeup();  
 }
 
 JobHandle
@@ -77,7 +80,7 @@ JobWorkerThread::request(boost::shared_ptr<Job> job, const boost::function<void 
   Task task;
   task.job      = job;
   task.callback = callback;
-  queue.push(task);
+  m_queue.push(task);
 
   return handle;
 }
