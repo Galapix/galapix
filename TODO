@@ -23,21 +23,9 @@ Problems:
 
 * maybe have something like JobHandle->spawn_child_job()
 
-* add optional cross to indicate cursor position
-
-* process tiles earlier then fileentries,
-
-  FileEntry FileDatabase::get_file_entry(const URL& url)
-
-  is the wrong place to browse the filesystem
-
 * current use of cURL is not thread safe due to curl_global_init()
 
 * write tcl/tk script to convert old database to new database
-
-* add two button mode: hold-right button for drag&drop zoom
-
-* add custom sorter (sort by date, name, reverse, shuffle, ...)
 
 * Quadtree stuff in Workspace could be speed up by recycling the
   std::vector object and by using marks on Image instead of a std::set
@@ -50,16 +38,11 @@ Problems:
   them later, as it would need much less sql calls (one select vs one
   for each of thousands of pictures)
 
-* when view is rotated, zooming in position is not rotated with it
-
-* add test case for util/exec.cpp, rar, zip, etc. many have already
-  test code in their .cpp file
-
 * shared_ptr<> impl is evil
 
 * Database::tile_request_groups is never emptied
 
-* viewdb -p PATTERN doesn't work, as the viewer isn't updated in
+* viewdb -p PATTERN doesn't work as expected, as the viewer isn't updated in
   SDLViewer::run(), pressing '1' works as a workaround
 
 * some jobs seem to stall and never get completed or never launched
@@ -68,22 +51,112 @@ Problems:
 * implement some proper stuff to report the current status (what jobs
   are running, what an image is doing, etc)
 
-* use graphic indicator for loading (alpha flashing)
-
 * add a is_queued() is_running() to the Job handle
 
-* use framebuffer_object to speed up the drawing
-
-* use highres tiles when they are in cache when zooming out
-
-* implement auto-pilot
-
-* trackball mode in window mode doesn't zoom to center, but some abitary point
-
-* pressing Escape doesn't stop any jobs, instead it waits for them to finish, should be changed
+* use highres tiles when they are in cache when zooming out (currently
+  only using one level of highres data)
 
 * make the database versioned by filename (easiest to implement):
   ~/.galapix/cache-1.sqlite
+
+Graphical User Interface
+========================
+
+* ZoomTool doesn't know about trackball_mode and thus zooms not into
+  the center of the picture, but to the mouse cursor
+
+* trackball mode in window mode doesn't zoom to center, but some abitary point
+
+* implement auto-pilot that navigates images randomly or in sequence
+  (i.e. slideshow with a bit of zooming)
+
+* use framebuffer_object to speed up the drawing
+
+* use graphic indicator for loading (alpha flashing)
+
+* add optional fullscreen-sized cross to indicate cursor position
+
+* add two button mode: hold-right button for drag&drop zoom
+
+* add custom sorter (sort by date, name, reverse, shuffle, ...)
+
+* when view is rotated, zooming in position is not rotated with it
+
+* add X11 drag&drop support to SDL
+
+* something useless: add puzzle mode that randomly places tiles on the
+  screen and let the user put them back together
+
+* write an auto-fit option: take all pictures fully visible on the
+  screen, select them then fit them to the screen
+
+* key stuck issues happens: SDL event queue getting filled up? and key-up events lost?
+
+* add raise/lower buttons 
+
+* make 'd' clone the current selection
+
+* add shift-click support to the MoveTool, also rename MoveTool to SelectTool
+
+* add button to flip the view
+
+File Plugins
+============
+
+* Corel CMX Support
+
+* build in a file magic detector: .xcf.bz2 doesn't work for xcfinfo if it ends in .xcf
+
+* check that all file plugins can load from any URL
+
+* move file-extension -> plugin mapping into configuration file
+
+  -> didn't work out, file format handler have to much interdepedency
+     to make this practical right now
+
+* add support for Imagemagick files that create multiple images (i.e. pdf)
+
+
+* figure out a way to handle multi-image files (rar, tar, zip, pdf, multilayer-xcf)
+
+  rar vb RARFILE -> [files, ...]
+  rar p -inul RARFILE FILE_IN_ARCHIVE -> file_content
+
+  unzip -lqq ZIP 
+  unzip -pqq ZIP FILE_IN_ARCHIVE
+
+  tar --list TAR
+  tar --extract --to-stdout --file TAR FILE
+ 
+  XCF: parse xcfinfo output
+
+  Images are accessed when their width/height is requested and when
+  the tiles are generated, everything else is happening outside with
+  the database not the files
+
+* check for xcf2pnm, xcfinfo and other tool binaries on startup
+
+* catch PNG read errors properly 
+
+Database
+========
+
+* Cleanup higher zoom levels of jpg files (takes hours to run):
+
+  delete from tiles where rowid in (
+    select tiles.rowid from files,tiles
+       where files.fileid = tiles.fileid AND files.url glob "*.jpg" AND tiles.scale = 0
+  );
+
+* Cleanup stuff from the database (quite slow):
+
+  Slow:
+  delete from files where url glob "file:///tmp/*";
+  delete from tiles where fileid not in (select fileid from files);
+
+  Faster(?):
+  delete from tiles where fileid in (select fileid from files where url glob "file:///tmp/*");
+  delete from files where url glob "file:///tmp/*";
 
 * add:
 
@@ -105,34 +178,37 @@ ATTACH "/home/ingo/.galapix/cache.sqlite" as galapix;
 INSERT INTO files select * from galapix.files where url glob "*comics/*";
 INSERT INTO tiles select * from galapix.tiles where fileid in (select fileid from files);
 
+* Table convert:
+  create table if not exists files_new (fileid INTEGER PRIMARY KEY  AUTOINCREMENT, url TEXT UNIQUE, size  INTEGER,  mtime     INTEGER, width INTEGER, height INTEGER);
+  insert into files_new (fileid, url, size, mtime, width, height) select fileid, filename, filesize, mtime, width, height from files;
+  alter table files rename to files_old
+  alter table files_new rename to files;
+
+* delete tile duplicates via:
+
+DELETE FROM tiles WHERE rowid IN 
+(SELECT b.rowid 
+ FROM tiles AS a, tiles AS b 
+ WHERE a.fileid = b.fileid AND 
+            a.x = b.x      AND
+            a.y = b.y      AND 
+        a.scale = b.scale  AND 
+        a.rowid < b.rowid);
+
+Then shrink via (do this in a seperate step, since it requires plenty
+of diskspace, 2x(!) times what the database uses):
+
+VACUUM;
+
+* invalid image causes Rect to become 'nan' ->
+  'file:///resources/flickr/flickr/farm1.static.flickr.com/1/97146_20ff533764_o.jpg'
+  -> width == 0, set_scale(.../width) -> inf -> nan
 
-* Corel CMX Support
-
-* Cleanup higher zoom levels of jpg files (takes hours to run):
-
-  delete from tiles where rowid in (
-    select tiles.rowid from files,tiles
-       where files.fileid = tiles.fileid AND files.url glob "*.jpg" AND tiles.scale = 0
-  );
-
-* Cleanup stuff from the database (quite slow):
-
-  Slow:
-  delete from files where url glob "file:///tmp/*";
-  delete from tiles where fileid not in (select fileid from files);
-
-  Faster(?):
-  delete from tiles where fileid in (select fileid from files where url glob "file:///tmp/*");
-  delete from files where url glob "file:///tmp/*";
 
 * add --size option to 'galapix export'
 
-* build in a file magic detector: .xcf.bz2 doesn't work for xcfinfo if it ends in .xcf
-
 * There seems to be a conflict between libboost-thread1.34 and
   libboost-thread1.35 (thread joinable(), maybe others)
-
-* implement search for higher scales for Images
 
 * tile_cache order is wrong
 
@@ -140,31 +216,13 @@ INSERT INTO tiles select * from galapix.tiles where fileid in (select fileid fro
 
 * updating an image with F5 doesn't update its size in the FileEntry
 
-* something useless: add puzzle mode that randomly places tiles on the
-  screen and let the user put them back together
-
 * seperate files and images tables so that information about archive
   files can be saved and other stuff
-
-* write an auto-fit option: take all pictures fully visible on the
-  screen, select them then fit them to the screen
-
-* make get_size() work in a seperate worker thread and in general make
-  DatabaseThread only handle database request and dispatch everything
-  else
 
 * when a file is given as URL and refers to an archive it does not
   work from command line, since URLs are assumed to refer to images
 
-* magic byte detection for archive files would be good
-
-* add X11 drag&drop support to SDL
-
 * always process get requests to the database before store requests
-
-* check that all file plugins can load from any URL
-
-* key stuck issues happens: SDL event queue getting filled up? and key-up events lost?
 
 * add command line option to not follow links and/or archive files
 
@@ -190,21 +248,9 @@ INSERT INTO tiles select * from galapix.tiles where fileid in (select fileid fro
 
 * add tool to cut an image (simple rectangle or more complex polygonal shapes)
 
-* Table convert:
-  create table if not exists files_new (fileid INTEGER PRIMARY KEY  AUTOINCREMENT, url TEXT UNIQUE, size  INTEGER,  mtime     INTEGER, width INTEGER, height INTEGER);
-  insert into files_new (fileid, url, size, mtime, width, height) select fileid, filename, filesize, mtime, width, height from files;
-  alter table files rename to files_old
-  alter table files_new rename to files;
-
 * PRAGMA temp_store_directory = '/home/ingo/.galapix/tmp/'; 
 
-* Must run: 
-   PRAGMA auto_vacuum='full'; 
-  before any table is created to get auto_vacuum to work
-
 * play around with attaching databases to copy stuff around for compability
-
-* filename -> fileformat, ending only would be fasted
 
 * is it worth to have a get_size(filename) command? or is it better to
   wait for a proper thumbnail to be there?
@@ -214,31 +260,6 @@ INSERT INTO tiles select * from galapix.tiles where fileid in (select fileid fro
      not pretty and it only works for a few formats anyway, so drop
      and get the smallest possible thumbnail instead and only place
      stuff on the workspace when it is ready
-
-* move file-extension -> plugin mapping into configuration file
-
-  -> didn't work out, file format handler have to much interdepedency
-     to make this practical
-
-* delete tile duplicates via:
-
-DELETE FROM tiles WHERE rowid IN 
-(SELECT b.rowid 
- FROM tiles AS a, tiles AS b 
- WHERE a.fileid = b.fileid AND 
-            a.x = b.x      AND
-            a.y = b.y      AND 
-        a.scale = b.scale  AND 
-        a.rowid < b.rowid);
-
-Then shrink via (do this in a seperate step, since it requires plenty
-of diskspace, 2x(!) times what the database uses):
-
-VACUUM;
-
-* invalid image causes Rect to become 'nan' ->
-  'file:///resources/flickr/flickr/farm1.static.flickr.com/1/97146_20ff533764_o.jpg'
-  -> width == 0, set_scale(.../width) -> inf -> nan
 
 * Add glob pattern URL support: glob:://file:///resources/flickr/*
 
@@ -253,11 +274,6 @@ VACUUM;
 * Exec::stdout isn't a Blob, cleanup relationship between Blob,
   std::vector<char> and std::vector<uint8_t*> so that we don't need unneeded copies
 
-* add support for Imagemagick files that create multiple images (i.e. pdf)
-
-* ZoomTool doesn't know about trackball_mode and thus zooms not into
-  the center of the picture, but to the mouse cursor
-
 * need to filter out directories when generating file list for .rar
   (how? since rar doesn't tell you if its a directiory -> use file extension)
 
@@ -266,26 +282,7 @@ VACUUM;
   way often as well
 
 * add something to reconstruct a file from the database (as backup in
-  case of file loss)
-
-* figure out a way to handle multi-image files (rar, tar, zip, pdf, multilayer-xcf)
-
-  rar vb RARFILE -> [files, ...]
-  rar p -inul RARFILE FILE_IN_ARCHIVE -> file_content
-
-  unzip -lqq ZIP 
-  unzip -pqq ZIP FILE_IN_ARCHIVE
-
-  tar --list TAR
-  tar --extract --to-stdout --file TAR FILE
- 
-  XCF: parse xcfinfo output
-
-  Images are accessed when their width/height is requested and when
-  the tiles are generated, everything else is happening outside with
-  the database not the files
-
-* check for xcf2pnm, xcfinfo and other tool binaries on startup
+  case of file loss) (partly done, see 'export')
 
 * make sure that PNM class can handle all PNM formats that XCF can output
 
@@ -304,19 +301,11 @@ VACUUM;
 
 * reading all files from the database should be incremental
 
-* add raise/lower buttons 
-
-* catch PNG read errors properly 
-
 * add a way to delete all cached stuff related to an image
 
 * add support for checkboard pattern and stuff in the background
 
 * How to detect file format: file extension (case-insensitive, magic byte)
-
-* add shift-click support to the MoveTool, also rename MoveTool to SelectTool
-
-* make 'd' clone the current selection
 
 * change Framebuffer/Surface so that we can draw images with alpha
 
@@ -324,15 +313,11 @@ VACUUM;
 
 * implement image rotation
 
-* add button to flip the view
-
 * When thumbgen is running while galapix view is started:
 
 terminate called after throwing an instance of 'SQLiteError'
   what():  SQLiteStatement::~SQLiteStatement: column filename is not unique
 Aborted
-
-* support for archive files (rar, zip) would be nice
 
 * support for additional image formats would be nice, via ImageMagicks
   "convert" as a fallback
