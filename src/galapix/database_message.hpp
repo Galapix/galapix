@@ -104,9 +104,8 @@ public:
         FileEntry entry = db.files.get_file_entry(url);
         if (!entry)
           {
+            // file entry is not in the database, so try to generate it
             DatabaseThread::current()->generate_file_entry(job_handle, url, callback);
-            //std::cout << "Error: Couldn't get FileEntry for " << url << std::endl;
-            //job_handle.finish();
           }
         else
           {

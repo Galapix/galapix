@@ -142,7 +142,7 @@ Workspace::add_image(const FileEntry& file_entry)
 void
 Workspace::start_animation()
 {
-  std::cout << "Start Animation" << std::endl;
+  //std::cout << "Start Animation" << std::endl;
   progress = 0.0f;  
   clear_quad_tree(); 
 }
@@ -150,7 +150,7 @@ Workspace::start_animation()
 void
 Workspace::animation_finished()
 {
-  std::cout << "Animation Finished" << std::endl;
+  //std::cout << "Animation Finished" << std::endl;
   build_quad_tree();
 }
 
@@ -298,7 +298,7 @@ Workspace::build_quad_tree()
     {
       Rectf rect = get_bounding_rect();
 
-      std::cout << "QuadTree: " << rect << std::endl;
+      //std::cout << "QuadTree: " << rect << std::endl;
 
       quad_tree.reset(new QuadTree<ImageHandle>(rect));
       
@@ -681,7 +681,6 @@ Workspace::receive_file(const FileEntry& entry)
 {
   if (entry)
   {
-    std::cout << "Got file entry: " << entry.get_url() << std::endl;
     file_queue.push(entry);
   }
   else

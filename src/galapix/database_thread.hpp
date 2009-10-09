@@ -43,9 +43,10 @@ private:
 
   std::string database_filename;
   bool abort_instantly;
-  bool quit;
+  bool m_quit;
+  bool m_abort;
   
-  ThreadMessageQueue<DatabaseMessage*> queue;
+  ThreadMessageQueue<DatabaseMessage*> m_queue;
 
   struct TileRequest
   {
@@ -91,6 +92,7 @@ public:
   virtual ~DatabaseThread();
 
   void stop_thread();
+  void abort_thread();
 
   void process_tile(const TileEntry& tile_entry);
   void generate_tile(const JobHandle& job_handle,

@@ -18,6 +18,8 @@
 
 #include "galapix/database_thread.hpp"
 
+#include <typeinfo>
+
 #include "database/database.hpp"
 #include "galapix/database_message.hpp"
 #include "job/job_manager.hpp"
@@ -33,8 +35,9 @@ DatabaseThread::DatabaseThread(const std::string& filename_,
     m_file_entry_job_manager(file_entry_job_manager),
     database_filename(filename_),
     abort_instantly(),
-    quit(false),
-    queue(),
+    m_quit(false),
+    m_abort(false),
+    m_queue(),
     tile_request_groups()
 {
   assert(current_ == 0);
@@ -43,7 +46,7 @@ DatabaseThread::DatabaseThread(const std::string& filename_,
 
 DatabaseThread::~DatabaseThread()
 {
-  assert(quit);
+  assert(m_quit);
 }
 
 JobHandle
@@ -51,7 +54,7 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
                              const boost::function<void (TileEntry)>& callback)
 {
   JobHandle job_handle;
-  queue.push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
+  m_queue.push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
   return job_handle;
 }
 
@@ -59,61 +62,71 @@ JobHandle
 DatabaseThread::request_file(const URL& url, const boost::function<void (const FileEntry&)>& callback)
 {
   JobHandle job_handle;
-  queue.push(new RequestFileDatabaseMessage(job_handle, url, callback));
+  m_queue.push(new RequestFileDatabaseMessage(job_handle, url, callback));
   return job_handle;
 }
 
 void
 DatabaseThread::request_all_files(const boost::function<void (FileEntry)>& callback)
 {
-  queue.push(new AllFilesDatabaseMessage(callback));
+  m_queue.push(new AllFilesDatabaseMessage(callback));
 }
 
 void
 DatabaseThread::request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
 {
-  queue.push(new FilesByPatternDatabaseMessage(callback, pattern));
+  m_queue.push(new FilesByPatternDatabaseMessage(callback, pattern));
 }
 
 void
 DatabaseThread::receive_tile(const TileEntry& tile)
 {
-  queue.push(new ReceiveTileDatabaseMessage(tile));
+  m_queue.push(new ReceiveTileDatabaseMessage(tile));
 }
 
 void
 DatabaseThread::delete_file_entry(int64_t fileid)
 {
-  queue.push(new DeleteFileEntryDatabaseMessage(fileid));
+  m_queue.push(new DeleteFileEntryDatabaseMessage(fileid));
 }
 
 void
 DatabaseThread::stop_thread()
 {
-  quit  = true;
-  queue.wakeup();
+  m_quit  = true;
+  m_queue.wakeup();
+}
+
+void
+DatabaseThread::abort_thread()
+{
+  m_quit  = true;
+  m_abort = true;
+  m_queue.wakeup();  
 }
 
 void
 DatabaseThread::run()
 {
-  quit = false;
+  m_quit = false;
 
   Database db(database_filename);
 
-  std::vector<DatabaseMessage*> messages;
-  while(!quit)
-    {
-      queue.wait();
+  while(!m_quit)
+  {
+    m_queue.wait();
 
-      while(!queue.empty())
-        {
-          DatabaseMessage* msg = queue.front();
-          queue.pop();
-          msg->run(db);
-          delete msg;
-        }
+    while(!m_abort && !m_queue.empty())
+    {
+      DatabaseMessage* msg = m_queue.front();
+      m_queue.pop();
+
+      //std::cout << "DatabaseThread::queue.size(): " << m_queue.size() << " - " << typeid(*msg).name() << std::endl;
+
+      msg->run(db);
+      delete msg;
     }
+  }
 }
 
 void
@@ -169,7 +182,7 @@ void
 DatabaseThread::store_file_entry(const URL& url, const Size& size,
                                  const boost::function<void (FileEntry)>& callback)
 {
-  queue.push(new StoreFileEntryDatabaseMessage(url, size, callback));
+  m_queue.push(new StoreFileEntryDatabaseMessage(url, size, callback));
 }
 
 void

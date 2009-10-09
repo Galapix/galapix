@@ -30,7 +30,6 @@ jmp_buf setjmp_buffer;
 
 void fatal_error_handler(j_common_ptr /*cinfo*/)
 {
-  std::cout << "Some jpeg error: " << std::endl;
   longjmp(setjmp_buffer, 1);
 }
 
@@ -55,6 +54,7 @@ JPEG::get_size(const std::string& filename, Size& size)
 
       if (setjmp(setjmp_buffer))
         {
+          std::cout << "Some jpeg error: " << filename << std::endl;
           return false;
         }
       else

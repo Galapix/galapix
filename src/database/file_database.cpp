@@ -65,8 +65,13 @@ FileDatabase::store_file_entry(const FileEntry& entry)
 }
  
 FileEntry
-FileDatabase::store_file_entry(const URL& url,
-                               const Size& size)
+FileDatabase::store_file_entry(const URL& url, const Size& size)
+{
+  return store_file_entry_without_cache(url, size);
+}
+
+FileEntry
+FileDatabase::store_file_entry_without_cache(const URL& url, const Size& size)
 {
   FileEntry file_entry(0, url, url.get_size(), url.get_mtime(), size.width, size.height);
 

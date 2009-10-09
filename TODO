@@ -21,6 +21,10 @@ Release procedure:
 Problems:
 =========
 
+* DatabaseThread is very similar to JobWorkerThread, maybe merge them
+
+* galapix crashes when 
+
 * maybe have something like JobHandle->spawn_child_job()
 
 * current use of cURL is not thread safe due to curl_global_init()

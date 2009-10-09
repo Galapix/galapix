@@ -18,6 +18,8 @@
 
 #include "jobs/file_entry_generation_job.hpp"
 
+#include <assert.h>
+
 #include "galapix/database_thread.hpp"
 #include "util/software_surface_factory.hpp"
 
@@ -27,6 +29,7 @@ FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, cons
     m_url(url),
     m_callback(callback)
 {
+  assert(m_callback);
 }
 
 void
