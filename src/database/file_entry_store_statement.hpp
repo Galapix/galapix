@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_STORE_STATEMENT_HPP
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_STORE_STATEMENT_HPP
 
+#include <iostream>
+
 class FileEntryStoreStatement
 {
 private:
@@ -31,9 +33,12 @@ public:
     m_stmt(db, "INSERT OR REPLACE INTO files (url, size, mtime, width, height) VALUES (?1, ?2, ?3, ?4, ?5);")
   {}
 
-  FileEntry operator()(const URL& url, const Size& size)
+  void operator()(FileEntry file_entry)
   {
-    FileEntry file_entry = FileEntry::create_without_fileid(url, url.get_size(), url.get_mtime(), size.width, size.height);
+    if (file_entry.has_fileid())
+    {
+      std::cout << "FileEntryStoreStatement: Warning file_entry already has fileid: " << file_entry.get_fileid() << std::endl;
+    }
 
     m_stmt.bind_text(1, file_entry.get_url().str());
     m_stmt.bind_int (2, file_entry.get_size());
@@ -44,8 +49,6 @@ public:
     m_stmt.execute();
   
     file_entry.set_fileid(sqlite3_last_insert_rowid(m_db.get_db()));
-
-    return file_entry;
   }
 
 private:

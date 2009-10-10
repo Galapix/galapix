@@ -40,19 +40,23 @@ FileDatabase::FileDatabase(Database& db) :
 FileEntry
 FileDatabase::store_file_entry(const FileEntry& entry)
 {
-  return store_file_entry(entry.get_url(), entry.get_image_size());
+  store_file_entry_without_cache(entry);
+  return entry;
 }
  
 FileEntry
 FileDatabase::store_file_entry(const URL& url, const Size& size)
 {
-  return store_file_entry_without_cache(url, size);
+  FileEntry entry = FileEntry::create_without_fileid(url, url.get_size(), url.get_mtime(), size.width, size.height);
+  store_file_entry(entry);
+  return entry;
 }
 
 FileEntry
-FileDatabase::store_file_entry_without_cache(const URL& url, const Size& size)
+FileDatabase::store_file_entry_without_cache(const FileEntry& entry)
 {
-  return m_file_entry_store(url, size);
+  m_file_entry_store(entry);
+  return entry;
 }
 
 FileEntry

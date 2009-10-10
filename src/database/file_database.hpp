@@ -75,7 +75,7 @@ public:
 
   FileEntry store_file_entry(const FileEntry& entry);
   FileEntry store_file_entry(const URL& url, const Size& size);
-  FileEntry store_file_entry_without_cache(const URL& url, const Size& size);
+  FileEntry store_file_entry_without_cache(const FileEntry& entry);
 
   void check();
 
