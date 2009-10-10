@@ -21,7 +21,17 @@ Release procedure:
 Problems:
 =========
 
-* replace all SQlitestamentes with dedicated objects that wrap the query
+* potential crash in JPEG::get_size(), current use of libjpeg might
+  not be thread save (its not clear if the crash is caused by libjpeg,
+  as it semes rather random):
+
+(gdb) where
+#0  0xb7a05fa7 in std::operator<< <char, std::char_traits<char>, std::allocator<char> > () from /usr/lib/libstdc++.so.6
+#1  0x080a1c94 in JPEG::get_size (filename=@0x80574f2, size=@0xb46f8e48) at src/plugins/jpeg.cpp:57
+#2  0xb7926ff4 in ?? () from /lib/tls/i686/cmov/libc.so.6
+#3  0xb7926ff4 in ?? () from /lib/tls/i686/cmov/libc.so.6
+#4  0xb77b805c in __pthread_mutex_unlock_usercnt (mutex=0x0, decr=134575346) at pthread_mutex_unlock.c:31
+#5  0x00000000 in ?? ()
 
 * need to handle mtime properly
 

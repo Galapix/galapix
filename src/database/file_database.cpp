@@ -62,19 +62,19 @@ FileDatabase::get_file_entry(const URL& url)
 }
 
 void
-FileDatabase::get_file_entries(std::vector<FileEntry>& entries, const std::string& pattern)
+FileDatabase::get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out)
 {
-  m_file_entry_get_by_pattern(entries, pattern);
+  m_file_entry_get_by_pattern(pattern, entries_out);
 }
 
 void
-FileDatabase::get_file_entries(std::vector<FileEntry>& entries)
+FileDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
 {
-  m_file_entry_get_all(entries);
+  m_file_entry_get_all(entries_out);
 }
 
 void
-FileDatabase::update_file_entry(FileEntry& /*entry*/)
+FileDatabase::update_file_entry(FileEntry& entry)
 {
   // UPDATE files SET mtime = ?entry.get_mtime() WHERE fileid = ?entry.fileid
 }

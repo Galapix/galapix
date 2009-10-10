@@ -247,7 +247,7 @@ Galapix::list(const std::string& database, const std::string& pattern)
   if (pattern.empty())
     db.files.get_file_entries(entries);
   else
-    db.files.get_file_entries(entries, pattern);
+    db.files.get_file_entries(pattern, entries);
 
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {

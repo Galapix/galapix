@@ -152,7 +152,7 @@ public:
   void run(Database& db)
   {
     std::vector<FileEntry> entries;
-    db.files.get_file_entries(entries, m_pattern);
+    db.files.get_file_entries(m_pattern, entries);
     for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
         m_callback(*i);

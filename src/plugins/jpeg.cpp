@@ -28,7 +28,7 @@
 
 jmp_buf setjmp_buffer;
 
-void fatal_error_handler(j_common_ptr /*cinfo*/)
+void fatal_error_handler(j_common_ptr cinfo)
 {
   longjmp(setjmp_buffer, 1);
 }

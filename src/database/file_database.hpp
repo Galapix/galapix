@@ -70,8 +70,8 @@ public:
       @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
   FileEntry get_file_entry(const URL& url);
-  void get_file_entries(std::vector<FileEntry>& entries);
-  void get_file_entries(std::vector<FileEntry>& entries, const std::string& pattern);
+  void get_file_entries(std::vector<FileEntry>& entries_out);
+  void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
 
   FileEntry store_file_entry(const FileEntry& entry);
   FileEntry store_file_entry(const URL& url, const Size& size);

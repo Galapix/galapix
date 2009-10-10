@@ -29,7 +29,7 @@ public:
     m_stmt(db, "SELECT * FROM files WHERE url GLOB ?1;")
   {}
 
-  void operator()(std::vector<FileEntry>& entries, const std::string& pattern)
+  void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
   {
     m_stmt.bind_text(1, pattern);
     SQLiteReader reader = m_stmt.execute_query();
@@ -43,7 +43,7 @@ public:
                                           reader.get_int(3),
                                           reader.get_int(4),  // width
                                           reader.get_int(5)); // height
-      entries.push_back(entry);
+      entries_out.push_back(entry);
     } 
   }
 
