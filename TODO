@@ -21,6 +21,13 @@ Release procedure:
 Problems:
 =========
 
+* flush file cache from time to time
+
+* figure out why some images get stuck and do not load (tilegroup?),
+  easily reproducible with a clean database, zooming in often fixes it
+
+* implement loading of small thumbnails that are always kept
+
 * potential crash in JPEG::get_size(), current use of libjpeg might
   not be thread save (its not clear if the crash is caused by libjpeg,
   as it semes rather random), might be caused by libjpeg error handling with setjmp:
@@ -36,8 +43,6 @@ Problems:
 * need to handle mtime properly
 
 * DatabaseThread is very similar to JobWorkerThread, maybe merge them
-
-* galapix crashes when 
 
 * maybe have something like JobHandle->spawn_child_job()
 
