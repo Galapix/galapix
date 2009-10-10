@@ -37,7 +37,7 @@ DatabaseThread::DatabaseThread(const std::string& filename_,
     m_quit(false),
     m_abort(false),
     m_queue(),
-    tile_request_groups()
+    m_tile_request_groups()
 {
   assert(current_ == 0);
   current_ = this;
@@ -136,8 +136,8 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
   // FIXME: We don't check what tiles are already present, so some get
   // generated multiple times! (3-5 then 0-5, while it should be 0-2)
   // FIXME: Cancelation doesn't work either
-  TileRequestGroups::iterator group = tile_request_groups.end();
-  for(TileRequestGroups::iterator i = tile_request_groups.begin(); i != tile_request_groups.end(); ++i)
+  TileRequestGroups::iterator group = m_tile_request_groups.end();
+  for(TileRequestGroups::iterator i = m_tile_request_groups.begin(); i != m_tile_request_groups.end(); ++i)
     {
       if (i->file_entry == file_entry &&
           i->min_scale <= tilescale &&
@@ -148,7 +148,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
         }
     }
 
-  if (group == tile_request_groups.end())
+  if (group == m_tile_request_groups.end())
     {
       int min_scale = tilescale;
       int max_scale = file_entry.get_thumbnail_scale();
@@ -159,7 +159,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
       
       TileRequestGroup request_group(file_entry, min_scale, max_scale);
       request_group.requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
-      tile_request_groups.push_back(request_group);
+      m_tile_request_groups.push_back(request_group);
     }
   else
     {
@@ -187,7 +187,7 @@ void
 DatabaseThread::process_tile(const TileEntry& tile_entry)
 {
   // FIXME: Could break/return here to do some less looping
-  for(TileRequestGroups::iterator i = tile_request_groups.begin(); i != tile_request_groups.end(); ++i)
+  for(TileRequestGroups::iterator i = m_tile_request_groups.begin(); i != m_tile_request_groups.end(); ++i)
     {
       if (i->file_entry == tile_entry.get_file_entry())
         {

@@ -29,9 +29,9 @@ class TileEntry;
 class TileGenerationJob : public Job
 {
 private: 
-  FileEntry entry;
-  int       min_scale;
-  int       max_scale;
+  FileEntry m_file_entry;
+  int       m_min_scale;
+  int       m_max_scale;
   
   boost::function<void (TileEntry)> callback;
 

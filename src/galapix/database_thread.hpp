@@ -36,17 +36,8 @@ private:
   static DatabaseThread* current_;
 public:
   static DatabaseThread* current() { return current_; }
-  
+
 private:
-  JobManager& m_tile_job_manager;
-  JobManager& m_file_entry_job_manager;
-
-  std::string database_filename;
-  bool m_quit;
-  bool m_abort;
-  
-  ThreadMessageQueue<DatabaseMessage*> m_queue;
-
   struct TileRequest
   {
     JobHandle job_handle;
@@ -79,7 +70,18 @@ private:
   };
   
   typedef std::list<TileRequestGroup> TileRequestGroups;
-  TileRequestGroups tile_request_groups;
+  
+private:
+  JobManager& m_tile_job_manager;
+  JobManager& m_file_entry_job_manager;
+
+  std::string database_filename;
+  bool m_quit;
+  bool m_abort;
+  
+  ThreadMessageQueue<DatabaseMessage*> m_queue;
+
+  TileRequestGroups m_tile_request_groups;
 
 protected: 
   void run();
