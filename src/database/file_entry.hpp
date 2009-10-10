@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <assert.h>
 
 #include "util/url.hpp"
 #include "math/math.hpp"
@@ -105,7 +106,7 @@ public:
 
   bool        has_fileid() const { return impl->fileid != 0; }
   void        set_fileid(int64_t fileid) { impl->fileid = fileid; }
-  int64_t     get_fileid()     const { return impl->fileid; }
+  int64_t     get_fileid()     const { assert(has_fileid()); return impl->fileid; }
   URL         get_url()        const { return impl->url; }
   int         get_width()      const { return impl->image_size.width; }
   int         get_height()     const { return impl->image_size.height; }
@@ -117,7 +118,18 @@ public:
   int get_thumbnail_scale() const { return impl->thumbnail_size; }
 
   operator bool() const { return impl.get(); }
- 
+  bool operator==(const FileEntry& rhs) const
+  {
+    if (has_fileid() && rhs.has_fileid())
+    {
+      return get_fileid() == rhs.get_fileid();
+    }
+    else
+    {
+      return impl == rhs.impl;
+    }
+  }
+
 private:
   boost::shared_ptr<FileEntryImpl> impl;
 };

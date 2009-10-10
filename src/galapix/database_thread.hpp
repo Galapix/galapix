@@ -42,7 +42,6 @@ private:
   JobManager& m_file_entry_job_manager;
 
   std::string database_filename;
-  bool abort_instantly;
   bool m_quit;
   bool m_abort;
   
@@ -66,14 +65,14 @@ private:
 
   struct TileRequestGroup 
   {
-    TileRequestGroup(int64_t fileid_, int min_scale_, int max_scale_)
-      : fileid(fileid_),
+    TileRequestGroup(const FileEntry& file_entry_, int min_scale_, int max_scale_)
+      : file_entry(file_entry_),
         min_scale(min_scale_),
         max_scale(max_scale_),
         requests()
     {}
     
-    int64_t fileid; 
+    FileEntry file_entry; 
     int min_scale;
     int max_scale;
     std::vector<TileRequest> requests;

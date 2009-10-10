@@ -54,7 +54,7 @@ TileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int sca
     // Check cache
     for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
     {
-      if (i->get_fileid() == file_entry.get_fileid() &&
+      if (i->get_file_entry() == file_entry &&
           i->get_scale()  == scale  &&
           i->get_pos()    == pos)
       {
@@ -69,12 +69,15 @@ TileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int sca
 void
 TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles_out)
 {
-  m_tile_entry_get_all_by_file_entry(file_entry, tiles_out);
+  if (file_entry.has_fileid())
+  {
+    m_tile_entry_get_all_by_file_entry(file_entry, tiles_out);
+  }
 
   // Check cache
   for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
   {
-    if (i->get_fileid() == file_entry.get_fileid())
+    if (i->get_file_entry() == file_entry)
     {
       tiles_out.push_back(*i);
     }
@@ -84,16 +87,12 @@ TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& til
 bool
 TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile)
 {
-  if (m_tile_entry_get_by_file_entry(file_entry, scale, pos, tile))
-  {
-    return true;
-  }
-  else
+  if (!file_entry.has_fileid())
   {
     // Check cache
     for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
     {
-      if (i->get_fileid() == file_entry.get_fileid() &&
+      if (i->get_file_entry() == file_entry &&
           i->get_scale()  == scale  &&
           i->get_pos()    == pos)
       {
@@ -101,9 +100,31 @@ TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& p
         return true;
       }
     }
-
-    // Tile missing
     return false;
+  }
+  else
+  {
+    if (m_tile_entry_get_by_file_entry(file_entry, scale, pos, tile))
+    {
+      return true;
+    }
+    else
+    {
+      // Check cache
+      for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
+      {
+        if (i->get_file_entry() == file_entry &&
+            i->get_scale()  == scale  &&
+            i->get_pos()    == pos)
+        {
+          tile = *i;
+          return true;
+        }
+      }
+
+      // Tile missing
+      return false;
+    }
   }
 }
 
@@ -156,8 +177,8 @@ TileDatabase::check()
 void
 TileDatabase::flush_cache()
 {
-  std::cout << "Flushing TileCache" << std::endl;
-
+  std::cout << "TileDatabes::flush_cache()" << std::endl;
+  m_db.files.flush_cache();
   if (!tile_cache.empty())
     {
       store_tiles(tile_cache);

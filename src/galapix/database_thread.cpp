@@ -33,8 +33,7 @@ DatabaseThread::DatabaseThread(const std::string& filename_,
                                JobManager& file_entry_job_manager)
   : m_tile_job_manager(tile_job_manager),
     m_file_entry_job_manager(file_entry_job_manager),
-    database_filename(filename_),
-    abort_instantly(),
+    database_filename(filename_),  
     m_quit(false),
     m_abort(false),
     m_queue(),
@@ -137,11 +136,10 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
   // FIXME: We don't check what tiles are already present, so some get
   // generated multiple times! (3-5 then 0-5, while it should be 0-2)
   // FIXME: Cancelation doesn't work either
-
   TileRequestGroups::iterator group = tile_request_groups.end();
   for(TileRequestGroups::iterator i = tile_request_groups.begin(); i != tile_request_groups.end(); ++i)
     {
-      if (i->fileid    == file_entry.get_fileid() && 
+      if (i->file_entry == file_entry &&
           i->min_scale <= tilescale &&
           i->max_scale >= tilescale)
         {
@@ -159,7 +157,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
                                                            boost::bind(&DatabaseThread::receive_tile, this, _1)));
       m_tile_job_manager.request(job_ptr, boost::function<void (boost::shared_ptr<Job>)>());
       
-      TileRequestGroup request_group(file_entry.get_fileid(), min_scale, max_scale);
+      TileRequestGroup request_group(file_entry, min_scale, max_scale);
       request_group.requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
       tile_request_groups.push_back(request_group);
     }
@@ -191,7 +189,7 @@ DatabaseThread::process_tile(const TileEntry& tile_entry)
   // FIXME: Could break/return here to do some less looping
   for(TileRequestGroups::iterator i = tile_request_groups.begin(); i != tile_request_groups.end(); ++i)
     {
-      if (i->fileid == tile_entry.get_fileid())
+      if (i->file_entry == tile_entry.get_file_entry())
         {
           for(std::vector<TileRequest>::iterator j = i->requests.begin(); j != i->requests.end(); ++j)
             {

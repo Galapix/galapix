@@ -34,42 +34,49 @@ public:
 
   bool operator()(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile)
   {
-    m_stmt.bind_int64(1, file_entry.get_fileid());
-    m_stmt.bind_int(2, scale);
-    m_stmt.bind_int(3, pos.x);
-    m_stmt.bind_int(4, pos.y);
-
-    SQLiteReader reader = m_stmt.execute_query();
-
-    if (reader.next())
+    if (!file_entry.has_fileid())
     {
-      tile = TileEntry(file_entry,
-                       reader.get_int(1), // scale
-                       Vector2i(reader.get_int(2), // pos
-                                reader.get_int(3)),
-                       reader.get_blob(4),
-                       reader.get_int(6));
-
-      
-      // FIXME: Do this in a DecoderThread
-
-      BlobHandle blob = tile.get_blob();
-      switch(tile.get_format())
-      {
-        case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
-          tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
-          break;
-
-        case SoftwareSurfaceFactory::PNG_FILEFORMAT:
-          tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
-          break;
-      }
-      
-      return true;
+      return false;
     }
     else
     {
-      return false;
+      m_stmt.bind_int64(1, file_entry.get_fileid());
+      m_stmt.bind_int(2, scale);
+      m_stmt.bind_int(3, pos.x);
+      m_stmt.bind_int(4, pos.y);
+
+      SQLiteReader reader = m_stmt.execute_query();
+
+      if (reader.next())
+      {
+        tile = TileEntry(file_entry,
+                         reader.get_int(1), // scale
+                         Vector2i(reader.get_int(2), // pos
+                                  reader.get_int(3)),
+                         reader.get_blob(4),
+                         reader.get_int(6));
+
+      
+        // FIXME: Do this in a DecoderThread
+
+        BlobHandle blob = tile.get_blob();
+        switch(tile.get_format())
+        {
+          case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
+            tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
+            break;
+
+          case SoftwareSurfaceFactory::PNG_FILEFORMAT:
+            tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
+            break;
+        }
+      
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
   }
 

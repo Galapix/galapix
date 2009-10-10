@@ -23,7 +23,7 @@ Problems:
 
 * potential crash in JPEG::get_size(), current use of libjpeg might
   not be thread save (its not clear if the crash is caused by libjpeg,
-  as it semes rather random):
+  as it semes rather random), might be caused by libjpeg error handling with setjmp:
 
 (gdb) where
 #0  0xb7a05fa7 in std::operator<< <char, std::char_traits<char>, std::allocator<char> > () from /usr/lib/libstdc++.so.6

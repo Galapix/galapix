@@ -37,10 +37,16 @@ FileDatabase::FileDatabase(Database& db) :
 {
 }
 
+FileDatabase::~FileDatabase()
+{
+  flush_cache();
+}
+
 FileEntry
 FileDatabase::store_file_entry(const FileEntry& entry)
 {
-  store_file_entry_without_cache(entry);
+  //store_file_entry_without_cache(entry);
+  m_file_entry_cache.push_back(entry);
   return entry;
 }
  
@@ -48,7 +54,8 @@ FileEntry
 FileDatabase::store_file_entry(const URL& url, const Size& size)
 {
   FileEntry entry = FileEntry::create_without_fileid(url, url.get_size(), url.get_mtime(), size.width, size.height);
-  store_file_entry(entry);
+  //store_file_entry(entry);
+  m_file_entry_cache.push_back(entry);
   return entry;
 }
 
@@ -101,6 +108,19 @@ FileDatabase::check()
           std::cout << i->get_url() << ": ok" << std::endl;
         }
     }
+}
+
+void
+FileDatabase::flush_cache()
+{
+  std::cout << "FileDatabes::flush_cache()" << std::endl;
+  m_db.get_db().exec("BEGIN;");
+  for(std::vector<FileEntry>::iterator i = m_file_entry_cache.begin(); i != m_file_entry_cache.end(); ++i)
+  {
+    store_file_entry_without_cache(*i);
+  }
+  m_db.get_db().exec("COMMIT;");
+  m_file_entry_cache.clear();
 }
 
 /* EOF */

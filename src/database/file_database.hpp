@@ -54,10 +54,13 @@ private:
   FileEntryGetByUrlStatement     m_file_entry_get_by_url;
   FileEntryStoreStatement        m_file_entry_store;
 
+  std::vector<FileEntry> m_file_entry_cache;
+
   void update_file_entry(FileEntry& entry);
  
 public:
   FileDatabase(Database& db);
+  ~FileDatabase();
   
   /** Lookup a FileEntry by its url. If there is no corresponding
       url, then the file will be looked up in the filesystem and
@@ -78,6 +81,7 @@ public:
   FileEntry store_file_entry_without_cache(const FileEntry& entry);
 
   void check();
+  void flush_cache();
 
 private:
   FileDatabase (const FileDatabase&);
