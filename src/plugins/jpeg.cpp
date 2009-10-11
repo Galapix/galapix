@@ -19,6 +19,7 @@
 #include <iostream>
 #include <sstream>
 #include <boost/bind.hpp>
+#include <boost/thread.hpp>
 #include <setjmp.h>
 
 #include "math/size.hpp"
@@ -26,51 +27,59 @@
 #include "plugins/jpeg_memory_dest.hpp"
 #include "plugins/jpeg.hpp"
 
-jmp_buf setjmp_buffer;
+struct JPEGJumpBuffer
+{
+  jmp_buf buf;
+};
+
+boost::thread_specific_ptr<JPEGJumpBuffer> g_setjmp_buffer_ptr;
 
 void fatal_error_handler(j_common_ptr cinfo)
 {
-  longjmp(setjmp_buffer, 1);
+  longjmp(g_setjmp_buffer_ptr->buf, 1);
 }
 
 bool
 JPEG::get_size(const std::string& filename, Size& size)
 {
+  if (!g_setjmp_buffer_ptr.get())
+    g_setjmp_buffer_ptr.reset(new JPEGJumpBuffer);
+
   FILE* in = fopen(filename.c_str(), "rb");
   if (!in)
+  {
+    // throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
+    return false;
+  }
+  else
+  {
+    struct jpeg_decompress_struct  cinfo;
+    struct jpeg_error_mgr jerr;
+
+    cinfo.err = jpeg_std_error(&jerr);
+    cinfo.err->error_exit = &fatal_error_handler;
+    jpeg_create_decompress(&cinfo);
+    jpeg_stdio_src(&cinfo, in);
+
+    if (setjmp(g_setjmp_buffer_ptr->buf))
     {
-      // throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
+      std::cout << "Some jpeg error: " << filename << std::endl;
       return false;
     }
-  else
+    else
     {
-      struct jpeg_decompress_struct  cinfo;
-      struct jpeg_error_mgr jerr;
+      jpeg_read_header(&cinfo, FALSE);
 
-      cinfo.err = jpeg_std_error(&jerr);
-      cinfo.err->error_exit = &fatal_error_handler;
-      jpeg_create_decompress(&cinfo);
-      jpeg_stdio_src(&cinfo, in);
+      size.width  = cinfo.image_width;
+      size.height = cinfo.image_height;
 
-      if (setjmp(setjmp_buffer))
-        {
-          std::cout << "Some jpeg error: " << filename << std::endl;
-          return false;
-        }
-      else
-        {
-          jpeg_read_header(&cinfo, FALSE);
+      jpeg_destroy_decompress(&cinfo);
 
-          size.width  = cinfo.image_width;
-          size.height = cinfo.image_height;
+      fclose(in);
 
-          jpeg_destroy_decompress(&cinfo);
-
-          fclose(in);
-
-          return true;
-        }
+      return true;
     }
+  }
 }
 
 SoftwareSurfaceHandle
@@ -81,6 +90,9 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
          scale == 2 ||
          scale == 4 ||
          scale == 8);
+
+  if (!g_setjmp_buffer_ptr.get())
+    g_setjmp_buffer_ptr.reset(new JPEGJumpBuffer);
 
   struct jpeg_decompress_struct  cinfo;
   struct jpeg_error_mgr jerr;
@@ -93,23 +105,23 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
   // Setup the JPEG source (stdio or mem)
   setup_src_mgr(&cinfo);
 
-  if (setjmp(setjmp_buffer))
-    {
-      throw std::runtime_error("JPEG::load: ERROR");
-    }
+  if (setjmp(g_setjmp_buffer_ptr->buf))
+  {
+    throw std::runtime_error("JPEG::load: ERROR");
+  }
 
   jpeg_read_header(&cinfo, FALSE);
 
   if (scale != 1)
-    { // scale the image down by scale
+  { // scale the image down by scale
 
-      // by default all those values below are on 1
-      cinfo.scale_num           = 1;
-      cinfo.scale_denom         = scale;
+    // by default all those values below are on 1
+    cinfo.scale_num           = 1;
+    cinfo.scale_denom         = scale;
    
-      cinfo.do_fancy_upsampling = FALSE; /* TRUE=apply fancy upsampling */
-      cinfo.do_block_smoothing  = FALSE; /* TRUE=apply interblock smoothing */
-    }
+    cinfo.do_fancy_upsampling = FALSE; /* TRUE=apply fancy upsampling */
+    cinfo.do_block_smoothing  = FALSE; /* TRUE=apply interblock smoothing */
+  }
 
   jpeg_start_decompress(&cinfo);
 
@@ -118,51 +130,51 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
                                                                cinfo.output_height));
   
   if (cinfo.output_components == 3)
-    { // RGB Image
-      boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
+  { // RGB Image
+    boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
 
-      for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(y);
+    for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
+      scanlines[y] = surface->get_row_data(y);
 
-      while (cinfo.output_scanline < cinfo.output_height) 
-        {
-          jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
-                              cinfo.output_height - cinfo.output_scanline);
-        }
-    }
-  else if (cinfo.output_components == 1)
-    { // Greyscale Image
-      boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
-
-      for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(y);
-
-      while (cinfo.output_scanline < cinfo.output_height) 
-        {
-          jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
-                              cinfo.output_height - cinfo.output_scanline);
-        }
-
-      // Expand the greyscale data to RGB
-      // FIXME: Could be made faster if SoftwareSurface would support
-      // other color formats
-      for(int y = 0; y < surface->get_height(); ++y)
-        {
-          uint8_t* rowptr = surface->get_row_data(y);
-          for(int x = surface->get_width()-1; x >= 0; --x)
-            {
-              rowptr[3*x+0] = rowptr[x];
-              rowptr[3*x+1] = rowptr[x];
-              rowptr[3*x+2] = rowptr[x];
-            }
-        }
-    }
-  else
+    while (cinfo.output_scanline < cinfo.output_height) 
     {
-      std::ostringstream str;
-      str << "JPEG: Unsupported color depth: " << cinfo.output_components;
-      throw std::runtime_error(str.str());
+      jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
+                          cinfo.output_height - cinfo.output_scanline);
     }
+  }
+  else if (cinfo.output_components == 1)
+  { // Greyscale Image
+    boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
+
+    for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
+      scanlines[y] = surface->get_row_data(y);
+
+    while (cinfo.output_scanline < cinfo.output_height) 
+    {
+      jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
+                          cinfo.output_height - cinfo.output_scanline);
+    }
+
+    // Expand the greyscale data to RGB
+    // FIXME: Could be made faster if SoftwareSurface would support
+    // other color formats
+    for(int y = 0; y < surface->get_height(); ++y)
+    {
+      uint8_t* rowptr = surface->get_row_data(y);
+      for(int x = surface->get_width()-1; x >= 0; --x)
+      {
+        rowptr[3*x+0] = rowptr[x];
+        rowptr[3*x+1] = rowptr[x];
+        rowptr[3*x+2] = rowptr[x];
+      }
+    }
+  }
+  else
+  {
+    std::ostringstream str;
+    str << "JPEG: Unsupported color depth: " << cinfo.output_components;
+    throw std::runtime_error(str.str());
+  }
 
   jpeg_destroy_decompress(&cinfo);
 
@@ -174,18 +186,18 @@ JPEG::load_from_file(const std::string& filename, int scale)
 {
   FILE* in = fopen(filename.c_str(), "rb");
   if (!in)
-    {
-      throw std::runtime_error("JPEG::load_from_file: Couldn't open " + filename);
-    }
+  {
+    throw std::runtime_error("JPEG::load_from_file: Couldn't open " + filename);
+  }
   else
-    {
-      SoftwareSurfaceHandle surface = JPEG::load(boost::bind(jpeg_stdio_src, _1, in),
-                                                 scale);
+  {
+    SoftwareSurfaceHandle surface = JPEG::load(boost::bind(jpeg_stdio_src, _1, in),
+                                               scale);
 
-      fclose(in); 
+    fclose(in); 
 
-      return surface;
-    }
+    return surface;
+  }
 }
 
 SoftwareSurfaceHandle
@@ -199,17 +211,17 @@ JPEG::save(const SoftwareSurfaceHandle& surface, int quality, const std::string&
 {
   FILE* out = fopen(filename.c_str(), "wb");
   if (!out)
-    {
-      throw std::runtime_error("JPEG:save: Couldn't open " + filename + " for writing");
-    }
+  {
+    throw std::runtime_error("JPEG:save: Couldn't open " + filename + " for writing");
+  }
   else
-    {
-      JPEG::save(surface, 
-                 boost::bind(jpeg_stdio_dest, _1, out),
-                 quality);
+  {
+    JPEG::save(surface, 
+               boost::bind(jpeg_stdio_dest, _1, out),
+               quality);
                  
-      fclose(out);
-    }
+    fclose(out);
+  }
 }
 
 BlobHandle
@@ -258,10 +270,10 @@ JPEG::save(const SoftwareSurfaceHandle& surface_in,
     row_pointer[y] = static_cast<JSAMPLE*>(surface->get_row_data(y));
 
   while(cinfo.next_scanline < cinfo.image_height)
-    {
-      jpeg_write_scanlines(&cinfo, &row_pointer[cinfo.next_scanline], 
-                           surface->get_height() - cinfo.next_scanline);
-    }
+  {
+    jpeg_write_scanlines(&cinfo, &row_pointer[cinfo.next_scanline], 
+                         surface->get_height() - cinfo.next_scanline);
+  }
   
   jpeg_finish_compress(&cinfo);
   
