@@ -21,17 +21,17 @@
 
 #include "sqlite/connection.hpp"
 #include "util/blob.hpp"
+
+class SQLiteStatement;
 
 class SQLiteReader
 {
 private:
-  SQLiteConnection* db;
-  sqlite3_stmt*   stmt;
-  
+  SQLiteConnection& m_db;
+  sqlite3_stmt*  m_stmt;
+
 public:
-  SQLiteReader(SQLiteConnection* db, sqlite3_stmt* stmt);
-  SQLiteReader(const SQLiteReader&);
-  SQLiteReader& operator=(const SQLiteReader&);
+  SQLiteReader(SQLiteConnection& db, sqlite3_stmt* stmt);
   ~SQLiteReader();
 
   bool next();
@@ -44,6 +44,11 @@ public:
   BlobHandle  get_blob(int column);
 
   std::string get_column_name(int column);
+
+public:
+  SQLiteReader(const SQLiteReader&);
+private:
+  SQLiteReader& operator=(const SQLiteReader&);
 };
 
 #endif

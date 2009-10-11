@@ -24,15 +24,14 @@
 class SQLiteStatement
 {
 private:
-  SQLiteConnection* db;
-  sqlite3_stmt*   stmt;
-  std::string     stmt_str;
+  SQLiteConnection& m_db;
+  sqlite3_stmt*  m_stmt;
+  std::string    m_stmt_str;
 
   void reset();
   
 public:
-  SQLiteStatement(SQLiteConnection* db);
-  SQLiteStatement(SQLiteConnection* db, const std::string& sqlstmt);
+  SQLiteStatement(SQLiteConnection& db);
   SQLiteStatement(SQLiteConnection& db, const std::string& sqlstmt);
   ~SQLiteStatement();
 
@@ -47,10 +46,11 @@ public:
   void execute();
   SQLiteReader execute_query();
 
-  std::string str() const { return stmt_str; }
+  std::string str() const { return m_stmt_str; }
+
+  sqlite3_stmt*  get_stmt() { return m_stmt; }
 
 private:
-  SQLiteStatement();
   SQLiteStatement(const SQLiteStatement&);
   SQLiteStatement& operator=(const SQLiteStatement&);
 };

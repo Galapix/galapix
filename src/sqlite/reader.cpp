@@ -21,112 +21,95 @@
 #include <sstream>
 
 #include "sqlite/error.hpp"
+#include "sqlite/statement.hpp"
 
-SQLiteReader::SQLiteReader(SQLiteConnection* db_, sqlite3_stmt* stmt_) :
-  db(db_),
-  stmt(stmt_)
+SQLiteReader::SQLiteReader(SQLiteConnection& db, sqlite3_stmt* stmt) :
+  m_db(db),
+  m_stmt(stmt)
 {
 }
 
-SQLiteReader::SQLiteReader(const SQLiteReader& rhs) :
-  db(rhs.db),
-  stmt(rhs.stmt)
-{ // FIXME: WRONG, leads to double free
-}
-
-SQLiteReader&
-SQLiteReader::operator=(const SQLiteReader& rhs)
-{ // FIXME: WRONG, leads to double free
-  db   = rhs.db;
-  stmt = rhs.stmt;  
-  return *this;
-}
-
 SQLiteReader::~SQLiteReader()
-{  
-  // FIXME: Not good, we likely clean up twice
-  sqlite3_clear_bindings(stmt);
-
-  if (sqlite3_reset(stmt) != SQLITE_OK)
-    {
-      std::ostringstream str;
-      str << "SQLiteReader::~SQLiteReader:" << db->get_error_msg();
-      throw SQLiteError(str.str());
-    }
+{
+  sqlite3_clear_bindings(m_stmt);
+  if (sqlite3_reset(m_stmt) != SQLITE_OK)
+  {
+    std::ostringstream str;
+    str << "SQLiteReader::~SQLiteReader:" << m_db.get_error_msg();
+    throw SQLiteError(str.str());
+  }
 }
 
 bool
 SQLiteReader::next()
 {
- retry:
+retry:
+  switch(sqlite3_step(m_stmt))
+  {
+    case SQLITE_DONE:
+      return false;
 
-  switch(sqlite3_step(stmt))
-    {
-      case SQLITE_DONE:
-        // cleanup here or in the destructor?!
-        return false;
+    case SQLITE_ROW:
+      return true;
 
-      case SQLITE_ROW:
-        return true;
-
-      case SQLITE_BUSY:
-        goto retry;        
+    case SQLITE_BUSY:
+      goto retry;        
         
-      case SQLITE_ERROR:
-      case SQLITE_MISUSE:
-      default:
-        {
-          std::ostringstream str;
-          str << "SQLiteStatement::execute_query: " << db->get_error_msg();
-          throw SQLiteError(str.str());     
-          return false;
-        }
+    case SQLITE_ERROR:
+    case SQLITE_MISUSE:
+    default:
+    {
+      std::ostringstream str;
+      str << "SQLiteReader::next: " << m_db.get_error_msg();
+      throw SQLiteError(str.str());     
+      return false;
     }
+  }
 }
 
 int
 SQLiteReader::get_int(int column)
 {
-  return sqlite3_column_int(stmt, column);
+  return sqlite3_column_int(m_stmt, column);
 }
 
 int64_t
 SQLiteReader::get_int64(int column)
 {
-  return sqlite3_column_int64(stmt, column);
+  return sqlite3_column_int64(m_stmt, column);
 }
 
 bool
 SQLiteReader::is_null(int column)
 {
-  return sqlite3_column_type(stmt, column) == SQLITE_NULL;
+  return sqlite3_column_type(m_stmt, column) == SQLITE_NULL;
 }
 
 int
 SQLiteReader::get_type(int column)
 {
-  return sqlite3_column_type(stmt, column);
+  return sqlite3_column_type(m_stmt, column);
 }
 
 std::string
 SQLiteReader::get_text(int column)
 {
-  const void* data = sqlite3_column_text(stmt, column);
-  int len = sqlite3_column_bytes(stmt, column);
+  const void* data = sqlite3_column_text(m_stmt, column);
+  int len = sqlite3_column_bytes(m_stmt, column);
   return std::string(static_cast<const char*>(data), len);
 }
 
 BlobHandle
 SQLiteReader::get_blob(int column)
 {
-  return Blob::copy(sqlite3_column_blob(stmt, column),
-                    sqlite3_column_bytes(stmt, column));
+  return Blob::copy(sqlite3_column_blob(m_stmt, column),
+                    sqlite3_column_bytes(m_stmt, column));
 }
 
 std::string
 SQLiteReader::get_column_name(int column)
 {
-  return sqlite3_column_name(stmt, column);
+  return sqlite3_column_name(m_stmt, column);
 }
 
 /* EOF */
