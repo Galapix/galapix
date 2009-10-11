@@ -19,202 +19,45 @@
 #include <iostream>
 #include <sstream>
 #include <boost/bind.hpp>
-#include <boost/thread.hpp>
 #include <setjmp.h>
 
 #include "math/size.hpp"
-#include "plugins/jpeg_memory_src.hpp"
 #include "plugins/jpeg_memory_dest.hpp"
 #include "plugins/jpeg.hpp"
-
-struct JPEGJumpBuffer
-{
-  jmp_buf buf;
-};
-
-// FIXME: could do it without local storage by making the jmp_buf part
-// of the cinfo struct, see examples in libjpeg
-boost::thread_specific_ptr<JPEGJumpBuffer> g_setjmp_buffer_ptr; 
-
-void fatal_error_handler(j_common_ptr cinfo)
-{
-  longjmp(g_setjmp_buffer_ptr->buf, 1);
-}
+#include "plugins/file_jpeg_loader.hpp"
+#include "plugins/mem_jpeg_loader.hpp"
 
 bool
-JPEG::get_size(const std::string& filename, Size& size)
+JPEG::get_size(const std::string& filename, Size& size_out)
 {
-  if (!g_setjmp_buffer_ptr.get())
-    g_setjmp_buffer_ptr.reset(new JPEGJumpBuffer);
-
-  FILE* in = fopen(filename.c_str(), "rb");
-  if (!in)
-  {
-    // throw std::runtime_error("JPEG::get_size: Couldn't open " + filename);
-    return false;
-  }
-  else
-  {
-    struct jpeg_decompress_struct  cinfo;
-    struct jpeg_error_mgr jerr;
-
-    cinfo.err = jpeg_std_error(&jerr);
-    cinfo.err->error_exit = &fatal_error_handler;
-    jpeg_create_decompress(&cinfo);
-    jpeg_stdio_src(&cinfo, in);
-
-    if (setjmp(g_setjmp_buffer_ptr->buf))
-    {
-      char buffer[JMSG_LENGTH_MAX];
-      (cinfo.err->format_message)(reinterpret_cast<jpeg_common_struct*>(&cinfo), buffer);
-      std::cout << "Error: JPEG::get_size: " << filename << ": " << buffer << std::endl;
-
-      return false;
-    }
-    else
-    {
-      jpeg_read_header(&cinfo, FALSE);
-
-      size.width  = cinfo.image_width;
-      size.height = cinfo.image_height;
-
-      jpeg_destroy_decompress(&cinfo);
-
-      fclose(in);
-
-      return true;
-    }
-  }
+  FileJPEGLoader loader(filename);
+  loader.read_header();
+  size_out = loader.get_size();
+  return true;
 }
 
 SoftwareSurfaceHandle
-JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
-           int scale)
+JPEG::load_from_file(const std::string& filename, int scale)
 {
   assert(scale == 1 ||
          scale == 2 ||
          scale == 4 ||
          scale == 8);
 
-  if (!g_setjmp_buffer_ptr.get())
-    g_setjmp_buffer_ptr.reset(new JPEGJumpBuffer);
-
-  struct jpeg_decompress_struct  cinfo;
-  struct jpeg_error_mgr jerr;
-
-  cinfo.err = jpeg_std_error(&jerr);
-  cinfo.err->error_exit = &fatal_error_handler;
-
-  jpeg_create_decompress(&cinfo);
-
-  // Setup the JPEG source (stdio or mem)
-  setup_src_mgr(&cinfo);
-
-  if (setjmp(g_setjmp_buffer_ptr->buf))
-  {
-    char buffer[JMSG_LENGTH_MAX];
-    (cinfo.err->format_message)(reinterpret_cast<jpeg_common_struct*>(&cinfo), buffer);
-
-    std::ostringstream out;
-    out << "Error: JPEG::load: " /*<< filename << ": "*/ << buffer << std::endl;
-
-    throw std::runtime_error(out.str());
-  }
-
-  jpeg_read_header(&cinfo, FALSE);
-
-  if (scale != 1)
-  { // scale the image down by scale
-
-    // by default all those values below are on 1
-    cinfo.scale_num           = 1;
-    cinfo.scale_denom         = scale;
-   
-    cinfo.do_fancy_upsampling = FALSE; /* TRUE=apply fancy upsampling */
-    cinfo.do_block_smoothing  = FALSE; /* TRUE=apply interblock smoothing */
-  }
-
-  jpeg_start_decompress(&cinfo);
-
-  SoftwareSurfaceHandle surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
-                                                          Size(cinfo.output_width,
-                                                               cinfo.output_height));
-  
-  if (cinfo.output_components == 3)
-  { // RGB Image
-    boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
-
-    for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
-      scanlines[y] = surface->get_row_data(y);
-
-    while (cinfo.output_scanline < cinfo.output_height) 
-    {
-      jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
-                          cinfo.output_height - cinfo.output_scanline);
-    }
-  }
-  else if (cinfo.output_components == 1)
-  { // Greyscale Image
-    boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[cinfo.output_height]);
-
-    for(JDIMENSION y = 0; y < cinfo.output_height; ++y)
-      scanlines[y] = surface->get_row_data(y);
-
-    while (cinfo.output_scanline < cinfo.output_height) 
-    {
-      jpeg_read_scanlines(&cinfo, &scanlines[cinfo.output_scanline], 
-                          cinfo.output_height - cinfo.output_scanline);
-    }
-
-    // Expand the greyscale data to RGB
-    // FIXME: Could be made faster if SoftwareSurface would support
-    // other color formats
-    for(int y = 0; y < surface->get_height(); ++y)
-    {
-      uint8_t* rowptr = surface->get_row_data(y);
-      for(int x = surface->get_width()-1; x >= 0; --x)
-      {
-        rowptr[3*x+0] = rowptr[x];
-        rowptr[3*x+1] = rowptr[x];
-        rowptr[3*x+2] = rowptr[x];
-      }
-    }
-  }
-  else
-  {
-    std::ostringstream str;
-    str << "JPEG: Unsupported color depth: " << cinfo.output_components;
-    throw std::runtime_error(str.str());
-  }
-
-  jpeg_destroy_decompress(&cinfo);
-
-  return surface;
-}  
-
-SoftwareSurfaceHandle
-JPEG::load_from_file(const std::string& filename, int scale)
-{
-  FILE* in = fopen(filename.c_str(), "rb");
-  if (!in)
-  {
-    throw std::runtime_error("JPEG::load_from_file: Couldn't open " + filename);
-  }
-  else
-  {
-    SoftwareSurfaceHandle surface = JPEG::load(boost::bind(jpeg_stdio_src, _1, in),
-                                               scale);
-
-    fclose(in); 
-
-    return surface;
-  }
+  FileJPEGLoader loader(filename);
+  return loader.read_image(scale);
 }
 
 SoftwareSurfaceHandle
 JPEG::load_from_mem(uint8_t* mem, int len, int scale)
 {
-  return JPEG::load(boost::bind(jpeg_memory_src, _1, mem, len), scale);
+  assert(scale == 1 ||
+         scale == 2 ||
+         scale == 4 ||
+         scale == 8);
+
+  MemJPEGLoader loader(mem, len);
+  return loader.read_image(scale);
 }
 
 void

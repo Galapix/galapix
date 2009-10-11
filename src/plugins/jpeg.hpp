@@ -32,8 +32,6 @@ private:
 public:
   static bool get_size(const std::string& filename, Size& size);
 
-  static SoftwareSurfaceHandle load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr, 
-                              int scale = 1);
   static void save(const SoftwareSurfaceHandle& surface, 
                    const boost::function<void (j_compress_ptr)>& setup_dest_mgr, 
                    int quality);
