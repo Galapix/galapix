@@ -76,7 +76,9 @@ TileGenerationJob::generate_tile_entries(SoftwareSurfaceFactory::FileFormat form
 {
   std::cout << "TileGeneratorThread: have " 
             << m_min_scale_in_db << "-" << m_max_scale_in_db << " generating "
-            << min_scale << "-" << max_scale << ": " << m_file_entry.get_url() << std::endl;
+            << min_scale << "-" << max_scale << ": " << (m_file_entry.has_fileid() ? m_file_entry.get_fileid() : -1)
+            << ": " 
+            << m_file_entry.get_url() << std::endl;
 
   // Find scale at which the image fits on one tile
   int width  = m_file_entry.get_width();

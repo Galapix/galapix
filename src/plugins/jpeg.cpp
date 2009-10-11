@@ -38,11 +38,6 @@ JPEG::get_size(const std::string& filename)
 SoftwareSurfaceHandle
 JPEG::load_from_file(const std::string& filename, int scale)
 {
-  assert(scale == 1 ||
-         scale == 2 ||
-         scale == 4 ||
-         scale == 8);
-
   FileJPEGLoader loader(filename);
   return loader.read_image(scale);
 }
@@ -50,11 +45,6 @@ JPEG::load_from_file(const std::string& filename, int scale)
 SoftwareSurfaceHandle
 JPEG::load_from_mem(uint8_t* mem, int len, int scale)
 {
-  assert(scale == 1 ||
-         scale == 2 ||
-         scale == 4 ||
-         scale == 8);
-
   MemJPEGLoader loader(mem, len);
   return loader.read_image(scale);
 }

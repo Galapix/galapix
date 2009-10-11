@@ -19,6 +19,7 @@
 #include "plugins/jpeg_loader.hpp"
 
 #include <sstream>
+#include <iostream>
 #include <stdexcept>
 
 void
@@ -72,6 +73,15 @@ JPEGLoader::read_header()
 SoftwareSurfaceHandle
 JPEGLoader::read_image(int scale)
 {
+  if (!(scale == 1 ||
+        scale == 2 ||
+        scale == 4 ||
+        scale == 8))
+  {
+    std::cout << "JPEGLoader::read_image: Invalid scale: " << scale << std::endl;
+    assert(0);
+  }
+
   if (setjmp(m_err.setjmp_buffer))
   {
     char buffer[JMSG_LENGTH_MAX];
