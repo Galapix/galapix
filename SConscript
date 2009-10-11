@@ -99,6 +99,7 @@ if compile_galapix_tests:
     libgalapix_test_env.Program("test/exec_test", ["test/exec_test.cpp"])
     libgalapix_test_env.Program("test/url_test",  ["test/url_test.cpp"])
     libgalapix_test_env.Program("test/pnm_test",  ["test/pnm_test.cpp"])
+    libgalapix_test_env.Program("test/jpeg_size_test", ["test/jpeg_size_test.cpp"])
     libgalapix_test_env.Program("test/curl_test", ["test/curl_test.cpp"])
 
 if compile_galapix_sdl:
