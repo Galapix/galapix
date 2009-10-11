@@ -21,8 +21,6 @@ Release procedure:
 Problems:
 =========
 
-* verify JPEG loading code for memory leaks and segfaults
-
 * memory behaviour:
 
   after start up: 50MB

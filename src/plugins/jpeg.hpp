@@ -30,7 +30,7 @@ class JPEG
 private:
 
 public:
-  static bool get_size(const std::string& filename, Size& size);
+  static Size get_size(const std::string& filename);
 
   static void save(const SoftwareSurfaceHandle& surface, 
                    const boost::function<void (j_compress_ptr)>& setup_dest_mgr, 

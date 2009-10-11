@@ -27,13 +27,12 @@
 #include "plugins/file_jpeg_loader.hpp"
 #include "plugins/mem_jpeg_loader.hpp"
 
-bool
-JPEG::get_size(const std::string& filename, Size& size_out)
+Size
+JPEG::get_size(const std::string& filename)
 {
   FileJPEGLoader loader(filename);
   loader.read_header();
-  size_out = loader.get_size();
-  return true;
+  return loader.get_size();
 }
 
 SoftwareSurfaceHandle

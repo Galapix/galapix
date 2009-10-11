@@ -32,14 +32,14 @@ int main(int argc, char** argv)
   {
     for (int i = 1; i < argc; ++i)
     {
-      Size size;
-      if (JPEG::get_size(argv[i], size))
+      try 
       {
+        Size size = JPEG::get_size(argv[i]);
         std::cout << "JPEG::get_size(\"" << argv[i] << "\", " << size << ")" << std::endl;
       }
-      else
+      catch(std::exception& err)
       {
-        std::cout << "Error: Couldn't get size: " << argv[i] << std::endl;
+        std::cout << err.what() << std::endl;
       }
     }
     return 0;

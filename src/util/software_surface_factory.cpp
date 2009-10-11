@@ -103,7 +103,8 @@ SoftwareSurfaceFactory::get_size(const URL& url, Size& size)
           switch(format)
             {
               case JPEG_FILEFORMAT:
-                return JPEG::get_size(url.get_stdio_name(), size);
+                size = JPEG::get_size(url.get_stdio_name());
+                return true;
 
               case PNG_FILEFORMAT:
                 return PNG::get_size(url.get_stdio_name(), size);
