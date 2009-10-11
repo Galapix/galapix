@@ -98,8 +98,8 @@ public:
         {
           if (!m_sw.get())
           {
-            m_sw.reset(new QuadTreeNode(m_depth+1, Rectf(m_bounding_rect.left, m_bounding_rect.top,
-                                                         m_center.x, m_center.y)));
+            m_sw.reset(new QuadTreeNode(m_depth+1, Rectf(m_bounding_rect.left, m_center.y,
+                                                         m_center.x, m_bounding_rect.bottom)));
           }
           m_sw->add(rect, c);
         }
@@ -117,8 +117,8 @@ public:
         {
           if (!m_ne.get())
           {
-            m_ne.reset(new QuadTreeNode(m_depth+1, Rectf(m_bounding_rect.left, m_bounding_rect.top,
-                                                         m_center.x, m_center.y)));
+            m_ne.reset(new QuadTreeNode(m_depth+1, Rectf(m_center.x, m_bounding_rect.top,
+                                                         m_bounding_rect.right, m_center.y)));
           }
           m_ne->add(rect, c);
         }
@@ -126,8 +126,8 @@ public:
         {
           if (!m_se.get())
           {
-            m_se.reset(new QuadTreeNode(m_depth+1, Rectf(m_bounding_rect.left, m_bounding_rect.top,
-                                                         m_center.x, m_center.y)));
+            m_se.reset(new QuadTreeNode(m_depth+1, Rectf(m_center.x, m_center.y,
+                                                         m_bounding_rect.right, m_bounding_rect.bottom)));
           }
           m_se->add(rect, c);
         }
@@ -151,15 +151,6 @@ public:
 
   void get_items_at(const Rectf& rect, std::vector<C>& out_items) const
   {
-    // Check all overlapping items
-    for(typename Items::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
-    {
-      if (i->rect.is_overlapped(rect))
-      {
-        out_items.push_back(i->data);
-      }
-    }
-
     // If rect overlaps with the given quadrant, recursivly check the quadrant
     if (m_nw.get() && 
         rect.left < m_center.x &&
@@ -187,6 +178,15 @@ public:
         rect.bottom > m_center.y)
     {
       m_se->get_items_at(rect, out_items);
+    }
+
+    // Check all overlapping items
+    for(typename Items::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
+    {
+      if (i->rect.is_overlapped(rect))
+      {
+        out_items.push_back(i->data);
+      }
     }
   }
 };
