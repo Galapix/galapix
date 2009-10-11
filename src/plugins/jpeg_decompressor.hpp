@@ -16,21 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_PLUGINS_MEM_JPEG_LOADER_HPP
-#define HEADER_GALAPIX_PLUGINS_MEM_JPEG_LOADER_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_JPEG_DECOMPRESSOR_HPP
+#define HEADER_GALAPIX_PLUGINS_JPEG_DECOMPRESSOR_HPP
 
-#include "plugins/jpeg_loader.hpp"
+#include <stdio.h>
+#include <jpeglib.h>
+#include <setjmp.h>
 
-class MemJPEGLoader : public JPEGLoader
+#include "math/size.hpp"
+#include "util/software_surface.hpp"
+
+class JPEGDecompressor
 {
-private:
+protected:
+  struct ErrorMgr 
+  {
+    struct jpeg_error_mgr pub;
+    jmp_buf setjmp_buffer;
+  };
+
+protected:
+  struct jpeg_decompress_struct  m_cinfo;
+  struct ErrorMgr m_err;
+
+protected:
+  JPEGDecompressor();
+
 public:
-  MemJPEGLoader(uint8_t* mem, int len);
-  ~MemJPEGLoader();
+  virtual ~JPEGDecompressor();
+  
+  Size get_size() const;
+
+  void read_header();
+  SoftwareSurfaceHandle read_image(int scale);
 
 private:
-  MemJPEGLoader(const MemJPEGLoader&);
-  MemJPEGLoader& operator=(const MemJPEGLoader&);
+  static void fatal_error_handler(j_common_ptr cinfo);
+  
+private:
+  JPEGDecompressor(const JPEGDecompressor&);
+  JPEGDecompressor& operator=(const JPEGDecompressor&);
 };
 
 #endif

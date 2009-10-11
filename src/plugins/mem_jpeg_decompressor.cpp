@@ -16,32 +16,17 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/file_jpeg_loader.hpp"
+#include "plugins/mem_jpeg_decompressor.hpp"
 
-#include <sstream>
-#include <stdexcept>
-#include <string.h>
-#include <errno.h>
+#include "plugins/jpeg_memory_src.hpp"
 
-FileJPEGLoader::FileJPEGLoader(const std::string& filename) :
-  m_filename(filename),
-  m_in(fopen(filename.c_str(), "rb"))
+MemJPEGDecompressor::MemJPEGDecompressor(uint8_t* mem, int len)
 {
-  if (!m_in)
-  {
-    std::ostringstream out;
-    out << filename << ": " << strerror(errno);
-    throw std::runtime_error(out.str());
-  }
-  else
-  {
-    jpeg_stdio_src(&m_cinfo, m_in);
-  }
+  jpeg_memory_src(&m_cinfo, mem, len);
 }
 
-FileJPEGLoader::~FileJPEGLoader()
+MemJPEGDecompressor::~MemJPEGDecompressor()
 {
-  fclose(m_in);
 }
 
 /* EOF */

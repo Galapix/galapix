@@ -16,43 +16,43 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/jpeg_loader.hpp"
+#include "plugins/jpeg_decompressor.hpp"
 
 #include <sstream>
 #include <iostream>
 #include <stdexcept>
 
 void
-JPEGLoader::fatal_error_handler(j_common_ptr cinfo)
+JPEGDecompressor::fatal_error_handler(j_common_ptr cinfo)
 {
   longjmp(reinterpret_cast<ErrorMgr*>(cinfo->err)->setjmp_buffer, 1);
 }
 
-JPEGLoader::JPEGLoader()
+JPEGDecompressor::JPEGDecompressor()
 {
   jpeg_std_error(&m_err.pub);
 
-  m_err.pub.error_exit = &JPEGLoader::fatal_error_handler;
+  m_err.pub.error_exit = &JPEGDecompressor::fatal_error_handler;
 
   m_cinfo.err = &m_err.pub;
 
   jpeg_create_decompress(&m_cinfo);
 }
 
-JPEGLoader::~JPEGLoader()
+JPEGDecompressor::~JPEGDecompressor()
 {
   jpeg_destroy_decompress(&m_cinfo);
 }
 
 Size
-JPEGLoader::get_size() const
+JPEGDecompressor::get_size() const
 {
   return Size(m_cinfo.image_width,
               m_cinfo.image_height);
 }
 
 void
-JPEGLoader::read_header()
+JPEGDecompressor::read_header()
 {
   if (setjmp(m_err.setjmp_buffer))
   {
@@ -71,14 +71,14 @@ JPEGLoader::read_header()
 }
 
 SoftwareSurfaceHandle
-JPEGLoader::read_image(int scale)
+JPEGDecompressor::read_image(int scale)
 {
   if (!(scale == 1 ||
         scale == 2 ||
         scale == 4 ||
         scale == 8))
   {
-    std::cout << "JPEGLoader::read_image: Invalid scale: " << scale << std::endl;
+    std::cout << "JPEGDecompressor::read_image: Invalid scale: " << scale << std::endl;
     assert(0);
   }
 

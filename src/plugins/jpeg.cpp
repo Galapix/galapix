@@ -25,13 +25,13 @@
 #include "plugins/jpeg.hpp"
 #include "plugins/file_jpeg_compressor.hpp"
 #include "plugins/mem_jpeg_compressor.hpp"
-#include "plugins/file_jpeg_loader.hpp"
-#include "plugins/mem_jpeg_loader.hpp"
+#include "plugins/file_jpeg_decompressor.hpp"
+#include "plugins/mem_jpeg_decompressor.hpp"
 
 Size
 JPEG::get_size(const std::string& filename)
 {
-  FileJPEGLoader loader(filename);
+  FileJPEGDecompressor loader(filename);
   loader.read_header();
   return loader.get_size();
 }
@@ -39,14 +39,14 @@ JPEG::get_size(const std::string& filename)
 SoftwareSurfaceHandle
 JPEG::load_from_file(const std::string& filename, int scale)
 {
-  FileJPEGLoader loader(filename);
+  FileJPEGDecompressor loader(filename);
   return loader.read_image(scale);
 }
 
 SoftwareSurfaceHandle
 JPEG::load_from_mem(uint8_t* mem, int len, int scale)
 {
-  MemJPEGLoader loader(mem, len);
+  MemJPEGDecompressor loader(mem, len);
   return loader.read_image(scale);
 }
 

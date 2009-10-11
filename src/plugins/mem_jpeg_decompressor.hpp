@@ -16,17 +16,23 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/mem_jpeg_loader.hpp"
+#ifndef HEADER_GALAPIX_PLUGINS_MEM_JPEG_DECOMPRESSOR_HPP
+#define HEADER_GALAPIX_PLUGINS_MEM_JPEG_DECOMPRESSOR_HPP
 
-#include "plugins/jpeg_memory_src.hpp"
+#include "plugins/jpeg_decompressor.hpp"
 
-MemJPEGLoader::MemJPEGLoader(uint8_t* mem, int len)
+class MemJPEGDecompressor : public JPEGDecompressor
 {
-  jpeg_memory_src(&m_cinfo, mem, len);
-}
+private:
+public:
+  MemJPEGDecompressor(uint8_t* mem, int len);
+  ~MemJPEGDecompressor();
 
-MemJPEGLoader::~MemJPEGLoader()
-{
-}
+private:
+  MemJPEGDecompressor(const MemJPEGDecompressor&);
+  MemJPEGDecompressor& operator=(const MemJPEGDecompressor&);
+};
+
+#endif
 
 /* EOF */

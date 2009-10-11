@@ -16,27 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_PLUGINS_FILE_JPEG_LOADER_HPP
-#define HEADER_GALAPIX_PLUGINS_FILE_JPEG_LOADER_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_FILE_JPEG_DECOMPRESSOR_HPP
+#define HEADER_GALAPIX_PLUGINS_FILE_JPEG_DECOMPRESSOR_HPP
 
-#include "plugins/jpeg_loader.hpp"
+#include "plugins/jpeg_decompressor.hpp"
 
 #include <sstream>
 #include <stdio.h>
 
-class FileJPEGLoader : public JPEGLoader
+class FileJPEGDecompressor : public JPEGDecompressor
 {
 private:
   std::string m_filename;
   FILE* m_in;
 
 public:
-  FileJPEGLoader(const std::string& filename);
-  ~FileJPEGLoader();
+  FileJPEGDecompressor(const std::string& filename);
+  ~FileJPEGDecompressor();
 
 private:
-  FileJPEGLoader(const FileJPEGLoader&);
-  FileJPEGLoader& operator=(const FileJPEGLoader&);
+  FileJPEGDecompressor(const FileJPEGDecompressor&);
+  FileJPEGDecompressor& operator=(const FileJPEGDecompressor&);
 };
 
 #endif

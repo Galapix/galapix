@@ -16,48 +16,32 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_PLUGINS_JPEG_LOADER_HPP
-#define HEADER_GALAPIX_PLUGINS_JPEG_LOADER_HPP
+#include "plugins/file_jpeg_decompressor.hpp"
 
-#include <stdio.h>
-#include <jpeglib.h>
-#include <setjmp.h>
+#include <sstream>
+#include <stdexcept>
+#include <string.h>
+#include <errno.h>
 
-#include "math/size.hpp"
-#include "util/software_surface.hpp"
-
-class JPEGLoader
+FileJPEGDecompressor::FileJPEGDecompressor(const std::string& filename) :
+  m_filename(filename),
+  m_in(fopen(filename.c_str(), "rb"))
 {
-protected:
-  struct ErrorMgr 
+  if (!m_in)
   {
-    struct jpeg_error_mgr pub;
-    jmp_buf setjmp_buffer;
-  };
+    std::ostringstream out;
+    out << filename << ": " << strerror(errno);
+    throw std::runtime_error(out.str());
+  }
+  else
+  {
+    jpeg_stdio_src(&m_cinfo, m_in);
+  }
+}
 
-protected:
-  struct jpeg_decompress_struct  m_cinfo;
-  struct ErrorMgr m_err;
-
-protected:
-  JPEGLoader();
-
-public:
-  virtual ~JPEGLoader();
-  
-  Size get_size() const;
-
-  void read_header();
-  SoftwareSurfaceHandle read_image(int scale);
-
-private:
-  static void fatal_error_handler(j_common_ptr cinfo);
-  
-private:
-  JPEGLoader(const JPEGLoader&);
-  JPEGLoader& operator=(const JPEGLoader&);
-};
-
-#endif
+FileJPEGDecompressor::~FileJPEGDecompressor()
+{
+  fclose(m_in);
+}
 
 /* EOF */
