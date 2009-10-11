@@ -56,29 +56,31 @@ public:
   void run(Database& db)
   {
     if (!job_handle.is_aborted())
+    {
+      TileEntry tile;
+      if (db.tiles.get_tile(file_entry, tilescale, pos, tile))
       {
-        TileEntry tile;
-        if (db.tiles.get_tile(file_entry, tilescale, pos, tile))
-          {
-            // Tile has been found, so return it and finish up
-            if (callback)
-              callback(tile);
-            job_handle.finish();
-          }
-        else
-          {
-            // Tile hasn't been found, so we need to generate it
-            if (0)
-              std::cout << "Error: Couldn't get tile: " 
-                        << file_entry.get_fileid() << " "
-                        << pos.x << " "
-                        << pos.y << " "
-                        << tilescale
-                        << std::endl;
-                          
-            DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
-          }
+        // Tile has been found, so return it and finish up
+        if (callback)
+          callback(tile);
+        job_handle.finish();
       }
+      else
+      {
+        // Tile hasn't been found, so we need to generate it
+        if (0)
+          std::cout << "Error: Couldn't get tile: " 
+                    << file_entry.get_fileid() << " "
+                    << pos.x << " "
+                    << pos.y << " "
+                    << tilescale
+                    << std::endl;
+        
+        {
+          DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
+        }
+      }
+    }
   }
 };
 
@@ -177,12 +179,9 @@ public:
                 << tile.get_pos()    << " scale: " 
                 << tile.get_scale()  << std::endl;
 
-    DatabaseThread::current()->process_tile(tile);
-
     // FIXME: Make some better error checking in case of loading failure
     if (tile.get_surface())
       {
-        // Avoid doubble store of tiles in the database
         // FIXME: Test the performance of this
         //if (!db.tiles.has_tile(tile.fileid, tile.pos, tile.scale))
         db.tiles.store_tile_in_cache(tile);

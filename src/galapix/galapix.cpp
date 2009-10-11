@@ -302,24 +302,26 @@ Galapix::thumbgen(const GalapixOptions& opts,
     for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
       i->wait();
   }
-
-  {
+  
+  assert(!"Implement this");
+#if 0 
+  { // FIXME: Implement this
     std::vector<JobHandle> job_handles;
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
       {
         // Generate Image Tiles
         SoftwareSurfaceHandle surface = SoftwareSurfaceFactory::from_url(i->get_url());
         
-        JobHandle job_handle;
-        boost::shared_ptr<Job> job_ptr(new TileGenerationJob(job_handle, *i, 0, i->get_thumbnail_scale(),
+        boost::shared_ptr<Job> job_ptr(new TileGenerationJob(*i, 
                                                              boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)));
         job_manager.request(job_ptr);
-        job_handles.push_back(job_handle);
+        job_handles.push_back(job_ptr->get_handle());
       }
 
     for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
       i->wait();
   }
+#endif
 
   job_manager.stop_thread();
   database_thread.stop_thread();

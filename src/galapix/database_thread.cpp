@@ -37,7 +37,7 @@ DatabaseThread::DatabaseThread(const std::string& filename_,
     m_quit(false),
     m_abort(false),
     m_queue(),
-    m_tile_request_groups()
+    m_tile_generation_jobs()
 {
   assert(current_ == 0);
   current_ = this;
@@ -109,7 +109,7 @@ DatabaseThread::run()
 {
   m_quit = false;
 
-  Database db(database_filename);
+  m_database.reset(new Database(database_filename));
 
   while(!m_quit)
   {
@@ -122,49 +122,58 @@ DatabaseThread::run()
 
       //std::cout << "DatabaseThread::queue.size(): " << m_queue.size() << " - " << typeid(*msg).name() << std::endl;
 
-      msg->run(db);
+      msg->run(*m_database);
       delete msg;
     }
   }
 }
 
+struct FindByFileEntry
+{
+  FileEntry m_file_entry;
+
+  FindByFileEntry(FileEntry file_entry) :
+    m_file_entry(file_entry)
+  {}
+  
+  bool operator()(boost::shared_ptr<TileGenerationJob> job) const
+  {
+    return job->get_file_entry() == m_file_entry;
+  }
+};
+
 void
 DatabaseThread::generate_tile(const JobHandle& job_handle,
                               const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
                               const boost::function<void (TileEntry)>& callback)
-{
-  // FIXME: We don't check what tiles are already present, so some get
-  // generated multiple times! (3-5 then 0-5, while it should be 0-2)
-  // FIXME: Cancelation doesn't work either
-  TileRequestGroups::iterator group = m_tile_request_groups.end();
-  for(TileRequestGroups::iterator i = m_tile_request_groups.begin(); i != m_tile_request_groups.end(); ++i)
-    {
-      if (i->file_entry == file_entry &&
-          i->min_scale <= tilescale &&
-          i->max_scale >= tilescale)
-        {
-          group = i;
-          break;
-        }
-    }
+{ 
+  std::list<boost::shared_ptr<TileGenerationJob> >::iterator it = 
+    std::find_if(m_tile_generation_jobs.begin(), m_tile_generation_jobs.end(), 
+              FindByFileEntry(file_entry));
 
-  if (group == m_tile_request_groups.end())
-    {
-      int min_scale = tilescale;
-      int max_scale = file_entry.get_thumbnail_scale();
-      boost::shared_ptr<Job> job_ptr(new TileGenerationJob(job_handle, 
-                                                           file_entry, min_scale, max_scale, 
-                                                           boost::bind(&DatabaseThread::receive_tile, this, _1)));
-      m_tile_job_manager.request(job_ptr, boost::function<void (boost::shared_ptr<Job>)>());
-      
-      TileRequestGroup request_group(file_entry, min_scale, max_scale);
-      request_group.requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
-      m_tile_request_groups.push_back(request_group);
-    }
+  if (it != m_tile_generation_jobs.end() && 
+      (*it)->request_tile(job_handle, tilescale, pos, callback))
+  {
+    // all ok
+  }
   else
-    {
-      group->requests.push_back(TileRequest(job_handle, tilescale, pos, callback));
-    }
+  {
+    // job not there or already running, so create a new one
+    int min_scale_in_db = -1;
+    int max_scale_in_db = -1;
+
+    if (file_entry.has_fileid())
+      m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
+
+    boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db,
+                                                                       boost::bind(&DatabaseThread::receive_tile, this, _1)));
+    job_ptr->request_tile(job_handle, tilescale, pos, callback);
+
+    m_tile_job_manager.request(job_ptr);
+
+    // FIXME: This is never emptied
+    m_tile_generation_jobs.push_front(job_ptr);
+  }
 }
 
 void
@@ -181,31 +190,6 @@ DatabaseThread::store_file_entry(const URL& url, const Size& size,
                                  const boost::function<void (FileEntry)>& callback)
 {
   m_queue.push(new StoreFileEntryDatabaseMessage(url, size, callback));
-}
-
-void
-DatabaseThread::process_tile(const TileEntry& tile_entry)
-{
-  // FIXME: Could break/return here to do some less looping
-  for(TileRequestGroups::iterator i = m_tile_request_groups.begin(); i != m_tile_request_groups.end(); ++i)
-    {
-      if (i->file_entry == tile_entry.get_file_entry())
-        {
-          for(std::vector<TileRequest>::iterator j = i->requests.begin(); j != i->requests.end(); ++j)
-            {
-              if (tile_entry.get_scale() == j->scale &&
-                  tile_entry.get_pos()   == j->pos)
-                {
-                  if (j->callback)
-                    j->callback(tile_entry);
-
-                  j->job_handle.finish();
-                  i->requests.erase(j);
-                  break;
-                }
-            }
-        }
-    }
 }
 
 /* EOF */

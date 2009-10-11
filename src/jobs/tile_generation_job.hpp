@@ -20,25 +20,69 @@
 #define HEADER_GALAPIX_JOBS_TILE_GENERATION_JOB_HPP
 
 #include <boost/function.hpp>
+#include <boost/thread/mutex.hpp>
 
-#include "job/job.hpp"
 #include "database/file_entry.hpp"
+#include "job/job.hpp"
+#include "math/vector2i.hpp"
+#include "util/software_surface_factory.hpp"
 
 class TileEntry;
 
 class TileGenerationJob : public Job
 {
-private: 
-  FileEntry m_file_entry;
-  int       m_min_scale;
-  int       m_max_scale;
+private:
+  struct TileRequest
+  {
+    JobHandle job_handle;
+    int       scale;
+    Vector2i  pos;
+    boost::function<void (TileEntry)> callback;
+    
+    TileRequest(const JobHandle& job_handle_,
+                int scale_, const Vector2i& pos_,
+                const boost::function<void (TileEntry)>& callback_)
+      : job_handle(job_handle_),
+        scale(scale_), pos(pos_),
+        callback(callback_)
+    {}
+  };
+
+  typedef std::vector<TileRequest> TileRequests;
   
-  boost::function<void (TileEntry)> callback;
+private: 
+  boost::try_mutex mutex;
+
+  bool      m_running;
+  FileEntry m_file_entry;
+  int       m_min_scale_in_db;
+  int       m_max_scale_in_db;
+  
+  /** All generated tiles go through this callback */
+  boost::function<void (TileEntry)> m_callback;
+
+  TileRequests m_tile_requests;
 
 public:
-  TileGenerationJob(const JobHandle& job_handle, const FileEntry& file_entry, int min_scale, int max_scale,
-                    const boost::function<void (TileEntry)>& callback = boost::function<void (TileEntry)>());
+  TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
+                    const boost::function<void (TileEntry)>& callback);
+
+  /** Request a tile to be generated, returns true if the request will
+      be honored, false if the tile generation is already in progress
+      and the request has to be discarded */
+  bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
+                    const boost::function<void (TileEntry)>& callback);
+
   void run();
+
+  FileEntry get_file_entry() const { return m_file_entry; }
+
+  bool is_aborted();
+
+private:
+  void generate_tile_entries(SoftwareSurfaceFactory::FileFormat format, 
+                             int min_scale, int max_scale);
+  void process_tile_entry(const TileEntry& tile_entry);
 };
 
 #endif

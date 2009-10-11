@@ -21,6 +21,8 @@ Release procedure:
 Problems:
 =========
 
+* improve layouter, so that new images come in more cleanly
+
 * flush file cache from time to time
 
 * figure out why some images get stuck and do not load (tilegroup?),

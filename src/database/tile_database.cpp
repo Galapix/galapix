@@ -34,6 +34,7 @@ TileDatabase::TileDatabase(Database& db)
     m_tile_entry_get_all_by_file_entry(m_db.get_db()),
     m_tile_entry_has(m_db.get_db()),
     m_tile_entry_get_by_file_entry(m_db.get_db()),
+    m_tile_entry_get_min_max_scale(m_db.get_db()),
     tile_cache()
 {}
 
@@ -82,6 +83,12 @@ TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& til
       tiles_out.push_back(*i);
     }
   }
+}
+
+bool
+TileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
+{
+  return m_tile_entry_get_min_max_scale(file_entry, min_scale_out, max_scale_out);
 }
 
 bool

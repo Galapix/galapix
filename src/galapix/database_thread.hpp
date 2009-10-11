@@ -26,8 +26,10 @@
 #include "job/job_manager.hpp"
 
 class URL;
+class Database;
 class DatabaseMessage;
 class TileDatabaseMessage;
+class TileGenerationJob;
 class FileEntry;
 
 class DatabaseThread : public Thread
@@ -38,40 +40,10 @@ public:
   static DatabaseThread* current() { return current_; }
 
 private:
-  struct TileRequest
-  {
-    JobHandle job_handle;
-    int scale;
-    Vector2i pos;
-    boost::function<void (TileEntry)> callback;
-    
-    TileRequest(const JobHandle& job_handle_,
-                int scale_, const Vector2i& pos_,
-                const boost::function<void (TileEntry)>& callback_)
-      : job_handle(job_handle_),
-        scale(scale_), pos(pos_),
-        callback(callback_)
-    {}
-  };
-
-  struct TileRequestGroup 
-  {
-    TileRequestGroup(const FileEntry& file_entry_, int min_scale_, int max_scale_)
-      : file_entry(file_entry_),
-        min_scale(min_scale_),
-        max_scale(max_scale_),
-        requests()
-    {}
-    
-    FileEntry file_entry; 
-    int min_scale;
-    int max_scale;
-    std::vector<TileRequest> requests;
-  };
-  
-  typedef std::list<TileRequestGroup> TileRequestGroups;
   
 private:
+  boost::scoped_ptr<Database> m_database;
+
   JobManager& m_tile_job_manager;
   JobManager& m_file_entry_job_manager;
 
@@ -80,8 +52,7 @@ private:
   bool m_abort;
   
   ThreadMessageQueue<DatabaseMessage*> m_queue;
-
-  TileRequestGroups m_tile_request_groups;
+  std::list<boost::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
 
 protected: 
   void run();
@@ -95,7 +66,7 @@ public:
   void stop_thread();
   void abort_thread();
 
-  void process_tile(const TileEntry& tile_entry);
+  /** Generates the requested tile from its original image */
   void generate_tile(const JobHandle& job_handle,
                      const FileEntry&, int tilescale, const Vector2i& pos, 
                      const boost::function<void (TileEntry)>& callback);
@@ -104,7 +75,10 @@ public:
                            const boost::function<void (FileEntry)>& callback);
   
   /* @{ */ // syncronized functions to be used by other threads
-  /** Request the tile for file \a tileid */
+  /**
+   *  Request the tile from the database, if not in the database the
+   *  tile will be generated from the source image
+   */
   JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
 
   /** Request the FileEntry for \a filename */

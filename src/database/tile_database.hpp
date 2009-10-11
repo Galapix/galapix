@@ -28,6 +28,7 @@
 #include "database/tile_entry_get_all_statement.hpp"
 #include "database/tile_entry_store_statement.hpp"
 #include "database/tile_entry_get_by_file_entry_statement.hpp"
+#include "database/tile_entry_get_min_max_scale_statement.hpp"
 
 class TileEntry;
 class FileEntry;
@@ -43,6 +44,7 @@ private:
   TileEntryGetAllByFileEntryStatement m_tile_entry_get_all_by_file_entry;
   TileEntryHasStatement               m_tile_entry_has;
   TileEntryGetByFileEntryStatement    m_tile_entry_get_by_file_entry;
+  TileEntryGetMinMaxScaleStatement    m_tile_entry_get_min_max_scale;
 
   std::vector<TileEntry> tile_cache;
 
@@ -53,6 +55,7 @@ public:
   bool has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale);
   bool get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out);
   void get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles);
+  bool get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out);
 
   void store_tile_in_cache(const TileEntry& tile);
   void store_tile(const TileEntry& tile);

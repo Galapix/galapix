@@ -35,6 +35,8 @@ public:
 
   virtual void run() =0;
 
+  virtual bool is_aborted() const { return m_handle.is_aborted(); }
+
 private:
   Job (const Job&);
   Job& operator= (const Job&);

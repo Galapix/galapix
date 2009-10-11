@@ -44,7 +44,7 @@ JobWorkerThread::run()
           Task task = m_queue.front();
           m_queue.pop();
 
-          if (!task.job->get_handle().is_aborted())
+          if (!task.job->is_aborted())
             {
               //std::cout << "start job: " << task.job << std::endl;
               task.job->run();
