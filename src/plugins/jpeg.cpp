@@ -32,7 +32,9 @@ struct JPEGJumpBuffer
   jmp_buf buf;
 };
 
-boost::thread_specific_ptr<JPEGJumpBuffer> g_setjmp_buffer_ptr;
+// FIXME: could do it without local storage by making the jmp_buf part
+// of the cinfo struct, see examples in libjpeg
+boost::thread_specific_ptr<JPEGJumpBuffer> g_setjmp_buffer_ptr; 
 
 void fatal_error_handler(j_common_ptr cinfo)
 {
@@ -63,7 +65,10 @@ JPEG::get_size(const std::string& filename, Size& size)
 
     if (setjmp(g_setjmp_buffer_ptr->buf))
     {
-      std::cout << "Some jpeg error: " << filename << std::endl;
+      char buffer[JMSG_LENGTH_MAX];
+      (cinfo.err->format_message)(reinterpret_cast<jpeg_common_struct*>(&cinfo), buffer);
+      std::cout << "Error: JPEG::get_size: " << filename << ": " << buffer << std::endl;
+
       return false;
     }
     else
@@ -107,7 +112,13 @@ JPEG::load(const boost::function<void (j_decompress_ptr)>& setup_src_mgr,
 
   if (setjmp(g_setjmp_buffer_ptr->buf))
   {
-    throw std::runtime_error("JPEG::load: ERROR");
+    char buffer[JMSG_LENGTH_MAX];
+    (cinfo.err->format_message)(reinterpret_cast<jpeg_common_struct*>(&cinfo), buffer);
+
+    std::ostringstream out;
+    out << "Error: JPEG::load: " /*<< filename << ": "*/ << buffer << std::endl;
+
+    throw std::runtime_error(out.str());
   }
 
   jpeg_read_header(&cinfo, FALSE);
