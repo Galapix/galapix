@@ -61,7 +61,6 @@ JPEGDecompressor::read_header()
 
     std::ostringstream out;
     out << "Error: JPEG::read_header: " /*<< filename << ": "*/ << buffer;
-
     throw std::runtime_error(out.str());
   }
   else

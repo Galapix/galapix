@@ -20,9 +20,16 @@
 
 JPEGCompressor::JPEGCompressor()
 {
-  m_cinfo.err = jpeg_std_error(&m_jerr);
+  jpeg_std_error(&m_jerr);
+
+  m_cinfo.err = &m_jerr;
 
   jpeg_create_compress(&m_cinfo);
+}
+
+JPEGCompressor::~JPEGCompressor()
+{
+  jpeg_destroy_compress(&m_cinfo);
 }
 
 void
@@ -53,12 +60,8 @@ JPEGCompressor::save(SoftwareSurfaceHandle surface_in, int quality)
     jpeg_write_scanlines(&m_cinfo, &row_pointer[m_cinfo.next_scanline], 
                          surface->get_height() - m_cinfo.next_scanline);
   }
-}
 
-JPEGCompressor::~JPEGCompressor()
-{
   jpeg_finish_compress(&m_cinfo);  
-  jpeg_destroy_compress(&m_cinfo);
 }
 
 /* EOF */
