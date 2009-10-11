@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_WINDSTILLE_FILE_JPEG_COMPRESSOR_HPP
-#define HEADER_WINDSTILLE_FILE_JPEG_COMPRESSOR_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_FILE_JPEG_COMPRESSOR_HPP
+#define HEADER_GALAPIX_PLUGINS_FILE_JPEG_COMPRESSOR_HPP
 
 #include <stdio.h>
 #include <string>

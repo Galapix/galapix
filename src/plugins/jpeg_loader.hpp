@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_WINDSTILLE_JPEG_LOADER_HPP
-#define HEADER_WINDSTILLE_JPEG_LOADER_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_JPEG_LOADER_HPP
+#define HEADER_GALAPIX_PLUGINS_JPEG_LOADER_HPP
 
 #include <stdio.h>
 #include <jpeglib.h>
