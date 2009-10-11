@@ -173,7 +173,8 @@ TileGenerationJob::run()
   int max_scale;
 
   if (format != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
-  { // Generate all tiles instead of just the requested for non-jpeg formats
+  { 
+    // Generate all tiles instead of just the requested for non-jpeg formats
     min_scale = 0;
     max_scale = m_file_entry.get_thumbnail_scale();
   }
@@ -185,6 +186,14 @@ TileGenerationJob::run()
     for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
     {
       min_scale = std::min(min_scale, i->scale);
+    }
+  }
+
+  if (min_scale == -1 || max_scale == -1)
+  {
+    for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+    {
+      std::cout << "TileRequest: scale=" << i->scale << std::endl;
     }
   }
 
