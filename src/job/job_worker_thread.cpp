@@ -36,25 +36,31 @@ void
 JobWorkerThread::run()
 {
   while(!m_quit)
+  {
+    m_queue.wait();
+
+    while(!m_abort && !m_queue.empty())
     {
-      m_queue.wait();
+      Task task = m_queue.front();
+      m_queue.pop();
 
-      while(!m_abort && !m_queue.empty())
+      if (!task.job->is_aborted())
+      {
+        //std::cout << "start job: " << task.job << std::endl;
+        task.job->run();
+        if (task.callback)
         {
-          Task task = m_queue.front();
-          m_queue.pop();
-
-          if (!task.job->is_aborted())
-            {
-              //std::cout << "start job: " << task.job << std::endl;
-              task.job->run();
-              if (task.callback)
-                task.callback(task.job);
-              task.job->get_handle().finish();
-              //std::cout << "done job: " << task.job << std::endl;
-            }
+          task.callback(task.job, true);
         }
+        task.job->get_handle().finish();
+        //std::cout << "done job: " << task.job << std::endl;
+      }
+      else
+      {
+        task.callback(task.job, false);
+      }
     }
+  }
 }
 
 void
@@ -73,7 +79,7 @@ JobWorkerThread::stop_thread()
 }
 
 JobHandle
-JobWorkerThread::request(boost::shared_ptr<Job> job, const boost::function<void (boost::shared_ptr<Job>)>& callback)
+JobWorkerThread::request(boost::shared_ptr<Job> job, const boost::function<void (boost::shared_ptr<Job>, bool)>& callback)
 {
   JobHandle handle = job->get_handle();
   

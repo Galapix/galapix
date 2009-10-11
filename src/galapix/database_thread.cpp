@@ -57,6 +57,12 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
   return job_handle;
 }
 
+void
+DatabaseThread::request_job_removal(boost::shared_ptr<Job> job, bool)
+{
+  m_queue.push(new RequestJobRemovalDatabaseMessage(job));
+}
+
 JobHandle
 DatabaseThread::request_file(const URL& url, const boost::function<void (const FileEntry&)>& callback)
 {
@@ -128,6 +134,20 @@ DatabaseThread::run()
   }
 }
 
+void
+DatabaseThread::remove_job(boost::shared_ptr<Job> job)
+{
+  for(std::list<boost::shared_ptr<TileGenerationJob> >::iterator i = m_tile_generation_jobs.begin(); 
+      i != m_tile_generation_jobs.end(); ++i)
+  {
+    if (*i == job)
+    {
+      m_tile_generation_jobs.erase(i);
+      break;
+    }
+  }
+}
+
 struct FindByFileEntry
 {
   FileEntry m_file_entry;
@@ -168,9 +188,8 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
                                                                        boost::bind(&DatabaseThread::receive_tile, this, _1)));
     job_ptr->request_tile(job_handle, tilescale, pos, callback);
 
-    m_tile_job_manager.request(job_ptr);
+    m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
 
-    // FIXME: This is never emptied
     m_tile_generation_jobs.push_front(job_ptr);
   }
 }
@@ -181,7 +200,7 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
 {
   boost::shared_ptr<Job> job(new FileEntryGenerationJob(job_handle, url, callback));
   m_file_entry_job_manager.request(job,
-                                   boost::function<void (boost::shared_ptr<Job>)>());
+                                   boost::function<void (boost::shared_ptr<Job>, bool)>());
 }
 
 void

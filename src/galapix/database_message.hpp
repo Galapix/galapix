@@ -19,7 +19,11 @@
 #ifndef HEADER_GALAPIX_GALAPIX_DATABASE_MESSAGE_HPP
 #define HEADER_GALAPIX_GALAPIX_DATABASE_MESSAGE_HPP
 
+#include <boost/shared_ptr.hpp>
+
 #include "database/file_entry.hpp"
+
+class Job;
 
 class DatabaseMessage
 {
@@ -31,6 +35,22 @@ public:
   {}
 
   virtual void run(Database& db) =0;
+};
+
+class RequestJobRemovalDatabaseMessage : public DatabaseMessage
+{
+private:
+  boost::shared_ptr<Job> m_job;
+
+public:
+  RequestJobRemovalDatabaseMessage(boost::shared_ptr<Job> job) :
+    m_job(job)
+  {}
+
+  void run(Database& db)
+  {
+    DatabaseThread::current()->remove_job(m_job);
+  }
 };
 
 class RequestTileDatabaseMessage : public DatabaseMessage

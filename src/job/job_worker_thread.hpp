@@ -34,7 +34,7 @@ private:
   struct Task 
   {
     boost::shared_ptr<Job> job;
-    boost::function<void (boost::shared_ptr<Job>)> callback;
+    boost::function<void (boost::shared_ptr<Job>, bool)> callback;
 
     Task() :
       job(),
@@ -51,7 +51,7 @@ public:
   JobWorkerThread();
   ~JobWorkerThread();
 
-  JobHandle request(boost::shared_ptr<Job> job, const boost::function<void (boost::shared_ptr<Job>)>& callback);
+  JobHandle request(boost::shared_ptr<Job> job, const boost::function<void (boost::shared_ptr<Job>, bool)>& callback);
 
   void run();
 

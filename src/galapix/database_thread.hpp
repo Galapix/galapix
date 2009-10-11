@@ -73,13 +73,16 @@ public:
 
   void generate_file_entry(const JobHandle& job_handle, const URL& url,
                            const boost::function<void (FileEntry)>& callback);
-  
+  void remove_job(boost::shared_ptr<Job> job);
+
   /* @{ */ // syncronized functions to be used by other threads
   /**
    *  Request the tile from the database, if not in the database the
    *  tile will be generated from the source image
    */
   JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
+
+  void      request_job_removal(boost::shared_ptr<Job> job, bool);
 
   /** Request the FileEntry for \a filename */
   JobHandle request_file(const URL& url, const boost::function<void (const FileEntry&)>& callback);

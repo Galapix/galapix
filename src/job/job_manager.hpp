@@ -50,7 +50,7 @@ public:
   /** \a job is processed and once finished \a callback is called, \a
       job will be deleted afterwards */
   JobHandle request(boost::shared_ptr<Job> job, 
-                    const boost::function<void (boost::shared_ptr<Job>)>& callback = boost::function<void (boost::shared_ptr<Job>)>());
+                    const boost::function<void (boost::shared_ptr<Job>, bool)>& callback = boost::function<void (boost::shared_ptr<Job>, bool)>());
 };
 
 #endif

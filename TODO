@@ -21,6 +21,15 @@ Release procedure:
 Problems:
 =========
 
+* figure out where all the memory goes, galapix should ideally need no
+  more then what is visible on the screen, which is much less then the
+  hundreds of megabyte that ps shows
+
+* use the JobManager finished callback to remove used up TileGenerationJobs from the queue in Database
+
+* break up tile generation some more, as other parts of the code, such
+  as "galapix thumbgen" don't need the complexity of TileGenerationJob
+
 * there seem to be issues with job cancelation again
 
 * Quadtree only seems to behave correctly in the top left corner

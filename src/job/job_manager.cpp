@@ -74,7 +74,7 @@ JobManager::join_thread()
 
 JobHandle
 JobManager::request(boost::shared_ptr<Job> job, 
-                    const boost::function<void (boost::shared_ptr<Job>)>& callback)
+                    const boost::function<void (boost::shared_ptr<Job>, bool)>& callback)
 {
   boost::mutex::scoped_lock lock(mutex);
 
