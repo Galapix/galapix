@@ -194,6 +194,6 @@ inline Size::Size(const Sizef& s)
     height(static_cast<int>(s.height))
 {}
 
-inline std::ostream& operator<<(std::ostream& s, const Size& size);
+std::ostream& operator<<(std::ostream& s, const Size& size);
 
 #endif
