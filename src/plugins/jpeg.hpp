@@ -32,10 +32,6 @@ private:
 public:
   static Size get_size(const std::string& filename);
 
-  static void save(const SoftwareSurfaceHandle& surface, 
-                   const boost::function<void (j_compress_ptr)>& setup_dest_mgr, 
-                   int quality);
-
   /** Load a SoftwareSurface from a JPEG file
       
       @param filename   Filename of the file to load

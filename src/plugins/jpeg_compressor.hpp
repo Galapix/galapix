@@ -16,32 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/file_jpeg_loader.hpp"
+#ifndef HEADER_WINDSTILLE_JPEG_COMPRESSOR_HPP
+#define HEADER_WINDSTILLE_JPEG_COMPRESSOR_HPP
 
-#include <sstream>
-#include <stdexcept>
-#include <string.h>
-#include <errno.h>
+#include <stdio.h>
+#include <jpeglib.h>
 
-FileJPEGLoader::FileJPEGLoader(const std::string& filename) :
-  m_filename(filename),
-  m_in(fopen(filename.c_str(), "rb"))
+#include "util/software_surface.hpp"
+
+class JPEGCompressor
 {
-  if (!m_in)
-  {
-    std::ostringstream out;
-    out << filename << ": " << strerror(errno);
-    throw std::runtime_error(out.str());
-  }
-  else
-  {
-    jpeg_stdio_src(&m_cinfo, m_in);
-  }
-}
+protected:
+  struct jpeg_compress_struct m_cinfo;
+  struct jpeg_error_mgr m_jerr;
 
-FileJPEGLoader::~FileJPEGLoader()
-{
-  fclose(m_in);
-}
+protected:
+  JPEGCompressor();
+
+public:
+  ~JPEGCompressor();
+  
+  void save(SoftwareSurfaceHandle surface_in, int quality);
+
+private:
+  JPEGCompressor(const JPEGCompressor&);
+  JPEGCompressor& operator=(const JPEGCompressor&);
+};
+
+#endif
 
 /* EOF */
