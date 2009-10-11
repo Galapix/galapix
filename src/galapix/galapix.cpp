@@ -450,7 +450,7 @@ Galapix::main(int argc, char** argv)
     {
       GalapixOptions opts;
       opts.threads  = 2;
-      opts.database = Filesystem::get_home() + "/.galapix/cache.sqlite";
+      opts.database = Filesystem::get_home() + "/.galapix/cache2.sqlite";
       parse_args(argc, argv, opts);
       run(opts);
       return EXIT_SUCCESS;
