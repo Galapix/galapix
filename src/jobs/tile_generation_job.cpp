@@ -28,6 +28,7 @@
 TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
                                      const boost::function<void (TileEntry)>& callback) :
   m_running(false),
+  m_is_aborted(false),
   m_file_entry(file_entry),
   m_min_scale_in_db(min_scale_in_db),
   m_max_scale_in_db(max_scale_in_db),
@@ -42,7 +43,7 @@ TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Ve
 {
   boost::try_mutex::scoped_try_lock lock(mutex);
 
-  if (lock && !m_running)
+  if (lock && !m_running && !m_is_aborted)
   {
     m_tile_requests.push_back(TileRequest(job_handle, scale, pos, callback));
     return true;
@@ -73,7 +74,8 @@ void
 TileGenerationJob::generate_tile_entries(SoftwareSurfaceFactory::FileFormat format,
                                          int min_scale, int max_scale)
 {
-  std::cout << "TileGeneratorThread: processing scales " 
+  std::cout << "TileGeneratorThread: have " 
+            << m_min_scale_in_db << "-" << m_max_scale_in_db << " generating "
             << min_scale << "-" << max_scale << ": " << m_file_entry.get_url() << std::endl;
 
   // Find scale at which the image fits on one tile
@@ -153,6 +155,7 @@ TileGenerationJob::is_aborted()
     if (!i->job_handle.is_aborted())
       return false;
   }
+  m_is_aborted = true;
   return true;
 }
 
@@ -174,7 +177,7 @@ TileGenerationJob::run()
   }
   else
   {
-    max_scale = m_max_scale_in_db != -1 ? m_max_scale_in_db : m_file_entry.get_thumbnail_scale();
+    max_scale = m_min_scale_in_db != -1 ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
     min_scale = max_scale;
     
     for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)

@@ -162,8 +162,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     int min_scale_in_db = -1;
     int max_scale_in_db = -1;
 
-    if (file_entry.has_fileid())
-      m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
+    m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
 
     boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db,
                                                                        boost::bind(&DatabaseThread::receive_tile, this, _1)));

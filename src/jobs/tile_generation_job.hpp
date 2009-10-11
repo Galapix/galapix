@@ -54,6 +54,7 @@ private:
   boost::try_mutex mutex;
 
   bool      m_running;
+  bool      m_is_aborted;
   FileEntry m_file_entry;
   int       m_min_scale_in_db;
   int       m_max_scale_in_db;

@@ -88,7 +88,50 @@ TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& til
 bool
 TileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
 {
-  return m_tile_entry_get_min_max_scale(file_entry, min_scale_out, max_scale_out);
+  if (file_entry.has_fileid() && m_tile_entry_get_min_max_scale(file_entry, min_scale_out, max_scale_out))
+  {
+    return true;
+  }
+  else
+  { // Check the cache
+    int min_scale = -1;
+    int max_scale = -1;
+
+    for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
+    {
+      if (i->get_file_entry() == file_entry)
+      {
+        if (min_scale == -1)
+        {
+          min_scale = i->get_scale();
+        }
+        else
+        {
+          min_scale = std::min(min_scale, i->get_scale());
+        }
+
+        if (max_scale == -1)
+        {
+          max_scale = i->get_scale();
+        }
+        else
+        {
+          max_scale = std::max(max_scale, i->get_scale());
+        }
+      }
+    }
+
+    if (min_scale != -1 && max_scale != -1)
+    {
+      min_scale_out = min_scale;
+      max_scale_out = max_scale;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
 }
 
 bool

@@ -21,6 +21,15 @@ Release procedure:
 Problems:
 =========
 
+* there seem to be issues with job cancelation again
+
+* Quadtree only seems to behave correctly in the top left corner
+
+* multithreading seems to lead to double tile generation, maybe a way
+  to inject tile request later in the generation process would be needed
+
+* is scale 0-8 == [0,8] or [0,8[ ?
+
 * improve layouter, so that new images come in more cleanly
 
 * flush file cache from time to time
