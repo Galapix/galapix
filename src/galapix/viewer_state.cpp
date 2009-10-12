@@ -96,19 +96,19 @@ ViewerState::zoom_to(const Size& display_, const Rectf& rect)
   Sizef display = display_;
 
   if ((display.height / display.width) > (rect.get_height() / rect.get_width()))
-    { // match width
-      scale = display.width / rect.get_width();
+  { // match width
+    scale = display.width / rect.get_width();
       
-      offset.x = -rect.left * scale;
-      offset.y = -(rect.top - ((display.height / scale) - rect.get_height()) / 2.0f) * scale;
-    }
+    offset.x = -rect.left * scale;
+    offset.y = -(rect.top - ((display.height / scale) - rect.get_height()) / 2.0f) * scale;
+  }
   else
-    { // match height
-      scale = display.height / rect.get_height();
+  { // match height
+    scale = display.height / rect.get_height();
 
-      offset.x = -(rect.left - ((display.width / scale) - rect.get_width()) / 2.0f) * scale;
-      offset.y = -rect.top  * scale;
-    }
+    offset.x = -(rect.left - ((display.width / scale) - rect.get_width()) / 2.0f) * scale;
+    offset.y = -rect.top  * scale;
+  }
 }
 
 /* EOF */

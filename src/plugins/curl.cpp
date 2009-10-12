@@ -54,21 +54,21 @@ CURLHandler::get_data(const std::string& url)
   curl_easy_cleanup(handle);
 
   if (response_code/100 != 2 && response_code/100 != 3)
-    {
-      std::ostringstream str;
-      str << "Error: CURLHandler::get_data(): HTTP Error: " << response_code;
-      throw std::runtime_error(str.str());
-    }
+  {
+    std::ostringstream str;
+    str << "Error: CURLHandler::get_data(): HTTP Error: " << response_code;
+    throw std::runtime_error(str.str());
+  }
 
   if (ret == 0)
-    {
-      return Blob::copy(data);
-    }
+  {
+    return Blob::copy(data);
+  }
   else
-    {
-      throw std::runtime_error("Error: CURLHandler::get_data(): " + std::string(errbuf));
-      return BlobHandle();
-    }
+  {
+    throw std::runtime_error("Error: CURLHandler::get_data(): " + std::string(errbuf));
+    return BlobHandle();
+  }
 }
 
 /* EOF */

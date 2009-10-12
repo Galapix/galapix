@@ -38,14 +38,14 @@ PanTool::move(const Vector2i& pos, const Vector2i& rel)
   mouse_pos = pos;
 
   if (trackball_mode)
-    {
-      viewer->get_state().move(rel * 4);
-    }
+  {
+    viewer->get_state().move(rel * 4);
+  }
   else if (move_active)
-    { // FIXME: This is of course wrong, since depending on x/yrel will lead to drift
-      // Also we shouldn't use 4x speed, but 1x seems so useless
-      viewer->get_state().move(rel * 4);
-    }
+  { // FIXME: This is of course wrong, since depending on x/yrel will lead to drift
+    // Also we shouldn't use 4x speed, but 1x seems so useless
+    viewer->get_state().move(rel * 4);
+  }
 }
 
 void

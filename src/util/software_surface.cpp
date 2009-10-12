@@ -43,20 +43,20 @@ public:
     pixels()
   {
     switch(format)
-      {
-        case SoftwareSurface::RGB_FORMAT:
-          pitch  = size.width * 3;
-          pixels.reset(new uint8_t[pitch * size.height]);
-          break;
+    {
+      case SoftwareSurface::RGB_FORMAT:
+        pitch  = size.width * 3;
+        pixels.reset(new uint8_t[pitch * size.height]);
+        break;
           
-        case SoftwareSurface::RGBA_FORMAT:
-          pitch  = size.width * 4;
-          pixels.reset(new uint8_t[pitch * size.height]);
-          break;
+      case SoftwareSurface::RGBA_FORMAT:
+        pitch  = size.width * 4;
+        pixels.reset(new uint8_t[pitch * size.height]);
+        break;
 
-        default:
-          assert(!"SoftwareSurfaceImpl: Unknown color format");
-      }
+      default:
+        assert(!"SoftwareSurfaceImpl: Unknown color format");
+    }
   }
 };
 
@@ -138,38 +138,38 @@ SoftwareSurface::halve()
   int dst_p = dstsrc->get_pitch();
 
   switch(impl->format)
-    {
-      case RGB_FORMAT:
-        for(int y = 0; y < dst_h; ++y)
-          for(int x = 0; x < dst_w; ++x)
-            {
-              uint8_t* d = dst + (y*dst_p + 3*x);
-              uint8_t* s = src + (y*src_p + 3*x)*2;
+  {
+    case RGB_FORMAT:
+      for(int y = 0; y < dst_h; ++y)
+        for(int x = 0; x < dst_w; ++x)
+        {
+          uint8_t* d = dst + (y*dst_p + 3*x);
+          uint8_t* s = src + (y*src_p + 3*x)*2;
 
-              d[0] = static_cast<uint8_t>((s[0] + s[0+3] + s[0+src_p] + s[0+src_p+3])/4);
-              d[1] = static_cast<uint8_t>((s[1] + s[1+3] + s[1+src_p] + s[1+src_p+3])/4);
-              d[2] = static_cast<uint8_t>((s[2] + s[2+3] + s[2+src_p] + s[2+src_p+3])/4);
-            }
-        break;
+          d[0] = static_cast<uint8_t>((s[0] + s[0+3] + s[0+src_p] + s[0+src_p+3])/4);
+          d[1] = static_cast<uint8_t>((s[1] + s[1+3] + s[1+src_p] + s[1+src_p+3])/4);
+          d[2] = static_cast<uint8_t>((s[2] + s[2+3] + s[2+src_p] + s[2+src_p+3])/4);
+        }
+      break;
 
-      case RGBA_FORMAT:
-        for(int y = 0; y < dst_h; ++y)
-          for(int x = 0; x < dst_w; ++x)
-            {
-              uint8_t* d = dst + (y*dst_p + 4*x);
-              uint8_t* s = src + (y*src_p + 4*x)*2;
+    case RGBA_FORMAT:
+      for(int y = 0; y < dst_h; ++y)
+        for(int x = 0; x < dst_w; ++x)
+        {
+          uint8_t* d = dst + (y*dst_p + 4*x);
+          uint8_t* s = src + (y*src_p + 4*x)*2;
 
-              d[0] = static_cast<uint8_t>((s[0] + s[0+4] + s[0+src_p] + s[0+src_p+4])/4);
-              d[1] = static_cast<uint8_t>((s[1] + s[1+4] + s[1+src_p] + s[1+src_p+4])/4);
-              d[2] = static_cast<uint8_t>((s[2] + s[2+4] + s[2+src_p] + s[2+src_p+4])/4);
-              d[3] = static_cast<uint8_t>((s[3] + s[3+4] + s[3+src_p] + s[3+src_p+4])/4);
-            }
-        break;
+          d[0] = static_cast<uint8_t>((s[0] + s[0+4] + s[0+src_p] + s[0+src_p+4])/4);
+          d[1] = static_cast<uint8_t>((s[1] + s[1+4] + s[1+src_p] + s[1+src_p+4])/4);
+          d[2] = static_cast<uint8_t>((s[2] + s[2+4] + s[2+src_p] + s[2+src_p+4])/4);
+          d[3] = static_cast<uint8_t>((s[3] + s[3+4] + s[3+src_p] + s[3+src_p+4])/4);
+        }
+      break;
         
-      default:
-        assert(!"Not reachable");
-        break;
-    }
+    default:
+      assert(!"Not reachable");
+      break;
+  }
 
   return dstsrc;
 }
@@ -178,52 +178,52 @@ SoftwareSurfaceHandle
 SoftwareSurface::scale(const Size& size)
 {
   if (size == impl->size)
-    {
-      return shared_from_this();
-    }
+  {
+    return shared_from_this();
+  }
   else
+  {
+    SoftwareSurfaceHandle surface = SoftwareSurface::create(impl->format, size);
+    // FIXME: very much non-fast
+    switch(impl->format)
     {
-      SoftwareSurfaceHandle surface = SoftwareSurface::create(impl->format, size);
-      // FIXME: very much non-fast
-      switch(impl->format)
-        {
-          case RGB_FORMAT:
-            {
-              RGB rgb;
-              for(int y = 0; y < surface->get_height(); ++y)
-                for(int x = 0; x < surface->get_width(); ++x)
-                  {
-                    get_pixel(x * impl->size.width  / surface->impl->size.width,
-                              y * impl->size.height / surface->impl->size.height,
-                              rgb);
+      case RGB_FORMAT:
+      {
+        RGB rgb;
+        for(int y = 0; y < surface->get_height(); ++y)
+          for(int x = 0; x < surface->get_width(); ++x)
+          {
+            get_pixel(x * impl->size.width  / surface->impl->size.width,
+                      y * impl->size.height / surface->impl->size.height,
+                      rgb);
                 
-                    surface->put_pixel(x, y, rgb);
-                  }
-            }
-            break;
+            surface->put_pixel(x, y, rgb);
+          }
+      }
+      break;
 
-          case RGBA_FORMAT:
-            {
-              RGBA rgba;
-              for(int y = 0; y < surface->get_height(); ++y)
-                for(int x = 0; x < surface->get_width(); ++x)
-                  {
-                    get_pixel(x * impl->size.width  / surface->impl->size.width,
-                              y * impl->size.height / surface->impl->size.height,
-                              rgba);
+      case RGBA_FORMAT:
+      {
+        RGBA rgba;
+        for(int y = 0; y < surface->get_height(); ++y)
+          for(int x = 0; x < surface->get_width(); ++x)
+          {
+            get_pixel(x * impl->size.width  / surface->impl->size.width,
+                      y * impl->size.height / surface->impl->size.height,
+                      rgba);
                 
-                    surface->put_pixel(x, y, rgba);
-                  }
-            }
-            break;
+            surface->put_pixel(x, y, rgba);
+          }
+      }
+      break;
 
-          default:
-            assert(!"SoftwareSurface::scale: Unknown format");
-            break;
-        }
-
-      return surface;
+      default:
+        assert(!"SoftwareSurface::scale: Unknown format");
+        break;
     }
+
+    return surface;
+  }
 }
 
 SoftwareSurfaceHandle
@@ -254,11 +254,11 @@ SoftwareSurface::crop(const Rect& rect_in)
   SoftwareSurfaceHandle surface = SoftwareSurface::create(impl->format, rect.get_size());
 
   for(int y = rect.top; y < rect.bottom; ++y)
-    {
-      memcpy(surface->get_row_data(y - rect.top), 
-             get_row_data(y) + rect.left * get_bytes_per_pixel(),
-             rect.get_width() * get_bytes_per_pixel());
-    }
+  {
+    memcpy(surface->get_row_data(y - rect.top), 
+           get_row_data(y) + rect.left * get_bytes_per_pixel(),
+           rect.get_width() * get_bytes_per_pixel());
+  }
 
   return surface;
 }
@@ -325,14 +325,14 @@ SoftwareSurface::get_average_color() const
 
   for(int y = 0; y < get_height(); ++y)
     for(int x = 0; x < get_width(); ++x)
-      {
-        RGB rgb;
-        get_pixel(x, y, rgb);
+    {
+      RGB rgb;
+      get_pixel(x, y, rgb);
 
-        r += rgb.r;
-        g += rgb.g;
-        b += rgb.b;
-      }
+      r += rgb.r;
+      g += rgb.g;
+      b += rgb.b;
+    }
 
   int num_pixels = get_width() * get_height();
   return RGB(static_cast<uint8_t>(r / num_pixels),
@@ -344,49 +344,49 @@ SoftwareSurfaceHandle
 SoftwareSurface::to_rgb()
 {
   switch(impl->format)
+  {
+    case RGB_FORMAT:
+      return shared_from_this();
+        
+    case RGBA_FORMAT:
     {
-      case RGB_FORMAT:
-        return shared_from_this();
-        
-      case RGBA_FORMAT:
-        {
-          SoftwareSurfaceHandle surface = SoftwareSurface::create(RGB_FORMAT, impl->size);
+      SoftwareSurfaceHandle surface = SoftwareSurface::create(RGB_FORMAT, impl->size);
 
-          int num_pixels      = get_width() * get_height();
-          uint8_t* src_pixels = get_data();
-          uint8_t* dst_pixels = surface->get_data();
+      int num_pixels      = get_width() * get_height();
+      uint8_t* src_pixels = get_data();
+      uint8_t* dst_pixels = surface->get_data();
 
-          for(int i = 0; i < num_pixels; ++i)
-            {
-              dst_pixels[3*i+0] = src_pixels[4*i+0];
-              dst_pixels[3*i+1] = src_pixels[4*i+1];
-              dst_pixels[3*i+2] = src_pixels[4*i+2];
-            }
+      for(int i = 0; i < num_pixels; ++i)
+      {
+        dst_pixels[3*i+0] = src_pixels[4*i+0];
+        dst_pixels[3*i+1] = src_pixels[4*i+1];
+        dst_pixels[3*i+2] = src_pixels[4*i+2];
+      }
 
-          return surface;
-        }
-        
-      default:
-        assert(!"SoftwareSurface::to_rgb: Unknown format");
-        return SoftwareSurfaceHandle();
+      return surface;
     }
+        
+    default:
+      assert(!"SoftwareSurface::to_rgb: Unknown format");
+      return SoftwareSurfaceHandle();
+  }
 }
 
 int
 SoftwareSurface::get_bytes_per_pixel() const
 {
   switch(impl->format) 
-    {
-      case RGB_FORMAT:
-        return 3;
+  {
+    case RGB_FORMAT:
+      return 3;
 
-      case RGBA_FORMAT:
-        return 4;
+    case RGBA_FORMAT:
+      return 4;
 
-      default:
-        assert(!"SoftwareSurface::get_bytes_per_pixel(): Unknown format");
-        return 0;
-    }
+    default:
+      assert(!"SoftwareSurface::get_bytes_per_pixel(): Unknown format");
+      return 0;
+  }
 }
 
 void
@@ -399,55 +399,55 @@ SoftwareSurface::blit(SoftwareSurfaceHandle& dst, const Vector2i& pos)
   int end_y = std::min(impl->size.height, dst->impl->size.height - pos.y);
 
   if (dst->impl->format == RGB_FORMAT && impl->format == RGB_FORMAT)
-    {
-      for(int y = start_y; y < end_y; ++y)
-        memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*3, 
-               get_row_data(y) + start_x*3,
-               (end_x - start_x)*3);
-    }
+  {
+    for(int y = start_y; y < end_y; ++y)
+      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*3, 
+             get_row_data(y) + start_x*3,
+             (end_x - start_x)*3);
+  }
   else if (dst->impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
-    {
-      for(int y = start_y; y < end_y; ++y)
-        memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*4, 
-               get_row_data(y) + start_x*4,
-               (end_x - start_x)*4);
-    }
+  {
+    for(int y = start_y; y < end_y; ++y)
+      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*4, 
+             get_row_data(y) + start_x*4,
+             (end_x - start_x)*4);
+  }
   else if (dst->impl->format == RGBA_FORMAT && impl->format == RGB_FORMAT)
+  {
+    for(int y = start_y; y < end_y; ++y)
     {
-      for(int y = start_y; y < end_y; ++y)
-        {
-          uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*4;
-          uint8_t* srcpx = get_row_data(y) + start_x*3;
+      uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*4;
+      uint8_t* srcpx = get_row_data(y) + start_x*3;
           
-          for(int x = 0; x < (end_x - start_x); ++x)
-            { 
-              dstpx[4*x+0] = srcpx[3*x+0];
-              dstpx[4*x+1] = srcpx[3*x+1];
-              dstpx[4*x+2] = srcpx[3*x+2];
-              dstpx[4*x+3] = 255;
-            }
-        }
+      for(int x = 0; x < (end_x - start_x); ++x)
+      { 
+        dstpx[4*x+0] = srcpx[3*x+0];
+        dstpx[4*x+1] = srcpx[3*x+1];
+        dstpx[4*x+2] = srcpx[3*x+2];
+        dstpx[4*x+3] = 255;
+      }
     }
+  }
   else if (dst->impl->format == RGB_FORMAT && impl->format == RGBA_FORMAT)
+  {
+    for(int y = start_y; y < end_y; ++y)
     {
-      for(int y = start_y; y < end_y; ++y)
-        {
-          uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*3;
-          uint8_t* srcpx = get_row_data(y) + start_x*4;
+      uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*3;
+      uint8_t* srcpx = get_row_data(y) + start_x*4;
           
-          for(int x = 0; x < (end_x - start_x); ++x)
-            { 
-              uint8_t alpha = srcpx[4*x+3];
-              dstpx[3*x+0] = static_cast<uint8_t>(srcpx[4*x+0] * alpha / 255);
-              dstpx[3*x+1] = static_cast<uint8_t>(srcpx[4*x+1] * alpha / 255);
-              dstpx[3*x+2] = static_cast<uint8_t>(srcpx[4*x+2] * alpha / 255);
-            }
-        }
+      for(int x = 0; x < (end_x - start_x); ++x)
+      { 
+        uint8_t alpha = srcpx[4*x+3];
+        dstpx[3*x+0] = static_cast<uint8_t>(srcpx[4*x+0] * alpha / 255);
+        dstpx[3*x+1] = static_cast<uint8_t>(srcpx[4*x+1] * alpha / 255);
+        dstpx[3*x+2] = static_cast<uint8_t>(srcpx[4*x+2] * alpha / 255);
+      }
     }
+  }
   else
-    {
-      assert(!"Not implemented");
-    }
+  {
+    assert(!"Not implemented");
+  }
 }
   
 /* EOF */

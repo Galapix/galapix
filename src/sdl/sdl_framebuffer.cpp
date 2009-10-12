@@ -43,10 +43,10 @@ SDLFramebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_alias
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
   if (anti_aliasing > 0)
-    {
-      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-      SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, anti_aliasing);
-    }
+  {
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, anti_aliasing);
+  }
   
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
@@ -59,20 +59,20 @@ SDLFramebuffer::set_video_mode(const Size& size, bool fullscreen, int anti_alias
   flags = SDL_RESIZABLE | SDL_OPENGL;
 
   if (fullscreen)
-    {
-      flags |= SDL_FULLSCREEN;
-      screen = SDL_SetVideoMode(desktop_resolution.width, desktop_resolution.height, 0, flags);
-    }
+  {
+    flags |= SDL_FULLSCREEN;
+    screen = SDL_SetVideoMode(desktop_resolution.width, desktop_resolution.height, 0, flags);
+  }
   else
-    {
-      screen = SDL_SetVideoMode(size.width, size.height, 0, flags);
-    }
+  {
+    screen = SDL_SetVideoMode(size.width, size.height, 0, flags);
+  }
 
   if (screen == NULL) 
-    {
-      std::cout << "Unable to set video mode: " << SDL_GetError() << std::endl;
-      exit(1);
-    }
+  {
+    std::cout << "Unable to set video mode: " << SDL_GetError() << std::endl;
+    exit(1);
+  }
 
   SDL_WM_SetCaption("Galapix 0.1.0", 0 /* icon */);
   SDL_EnableUNICODE(1);
@@ -86,21 +86,21 @@ SDLFramebuffer::toggle_fullscreen()
 {
   Size res(800,600);
   if (flags & SDL_FULLSCREEN)
-    {
-      flags = SDL_OPENGL | SDL_RESIZABLE;
-      res = window_resolution;
-      std::cout << "Switching to fullscreen " 
-                << res.width << "x" << res.height << std::endl;
-    }
+  {
+    flags = SDL_OPENGL | SDL_RESIZABLE;
+    res = window_resolution;
+    std::cout << "Switching to fullscreen " 
+              << res.width << "x" << res.height << std::endl;
+  }
   else
-    {
-      window_resolution = Size(screen->w, screen->h);
+  {
+    window_resolution = Size(screen->w, screen->h);
 
-      flags = SDL_OPENGL | SDL_FULLSCREEN;
-      res = desktop_resolution;
-      std::cout << "Switching to desktop " 
-                << res.width << "x" << res.height << std::endl;
-    }
+    flags = SDL_OPENGL | SDL_FULLSCREEN;
+    res = desktop_resolution;
+    std::cout << "Switching to desktop " 
+              << res.width << "x" << res.height << std::endl;
+  }
  
   screen = SDL_SetVideoMode(res.width, res.height, 0, flags); 
   Framebuffer::reshape(Size(screen->w, screen->h));
@@ -125,14 +125,14 @@ SDLFramebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
 {
   Uint16 tbl[256];
   for(int i = 0; i < 256; ++i)
-    {
-      float c = static_cast<float>(i)/255.0f;
-      c = c + brightness;
-      c = (c * contrast) - 0.5f * (contrast - 1.0f);
-      c = powf(c, 1.0f/gamma);
+  {
+    float c = static_cast<float>(i)/255.0f;
+    c = c + brightness;
+    c = (c * contrast) - 0.5f * (contrast - 1.0f);
+    c = powf(c, 1.0f/gamma);
       
-      tbl[i] = static_cast<Uint16>(Math::clamp(0, (int)(c*65535.0f), 65535));
-    }
+    tbl[i] = static_cast<Uint16>(Math::clamp(0, (int)(c*65535.0f), 65535));
+  }
   
   SDL_SetGammaRamp(tbl, tbl, tbl);
 }

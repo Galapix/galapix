@@ -42,15 +42,15 @@ void
 ZoomRectTool::up  (const Vector2i& pos)
 {
   if (drag_active)
-    {
-      drag_active = false;
-      Rectf rect(click_pos,
-                 viewer->get_state().screen2world(mouse_pos));
-      rect.normalize();
+  {
+    drag_active = false;
+    Rectf rect(click_pos,
+               viewer->get_state().screen2world(mouse_pos));
+    rect.normalize();
 
-      viewer->get_state().zoom_to(Framebuffer::get_size(), rect);
-      std::cout << "Zooming to: " << rect << std::endl;
-    }
+    viewer->get_state().zoom_to(Framebuffer::get_size(), rect);
+    std::cout << "Zooming to: " << rect << std::endl;
+  }
 }
 
 void
@@ -64,12 +64,12 @@ void
 ZoomRectTool::draw()
 {
   if (drag_active)
-    {
-      Rectf rect(click_pos,
-                 viewer->get_state().screen2world(mouse_pos));
-      rect.normalize();
-      Framebuffer::draw_rect(rect, RGB(255, 255, 255));
-    }
+  {
+    Rectf rect(click_pos,
+               viewer->get_state().screen2world(mouse_pos));
+    rect.normalize();
+    Framebuffer::draw_rect(rect, RGB(255, 255, 255));
+  }
 }
 
 /* EOF */

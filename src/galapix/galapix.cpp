@@ -122,33 +122,33 @@ Galapix::merge(const std::string& database,
   Database out_db(database);
 
   for(std::vector<std::string>::const_iterator db_it = filenames.begin(); db_it != filenames.end(); ++db_it)
-    {
-      Database in_db(*db_it);
+  {
+    Database in_db(*db_it);
           
-      std::vector<FileEntry> entries;
-      in_db.files.get_file_entries(entries);
-      for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+    std::vector<FileEntry> entries;
+    in_db.files.get_file_entries(entries);
+    for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+    {
+      try {
+        std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
+
+        // FIXME: Must catch URL collisions here (or maybe not?)
+        FileEntry entry = out_db.files.store_file_entry(*i);
+
+        std::vector<TileEntry> tiles;
+        in_db.tiles.get_tiles(*i, tiles);
+        for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
         {
-          try {
-            std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
-
-            // FIXME: Must catch URL collisions here (or maybe not?)
-            FileEntry entry = out_db.files.store_file_entry(*i);
-
-            std::vector<TileEntry> tiles;
-            in_db.tiles.get_tiles(*i, tiles);
-            for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
-              {
-                // Change the fileid
-                j->set_file_entry(entry);
-                out_db.tiles.store_tile(*j);
-              }
-          } catch(std::exception& err) {
-            std::cout << "Error: " << err.what() << std::endl;
-          }
+          // Change the fileid
+          j->set_file_entry(entry);
+          out_db.tiles.store_tile(*j);
         }
-      std::cout << std::endl;
+      } catch(std::exception& err) {
+        std::cout << "Error: " << err.what() << std::endl;
+      }
     }
+    std::cout << std::endl;
+  }
 }
 
 void
@@ -159,55 +159,55 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
   int wish_size = 512;
   int image_num = 0;
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
+  {
+    FileEntry entry = db.files.get_file_entry(*i);
+    if (!entry)
     {
-      FileEntry entry = db.files.get_file_entry(*i);
-      if (!entry)
-        {
-          std::cerr << "Error: Couldn't get file entry for " << *i << std::endl;
-        }
-      else
-        {
-          Size size = entry.get_image_size();
-          int scale = 0;
-          while(size.width > wish_size && size.height > wish_size)
-            {
-              scale += 1;
-              size /= 2;
-            }
-
-          SoftwareSurfaceHandle target = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, size);
-          for(int y = 0; y < (size.height+255)/256; ++y)
-            for(int x = 0; x < (size.width+255)/256; ++x)
-              {
-                TileEntry tile;
-                if (db.tiles.get_tile(entry, scale, Vector2i(x, y), tile))
-                  {
-                    tile.get_surface()->blit(target, Vector2i(x, y) * 256);
-                  }
-              }
-
-          char filename[1024];
-          sprintf(filename, "/tmp/out/%04d.jpg", image_num);
-          std::cout << "Writing result to: " << filename << std::endl;
-          JPEG::save(target, 85, filename);
-          //PNG::save(target, filename);
-          image_num += 1;
-        }
+      std::cerr << "Error: Couldn't get file entry for " << *i << std::endl;
     }
+    else
+    {
+      Size size = entry.get_image_size();
+      int scale = 0;
+      while(size.width > wish_size && size.height > wish_size)
+      {
+        scale += 1;
+        size /= 2;
+      }
+
+      SoftwareSurfaceHandle target = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, size);
+      for(int y = 0; y < (size.height+255)/256; ++y)
+        for(int x = 0; x < (size.width+255)/256; ++x)
+        {
+          TileEntry tile;
+          if (db.tiles.get_tile(entry, scale, Vector2i(x, y), tile))
+          {
+            tile.get_surface()->blit(target, Vector2i(x, y) * 256);
+          }
+        }
+
+      char filename[1024];
+      sprintf(filename, "/tmp/out/%04d.jpg", image_num);
+      std::cout << "Writing result to: " << filename << std::endl;
+      JPEG::save(target, 85, filename);
+      //PNG::save(target, filename);
+      image_num += 1;
+    }
+  }
 }
 
 void
 Galapix::info(const std::vector<URL>& url)
 {
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
-    {
-      Size size;
+  {
+    Size size;
 
-      if (SoftwareSurfaceFactory::get_size(*i, size))
-        std::cout << *i << " " << size.width << "x" << size.height << std::endl;
-      else
-        std::cout << "Error reading " << *i << std::endl;
-    }
+    if (SoftwareSurfaceFactory::get_size(*i, size))
+      std::cout << *i << " " << size.width << "x" << size.height << std::endl;
+    else
+      std::cout << "Error reading " << *i << std::endl;
+  }
 }
 
 void
@@ -215,17 +215,17 @@ Galapix::downscale(const std::vector<URL>& url)
 {
   int num = 0;
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i, ++num)
-    {
-      std::cout << *i << std::endl;
-      SoftwareSurfaceHandle surface = JPEG::load_from_file(i->get_stdio_name(), 8);
+  {
+    std::cout << *i << std::endl;
+    SoftwareSurfaceHandle surface = JPEG::load_from_file(i->get_stdio_name(), 8);
 
-      std::ostringstream out;
-      out << "/tmp/out-" << num << ".jpg";
-      BlobHandle blob = JPEG::save(surface, 75);
-      blob->write_to_file(out.str());
+    std::ostringstream out;
+    out << "/tmp/out-" << num << ".jpg";
+    BlobHandle blob = JPEG::save(surface, 75);
+    blob->write_to_file(out.str());
 
-      std::cout << "Wrote: " << out.str() << std::endl;
-    }  
+    std::cout << "Wrote: " << out.str() << std::endl;
+  }  
 }
 
 void
@@ -250,9 +250,9 @@ Galapix::list(const std::string& database, const std::string& pattern)
     db.files.get_file_entries(pattern, entries);
 
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
-    {
-      std::cout << i->get_url() << std::endl;
-    }  
+  {
+    std::cout << i->get_url() << std::endl;
+  }  
 }
 
 void
@@ -270,17 +270,17 @@ Galapix::filegen(const std::string& database,
   Database db(database);
   
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
+  {
+    FileEntry entry = db.files.get_file_entry(url[i]); //FIXME: Fri Oct  9 13:08:44 2009
+    if (!entry)
     {
-      FileEntry entry = db.files.get_file_entry(url[i]); //FIXME: Fri Oct  9 13:08:44 2009
-      if (!entry)
-        {
-          std::cout << "Couldn't get entry for " << url[i] << std::endl;
-        }
-      else
-        {
-          std::cout << "Got: " << entry.get_url() << " " << entry.get_width() << "x" << entry.get_height() << std::endl;
-        }
+      std::cout << "Couldn't get entry for " << url[i] << std::endl;
     }
+    else
+    {
+      std::cout << "Got: " << entry.get_url() << " " << entry.get_width() << "x" << entry.get_height() << std::endl;
+    }
+  }
 }
 
 void
@@ -308,15 +308,15 @@ Galapix::thumbgen(const GalapixOptions& opts,
   { // FIXME: Implement this
     std::vector<JobHandle> job_handles;
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
-      {
-        // Generate Image Tiles
-        SoftwareSurfaceHandle surface = SoftwareSurfaceFactory::from_url(i->get_url());
+    {
+      // Generate Image Tiles
+      SoftwareSurfaceHandle surface = SoftwareSurfaceFactory::from_url(i->get_url());
         
-        boost::shared_ptr<Job> job_ptr(new TileGenerationJob(*i, 
-                                                             boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)));
-        job_manager.request(job_ptr);
-        job_handles.push_back(job_ptr->get_handle());
-      }
+      boost::shared_ptr<Job> job_ptr(new TileGenerationJob(*i, 
+                                                           boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)));
+      job_manager.request(job_ptr);
+      job_handles.push_back(job_ptr->get_handle());
+    }
 
     for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
       i->wait();
@@ -347,30 +347,30 @@ Galapix::view(const GalapixOptions& opts,
   Workspace workspace;
 
   if (view_all)
+  {
+    if (pattern.empty())
     {
-      if (pattern.empty())
-        {
-          // When no files are given, display everything in the database
-          database_thread.request_all_files(boost::bind(&Workspace::receive_file, &workspace, _1));
-        }
-      else 
-        {
-          std::cout << "Using pattern: '" << pattern << "'" << std::endl;
-          database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), pattern);
-        }
+      // When no files are given, display everything in the database
+      database_thread.request_all_files(boost::bind(&Workspace::receive_file, &workspace, _1));
     }
+    else 
+    {
+      std::cout << "Using pattern: '" << pattern << "'" << std::endl;
+      database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), pattern);
+    }
+  }
 
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
+  {
+    if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))
     {
-      if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))
-        {
-          workspace.load(i->get_stdio_name());
-        }
-      else
-        {
-          database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
-        }
+      workspace.load(i->get_stdio_name());
     }
+    else
+    {
+      database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
+    }
+  }
 
 #ifdef GALAPIX_SDL
   SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing);
@@ -447,19 +447,19 @@ Galapix::main(int argc, char** argv)
   //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
   try 
-    {
-      GalapixOptions opts;
-      opts.threads  = 2;
-      opts.database = Filesystem::get_home() + "/.galapix/cache2.sqlite";
-      parse_args(argc, argv, opts);
-      run(opts);
-      return EXIT_SUCCESS;
-    }
+  {
+    GalapixOptions opts;
+    opts.threads  = 2;
+    opts.database = Filesystem::get_home() + "/.galapix/cache2.sqlite";
+    parse_args(argc, argv, opts);
+    run(opts);
+    return EXIT_SUCCESS;
+  }
   catch(const std::exception& err) 
-    {
-      std::cout << "Exception: " << err.what() << std::endl;
-      return EXIT_FAILURE;
-    }
+  {
+    std::cout << "Exception: " << err.what() << std::endl;
+    return EXIT_FAILURE;
+  }
 }
   
 void
@@ -470,88 +470,88 @@ Galapix::run(const GalapixOptions& opts)
   std::vector<URL> urls;
 
   if (opts.rest.empty())
-    {
+  {
 #ifdef GALAPIX_SDL
-      print_usage();
+    print_usage();
 #else
-      view(opts, std::vector<URL>(), false, "");
+    view(opts, std::vector<URL>(), false, "");
 #endif
-    }
+  }
   else
+  {
+    std::cout << "Scanning directories... " << std::flush;
+    for(std::vector<std::string>::const_iterator i = opts.rest.begin()+1; i != opts.rest.end(); ++i)
     {
-      std::cout << "Scanning directories... " << std::flush;
-      for(std::vector<std::string>::const_iterator i = opts.rest.begin()+1; i != opts.rest.end(); ++i)
-        {
-          if (URL::is_url(*i))
-            urls.push_back(URL::from_string(*i));
-          else
-            Filesystem::generate_image_file_list(*i, urls);
-        }
-      std::sort(urls.begin(), urls.end());
-      std::cout << urls.size() << " files found." << std::endl;
-
-      const std::string& command = opts.rest.front();
-        
-      if (command == "view")
-        {
-          if (!urls.empty())
-            view(opts, urls, false, opts.pattern);
-          else
-            std::cout << "Error: No URLs given" << std::endl;
-        }
-      else if (command == "viewdb")
-        {
-          view(opts, urls, true, opts.pattern);
-        }
-      else if (command == "check")
-        {
-          check(opts.database);
-        }
-      else if (command == "list")
-        {
-          list(opts.database, opts.pattern);
-        }
-      else if (command == "cleanup")
-        {
-          cleanup(opts.database);
-        }
-      else if (command == "export")
-        {
-          export_images(opts.database, urls);
-        }
-      else if (command == "merge")
-        {
-          merge(opts.database, std::vector<std::string>(opts.rest.begin()+1, opts.rest.end()));
-        }
-      else if (command == "info")
-        {
-          info(urls);
-        }
-      else if (command == "test")
-        {
-          test(opts, urls);
-        }
-      else if (command == "downscale")
-        {
-          downscale(urls);
-        }
-      else if (command == "prepare")
-        {
-          thumbgen(opts, urls, true);
-        }
-      else if (command == "thumbgen")
-        {
-          thumbgen(opts, urls, false);
-        }
-      else if (command == "filegen")
-        {
-          filegen(opts.database, urls);
-        }
+      if (URL::is_url(*i))
+        urls.push_back(URL::from_string(*i));
       else
-        {
-          print_usage();
-        }
+        Filesystem::generate_image_file_list(*i, urls);
     }
+    std::sort(urls.begin(), urls.end());
+    std::cout << urls.size() << " files found." << std::endl;
+
+    const std::string& command = opts.rest.front();
+        
+    if (command == "view")
+    {
+      if (!urls.empty())
+        view(opts, urls, false, opts.pattern);
+      else
+        std::cout << "Error: No URLs given" << std::endl;
+    }
+    else if (command == "viewdb")
+    {
+      view(opts, urls, true, opts.pattern);
+    }
+    else if (command == "check")
+    {
+      check(opts.database);
+    }
+    else if (command == "list")
+    {
+      list(opts.database, opts.pattern);
+    }
+    else if (command == "cleanup")
+    {
+      cleanup(opts.database);
+    }
+    else if (command == "export")
+    {
+      export_images(opts.database, urls);
+    }
+    else if (command == "merge")
+    {
+      merge(opts.database, std::vector<std::string>(opts.rest.begin()+1, opts.rest.end()));
+    }
+    else if (command == "info")
+    {
+      info(urls);
+    }
+    else if (command == "test")
+    {
+      test(opts, urls);
+    }
+    else if (command == "downscale")
+    {
+      downscale(urls);
+    }
+    else if (command == "prepare")
+    {
+      thumbgen(opts, urls, true);
+    }
+    else if (command == "thumbgen")
+    {
+      thumbgen(opts, urls, false);
+    }
+    else if (command == "filegen")
+    {
+      filegen(opts.database, urls);
+    }
+    else
+    {
+      print_usage();
+    }
+  }
 }
 
 void
@@ -559,108 +559,108 @@ Galapix::parse_args(int argc, char** argv, GalapixOptions& opts)
 {
   // Parse arguments
   for(int i = 1; i < argc; ++i)
+  {
+    if (argv[i][0] == '-')
     {
-      if (argv[i][0] == '-')
+      if (strcmp(argv[i], "--help") == 0 ||
+          strcmp(argv[i], "-h") == 0)
+      {
+        print_usage();
+        exit(0);
+      }
+      else if (strcmp(argv[i], "--database") == 0 ||
+               strcmp(argv[i], "-d") == 0)
+      {
+        ++i;
+        if (i < argc)
         {
-          if (strcmp(argv[i], "--help") == 0 ||
-              strcmp(argv[i], "-h") == 0)
-            {
-              print_usage();
-              exit(0);
-            }
-          else if (strcmp(argv[i], "--database") == 0 ||
-                   strcmp(argv[i], "-d") == 0)
-            {
-              ++i;
-              if (i < argc)
-                {
-                  opts.database = argv[i];
-                }
-              else
-                {
-                  throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
-                }
-            }
-          else if (strcmp(argv[i], "-t") == 0 ||
-                   strcmp(argv[i], "--threads") == 0)
-            {
-              ++i;
-              if (i < argc)
-                {
-                  opts.threads = atoi(argv[i]);
-                }
-              else
-                {
-                  throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
-                }              
-            }
-          else if (strcmp(argv[i], "-F") == 0 ||
-                   strcmp(argv[i], "--files-from") == 0)
-            {
-              ++i;
-              if (i < argc)
-                {
-                  std::string line;
-                  std::ifstream in(argv[i]);
-                  if (!in)
-                    {
-                      throw std::runtime_error("Couldn't open " + std::string(argv[i]));
-                    }
-                  else
-                    {
-                      while(std::getline(in, line))
-                        {
-                          opts.rest.push_back(line);
-                        }
-                    }
-                }
-              else
-                {
-                  throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
-                }
-            }
-          else if (strcmp(argv[i], "--pattern") == 0 ||
-                   strcmp(argv[i], "-p") == 0)
-            {
-              i += 1;
-              if (i < argc)
-                opts.pattern = argv[i];
-              else
-                throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
-            }
-          else if (strcmp(argv[i], "--anti-aliasing") == 0 ||
-                   strcmp(argv[i], "-a") == 0)
-            {
-              i += 1;
-              if (i < argc)
-                anti_aliasing = atoi(argv[i]);
-              else
-                throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");                  
-            }
-          else if (strcmp(argv[i], "--geometry") == 0 ||
-                   strcmp(argv[i], "-g") == 0)
-            {
-              i += 1;
-              if (i < argc)
-                sscanf(argv[i], "%dx%d", &geometry.width, &geometry.height);
-              else
-                throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
-            }
-          else if (strcmp(argv[i], "--fullscreen") == 0 ||
-                   strcmp(argv[i], "-f") == 0)
-            {
-              fullscreen = true;
-            }
+          opts.database = argv[i];
+        }
+        else
+        {
+          throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+        }
+      }
+      else if (strcmp(argv[i], "-t") == 0 ||
+               strcmp(argv[i], "--threads") == 0)
+      {
+        ++i;
+        if (i < argc)
+        {
+          opts.threads = atoi(argv[i]);
+        }
+        else
+        {
+          throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+        }              
+      }
+      else if (strcmp(argv[i], "-F") == 0 ||
+               strcmp(argv[i], "--files-from") == 0)
+      {
+        ++i;
+        if (i < argc)
+        {
+          std::string line;
+          std::ifstream in(argv[i]);
+          if (!in)
+          {
+            throw std::runtime_error("Couldn't open " + std::string(argv[i]));
+          }
           else
+          {
+            while(std::getline(in, line))
             {
-              throw std::runtime_error("Unknown option " + std::string(argv[i]));
+              opts.rest.push_back(line);
             }
+          }
         }
-      else
+        else
         {
-          opts.rest.push_back(argv[i]);
+          throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
         }
+      }
+      else if (strcmp(argv[i], "--pattern") == 0 ||
+               strcmp(argv[i], "-p") == 0)
+      {
+        i += 1;
+        if (i < argc)
+          opts.pattern = argv[i];
+        else
+          throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+      }
+      else if (strcmp(argv[i], "--anti-aliasing") == 0 ||
+               strcmp(argv[i], "-a") == 0)
+      {
+        i += 1;
+        if (i < argc)
+          anti_aliasing = atoi(argv[i]);
+        else
+          throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");                  
+      }
+      else if (strcmp(argv[i], "--geometry") == 0 ||
+               strcmp(argv[i], "-g") == 0)
+      {
+        i += 1;
+        if (i < argc)
+          sscanf(argv[i], "%dx%d", &geometry.width, &geometry.height);
+        else
+          throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+      }
+      else if (strcmp(argv[i], "--fullscreen") == 0 ||
+               strcmp(argv[i], "-f") == 0)
+      {
+        fullscreen = true;
+      }
+      else
+      {
+        throw std::runtime_error("Unknown option " + std::string(argv[i]));
+      }
     }
+    else
+    {
+      opts.rest.push_back(argv[i]);
+    }
+  }
 }
   
 int main(int argc, char** argv)

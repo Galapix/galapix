@@ -43,9 +43,9 @@ boolean jpeg_memory_empty_output_buffer(j_compress_ptr cinfo)
   // This function always gets OUTPUT_BUF_SIZE bytes,
   // cinfo->dest->free_in_buffer *must* be ignored
   for(size_t i = 0; i < OUTPUT_BUF_SIZE; ++i) 
-    { // FIXME: Little slow maybe?
-      mgr->data->push_back(mgr->buffer[i]);
-    }
+  { // FIXME: Little slow maybe?
+    mgr->data->push_back(mgr->buffer[i]);
+  }
 
   cinfo->dest->next_output_byte = mgr->buffer;
   cinfo->dest->free_in_buffer   = OUTPUT_BUF_SIZE;
@@ -59,19 +59,19 @@ void jpeg_memory_term_destination(j_compress_ptr cinfo)
   size_t datacount = OUTPUT_BUF_SIZE - cinfo->dest->free_in_buffer;
 
   for(size_t i = 0; i < datacount; ++i)
-    { // FIXME: Little slow maybe?
-      mgr->data->push_back(mgr->buffer[i]);
-    }
+  { // FIXME: Little slow maybe?
+    mgr->data->push_back(mgr->buffer[i]);
+  }
 }
 
 void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data)
 {
   if (cinfo->dest == NULL) 
-    {	/* first time for this JPEG object? */
-      cinfo->dest = (struct jpeg_destination_mgr*)
-        (*cinfo->mem->alloc_small)((j_common_ptr) cinfo, JPOOL_PERMANENT,
-                                   sizeof(struct jpeg_memory_destination_mgr));
-    }
+  {     /* first time for this JPEG object? */
+    cinfo->dest = (struct jpeg_destination_mgr*)
+      (*cinfo->mem->alloc_small)((j_common_ptr) cinfo, JPOOL_PERMANENT,
+                                 sizeof(struct jpeg_memory_destination_mgr));
+  }
 
   cinfo->dest->init_destination    = jpeg_memory_init_destination;
   cinfo->dest->empty_output_buffer = jpeg_memory_empty_output_buffer;

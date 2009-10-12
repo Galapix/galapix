@@ -82,18 +82,18 @@ bool
 FileReader::read_url(const char* name, URL& value) const
 {
   if (impl.get())
+  {
+    std::string filename;
+    if (impl->read_string(name, filename))
     {
-      std::string filename;
-      if (impl->read_string(name, filename))
-        {
-          value = URL::from_string(filename);
-          return true;
-        }
-      else
-        {
-          return false;
-        }
+      value = URL::from_string(filename);
+      return true;
     }
+    else
+    {
+      return false;
+    }
+  }
   else
     return false;
 }
@@ -198,13 +198,13 @@ FileReader::parse(const std::string& filename)
 {
   boost::shared_ptr<lisp::Lisp> sexpr = lisp::Parser::parse(filename);
   if (sexpr)
-    {
-      return SExprFileReader(sexpr->get_list_elem(0));
-    }
+  {
+    return SExprFileReader(sexpr->get_list_elem(0));
+  }
   else
-    {
-      return FileReader();
-    }
+  {
+    return FileReader();
+  }
 }
 
 /* EOF */

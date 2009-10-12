@@ -44,18 +44,18 @@ public:
     
     int gl_format = GL_RGB;
     switch(src->get_format())
-      {
-        case SoftwareSurface::RGB_FORMAT:
-          gl_format = GL_RGB;
-          break;
+    {
+      case SoftwareSurface::RGB_FORMAT:
+        gl_format = GL_RGB;
+        break;
 
-        case SoftwareSurface::RGBA_FORMAT:
-          gl_format = GL_RGBA;
-          break;
+      case SoftwareSurface::RGBA_FORMAT:
+        gl_format = GL_RGBA;
+        break;
 
-        default:
-          assert(!"Texture: Not supposed to be reached");
-      }
+      default:
+        assert(!"Texture: Not supposed to be reached");
+    }
 
     glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, gl_format,
                  size.width, size.height,

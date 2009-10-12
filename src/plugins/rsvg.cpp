@@ -28,14 +28,14 @@ SoftwareSurfaceHandle
 RSVG::load_from_url(const URL& url)
 {
   if (url.has_stdio_name())
-    {
-      return load_from_file(url.get_stdio_name());
-    }
+  {
+    return load_from_file(url.get_stdio_name());
+  }
   else
-    {
-      assert(!"RSVG: Not supported");
-      return SoftwareSurfaceHandle();
-    }
+  {
+    assert(!"RSVG: Not supported");
+    return SoftwareSurfaceHandle();
+  }
  
 }
 
@@ -49,15 +49,15 @@ RSVG::load_from_file(const std::string& filename)
   rsvg.arg("/dev/stdout");
 
   if (rsvg.exec() == 0)
-    {
-      BlobHandle blob = Blob::copy(&*rsvg.get_stdout().begin(), rsvg.get_stdout().size());
-      SoftwareSurfaceHandle surface = PNG::load_from_mem(blob->get_data(), blob->size());
-      return surface;
-    }
+  {
+    BlobHandle blob = Blob::copy(&*rsvg.get_stdout().begin(), rsvg.get_stdout().size());
+    SoftwareSurfaceHandle surface = PNG::load_from_mem(blob->get_data(), blob->size());
+    return surface;
+  }
   else
-    {
-      throw std::runtime_error("RSVG: " + std::string(rsvg.get_stderr().begin(), rsvg.get_stderr().end()));
-    }
+  {
+    throw std::runtime_error("RSVG: " + std::string(rsvg.get_stderr().begin(), rsvg.get_stderr().end()));
+  }
 }
 
 /* EOF */

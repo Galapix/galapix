@@ -28,14 +28,14 @@ SoftwareSurfaceHandle
 UFRaw::load_from_url(const URL& url)
 {
   if (url.has_stdio_name())
-    {
-      return load_from_file(url.get_stdio_name());
-    }
+  {
+    return load_from_file(url.get_stdio_name());
+  }
   else
-    {
-      assert(!"UFRaw: Not supported");
-      return SoftwareSurfaceHandle();
-    }
+  {
+    assert(!"UFRaw: Not supported");
+    return SoftwareSurfaceHandle();
+  }
 }
 
 SoftwareSurfaceHandle
@@ -49,13 +49,13 @@ UFRaw::load_from_file(const std::string& filename)
     .arg("--output=-");
      
   if (ufraw.exec())
-    {
-      throw std::runtime_error("UFRaw::load_from_file: " + std::string(ufraw.get_stderr().begin(), ufraw.get_stderr().end()));
-    }
+  {
+    throw std::runtime_error("UFRaw::load_from_file: " + std::string(ufraw.get_stderr().begin(), ufraw.get_stderr().end()));
+  }
   else
-    {
-      return PNM::load_from_mem(&*ufraw.get_stdout().begin(), ufraw.get_stdout().size());
-    }
+  {
+    return PNM::load_from_mem(&*ufraw.get_stdout().begin(), ufraw.get_stdout().size());
+  }
 }
 
 /* EOF */

@@ -98,16 +98,16 @@ FileDatabase::check()
 
   std::cout << "Checking File Existance:" << std::endl;
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+  {
+    if (!Filesystem::exist(i->get_url().get_stdio_name()))
     {
-      if (!Filesystem::exist(i->get_url().get_stdio_name()))
-        {
-          std::cout << i->get_url() << ": does not exist" << std::endl;
-        }
-      else
-        {
-          std::cout << i->get_url() << ": ok" << std::endl;
-        }
+      std::cout << i->get_url() << ": does not exist" << std::endl;
     }
+    else
+    {
+      std::cout << i->get_url() << ": ok" << std::endl;
+    }
+  }
 }
 
 void

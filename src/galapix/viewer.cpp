@@ -100,19 +100,19 @@ void
 Viewer::redraw()
 {
   if (!mark_for_redraw)
-    {
-      mark_for_redraw = true;
+  {
+    mark_for_redraw = true;
   
 #ifdef GALAPIX_SDL
-      SDL_Event event;
-      event.type = SDL_USEREVENT;
-      event.user.code  = 1;
-      event.user.data1 = 0;
-      event.user.data2 = 0;
+    SDL_Event event;
+    event.type = SDL_USEREVENT;
+    event.user.code  = 1;
+    event.user.data1 = 0;
+    event.user.data2 = 0;
   
-      while (SDL_PushEvent(&event) != 0) {}
+    while (SDL_PushEvent(&event) != 0) {}
 #endif
-    }
+  }
 }
 
 void
@@ -126,30 +126,30 @@ Viewer::draw()
   glPushMatrix();
 
   if (clip_debug)
-    {
-      glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
-      glScalef(0.5f, 0.5f, 1.0f);
-      glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
-    }
+  {
+    glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
+    glScalef(0.5f, 0.5f, 1.0f);
+    glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
+  }
 
   Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
 
   if (state.get_angle() != 0.0f)
-    {
-      glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
-      glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
-      glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
+  {
+    glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
+    glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
+    glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
 
-      // FIXME: We enlarge the cliprect so much that we can rotate
-      // freely, however this enlargement creates a cliprect that
-      // might be quite a bit larger then what is really needed
-      float  diagonal = cliprect.get_diagonal();
-      Vector2f center = cliprect.get_center();
-      cliprect.left   = center.x - diagonal;
-      cliprect.right  = center.x + diagonal;
-      cliprect.top    = center.y - diagonal;
-      cliprect.bottom = center.y + diagonal;
-    }
+    // FIXME: We enlarge the cliprect so much that we can rotate
+    // freely, however this enlargement creates a cliprect that
+    // might be quite a bit larger then what is really needed
+    float  diagonal = cliprect.get_diagonal();
+    Vector2f center = cliprect.get_center();
+    cliprect.left   = center.x - diagonal;
+    cliprect.right  = center.x + diagonal;
+    cliprect.top    = center.y - diagonal;
+    cliprect.bottom = center.y + diagonal;
+  }
 
   glTranslatef(state.get_offset().x, state.get_offset().y, 0.0f);
   glScalef(state.get_scale(), state.get_scale(), 1.0f);
@@ -167,18 +167,18 @@ Viewer::draw()
   glPopMatrix();
 
   if (draw_grid)
+  {
+    if (pin_grid)
     {
-      if (pin_grid)
-        {
-          Framebuffer::draw_grid(grid_offset * state.get_scale() + state.get_offset(), 
-                                 grid_size * state.get_scale(),
-                                 grid_color);
-        }
-      else
-        {
-          Framebuffer::draw_grid(grid_offset, grid_size, grid_color);
-        }
+      Framebuffer::draw_grid(grid_offset * state.get_scale() + state.get_offset(), 
+                             grid_size * state.get_scale(),
+                             grid_color);
     }
+    else
+    {
+      Framebuffer::draw_grid(grid_offset, grid_size, grid_color);
+    }
+  }
 }
 
 void
@@ -211,19 +211,19 @@ Viewer::on_mouse_button_down(const Vector2i& pos, int btn)
   mouse_pos = pos;
 
   switch(btn)
-    {
-      case SDL_BUTTON_LEFT:
-        left_tool->down(pos);
-        break;
+  {
+    case SDL_BUTTON_LEFT:
+      left_tool->down(pos);
+      break;
 
-      case SDL_BUTTON_RIGHT:
-        right_tool->down(pos);
-        break;
+    case SDL_BUTTON_RIGHT:
+      right_tool->down(pos);
+      break;
 
-      case SDL_BUTTON_MIDDLE:
-        middle_tool->down(pos);
-        break;
-    }
+    case SDL_BUTTON_MIDDLE:
+      middle_tool->down(pos);
+      break;
+  }
 }
 
 void
@@ -232,59 +232,59 @@ Viewer::on_mouse_button_up(const Vector2i& pos, int btn)
   mouse_pos = pos;
 
   switch(btn)
-    {
-      case SDL_BUTTON_LEFT:
-        left_tool->up(pos);
-        break;
+  {
+    case SDL_BUTTON_LEFT:
+      left_tool->up(pos);
+      break;
 
-      case SDL_BUTTON_RIGHT:
-        right_tool->up(pos);
-        break;
+    case SDL_BUTTON_RIGHT:
+      right_tool->up(pos);
+      break;
 
-      case SDL_BUTTON_MIDDLE:
-        middle_tool->up(pos);
-        break;
-    }
+    case SDL_BUTTON_MIDDLE:
+      middle_tool->up(pos);
+      break;
+  }
 }
 
 void
 Viewer::on_key_up(int key)
 {
   switch(key)
-    {
-      case SDLK_END:
-        keyboard_zoom_out_tool->up(mouse_pos);
-        break;
+  {
+    case SDLK_END:
+      keyboard_zoom_out_tool->up(mouse_pos);
+      break;
 
-      case SDLK_HOME:
-        keyboard_zoom_in_tool->up(mouse_pos);
-        break;
+    case SDLK_HOME:
+      keyboard_zoom_in_tool->up(mouse_pos);
+      break;
 
-      case SDLK_RSHIFT:
-      case SDLK_LSHIFT:
-        keyboard_view_rotate_tool->up(mouse_pos);
-        break;
-    }
+    case SDLK_RSHIFT:
+    case SDLK_LSHIFT:
+      keyboard_view_rotate_tool->up(mouse_pos);
+      break;
+  }
 }
 
 void
 Viewer::on_key_down(int key)
 {
   switch(key)
-    {
-      case SDLK_END:
-        keyboard_zoom_out_tool->down(mouse_pos);
-        break;
+  {
+    case SDLK_END:
+      keyboard_zoom_out_tool->down(mouse_pos);
+      break;
 
-      case SDLK_HOME:
-        keyboard_zoom_in_tool->down(mouse_pos);
-        break;
+    case SDLK_HOME:
+      keyboard_zoom_in_tool->down(mouse_pos);
+      break;
 
-      case SDLK_RSHIFT:
-      case SDLK_LSHIFT:
-        keyboard_view_rotate_tool->down(mouse_pos);
-        break;
-    }
+    case SDLK_RSHIFT:
+    case SDLK_LSHIFT:
+      keyboard_view_rotate_tool->down(mouse_pos);
+      break;
+  }
 }
 
 bool
@@ -302,15 +302,15 @@ void
 Viewer::set_grid(const Vector2f& offset, const Sizef& size)
 {
   if (pin_grid)
-    {
-      grid_offset = offset;
-      grid_size   = size;
-    }
+  {
+    grid_offset = offset;
+    grid_size   = size;
+  }
   else
-    {
-      grid_offset = offset * state.get_scale() + state.get_offset();
-      grid_size   = size * state.get_scale();
-    }
+  {
+    grid_offset = offset * state.get_scale() + state.get_offset();
+    grid_size   = size * state.get_scale();
+  }
 }
 
 void
@@ -462,15 +462,15 @@ Viewer::toggle_pinned_grid()
   pin_grid = !pin_grid;
   std::cout << "Pin Grid: " << pin_grid << std::endl;
   if (!pin_grid)
-    {
-      grid_offset = grid_offset * state.get_scale() + state.get_offset();
-      grid_size  *= state.get_scale();
-    }
+  {
+    grid_offset = grid_offset * state.get_scale() + state.get_offset();
+    grid_size  *= state.get_scale();
+  }
   else
-    {
-      grid_offset = (grid_offset - state.get_offset()) / state.get_scale();
-      grid_size  /= state.get_scale();            
-    }
+  {
+    grid_offset = (grid_offset - state.get_offset()) / state.get_scale();
+    grid_size  /= state.get_scale();            
+  }
 }
 
 void
@@ -502,15 +502,15 @@ void
 Viewer::zoom_to_selection()
 {
   if (!workspace->get_selection().empty())
-    {
-      state.zoom_to(Framebuffer::get_size(),
-                    workspace->get_selection().get_bounding_rect());
-    }
+  {
+    state.zoom_to(Framebuffer::get_size(),
+                  workspace->get_selection().get_bounding_rect());
+  }
   else
-    {
-      state.zoom_to(Framebuffer::get_size(),
-                    workspace->get_bounding_rect());
-    }
+  {
+    state.zoom_to(Framebuffer::get_size(),
+                  workspace->get_bounding_rect());
+  }
 }
 
 void 
@@ -542,17 +542,17 @@ Viewer::toggle_trackball_mode()
 {
   pan_tool->set_trackball_mode(!pan_tool->get_trackball_mode());
   if (pan_tool->get_trackball_mode())
-    {
-      std::cout << "Trackball mode active, press 't' to leave" << std::endl;
-      SDL_ShowCursor(SDL_DISABLE);
-      SDL_WM_GrabInput(SDL_GRAB_ON);
-    }
+  {
+    std::cout << "Trackball mode active, press 't' to leave" << std::endl;
+    SDL_ShowCursor(SDL_DISABLE);
+    SDL_WM_GrabInput(SDL_GRAB_ON);
+  }
   else
-    {
-      std::cout << "Trackball mode deactivated" << std::endl;
-      SDL_ShowCursor(SDL_ENABLE);
-      SDL_WM_GrabInput(SDL_GRAB_OFF);
-    }
+  {
+    std::cout << "Trackball mode deactivated" << std::endl;
+    SDL_ShowCursor(SDL_ENABLE);
+    SDL_WM_GrabInput(SDL_GRAB_OFF);
+  }
 }
 
 void
@@ -577,9 +577,9 @@ Viewer::refresh_selection()
   Selection selection = workspace->get_selection();
   bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
-    {
-      (*i)->refresh(force);
-    }
+  {
+    (*i)->refresh(force);
+  }
 }
 
 void

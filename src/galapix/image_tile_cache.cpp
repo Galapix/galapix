@@ -69,43 +69,43 @@ ImageTileCache::request_tile(int x, int y, int scale)
   Cache::iterator i = cache.find(cache_id);
 
   if (i == cache.end())
-    {
-      // Important: it must be '*this', not 'this', since the 'this'
-      // pointer might disappear any time, its only the impl that
-      // stays and which we can link to by making a copy of the Image
-      // object via *this.
-      // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
-      jobs.push_back(DatabaseThread::current()->request_tile(file_entry, scale, Vector2i(x, y), 
-                                                             boost::bind(&ImageTileCache::receive_tile, this, _1)));
+  {
+    // Important: it must be '*this', not 'this', since the 'this'
+    // pointer might disappear any time, its only the impl that
+    // stays and which we can link to by making a copy of the Image
+    // object via *this.
+    // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
+    jobs.push_back(DatabaseThread::current()->request_tile(file_entry, scale, Vector2i(x, y), 
+                                                           boost::bind(&ImageTileCache::receive_tile, this, _1)));
 
-      // FIXME: Something to try: Request the next smaller tile too,
-      // so we get a lower quality image fast and a higher quality one
-      // soon after FIXME: Its unclear if this actually improves
-      // things, also the order of request gets mungled in the
-      // DatabaseThread, we should request the whole group of lower
-      // res tiles at once, instead of one by one, since that eats up
-      // the possible speed up
-      // impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, scale+1, Vector2i(x, y), 
-      //                                                              boost::bind(&Image::receive_tile, *this, _1)));
-      SurfaceStruct s;
+    // FIXME: Something to try: Request the next smaller tile too,
+    // so we get a lower quality image fast and a higher quality one
+    // soon after FIXME: Its unclear if this actually improves
+    // things, also the order of request gets mungled in the
+    // DatabaseThread, we should request the whole group of lower
+    // res tiles at once, instead of one by one, since that eats up
+    // the possible speed up
+    // impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, scale+1, Vector2i(x, y), 
+    //                                                              boost::bind(&Image::receive_tile, *this, _1)));
+    SurfaceStruct s;
       
-      s.surface = SurfaceHandle();
-      s.status  = SurfaceStruct::SURFACE_REQUESTED;
+    s.surface = SurfaceHandle();
+    s.status  = SurfaceStruct::SURFACE_REQUESTED;
 
-      cache[cache_id] = s;
+    cache[cache_id] = s;
 
-      return SurfaceHandle();
-    }
+    return SurfaceHandle();
+  }
   else
-    {
-      return i->second.surface;
-    }
+  {
+    return i->second.surface;
+  }
 }
 
 void
 ImageTileCache::clear()
 {
- for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
+  for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
     i->abort();
   jobs.clear();
 
@@ -135,13 +135,13 @@ ImageTileCache::cleanup()
 
   // FIXME: Code can hang here for some reason
   for(Cache::iterator i = cache.begin(); i != cache.end();)
-    {
-      int tiledb_scale = (i->first >> 16);
-      if (tiledb_scale < min_keep_scale)
-        cache.erase(i++);
-      else
-        ++i;
-    }
+  {
+    int tiledb_scale = (i->first >> 16);
+    if (tiledb_scale < min_keep_scale)
+      cache.erase(i++);
+    else
+      ++i;
+  }
 }
 
 SurfaceHandle
@@ -150,20 +150,20 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
   int  downscale_factor = 1;
 
   while(downscale_factor < max_scale)
+  {
+    downscale_out = Math::pow2(downscale_factor);
+
+    uint32_t cache_id = make_cache_id(x / downscale_out, y / downscale_out,
+                                      tiledb_scale+downscale_factor);
+
+    Cache::iterator i = cache.find(cache_id);
+    if (i != cache.end() && i->second.surface)
     {
-      downscale_out = Math::pow2(downscale_factor);
-
-      uint32_t cache_id = make_cache_id(x / downscale_out, y / downscale_out,
-                                        tiledb_scale+downscale_factor);
-
-      Cache::iterator i = cache.find(cache_id);
-      if (i != cache.end() && i->second.surface)
-        {
-          return i->second.surface;
-        }
-
-      downscale_factor += 1;
+      return i->second.surface;
     }
+
+    downscale_factor += 1;
+  }
 
   return SurfaceHandle();
 }
@@ -173,27 +173,27 @@ ImageTileCache::process_queue()
 {
   // Check the queue for newly arrived tiles
   while (!tile_queue.empty())
+  {
+    TileEntry tile = tile_queue.front();
+    tile_queue.pop();
+
+    int tile_id = make_cache_id(tile.get_pos().x, tile.get_pos().y, tile.get_scale());
+  
+    SurfaceStruct s;
+  
+    if (tile.get_surface())
     {
-      TileEntry tile = tile_queue.front();
-      tile_queue.pop();
-
-      int tile_id = make_cache_id(tile.get_pos().x, tile.get_pos().y, tile.get_scale());
-  
-      SurfaceStruct s;
-  
-      if (tile.get_surface())
-        {
-          s.surface = Surface::create(tile.get_surface());
-          s.status  = SurfaceStruct::SURFACE_OK;
-        }
-      else
-        {
-          s.surface = SurfaceHandle();
-          s.status  = SurfaceStruct::SURFACE_FAILED;
-        }
-
-      cache[tile_id] = s;
+      s.surface = Surface::create(tile.get_surface());
+      s.status  = SurfaceStruct::SURFACE_OK;
     }
+    else
+    {
+      s.surface = SurfaceHandle();
+      s.status  = SurfaceStruct::SURFACE_FAILED;
+    }
+
+    cache[tile_id] = s;
+  }
 }
 
 void

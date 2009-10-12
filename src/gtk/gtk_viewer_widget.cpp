@@ -36,18 +36,18 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
                                      Gdk::GL::MODE_DEPTH  |
                                      Gdk::GL::MODE_DOUBLE);
   if (!glconfig)
-    {
-      std::cerr << "*** Cannot find the double-buffered visual.\n"
-                << "*** Trying single-buffered visual.\n";
+  {
+    std::cerr << "*** Cannot find the double-buffered visual.\n"
+              << "*** Trying single-buffered visual.\n";
 
-      // Try single-buffered visual
-      glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB   |
-                                         Gdk::GL::MODE_DEPTH);
-      if (!glconfig)
-        {
-          throw std::runtime_error("*** Cannot find any OpenGL-capable visual.");
-        }
+    // Try single-buffered visual
+    glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB   |
+                                       Gdk::GL::MODE_DEPTH);
+    if (!glconfig)
+    {
+      throw std::runtime_error("*** Cannot find any OpenGL-capable visual.");
     }
+  }
  
   set_gl_capability(glconfig);
 
@@ -171,13 +171,13 @@ bool
 GtkViewerWidget::scroll(GdkEventScroll* ev)
 {
   if (ev->direction == GDK_SCROLL_UP)
-    {
-      viewer->get_state().zoom(1.1f, Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)));
-    }
+  {
+    viewer->get_state().zoom(1.1f, Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)));
+  }
   else if (ev->direction == GDK_SCROLL_DOWN)
-    {
-      viewer->get_state().zoom(1.0f/1.1f, Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)));
-    }
+  {
+    viewer->get_state().zoom(1.0f/1.1f, Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)));
+  }
   return false;
 }
 
@@ -195,29 +195,29 @@ GtkViewerWidget::key_press(GdkEventKey* ev)
   //std::cout << "KeyPress" << std::endl;
   std::cout << "v" << ev->keyval << std::endl;
   switch(ev->keyval)
-    {
-      case GDK_space:
-        break;
+  {
+    case GDK_space:
+      break;
 
-      case GDK_l:
-        viewer->print_state();
-        break;
+    case GDK_l:
+      viewer->print_state();
+      break;
 
-      case GDK_h:        
-        viewer->zoom_home();
-        break;
+    case GDK_h:        
+      viewer->zoom_home();
+      break;
 
-      case GDK_g:
-        viewer->toggle_grid();
-        break;
+    case GDK_g:
+      viewer->toggle_grid();
+      break;
 
-      case GDK_f:
-        viewer->toggle_pinned_grid();
-        break;
+    case GDK_f:
+      viewer->toggle_pinned_grid();
+      break;
 
-      default:
-        break;
-    }
+    default:
+      break;
+  }
   return true;
 }
 

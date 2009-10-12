@@ -49,16 +49,16 @@ Framebuffer::init()
   // Init Glew 
   GLenum err = glewInit();
   if (GLEW_OK != err)
-    {
-      std::ostringstream str;
-      str << "Error: " << glewGetErrorString(err) << std::endl;
-      throw std::runtime_error(str.str());
-    }
+  {
+    std::ostringstream str;
+    str << "Error: " << glewGetErrorString(err) << std::endl;
+    throw std::runtime_error(str.str());
+  }
   
   if (!GLEW_ARB_texture_rectangle)
-    {
-      throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
-    }
+  {
+    throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
+  }
 }
 
 void
@@ -127,23 +127,23 @@ Framebuffer::draw_grid(int num_cells)
  
   glBegin(GL_LINES);
   //  if (grid_color)
-    glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
   //else
   //  glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
 
-    int cell_width = Framebuffer::get_width()/num_cells;
-    for(int x = 1; x < num_cells; ++x)
-      {
-        glVertex2i(x*cell_width, 0);
-        glVertex2i(x*cell_width, Framebuffer::get_height());
-      }
+  int cell_width = Framebuffer::get_width()/num_cells;
+  for(int x = 1; x < num_cells; ++x)
+  {
+    glVertex2i(x*cell_width, 0);
+    glVertex2i(x*cell_width, Framebuffer::get_height());
+  }
 
-    int cell_height = Framebuffer::get_height()/num_cells;
-    for(int y = 1; y < num_cells; ++y)
-      {
-        glVertex2i(0, y*cell_height);
-        glVertex2i(Framebuffer::get_width(), y*cell_height);
-      }
+  int cell_height = Framebuffer::get_height()/num_cells;
+  for(int y = 1; y < num_cells; ++y)
+  {
+    glVertex2i(0, y*cell_height);
+    glVertex2i(Framebuffer::get_width(), y*cell_height);
+  }
 
   glEnd();
 }
@@ -160,16 +160,16 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
   float start_y = fmodf(offset.y, size_.height);
 
   for(float x = start_x; x < Framebuffer::get_width(); x += size_.width)
-    {
-      glVertex2f(x, 0);
-      glVertex2f(x, static_cast<float>(Framebuffer::get_height()));
-    }
+  {
+    glVertex2f(x, 0);
+    glVertex2f(x, static_cast<float>(Framebuffer::get_height()));
+  }
 
   for(float y = start_y; y < Framebuffer::get_height(); y += size_.height)
-    {
-      glVertex2f(0, y);
-      glVertex2f(static_cast<float>(Framebuffer::get_width()), y);
-    }
+  {
+    glVertex2f(0, y);
+    glVertex2f(static_cast<float>(Framebuffer::get_width()), y);
+  }
 
   glEnd();  
 }

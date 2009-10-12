@@ -28,25 +28,25 @@ Rar::get_filenames(const std::string& rar_filename)
   Exec rar("rar");
   rar.arg("vb").arg("-p-").arg(rar_filename);
   if (rar.exec() == 0)
+  {
+    std::vector<std::string> lst;
+    const std::vector<char>& stdout_lst = rar.get_stdout();
+    std::vector<char>::const_iterator start = stdout_lst.begin();
+    for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
     {
-      std::vector<std::string> lst;
-      const std::vector<char>& stdout_lst = rar.get_stdout();
-      std::vector<char>::const_iterator start = stdout_lst.begin();
-      for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
-        {
-          if (*i == '\n')
-            {
-              lst.push_back(std::string(start, i));
-              start = i+1;
-            }
-        }
-      return lst;
+      if (*i == '\n')
+      {
+        lst.push_back(std::string(start, i));
+        start = i+1;
+      }
     }
+    return lst;
+  }
   else
-    {
-      throw std::runtime_error("Rar: " + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
-      return std::vector<std::string>();
-    }
+  {
+    throw std::runtime_error("Rar: " + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    return std::vector<std::string>();
+  }
 }
 
 BlobHandle
@@ -55,15 +55,15 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
   Exec rar("rar");
   rar.arg("p").arg("-inul").arg("-p-").arg(rar_filename).arg(filename);
   if (rar.exec() == 0)
-    {
-      // FIXME: Unneeded copy of data
-      return Blob::copy(&*rar.get_stdout().begin(), rar.get_stdout().size());
-    }
+  {
+    // FIXME: Unneeded copy of data
+    return Blob::copy(&*rar.get_stdout().begin(), rar.get_stdout().size());
+  }
   else
-    {
-      throw std::runtime_error("Rar: " + rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
-      return BlobHandle();
-    }
+  {
+    throw std::runtime_error("Rar: " + rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    return BlobHandle();
+  }
 }
 
 #ifdef __TEST_RAR__
@@ -75,31 +75,31 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
 int main(int argc, char** argv)
 {
   try
+  {
+    if (argc == 2)
     {
-      if (argc == 2)
-        {
-          const std::vector<std::string>& files = Rar::get_filenames(argv[1]);
-          for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
-            {
-              std::cout << "File: '" << *i << "'" << std::endl;
-            }
-        }
-      else if (argc == 3)
-        {
-          BlobHandle blob = Rar::get_file(argv[1], argv[2]);
-          blob.write_to_file("/tmp/out.file");
-          std::cout << "Writting /tmp/out.file" << std::endl;
-        }
-      else 
-        {
-          std::cout << "Usage: " << argv[0] << " RARFILE" << std::endl;
-          std::cout << "       " << argv[0] << " RARFILE FILETOEXTRACT" << std::endl;
-        }
+      const std::vector<std::string>& files = Rar::get_filenames(argv[1]);
+      for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
+      {
+        std::cout << "File: '" << *i << "'" << std::endl;
+      }
     }
+    else if (argc == 3)
+    {
+      BlobHandle blob = Rar::get_file(argv[1], argv[2]);
+      blob.write_to_file("/tmp/out.file");
+      std::cout << "Writting /tmp/out.file" << std::endl;
+    }
+    else 
+    {
+      std::cout << "Usage: " << argv[0] << " RARFILE" << std::endl;
+      std::cout << "       " << argv[0] << " RARFILE FILETOEXTRACT" << std::endl;
+    }
+  }
   catch(std::exception& err) 
-    {
-      std::cout << "Error: " << err.what() << std::endl;
-    }
+  {
+    std::cout << "Error: " << err.what() << std::endl;
+  }
   return 0;
 }
 

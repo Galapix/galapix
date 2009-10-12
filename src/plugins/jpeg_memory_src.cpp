@@ -21,7 +21,7 @@
 #include <jerror.h>
 
 struct jpeg_memory_source_mgr {
-  struct jpeg_source_mgr pub;	/* public fields */
+  struct jpeg_source_mgr pub;   /* public fields */
 
   uint8_t* mem;
   int      len;
@@ -45,20 +45,20 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
   //std::cout << "jpeg_memory_fill_input_buffer" << std::endl;
 
   if (cinfo->src->next_input_byte != NULL)
-    {
-      (cinfo)->err->msg_code = JERR_INPUT_EOF;
-      (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
-      return FALSE;
-    }
+  {
+    (cinfo)->err->msg_code = JERR_INPUT_EOF;
+    (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
+    return FALSE;
+  }
   else
-    {
-      struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
+  {
+    struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
   
-      cinfo->src->next_input_byte = mgr->mem;
-      cinfo->src->bytes_in_buffer = mgr->len;
+    cinfo->src->next_input_byte = mgr->mem;
+    cinfo->src->bytes_in_buffer = mgr->len;
 
-      return TRUE;
-    }
+    return TRUE;
+  }
 }
 
 void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
@@ -71,20 +71,20 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
   struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
 
   if (cinfo->src->next_input_byte >= &mgr->mem[mgr->len])
-    {
-      (cinfo)->err->msg_code = JERR_INPUT_EOF;
-      (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
-    }
+  {
+    (cinfo)->err->msg_code = JERR_INPUT_EOF;
+    (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
+  }
 }
 
 void jpeg_memory_src(j_decompress_ptr cinfo, uint8_t* mem, int len)
 {
   if (cinfo->src == NULL) 
-    {
-      cinfo->src = (struct jpeg_source_mgr*)((*cinfo->mem->alloc_small)((j_common_ptr)cinfo, 
-                                                                 JPOOL_PERMANENT,
-                                                                 sizeof(struct jpeg_memory_source_mgr)));
-    }
+  {
+    cinfo->src = (struct jpeg_source_mgr*)((*cinfo->mem->alloc_small)((j_common_ptr)cinfo, 
+                                                                      JPOOL_PERMANENT,
+                                                                      sizeof(struct jpeg_memory_source_mgr)));
+  }
   
   cinfo->src->init_source       = jpeg_memory_init_source;
   cinfo->src->fill_input_buffer = jpeg_memory_fill_input_buffer;

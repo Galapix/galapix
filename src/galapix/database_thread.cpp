@@ -169,7 +169,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
 { 
   std::list<boost::shared_ptr<TileGenerationJob> >::iterator it = 
     std::find_if(m_tile_generation_jobs.begin(), m_tile_generation_jobs.end(), 
-              FindByFileEntry(file_entry));
+                 FindByFileEntry(file_entry));
 
   if (it != m_tile_generation_jobs.end() && 
       (*it)->request_tile(job_handle, tilescale, pos, callback))

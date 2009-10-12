@@ -72,10 +72,10 @@ ImageRenderer::draw_tile(int x, int y, int scale,
         s.height = Math::min(surface->get_height(), s.height);
           
         surface->draw(Rectf(Vector2f(static_cast<float>(x % downscale), 
-                                    static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
-                           s),
-                     //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
-                     Rectf(pos, s * zoom * static_cast<float>(downscale)));
+                                     static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
+                            s),
+                      //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
+                      Rectf(pos, s * zoom * static_cast<float>(downscale)));
       }
       else // draw replacement rect when no tile could be loaded
       {         

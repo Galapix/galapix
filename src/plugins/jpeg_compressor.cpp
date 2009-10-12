@@ -40,8 +40,8 @@ JPEGCompressor::save(SoftwareSurfaceHandle surface_in, int quality)
   m_cinfo.image_width  = surface->get_width();
   m_cinfo.image_height = surface->get_height();
 
-  m_cinfo.input_components = 3;		/* # of color components per pixel */
-  m_cinfo.in_color_space   = JCS_RGB; 	/* colorspace of input image */
+  m_cinfo.input_components = 3;         /* # of color components per pixel */
+  m_cinfo.in_color_space   = JCS_RGB;   /* colorspace of input image */
 
   jpeg_set_defaults(&m_cinfo);
   jpeg_set_quality(&m_cinfo, quality, TRUE /* limit to baseline-JPEG values */);

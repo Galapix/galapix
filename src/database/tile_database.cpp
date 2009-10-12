@@ -115,9 +115,9 @@ TileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 {
   m_db.get_db().exec("BEGIN;");
   for(std::vector<TileEntry>::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
-    {
-      m_tile_entry_store(*i);
-    }
+  {
+    m_tile_entry_store(*i);
+  }
   m_db.get_db().exec("COMMIT;");
 }
 
@@ -128,15 +128,15 @@ TileDatabase::check()
   SQLiteReader reader = get_all_stmt.execute_query();
 
   while(reader.next())
-    {
-      /*
-        int64_t fileid = reader.get_int64(0);
-        int scale  = reader.get_int(1);
-        int x      = reader.get_int(2);
-        int y      = reader.get_int(3);
-        BlobHandle blob  = reader.get_blob(4);
-      */
-    }
+  {
+    /*
+      int64_t fileid = reader.get_int64(0);
+      int scale  = reader.get_int(1);
+      int x      = reader.get_int(2);
+      int y      = reader.get_int(3);
+      BlobHandle blob  = reader.get_blob(4);
+    */
+  }
 #endif
 }
 

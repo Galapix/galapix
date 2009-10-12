@@ -57,17 +57,17 @@ URL::from_string(const std::string& url)
   ret.protocol = url.substr(0, i-1);
   std::string::size_type j = url.find("//", i+2);
   if (j == std::string::npos)
-    { // no plugin given
-      ret.payload = url.substr(i+2);
-    }
+  { // no plugin given
+    ret.payload = url.substr(i+2);
+  }
   else
-    {
-      ret.payload  = url.substr(i+2, j-i-2);
-      std::string::size_type k = url.find(":", j+2);
-      ret.plugin          = url.substr(j+2, k-j-2);
-      ret.plugin_payload  = url.substr(k+1);
-      //std::cout << "'" << protocol << "' '" << payload << "' '" << plugin << "' " << plugin_payload << std::endl;
-    }
+  {
+    ret.payload  = url.substr(i+2, j-i-2);
+    std::string::size_type k = url.find(":", j+2);
+    ret.plugin          = url.substr(j+2, k-j-2);
+    ret.plugin_payload  = url.substr(k+1);
+    //std::cout << "'" << protocol << "' '" << payload << "' '" << plugin << "' " << plugin_payload << std::endl;
+  }
   
   return ret;
 }
@@ -77,13 +77,13 @@ URL::str() const
 {
   std::string url = protocol + "://" + payload;
   if (!plugin.empty())
-    {
-      return url + "//" + plugin + ":" + plugin_payload;
-    }
+  {
+    return url + "//" + plugin + ":" + plugin_payload;
+  }
   else
-    {
-      return url;
-    }
+  {
+    return url;
+  }
 }
 
 std::string
@@ -112,63 +112,63 @@ BlobHandle
 URL::get_blob() const
 {
   if (protocol == "file")
+  {
+    if (plugin.empty())
     {
-      if (plugin.empty())
-        {
-          return Blob::from_file(payload);
-        }
-      else if (plugin == "rar")
-        {
-          return Rar::get_file(payload, plugin_payload);
-        }
-      else if (plugin == "zip")
-        {
-          return Zip::get_file(payload, plugin_payload);
-        }
-      else if (plugin == "tar")
-        {
-          return Tar::get_file(payload, plugin_payload);
-        }
-      else
-        {
-          throw std::runtime_error("URL: Unhandled plugin: " + plugin);
-        }
+      return Blob::from_file(payload);
     }
+    else if (plugin == "rar")
+    {
+      return Rar::get_file(payload, plugin_payload);
+    }
+    else if (plugin == "zip")
+    {
+      return Zip::get_file(payload, plugin_payload);
+    }
+    else if (plugin == "tar")
+    {
+      return Tar::get_file(payload, plugin_payload);
+    }
+    else
+    {
+      throw std::runtime_error("URL: Unhandled plugin: " + plugin);
+    }
+  }
   else if (protocol == "http" || protocol == "https" || protocol == "ftp")
-    {
-      return CURLHandler::get_data(str());
-    }
+  {
+    return CURLHandler::get_data(str());
+  }
   else
-    {
-      throw std::runtime_error("URL: Unhandled protocol: " + protocol);
-      return BlobHandle();
-    }
+  {
+    throw std::runtime_error("URL: Unhandled protocol: " + protocol);
+    return BlobHandle();
+  }
 }
 
 int
 URL::get_mtime() const
 {
   if (has_stdio_name())
-    {
-      return Filesystem::get_mtime(get_stdio_name());
-    }
+  {
+    return Filesystem::get_mtime(get_stdio_name());
+  }
   else
-    {
-      return 0;
-    } 
+  {
+    return 0;
+  } 
 }
 
 int
 URL::get_size() const
 {
   if (has_stdio_name())
-    {
-      return Filesystem::get_size(get_stdio_name());
-    }
+  {
+    return Filesystem::get_size(get_stdio_name());
+  }
   else
-    {
-      return 0;
-    }  
+  {
+    return 0;
+  }  
 }
 
 bool
@@ -177,17 +177,17 @@ URL::is_url(const std::string& url)
   std::string::size_type k = url.find("://");
 
   if (k == std::string::npos)
-    {
-      return false;
-    }
+  {
+    return false;
+  }
   else
-    {
-      for(std::string::size_type i = 0; i < k; ++i)
-        if (!(url[i] >= 'a' && url[i] <= 'z'))
-          return false;
+  {
+    for(std::string::size_type i = 0; i < k; ++i)
+      if (!(url[i] >= 'a' && url[i] <= 'z'))
+        return false;
         
-      return true;
-    }
+    return true;
+  }
 }
 
 std::ostream& operator<<(std::ostream& out, const URL& url)

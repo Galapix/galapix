@@ -57,52 +57,52 @@ public:
   void draw(const Rectf& srcrect, const Rectf& dstrect)
   {
     if (texture)
-      {
-        texture->bind();
-        glEnable(GL_BLEND);
-        glEnable(GL_TEXTURE_RECTANGLE_ARB);
-        glColor3f(1.0f, 1.0f, 1.0f);       
+    {
+      texture->bind();
+      glEnable(GL_BLEND);
+      glEnable(GL_TEXTURE_RECTANGLE_ARB);
+      glColor3f(1.0f, 1.0f, 1.0f);       
 
-        glBegin(GL_QUADS);
-        glTexCoord2f(srcrect.left, srcrect.top);
-        glVertex2f(dstrect.left, dstrect.top);
+      glBegin(GL_QUADS);
+      glTexCoord2f(srcrect.left, srcrect.top);
+      glVertex2f(dstrect.left, dstrect.top);
 
-        glTexCoord2f(srcrect.right, srcrect.top);
-        glVertex2f(dstrect.right, dstrect.top);
+      glTexCoord2f(srcrect.right, srcrect.top);
+      glVertex2f(dstrect.right, dstrect.top);
 
-        glTexCoord2f(srcrect.right, srcrect.bottom);
-        glVertex2f(dstrect.right, dstrect.bottom);
+      glTexCoord2f(srcrect.right, srcrect.bottom);
+      glVertex2f(dstrect.right, dstrect.bottom);
 
-        glTexCoord2f(srcrect.left, srcrect.bottom);
-        glVertex2f(dstrect.left, dstrect.bottom);
-        glEnd();
-      }    
+      glTexCoord2f(srcrect.left, srcrect.bottom);
+      glVertex2f(dstrect.left, dstrect.bottom);
+      glEnd();
+    }    
   }
 
   void draw(const Rectf& rect)
   {
     if (texture)
-      {
-        texture->bind();
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable(GL_TEXTURE_RECTANGLE_ARB);
-        glColor3f(1.0f, 1.0f, 1.0f);       
+    {
+      texture->bind();
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_TEXTURE_RECTANGLE_ARB);
+      glColor3f(1.0f, 1.0f, 1.0f);       
 
-        glBegin(GL_QUADS);
-        glTexCoord2f(uv.left, uv.top);
-        glVertex2f(rect.left, rect.top);
+      glBegin(GL_QUADS);
+      glTexCoord2f(uv.left, uv.top);
+      glVertex2f(rect.left, rect.top);
 
-        glTexCoord2f(uv.right, uv.top);
-        glVertex2f(rect.right, rect.top);
+      glTexCoord2f(uv.right, uv.top);
+      glVertex2f(rect.right, rect.top);
 
-        glTexCoord2f(uv.right, uv.bottom);
-        glVertex2f(rect.right, rect.bottom);
+      glTexCoord2f(uv.right, uv.bottom);
+      glVertex2f(rect.right, rect.bottom);
 
-        glTexCoord2f(uv.left, uv.bottom);
-        glVertex2f(rect.left, rect.bottom);
-        glEnd();
-      }
+      glTexCoord2f(uv.left, uv.bottom);
+      glVertex2f(rect.left, rect.bottom);
+      glEnd();
+    }
   }
 
   void draw(const Vector2f& pos)

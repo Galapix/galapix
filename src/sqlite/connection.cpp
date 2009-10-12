@@ -33,11 +33,11 @@ SQLiteConnection::SQLiteConnection(const std::string& filename)
   : db(0)
 {
   if (sqlite3_open(filename.c_str(), &db) != SQLITE_OK)
-    {
-      std::ostringstream str; 
-      str << "SQLiteConnection: can't open database: " << sqlite3_errmsg(db);
-      throw SQLiteError(str.str());
-    }
+  {
+    std::ostringstream str; 
+    str << "SQLiteConnection: can't open database: " << sqlite3_errmsg(db);
+    throw SQLiteError(str.str());
+  }
 
   sqlite3_busy_handler(db, busy_callback, 0);
 
@@ -56,20 +56,20 @@ SQLiteConnection::exec(const std::string& sqlstmt)
   char* errmsg;
 
   if (sqlite3_exec(db, sqlstmt.c_str(), 0, 0, &errmsg) != SQLITE_OK)
-    {
-      std::ostringstream out;
+  {
+    std::ostringstream out;
 
-      out << "SQLiteConnection: " << errmsg << std::endl;
+    out << "SQLiteConnection: " << errmsg << std::endl;
 
-      sqlite3_free(errmsg);
-      errmsg = 0;
+    sqlite3_free(errmsg);
+    errmsg = 0;
 
-      throw SQLiteError(out.str());
-    }
+    throw SQLiteError(out.str());
+  }
   else
-    {
-      // std::cout << "Executed: " << sqlstmt << std::endl;
-    }
+  {
+    // std::cout << "Executed: " << sqlstmt << std::endl;
+  }
 }
 
 void

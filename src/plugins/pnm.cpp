@@ -34,27 +34,27 @@ PNM::load_from_mem(const char* data, int len)
   //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;
   assert(pnm.get_maxval() == 255);
   if (pnm.get_magic() == "P6") // RGB
+  {
+    for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
     {
-      for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
-        {
-          dst_pixels[3*i+0] = src_pixels[3*i+0];
-          dst_pixels[3*i+1] = src_pixels[3*i+1];
-          dst_pixels[3*i+2] = src_pixels[3*i+2];
-        }
+      dst_pixels[3*i+0] = src_pixels[3*i+0];
+      dst_pixels[3*i+1] = src_pixels[3*i+1];
+      dst_pixels[3*i+2] = src_pixels[3*i+2];
     }
+  }
   else if (pnm.get_magic() == "P5") // Grayscale
+  {
+    for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
     {
-      for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
-        {
-          dst_pixels[3*i+0] = src_pixels[i];
-          dst_pixels[3*i+1] = src_pixels[i];
-          dst_pixels[3*i+2] = src_pixels[i];
-        }
+      dst_pixels[3*i+0] = src_pixels[i];
+      dst_pixels[3*i+1] = src_pixels[i];
+      dst_pixels[3*i+2] = src_pixels[i];
     }
+  }
   else
-    {
-      throw std::runtime_error("Unhandled PNM format: '" + pnm.get_magic() + "'");
-    }
+  {
+    throw std::runtime_error("Unhandled PNM format: '" + pnm.get_magic() + "'");
+  }
 
   return surface;
 }

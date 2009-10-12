@@ -42,27 +42,27 @@ MoveTool::move(const Vector2i& pos, const Vector2i& rel)
   mouse_pos = pos;
 
   if (move_active)
-    {
-      // FIXME: Why does (Vector2i * float) work instead of giving an error?
-      viewer->get_workspace()->move_selection(Vector2f(rel) * (1.0f/viewer->get_state().get_scale()));
-    }
+  {
+    // FIXME: Why does (Vector2i * float) work instead of giving an error?
+    viewer->get_workspace()->move_selection(Vector2f(rel) * (1.0f/viewer->get_state().get_scale()));
+  }
 }
 
 void
 MoveTool::up(const Vector2i& /*pos*/)
 {
   if (drag_active)
-    {
-      drag_active = false;
-      Rectf rect(click_pos,
-                 viewer->get_state().screen2world(mouse_pos));
-      rect.normalize();
-      viewer->get_workspace()->select_images(viewer->get_workspace()->get_images(rect));
-    }
+  {
+    drag_active = false;
+    Rectf rect(click_pos,
+               viewer->get_state().screen2world(mouse_pos));
+    rect.normalize();
+    viewer->get_workspace()->select_images(viewer->get_workspace()->get_images(rect));
+  }
   else if (move_active)
-    {
-      move_active = false;
-    }
+  {
+    move_active = false;
+  }
 }
 
 void
@@ -73,35 +73,35 @@ MoveTool::down(const Vector2i& pos)
   ImageHandle image = viewer->get_workspace()->get_image(click_pos);
 
   if (image)
+  {
+    if (viewer->get_workspace()->get_selection().has(image))
     {
-      if (viewer->get_workspace()->get_selection().has(image))
-        {
-          // Ok, so move the whole selection 
-        }
-      else
-        {
-          viewer->get_workspace()->clear_selection();
-          viewer->get_workspace()->get_selection().add_image(image);
-        }
-      move_active = true;
+      // Ok, so move the whole selection 
     }
-  else
+    else
     {
-      drag_active = true;
       viewer->get_workspace()->clear_selection();
+      viewer->get_workspace()->get_selection().add_image(image);
     }
+    move_active = true;
+  }
+  else
+  {
+    drag_active = true;
+    viewer->get_workspace()->clear_selection();
+  }
 }
 
 void
 MoveTool::draw()
 {
   if (drag_active)
-    {
-      Rectf rect(click_pos,
-                 viewer->get_state().screen2world(mouse_pos));
-      rect.normalize();
-      Framebuffer::draw_rect(rect, RGB(255, 255, 255));
-    }
+  {
+    Rectf rect(click_pos,
+               viewer->get_state().screen2world(mouse_pos));
+    rect.normalize();
+    Framebuffer::draw_rect(rect, RGB(255, 255, 255));
+  }
 }
   
 /* EOF */

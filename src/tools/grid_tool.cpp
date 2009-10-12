@@ -40,18 +40,18 @@ void
 GridTool::up  (const Vector2i& pos)
 {
   if (drag_active)
-    {
-      drag_active = false;
-      //Rect rect(click_pos, mouse_pos);
-      //rect.normalize();
+  {
+    drag_active = false;
+    //Rect rect(click_pos, mouse_pos);
+    //rect.normalize();
       
-      Rectf rect(viewer->get_state().screen2world(click_pos),
-                 viewer->get_state().screen2world(mouse_pos));
-      rect.normalize();
+    Rectf rect(viewer->get_state().screen2world(click_pos),
+               viewer->get_state().screen2world(mouse_pos));
+    rect.normalize();
 
-      viewer->set_grid(Vector2f(rect.left, rect.top), 
-                       rect.get_size());
-    }
+    viewer->set_grid(Vector2f(rect.left, rect.top), 
+                     rect.get_size());
+  }
 }
 
 void
@@ -65,25 +65,25 @@ void
 GridTool::draw()
 {
   if (drag_active)
+  {
+    if (1)
     {
-      if (1)
-        {
-          Rectf rect(viewer->get_state().screen2world(click_pos),
-                     viewer->get_state().screen2world(mouse_pos));
-          rect.normalize();
-          Framebuffer::draw_rect(rect, RGB(255, 255, 255));
-        }
-      else
-        {
-          // Draw a preview of the grid
-          // FIXME: Doesn't work, wrong space
-          Rectf rect(viewer->get_state().screen2world(click_pos),
-                     viewer->get_state().screen2world(mouse_pos));
-          rect.normalize();
-
-          Framebuffer::draw_grid(Vector2f(rect.left, rect.top), rect.get_size(), RGBA(255, 255, 0, 255));
-        }
+      Rectf rect(viewer->get_state().screen2world(click_pos),
+                 viewer->get_state().screen2world(mouse_pos));
+      rect.normalize();
+      Framebuffer::draw_rect(rect, RGB(255, 255, 255));
     }
+    else
+    {
+      // Draw a preview of the grid
+      // FIXME: Doesn't work, wrong space
+      Rectf rect(viewer->get_state().screen2world(click_pos),
+                 viewer->get_state().screen2world(mouse_pos));
+      rect.normalize();
+
+      Framebuffer::draw_grid(Vector2f(rect.left, rect.top), rect.get_size(), RGBA(255, 255, 0, 255));
+    }
+  }
 }
 
 /* EOF */

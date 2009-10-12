@@ -58,23 +58,23 @@ Selection::scale(float factor)
 {
   Vector2f center = get_center();
   for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
-    {
-      (*i)->set_scale((*i)->get_scale() * factor);
+  {
+    (*i)->set_scale((*i)->get_scale() * factor);
 
-      (*i)->set_pos(center + ((*i)->get_pos() - center) * factor);
-    }
+    (*i)->set_pos(center + ((*i)->get_pos() - center) * factor);
+  }
 }
 
 bool
 Selection::has(const ImageHandle& image) const
 {
   for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+  {
+    if (image == *i)
     {
-      if (image == *i)
-        {
-          return true;
-        }
+      return true;
     }
+  }
   return false;
 }
 
@@ -100,18 +100,18 @@ Vector2f
 Selection::get_center() const
 {
   if (impl->images.empty())
-    {
-      return Vector2f();
-    }
+  {
+    return Vector2f();
+  }
   else
+  {
+    Vector2f pos;
+    for(Images::const_iterator i = impl->images.begin(); i != impl->images.end(); ++i)
     {
-      Vector2f pos;
-      for(Images::const_iterator i = impl->images.begin(); i != impl->images.end(); ++i)
-        {
-          pos += (*i)->get_pos();
-        }
-      return pos / static_cast<float>(impl->images.size());
+      pos += (*i)->get_pos();
     }
+    return pos / static_cast<float>(impl->images.size());
+  }
 }
 
 Selection::iterator
@@ -142,34 +142,34 @@ Rectf
 Selection::get_bounding_rect() const
 {
   if (impl->images.empty())
-    {
-      return Rectf();
-    }
+  {
+    return Rectf();
+  }
   else
+  {
+    Rectf rect = impl->images.front()->get_image_rect();
+
+    for(Images::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
     {
-      Rectf rect = impl->images.front()->get_image_rect();
-
-      for(Images::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
-        {
-          const Rectf& image_rect = (*i)->get_image_rect(); 
+      const Rectf& image_rect = (*i)->get_image_rect(); 
           
-          rect.left   = Math::min(rect.left,   image_rect.left);
-          rect.right  = Math::max(rect.right,  image_rect.right);
-          rect.top    = Math::min(rect.top,    image_rect.top);
-          rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+      rect.left   = Math::min(rect.left,   image_rect.left);
+      rect.right  = Math::max(rect.right,  image_rect.right);
+      rect.top    = Math::min(rect.top,    image_rect.top);
+      rect.bottom = Math::max(rect.bottom, image_rect.bottom);
 
-          if (isnan(rect.left) ||
-              isnan(rect.right) ||
-              isnan(rect.top) ||
-              isnan(rect.bottom))
-            {
-              //std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
-              assert(!"NAN Rect encountered");
-            }
-        }
-  
-      return rect;
+      if (isnan(rect.left) ||
+          isnan(rect.right) ||
+          isnan(rect.top) ||
+          isnan(rect.bottom))
+      {
+        //std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
+        assert(!"NAN Rect encountered");
+      }
     }
+  
+    return rect;
+  }
 }
 
 /* EOF */

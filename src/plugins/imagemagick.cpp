@@ -46,14 +46,14 @@ SoftwareSurfaceHandle
 Imagemagick::load_from_url(const URL& url)
 {
   if (url.has_stdio_name())
-    {
-      return load_from_file(url.get_stdio_name());
-    }
+  {
+    return load_from_file(url.get_stdio_name());
+  }
   else
-    {
-      BlobHandle blob = url.get_blob();
-      return load_from_mem(blob->get_data(), blob->size());
-    }
+  {
+    BlobHandle blob = url.get_blob();
+    return load_from_mem(blob->get_data(), blob->size());
+  }
 }
 
 static 
@@ -74,41 +74,41 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
     assert(!"Imagemagick: Unknown MaxRGB");
 
   if (image.matte())
+  {
+    surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, 
+                                      Size(width, height));
+
+    for(int y = 0; y < height; ++y)
     {
-      surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, 
-                                        Size(width, height));
+      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
+      uint8_t* dst_pixels = surface->get_row_data(y);
 
-      for(int y = 0; y < height; ++y)
-        {
-          const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
-          uint8_t* dst_pixels = surface->get_row_data(y);
-
-          for(int x = 0; x < width; ++x)
-            {
-              dst_pixels[4*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
-              dst_pixels[4*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
-              dst_pixels[4*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
-              dst_pixels[4*x + 3] = static_cast<uint8_t>(255 - (src_pixels[x].opacity >> shift));
-            }
-        }
+      for(int x = 0; x < width; ++x)
+      {
+        dst_pixels[4*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
+        dst_pixels[4*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
+        dst_pixels[4*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
+        dst_pixels[4*x + 3] = static_cast<uint8_t>(255 - (src_pixels[x].opacity >> shift));
+      }
     }
+  }
   else
+  {
+    surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, 
+                                      Size(width, height));
+    for(int y = 0; y < height; ++y)
     {
-      surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, 
-                                        Size(width, height));
-      for(int y = 0; y < height; ++y)
-        {
-          uint8_t* dst_pixels = surface->get_row_data(y);
-          const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
+      uint8_t* dst_pixels = surface->get_row_data(y);
+      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
 
-          for(int x = 0; x < width; ++x)
-            {
-              dst_pixels[3*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
-              dst_pixels[3*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
-              dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
-            }
-        }
-    }  
+      for(int x = 0; x < width; ++x)
+      {
+        dst_pixels[3*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
+        dst_pixels[3*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
+        dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
+      }
+    }
+  }  
 
   return surface;
 }

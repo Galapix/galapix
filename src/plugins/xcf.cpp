@@ -47,28 +47,28 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
   std::vector<std::string> layer_names;
 
   while(start != end)
-    {
-      std::vector<char>::const_iterator line_end = std::find(start, end, '\n');
-      std::string line(&*start, line_end - start);
-      start = line_end+1;
+  {
+    std::vector<char>::const_iterator line_end = std::find(start, end, '\n');
+    std::string line(&*start, line_end - start);
+    start = line_end+1;
       
-      char visible;
-      int  width, height;
-      char x_sign, y_sign;
-      int  x, y;
-      char color[128];
-      char mode[128];
-      char layer_name[1024];
+    char visible;
+    int  width, height;
+    char x_sign, y_sign;
+    int  x, y;
+    char color[128];
+    char mode[128];
+    char layer_name[1024];
 
-      if (sscanf(line.c_str(), "%c %dx%d%c%d%c%d %127s %127s %[^\n]s",
-                 &visible, &width, &height, &x_sign, &x, &y_sign, &y,
-                 color, mode, layer_name) != 10)
-        {
-          throw std::runtime_error("XCF::get_layer: Couldn't parse output line:\n" + line);
-        }
-
-      layer_names.push_back(layer_name);
+    if (sscanf(line.c_str(), "%c %dx%d%c%d%c%d %127s %127s %[^\n]s",
+               &visible, &width, &height, &x_sign, &x, &y_sign, &y,
+               color, mode, layer_name) != 10)
+    {
+      throw std::runtime_error("XCF::get_layer: Couldn't parse output line:\n" + line);
     }
+
+    layer_names.push_back(layer_name);
+  }
   
   return layer_names;
 }
@@ -84,25 +84,25 @@ XCF::get_layers(const URL& url)
     xcfinfo.arg("-").set_stdin(url.get_blob());
 
   if (xcfinfo.exec() == 0)
+  {
+    const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
+    std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
+    if (line_end == stdout_lst.end())
     {
-      const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
-      std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
-      if (line_end == stdout_lst.end())
-        {
-          throw std::runtime_error("XCF::get_layer: Couldn't parse output");
-          return std::vector<std::string>();
-        }
-      else
-        {
-          return xcfinfo_get_layer(line_end+1, stdout_lst.end());
-        }
-    }
-  else
-    {
-      throw std::runtime_error("XCF::get_layer: " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
+      throw std::runtime_error("XCF::get_layer: Couldn't parse output");
       return std::vector<std::string>();
     }
+    else
+    {
+      return xcfinfo_get_layer(line_end+1, stdout_lst.end());
+    }
   }
+  else
+  {
+    throw std::runtime_error("XCF::get_layer: " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
+    return std::vector<std::string>();
+  }
+}
 
 bool
 XCF::get_size(const std::string& filename, Size& size)
@@ -110,36 +110,36 @@ XCF::get_size(const std::string& filename, Size& size)
   Exec xcfinfo("xcfinfo");
   xcfinfo.arg(filename);
   if (xcfinfo.exec() == 0)
+  {
+    const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
+    std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
+    if (line_end == stdout_lst.end())
     {
-      const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
-      std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
-      if (line_end == stdout_lst.end())
-        {
-          std::cout << "Error: XCF: couldn't parse xcfinfo output" << std::endl;
-          return false;
-        }
-      else
-        {
-          std::string line(stdout_lst.begin(), line_end);
-          int version, width, height;          
-          if (sscanf(line.c_str(), "Version %d, %dx%d", &version, &width, &height) == 3)
-            {
-              size.width  = width;
-              size.height = height;
-              return true;
-            }
-          else
-            {
-              std::cout << "Error: XCF: couldn't parse xcfinfo output: \"" << line << "\"" << std::endl;
-              return false;
-            }
-        }
-    }
-  else
-    {
-      std::cout.write(&*xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().size());
+      std::cout << "Error: XCF: couldn't parse xcfinfo output" << std::endl;
       return false;
     }
+    else
+    {
+      std::string line(stdout_lst.begin(), line_end);
+      int version, width, height;          
+      if (sscanf(line.c_str(), "Version %d, %dx%d", &version, &width, &height) == 3)
+      {
+        size.width  = width;
+        size.height = height;
+        return true;
+      }
+      else
+      {
+        std::cout << "Error: XCF: couldn't parse xcfinfo output: \"" << line << "\"" << std::endl;
+        return false;
+      }
+    }
+  }
+  else
+  {
+    std::cout.write(&*xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().size());
+    return false;
+  }
 }
 
 SoftwareSurfaceHandle
@@ -154,13 +154,13 @@ XCF::load_from_url(const URL& url)
     xcf2pnm.arg("-").set_stdin(url.get_blob());
 
   if (xcf2pnm.exec() != 0)
-    {
-      throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
-    }
+  {
+    throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+  }
   else
-    {
-      return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
-    }  
+  {
+    return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
+  }  
 }
 
 SoftwareSurfaceHandle
@@ -170,13 +170,13 @@ XCF::load_from_file(const std::string& filename)
   xcf2pnm.arg("--background").arg("#000"); // Makes transparent pixels black
   xcf2pnm.arg(filename);
   if (xcf2pnm.exec() != 0)
-    {
-      throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
-    }
+  {
+    throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+  }
   else
-    {
-      return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
-    }
+  {
+    return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
+  }
 }
 
 SoftwareSurfaceHandle
@@ -187,13 +187,13 @@ XCF::load_from_mem(void* data, int len)
   xcf2pnm.arg("-"); // Read from stdin
   xcf2pnm.set_stdin(Blob::copy(data, len));
   if (xcf2pnm.exec() != 0)
-    {
-      throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
-    }
+  {
+    throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+  }
   else
-    {
-      return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
-    }
+  {
+    return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
+  }
 }
 
 /* EOF */

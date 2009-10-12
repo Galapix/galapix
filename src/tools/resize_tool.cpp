@@ -34,19 +34,19 @@ void
 ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
 {
   if (resize_active)
+  {
+    Vector2f p = viewer->get_state().screen2world(pos);
+
+    float a = (selection_center - p).length();
+    float b = (selection_center - resize_center).length();
+
+    if (b != 0.0f)
     {
-      Vector2f p = viewer->get_state().screen2world(pos);
-
-      float a = (selection_center - p).length();
-      float b = (selection_center - resize_center).length();
-
-      if (b != 0.0f)
-        {
-          //std::cout << a << " " << b << " " << a / b << std::endl;
-          viewer->get_workspace()->get_selection().scale((1.0f/old_scale) * (a/b));
-          old_scale = a/b; // FIXME: Hack, should scale to original scale 
-        }
+      //std::cout << a << " " << b << " " << a / b << std::endl;
+      viewer->get_workspace()->get_selection().scale((1.0f/old_scale) * (a/b));
+      old_scale = a/b; // FIXME: Hack, should scale to original scale 
     }
+  }
 }
 
 void

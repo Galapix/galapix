@@ -28,25 +28,25 @@ Tar::get_filenames(const std::string& tar_filename)
   Exec tar("tar");
   tar.arg("--list").arg("--file").arg(tar_filename);
   if (tar.exec() == 0)
+  {
+    std::vector<std::string> lst;
+    const std::vector<char>& stdout_lst = tar.get_stdout();
+    std::vector<char>::const_iterator start = stdout_lst.begin();
+    for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
     {
-      std::vector<std::string> lst;
-      const std::vector<char>& stdout_lst = tar.get_stdout();
-      std::vector<char>::const_iterator start = stdout_lst.begin();
-      for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
-        {
-          if (*i == '\n')
-            {
-              lst.push_back(std::string(start, i));
-              start = i+1;
-            }
-        }
-      return lst;
+      if (*i == '\n')
+      {
+        lst.push_back(std::string(start, i));
+        start = i+1;
+      }
     }
+    return lst;
+  }
   else
-    {
-      throw std::runtime_error("Tar: " + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
-      return std::vector<std::string>();
-    }
+  {
+    throw std::runtime_error("Tar: " + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
+    return std::vector<std::string>();
+  }
 }
 
 BlobHandle
@@ -55,14 +55,14 @@ Tar::get_file(const std::string& tar_filename, const std::string& filename)
   Exec tar("tar");
   tar.arg("--extract").arg("--to-stdout").arg("--file").arg(tar_filename).arg(filename);
   if (tar.exec() == 0)
-    {
-      // FIXME: Unneeded copy of data
-      return Blob::copy(&*tar.get_stdout().begin(), tar.get_stdout().size());
-    }
+  {
+    // FIXME: Unneeded copy of data
+    return Blob::copy(&*tar.get_stdout().begin(), tar.get_stdout().size());
+  }
   else
-    {
-      throw std::runtime_error("Tar: " + tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
-    }
+  {
+    throw std::runtime_error("Tar: " + tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
+  }
 
 }
 

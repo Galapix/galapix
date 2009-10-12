@@ -28,10 +28,10 @@ void
 TestJob::run()
 {
   for(int i = 0; i < 10; ++i)
-    {
-      std::cout << i << std::endl;
-      usleep(100000);
-    }
+  {
+    std::cout << i << std::endl;
+    usleep(100000);
+  }
 }
 
 /* EOF */

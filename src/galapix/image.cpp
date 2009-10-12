@@ -89,15 +89,15 @@ Image::update_pos(float progress)
          progress <= 1.0f);
 
   if (progress == 1.0f)
-    {
-      set_pos(m_target_pos);
-      set_scale(m_target_scale);
-    }
+  {
+    set_pos(m_target_pos);
+    set_scale(m_target_scale);
+  }
   else
-    {
-      m_pos   = (m_last_pos   * (1.0f - progress)) + (m_target_pos   * progress);
-      m_scale = (m_last_scale * (1.0f - progress)) + (m_target_scale * progress);
-    }
+  {
+    m_pos   = (m_last_pos   * (1.0f - progress)) + (m_target_pos   * progress);
+    m_scale = (m_last_scale * (1.0f - progress)) + (m_target_scale * progress);
+  }
 }
 
 void
@@ -180,15 +180,15 @@ void
 Image::refresh(bool force)
 {
   if (force || m_file_entry.get_url().get_mtime() != m_file_entry.get_mtime())
-    {
-      clear_cache();
-      DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
+  {
+    clear_cache();
+    DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
 
-      // FIXME: Add this point the FileEntry is invalid and points to
-      // something that no longer exists, newly generated Tiles point
-      // to that obsolete fileid number
-      // do stuff with receive_file_entry() to fix this
-    }
+    // FIXME: Add this point the FileEntry is invalid and points to
+    // something that no longer exists, newly generated Tiles point
+    // to that obsolete fileid number
+    // do stuff with receive_file_entry() to fix this
+  }
 }
 
 void
@@ -227,33 +227,33 @@ Rectf
 Image::get_image_rect() const
 {
   if (!m_file_entry)
-    {
-      return Rectf(m_pos, Size(0, 0));
-    }
+  {
+    return Rectf(m_pos, Size(0, 0));
+  }
   else
+  {
+    if (m_file_entry.get_image_size() == Size(0,0))
     {
-      if (m_file_entry.get_image_size() == Size(0,0))
-        {
-          return Rectf(m_pos, m_file_entry.get_image_size());
-        }
-      else
-        {
-          Sizef image_size(m_file_entry.get_image_size() * m_scale);
-          return Rectf(m_pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
-        }
+      return Rectf(m_pos, m_file_entry.get_image_size());
     }
+    else
+    {
+      Sizef image_size(m_file_entry.get_image_size() * m_scale);
+      return Rectf(m_pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
+    }
+  }
 }
 
 /*
-void
-Image::receive_file_entry(const FileEntry& file_entry)
-{
+  void
+  Image::receive_file_entry(const FileEntry& file_entry)
+  {
   assert(!m_file_entry);
 
   m_file_entry = file_entry;
 
   m_max_scale      = m_file_entry.get_thumbnail_scale();
-}
+  }
 */
 
 /* EOF */

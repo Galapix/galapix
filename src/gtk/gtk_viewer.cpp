@@ -123,19 +123,19 @@ GtkViewer::run()
   action_group->add(Gtk::Action::create("FileMenu", "_File"));
 
   action_group->add(Gtk::Action::create("New", Gtk::Stock::NEW),
-                    sigc::mem_fun(*this, &GtkViewer::on_menu_file_new));
+  sigc::mem_fun(*this, &GtkViewer::on_menu_file_new));
 
   Glib::RefPtr<Gtk::UIManager> ui_manager = Gtk::UIManager::create();
   ui_manager->insert_action_group(action_group);
 
   Glib::ustring ui_info = 
-    "<ui>"
-    "  <menubar name='MenuBar'>"
-    "    <menu action='FileMenu'>"
-    "      <menuitem action='New'/>"
-    "    </menu>"
-    "  </menubar>"
-    "</ui>";
+  "<ui>"
+  "  <menubar name='MenuBar'>"
+  "    <menu action='FileMenu'>"
+  "      <menuitem action='New'/>"
+  "    </menu>"
+  "  </menubar>"
+  "</ui>";
 
   ui_manager->add_ui_from_string(ui_info);
 
@@ -201,17 +201,17 @@ void
 GtkViewer::on_layout_toggle()
 {
   if (layout_regular_button->get_active())
-    {
-      viewer->layout_auto();
-    }
+  {
+    viewer->layout_auto();
+  }
   else if (layout_tight_button->get_active())
-    {
-      viewer->layout_tight();
-    }
+  {
+    viewer->layout_tight();
+  }
   else if (layout_random_button->get_active())
-    {
-      viewer->layout_random();
-    }
+  {
+    viewer->layout_random();
+  }
 }
 
 void

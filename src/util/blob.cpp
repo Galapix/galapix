@@ -84,22 +84,22 @@ Blob::from_file(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::binary);
   if (!in)
-    {
-      throw std::runtime_error("Blob::from_file: Couldn't read " + filename);
-    }
+  {
+    throw std::runtime_error("Blob::from_file: Couldn't read " + filename);
+  }
   else
+  {
+    std::vector<uint8_t> data;
+    uint8_t buffer[4096];
+    while(!in.eof())
     {
-      std::vector<uint8_t> data;
-      uint8_t buffer[4096];
-      while(!in.eof())
-        {
-          int len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
-          std::copy(buffer, buffer+len, std::back_inserter(data));
-        }
-      
-      // FIXME: useless copy, should read directly into the blob
-      return Blob::copy(data);
+      int len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
+      std::copy(buffer, buffer+len, std::back_inserter(data));
     }
+      
+    // FIXME: useless copy, should read directly into the blob
+    return Blob::copy(data);
+  }
 }
 
 BlobHandle

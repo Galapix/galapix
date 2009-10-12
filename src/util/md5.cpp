@@ -60,10 +60,10 @@ MD5::md5_file(const std::string& filename)
     throw std::runtime_error("MD5: Couldn't open file " + filename);
     
   while(!in.eof())
-    {
-      in.read(buf, buf_size);
-      mhash(td, buf, in.gcount());
-    }
+  {
+    in.read(buf, buf_size);
+    mhash(td, buf, in.gcount());
+  }
 
   in.close();
     
