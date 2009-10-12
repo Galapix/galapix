@@ -30,8 +30,11 @@ private:
   SQLiteConnection& m_db;
   sqlite3_stmt*  m_stmt;
 
-public:
+private:
+  friend class SQLiteStatement;
   SQLiteReader(SQLiteConnection& db, sqlite3_stmt* stmt);
+
+public:
   ~SQLiteReader();
 
   bool next();
