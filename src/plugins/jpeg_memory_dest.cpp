@@ -43,7 +43,7 @@ boolean jpeg_memory_empty_output_buffer(j_compress_ptr cinfo)
   // This function always gets OUTPUT_BUF_SIZE bytes,
   // cinfo->dest->free_in_buffer *must* be ignored
   for(size_t i = 0; i < OUTPUT_BUF_SIZE; ++i) 
-    { // Little slow maybe?
+    { // FIXME: Little slow maybe?
       mgr->data->push_back(mgr->buffer[i]);
     }
 
@@ -59,9 +59,9 @@ void jpeg_memory_term_destination(j_compress_ptr cinfo)
   size_t datacount = OUTPUT_BUF_SIZE - cinfo->dest->free_in_buffer;
 
   for(size_t i = 0; i < datacount; ++i)
-    { // Little slow maybe?
+    { // FIXME: Little slow maybe?
       mgr->data->push_back(mgr->buffer[i]);
-    } 
+    }
 }
 
 void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data)
