@@ -35,7 +35,7 @@ TileDatabase::TileDatabase(Database& db)
     m_tile_entry_has(m_db.get_db()),
     m_tile_entry_get_by_file_entry(m_db.get_db()),
     m_tile_entry_get_min_max_scale(m_db.get_db()),
-    tile_cache()
+    m_cache()
 {}
 
 TileDatabase::~TileDatabase()
@@ -52,18 +52,7 @@ TileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int sca
   }
   else
   {
-    // Check cache
-    for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
-    {
-      if (i->get_file_entry() == file_entry &&
-          i->get_scale()  == scale  &&
-          i->get_pos()    == pos)
-      {
-        return true;
-      }
-    }
-
-    return false;
+    return m_cache.has_tile(file_entry, pos, scale);
   }
 }
 
@@ -75,14 +64,7 @@ TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& til
     m_tile_entry_get_all_by_file_entry(file_entry, tiles_out);
   }
 
-  // Check cache
-  for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
-  {
-    if (i->get_file_entry() == file_entry)
-    {
-      tiles_out.push_back(*i);
-    }
-  }
+  m_cache.get_tiles(file_entry, tiles_out);
 }
 
 bool
@@ -93,87 +75,27 @@ TileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out,
     return true;
   }
   else
-  { // Check the cache
-    int min_scale = -1;
-    int max_scale = -1;
-
-    for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
-    {
-      if (i->get_file_entry() == file_entry)
-      {
-        if (min_scale == -1)
-        {
-          min_scale = i->get_scale();
-        }
-        else
-        {
-          min_scale = std::min(min_scale, i->get_scale());
-        }
-
-        if (max_scale == -1)
-        {
-          max_scale = i->get_scale();
-        }
-        else
-        {
-          max_scale = std::max(max_scale, i->get_scale());
-        }
-      }
-    }
-
-    if (min_scale != -1 && max_scale != -1)
-    {
-      min_scale_out = min_scale;
-      max_scale_out = max_scale;
-      return true;
-    }
-    else
-    {
-      return false;
-    }
+  {
+    return m_cache.get_min_max_scale(file_entry, min_scale_out, max_scale_out);
   }
 }
 
 bool
-TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile)
+TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
   if (!file_entry.has_fileid())
   {
-    // Check cache
-    for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
-    {
-      if (i->get_file_entry() == file_entry &&
-          i->get_scale()  == scale  &&
-          i->get_pos()    == pos)
-      {
-        tile = *i;
-        return true;
-      }
-    }
-    return false;
+    return m_cache.get_tile(file_entry, scale, pos, tile_out);
   }
   else
   {
-    if (m_tile_entry_get_by_file_entry(file_entry, scale, pos, tile))
+    if (m_tile_entry_get_by_file_entry(file_entry, scale, pos, tile_out))
     {
       return true;
     }
     else
     {
-      // Check cache
-      for(std::vector<TileEntry>::iterator i = tile_cache.begin(); i != tile_cache.end(); ++i)
-      {
-        if (i->get_file_entry() == file_entry &&
-            i->get_scale()  == scale  &&
-            i->get_pos()    == pos)
-        {
-          tile = *i;
-          return true;
-        }
-      }
-
-      // Tile missing
-      return false;
+      return m_cache.get_tile(file_entry, scale, pos, tile_out);
     }
   }
 }
@@ -181,10 +103,10 @@ TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& p
 void
 TileDatabase::store_tile_in_cache(const TileEntry& tile)
 {
-  tile_cache.push_back(tile);
+  m_cache.store_tile(tile);
 
   // A single tile is ~10KB
-  if (tile_cache.size() > 256)
+  if (m_cache.size() > 256)
     flush_cache();
 }
 
@@ -229,11 +151,7 @@ TileDatabase::flush_cache()
 {
   std::cout << "TileDatabes::flush_cache()" << std::endl;
   m_db.files.flush_cache();
-  if (!tile_cache.empty())
-    {
-      store_tiles(tile_cache);
-      tile_cache.clear();
-    }
+  m_cache.flush(*this);
 }
 
 /* EOF */

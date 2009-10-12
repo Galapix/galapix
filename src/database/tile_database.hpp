@@ -29,6 +29,7 @@
 #include "database/tile_entry_store_statement.hpp"
 #include "database/tile_entry_get_by_file_entry_statement.hpp"
 #include "database/tile_entry_get_min_max_scale_statement.hpp"
+#include "database/tile_cache.hpp"
 
 class TileEntry;
 class FileEntry;
@@ -46,7 +47,7 @@ private:
   TileEntryGetByFileEntryStatement    m_tile_entry_get_by_file_entry;
   TileEntryGetMinMaxScaleStatement    m_tile_entry_get_min_max_scale;
 
-  std::vector<TileEntry> tile_cache;
+  TileCache m_cache;
 
 public:
   TileDatabase(Database& db);

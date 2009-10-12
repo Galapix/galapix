@@ -21,6 +21,7 @@
 
 #include "database/tile_database.hpp"
 #include "database/file_database.hpp"
+#include "database/tile_cache.hpp"
 
 /** */
 class Database
