@@ -1,5 +1,5 @@
 /*
-**  Galapix - A Sci-Fi Action-Adventure Game
+**  Galapix - an image viewer for large image collections
 **  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
