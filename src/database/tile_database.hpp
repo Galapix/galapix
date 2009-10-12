@@ -58,7 +58,6 @@ public:
   void get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles);
   bool get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out);
 
-  void store_tile_in_cache(const TileEntry& tile);
   void store_tile(const TileEntry& tile);
   void store_tiles(const std::vector<TileEntry>& tiles);
 

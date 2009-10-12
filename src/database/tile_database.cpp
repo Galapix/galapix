@@ -101,7 +101,7 @@ TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& p
 }
 
 void
-TileDatabase::store_tile_in_cache(const TileEntry& tile)
+TileDatabase::store_tile(const TileEntry& tile)
 {
   m_cache.store_tile(tile);
 
@@ -116,15 +116,9 @@ TileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
   m_db.get_db().exec("BEGIN;");
   for(std::vector<TileEntry>::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
     {
-      store_tile(*i);
+      m_tile_entry_store(*i);
     }
   m_db.get_db().exec("COMMIT;");
-}
-
-void
-TileDatabase::store_tile(const TileEntry& tile)
-{
-  m_tile_entry_store(tile);
 }
 
 void
