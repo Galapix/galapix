@@ -140,14 +140,14 @@ Exec::exec()
     if (len == -1)
       throw std::runtime_error("error reading stderr from xcfinfo");
 
-    int child_status;
+    int child_status = 0;
     waitpid(pid, &child_status, 0);
 
     // Cleanup
     close(stdout_fd[0]);
     close(stderr_fd[0]);
 
-    return child_status;
+    return WEXITSTATUS(child_status);
   }
 }
 
