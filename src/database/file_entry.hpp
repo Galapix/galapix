@@ -124,9 +124,14 @@ public:
     {
       return get_fileid() == rhs.get_fileid();
     }
+    else if (impl == rhs.impl)
+    {
+      return true;
+    }
     else
     {
-      return impl == rhs.impl;
+      // FIXME: Not quite, as width/height might differ
+      return impl->url == rhs.impl->url;
     }
   }
 
