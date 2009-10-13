@@ -98,7 +98,22 @@ ImageTileCache::request_tile(int x, int y, int scale)
   }
   else
   {
-    return i->second.surface;
+    switch (i->second.status)
+    {
+      case SurfaceStruct::SURFACE_OK:
+        return i->second.surface;
+
+      case SurfaceStruct::SURFACE_REQUESTED:
+        // FIXME: Could return special graphics to indicate loading here
+        return SurfaceHandle();
+
+      case SurfaceStruct::SURFACE_FAILED:
+        // FIXME: Could return special graphics to indicate failure here
+        return SurfaceHandle();
+        
+      default:
+        return SurfaceHandle();
+    }
   }
 }
 
@@ -137,10 +152,15 @@ ImageTileCache::cleanup()
   for(Cache::iterator i = cache.begin(); i != cache.end();)
   {
     int tiledb_scale = (i->first >> 16);
-    if (tiledb_scale < min_keep_scale)
+    if (tiledb_scale < min_keep_scale ||
+        i->second.status == SurfaceStruct::SURFACE_REQUESTED)
+    {
       cache.erase(i++);
+    }
     else
+    {
       ++i;
+    }
   }
 }
 
