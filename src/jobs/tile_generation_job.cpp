@@ -49,6 +49,10 @@ TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Ve
   switch(m_state)
   {
     case kWaiting:
+      // We don't allow requests for tiles that are already in the database
+      assert(scale < m_min_scale_in_db ||
+             scale > m_max_scale_in_db);
+
       m_tile_requests.push_back(TileRequest(job_handle, scale, pos, callback));
       return true;
 
@@ -123,7 +127,7 @@ void
 TileGenerationJob::generate_tile_entries(SoftwareSurfaceFactory::FileFormat format,
                                          int min_scale, int max_scale)
 {
-  std::cout << "TileGeneratorThread: have ";
+  std::cout << "TileGenerationJob: have ";
   if (m_min_scale_in_db == -1 && m_max_scale_in_db)
   {
     std::cout << "[empty]";

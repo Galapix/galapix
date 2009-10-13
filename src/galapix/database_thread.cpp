@@ -182,7 +182,28 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     int min_scale_in_db = -1;
     int max_scale_in_db = -1;
 
-    m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
+    if (m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db))
+    {
+      if (tilescale >= min_scale_in_db &&
+          tilescale <= max_scale_in_db)
+      {
+        // This means we have got a request for tile generation for a
+        // tile that should be already in the database, this can
+        // happen when the database is incomplete (say after a "kill
+        // -9")
+        std::cout << "DatabaseThread::generate_tile: Warning request for Tile which should already be in the database:\n"
+                  << "  file: " << file_entry << '\n'
+                  << "  pos: " << pos << '\n'
+                  << "  tilescale: " << tilescale << '\n'
+                  << "  min: " << min_scale_in_db  << '\n'
+                  << "  max: " << max_scale_in_db << std::endl;
+        
+        // We lie and say that no Tile is in the database, so all get
+        // regenerated
+        min_scale_in_db = -1;
+        max_scale_in_db = -1;
+      }
+    }
 
     boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db,
                                                                        boost::bind(&DatabaseThread::receive_tile, this, _1)));
