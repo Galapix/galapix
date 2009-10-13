@@ -54,7 +54,7 @@ Thread::run_wrap()
   }
   catch(std::exception& err) 
   {
-    std::cout << "Error: " << err.what() << std::endl;
+    std::cout << "Thread: Error: " << err.what() << std::endl;
   }
 }
 

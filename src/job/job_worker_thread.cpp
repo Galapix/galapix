@@ -47,7 +47,15 @@ JobWorkerThread::run()
       if (!task.job->is_aborted())
       {
         //std::cout << "start job: " << task.job << std::endl;
-        task.job->run();
+        try 
+        {
+          task.job->run();
+        }
+        catch(const std::exception& err)
+        {
+          std::cout << "JobWorkerThread:run: Job failed: " << err.what() << std::endl;
+        }
+
         if (task.callback)
         {
           task.callback(task.job, true);

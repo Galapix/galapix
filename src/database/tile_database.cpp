@@ -121,7 +121,8 @@ TileDatabase::store_tile(const TileEntry& tile)
 {
   m_cache.store_tile(tile);
 
-  // A single tile is ~10KB
+  // A single tile is ~10KB, but only in compressed JPEG form,
+  // uncompressed tiles can be much bigger
   if (m_cache.size() > 256)
     flush_cache();
 }

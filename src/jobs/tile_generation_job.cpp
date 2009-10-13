@@ -261,8 +261,16 @@ TileGenerationJob::run()
     }
   }
 
-  // Do the main work
-  generate_tile_entries(format, m_min_scale, m_max_scale);
+  try 
+  {
+    // Do the main work
+    generate_tile_entries(format, m_min_scale, m_max_scale);
+  }
+  catch(const std::exception& err)
+  {
+    std::cout << "TileGenerationJob: Error while processing " << m_file_entry << std::endl;
+    std::cout << "  Error: " << err.what() << std::endl;
+  }
 
   {
     boost::mutex::scoped_lock lock(m_state_mutex);
