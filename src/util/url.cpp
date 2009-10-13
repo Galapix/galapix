@@ -199,5 +199,13 @@ bool operator<(const URL& lhs, const URL& rhs)
 {
   return lhs.str() < rhs.str();
 }
+
+bool operator==(const URL& lhs, const URL& rhs)
+{
+  return (lhs.payload  == rhs.payload  &&
+          lhs.protocol == rhs.protocol &&
+          lhs.plugin   == rhs.plugin   &&
+          lhs.plugin_payload == rhs.plugin_payload);
+}
 
 /* EOF */

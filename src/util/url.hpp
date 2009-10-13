@@ -68,10 +68,12 @@ public:
   int         get_size() const;
 
   static bool is_url(const std::string& url);
+  friend bool operator==(const URL& lhs, const URL& rhs);  
 };
 
 std::ostream& operator<<(std::ostream& out, const URL& url);
 bool operator<(const URL& lhs, const URL& rhs);
+bool operator==(const URL& lhs, const URL& rhs);
 
 #endif
 
