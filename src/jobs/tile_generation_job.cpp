@@ -27,13 +27,16 @@
 
 TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
                                      const boost::function<void (TileEntry)>& callback) :
-  m_running(false),
-  m_is_aborted(false),
+  m_state(kWaiting),
   m_file_entry(file_entry),
+  m_min_scale(-1),
+  m_max_scale(-1),
   m_min_scale_in_db(min_scale_in_db),
   m_max_scale_in_db(max_scale_in_db),
   m_callback(callback),
-  m_tile_requests()
+  m_tile_requests(),
+  m_late_tile_requests(),
+  m_tiles()
 {
 }
 
@@ -41,22 +44,68 @@ bool
 TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
                                 const boost::function<void (TileEntry)>& callback)
 {
-  boost::try_mutex::scoped_try_lock lock(mutex);
+  boost::mutex::scoped_lock lock(m_state_mutex);
+  
+  switch(m_state)
+  {
+    case kWaiting:
+      m_tile_requests.push_back(TileRequest(job_handle, scale, pos, callback));
+      return true;
 
-  if (lock && !m_running && !m_is_aborted)
-  {
-    m_tile_requests.push_back(TileRequest(job_handle, scale, pos, callback));
-    return true;
-  }
-  else
-  {
-    return false;
+    case kRunning:
+      if (m_min_scale <= scale && scale <= m_max_scale)
+      {
+        m_late_tile_requests.push_back(TileRequest(job_handle, scale, pos, callback));
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+
+    case kAborted:
+      return false;
+
+    case kDone:
+      if (m_min_scale <= scale && scale <= m_max_scale)
+      {
+        Tiles::iterator tile_it = m_tiles.end();
+        for(Tiles::iterator i = m_tiles.begin(); i != m_tiles.end(); ++i)
+        {
+          if (scale == i->get_scale() &&
+              pos   == i->get_pos())
+          {
+            tile_it = i;
+            break;
+          }
+        }
+
+        if (tile_it != m_tiles.end())
+        {
+          callback(*tile_it);
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+      else
+      {
+        return false;
+      }
+
+    default:
+      assert(!"Never reached");
+      return false;
   }
 }
 
 void
 TileGenerationJob::process_tile_entry(const TileEntry& tile_entry)
 {
+  m_tiles.push_back(tile_entry);
+
   m_callback(tile_entry);
 
   for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
@@ -138,7 +187,6 @@ TileGenerationJob::generate_tile_entries(SoftwareSurfaceFactory::FileFormat form
       }
 
     scale += 1;
-
   } 
   while (scale <= max_scale);
 
@@ -150,54 +198,80 @@ TileGenerationJob::generate_tile_entries(SoftwareSurfaceFactory::FileFormat form
 bool
 TileGenerationJob::is_aborted()
 {
-  boost::mutex::scoped_lock lock(mutex);
+  boost::mutex::scoped_lock lock(m_state_mutex);
 
   for(TileRequests::const_iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
   {
     if (!i->job_handle.is_aborted())
       return false;
   }
-  m_is_aborted = true;
+
+  m_state = kAborted;
+ 
   return true;
 }
 
 void
 TileGenerationJob::run()
 {
-  boost::mutex::scoped_lock lock(mutex);
-  m_running = true;
+  SoftwareSurfaceFactory::FileFormat format;
 
-  SoftwareSurfaceFactory::FileFormat format = SoftwareSurfaceFactory::get_fileformat(m_file_entry.get_url());
+  { // Calculate min/max_scale
+    boost::mutex::scoped_lock lock(m_state_mutex);
+    assert(m_state == kWaiting);
+    m_state = kRunning;
 
-  int min_scale;
-  int max_scale;
+    format = SoftwareSurfaceFactory::get_fileformat(m_file_entry.get_url());
 
-  if (format != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
-  { 
-    // Generate all tiles instead of just the requested for non-jpeg formats
-    min_scale = 0;
-    max_scale = m_file_entry.get_thumbnail_scale();
-  }
-  else
-  {
-    max_scale = m_min_scale_in_db != -1 ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
-    min_scale = max_scale;
+    if (format != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
+    { 
+      // Generate all tiles instead of just the requested for non-jpeg formats
+      m_min_scale = 0;
+      m_max_scale = m_file_entry.get_thumbnail_scale();
+    }
+    else
+    {
+      m_max_scale = m_min_scale_in_db != -1 ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
+      m_min_scale = m_max_scale;
     
-    for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+      for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+      {
+        m_min_scale = std::min(m_min_scale, i->scale);
+      }
+    }
+
+    if (m_min_scale == -1 || m_max_scale == -1)
     {
-      min_scale = std::min(min_scale, i->scale);
+      for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+      {
+        std::cout << "TileRequest: scale=" << i->scale << std::endl;
+      }
     }
   }
 
-  if (min_scale == -1 || max_scale == -1)
+  // Do the main work
+  generate_tile_entries(format, m_min_scale, m_max_scale);
+
   {
-    for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
-    {
-      std::cout << "TileRequest: scale=" << i->scale << std::endl;
-    }
-  }
+    boost::mutex::scoped_lock lock(m_state_mutex);
+    assert(m_state == kRunning);
+    m_state = kDone;
 
-  generate_tile_entries(format, min_scale, max_scale);
+    for(TileRequests::iterator j = m_late_tile_requests.begin(); j != m_late_tile_requests.end(); ++j)
+    {
+      for(Tiles::iterator i = m_tiles.begin(); i != m_tiles.end(); ++i)
+      {
+        if (j->scale == i->get_scale() &&
+            j->pos   == i->get_pos())
+        {
+          j->callback(*i);
+          break;
+        }
+      }
+    }
+
+    m_late_tile_requests.clear();
+  }
 }
 
 /* EOF */

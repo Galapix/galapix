@@ -51,18 +51,35 @@ private:
   typedef std::vector<TileRequest> TileRequests;
   
 private: 
-  boost::try_mutex mutex;
+  boost::mutex m_state_mutex;
 
-  bool      m_running;
-  bool      m_is_aborted;
+  enum { 
+    kWaiting,
+    kRunning,
+    kAborted,
+    kDone
+  } m_state;
+
   FileEntry m_file_entry;
+
+  /** Only valid if state is kRunning or kDone */
+  int       m_min_scale;
+  int       m_max_scale;
+  
   int       m_min_scale_in_db;
   int       m_max_scale_in_db;
   
   /** All generated tiles go through this callback */
   boost::function<void (TileEntry)> m_callback;
 
+  /** Regular TileRequests */
   TileRequests m_tile_requests;
+
+  /** TileRequests that came in when the process was already running */
+  TileRequests m_late_tile_requests;
+  
+  typedef std::vector<TileEntry> Tiles;
+  Tiles m_tiles;
 
 public:
   TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
