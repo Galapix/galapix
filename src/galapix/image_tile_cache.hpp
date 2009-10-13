@@ -30,7 +30,7 @@
 
 class ImageTileCache
 {
-private:
+public:
   struct SurfaceStruct 
   {
     enum Status 
@@ -49,6 +49,7 @@ private:
     {}
   };
 
+private:
   typedef std::map<unsigned int, SurfaceStruct> Cache; 
   typedef std::vector<JobHandle> Jobs;
 
@@ -71,7 +72,7 @@ public:
 public:
   ImageTileCache(const FileEntry& file_entry);
 
-  SurfaceHandle request_tile(int x, int y, int scale);
+  SurfaceStruct request_tile(int x, int y, int scale);
   SurfaceHandle get_tile(int x, int y, int scale);
   SurfaceHandle find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
 

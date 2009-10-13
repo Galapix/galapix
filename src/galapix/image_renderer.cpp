@@ -37,12 +37,12 @@ void
 ImageRenderer::draw_tile(int x, int y, int scale, 
                          const Vector2f& pos, float zoom)
 {
-  SurfaceHandle surface = m_cache.request_tile(x, y, scale);
-  if (surface)
+  ImageTileCache::SurfaceStruct sstruct = m_cache.request_tile(x, y, scale);
+  if (sstruct.surface)
   {
     // FIXME: surface.get_size() * scale does not give the correct
     // size of a tile due to rounding errors
-    surface->draw(Rectf(pos, surface->get_size() * zoom));
+    sstruct.surface->draw(Rectf(pos, sstruct.surface->get_size() * zoom));
   }
   else // tile not found, so find a replacement
   {
@@ -56,7 +56,7 @@ ImageRenderer::draw_tile(int x, int y, int scale,
     {
       // draw lower resolution tiles
       int downscale;
-      surface = m_cache.find_smaller_tile(x, y, scale, downscale);
+      SurfaceHandle surface = m_cache.find_smaller_tile(x, y, scale, downscale);
 
       // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
       Size tile_size(Math::min(256, (m_image.get_original_width()  / Math::pow2(scale)) - 256 * x),
@@ -79,7 +79,24 @@ ImageRenderer::draw_tile(int x, int y, int scale,
       }
       else // draw replacement rect when no tile could be loaded
       {         
-        Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 155));
+        switch (sstruct.status)
+        {
+          case ImageTileCache::SurfaceStruct::SURFACE_OK:
+            assert(!"should never happen");
+            break;
+
+          case ImageTileCache::SurfaceStruct::SURFACE_REQUESTED:
+            Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 155));
+            break;
+
+          case ImageTileCache::SurfaceStruct::SURFACE_FAILED:
+            Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 0));
+            break;
+        
+          default:
+            assert(!"should never happen either");
+            break;
+        }
       }
     }
 

@@ -62,7 +62,7 @@ ImageTileCache::get_tile(int x, int y, int scale)
   }
 }
 
-SurfaceHandle
+ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
   unsigned int cache_id = make_cache_id(x, y, scale);
@@ -94,26 +94,11 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
     cache[cache_id] = s;
 
-    return SurfaceHandle();
+    return s;
   }
   else
   {
-    switch (i->second.status)
-    {
-      case SurfaceStruct::SURFACE_OK:
-        return i->second.surface;
-
-      case SurfaceStruct::SURFACE_REQUESTED:
-        // FIXME: Could return special graphics to indicate loading here
-        return SurfaceHandle();
-
-      case SurfaceStruct::SURFACE_FAILED:
-        // FIXME: Could return special graphics to indicate failure here
-        return SurfaceHandle();
-        
-      default:
-        return SurfaceHandle();
-    }
+    return i->second;
   }
 }
 

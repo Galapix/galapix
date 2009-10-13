@@ -144,7 +144,7 @@ Galapix::merge(const std::string& database,
           out_db.tiles.store_tile(*j);
         }
       } catch(std::exception& err) {
-        std::cout << "Error: " << err.what() << std::endl;
+        std::cout << "Galapix:merge: Error: " << err.what() << std::endl;
       }
     }
     std::cout << std::endl;
@@ -271,7 +271,7 @@ Galapix::filegen(const std::string& database,
   
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
   {
-    FileEntry entry = db.files.get_file_entry(url[i]); //FIXME: Fri Oct  9 13:08:44 2009
+    FileEntry entry = db.files.get_file_entry(url[i]);
     if (!entry)
     {
       std::cout << "Couldn't get entry for " << url[i] << std::endl;
@@ -497,7 +497,7 @@ Galapix::run(const GalapixOptions& opts)
       if (!urls.empty())
         view(opts, urls, false, opts.pattern);
       else
-        std::cout << "Error: No URLs given" << std::endl;
+        std::cout << "Galapix::run: Error: No URLs given" << std::endl;
     }
     else if (command == "viewdb")
     {
