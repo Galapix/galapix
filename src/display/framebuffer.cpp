@@ -190,7 +190,9 @@ SoftwareSurfaceHandle
 Framebuffer::screenshot()
 {
   SoftwareSurfaceHandle surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, get_size());
-  glReadPixels(0, 0, surface->get_width(), surface->get_height(), GL_RGB, GL_UNSIGNED_BYTE, surface->get_data());
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glReadPixels(0, 0, surface->get_width(), surface->get_height(),
+               GL_RGB, GL_UNSIGNED_BYTE, surface->get_data());
   return surface->vflip();
 }
 
