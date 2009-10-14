@@ -39,8 +39,9 @@ public:
   bool draw(const Rectf& cliprect, float zoom);
 
 private:
-  void draw_tile(int x, int y, int tiledb_scale, const Vector2f& rect, float zoom);
-  void draw_tiles(const Rect& rect, int tiledb_scale, const Vector2f& pos, float zoom);
+  Vector2f get_vertex(int x, int y, float zoom) const;
+  void draw_tile(int x, int y, int tiledb_scale, float zoom);
+  void draw_tiles(const Rect& rect, int tiledb_scale, float zoom);
 
 private:
   ImageRenderer(const ImageRenderer&);

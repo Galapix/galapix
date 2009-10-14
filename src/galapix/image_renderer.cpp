@@ -33,24 +33,34 @@ ImageRenderer::ImageRenderer(Image& image, ImageTileCache& cache)
 {
 }
 
+Vector2f
+ImageRenderer::get_vertex(int x, int y, float zoom) const
+{
+  float tilesize = 256.0f * zoom;
+
+  return m_image.get_top_left_pos() + 
+    Vector2f(std::min(static_cast<float>(x) * tilesize, 
+                      m_image.get_scaled_width()),
+             std::min(static_cast<float>(y) * tilesize,
+                      m_image.get_scaled_height()));
+}
+
 void
-ImageRenderer::draw_tile(int x, int y, int scale, 
-                         const Vector2f& pos, float zoom)
+ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
 {
   ImageTileCache::SurfaceStruct sstruct = m_cache.request_tile(x, y, scale);
   if (sstruct.surface)
   {
-    // FIXME: surface.get_size() * scale does not give the correct
-    // size of a tile due to rounding errors
-    sstruct.surface->draw(Rectf(pos, sstruct.surface->get_size() * zoom));
+    sstruct.surface->draw(Rectf(get_vertex(x,   y,   zoom),
+                                get_vertex(x+1, y+1, zoom)));
   }
   else // tile not found, so find a replacement
   {
     // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
-    SurfaceHandle nw = m_cache.get_tile(x*2,   y*2,   scale - 1);
-    SurfaceHandle ne = m_cache.get_tile(x*2+1, y*2,   scale - 1);
-    SurfaceHandle sw = m_cache.get_tile(x*2,   y*2+1, scale - 1);
-    SurfaceHandle se = m_cache.get_tile(x*2+1, y*2+1, scale - 1);
+    SurfaceHandle nw = m_cache.get_tile(2*x,   2*y,   scale - 1);
+    SurfaceHandle ne = m_cache.get_tile(2*x+1, 2*y,   scale - 1);
+    SurfaceHandle sw = m_cache.get_tile(2*x,   2*y+1, scale - 1);
+    SurfaceHandle se = m_cache.get_tile(2*x+1, 2*y+1, scale - 1);
 
     if (!nw || !ne || !sw || !se)
     {
@@ -58,39 +68,37 @@ ImageRenderer::draw_tile(int x, int y, int scale,
       int downscale;
       SurfaceHandle surface = m_cache.find_smaller_tile(x, y, scale, downscale);
 
-      // Calculate the actual size of the tile (i.e. border tiles might be smaller then 256x256)
-      Size tile_size(Math::min(256, (m_image.get_original_width()  / Math::pow2(scale)) - 256 * x),
-                     Math::min(256, (m_image.get_original_height() / Math::pow2(scale)) - 256 * y));
-
       if (surface)
       { 
-        // Must only draw relevant section!
-        Size s((x % downscale) ? (surface->get_width()  - 256/downscale * (x % downscale)) : 256 / downscale,
-               (y % downscale) ? (surface->get_height() - 256/downscale * (y % downscale)) : 256 / downscale);
+        Rectf subsection(Vector2f(static_cast<float>(x % downscale * 256/downscale),
+                                  static_cast<float>(y % downscale * 256/downscale)),
+                         Size(256 / downscale, 256 / downscale));
 
-        s.width  = Math::min(surface->get_width(),  s.width);
-        s.height = Math::min(surface->get_height(), s.height);
-          
-        surface->draw(Rectf(Vector2f(static_cast<float>(x % downscale), 
-                                     static_cast<float>(y % downscale)) * static_cast<float>(256/downscale), 
-                            s),
-                      //Rectf(pos, tile_size * scale)); kind of works, but leads to discontuinity and jumps
-                      Rectf(pos, s * zoom * static_cast<float>(downscale)));
+        subsection.right  = std::min(subsection.right,  static_cast<float>(surface->get_width()));
+        subsection.bottom = std::min(subsection.bottom, static_cast<float>(surface->get_height()));
+
+        surface->draw(subsection,
+                      Rectf(get_vertex(x,   y,   zoom), 
+                            get_vertex(x+1, y+1, zoom)));
       }
       else // draw replacement rect when no tile could be loaded
       {         
         switch (sstruct.status)
         {
           case ImageTileCache::SurfaceStruct::SURFACE_OK:
-            assert(!"should never happen");
+            //assert(!"should never happen");
             break;
 
           case ImageTileCache::SurfaceStruct::SURFACE_REQUESTED:
-            Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 155));
+            Framebuffer::fill_rect(Rectf(get_vertex(x,   y,   zoom),
+                                         get_vertex(x+1, y+1, zoom)),
+                                   RGB(155, 0, 155));
             break;
 
           case ImageTileCache::SurfaceStruct::SURFACE_FAILED:
-            Framebuffer::fill_rect(Rectf(pos, tile_size * zoom), RGB(155, 0, 0));
+            Framebuffer::fill_rect(Rectf(get_vertex(x,   y,   zoom),
+                                         get_vertex(x+1, y+1, zoom)),
+                                   RGB(155, 0, 0));
             break;
         
           default:
@@ -101,25 +109,20 @@ ImageRenderer::draw_tile(int x, int y, int scale,
     }
 
     // draw higher resolution tiles
-    if (nw) nw->draw(Rectf(pos, nw->get_size() * zoom * 0.5f));
-    if (ne) ne->draw(Rectf(pos + Vector2f(256*zoom/2, 0), ne->get_size() * zoom * 0.5f));
-    if (sw) sw->draw(Rectf(pos + Vector2f(0, 256*zoom/2), sw->get_size() * zoom * 0.5f));
-    if (se) se->draw(Rectf(pos + Vector2f(256*zoom/2, 256*zoom/2), se->get_size() * zoom * 0.5f));
+    if (nw) nw->draw(Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f)));
+    if (ne) ne->draw(Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f)));
+    if (sw) sw->draw(Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f)));
+    if (se) se->draw(Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f)));
   }
 }
 
 void 
-ImageRenderer::draw_tiles(const Rect& rect, int scale, 
-                          const Vector2f& pos, float zoom)
+ImageRenderer::draw_tiles(const Rect& rect, int scale, float zoom)
 {
-  float tilesize = 256.0f * zoom;
-
   for(int y = rect.top; y < rect.bottom; ++y)
     for(int x = rect.left; x < rect.right; ++x)
     {
-      draw_tile(x, y, scale, 
-                m_image.get_top_left_pos() + Vector2f(static_cast<float>(x), static_cast<float>(y)) * tilesize,
-                zoom);
+      draw_tile(x, y, scale, zoom);
     }
 }
 
@@ -135,8 +138,6 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
   }
   else
   {
-    Vector2f top_left(image_rect.left, image_rect.top);
-
     // scale factor for requesting the tile from the TileDatabase
     // FIXME: Can likely be done without float
     int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (zoom * m_image.get_scale())) /
@@ -149,17 +150,16 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
     if (scaled_width  < 256 && scaled_height < 256)
     { // So small that only one tile is to be drawn
       draw_tile(0, 0, tiledb_scale, 
-                top_left,
                 static_cast<float>(scale_factor) * m_image.get_scale());
     }
     else
     {
       Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
 
-      image_region.left   = (image_region.left   - top_left.x) / m_image.get_scale();
-      image_region.right  = (image_region.right  - top_left.x) / m_image.get_scale();
-      image_region.top    = (image_region.top    - top_left.y) / m_image.get_scale();
-      image_region.bottom = (image_region.bottom - top_left.y) / m_image.get_scale();
+      image_region.left   = (image_region.left   - image_rect.left) / m_image.get_scale();
+      image_region.right  = (image_region.right  - image_rect.left) / m_image.get_scale();
+      image_region.top    = (image_region.top    - image_rect.top)  / m_image.get_scale();
+      image_region.bottom = (image_region.bottom - image_rect.top)  / m_image.get_scale();
 
       int   itilesize = 256 * scale_factor;
           
@@ -171,7 +171,6 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
 
       draw_tiles(Rect(start_x, start_y, end_x, end_y), 
                  tiledb_scale, 
-                 top_left,
                  static_cast<float>(scale_factor) * m_image.get_scale());
     }
 
