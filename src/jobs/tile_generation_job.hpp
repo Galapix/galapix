@@ -41,10 +41,10 @@ private:
     
     TileRequest(const JobHandle& job_handle_,
                 int scale_, const Vector2i& pos_,
-                const boost::function<void (TileEntry)>& callback_)
-      : job_handle(job_handle_),
-        scale(scale_), pos(pos_),
-        callback(callback_)
+                const boost::function<void (TileEntry)>& callback_) :
+      job_handle(job_handle_),
+      scale(scale_), pos(pos_),
+      callback(callback_)
     {}
   };
 

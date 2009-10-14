@@ -308,9 +308,8 @@ Galapix::thumbgen(const GalapixOptions& opts,
     job_handle_group.add(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
   }
 
-  std::cout << "FileEntry: " << file_entries.size() << std::endl;
   job_handle_group.wait();
-  std::cout << "XXX FileEntry: " << file_entries.size() << std::endl;
+  std::cout << "Got " << file_entries.size() << " files, generating tiles..." << std::endl;
 
   // gather thumbnails
   for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)

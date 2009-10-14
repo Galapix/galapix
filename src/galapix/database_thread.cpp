@@ -253,10 +253,11 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
 }
 
 void
-DatabaseThread::store_file_entry(const URL& url, const Size& size,
+DatabaseThread::store_file_entry(const JobHandle& job_handle, 
+                                 const URL& url, const Size& size,
                                  const boost::function<void (FileEntry)>& callback)
 {
-  m_queue.push(new StoreFileEntryDatabaseMessage(url, size, callback));
+  m_queue.push(new StoreFileEntryDatabaseMessage(job_handle, url, size, callback));
 }
 
 /* EOF */

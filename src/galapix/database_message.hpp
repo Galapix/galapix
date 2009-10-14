@@ -274,14 +274,17 @@ public:
 class StoreFileEntryDatabaseMessage : public DatabaseMessage
 {
 private:
+  JobHandle m_job_handle;
   URL  m_url;
   Size m_size;
   boost::function<void (FileEntry)> m_callback;
 
 public:
-  StoreFileEntryDatabaseMessage(const URL& url, const Size& size,
+  StoreFileEntryDatabaseMessage(const JobHandle& job_handle, 
+                                const URL& url, const Size& size,
                                 const boost::function<void (FileEntry)>& callback)
-    : m_url(url),
+    : m_job_handle(job_handle),
+      m_url(url),
       m_size(size),
       m_callback(callback)
   {}
@@ -293,6 +296,7 @@ public:
     {
       m_callback(file_entry);
     }
+    m_job_handle.set_finished();
   }
 };
 

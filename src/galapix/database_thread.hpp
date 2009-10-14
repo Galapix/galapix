@@ -102,7 +102,8 @@ public:
   /** Request all FileEntrys available in the database */
   void      request_all_files(const boost::function<void (FileEntry)>& callback);
 
-  void      store_file_entry(const URL& url, const Size& size, 
+  void      store_file_entry(const JobHandle& job_handle, 
+                             const URL& url, const Size& size, 
                              const boost::function<void (FileEntry)>& callback);
 
   /** Place tile into the database */

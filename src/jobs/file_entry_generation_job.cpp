@@ -37,8 +37,7 @@ FileEntryGenerationJob::run()
   Size size;
   if (SoftwareSurfaceFactory::get_size(m_url, size))
   {
-    DatabaseThread::current()->store_file_entry(m_url, size, m_callback);
-    m_job_handle.set_finished();
+    DatabaseThread::current()->store_file_entry(m_job_handle, m_url, size, m_callback);
   }
   else
   {
