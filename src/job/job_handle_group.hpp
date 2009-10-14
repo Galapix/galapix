@@ -46,6 +46,11 @@ public:
       i->wait();
     }
   }
+
+  void clear()
+  {
+    m_job_handles.clear();
+  }
   
 private:
   JobHandleGroup(const JobHandleGroup&);

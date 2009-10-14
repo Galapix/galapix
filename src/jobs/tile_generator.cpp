@@ -35,7 +35,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
                         const boost::function<void(const TileEntry& tile_entry)>& callback)
 {
   std::cout << "TileGenerationJob: have ";
-  if (m_min_scale_in_db == -1 && m_max_scale_in_db)
+  if (m_min_scale_in_db == -1 && m_max_scale_in_db == -1)
   {
     std::cout << "[empty]";
   }

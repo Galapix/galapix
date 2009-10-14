@@ -24,6 +24,7 @@
 #include "galapix/database_message.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/tile_generation_job.hpp"
+#include "jobs/multiple_tile_generation_job.hpp"
 #include "jobs/file_entry_generation_job.hpp"
 
 DatabaseThread* DatabaseThread::current_ = 0;
@@ -176,18 +177,24 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
                                int min_scale, int max_scale,
                                const boost::function<void (TileEntry)>& callback)
 {
+  // FIXME: We are ignoring the callback, but shouldn't so assert in
+  // case somebody tries to use one
+  assert(!callback);
+
   int min_scale_in_db = -1;
   int max_scale_in_db = -1;
 
   m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
 
-  boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db,
-                                                                     boost::bind(&DatabaseThread::receive_tile, this, _1)));
-  job_ptr->request_tiles(job_handle, min_scale, max_scale, callback);
+  boost::shared_ptr<MultipleTileGenerationJob> 
+    job_ptr(new MultipleTileGenerationJob(job_handle, 
+                                          file_entry,
+                                          min_scale_in_db, max_scale_in_db,
+                                          min_scale, max_scale,
+                                          boost::bind(&DatabaseThread::receive_tile, this, _1)));
 
-  m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
-
-  m_tile_generation_jobs.push_front(job_ptr); 
+  // Not removing the job from the queue
+  m_tile_job_manager.request(job_ptr);
 }
 
 void

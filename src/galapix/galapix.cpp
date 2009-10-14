@@ -307,16 +307,28 @@ Galapix::thumbgen(const GalapixOptions& opts,
   {
     job_handle_group.add(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
   }
-
   job_handle_group.wait();
-  std::cout << "Got " << file_entries.size() << " files, generating tiles..." << std::endl;
+  job_handle_group.clear();
+
+  std::cout << "Got " << file_entries.size() << " files, generating tiles...: "  << generate_all_tiles << std::endl;
 
   // gather thumbnails
   for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
   {
-    database_thread.request_tiles(*i, 0, i->get_thumbnail_scale(),
-                                  boost::function<void(TileEntry)>());
+    int min_scale = 0;
+    int max_scale = i->get_thumbnail_scale();
+
+    if (!generate_all_tiles)
+    {
+      min_scale = std::max(0, max_scale - 3);
+    }
+
+    job_handle_group.add(database_thread.request_tiles(*i, min_scale, max_scale,
+                                                       boost::function<void(const TileEntry&)>()));
   }
+
+  job_handle_group.wait();
+  job_handle_group.clear();
 
   job_manager.stop_thread();
   database_thread.stop_thread();
