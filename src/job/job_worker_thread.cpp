@@ -60,7 +60,7 @@ JobWorkerThread::run()
         {
           task.callback(task.job, true);
         }
-        task.job->get_handle().finish();
+        task.job->get_handle().set_finished();
         //std::cout << "done job: " << task.job << std::endl;
       }
       else

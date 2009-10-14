@@ -40,6 +40,7 @@
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 #include "database/database.hpp"
+#include "job/job_handle_group.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "jobs/test_job.hpp"
 #include "galapix/database_thread.hpp"
@@ -89,7 +90,7 @@ Galapix::test(const GalapixOptions& opts,
 {
   std::cout << "Running test case" << std::endl;
 
-  JobManager job_manager(2);
+  JobManager job_manager(opts.threads);
   DatabaseThread database_thread(opts.database, job_manager, job_manager);
 
   database_thread.start_thread();
@@ -264,23 +265,26 @@ Galapix::check(const std::string& database)
 }
 
 void
-Galapix::filegen(const std::string& database, 
+Galapix::filegen(const GalapixOptions& opts,
                  const std::vector<URL>& url)
 {
-  Database db(database);
+  JobManager job_manager(opts.threads);
+  DatabaseThread database_thread(opts.database, job_manager, job_manager);
+
+  job_manager.start_thread();
+  database_thread.start_thread();
   
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
   {
-    FileEntry entry = db.files.get_file_entry(url[i]);
-    if (!entry)
-    {
-      std::cout << "Couldn't get entry for " << url[i] << std::endl;
-    }
-    else
-    {
-      std::cout << "Got: " << entry.get_url() << " " << entry.get_width() << "x" << entry.get_height() << std::endl;
-    }
+    database_thread.request_file(url[i],
+                           boost::function<void (const FileEntry&)>());
   }
+
+  job_manager.stop_thread();
+  database_thread.stop_thread();
+
+  job_manager.join_thread();
+  database_thread.join_thread();
 }
 
 void
@@ -295,33 +299,25 @@ Galapix::thumbgen(const GalapixOptions& opts,
   job_manager.start_thread();
 
   std::vector<FileEntry> file_entries;
-  {
-    std::vector<JobHandle> job_handles;
-    for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
-      job_handles.push_back(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
-    for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
-      i->wait();
-  }
-  
-  assert(!"Implement this");
-#if 0 
-  { // FIXME: Implement this
-    std::vector<JobHandle> job_handles;
-    for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
-    {
-      // Generate Image Tiles
-      SoftwareSurfaceHandle surface = SoftwareSurfaceFactory::from_url(i->get_url());
-        
-      boost::shared_ptr<Job> job_ptr(new TileGenerationJob(*i, 
-                                                           boost::bind(&DatabaseThread::receive_tile, &database_thread, _1)));
-      job_manager.request(job_ptr);
-      job_handles.push_back(job_ptr->get_handle());
-    }
 
-    for(std::vector<JobHandle>::iterator i = job_handles.begin(); i != job_handles.end(); ++i)
-      i->wait();
+  JobHandleGroup job_handle_group;
+
+  // gather FileEntries
+  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
+  {
+    job_handle_group.add(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
   }
-#endif
+
+  std::cout << "FileEntry: " << file_entries.size() << std::endl;
+  job_handle_group.wait();
+  std::cout << "XXX FileEntry: " << file_entries.size() << std::endl;
+
+  // gather thumbnails
+  for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
+  {
+    database_thread.request_tiles(*i, 0, i->get_thumbnail_scale(),
+                                  boost::function<void(TileEntry)>());
+  }
 
   job_manager.stop_thread();
   database_thread.stop_thread();
@@ -545,7 +541,7 @@ Galapix::run(const GalapixOptions& opts)
     }
     else if (command == "filegen")
     {
-      filegen(opts.database, urls);
+      filegen(opts, urls);
     }
     else
     {

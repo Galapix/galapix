@@ -106,7 +106,9 @@ void
 ImageTileCache::clear()
 {
   for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
-    i->abort();
+  {
+    i->set_aborted();
+  }
   jobs.clear();
 
   cache.clear();
@@ -120,7 +122,9 @@ ImageTileCache::cleanup()
 
   // Image is not visible, so cancel all jobs
   for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
-    i->abort();
+  {
+    i->set_aborted();
+  }
   jobs.clear();
         
   // FIXME: We also need to purge the cache more often, since with

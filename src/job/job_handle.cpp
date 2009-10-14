@@ -18,6 +18,8 @@
 
 #include <boost/thread/condition.hpp>
 
+#include <boost/bind.hpp>
+
 #include "job/job_handle.hpp"
 
 class JobHandleImpl
@@ -47,10 +49,18 @@ JobHandle::~JobHandle()
 }
 
 void
-JobHandle::abort()
+JobHandle::set_aborted()
 {
   boost::mutex::scoped_lock lock(impl->mutex);
   impl->aborted = true;
+  impl->cond.notify_all();
+}
+
+void
+JobHandle::set_finished()
+{
+  boost::mutex::scoped_lock lock(impl->mutex);
+  impl->finished = true;
   impl->cond.notify_all();
 }
 
@@ -60,26 +70,23 @@ JobHandle::is_aborted() const
   return impl->aborted;
 }
 
-void
-JobHandle::finish()
-{
-  boost::mutex::scoped_lock lock(impl->mutex);
-  impl->finished = true;
-  impl->cond.notify_all();
-}
-
 bool
-JobHandle::is_finished() const
+JobHandle::is_done() const
 {
-  return impl->finished;
+  return impl->finished || impl->aborted;
 }
 
 void
 JobHandle::wait()
 {
   boost::mutex::scoped_lock lock(impl->mutex);
-  if (!impl->finished)
-    impl->cond.wait(lock);
+  if (!impl->finished && !impl->aborted)
+  {
+    while(!is_done())
+    {
+      impl->cond.wait(lock);
+    }
+  }
 }
 
 /* EOF */

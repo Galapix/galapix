@@ -47,6 +47,8 @@ public:
   void abort_thread();
   void join_thread();
 
+  void wait();
+
   /** \a job is processed and once finished \a callback is called, \a
       job will be deleted afterwards */
   JobHandle request(boost::shared_ptr<Job> job, 

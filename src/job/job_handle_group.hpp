@@ -16,35 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_JOB_JOB_HANDLE_HPP
-#define HEADER_GALAPIX_JOB_JOB_HANDLE_HPP
+#ifndef HEADER_GALAPIX_JOB_JOB_HANDLE_GROUP_HPP
+#define HEADER_GALAPIX_JOB_JOB_HANDLE_GROUP_HPP
 
-#include <boost/shared_ptr.hpp>
-
-class JobHandleImpl;
-
-/** A JobHandle should be returend whenever one thread makes a request
-    to another thread, the JobHandle allows the calling thread to
-    cancel the job and the called thread to inform the calling one
-    that the Job is finished. (FIXME: Do we need that last thing for something?) */
-class JobHandle
+#include <vector>
+
+#include "job/job_handle.hpp"
+
+class JobHandleGroup
 {
-public:
-  JobHandle();
-  ~JobHandle();
-
-  void set_aborted();
-  void set_finished();
-
-  bool is_done() const;
-  bool is_aborted() const;
-  
-  void wait();
-
 private:
-  boost::shared_ptr<JobHandleImpl> impl;
+  typedef std::vector<JobHandle> JobHandles;
+  JobHandles m_job_handles;
+
+public:
+  JobHandleGroup()
+    : m_job_handles()
+  {}
+  
+  void add(JobHandle job_handle)
+  {
+    m_job_handles.push_back(job_handle);
+  }
+
+  void wait()
+  {
+    for(JobHandles::iterator i = m_job_handles.begin(); i != m_job_handles.end(); ++i)
+    {
+      i->wait();
+    }
+  }
+  
+private:
+  JobHandleGroup(const JobHandleGroup&);
+  JobHandleGroup& operator=(const JobHandleGroup&);
 };
-
+
 #endif
 
 /* EOF */

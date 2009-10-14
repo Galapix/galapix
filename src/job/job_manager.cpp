@@ -18,6 +18,8 @@
 
 #include "job/job_manager.hpp"
 
+#include <unistd.h>
+
 #include "job/job.hpp"
 #include "job/job_worker_thread.hpp"
 
@@ -88,4 +90,27 @@ JobManager::request(boost::shared_ptr<Job> job,
   return handle;
 }
 
-/* EOF */
+void
+JobManager::wait()
+{
+  while(true)
+  {
+    {
+      boost::mutex::scoped_lock lock(mutex);
+      bool all_empty = true;
+      for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+      {
+        all_empty = all_empty && (*i)->empty();
+      }
+
+      std::cout << "SLeeP " << std::endl;
+      usleep(1000 * 1000);
+      std::cout << "SLeeP: done " << std::endl;
+      
+      if (all_empty)
+        return;
+    }
+  }
+}
+
+  /* EOF */

@@ -53,8 +53,8 @@ public:
   void thumbgen(const GalapixOptions& opts,
                 const std::vector<URL>& filenames, 
                 bool generate_all_tiles);
-  void filegen(const std::string& database, 
-                const std::vector<URL>& filenames);
+  void filegen(const GalapixOptions& opts,
+               const std::vector<URL>& filenames);
   void export_images(const std::string& database, const std::vector<URL>& url);
   void view(const GalapixOptions& opts,
             const std::vector<URL>& filenames,

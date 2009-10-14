@@ -57,6 +57,8 @@ public:
 
   void stop_thread();
   void abort_thread();
+
+  bool empty() { return m_queue.empty(); }
   
 private:
   JobWorkerThread (const JobWorkerThread&);

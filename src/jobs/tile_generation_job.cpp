@@ -41,6 +41,15 @@ TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_
 }
 
 bool
+TileGenerationJob::request_tiles(const JobHandle& job_handle, int min_scale, int max_scale,
+                                 const boost::function<void (TileEntry)>& callback)
+{
+  std::cout << "[UNIMPLEMENTED] TileGenerationJob::request_tiles: ["
+            << min_scale << ".." << max_scale << "] "  << m_file_entry << std::endl;
+  return true;
+}
+
+bool
 TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
                                 const boost::function<void (TileEntry)>& callback)
 {

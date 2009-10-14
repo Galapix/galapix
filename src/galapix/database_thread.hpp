@@ -67,6 +67,11 @@ public:
   void abort_thread();
 
   /** Generates the requested tile from its original image */
+  void generate_tiles(const JobHandle& job_handle, const FileEntry&,
+                      int min_scale, int max_scale,
+                      const boost::function<void (TileEntry)>& callback);
+
+  /** Generates the requested tile from its original image */
   void generate_tile(const JobHandle& job_handle,
                      const FileEntry&, int tilescale, const Vector2i& pos, 
                      const boost::function<void (TileEntry)>& callback);
@@ -80,7 +85,11 @@ public:
    *  Request the tile from the database, if not in the database the
    *  tile will be generated from the source image
    */
-  JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, const boost::function<void (TileEntry)>& callback);
+  JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, 
+                         const boost::function<void (TileEntry)>& callback);
+
+  JobHandle request_tiles(const FileEntry&, int min_scale, int max_scale, 
+                          const boost::function<void (TileEntry)>& callback);
 
   void      request_job_removal(boost::shared_ptr<Job> job, bool);
 

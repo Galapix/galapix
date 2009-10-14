@@ -53,6 +53,36 @@ public:
   }
 };
 
+class RequestTilesDatabaseMessage : public DatabaseMessage
+{
+public:
+  JobHandle m_job_handle;
+  FileEntry m_file_entry;
+  int m_min_scale;
+  int m_max_scale;
+  boost::function<void (TileEntry)> m_callback;
+
+  RequestTilesDatabaseMessage(const JobHandle& job_handle, const FileEntry& file_entry, 
+                              int min_scale, int max_scale,
+                              const boost::function<void (TileEntry)>& callback)
+    : m_job_handle(job_handle),
+      m_file_entry(file_entry),
+      m_min_scale(min_scale),
+      m_max_scale(max_scale),
+      m_callback(callback)
+  {}
+
+  void run(Database& db)
+  {
+    if (!m_job_handle.is_aborted())
+    {
+      DatabaseThread::current()->generate_tiles(m_job_handle, m_file_entry,
+                                                m_min_scale, m_max_scale, 
+                                                m_callback);
+    }
+  }
+};
+
 class RequestTileDatabaseMessage : public DatabaseMessage
 {
 public:
@@ -83,7 +113,7 @@ public:
         // Tile has been found, so return it and finish up
         if (callback)
           callback(tile);
-        job_handle.finish();
+        job_handle.set_finished();
       }
       else
       {
@@ -132,7 +162,7 @@ public:
         else
           {
             callback(entry);
-            job_handle.finish();
+            job_handle.set_finished();
           }
       }
   }

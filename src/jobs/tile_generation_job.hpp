@@ -90,6 +90,8 @@ public:
       and the request has to be discarded */
   bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
                     const boost::function<void (TileEntry)>& callback);
+  bool request_tiles(const JobHandle& job_handle, int min_scale, int max_scale,
+                     const boost::function<void (TileEntry)>& callback);
 
   void run();
 

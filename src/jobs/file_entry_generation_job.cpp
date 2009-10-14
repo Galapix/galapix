@@ -29,7 +29,6 @@ FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, cons
     m_url(url),
     m_callback(callback)
 {
-  assert(m_callback);
 }
 
 void
@@ -39,10 +38,11 @@ FileEntryGenerationJob::run()
   if (SoftwareSurfaceFactory::get_size(m_url, size))
   {
     DatabaseThread::current()->store_file_entry(m_url, size, m_callback);
+    m_job_handle.set_finished();
   }
   else
   {
-    m_callback(FileEntry());
+    m_job_handle.set_finished();
   }
 }
 

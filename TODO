@@ -17,20 +17,93 @@ Release procedure:
 * check that all keyboard shortcuts are documented and sort them a bit to be logical
 
 * svn cp trunk@REV tags/galapix-0.0.X
+
+* need to handle mtime properly
+
+* updating an image with F5 doesn't update its size in the FileEntry
+
 
-Problems:
-=========
+Galapix 0.2.0 Release ToDo:
+---------------------------
 
-* failed loading does not propagate to the image
+* fix random layout so that all image sizes are handled equally,
+  currently low-res images get really small
 
-* filegen and friends must use DatabaseThread, as Database no longer
+* add function to relayout just the selection instead of all images
+
+* make middle button exit trackball mode
+
+* add check for boost header files and make scons somewhat more solid
+
+* check with sqlite3_table_column_metadata() that the table has the
+  right format
+
+* need to display the thread status graphically somehow (graphical
+  rotating wheel? per image or overall?)
+
+* seperate galapix from the thumbgen code, so that there is a
+  galapix-tool and a galapix program
+
+* galapix --help
+   -d, --database FILE
+
+* galapix-thumbgen
+   -m, --minsize X      Generate tiles till this size
+   -d, --database FILE  
+
+* galapix-db [info|list|merge|cleanup|delete]
+   -d, --database FILE
+
+  galapix-db merge -d outdatabase.sqlite indatabase1.sqlite indatabase2.sqlite ...
+  galapix-db cleanup
+  galapix-db delete -d database1.sqlite [PATTERN]...
+
+
+Galapix 0.1.0 Release ToDo:
+===========================
+
+* (!) filegen and friends must use DatabaseThread, as Database no longer
   generates things by itself
+
+* (!) moving images around with the move tool doesn't update the QuadTree
+
+* (!) loading does not insert directly into the QuadTree
+
+* (!) mouse buttons can get stuck when you press them both at once
+
+* (!) viewdb -p PATTERN doesn't work as expected, as the viewer isn't updated in
+  SDLViewer::run(), pressing '1' works as a workaround
+
+* ZoomTool doesn't know about trackball_mode and thus zooms not into
+  the center of the picture, but to the mouse cursor
+
+* trackball mode in window mode doesn't zoom to center, but some abitary point
+
+* write script to convert old database to new database
+
+* improve layouter, so that new images come in more cleanly
+
+* flush file cache from time to time
+
+General Problems:
+=================
+
+* cleanup exceptions:
+
+  - they must tell which part of the code caused them JPEG::read_header()
+
+  - they must no include "Error"
+
+* implement loading of small thumbnails that are always kept
+
+galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::request_tile(const JobHandle&, int, const Vector2i&, const boost::function<void(TileEntry)>&): Assertion `scale < m_min_scale_in_db || scale > m_max_scale_in_db' failed.
+
+* failed loading does not propagate to the image, need some kind of
+  callback to report errors
 
 * requests can stack up so that galapix is busy flushing the cache multiple times in a row before stuff can continue
 
 * TileEntry::get_blob vs TileEntry::get_surface who uses what?
-
-* moving images around with the move tool doesn't update the QuadTree
 
 * figure out where all the memory goes, galapix should ideally need no
   more then what is visible on the screen, which is much less then the
@@ -43,28 +116,16 @@ Problems:
   low zoom levels don't seem to wast space, only high ones
   zooming in and out also wastes space
 
-* loading does not insert directly into the QuadTree
-
 * make tile and file cache size configurable
 
 * break up tile generation some more, as other parts of the code, such
   as "galapix thumbgen" don't need the complexity of TileGenerationJob
-
-* improve layouter, so that new images come in more cleanly
-
-* flush file cache from time to time
-
-* implement loading of small thumbnails that are always kept
-
-* need to handle mtime properly
 
 * DatabaseThread is very similar to JobWorkerThread, maybe merge them
 
 * maybe have something like JobHandle->spawn_child_job()
 
 * current use of cURL is not thread safe due to curl_global_init()
-
-* write tcl/tk script to convert old database to new database
 
 * Quadtree stuff in Workspace could be speed up by recycling the
   std::vector object and by using marks on Image instead of a std::set
@@ -79,9 +140,6 @@ Problems:
 
 * shared_ptr<> impl is evil
 
-* viewdb -p PATTERN doesn't work as expected, as the viewer isn't updated in
-  SDLViewer::run(), pressing '1' works as a workaround
-
 * implement some proper stuff to report the current status (what jobs
   are running, what an image is doing, etc)
 
@@ -89,19 +147,9 @@ Problems:
 
 * use highres tiles when they are in cache when zooming out (currently
   only using one level of highres data)
-
-* make the database versioned by filename (easiest to implement):
-  ~/.galapix/cache-1.sqlite
 
 Graphical User Interface
 ========================
-
-* mouse buttons can get stuck when you press them both at once
-
-* ZoomTool doesn't know about trackball_mode and thus zooms not into
-  the center of the picture, but to the mouse cursor
-
-* trackball mode in window mode doesn't zoom to center, but some abitary point
 
 * implement auto-pilot that navigates images randomly or in sequence
   (i.e. slideshow with a bit of zooming)
@@ -139,6 +187,9 @@ Graphical User Interface
 File Plugins
 ============
 
+* handle "Premature end of JPEG file" a little better, mark FileEntry
+  as broken or so
+
 * Corel CMX Support
 
 * build in a file magic detector: .xcf.bz2 doesn't work for xcfinfo if it ends in .xcf
@@ -148,21 +199,12 @@ File Plugins
 * move file-extension -> plugin mapping into configuration file
 
   -> didn't work out, file format handler have to much interdepedency
-     to make this practical right now
+     to make this practical right now, could wrap the static plugins
+     into boost::function or special plugin objects to make it work
 
 * add support for Imagemagick files that create multiple images (i.e. pdf)
 
-
-* figure out a way to handle multi-image files (rar, tar, zip, pdf, multilayer-xcf)
-
-  rar vb RARFILE -> [files, ...]
-  rar p -inul RARFILE FILE_IN_ARCHIVE -> file_content
-
-  unzip -lqq ZIP 
-  unzip -pqq ZIP FILE_IN_ARCHIVE
-
-  tar --list TAR
-  tar --extract --to-stdout --file TAR FILE
+* figure out a way to handle multi-image files (multilayer-xcf)
  
   XCF: parse xcfinfo output
 
@@ -235,10 +277,6 @@ Then shrink via (do this in a seperate step, since it requires plenty
 of diskspace, 2x(!) times what the database uses):
 
 VACUUM;
-
-* invalid image causes Rect to become 'nan' ->
-  'file:///resources/flickr/flickr/farm1.static.flickr.com/1/97146_20ff533764_o.jpg'
-  -> width == 0, set_scale(.../width) -> inf -> nan
 
 
 * add --size option to 'galapix export'
@@ -250,8 +288,6 @@ VACUUM;
 
 * use boost::bind() objects instead of custum ones in DatabaseThread
 
-* updating an image with F5 doesn't update its size in the FileEntry
-
 * seperate files and images tables so that information about archive
   files can be saved and other stuff
 
@@ -261,9 +297,6 @@ VACUUM;
 * always process get requests to the database before store requests
 
 * add command line option to not follow links and/or archive files
-
-* collect tiles and FileEntries before writing them to the database, might speed things up a bit
-   other speed improvements PRAGMA synchronous = OFF; 
 
 * Write a tempfile class that creates a tempfile from a Blob in cases
   where a command line tool can't read from stdin or from /dev/stdin,
@@ -297,7 +330,7 @@ VACUUM;
      and get the smallest possible thumbnail instead and only place
      stuff on the workspace when it is ready
 
-* Add glob pattern URL support: glob:://file:///resources/flickr/*
+* Add glob pattern URL support: glob:://file:///resources/flickr/* (what would that be good for?!)
 
 * merging databases causes reencoding of the JPEG data due to
   TileEntry storing SoftwareSurface instead of Blob
@@ -335,13 +368,7 @@ VACUUM;
 
 * switch to plain Magick libraries, not the C++ version
 
-* reading all files from the database should be incremental
-
-* add a way to delete all cached stuff related to an image
-
 * add support for checkboard pattern and stuff in the background
-
-* How to detect file format: file extension (case-insensitive, magic byte)
 
 * change Framebuffer/Surface so that we can draw images with alpha
 
@@ -379,88 +406,28 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 
 * use Big Buck Bunny
 
-Galapix 0.0.4 Release ToDo:
----------------------------
-
 // Get a list of all tiles for a given file
 // SELECT files.fileid,files.filename,tiles.scale,tiles.x,tiles.y 
 //   FROM files, tiles 
 //   WHERE files.filename = 'file:///tmp/ssc2008-11a14.jpg' AND files.fileid = tiles.fileid;
 // When no tiles are available nothing is returned, which makes this call kind of useless for the intended purpose
 
-* add support for RAW images via ufraw
- ufraw-batch YO5Z9782.CR2 --silent  --out-type=jpeg --output=-
-
-* small scales are displayed at the wrong size (thumbnail.size * scale
-  != image_size due to small values of thumbnail.size)
-
 * added toggle for GL_LINEAR/GL_NEAREST
-
-* Merge TileGenerator and TileGeneratorThread code
 
 * seperate loading of tiles from drawing, making loading/job-cancel
   event based instead of brute force as it is now
 
-* fix the max_scale mess some more (important!)
-
 * generate all tiles at once for stuff that doesn't support
   incremental loading (every other format then jpeg and jpegs loaded
-  from archive files) (important!)
-
-* add way to figure out which tiles are already in the database
+  from archive files) [mostly done, except for jpegs in archive files]
 
 * check the new features some more
 
 * handle file failures more gracefully, currently we run into a 'job
   rejected' situation because the job can never be completed
+
 * Loading JPEG file can throw exception and that isn't handled
   - failure modes: file not found, data corrupt
-
-* need to properly check for collisions in the database and update
-  entries instead of just inserting a duplicate (not an issue for
-  normal use, but for 'prepare' and 'thumbgen'), fixing this might
-  also fix incorrect generation ranges
- 
-Galapix 0.1.0 Release ToDo:
----------------------------
-
-* handle "Premature end of JPEG file" a little better, mark FileEntry
-  as broken or so
-
-* turn static classes into objects and map them dynamically to a file ending
-
-* fix random layout so that all image sizes are handled equally,
-  currently low-res images get really small
-
-* add function to relayout just the selection instead of all images
-
-* make middle button exit trackball mode
-
-* add check for boost header files and make scons somewhat more solid
-
-* check with sqlite3_table_column_metadata() that the table has the
-  right format
-
-* need to display the thread status graphically somehow (graphical
-  rotating wheel? per image or overall?)
-
-* seperate galapix from the thumbgen code, so that there is a
-  galapix-tool and a galapix program
-
-* galapix --help
-   -d, --database FILE
-
-* galapix-thumbgen
-   -m, --minsize X      Generate tiles till this size
-   -d, --database FILE  
-
-* galapix-db [info|list|merge|cleanup|delete]
-   -d, --database FILE
-
-  galapix-db merge -d outdatabase.sqlite indatabase1.sqlite indatabase2.sqlite ...
-  galapix-db cleanup
-  galapix-db delete -d database1.sqlite [PATTERN]...
-
 _______________________________________________________________________________
 
 * maybe limit the scrolling area, so that one can't scroll completly

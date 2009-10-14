@@ -68,27 +68,27 @@ Required Libraries and Tools:
 
 On Ubuntu 9.04 one can install all required libraries with this call:
 
-sudo apt-get install \
-  libsqlite3-dev \
-  libglew1.5-dev \
-  libjpeg62-dev \
-  libpng12-dev \
-  scons \
-  libmagick++-dev \
-  libcurl4-gnutls-dev \
-  libglademm-2.4-dev \
-  libgtkglextmm-x11-1.2-dev \
-  libboost-thread-dev \
-  libspnav-dev
+  sudo apt-get install \
+    libsqlite3-dev \
+    libglew1.5-dev \
+    libjpeg62-dev \
+    libpng12-dev \
+    scons \
+    libmagick++-dev \
+    libcurl4-gnutls-dev \
+    libglademm-2.4-dev \
+    libgtkglextmm-x11-1.2-dev \
+    libboost-thread-dev \
+    libspnav-dev
 
 The following packages are optional and used to handle some more
 exotic image formats:
 
-sudo apt-get install \
-  librsvg2-bin \
-  ufraw \
-  krita \
-  xcftools
+  sudo apt-get install \
+    librsvg2-bin \
+    ufraw \
+    krita \
+    xcftools
 
 OpenGL is required as well, but not listed here, since installation
 might differ depending on the brand of graphics card. For other
@@ -101,23 +101,23 @@ Compilation:
 
 The easiest way to compile is to type:
 
- scons
+  scons
 
 The rest should happen automatically.
 
 If you want to customize compiler options or other stuff you can do that
 by running:
   
- scons configure [VARS]...
+  scons configure [VARS]...
 
 To get a list of available variables use:
 
- scons -h
+  scons -h
 
 If the configure stage gives you problems even so you think have
 everything installed try:
 
- scons configure ignore_errors="True"
+  scons configure ignore_errors="True"
 
 A look at "config.log" might also prove useful in tracking the problem
 done more.
@@ -126,25 +126,28 @@ done more.
 Running:
 ========
 
-galapix comes with a number of sub commands, allowing the user to either
+Galapix comes in two versions, one is galapix.sdl, a GUI-less SDL
+based version and galapix.gtk a GUI version. The Gtk version is at
+this point very incomplete and hasn't been tested much, but it might
+be easier to use then figuring out the keybinding used by the SDL
+version.
+
+Galapix comes with a number of sub commands, allowing the user to either
 view images or pre-generate thumbnails. The most basic command is:
 
- ./galapix view [FILES]...
+  build/galapix.gtk view [FILES]...
 
-Which display the given files. To pregenerate only the small
+Which displays the given files. To pregenerate only the small
 thumbnails you use:
 
- ./galapix thumbgen [FILES]...
+  build/galapix.gtk thumbgen [FILES]...
 
 To generate not only the small thumbnails, but all tiles you use:
 
- ./galapix prepare [FILES]...
+  build/galapix.gtk prepare [FILES]...
 
 The other available commands are mostly for debugging and have little
 actualy use.
-
-When you do not supply a list of files galapix will display all files in
-the database.
 
 Via the -d flag you can specifiy a database, so that you can have
 different databases for different files. If you give an empty string
@@ -192,7 +195,7 @@ SpaceNavigator Support:
 
 galapix supports the Space Navigator via the Open Source spacenavd daemon:
 
- * http://spacenav.sourceforge.net
+  * http://spacenav.sourceforge.net
 
 The 3Dconnexion's official 3dxsrv daemon is not supported, neither is
 directly reading from /dev/input/eventX.
@@ -201,13 +204,13 @@ directly reading from /dev/input/eventX.
 Issues:
 =======
 
-* Galapix is very picky about I/O, so if you have updatedb running in
-  the background or other indexing software, it can get very slow.
+  * Galapix is very picky about I/O, so if you have updatedb running in
+    the background or other indexing software, it can get very slow.
 
-* Incremental loading is not fully optimized, so you see more
-  artifacts then you should.
+  * Incremental loading is not fully optimized, so you see more
+    artifacts then you should.
 
-* Running multiple instances of galapix at once can lead to:
+  * Running multiple instances of galapix at once can lead to:
 
 terminate called after throwing an instance of 'SQLiteError'
   what():  SQLiteStatement::~SQLiteStatement: column filename is not unique
