@@ -24,11 +24,13 @@
 
 #include "galapix/image.hpp"
 #include "galapix/selection.hpp"
+#include "galapix/layouter.hpp"
 #include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
 #include "util/url.hpp"
 
 class Rectf;
+class Layouter;
 
 class ImageRequest
 {
@@ -40,8 +42,8 @@ public:
 public:
   ImageRequest(const URL&      url_,
                const Vector2f& pos_,
-               float           scale_)
-    : url(url_), pos(pos_), scale(scale_)
+               float           scale_) :
+    url(url_), pos(pos_), scale(scale_)
   {}
 };
 
@@ -54,16 +56,12 @@ private:
 private:
   /** Simple QuadTree to have a quicker way to figure out which images
       are visible */
-  boost::scoped_ptr<QuadTree<ImageHandle> > quad_tree;
+  boost::scoped_ptr<QuadTree<ImageHandle> > m_quad_tree;
+  boost::scoped_ptr<Layouter> m_layouter;
   
   Images        images;
   ImageRequests image_requests;
   Selection     selection;
-
-  // Layout hints
-  // FIXME: ugly
-  Vector2f  next_pos;
-  int       row_width;
 
   /** Progress of the animation when relayouting, must be set to 0 to
       start animation */
@@ -84,6 +82,7 @@ public:
   void sort();
   void random_shuffle();
 
+  void layout_spiral();
   void layout_tight(float aspect_w, float aspect_h);
   void layout_aspect(float aspect_w, float aspect_h);
   void layout_vertical();

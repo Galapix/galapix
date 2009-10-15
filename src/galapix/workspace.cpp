@@ -21,6 +21,7 @@
 #include "database/file_entry.hpp"
 #include "galapix/database_thread.hpp"
 #include "util/file_reader.hpp"
+#include "galapix/spiral_layouter.hpp"
 
 struct ImageSorter
 {
@@ -34,8 +35,8 @@ struct ImageRequestFinder
 {
   std::string str;
 
-  ImageRequestFinder(const std::string& str_)
-    : str(str_)
+  ImageRequestFinder(const std::string& str_) :
+    str(str_)
   {}
 
   bool operator()(const ImageRequest& lhs) const {
@@ -44,12 +45,11 @@ struct ImageRequestFinder
 };
 
 Workspace::Workspace() :
-  quad_tree(),
+  m_quad_tree(),
+  m_layouter(new SpiralLayouter()),
   images(),
   image_requests(),
   selection(),
-  next_pos(0, 0),
-  row_width(20),
   progress(0.0f),
   file_queue(),
   m_images_on_screen()
@@ -77,7 +77,7 @@ Workspace::get_image(const Vector2f& pos) const
   {
     if ((*i)->overlaps(pos))
       return *i;
-  }  
+  }
   return ImageHandle();
 }
 
@@ -100,6 +100,8 @@ Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float sca
 void
 Workspace::add_image(const FileEntry& file_entry)
 {
+  //std::cout << "Workspace::add_image(const FileEntry& file_entry)" << std::endl;
+
   if (file_entry.get_width()  == 0 ||
       file_entry.get_height() == 0)
   {
@@ -122,20 +124,7 @@ Workspace::add_image(const FileEntry& file_entry)
       }
     }
 
-    {
-      image->set_scale(Math::min(1000.0f / static_cast<float>(file_entry.get_width()),
-                                 1000.0f / static_cast<float>(file_entry.get_height())));
-
-      image->set_pos(next_pos * 1024.0f);
-
-      // FIXME: Ugly, instead we should relayout once a second or so
-      next_pos.x += 1;
-      if (next_pos.x >= row_width)
-      {
-        next_pos.x  = 0;
-        next_pos.y += 1;
-      }
-    }
+    m_layouter->layout(*image, false);
   }
 }
 
@@ -158,7 +147,7 @@ void
 Workspace::layout_vertical()
 {
   float spacing = 10.0f;
-  next_pos = Vector2f(0.0f, 0.0f);
+  Vector2f next_pos(0.0f, 0.0f);
   for(Images::iterator i = images.begin(); i != images.end(); ++i)
   {
     (*i)->set_target_scale(1.0f);
@@ -176,8 +165,6 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
   {
     int w = int(Math::sqrt(aspect_w * static_cast<float>(images.size()) / aspect_h));
       
-    row_width = w;
-
     for(int i = 0; i < int(images.size()); ++i)
     {
       float target_scale = Math::min(1000.0f / static_cast<float>(images[i]->get_original_width()),
@@ -195,9 +182,20 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
         images[i]->set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
                                            static_cast<float>(i / w)         * 1024.0f));
       }
-
-      next_pos = Vector2i(i % w, i / w);
     }
+  }
+
+  start_animation();
+}
+
+void
+Workspace::layout_spiral()
+{
+  m_layouter->reset();
+  
+  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  {
+    m_layouter->layout(**i, true);
   }
 
   start_animation();
@@ -300,11 +298,11 @@ Workspace::build_quad_tree()
 
     //std::cout << "QuadTree: " << rect << std::endl;
 
-    quad_tree.reset(new QuadTree<ImageHandle>(rect));
+    m_quad_tree.reset(new QuadTree<ImageHandle>(rect));
       
     for(Images::iterator i = images.begin(); i != images.end(); ++i)
     {
-      quad_tree->add((*i)->get_image_rect(), *i);
+      m_quad_tree->add((*i)->get_image_rect(), *i);
     }
   }
 }
@@ -312,16 +310,16 @@ Workspace::build_quad_tree()
 void
 Workspace::clear_quad_tree()
 {
-  quad_tree.reset();
+  m_quad_tree.reset();
 }
 
 void
 Workspace::draw(const Rectf& cliprect, float zoom)
 {
-  if (quad_tree.get())
+  if (m_quad_tree.get())
   {
     std::set<ImageHandle> new_images_on_screen;
-    const Images& current_images = quad_tree->get_items_at(cliprect);
+    const Images& current_images = m_quad_tree->get_items_at(cliprect);
     for(Images::const_iterator i = current_images.begin(); i != current_images.end(); ++i)
     {
       if ((*i)->draw(cliprect, zoom))
@@ -446,12 +444,6 @@ Workspace::print_images(const Rectf& rect)
     }
   }
   std::cout << "--------------------------------------------------------" << std::endl;
-}
-
-void
-Workspace::set_row_width(int w)
-{
-  row_width = w;
 }
 
 void

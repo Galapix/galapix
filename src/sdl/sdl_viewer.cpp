@@ -310,6 +310,10 @@ SDLViewer::process_event(const SDL_Event& event)
           viewer->layout_solve_overlaps();
           break;
 
+        case SDLK_5:
+          viewer->layout_spiral();
+          break;
+
         case SDLK_6:
           viewer->layout_vertical();
           break;

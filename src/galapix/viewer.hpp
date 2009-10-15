@@ -143,6 +143,7 @@ public:
   void layout_random();
   void layout_solve_overlaps();
   void layout_tight();
+  void layout_spiral();
   void layout_vertical();
 
   void delete_selection();

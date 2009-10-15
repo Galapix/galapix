@@ -444,6 +444,12 @@ Viewer::layout_solve_overlaps()
 }
 
 void
+Viewer::layout_spiral()
+{
+  workspace->layout_spiral();
+}
+
+void
 Viewer::layout_tight()
 {
   workspace->layout_tight(static_cast<float>(Framebuffer::get_width()),

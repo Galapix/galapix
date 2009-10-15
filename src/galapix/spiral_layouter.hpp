@@ -1,0 +1,55 @@
+/*
+**  Galapix - an image viewer for large image collections
+**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**
+**  This program is free software: you can redistribute it and/or modify
+**  it under the terms of the GNU General Public License as published by
+**  the Free Software Foundation, either version 3 of the License, or
+**  (at your option) any later version.
+**
+**  This program is distributed in the hope that it will be useful,
+**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**  GNU General Public License for more details.
+**
+**  You should have received a copy of the GNU General Public License
+**  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#ifndef HEADER_GALAPIX_GALAPIX_SPIRAL_LAYOUTER_HPP
+#define HEADER_GALAPIX_GALAPIX_SPIRAL_LAYOUTER_HPP
+
+#include "galapix/layouter.hpp"
+
+#include "math/vector2i.hpp"
+
+class Image;
+
+class SpiralLayouter : public Layouter
+{
+private:
+  Vector2i m_pos;
+  int m_ring;
+  enum {
+    kRight,
+    kDown,
+    kLeft,
+    kUp
+  } m_direction;
+  
+public:
+  SpiralLayouter();
+
+  void reset();
+  void layout(Image& image, bool animated);
+  void advance();
+    
+private:
+  SpiralLayouter(const SpiralLayouter&);
+  SpiralLayouter& operator=(const SpiralLayouter&);
+};
+
+#endif
+
+/* EOF */
+
