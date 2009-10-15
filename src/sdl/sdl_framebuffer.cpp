@@ -89,7 +89,7 @@ SDLFramebuffer::toggle_fullscreen()
   {
     flags = SDL_OPENGL | SDL_RESIZABLE;
     res = window_resolution;
-    std::cout << "Switching to fullscreen " 
+    std::cout << "Switching to window mode " 
               << res.width << "x" << res.height << std::endl;
   }
   else
@@ -98,7 +98,7 @@ SDLFramebuffer::toggle_fullscreen()
 
     flags = SDL_OPENGL | SDL_FULLSCREEN;
     res = desktop_resolution;
-    std::cout << "Switching to desktop " 
+    std::cout << "Switching to fullscreen mode " 
               << res.width << "x" << res.height << std::endl;
   }
  
