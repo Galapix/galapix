@@ -19,6 +19,7 @@
 #include "util/url.hpp"
 
 #include <stdexcept>
+#include <ostream>
 #include "plugins/rar.hpp"
 #include "plugins/zip.hpp"
 #include "plugins/tar.hpp"
@@ -192,7 +193,7 @@ URL::is_url(const std::string& url)
 
 std::ostream& operator<<(std::ostream& out, const URL& url)
 {
-  return out << url.str();
+  return out << "URL(\"" << url.str() << "\")";
 }
 
 bool operator<(const URL& lhs, const URL& rhs)
