@@ -57,22 +57,18 @@ Galapix 0.2.0 Release ToDo:
   galapix-db merge -d outdatabase.sqlite indatabase1.sqlite indatabase2.sqlite ...
   galapix-db cleanup
   galapix-db delete -d database1.sqlite [PATTERN]...
-
 
 Galapix 0.1.0 Release ToDo:
 ===========================
-
-* (!) filegen and friends must use DatabaseThread, as Database no longer
-  generates things by itself
 
 * (!) moving images around with the move tool doesn't update the QuadTree
 
 * (!) loading does not insert directly into the QuadTree
 
-* (!) mouse buttons can get stuck when you press them both at once
-
 * (!) viewdb -p PATTERN doesn't work as expected, as the viewer isn't updated in
   SDLViewer::run(), pressing '1' works as a workaround
+
+* (!) mouse buttons can get stuck when you press them both at once
 
 * ZoomTool doesn't know about trackball_mode and thus zooms not into
   the center of the picture, but to the mouse cursor
@@ -87,6 +83,10 @@ Galapix 0.1.0 Release ToDo:
 
 General Problems:
 =================
+
+* add QuadTree rebuild
+
+* separate animation from Image, maybe even position
 
 * cleanup exceptions:
 

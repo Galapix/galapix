@@ -155,8 +155,8 @@ different databases for different files. If you give an empty string
 memory only.
 
 
-Keyboard Commands:
-===================
+Keyboard Commands for Galapix SDL:
+==================================
 
 Key       | Function
 ----------+------------------------------
