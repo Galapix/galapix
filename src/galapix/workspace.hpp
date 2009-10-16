@@ -50,7 +50,7 @@ public:
 class Workspace
 {
 private:
-  typedef std::vector<ImageHandle> Images;
+  typedef std::vector<ImageHandle>  Images;
   typedef std::vector<ImageRequest> ImageRequests;
 
 private:
@@ -59,15 +59,15 @@ private:
   boost::scoped_ptr<QuadTree<ImageHandle> > m_quad_tree;
   boost::scoped_ptr<Layouter> m_layouter;
   
-  Images        images;
-  ImageRequests image_requests;
-  Selection     selection;
+  Images        m_images;
+  ImageRequests m_image_requests;
+  Selection     m_selection;
 
   /** Progress of the animation when relayouting, must be set to 0 to
       start animation */
-  float     progress;
+  float     m_progress;
 
-  ThreadMessageQueue<FileEntry>   file_queue;
+  ThreadMessageQueue<FileEntry> m_file_queue;
   std::set<ImageHandle> m_images_on_screen;
 
 public:
@@ -103,7 +103,7 @@ public:
   void add_image(const URL& url, const Vector2f& pos, float scale);
 
   // Selection Commands
-  Selection get_selection() const { return selection; }
+  Selection get_selection() const { return m_selection; }
   bool selection_clicked(const Vector2f& pos) const;
   void select_images(const std::vector<ImageHandle>& images);
   void clear_selection();

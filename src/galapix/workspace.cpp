@@ -47,11 +47,11 @@ struct ImageRequestFinder
 Workspace::Workspace() :
   m_quad_tree(),
   m_layouter(new SpiralLayouter()),
-  images(),
-  image_requests(),
-  selection(),
-  progress(0.0f),
-  file_queue(),
+  m_images(),
+  m_image_requests(),
+  m_selection(),
+  m_progress(0.0f),
+  m_file_queue(),
   m_images_on_screen()
 {
 }
@@ -60,7 +60,7 @@ std::vector<ImageHandle>
 Workspace::get_images(const Rectf& rect) const
 {
   std::vector<ImageHandle> result;
-  for(Images::const_iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if (rect.contains((*i)->get_image_rect()))
     {
@@ -73,7 +73,7 @@ Workspace::get_images(const Rectf& rect) const
 ImageHandle
 Workspace::get_image(const Vector2f& pos) const
 {
-  for(Images::const_reverse_iterator i = images.rbegin(); i != images.rend(); ++i)
+  for(Images::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
   {
     if ((*i)->overlaps(pos))
       return *i;
@@ -85,14 +85,14 @@ void
 Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 {
   DatabaseThread::current()->request_file(url, boost::bind(&Workspace::receive_file, this, _1));
-  image_requests.push_back(ImageRequest(url, pos, scale));
+  m_image_requests.push_back(ImageRequest(url, pos, scale));
 }
 
 void
 Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float scale)
 {
   ImageHandle image = Image::create(file_entry);
-  images.push_back(image);
+  m_images.push_back(image);
   image->set_scale(scale);
   image->set_pos(pos);
 }
@@ -110,13 +110,13 @@ Workspace::add_image(const FileEntry& file_entry)
   else
   {
     ImageHandle image = Image::create(file_entry);
-    images.push_back(image);
+    m_images.push_back(image);
 
-    if (!image_requests.empty())
+    if (!m_image_requests.empty())
     {
-      ImageRequests::iterator i = std::find_if(image_requests.begin(), image_requests.end(), 
+      ImageRequests::iterator i = std::find_if(m_image_requests.begin(), m_image_requests.end(), 
                                                ImageRequestFinder(file_entry.get_url().str()));
-      if (i != image_requests.end())
+      if (i != m_image_requests.end())
       {
         image->set_pos(i->pos);
         image->set_scale(i->scale);
@@ -132,7 +132,7 @@ void
 Workspace::start_animation()
 {
   //std::cout << "Start Animation" << std::endl;
-  progress = 0.0f;  
+  m_progress = 0.0f;  
   clear_quad_tree(); 
 }
 
@@ -148,7 +148,7 @@ Workspace::layout_vertical()
 {
   float spacing = 10.0f;
   Vector2f next_pos(0.0f, 0.0f);
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->set_target_scale(1.0f);
     (*i)->set_target_pos(next_pos);
@@ -161,26 +161,26 @@ Workspace::layout_vertical()
 void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
-  if (!images.empty())
+  if (!m_images.empty())
   {
-    int w = int(Math::sqrt(aspect_w * static_cast<float>(images.size()) / aspect_h));
+    int w = int(Math::sqrt(aspect_w * static_cast<float>(m_images.size()) / aspect_h));
       
-    for(int i = 0; i < int(images.size()); ++i)
+    for(int i = 0; i < int(m_images.size()); ++i)
     {
-      float target_scale = Math::min(1000.0f / static_cast<float>(images[i]->get_original_width()),
-                                     1000.0f / static_cast<float>(images[i]->get_original_height()));
+      float target_scale = Math::min(1000.0f / static_cast<float>(m_images[i]->get_original_width()),
+                                     1000.0f / static_cast<float>(m_images[i]->get_original_height()));
 
-      images[i]->set_target_scale(target_scale);
+      m_images[i]->set_target_scale(target_scale);
 
       if ((i/w) % 2 == 0)
       {
-        images[i]->set_target_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
-                                           static_cast<float>(i / w) * 1024.0f));
+        m_images[i]->set_target_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
+                                             static_cast<float>(i / w) * 1024.0f));
       }
       else
       {
-        images[i]->set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
-                                           static_cast<float>(i / w)         * 1024.0f));
+        m_images[i]->set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
+                                             static_cast<float>(i / w)         * 1024.0f));
       }
     }
   }
@@ -193,7 +193,7 @@ Workspace::layout_spiral()
 {
   m_layouter->reset();
   
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     m_layouter->layout(**i, true);
   }
@@ -208,7 +208,7 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
 
   float width = 0;  
   // calculate the total width 
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     const float scale = (1000.0f + spacing) / static_cast<float>((*i)->get_original_height());
     width += static_cast<float>((*i)->get_original_width()) * scale;
@@ -220,7 +220,7 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
   
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     ImageHandle& image = *i;
 
@@ -280,8 +280,8 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
 void
 Workspace::layout_random()
 {
-  int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  int width = static_cast<int>(Math::sqrt(float(m_images.size())) * 1500.0f);
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->set_target_pos(Vector2f(static_cast<float>(rand()%width), static_cast<float>(rand()%width)));
     (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
@@ -292,7 +292,7 @@ Workspace::layout_random()
 void
 Workspace::build_quad_tree()
 {
-  if (!images.empty())
+  if (!m_images.empty())
   {
     Rectf rect = get_bounding_rect();
 
@@ -300,7 +300,7 @@ Workspace::build_quad_tree()
 
     m_quad_tree.reset(new QuadTree<ImageHandle>(rect));
       
-    for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
       m_quad_tree->add((*i)->get_image_rect(), *i);
     }
@@ -340,13 +340,13 @@ Workspace::draw(const Rectf& cliprect, float zoom)
   }
   else
   {
-    for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
       (*i)->draw(cliprect, zoom);
     }
   }
 
-  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+  for(Selection::iterator i = m_selection.begin(); i != m_selection.end(); ++i)
   {
     (*i)->draw_mark();
   }
@@ -355,28 +355,28 @@ Workspace::draw(const Rectf& cliprect, float zoom)
 void
 Workspace::update(float delta)
 {
-  while (!file_queue.empty())
+  while (!m_file_queue.empty())
   {
-    const FileEntry& entry = file_queue.front();
+    const FileEntry& entry = m_file_queue.front();
     add_image(entry);
-    file_queue.pop();
+    m_file_queue.pop();
   }
 
-  if (progress != 1.0f)
+  if (m_progress != 1.0f)
   {
-    progress += delta * 2.0f;
+    m_progress += delta * 2.0f;
 
-    if (progress > 1.0f)
+    if (m_progress > 1.0f)
     {
-      progress = 1.0f;
+      m_progress = 1.0f;
     }
 
-    for(Images::iterator i = images.begin(); i != images.end(); ++i)
+    for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
-      (*i)->update_pos(progress);
+      (*i)->update_pos(m_progress);
     }
 
-    if (progress == 1.0f)
+    if (m_progress == 1.0f)
     {
       animation_finished();
     }
@@ -386,19 +386,19 @@ Workspace::update(float delta)
 void
 Workspace::sort()
 {
-  std::sort(images.begin(), images.end(), ImageSorter());
+  std::sort(m_images.begin(), m_images.end(), ImageSorter());
 }
 
 void
 Workspace::random_shuffle()
 {
-  std::random_shuffle(images.begin(), images.end());
+  std::random_shuffle(m_images.begin(), m_images.end());
 }
 
 void
 Workspace::clear_cache()
 {
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->clear_cache();
   }  
@@ -407,7 +407,7 @@ Workspace::clear_cache()
 void
 Workspace::cache_cleanup()
 {
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->cache_cleanup();
   }   
@@ -418,7 +418,7 @@ Workspace::print_info(const Rectf& rect)
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if ((*i)->overlaps(rect))
     {
@@ -426,7 +426,7 @@ Workspace::print_info(const Rectf& rect)
       std::cout << std::endl;
     }
   }
-  std::cout << "  Number of Images: " << images.size() << std::endl;
+  std::cout << "  Number of Images: " << m_images.size() << std::endl;
   std::cout << "-------------------------------------------------------" << std::endl;
 }
 
@@ -434,7 +434,7 @@ void
 Workspace::print_images(const Rectf& rect)
 {
   std::cout << "-- Visible images --------------------------------------" << std::endl;
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if ((*i)->overlaps(rect))
     {
@@ -449,14 +449,14 @@ Workspace::print_images(const Rectf& rect)
 void
 Workspace::select_images(const std::vector<ImageHandle>& lst)
 {
-  selection.clear();
-  selection.add_images(lst);
+  m_selection.clear();
+  m_selection.add_images(lst);
 }
 
 bool
 Workspace::selection_clicked(const Vector2f& pos) const
 {
-  for(Selection::const_iterator i = selection.begin(); i != selection.end(); ++i)
+  for(Selection::const_iterator i = m_selection.begin(); i != m_selection.end(); ++i)
   {
     if ((*i)->overlaps(pos))
       return true;
@@ -467,21 +467,21 @@ Workspace::selection_clicked(const Vector2f& pos) const
 void
 Workspace::clear_selection()
 {
-  selection.clear();
+  m_selection.clear();
 }
 
 void
 Workspace::clear()
 {
   clear_quad_tree();
-  selection.clear();
-  images.clear();
+  m_selection.clear();
+  m_images.clear();
 }
 
 void
 Workspace::move_selection(const Vector2f& rel)
 {
-  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+  for(Selection::iterator i = m_selection.begin(); i != m_selection.end(); ++i)
   {
     (*i)->set_pos((*i)->get_pos() + rel);
   }
@@ -490,8 +490,8 @@ Workspace::move_selection(const Vector2f& rel)
 void
 Workspace::isolate_selection()
 {
-  images = selection.get_images();
-  selection.clear();
+  m_images = m_selection.get_images();
+  m_selection.clear();
 }
 
 struct ImagesMemberOf
@@ -516,9 +516,9 @@ struct ImagesMemberOf
 void
 Workspace::delete_selection()
 {
-  images.erase(std::remove_if(images.begin(), images.end(), ImagesMemberOf(selection)),
-               images.end());
-  selection.clear();
+  m_images.erase(std::remove_if(m_images.begin(), m_images.end(), ImagesMemberOf(m_selection)),
+                 m_images.end());
+  m_selection.clear();
 }
 
 void
@@ -532,9 +532,9 @@ Workspace::solve_overlaps()
   {
     num_overlappings = 0;
     // Use QuadTree to make this fast
-    for(std::vector<ImageHandle>::iterator i = images.begin(); i != images.end(); ++i)
+    for(std::vector<ImageHandle>::iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
-      for(std::vector<ImageHandle>::iterator j = i+1; j != images.end(); ++j)
+      for(std::vector<ImageHandle>::iterator j = i+1; j != m_images.end(); ++j)
       {
         Rectf irect = (*i)->get_image_rect();
         Rectf jrect = (*j)->get_image_rect();
@@ -572,7 +572,7 @@ Workspace::save(std::ostream& out)
   out << "(galapix-workspace\n"
       << "  (images\n";
   
-  for(Images::iterator i = images.begin(); i != images.end(); ++i)
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     // FIXME: Must escape the filename!
     out  << "    (image (url   \"" << (*i)->get_url() << "\")\n"
@@ -625,21 +625,21 @@ Workspace::load(const std::string& filename)
 Rectf
 Workspace::get_bounding_rect() const
 {
-  if (images.empty())
+  if (m_images.empty())
   {
     return Rectf();
   }
   else
   {
-    Rectf rect = images.front()->get_image_rect();
+    Rectf rect = m_images.front()->get_image_rect();
 
-    std::cout << images.front()->get_url() << " " << images.front()->get_pos() << " " 
-              << images.front()->get_scale() << " "
-              << images.front()->get_scaled_width() << " "
-              << images.front()->get_scaled_height()
+    std::cout << m_images.front()->get_url() << " " << m_images.front()->get_pos() << " " 
+              << m_images.front()->get_scale() << " "
+              << m_images.front()->get_scaled_width() << " "
+              << m_images.front()->get_scaled_height()
               << std::endl;
 
-    for(Images::const_iterator i = images.begin()+1; i != images.end(); ++i)
+    for(Images::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
       const Rectf& image_rect = (*i)->get_image_rect(); 
           
@@ -665,7 +665,7 @@ Workspace::get_bounding_rect() const
 bool
 Workspace::is_animated() const
 {
-  return progress != 1.0f;
+  return m_progress != 1.0f;
 }
 
 void
@@ -673,7 +673,7 @@ Workspace::receive_file(const FileEntry& entry)
 {
   if (entry)
   {
-    file_queue.push(entry);
+    m_file_queue.push(entry);
   }
   else
   {
