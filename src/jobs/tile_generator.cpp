@@ -44,7 +44,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
     std::cout << "[" << m_min_scale_in_db << ".." << m_max_scale_in_db << "]";
   }
   std::cout << " generating ["
-            << min_scale << ".." << max_scale << "]: " << (m_file_entry.has_fileid() ? m_file_entry.get_fileid() : -1)
+            << min_scale << ".." << max_scale << "]: " << m_file_entry.get_fileid()
             << ": " 
             << m_file_entry.get_url() << std::endl;
   

@@ -33,7 +33,7 @@ public:
 
   bool operator()(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
   {
-    m_stmt.bind_int64(1, file_entry.get_fileid());
+    m_stmt.bind_int64(1, file_entry.get_fileid().get_id());
     SQLiteReader reader = m_stmt.execute_query();
 
     if (reader.next())

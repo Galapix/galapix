@@ -31,13 +31,13 @@ public:
 
   bool operator()(const FileEntry& file_entry, const Vector2i& pos, int scale)
   {
-    if (!file_entry.has_fileid())
+    if (!file_entry.get_fileid())
     {
       return false;
     }
     else
     {
-      m_stmt.bind_int64(1, file_entry.get_fileid());
+      m_stmt.bind_int64(1, file_entry.get_fileid().get_id());
       m_stmt.bind_int(2, scale);
       m_stmt.bind_int(3, pos.x);
       m_stmt.bind_int(4, pos.y);

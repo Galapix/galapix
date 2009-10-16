@@ -16,14 +16,48 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/file_entry.hpp"
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ID_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ID_HPP
 
-#include <iostream>
-
-std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
+#include <stdint.h>
+#include <assert.h>
+#include <iosfwd>
+
+class FileId
 {
-  return os << entry.get_fileid() << " " << entry.get_url() 
-            << " size: "<< entry.get_width() << "x" << entry.get_height();
-}
-
+private:
+  int64_t m_id;
+
+public:
+  explicit FileId() : m_id(0) {}
+  explicit FileId(int64_t id) : m_id(id) {}
+
+  int64_t get_id() const 
+  { 
+    assert(m_id != 0);
+    return m_id; 
+  }
+
+  bool operator==(const FileId& rhs) const
+  {
+    if (m_id == 0 || rhs.m_id == 0)
+    {
+      return false;
+    }
+    else
+    {
+      return m_id == rhs.m_id; 
+    }
+  }
+
+  operator void*() const 
+  {
+    return reinterpret_cast<void*>(m_id != 0);
+  }
+};
+
+std::ostream& operator<<(std::ostream& s, const FileId& id);
+
+#endif
+
 /* EOF */

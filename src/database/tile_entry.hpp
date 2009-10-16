@@ -63,7 +63,6 @@ public:
 
   SoftwareSurfaceHandle get_surface() const { return m_surface; }
   BlobHandle get_blob()   const { return m_blob; }
-  int64_t  get_fileid() const { return m_file_entry.get_fileid(); }
   FileEntry get_file_entry() const { return m_file_entry; }
   int      get_scale()  const { return m_scale; }
   Vector2i get_pos()    const { return m_pos; }

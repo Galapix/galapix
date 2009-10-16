@@ -22,16 +22,17 @@
 #include <boost/shared_ptr.hpp>
 #include <assert.h>
 
-#include "util/url.hpp"
+#include "database/file_id.hpp"
 #include "math/math.hpp"
 #include "math/size.hpp"
+#include "util/url.hpp"
 
 class FileEntryImpl
 {
 public:
   /** Unique id by which one can refer to this FileEntry, used in the
       'tile' table in the database */
-  int64_t fileid;
+  FileId fileid;
 
   /** The URL of the image file */
   URL url;
@@ -44,8 +45,8 @@ public:
 
   int thumbnail_size;
 
-  FileEntryImpl()
-    : fileid(),
+  FileEntryImpl() :
+    fileid(),
       url(),
       image_size(),
       file_size(),
@@ -57,13 +58,13 @@ public:
 class FileEntry 
 {
 private:
-  FileEntry(int64_t fileid, 
+  FileEntry(const FileId& fileid,
             const URL& url,
             int size,
             int mtime,
             int width,
-            int height)
-    : impl(new FileEntryImpl())
+            int height) :
+    impl(new FileEntryImpl())
   {
     impl->fileid     = fileid;
     impl->url        = url;
@@ -91,10 +92,10 @@ public:
                                          int width,
                                          int height)
   {
-    return FileEntry(0, url, size, mtime, width, height);
+    return FileEntry(FileId(), url, size, mtime, width, height);
   }
 
-  static FileEntry create(int64_t fileid, 
+  static FileEntry create(const FileId& fileid, 
                           const URL& url,
                           int size,
                           int mtime,
@@ -104,9 +105,8 @@ public:
     return FileEntry(fileid, url, size, mtime, width, height);
   }
 
-  bool        has_fileid() const { return impl->fileid != 0; }
-  void        set_fileid(int64_t fileid) { impl->fileid = fileid; }
-  int64_t     get_fileid()     const { assert(has_fileid()); return impl->fileid; }
+  void        set_fileid(const FileId& fileid) { impl->fileid = fileid; }
+  FileId      get_fileid()     const { return impl->fileid; }
   URL         get_url()        const { return impl->url; }
   int         get_width()      const { return impl->image_size.width; }
   int         get_height()     const { return impl->image_size.height; }
@@ -120,7 +120,7 @@ public:
   operator bool() const { return impl.get(); }
   bool operator==(const FileEntry& rhs) const
   {
-    if (has_fileid() && rhs.has_fileid())
+    if (impl->fileid && rhs.impl->fileid)
     {
       return get_fileid() == rhs.get_fileid();
     }

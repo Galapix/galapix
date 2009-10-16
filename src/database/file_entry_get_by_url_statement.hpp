@@ -36,7 +36,7 @@ public:
 
     if (reader.next())
     {
-      return FileEntry::create(reader.get_int (0),  // fileid
+      return FileEntry::create(FileId(reader.get_int(0)),  // fileid
                                URL::from_string(reader.get_text(1)),  // url
                                reader.get_int(2),   // file size
                                reader.get_int(3),   // mtime

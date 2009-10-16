@@ -37,9 +37,9 @@ public:
 
   void operator()(const FileEntry& file_entry, std::vector<TileEntry>& tiles)
   {
-    if (file_entry.has_fileid())
+    if (file_entry.get_fileid())
     {
-      m_stmt.bind_int64(1, file_entry.get_fileid());
+      m_stmt.bind_int64(1, file_entry.get_fileid().get_id());
 
       SQLiteReader reader = m_stmt.execute_query();
       while(reader.next())

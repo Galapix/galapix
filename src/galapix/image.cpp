@@ -194,7 +194,7 @@ Image::refresh(bool force)
 void
 Image::print_info() const
 {
-  std::cout << "  Image: " << this << std::endl;
+  std::cout << "  Image: " << this << " " << m_file_entry << std::endl;
   //std::cout << "    Cache Size: " << m_cache.size() << std::endl;
   //std::cout << "    Job Size:   " << m_jobs.size() << std::endl;
 }

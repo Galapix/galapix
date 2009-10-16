@@ -226,7 +226,7 @@ public:
   {
     if (0)
       std::cout << "Received Tile: "
-                << tile.get_fileid() << " pos: " 
+                << tile.get_file_entry().get_fileid() << " pos: " 
                 << tile.get_pos()    << " scale: " 
                 << tile.get_scale()  << std::endl;
 
@@ -247,9 +247,9 @@ public:
 class DeleteFileEntryDatabaseMessage : public DatabaseMessage
 {
 public:
-  int64_t fileid;
+  FileId fileid;
 
-  DeleteFileEntryDatabaseMessage(int64_t fileid_)
+  DeleteFileEntryDatabaseMessage(const FileId& fileid_)
     : fileid(fileid_)
   {}
 
@@ -260,11 +260,11 @@ public:
       .execute();
     SQLiteStatement(db.get_db())
       .prepare("DELETE FROM files WHERE fileid = ?1;")
-      .bind_int64(1, fileid)
+      .bind_int64(1, fileid.get_id())
       .execute();
     SQLiteStatement(db.get_db())
       .prepare("DELETE FROM tiles WHERE fileid = ?1;")
-      .bind_int64(1, fileid)
+      .bind_int64(1, fileid.get_id())
       .execute();
     SQLiteStatement(db.get_db())
       .prepare("END;")

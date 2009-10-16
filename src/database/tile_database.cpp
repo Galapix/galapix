@@ -59,7 +59,7 @@ TileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int sca
 void
 TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles_out)
 {
-  if (file_entry.has_fileid())
+  if (file_entry.get_fileid())
   {
     m_tile_entry_get_all_by_file_entry(file_entry, tiles_out);
   }
@@ -70,7 +70,7 @@ TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& til
 bool
 TileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
 {
-  if (file_entry.has_fileid())
+  if (file_entry.get_fileid())
   {
     if (m_tile_entry_get_min_max_scale(file_entry, min_scale_out, max_scale_out))
     {
@@ -99,7 +99,7 @@ TileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out,
 bool
 TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
-  if (!file_entry.has_fileid())
+  if (!file_entry.get_fileid())
   {
     return m_cache.get_tile(file_entry, scale, pos, tile_out);
   }

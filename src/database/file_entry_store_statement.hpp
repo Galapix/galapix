@@ -35,7 +35,7 @@ public:
 
   void operator()(FileEntry file_entry)
   {
-    if (file_entry.has_fileid())
+    if (file_entry.get_fileid())
     {
       std::cout << "FileEntryStoreStatement: Warning file_entry already has fileid: " << file_entry.get_fileid() << std::endl;
     }
@@ -48,7 +48,7 @@ public:
 
     m_stmt.execute();
   
-    file_entry.set_fileid(sqlite3_last_insert_rowid(m_db.get_db()));
+    file_entry.set_fileid(FileId(sqlite3_last_insert_rowid(m_db.get_db())));
   }
 
 private:

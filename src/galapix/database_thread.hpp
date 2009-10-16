@@ -111,7 +111,7 @@ public:
   void      receive_tiles(const std::vector<TileEntry>& tiles);
 
   /** Delete the given FileEntry along with all TileEntry refering to it */
-  void      delete_file_entry(int64_t fileid);
+  void      delete_file_entry(const FileId& fileid);
   /* @} */
 
 private:

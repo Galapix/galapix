@@ -16,14 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/file_entry.hpp"
+#include "database/file_id.hpp"
 
-#include <iostream>
-
-std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
+#include <ostream>
+
+std::ostream& operator<<(std::ostream& s, const FileId& id)
 {
-  return os << entry.get_fileid() << " " << entry.get_url() 
-            << " size: "<< entry.get_width() << "x" << entry.get_height();
+  if (id)
+  {
+    return s << "FileId(" << id.get_id() << ")";
+  }
+  else
+  {
+    return s << "FileId(none)";
+  }
 }
-
+
 /* EOF */

@@ -100,7 +100,7 @@ DatabaseThread::receive_tile(const TileEntry& tile)
 }
 
 void
-DatabaseThread::delete_file_entry(int64_t fileid)
+DatabaseThread::delete_file_entry(const FileId& fileid)
 {
   m_queue.push(new DeleteFileEntryDatabaseMessage(fileid));
 }

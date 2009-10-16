@@ -37,7 +37,7 @@ public:
     while (reader.next())  
     {
       // FIXME: Use macro definitions instead of numeric constants
-      FileEntry entry = FileEntry::create(reader.get_int(0),  // fileid
+      FileEntry entry = FileEntry::create(FileId(reader.get_int(0)),  // fileid
                                           URL::from_string(reader.get_text(1)),  // url
                                           reader.get_int(2),
                                           reader.get_int(3),
