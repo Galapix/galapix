@@ -171,7 +171,7 @@ TileGenerationJob::run()
     }
     else
     {
-      m_max_scale = m_min_scale_in_db != -1 ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
+      m_max_scale = (m_min_scale_in_db != -1) ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
       m_min_scale = m_max_scale;
     
       for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
@@ -180,12 +180,17 @@ TileGenerationJob::run()
       }
     }
 
+    // catch weird database inconsisntencies
     if (m_min_scale == -1 || m_max_scale == -1)
     {
+      std::cout << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
       for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
       {
-        std::cout << "TileRequest: scale=" << i->scale << std::endl;
+        std::cout << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
       }
+
+      m_min_scale = 0;
+      m_max_scale = m_file_entry.get_thumbnail_scale();
     }
   }
 
