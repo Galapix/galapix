@@ -1,9 +1,12 @@
-Galapix 0.1.0 (??. Oct 2009)
+Galapix 0.1.0 (17. Oct 2009)
 ============================
 
+* database layout has changed
 * switched to boost::thread
-* a Gtk based GUI
-* images are placed in a QuadTree to speed up large image collections
+* added an incomplete Gtk based GUI
+* added OpenGL anti-aliasing (--anti-aliasing N)
+* added toggling of the background color
+* added a flexible grid overlay tool
 * support for SVG via RSVG
 * support for RAW images via UFRaw
 * support for PNG images via libpng
@@ -14,13 +17,6 @@ Galapix 0.1.0 (??. Oct 2009)
 * support for zip archive files 
 * support for rar archive files 
 * support for http/ftp via libcurl
-* support for OpenGL anti-aliasing (--anti-aliasing N)
-* support for toggling background color
-* a flexible grid overlay
-* database format changed, for conversion do a (incomplete):
-
-  ALTER TABLE tiles add format INTEGER DEFAULT 0;
-  UPDATE files SET filename = 'file://' || filename;
 
 
 Galapix 0.0.3 (12. Sep 2008)
