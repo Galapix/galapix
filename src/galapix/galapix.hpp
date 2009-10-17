@@ -25,7 +25,7 @@
 #include "util/url.hpp"
 #include "math/size.hpp"
 
-class GalapixOptions;
+class Options;
 
 class Galapix
 {
@@ -39,27 +39,26 @@ public:
   ~Galapix();
 
   void print_usage();
-  void parse_args(int argc, char** argv, GalapixOptions& options);
-  void run(const GalapixOptions& opts);
+  void parse_args(int argc, char** argv, Options& options);
+  void run(const Options& opts);
   int  main(int argc, char** argv);
 
   void merge(const std::string& database, const std::vector<std::string>& filenames);
-  void test(const GalapixOptions& opts, const std::vector<URL>& filenames);
+  void test(const Options& opts, const std::vector<URL>& filenames);
   void info(const std::vector<URL>& filenames);
   void downscale(const std::vector<URL>& filenames);
   void cleanup(const std::string& database);
   void check(const std::string& database);
-  void list(const std::string& database, const std::string& pattern);
-  void thumbgen(const GalapixOptions& opts,
+  void list(const Options& opts);
+  void thumbgen(const Options& opts,
                 const std::vector<URL>& filenames, 
                 bool generate_all_tiles);
-  void filegen(const GalapixOptions& opts,
+  void filegen(const Options& opts,
                const std::vector<URL>& filenames);
   void export_images(const std::string& database, const std::vector<URL>& url);
-  void view(const GalapixOptions& opts,
+  void view(const Options& opts,
             const std::vector<URL>& filenames,
-            bool view_all,
-            const std::string& pattern);
+            bool view_all);
 };
 
 #endif

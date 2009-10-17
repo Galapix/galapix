@@ -28,48 +28,33 @@
 #include <string>
 #include <vector>
 
+#include "database/database.hpp"
+#include "display/framebuffer.hpp"
+#include "display/surface.hpp"
+#include "galapix/database_thread.hpp"
+#include "galapix/options.hpp"
+#include "galapix/viewer.hpp"
+#include "galapix/workspace.hpp"
+#include "job/job_handle_group.hpp"
+#include "job/job_manager.hpp"
+#include "jobs/test_job.hpp"
+#include "jobs/tile_generation_job.hpp"
+#include "math/rect.hpp"
+#include "math/size.hpp"
+#include "math/vector2i.hpp"
+#include "plugins/imagemagick.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "plugins/xcf.hpp"
-#include "plugins/imagemagick.hpp"
-#include "display/surface.hpp"
-#include "display/framebuffer.hpp"
-#include "math/size.hpp"
-#include "math/rect.hpp"
-#include "math/vector2i.hpp"
+#include "util/filesystem.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
-#include "database/database.hpp"
-#include "job/job_handle_group.hpp"
-#include "jobs/tile_generation_job.hpp"
-#include "jobs/test_job.hpp"
-#include "galapix/database_thread.hpp"
-#include "util/filesystem.hpp"
-#include "galapix/workspace.hpp"
-#include "job/job_manager.hpp"
 #ifdef GALAPIX_SDL
 #  include "sdl/sdl_viewer.hpp"
 #endif
 #ifdef GALAPIX_GTK
 #  include "gtk/gtk_viewer.hpp"
 #endif
-#include "galapix/viewer.hpp"
-
-class GalapixOptions
-{
-public:
-  std::string database;
-  std::string pattern;
-  int         threads;
-  std::vector<std::string> rest;
-
-  GalapixOptions()
-    : database(),
-      pattern(),
-      threads(),
-      rest()
-  {}
-};
 
 Galapix::Galapix()
   : fullscreen(false),
@@ -85,7 +70,7 @@ Galapix::~Galapix()
 }
 
 void
-Galapix::test(const GalapixOptions& opts,
+Galapix::test(const Options& opts,
               const std::vector<URL>& url)
 {
   std::cout << "Running test case" << std::endl;
@@ -240,15 +225,22 @@ Galapix::cleanup(const std::string& database)
 }
 
 void
-Galapix::list(const std::string& database, const std::string& pattern)
+Galapix::list(const Options& opts)
 {
-  Database db(database);
+  Database db(opts.database);
 
   std::vector<FileEntry> entries;
-  if (pattern.empty())
+  if (opts.patterns.empty())
+  {
     db.files.get_file_entries(entries);
+  }
   else
-    db.files.get_file_entries(pattern, entries);
+  {
+    for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
+    {
+      db.files.get_file_entries(*i, entries);
+    }
+  }
 
   for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
   {
@@ -265,7 +257,7 @@ Galapix::check(const std::string& database)
 }
 
 void
-Galapix::filegen(const GalapixOptions& opts,
+Galapix::filegen(const Options& opts,
                  const std::vector<URL>& url)
 {
   JobManager job_manager(opts.threads);
@@ -288,7 +280,7 @@ Galapix::filegen(const GalapixOptions& opts,
 }
 
 void
-Galapix::thumbgen(const GalapixOptions& opts,
+Galapix::thumbgen(const Options& opts,
                   const std::vector<URL>& urls, 
                   bool generate_all_tiles)
 {
@@ -338,10 +330,9 @@ Galapix::thumbgen(const GalapixOptions& opts,
 }
 
 void
-Galapix::view(const GalapixOptions& opts,
+Galapix::view(const Options& opts,
               const std::vector<URL>& urls, 
-              bool view_all, 
-              const std::string& pattern)
+              bool view_all)
 {
   JobManager     tile_job_manager(opts.threads);
   JobManager     file_entry_job_manager(opts.threads);
@@ -355,15 +346,18 @@ Galapix::view(const GalapixOptions& opts,
 
   if (view_all)
   {
-    if (pattern.empty())
+    if (opts.patterns.empty())
     {
       // When no files are given, display everything in the database
       database_thread.request_all_files(boost::bind(&Workspace::receive_file, &workspace, _1));
     }
     else 
     {
-      std::cout << "Using pattern: '" << pattern << "'" << std::endl;
-      database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), pattern);
+      for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
+      {
+        std::cout << "Using pattern: '" << *i << "'" << std::endl;
+        database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), *i);
+      }
     }
   }
 
@@ -455,7 +449,7 @@ Galapix::main(int argc, char** argv)
 
   try 
   {
-    GalapixOptions opts;
+    Options opts;
     opts.threads  = 2;
     opts.database = Filesystem::get_home() + "/.galapix/cache2.sqlite";
     parse_args(argc, argv, opts);
@@ -470,7 +464,7 @@ Galapix::main(int argc, char** argv)
 }
   
 void
-Galapix::run(const GalapixOptions& opts)
+Galapix::run(const Options& opts)
 {
   std::cout << "Using database: " << (opts.database.empty() ? "memory" : opts.database) << std::endl;
 
@@ -481,7 +475,7 @@ Galapix::run(const GalapixOptions& opts)
 #ifdef GALAPIX_SDL
     print_usage();
 #else
-    view(opts, std::vector<URL>(), false, "");
+    view(opts, std::vector<URL>(), false);
 #endif
   }
   else
@@ -502,13 +496,17 @@ Galapix::run(const GalapixOptions& opts)
     if (command == "view")
     {
       if (!urls.empty())
-        view(opts, urls, false, opts.pattern);
+      {
+        view(opts, urls, false);
+      }
       else
+      {
         std::cout << "Galapix::run: Error: No URLs given" << std::endl;
+      }
     }
     else if (command == "viewdb")
     {
-      view(opts, urls, true, opts.pattern);
+      view(opts, urls, true);
     }
     else if (command == "check")
     {
@@ -516,7 +514,7 @@ Galapix::run(const GalapixOptions& opts)
     }
     else if (command == "list")
     {
-      list(opts.database, opts.pattern);
+      list(opts);
     }
     else if (command == "cleanup")
     {
@@ -562,7 +560,7 @@ Galapix::run(const GalapixOptions& opts)
 }
 
 void
-Galapix::parse_args(int argc, char** argv, GalapixOptions& opts)
+Galapix::parse_args(int argc, char** argv, Options& opts)
 {
   // Parse arguments
   for(int i = 1; i < argc; ++i)
@@ -631,7 +629,7 @@ Galapix::parse_args(int argc, char** argv, GalapixOptions& opts)
       {
         i += 1;
         if (i < argc)
-          opts.pattern = argv[i];
+          opts.patterns.push_back(argv[i]);
         else
           throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
       }
