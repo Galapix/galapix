@@ -156,8 +156,6 @@ public:
 
   void clear_cache();
   void cleanup_cache();
-  void build_quad_tree();
-  void clear_quad_tree();
 
   void sort_image_list();
   void shuffle_image_list();

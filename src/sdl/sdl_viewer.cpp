@@ -337,10 +337,6 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_F3:
           viewer->save();
           break;
-
-        case SDLK_j:
-          viewer->clear_quad_tree();
-          break;
                 
         case SDLK_c:
           viewer->clear_cache();
@@ -349,11 +345,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_F5:
           viewer->refresh_selection();
           break;
-              
-        case SDLK_q:
-          viewer->build_quad_tree();
-          break;
-
+          
         case SDLK_t:
           viewer->toggle_trackball_mode();
           break;

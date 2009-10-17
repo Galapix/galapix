@@ -56,7 +56,6 @@ private:
 private:
   /** Simple QuadTree to have a quicker way to figure out which images
       are visible */
-  boost::scoped_ptr<QuadTree<ImageHandle> > m_quad_tree;
   boost::scoped_ptr<Layouter> m_layouter;
   
   Images        m_images;
@@ -132,9 +131,6 @@ public:
   // ---------------------------------------------
   void load(const std::string& filename);
   void save(std::ostream& out);
-
-  void build_quad_tree();
-  void clear_quad_tree();
 
   Rectf get_bounding_rect() const;
 

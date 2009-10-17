@@ -603,21 +603,6 @@ Viewer::cleanup_cache()
 }
 
 void
-Viewer::build_quad_tree()
-{
-  std::cout << "Building QuadTree... " << std::flush;
-  workspace->build_quad_tree();
-  std::cout << "done" << std::endl;
-}
-
-void
-Viewer::clear_quad_tree()
-{
-  std::cout << "Killing QuadTree" << std::endl;
-  workspace->clear_quad_tree();                
-}
-
-void
 Viewer::sort_image_list()
 {
   std::cout << "Workspace: Sorting" << std::endl;

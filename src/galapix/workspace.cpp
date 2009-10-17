@@ -45,7 +45,6 @@ struct ImageRequestFinder
 };
 
 Workspace::Workspace() :
-  m_quad_tree(),
   m_layouter(new SpiralLayouter()),
   m_images(),
   m_image_requests(),
@@ -133,14 +132,12 @@ Workspace::start_animation()
 {
   //std::cout << "Start Animation" << std::endl;
   m_progress = 0.0f;  
-  clear_quad_tree(); 
 }
 
 void
 Workspace::animation_finished()
 {
   //std::cout << "Animation Finished" << std::endl;
-  build_quad_tree();
 }
 
 void
@@ -290,60 +287,11 @@ Workspace::layout_random()
 }
 
 void
-Workspace::build_quad_tree()
-{
-  if (!m_images.empty())
-  {
-    Rectf rect = get_bounding_rect();
-
-    //std::cout << "QuadTree: " << rect << std::endl;
-
-    m_quad_tree.reset(new QuadTree<ImageHandle>(rect));
-      
-    for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
-    {
-      m_quad_tree->add((*i)->get_image_rect(), *i);
-    }
-  }
-}
-
-void
-Workspace::clear_quad_tree()
-{
-  m_quad_tree.reset();
-}
-
-void
 Workspace::draw(const Rectf& cliprect, float zoom)
 {
-  if (m_quad_tree.get())
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
-    std::set<ImageHandle> new_images_on_screen;
-    const Images& current_images = m_quad_tree->get_items_at(cliprect);
-    for(Images::const_iterator i = current_images.begin(); i != current_images.end(); ++i)
-    {
-      if ((*i)->draw(cliprect, zoom))
-      {
-        new_images_on_screen.insert(*i);
-      }
-    }
-
-    for(std::set<ImageHandle>::const_iterator i = m_images_on_screen.begin(); i != m_images_on_screen.end(); ++i)
-    {
-      if (new_images_on_screen.find(*i) == new_images_on_screen.end())
-      {
-        (*i)->cache_cleanup();
-      }
-    }
-
-    m_images_on_screen = new_images_on_screen;
-  }
-  else
-  {
-    for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
-    {
-      (*i)->draw(cliprect, zoom);
-    }
+    (*i)->draw(cliprect, zoom);
   }
 
   for(Selection::iterator i = m_selection.begin(); i != m_selection.end(); ++i)
@@ -473,7 +421,6 @@ Workspace::clear_selection()
 void
 Workspace::clear()
 {
-  clear_quad_tree();
   m_selection.clear();
   m_images.clear();
 }
@@ -561,8 +508,6 @@ Workspace::solve_overlaps()
     }
     std::cout << "NumOverlappings: " << num_overlappings << std::endl; 
   }
-
-  build_quad_tree();
 }
 
 void
