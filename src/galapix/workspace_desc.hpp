@@ -16,27 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_WORKSPACE_DESC_HPP
+#define HEADER_GALAPIX_GALAPIX_WORKSPACE_DESC_HPP
 
-class Image;
-
-class Layouter
+#include <string>
+
+class ImageDesc
 {
-private:
-  
 public:
-  Layouter() {}
-  virtual ~Layouter() {}
-
-  virtual void reset()  =0;
-  virtual void layout(Image& image, bool animated) =0;
-
-private:
-  Layouter(const Layouter&);
-  Layouter& operator=(const Layouter&);
+  std::string filename;
+  Vector2f    pos;
+  float       scale;
 };
 
+class WorkspaceDesc
+{
+public:
+  std::vector<ImageDesc> images;
+
+  void add_image(const std::string& filename);
+};
+
 #endif
 
 /* EOF */

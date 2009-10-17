@@ -25,17 +25,16 @@
 #include <string>
 
 #include "database/file_entry.hpp"
+#include "galapix/image_handle.hpp"
 #include "job/job_handle.hpp"
-#include "math/vector2f.hpp"
 #include "math/rect.hpp"
+#include "math/vector2f.hpp"
 #include "util/url.hpp"
 
 class ImageTileCache;
 class ImageRenderer;
 class Image;
 class Rectf;
-
-typedef boost::shared_ptr<Image> ImageHandle;
 
 class Image
 {

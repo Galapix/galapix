@@ -16,26 +16,14 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_IMAGE_HANDLE_HPP
+#define HEADER_GALAPIX_GALAPIX_IMAGE_HANDLE_HPP
+
+#include <boost/shared_ptr.hpp>
 
 class Image;
 
-class Layouter
-{
-private:
-  
-public:
-  Layouter() {}
-  virtual ~Layouter() {}
-
-  virtual void reset()  =0;
-  virtual void layout(Image& image, bool animated) =0;
-
-private:
-  Layouter(const Layouter&);
-  Layouter& operator=(const Layouter&);
-};
+typedef boost::shared_ptr<Image> ImageHandle;
 
 #endif
 

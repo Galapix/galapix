@@ -20,23 +20,23 @@
 #define HEADER_GALAPIX_GALAPIX_SELECTION_HPP
 
 #include "galapix/image.hpp"
+#include "galapix/image_collection.hpp"
 
 class SelectionImpl;
 
 class Selection
 {
 public:
-  typedef std::vector<ImageHandle> Images;
-  typedef std::vector<ImageHandle>::iterator iterator;
-  typedef std::vector<ImageHandle>::const_iterator const_iterator;
+  typedef ImageCollection::iterator iterator;
+  typedef ImageCollection::const_iterator const_iterator;
 
   Selection();
 
   void   add_image(const ImageHandle& image);
-  void   add_images(const std::vector<ImageHandle>& images);
+  void   add_images(const ImageCollection& images);
   void   remove_image(const ImageHandle& image);
   void   clear();
-  Images get_images() const;
+  ImageCollection get_images() const;
   bool   empty() const;
   bool   has(const ImageHandle& image) const;
 

@@ -16,25 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_TIGHT_LAYOUTER_HPP
+#define HEADER_GALAPIX_GALAPIX_TIGHT_LAYOUTER_HPP
 
-class Image;
+#include "galapix/layouter.hpp"
+#include "math/vector2f.hpp"
 
-class Layouter
+class TightLayouter : public Layouter
 {
 private:
-  
-public:
-  Layouter() {}
-  virtual ~Layouter() {}
+  Vector2f m_pos;
+  Vector2f m_last_pos;
+  bool     m_go_right;
+  float    m_width;
 
-  virtual void reset()  =0;
-  virtual void layout(Image& image, bool animated) =0;
+public:
+  TightLayouter();
+
+  void set_width(float width);
+  void reset();
+  void layout(Image& image, bool animated);
 
 private:
-  Layouter(const Layouter&);
-  Layouter& operator=(const Layouter&);
+  TightLayouter(const TightLayouter&);
+  TightLayouter& operator=(const TightLayouter&);
 };
 
 #endif

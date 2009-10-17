@@ -28,14 +28,17 @@ class Image;
 class SpiralLayouter : public Layouter
 {
 private:
-  Vector2i m_pos;
-  int m_ring;
-  enum {
+  enum Direction {
     kRight,
     kDown,
     kLeft,
     kUp
-  } m_direction;
+  };
+
+private:
+  Vector2i m_pos;
+  int m_ring;
+  Direction m_direction;
   
 public:
   SpiralLayouter();

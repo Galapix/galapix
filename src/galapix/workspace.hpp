@@ -23,8 +23,9 @@
 #include <set>
 
 #include "galapix/image.hpp"
-#include "galapix/selection.hpp"
+#include "galapix/image_collection.hpp"
 #include "galapix/layouter.hpp"
+#include "galapix/selection.hpp"
 #include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
 #include "util/url.hpp"
@@ -50,7 +51,6 @@ public:
 class Workspace
 {
 private:
-  typedef std::vector<ImageHandle>  Images;
   typedef std::vector<ImageRequest> ImageRequests;
 
 private:
@@ -58,7 +58,7 @@ private:
       are visible */
   boost::scoped_ptr<Layouter> m_layouter;
   
-  Images        m_images;
+  ImageCollection m_images;
 
   /** ImageRequests "enriches" a given image with position and scale
    * FIXME: wonky concept, should be removed */
@@ -71,7 +71,6 @@ private:
   float     m_progress;
 
   ThreadMessageQueue<FileEntry> m_file_queue;
-  std::set<ImageHandle> m_images_on_screen;
 
 public:
   Workspace();
@@ -96,7 +95,7 @@ public:
 
   // Image Query Functions (dangerous: need to now when Image position
   // changes) -> Return "const Image"? -> can't do breaks due to impl
-  std::vector<ImageHandle> get_images(const Rectf& rect) const;
+  ImageCollection get_images(const Rectf& rect) const;
   ImageHandle get_image(const Vector2f& pos) const;
 
   // ---------------------------------------------
@@ -108,7 +107,7 @@ public:
   // Selection Commands
   Selection get_selection() const { return m_selection; }
   bool selection_clicked(const Vector2f& pos) const;
-  void select_images(const std::vector<ImageHandle>& images);
+  void select_images(const ImageCollection& images);
   void clear_selection();
   void move_selection(const Vector2f& rel);
   void clear();

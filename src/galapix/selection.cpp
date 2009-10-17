@@ -22,7 +22,7 @@
 class SelectionImpl
 {
 public:
-  Selection::Images images;
+  ImageCollection images;
   
   SelectionImpl() :
     images()
@@ -37,27 +37,27 @@ Selection::Selection()
 void
 Selection::add_image(const ImageHandle& image)
 {
-  impl->images.push_back(image);
+  impl->images.add(image);
 }
 
 void
-Selection::add_images(const std::vector<ImageHandle>& images)
+Selection::add_images(const ImageCollection& images)
 {
-  for(Images::const_iterator i = images.begin(); i != images.end(); ++i)
-    impl->images.push_back(*i);
+  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
+    impl->images.add(*i);
 }
 
 void
 Selection::remove_image(const ImageHandle& image)
 {
-  impl->images.push_back(image);
+  impl->images.add(image);
 }
 
 void
 Selection::scale(float factor)
 {
   Vector2f center = get_center();
-  for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+  for(ImageCollection::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
   {
     (*i)->set_scale((*i)->get_scale() * factor);
 
@@ -68,7 +68,7 @@ Selection::scale(float factor)
 bool
 Selection::has(const ImageHandle& image) const
 {
-  for(Images::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+  for(ImageCollection::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
   {
     if (image == *i)
     {
@@ -84,7 +84,7 @@ Selection::clear()
   impl->images.clear();
 }
 
-Selection::Images
+ImageCollection
 Selection::get_images() const 
 {
   return impl->images; 
@@ -106,7 +106,7 @@ Selection::get_center() const
   else
   {
     Vector2f pos;
-    for(Images::const_iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+    for(ImageCollection::const_iterator i = impl->images.begin(); i != impl->images.end(); ++i)
     {
       pos += (*i)->get_pos();
     }
@@ -149,7 +149,7 @@ Selection::get_bounding_rect() const
   {
     Rectf rect = impl->images.front()->get_image_rect();
 
-    for(Images::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
+    for(ImageCollection::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
     {
       const Rectf& image_rect = (*i)->get_image_rect(); 
           

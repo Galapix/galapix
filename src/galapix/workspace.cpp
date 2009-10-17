@@ -22,6 +22,7 @@
 #include "galapix/database_thread.hpp"
 #include "util/file_reader.hpp"
 #include "galapix/spiral_layouter.hpp"
+#include "galapix/tight_layouter.hpp"
 
 struct ImageSorter
 {
@@ -50,29 +51,28 @@ Workspace::Workspace() :
   m_image_requests(),
   m_selection(),
   m_progress(0.0f),
-  m_file_queue(),
-  m_images_on_screen()
+  m_file_queue()
 {
 }
 
-std::vector<ImageHandle>
+ImageCollection
 Workspace::get_images(const Rectf& rect) const
 {
-  std::vector<ImageHandle> result;
-  for(Images::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
+  ImageCollection result;
+  for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if (rect.contains((*i)->get_image_rect()))
     {
-      result.push_back(*i);
+      result.add(*i);
     }
-  }  
+  }
   return result;
 }
 
 ImageHandle
 Workspace::get_image(const Vector2f& pos) const
 {
-  for(Images::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
+  for(ImageCollection::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
   {
     if ((*i)->overlaps(pos))
       return *i;
@@ -91,7 +91,7 @@ void
 Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float scale)
 {
   ImageHandle image = Image::create(file_entry);
-  m_images.push_back(image);
+  m_images.add(image);
   image->set_scale(scale);
   image->set_pos(pos);
 }
@@ -109,7 +109,7 @@ Workspace::add_image(const FileEntry& file_entry)
   else
   {
     ImageHandle image = Image::create(file_entry);
-    m_images.push_back(image);
+    m_images.add(image);
 
     if (!m_image_requests.empty())
     {
@@ -145,7 +145,7 @@ Workspace::layout_vertical()
 {
   float spacing = 10.0f;
   Vector2f next_pos(0.0f, 0.0f);
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->set_target_scale(1.0f);
     (*i)->set_target_pos(next_pos);
@@ -190,7 +190,7 @@ Workspace::layout_spiral()
 {
   m_layouter->reset();
   
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     m_layouter->layout(**i, true);
   }
@@ -201,74 +201,23 @@ Workspace::layout_spiral()
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
-  float spacing = 24.0f;
+  TightLayouter tight_layouter;
 
+  const float spacing = 1024.0f;
   float width = 0;  
   // calculate the total width 
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     const float scale = (1000.0f + spacing) / static_cast<float>((*i)->get_original_height());
     width += static_cast<float>((*i)->get_original_width()) * scale;
   }
-
   width /= Math::sqrt(width / ((aspect_w / aspect_h) * (1000.0f + spacing)));
 
-  Vector2f pos(0.0f, 0.0f);
-  Vector2f last_pos(0.0f, 0.0f);
-  bool go_right = true;
-  
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  tight_layouter.set_width(width);
+
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
-    ImageHandle& image = *i;
-
-    const float scale = 1000.0f / static_cast<float>(image->get_original_height());
-    image->set_target_scale(scale);
-
-    if (go_right)
-    {
-      if (pos.x + (static_cast<float>(image->get_original_width())*scale) > width)
-      {
-        pos.x = last_pos.x;
-        pos.y += 1000.0f + spacing;   
-              
-        go_right = false;
-
-        last_pos = pos;
-        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
-                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
-      }
-      else
-      {
-        last_pos = pos;
-        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
-                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
-            
-        pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
-      }
-    }
-    else
-    {
-      if (pos.x - (static_cast<float>(image->get_original_width()) * scale) < 0)
-      {
-        //pos.x = 0;
-        pos.y += 1000.0f + spacing;   
-        go_right = true;
-
-        last_pos = pos;
-        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
-                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
-
-        pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
-      }
-      else
-      {
-        pos.x -= static_cast<float>(image->get_original_width()) * scale + spacing;
-
-        last_pos = pos;
-        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
-                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
-      }
-    }
+    tight_layouter.layout(**i, true);
   }
 
   start_animation();
@@ -278,7 +227,7 @@ void
 Workspace::layout_random()
 {
   int width = static_cast<int>(Math::sqrt(float(m_images.size())) * 1500.0f);
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->set_target_pos(Vector2f(static_cast<float>(rand()%width), static_cast<float>(rand()%width)));
     (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
@@ -289,7 +238,7 @@ Workspace::layout_random()
 void
 Workspace::draw(const Rectf& cliprect, float zoom)
 {
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if ((*i)->overlaps(cliprect))
     {
@@ -329,7 +278,7 @@ Workspace::update(float delta)
       m_progress = 1.0f;
     }
 
-    for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+    for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
       (*i)->update_pos(m_progress);
     }
@@ -356,7 +305,7 @@ Workspace::random_shuffle()
 void
 Workspace::clear_cache()
 {
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->clear_cache();
   }  
@@ -365,7 +314,7 @@ Workspace::clear_cache()
 void
 Workspace::cache_cleanup()
 {
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->cache_cleanup();
   }   
@@ -376,7 +325,7 @@ Workspace::print_info(const Rectf& rect)
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if ((*i)->overlaps(rect))
     {
@@ -392,7 +341,7 @@ void
 Workspace::print_images(const Rectf& rect)
 {
   std::cout << "-- Visible images --------------------------------------" << std::endl;
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if ((*i)->overlaps(rect))
     {
@@ -405,7 +354,7 @@ Workspace::print_images(const Rectf& rect)
 }
 
 void
-Workspace::select_images(const std::vector<ImageHandle>& lst)
+Workspace::select_images(const ImageCollection& lst)
 {
   m_selection.clear();
   m_selection.add_images(lst);
@@ -527,7 +476,7 @@ Workspace::save(std::ostream& out)
   out << "(galapix-workspace\n"
       << "  (images\n";
   
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     // FIXME: Must escape the filename!
     out  << "    (image (url   \"" << (*i)->get_url() << "\")\n"
@@ -594,7 +543,7 @@ Workspace::get_bounding_rect() const
               << m_images.front()->get_scaled_height()
               << std::endl;
 
-    for(Images::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
+    for(ImageCollection::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
       const Rectf& image_rect = (*i)->get_image_rect(); 
           

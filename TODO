@@ -16,7 +16,9 @@ Release procedure:
 
 * check that all keyboard shortcuts are documented and sort them a bit to be logical
 
-* svn cp trunk@REV tags/galapix-0.1.X
+* svn cp https://galapix.googlecode.com/svn/trunk/galapix@563 tags/galapix-0.1.0
+
+* svn export http://galapix.googlecode.com/svn/tags/galapix-0.1.0
 
 * need to handle mtime properly
 

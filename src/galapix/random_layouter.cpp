@@ -16,27 +16,32 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
+#include "random_layouter.hpp"
 
-class Image;
-
-class Layouter
+RandomLayouter::RandomLayouter()
 {
-private:
-  
-public:
-  Layouter() {}
-  virtual ~Layouter() {}
+}
 
-  virtual void reset()  =0;
-  virtual void layout(Image& image, bool animated) =0;
+void
+RandomLayouter::reset()
+{
+}
 
-private:
-  Layouter(const Layouter&);
-  Layouter& operator=(const Layouter&);
-};
+void
+RandomLayouter::layout(Image& image, bool animated)
+{
+#if 0
+  const int width = static_cast<int>(Math::sqrt(float(m_images.size())) * 1500.0f);
 
+  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  {
+    (*i)->set_target_pos(Vector2f(static_cast<float>(rand() % width), 
+                                  static_cast<float>(rand() % width)));
+
+    // FIXME: Make this relative to image size
+    (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); 
+  }
 #endif
+}
 
 /* EOF */
