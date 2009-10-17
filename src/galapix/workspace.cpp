@@ -291,7 +291,17 @@ Workspace::draw(const Rectf& cliprect, float zoom)
 {
   for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
-    (*i)->draw(cliprect, zoom);
+    if ((*i)->overlaps(cliprect))
+    {
+      (*i)->draw(cliprect, zoom);
+    }
+    else
+    {
+      if ((*i)->is_visible())
+      {
+        (*i)->cache_cleanup();
+      }
+    }
   }
 
   for(Selection::iterator i = m_selection.begin(); i != m_selection.end(); ++i)

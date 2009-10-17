@@ -33,6 +33,7 @@ Image::create(const FileEntry& file_entry)
 }
 
 Image::Image(const FileEntry& file_entry) :
+  m_visible(false),
   m_file_entry(file_entry),
   m_max_scale(m_file_entry.get_thumbnail_scale()),
   m_pos(),
@@ -60,6 +61,8 @@ Image::set_pos(const Vector2f& pos)
   m_pos        = pos;
   m_last_pos   = pos;
   m_target_pos = pos;
+
+  m_image_rect = calc_image_rect();
 }
 
 Vector2f
@@ -97,6 +100,7 @@ Image::update_pos(float progress)
   {
     m_pos   = (m_last_pos   * (1.0f - progress)) + (m_target_pos   * progress);
     m_scale = (m_last_scale * (1.0f - progress)) + (m_target_scale * progress);
+    m_image_rect = calc_image_rect();
   }
 }
 
@@ -118,6 +122,8 @@ Image::set_scale(float f)
   m_scale        = f;
   m_last_scale   = f;
   m_target_scale = f;
+
+  m_image_rect = calc_image_rect();
 }
 
 float
@@ -159,12 +165,15 @@ Image::clear_cache()
 void
 Image::cache_cleanup()
 {
+  m_visible = false;
   m_cache->cleanup();
 }
 
 bool
 Image::draw(const Rectf& cliprect, float zoom)
 {
+  m_visible = true;
+
   if (m_file_entry)
   {
     m_cache->process_queue();
@@ -202,13 +211,13 @@ Image::print_info() const
 bool
 Image::overlaps(const Vector2f& pos) const
 {
-  return get_image_rect().contains(pos);
+  return m_image_rect.contains(pos);
 }
 
 bool
 Image::overlaps(const Rectf& cliprect) const
 {
-  return cliprect.is_overlapped(get_image_rect());
+  return cliprect.is_overlapped(m_image_rect);
 }
 
 URL
@@ -220,11 +229,17 @@ Image::get_url() const
 void
 Image::draw_mark()
 {
-  Framebuffer::draw_rect(get_image_rect(), RGB(255, 255, 255));
+  Framebuffer::draw_rect(m_image_rect, RGB(255, 255, 255));
 }
 
 Rectf
 Image::get_image_rect() const
+{
+  return m_image_rect;
+}
+
+Rectf
+Image::calc_image_rect() const
 {
   if (!m_file_entry)
   {

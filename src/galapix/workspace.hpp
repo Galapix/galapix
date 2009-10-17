@@ -59,7 +59,11 @@ private:
   boost::scoped_ptr<Layouter> m_layouter;
   
   Images        m_images;
+
+  /** ImageRequests "enriches" a given image with position and scale
+   * FIXME: wonky concept, should be removed */
   ImageRequests m_image_requests;
+
   Selection     m_selection;
 
   /** Progress of the animation when relayouting, must be set to 0 to

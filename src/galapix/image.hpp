@@ -27,6 +27,7 @@
 #include "database/file_entry.hpp"
 #include "job/job_handle.hpp"
 #include "math/vector2f.hpp"
+#include "math/rect.hpp"
 #include "util/url.hpp"
 
 class ImageTileCache;
@@ -39,6 +40,8 @@ typedef boost::shared_ptr<Image> ImageHandle;
 class Image
 {
 private:
+  bool m_visible;
+  Rectf m_image_rect;
   FileEntry m_file_entry;
 
   /** The maximum scale for which tiles exist */
@@ -113,7 +116,10 @@ public:
   bool overlaps(const Rectf& cliprect) const;
   bool overlaps(const Vector2f& pos) const;
 
+  Rectf calc_image_rect() const;
   Rectf get_image_rect() const;
+
+  bool is_visible() const { return m_visible; }
 
   /** Syncronized function to acquire data from other threads */
   //void receive_file_entry(const FileEntry& file_entry);
