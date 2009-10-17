@@ -3,7 +3,9 @@
 compile_galapix_tests = True
 build_mode = 'development'
 
-preset_cxx = "g++-4.4"
+default_env = Environment()
+
+preset_cxx = default_env["CXX"]
 
 preset_cxxflags = {
     'release':     [ "-O3", "-s"  ],

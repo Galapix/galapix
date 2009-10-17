@@ -4,7 +4,7 @@
 # ------------------------
 compile_galapix_sdl = True
 compile_galapix_gtk = True
-compile_spacenav    = True
+compile_spacenav    = False
 # ------------------------
 
 Export("compile_galapix_gtk",
