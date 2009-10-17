@@ -31,8 +31,8 @@ int main(int argc, char** argv)
     else
     {
       Exec prgn(argv[1]);
-      std::string stdin = "-- Stdin Test Data --\n";
-      prgn.set_stdin(Blob::copy(stdin.c_str(), stdin.length()));
+      std::string stdin_data = "-- Stdin Test Data --\n";
+      prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
       for(int i = 2; i < argc; ++i)
         prgn.arg(argv[i]);
       std::cout << "ExitCode: " << prgn.exec() << std::endl;
