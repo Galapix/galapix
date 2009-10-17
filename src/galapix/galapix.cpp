@@ -429,8 +429,6 @@ Galapix::print_usage()
             << "  -g, --geometry WxH     Start with window size WxH\n"        
             << "  -a, --anti-aliasing N  Anti-aliasing factor 0,2,4 (default: 0)\n"
             << "\n"
-            << "If you do not supply any files, the whole content of the given database will be displayed.\n"
-            << "\n"
             << "Compiled Fetures:\n" 
 #ifdef HAVE_SPACE_NAVIGATOR
             << "  * SpaceNavigator: enabled\n"
