@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
 #define HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
 
-class Image;
+class ImageCollection;
 
 class Layouter
 {
@@ -29,8 +29,7 @@ public:
   Layouter() {}
   virtual ~Layouter() {}
 
-  virtual void reset()  =0;
-  virtual void layout(Image& image, bool animated) =0;
+  virtual void layout(const ImageCollection& images, bool animated) =0;
 
 private:
   Layouter(const Layouter&);

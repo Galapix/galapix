@@ -20,9 +20,11 @@
 
 #include "database/file_entry.hpp"
 #include "galapix/database_thread.hpp"
-#include "util/file_reader.hpp"
+#include "galapix/random_layouter.hpp"
+#include "galapix/regular_layouter.hpp"
 #include "galapix/spiral_layouter.hpp"
 #include "galapix/tight_layouter.hpp"
+#include "util/file_reader.hpp"
 
 struct ImageSorter
 {
@@ -158,80 +160,31 @@ Workspace::layout_vertical()
 void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
-  if (!m_images.empty())
-  {
-    int w = int(Math::sqrt(aspect_w * static_cast<float>(m_images.size()) / aspect_h));
-      
-    for(int i = 0; i < int(m_images.size()); ++i)
-    {
-      float target_scale = Math::min(1000.0f / static_cast<float>(m_images[i]->get_original_width()),
-                                     1000.0f / static_cast<float>(m_images[i]->get_original_height()));
-
-      m_images[i]->set_target_scale(target_scale);
-
-      if ((i/w) % 2 == 0)
-      {
-        m_images[i]->set_target_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
-                                             static_cast<float>(i / w) * 1024.0f));
-      }
-      else
-      {
-        m_images[i]->set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
-                                             static_cast<float>(i / w)         * 1024.0f));
-      }
-    }
-  }
-
+  RegularLayouter regular_layouter(aspect_w, aspect_h);
+  regular_layouter.layout(m_images, true);
   start_animation();
 }
 
 void
 Workspace::layout_spiral()
 {
-  m_layouter->reset();
-  
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
-  {
-    m_layouter->layout(**i, true);
-  }
-
+  m_layouter->layout(m_images, true);
   start_animation();
 }
 
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
-  TightLayouter tight_layouter;
-
-  const float spacing = 1024.0f;
-  float width = 0;  
-  // calculate the total width 
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
-  {
-    const float scale = (1000.0f + spacing) / static_cast<float>((*i)->get_original_height());
-    width += static_cast<float>((*i)->get_original_width()) * scale;
-  }
-  width /= Math::sqrt(width / ((aspect_w / aspect_h) * (1000.0f + spacing)));
-
-  tight_layouter.set_width(width);
-
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
-  {
-    tight_layouter.layout(**i, true);
-  }
-
+  TightLayouter tight_layouter(aspect_w, aspect_h);
+  tight_layouter.layout(m_images, true);
   start_animation();
 }
 
 void
 Workspace::layout_random()
 {
-  int width = static_cast<int>(Math::sqrt(float(m_images.size())) * 1500.0f);
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
-  {
-    (*i)->set_target_pos(Vector2f(static_cast<float>(rand()%width), static_cast<float>(rand()%width)));
-    (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); // FIXME: Make this relative to image size
-  }
+  RandomLayouter random_layouter;
+  random_layouter.layout(m_images, true);
   start_animation();
 }
 

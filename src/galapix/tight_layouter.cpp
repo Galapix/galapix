@@ -19,11 +19,14 @@
 #include "galapix/tight_layouter.hpp"
 
 #include "galapix/image.hpp"
+#include "galapix/image_collection.hpp"
 
-TightLayouter::TightLayouter() :
+TightLayouter::TightLayouter(float w, float h) :
   m_pos(0.0f, 0.0f),
   m_last_pos(0.0f, 0.0f),
-  m_go_right(true)
+  m_go_right(true),
+  m_aspect_w(w),
+  m_aspect_h(h)
 {
 }
 
@@ -93,6 +96,31 @@ TightLayouter::layout(Image& image, bool animated)
       image.set_target_pos(m_pos + Vector2f(static_cast<float>(image.get_original_width()),
                                             static_cast<float>(image.get_original_height())) * scale / 2.0f);
     }
+  }
+}
+
+void
+TightLayouter::layout(const ImageCollection& images, bool animated)
+{
+  const float spacing = 1024.0f;
+  float width = 0;  
+
+  // calculate the total width 
+  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
+  {
+    const float scale = (1000.0f + spacing) / static_cast<float>((*i)->get_original_height());
+    width += static_cast<float>((*i)->get_original_width()) * scale;
+  }
+  
+  width /= Math::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
+
+  set_width(width);
+
+  // do final layouting
+  reset();
+  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
+  {
+    layout(**i, animated);
   }
 }
 

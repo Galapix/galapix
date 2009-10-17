@@ -19,6 +19,7 @@
 #include "galapix/spiral_layouter.hpp"
 
 #include "galapix/image.hpp"
+#include "galapix/image_collection.hpp"
 #include "math/math.hpp"
 
 SpiralLayouter::SpiralLayouter() :
@@ -116,6 +117,16 @@ SpiralLayouter::layout(Image& image, bool animated)
   }
 
   advance();
+}
+
+void
+SpiralLayouter::layout(const ImageCollection& images, bool animated)
+{
+  reset();
+  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
+  {
+    layout(**i, animated);
+  }
 }
 
 /* EOF */

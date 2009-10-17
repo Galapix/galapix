@@ -16,24 +16,21 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "random_layouter.hpp"
+#include "galapix/random_layouter.hpp"
+
+#include "galapix/image.hpp"
+#include "galapix/image_collection.hpp"
 
 RandomLayouter::RandomLayouter()
 {
 }
 
 void
-RandomLayouter::reset()
+RandomLayouter::layout(const ImageCollection& images, bool animated)
 {
-}
+  const int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
 
-void
-RandomLayouter::layout(Image& image, bool animated)
-{
-#if 0
-  const int width = static_cast<int>(Math::sqrt(float(m_images.size())) * 1500.0f);
-
-  for(Images::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
   {
     (*i)->set_target_pos(Vector2f(static_cast<float>(rand() % width), 
                                   static_cast<float>(rand() % width)));
@@ -41,7 +38,6 @@ RandomLayouter::layout(Image& image, bool animated)
     // FIXME: Make this relative to image size
     (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); 
   }
-#endif
 }
 
 /* EOF */

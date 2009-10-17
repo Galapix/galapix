@@ -22,6 +22,8 @@
 #include "galapix/layouter.hpp"
 #include "math/vector2f.hpp"
 
+class Image;
+
 class TightLayouter : public Layouter
 {
 private:
@@ -29,10 +31,15 @@ private:
   Vector2f m_last_pos;
   bool     m_go_right;
   float    m_width;
-
+  float    m_aspect_w;
+  float    m_aspect_h;
+  
 public:
-  TightLayouter();
+  TightLayouter(float w, float h);
 
+  void layout(const ImageCollection& images, bool animated);
+
+private:
   void set_width(float width);
   void reset();
   void layout(Image& image, bool animated);

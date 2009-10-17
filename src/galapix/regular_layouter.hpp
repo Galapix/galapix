@@ -16,27 +16,25 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_RANDOM_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_RANDOM_LAYOUTER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_REGULAR_LAYOUTER_HPP
+#define HEADER_GALAPIX_GALAPIX_REGULAR_LAYOUTER_HPP
 
 #include "galapix/layouter.hpp"
 
-#include "math/rect.hpp"
-
-class Image;
-
-class RandomLayouter : public Layouter
+class RegularLayouter : public Layouter
 {
 private:
+  float m_aspect_w;
+  float m_aspect_h;
 
 public:
-  RandomLayouter();
+  RegularLayouter(float aspect_w, float aspect_h);
 
   void layout(const ImageCollection& images, bool animated);
 
 private:
-  RandomLayouter(const RandomLayouter&);
-  RandomLayouter& operator=(const RandomLayouter&);
+  RegularLayouter(const RegularLayouter&);
+  RegularLayouter& operator=(const RegularLayouter&);
 };
 
 #endif

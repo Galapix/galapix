@@ -43,10 +43,13 @@ private:
 public:
   SpiralLayouter();
 
+  void layout(const ImageCollection& images, bool animated);
   void reset();
   void layout(Image& image, bool animated);
+
+private:
   void advance();
-    
+
 private:
   SpiralLayouter(const SpiralLayouter&);
   SpiralLayouter& operator=(const SpiralLayouter&);

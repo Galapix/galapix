@@ -26,6 +26,7 @@
 #include "galapix/image_collection.hpp"
 #include "galapix/layouter.hpp"
 #include "galapix/selection.hpp"
+#include "galapix/spiral_layouter.hpp"
 #include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
 #include "util/url.hpp"
@@ -56,7 +57,7 @@ private:
 private:
   /** Simple QuadTree to have a quicker way to figure out which images
       are visible */
-  boost::scoped_ptr<Layouter> m_layouter;
+  boost::scoped_ptr<SpiralLayouter> m_layouter;
   
   ImageCollection m_images;
 
