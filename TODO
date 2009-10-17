@@ -16,7 +16,7 @@ Release procedure:
 
 * check that all keyboard shortcuts are documented and sort them a bit to be logical
 
-* svn cp trunk@REV tags/galapix-0.0.X
+* svn cp trunk@REV tags/galapix-0.1.X
 
 * need to handle mtime properly
 
@@ -61,12 +61,11 @@ Galapix 0.2.0 Release ToDo:
 Galapix 0.1.0 Release ToDo:
 ===========================
 
-* (!) moving images around with the move tool doesn't update the QuadTree
-
-* (!) loading does not insert directly into the QuadTree
-
 * (!) viewdb -p PATTERN doesn't work as expected, as the viewer isn't updated in
   SDLViewer::run(), pressing '1' works as a workaround
+
+  - moving left/right/up/down doesn't cause a screen refresh,
+    zoom-in/out on the other side does
 
 * (!) mouse buttons can get stuck when you press them both at once
 
