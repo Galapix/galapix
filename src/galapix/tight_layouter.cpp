@@ -22,105 +22,82 @@
 #include "galapix/image_collection.hpp"
 
 TightLayouter::TightLayouter(float w, float h) :
-  m_pos(0.0f, 0.0f),
-  m_last_pos(0.0f, 0.0f),
-  m_go_right(true),
   m_aspect_w(w),
   m_aspect_h(h)
 {
 }
 
 void
-TightLayouter::reset()
-{
-  m_pos      = Vector2f(0.0f, 0.0f);
-  m_last_pos = Vector2f(0.0f, 0.0f);
-  m_go_right = true;
-}
-
-void
-TightLayouter::set_width(float width)
-{
-  m_width = width;
-}
-
-void
-TightLayouter::layout(Image& image, bool animated)
-{
-  const float spacing = 24.0f;
-  const float scale = 1000.0f / static_cast<float>(image.get_original_height());
-
-  image.set_target_scale(scale);
-
-  if (m_go_right)
-  {
-    if (m_pos.x + (static_cast<float>(image.get_original_width()) * scale) > m_width)
-    {
-      m_pos.x = m_last_pos.x;
-      m_pos.y += 1000.0f + spacing;   
-              
-      m_go_right = false;
-
-      m_last_pos = m_pos;
-      image.set_target_pos(m_pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                          static_cast<float>(image.get_original_height())) * scale / 2.0f);
-    }
-    else
-    {
-      m_last_pos = m_pos;
-      image.set_target_pos(m_pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                            static_cast<float>(image.get_original_height())) * scale / 2.0f);
-            
-      m_pos.x += static_cast<float>(image.get_original_width()) * scale + spacing;
-    }
-  }
-  else
-  {
-    if (m_pos.x - (static_cast<float>(image.get_original_width()) * scale) < 0)
-    {
-      //m_pos.x = 0;
-      m_pos.y += 1000.0f + spacing;   
-      m_go_right = true;
-
-      m_last_pos = m_pos;
-      image.set_target_pos(m_pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                            static_cast<float>(image.get_original_height())) * scale / 2.0f);
-
-      m_pos.x += static_cast<float>(image.get_original_width()) * scale + spacing;
-    }
-    else
-    {
-      m_pos.x -= static_cast<float>(image.get_original_width()) * scale + spacing;
-
-      m_last_pos = m_pos;
-      image.set_target_pos(m_pos + Vector2f(static_cast<float>(image.get_original_width()),
-                                            static_cast<float>(image.get_original_height())) * scale / 2.0f);
-    }
-  }
-}
-
-void
 TightLayouter::layout(const ImageCollection& images, bool animated)
 {
-  const float spacing = 1024.0f;
-  float width = 0;  
+  float spacing = 24.0f;
 
+  float width = 0;  
   // calculate the total width 
   for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
   {
     const float scale = (1000.0f + spacing) / static_cast<float>((*i)->get_original_height());
     width += static_cast<float>((*i)->get_original_width()) * scale;
   }
-  
+
   width /= Math::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
 
-  set_width(width);
-
-  // do final layouting
-  reset();
+  Vector2f pos(0.0f, 0.0f);
+  Vector2f last_pos(0.0f, 0.0f);
+  bool go_right = true;
+  
   for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
   {
-    layout(**i, animated);
+    const ImageHandle& image = *i;
+
+    const float scale = 1000.0f / static_cast<float>(image->get_original_height());
+    image->set_target_scale(scale);
+
+    if (go_right)
+    {
+      if (pos.x + (static_cast<float>(image->get_original_width())*scale) > width)
+      {
+        pos.x = last_pos.x;
+        pos.y += 1000.0f + spacing;   
+              
+        go_right = false;
+
+        last_pos = pos;
+        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
+      }
+      else
+      {
+        last_pos = pos;
+        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
+            
+        pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
+      }
+    }
+    else
+    {
+      if (pos.x - (static_cast<float>(image->get_original_width()) * scale) < 0)
+      {
+        //pos.x = 0;
+        pos.y += 1000.0f + spacing;   
+        go_right = true;
+
+        last_pos = pos;
+        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
+
+        pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
+      }
+      else
+      {
+        pos.x -= static_cast<float>(image->get_original_width()) * scale + spacing;
+
+        last_pos = pos;
+        image->set_target_pos(pos + Vector2f(static_cast<float>(image->get_original_width()),
+                                             static_cast<float>(image->get_original_height())) * scale / 2.0f);
+      }
+    }
   }
 }
 

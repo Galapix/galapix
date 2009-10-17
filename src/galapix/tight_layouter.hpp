@@ -27,22 +27,13 @@ class Image;
 class TightLayouter : public Layouter
 {
 private:
-  Vector2f m_pos;
-  Vector2f m_last_pos;
-  bool     m_go_right;
-  float    m_width;
-  float    m_aspect_w;
-  float    m_aspect_h;
+  float m_aspect_w;
+  float m_aspect_h;
   
 public:
   TightLayouter(float w, float h);
 
   void layout(const ImageCollection& images, bool animated);
-
-private:
-  void set_width(float width);
-  void reset();
-  void layout(Image& image, bool animated);
 
 private:
   TightLayouter(const TightLayouter&);
