@@ -463,6 +463,12 @@ Viewer::layout_vertical()
 }
 
 void
+Viewer::finish_layout()
+{
+  m_workspace->finish_animation();
+}
+
+void
 Viewer::toggle_pinned_grid()
 {
   m_pin_grid = !m_pin_grid;

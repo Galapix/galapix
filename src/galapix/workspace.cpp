@@ -436,6 +436,17 @@ Workspace::save(std::ostream& out)
 }
 
 void
+Workspace::finish_animation()
+{
+  m_progress = 1.0f;
+
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  {
+    (*i)->update_pos(m_progress);
+  }
+}
+
+void
 Workspace::load(const std::string& filename)
 {
   FileReader reader = FileReader::parse(filename);

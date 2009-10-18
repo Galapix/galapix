@@ -396,6 +396,7 @@ Galapix::view(const Options& opts,
   Viewer viewer(&workspace);
   SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing, viewer);
   viewer.layout_tight();
+  viewer.finish_layout();
   viewer.zoom_to_selection();
   sdl_viewer.run();
 #endif

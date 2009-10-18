@@ -83,6 +83,7 @@ public:
   void layout_vertical();
   void layout_random();
   void solve_overlaps();
+  void finish_animation();
 
   // ---------------------------------------------
 
