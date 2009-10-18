@@ -75,8 +75,9 @@ Galapix::test(const Options& opts,
 {
   std::cout << "Running test case" << std::endl;
 
+  Database database(opts.database);
   JobManager job_manager(opts.threads);
-  DatabaseThread database_thread(opts.database, job_manager, job_manager);
+  DatabaseThread database_thread(database, job_manager, job_manager);
 
   database_thread.start_thread();
   job_manager.start_thread();
@@ -260,8 +261,9 @@ void
 Galapix::filegen(const Options& opts,
                  const std::vector<URL>& url)
 {
+  Database database(opts.database);
   JobManager job_manager(opts.threads);
-  DatabaseThread database_thread(opts.database, job_manager, job_manager);
+  DatabaseThread database_thread(database, job_manager, job_manager);
 
   job_manager.start_thread();
   database_thread.start_thread();
@@ -284,8 +286,9 @@ Galapix::thumbgen(const Options& opts,
                   const std::vector<URL>& urls, 
                   bool generate_all_tiles)
 {
+  Database       database(opts.database);
   JobManager     job_manager(opts.threads);
-  DatabaseThread database_thread(opts.database, job_manager, job_manager);
+  DatabaseThread database_thread(database, job_manager, job_manager);
   
   database_thread.start_thread();
   job_manager.start_thread();
@@ -334,9 +337,10 @@ Galapix::view(const Options& opts,
               const std::vector<URL>& urls, 
               bool view_all)
 {
+  Database       database(opts.database);
   JobManager     tile_job_manager(opts.threads);
   JobManager     file_entry_job_manager(opts.threads);
-  DatabaseThread database_thread(opts.database, tile_job_manager, file_entry_job_manager);
+  DatabaseThread database_thread(database, tile_job_manager, file_entry_job_manager);
 
   tile_job_manager.start_thread();  
   file_entry_job_manager.start_thread();  
@@ -370,7 +374,9 @@ Galapix::view(const Options& opts,
     else
     {
       //database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
-      ImageHandle image = workspace.add_image(FileEntry::create_incomplete(*i));
+      FileEntry file_entry = FileEntry::create_incomplete(*i);
+      ImageHandle image = workspace.add_image(file_entry);
+
       if (image)
       {
         database_thread.request_file(*i, boost::bind(&Image::receive_file_entry, image, _1));

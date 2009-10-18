@@ -42,12 +42,11 @@ public:
 private:
   
 private:
-  boost::scoped_ptr<Database> m_database;
+  Database& m_database;
 
   JobManager& m_tile_job_manager;
   JobManager& m_file_entry_job_manager;
 
-  std::string database_filename;
   bool m_quit;
   bool m_abort;
   
@@ -58,7 +57,7 @@ protected:
   void run();
 
 public:
-  DatabaseThread(const std::string& db_filename,
+  DatabaseThread(Database& database,
                  JobManager& tile_job_manager,
                  JobManager& file_entry_job_manager);
   virtual ~DatabaseThread();

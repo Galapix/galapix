@@ -29,16 +29,16 @@
 
 DatabaseThread* DatabaseThread::current_ = 0;
 
-DatabaseThread::DatabaseThread(const std::string& filename_,
+DatabaseThread::DatabaseThread(Database& database,
                                JobManager& tile_job_manager,
-                               JobManager& file_entry_job_manager)
-  : m_tile_job_manager(tile_job_manager),
-    m_file_entry_job_manager(file_entry_job_manager),
-    database_filename(filename_),  
-    m_quit(false),
-    m_abort(false),
-    m_queue(),
-    m_tile_generation_jobs()
+                               JobManager& file_entry_job_manager) :
+  m_database(database),
+  m_tile_job_manager(tile_job_manager),
+  m_file_entry_job_manager(file_entry_job_manager),
+  m_quit(false),
+  m_abort(false),
+  m_queue(),
+  m_tile_generation_jobs()
 {
   assert(current_ == 0);
   current_ = this;
@@ -124,9 +124,7 @@ void
 DatabaseThread::run()
 {
   m_quit = false;
-
-  m_database.reset(new Database(database_filename));
-
+  
   while(!m_quit)
   {
     m_queue.wait();
@@ -138,7 +136,7 @@ DatabaseThread::run()
 
       //std::cout << "DatabaseThread::queue.size(): " << m_queue.size() << " - " << typeid(*msg).name() << std::endl;
 
-      msg->run(*m_database);
+      msg->run(m_database);
       delete msg;
     }
   }
@@ -184,7 +182,7 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
   int min_scale_in_db = -1;
   int max_scale_in_db = -1;
 
-  m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
+  m_database.tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
 
   boost::shared_ptr<MultipleTileGenerationJob> 
     job_ptr(new MultipleTileGenerationJob(job_handle, 
@@ -217,7 +215,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     int min_scale_in_db = -1;
     int max_scale_in_db = -1;
 
-    if (m_database->tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db))
+    if (m_database.tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db))
     {
       if (tilescale >= min_scale_in_db &&
           tilescale <= max_scale_in_db)
