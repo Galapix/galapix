@@ -122,8 +122,6 @@ public:
 
   bool is_visible() const { return m_visible; }
 
-  FileEntry get_file_entry() const { return m_file_entry; }
-
   /** Syncronized function to acquire data from other threads */
   void receive_file_entry(const FileEntry& file_entry);
 };

@@ -250,7 +250,7 @@ Image::overlaps(const Vector2f& pos) const
 bool
 Image::overlaps(const Rectf& cliprect) const
 {
-  return cliprect.is_overlapped(m_image_rect);
+  return m_image_rect.is_overlapped(cliprect);
 }
 
 URL
@@ -274,28 +274,14 @@ Image::get_image_rect() const
 Rectf
 Image::calc_image_rect() const
 {
-  if (!m_file_entry)
-  {
-    return Rectf(m_pos, Size(0, 0));
-  }
-  else
-  {
-    if (m_file_entry.get_image_size() == Size(0,0))
-    {
-      return Rectf(m_pos, m_file_entry.get_image_size());
-    }
-    else
-    {
-      Sizef image_size(m_file_entry.get_image_size() * m_scale);
-      return Rectf(m_pos - Vector2f(image_size.width/2, image_size.height/2), image_size); // in world coordinates
-    }
-  }
+  return Rectf(get_top_left_pos(),
+               Sizef(get_scaled_width(), 
+                     get_scaled_height()));
 }
 
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
-  // FIXME: mutex this
   m_file_entry_requested = false;
   m_file_entry = file_entry;
   m_target_scale *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
