@@ -59,6 +59,8 @@ private:
   /** Rotation angle */
   float m_angle;
 
+  bool m_file_entry_requested;
+
   boost::scoped_ptr<ImageTileCache> m_cache;
   boost::scoped_ptr<ImageRenderer>  m_renderer;
 

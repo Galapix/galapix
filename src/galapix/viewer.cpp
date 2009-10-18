@@ -41,17 +41,17 @@
 
 Viewer* Viewer::current_ = 0;
 
-Viewer::Viewer(Workspace* workspace_)
-  : workspace(workspace_),
-    mark_for_redraw(false),
-    draw_grid(false),
-    pin_grid(false),
-    gamma(1.0f),
-    brightness(0.0f),
-    contrast(1.0f),
-    grid_offset(0.0f, 0.0f),
-    grid_size(400.0f, 300.0f),
-    grid_color(255, 0, 0, 255)
+Viewer::Viewer(Workspace* workspace_) :
+  workspace(workspace_),
+  mark_for_redraw(false),
+  draw_grid(false),
+  pin_grid(false),
+  gamma(1.0f),
+  brightness(0.0f),
+  contrast(1.0f),
+  grid_offset(0.0f, 0.0f),
+  grid_size(400.0f, 300.0f),
+  grid_color(255, 0, 0, 255)
 {
   current_ = this;
 

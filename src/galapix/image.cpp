@@ -42,6 +42,7 @@ Image::Image(const FileEntry& file_entry) :
   m_last_scale(1.0f),
   m_target_scale(1.0f),
   m_angle(0.0f),
+  m_file_entry_requested(false),
   m_cache(new ImageTileCache(m_file_entry)),
   m_renderer(new ImageRenderer(*this, *m_cache))
 {
@@ -185,11 +186,19 @@ void
 Image::draw(const Rectf& cliprect, float zoom)
 {
   boost::mutex::scoped_lock lock(mutex);
-
+  
   if (!m_file_entry.is_complete())
   {
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
                            RGB(255,255,0));
+
+    if (!m_file_entry_requested)
+    {
+      m_file_entry_requested = true;
+      DatabaseThread::current()->request_file(m_file_entry.get_url(),
+                                              boost::bind(&Image::receive_file_entry, this, _1));
+      //std::cout << "Image::draw(): receive_file_entry" << std::endl;
+    }
   }
   else
   {
@@ -280,11 +289,13 @@ Image::calc_image_rect() const
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
+  std::cout << this << " Image::receive_file_entry(const FileEntry& file_entry)" << std::endl;
   boost::mutex::scoped_lock lock(mutex);
 
+  m_file_entry_requested = false;
   m_file_entry = file_entry;
-  m_scale     *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
-                                                      m_file_entry.get_height()));
+  m_target_scale  *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
+                                                   m_file_entry.get_height()));
   m_image_rect = calc_image_rect();
 
   m_cache.reset(new ImageTileCache(m_file_entry));

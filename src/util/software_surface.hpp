@@ -34,8 +34,10 @@ class SoftwareSurface;
 
 typedef boost::shared_ptr<SoftwareSurface> SoftwareSurfaceHandle;
 
-class SoftwareSurface : public boost::enable_shared_from_this<SoftwareSurface>
+// boost::enable_shared_from_this gives warning, so we switch the warning off
+#pragma GCC diagnostic ignored "-Weffc++"
 
+class SoftwareSurface : public boost::enable_shared_from_this<SoftwareSurface>
 {
 public:
   enum Format { RGB_FORMAT, RGBA_FORMAT };

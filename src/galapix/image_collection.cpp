@@ -19,6 +19,7 @@
 #include "galapix/image_collection.hpp"
 
 ImageCollection::ImageCollection()
+  : m_images()
 {
 }
 

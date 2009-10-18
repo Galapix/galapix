@@ -34,30 +34,21 @@ class Workspace;
 class SDLViewer
 {
 private:
-  static SDLViewer* current_;
-public:
-  static SDLViewer* current() { return current_; }
+  Size m_geometry;
+  bool m_fullscreen;
+  int  m_anti_aliasing;
+
+  bool m_quit;
+  bool m_spnav_allow_rotate;
+
+  Viewer& m_viewer;
   
-private:
-  Size geometry;
-  bool fullscreen;
-  int  anti_aliasing;
-
-  bool quit;
-  bool spnav_allow_rotate;
-
-  boost::scoped_ptr<Viewer> viewer;
-  
-  Workspace* workspace;
-
 public:
-  SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing);
+  SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
+            Viewer& viewer);
   virtual ~SDLViewer();
 
   void run();
-  void set_workspace(Workspace* workspace_) { workspace = workspace_; }
-
-  Viewer* get_viewer() const { return viewer.get(); }
 
 private:
   void process_event(const SDL_Event& event);

@@ -55,15 +55,7 @@ private:
   typedef std::vector<ImageRequest> ImageRequests;
 
 private:
-  /** Simple QuadTree to have a quicker way to figure out which images
-      are visible */
-  boost::scoped_ptr<SpiralLayouter> m_layouter;
-  
   ImageCollection m_images;
-
-  /** ImageRequests "enriches" a given image with position and scale
-   * FIXME: wonky concept, should be removed */
-  ImageRequests m_image_requests;
 
   Selection     m_selection;
 

@@ -85,7 +85,11 @@ Galapix 0.1.0 Release ToDo:
 General Problems:
 =================
 
-* add QuadTree rebuild
+* make thumbnail generation output optional --verbose
+
+* very small images seem broken
+
+ TileGenerationJob: have [0..1] generating [-1..-1]: FileId(51152):
 
 * separate animation from Image, maybe even position
 

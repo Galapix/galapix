@@ -48,9 +48,7 @@ struct ImageRequestFinder
 };
 
 Workspace::Workspace() :
-  m_layouter(new SpiralLayouter()),
   m_images(),
-  m_image_requests(),
   m_selection(),
   m_progress(0.0f),
   m_file_queue()
@@ -85,8 +83,10 @@ Workspace::get_image(const Vector2f& pos) const
 void
 Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 {
-  DatabaseThread::current()->request_file(url, boost::bind(&Workspace::receive_file, this, _1));
-  m_image_requests.push_back(ImageRequest(url, pos, scale));
+  ImageHandle image = Image::create(FileEntry::create_incomplete(url));
+  m_images.add(image);
+  image->set_scale(scale);
+  image->set_pos(pos);
 }
 
 void
@@ -113,21 +113,6 @@ Workspace::add_image(const FileEntry& file_entry)
   {
     ImageHandle image = Image::create(file_entry);
     m_images.add(image);
-
-    if (!m_image_requests.empty())
-    {
-      ImageRequests::iterator i = std::find_if(m_image_requests.begin(), m_image_requests.end(), 
-                                               ImageRequestFinder(file_entry.get_url().str()));
-      if (i != m_image_requests.end())
-      {
-        image->set_pos(i->pos);
-        image->set_scale(i->scale);
-        return image;
-      }
-    }
-
-    m_layouter->layout(*image, false);
-    
     return image;
   }
 }
@@ -148,6 +133,7 @@ Workspace::animation_finished()
 void
 Workspace::layout_vertical()
 {
+  std::cout << "Workspace::layout_vertical()" << std::endl;
   float spacing = 10.0f;
   Vector2f next_pos(0.0f, 0.0f);
   for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
@@ -163,6 +149,7 @@ Workspace::layout_vertical()
 void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
+  std::cout << "Workspace::layout_aspect()" << std::endl;
   RegularLayouter regular_layouter(aspect_w, aspect_h);
   regular_layouter.layout(m_images, true);
   start_animation();
@@ -171,13 +158,16 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
 void
 Workspace::layout_spiral()
 {
-  m_layouter->layout(m_images, true);
+  std::cout << "Workspace::layout_spiral()" << std::endl;
+  SpiralLayouter spiral_layouter;
+  spiral_layouter.layout(m_images, true);
   start_animation();
 }
 
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
+  std::cout << "Workspace::layout_tight()" << std::endl;
   TightLayouter tight_layouter(aspect_w, aspect_h);
   tight_layouter.layout(m_images, true);
   start_animation();
@@ -186,6 +176,7 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
 void
 Workspace::layout_random()
 {
+  std::cout << "Workspace::layout_random()" << std::endl;
   RandomLayouter random_layouter;
   random_layouter.layout(m_images, true);
   start_animation();

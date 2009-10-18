@@ -63,14 +63,14 @@ private:
   boost::shared_ptr<ZoomTool>   keyboard_zoom_out_tool;
   boost::shared_ptr<ViewRotateTool> keyboard_view_rotate_tool;
 
-  boost::shared_ptr<PanTool>    pan_tool;
-  boost::shared_ptr<MoveTool>   move_tool;
-  boost::shared_ptr<ZoomRectTool>   zoom_rect_tool;
-  boost::shared_ptr<ZoomTool>   zoom_in_tool;
-  boost::shared_ptr<ZoomTool>   zoom_out_tool;
-  boost::shared_ptr<ResizeTool> resize_tool;
-  boost::shared_ptr<RotateTool> rotate_tool;
-  boost::shared_ptr<GridTool>   grid_tool;
+  boost::shared_ptr<PanTool>      pan_tool;
+  boost::shared_ptr<MoveTool>     move_tool;
+  boost::shared_ptr<ZoomRectTool> zoom_rect_tool;
+  boost::shared_ptr<ZoomTool>     zoom_in_tool;
+  boost::shared_ptr<ZoomTool>     zoom_out_tool;
+  boost::shared_ptr<ResizeTool>   resize_tool;
+  boost::shared_ptr<RotateTool>   rotate_tool;
+  boost::shared_ptr<GridTool>     grid_tool;
 
   Tool* left_tool;
   Tool* middle_tool;
