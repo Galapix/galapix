@@ -23,6 +23,7 @@
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <string>
+#include <boost/thread/mutex.hpp>
 
 #include "database/file_entry.hpp"
 #include "galapix/image_handle.hpp"
@@ -39,12 +40,11 @@ class Rectf;
 class Image
 {
 private:
+  boost::mutex mutex;
+
   bool m_visible;
   Rectf m_image_rect;
   FileEntry m_file_entry;
-
-  /** The maximum scale for which tiles exist */
-  int m_max_scale;
 
   /** Position refers to the center of the image */
   Vector2f m_pos;
@@ -70,7 +70,7 @@ public:
 
   // _____________________________________________________
   // Drawing stuff
-  bool draw(const Rectf& cliprect, float zoom);
+  void draw(const Rectf& cliprect, float zoom);
   void draw_mark();
 
   // _____________________________________________________
@@ -120,8 +120,10 @@ public:
 
   bool is_visible() const { return m_visible; }
 
+  FileEntry get_file_entry() const { return m_file_entry; }
+
   /** Syncronized function to acquire data from other threads */
-  //void receive_file_entry(const FileEntry& file_entry);
+  void receive_file_entry(const FileEntry& file_entry);
 };
 
 #endif

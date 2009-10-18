@@ -98,15 +98,16 @@ Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float sca
   image->set_pos(pos);
 }
 
-void
+ImageHandle
 Workspace::add_image(const FileEntry& file_entry)
 {
   //std::cout << "Workspace::add_image(const FileEntry& file_entry)" << std::endl;
 
-  if (file_entry.get_width()  == 0 ||
-      file_entry.get_height() == 0)
+  if (file_entry.is_complete() &&
+      (file_entry.get_width()  == 0 || file_entry.get_height() == 0))
   {
     std::cout << "Workspace: Error: ignoring " << file_entry.get_url() << " as its size is (0, 0)" << std::endl;
+    return ImageHandle();
   }
   else
   {
@@ -121,11 +122,13 @@ Workspace::add_image(const FileEntry& file_entry)
       {
         image->set_pos(i->pos);
         image->set_scale(i->scale);
-        return;
+        return image;
       }
     }
 
     m_layouter->layout(*image, false);
+    
+    return image;
   }
 }
 

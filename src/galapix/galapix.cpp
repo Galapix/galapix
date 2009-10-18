@@ -369,7 +369,12 @@ Galapix::view(const Options& opts,
     }
     else
     {
-      database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
+      //database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
+      ImageHandle image = workspace.add_image(FileEntry::create_incomplete(*i));
+      if (image)
+      {
+        database_thread.request_file(*i, boost::bind(&Image::receive_file_entry, image, _1));
+      }
     }
   }
 

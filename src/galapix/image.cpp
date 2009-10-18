@@ -35,7 +35,6 @@ Image::create(const FileEntry& file_entry)
 Image::Image(const FileEntry& file_entry) :
   m_visible(false),
   m_file_entry(file_entry),
-  m_max_scale(m_file_entry.get_thumbnail_scale()),
   m_pos(),
   m_last_pos(),
   m_target_pos(),
@@ -46,7 +45,6 @@ Image::Image(const FileEntry& file_entry) :
   m_cache(new ImageTileCache(m_file_entry)),
   m_renderer(new ImageRenderer(*this, *m_cache))
 {
-  assert(m_max_scale >= 0);
 }
 
 Vector2f
@@ -135,25 +133,39 @@ Image::get_scale() const
 float
 Image::get_scaled_width() const
 {
-  return static_cast<float>(m_file_entry.get_width()) * m_scale;
+  return static_cast<float>(get_original_width()) * m_scale;
 }
 
 float
 Image::get_scaled_height() const
 {
-  return static_cast<float>(m_file_entry.get_height()) * m_scale;
+  return static_cast<float>(get_original_height()) * m_scale;
 }
 
 int
 Image::get_original_width() const
 {
-  return m_file_entry.get_width();
+  if (m_file_entry.is_complete())
+  {
+    return m_file_entry.get_width();
+  }
+  else
+  {
+    return 256;
+  }
 }
 
 int
 Image::get_original_height() const
 {
-  return m_file_entry.get_height();
+  if (m_file_entry.is_complete())
+  {
+    return m_file_entry.get_height();
+  }
+  else
+  {
+    return 256;
+  }
 }
 
 void
@@ -169,19 +181,25 @@ Image::cache_cleanup()
   m_cache->cleanup();
 }
 
-bool
+void
 Image::draw(const Rectf& cliprect, float zoom)
 {
-  m_visible = true;
+  boost::mutex::scoped_lock lock(mutex);
 
-  if (m_file_entry)
+  if (!m_file_entry.is_complete())
   {
-    m_cache->process_queue();
-    return m_renderer->draw(cliprect, zoom);
+    Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
+                           RGB(255,255,0));
   }
   else
   {
-    return false;
+    m_visible = true;
+
+    if (m_file_entry)
+    {
+      m_cache->process_queue();
+      m_renderer->draw(cliprect, zoom);
+    }
   }
 }
 
@@ -259,16 +277,18 @@ Image::calc_image_rect() const
   }
 }
 
-/*
-  void
-  Image::receive_file_entry(const FileEntry& file_entry)
-  {
-  assert(!m_file_entry);
+void
+Image::receive_file_entry(const FileEntry& file_entry)
+{
+  boost::mutex::scoped_lock lock(mutex);
 
   m_file_entry = file_entry;
+  m_scale     *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
+                                                      m_file_entry.get_height()));
+  m_image_rect = calc_image_rect();
 
-  m_max_scale      = m_file_entry.get_thumbnail_scale();
-  }
-*/
+  m_cache.reset(new ImageTileCache(m_file_entry));
+  m_renderer.reset(new ImageRenderer(*this, *m_cache));
+}
 
 /* EOF */
