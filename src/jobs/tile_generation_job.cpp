@@ -27,6 +27,23 @@
 #include "jobs/tile_generator.hpp"
 #include "database/tile_entry.hpp"
 
+TileGenerationJob::TileGenerationJob(const URL& url,
+                                     const boost::function<void (FileEntry)>& file_callback,
+                                     const boost::function<void (TileEntry)>& tile_callback) :
+  m_state(kWaiting),
+  m_file_entry(FileEntry::create_incomplete(url)),
+  m_min_scale(-1),
+  m_max_scale(-1),
+  m_min_scale_in_db(-1),
+  m_max_scale_in_db(-1),
+  m_file_callback(file_callback),
+  m_tile_callback(tile_callback),
+  m_tile_requests(),
+  m_late_tile_requests(),
+  m_tiles() 
+{
+}
+
 TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
                                      const boost::function<void (TileEntry)>& callback) :
   m_state(kWaiting),
@@ -35,7 +52,7 @@ TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_
   m_max_scale(-1),
   m_min_scale_in_db(min_scale_in_db),
   m_max_scale_in_db(max_scale_in_db),
-  m_callback(callback),
+  m_tile_callback(callback),
   m_tile_requests(),
   m_late_tile_requests(),
   m_tiles()
@@ -112,7 +129,7 @@ TileGenerationJob::process_tile_entry(const TileEntry& tile_entry)
 {
   m_tiles.push_back(tile_entry);
 
-  m_callback(tile_entry);
+  m_tile_callback(tile_entry);
 
   for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
   {
@@ -154,6 +171,21 @@ TileGenerationJob::is_aborted()
 void
 TileGenerationJob::run()
 {
+  if (!m_file_entry.is_complete())
+  { // generate file entry
+    Size size;
+    if (!SoftwareSurfaceFactory::get_size(m_file_entry.get_url(), size))
+    {
+      std::cout << "TileGenerationJob::run(): Couldn't get size for " << m_file_entry.get_url() << std::endl;
+      return;
+    }
+    else
+    {
+      m_file_entry.complete(size);
+      m_file_callback(m_file_entry);
+    }
+  }
+
   SoftwareSurfaceFactory::FileFormat format;
 
   { // Calculate min/max_scale

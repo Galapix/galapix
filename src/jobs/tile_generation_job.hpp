@@ -69,8 +69,11 @@ private:
   int       m_min_scale_in_db;
   int       m_max_scale_in_db;
   
+  /** Callback for the FileEntry, only used when FileEntry isn't passed in the constructor*/
+  boost::function<void (FileEntry)> m_file_callback;
+
   /** All generated tiles go through this callback */
-  boost::function<void (TileEntry)> m_callback;
+  boost::function<void (TileEntry)> m_tile_callback;
 
   /** Regular TileRequests */
   TileRequests m_tile_requests;
@@ -82,6 +85,10 @@ private:
   Tiles m_tiles;
 
 public:
+  TileGenerationJob(const URL& url,
+                    const boost::function<void (FileEntry)>& file_callback,
+                    const boost::function<void (TileEntry)>& tile_callback);
+
   TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
                     const boost::function<void (TileEntry)>& callback);
 

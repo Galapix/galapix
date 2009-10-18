@@ -45,13 +45,16 @@ public:
 
   int thumbnail_size;
 
+  bool complete;
+
   FileEntryImpl() :
     fileid(),
-      url(),
-      image_size(),
-      file_size(),
-      file_mtime(),
-      thumbnail_size()
+    url(),
+    image_size(),
+    file_size(),
+    file_mtime(),
+    thumbnail_size(),
+    complete()
   {}
 };
 
@@ -63,7 +66,8 @@ private:
             int size,
             int mtime,
             int width,
-            int height) :
+            int height,
+            bool complete_) :
     impl(new FileEntryImpl())
   {
     impl->fileid     = fileid;
@@ -71,6 +75,7 @@ private:
     impl->image_size = Size(width, height);
     impl->file_size  = size;
     impl->file_mtime = mtime;
+    impl->complete   = complete_;
 
     int s = Math::max(width, height);
     impl->thumbnail_size = 0;
@@ -86,13 +91,18 @@ public:
     impl()
   {}
 
+  static FileEntry create_incomplete(const URL& url)
+  {
+    return FileEntry(FileId(), url, 0, 0, 0, 0, false);
+  }
+
   static FileEntry create_without_fileid(const URL& url,
                                          int size,
                                          int mtime,
                                          int width,
                                          int height)
   {
-    return FileEntry(FileId(), url, size, mtime, width, height);
+    return FileEntry(FileId(), url, size, mtime, width, height, true);
   }
 
   static FileEntry create(const FileId& fileid, 
@@ -102,7 +112,19 @@ public:
                           int width,
                           int height)
   {
-    return FileEntry(fileid, url, size, mtime, width, height);
+    return FileEntry(fileid, url, size, mtime, width, height, true);
+  }
+
+  /** An incomplet FileEntry is one with just the URL, with
+   *  everything else unset or invalid */
+  bool        is_complete() const { return impl->complete; }
+
+  void        complete(const Size& size)
+  {
+    impl->file_size  = impl->url.get_size();
+    impl->file_mtime = impl->url.get_mtime();
+    impl->image_size = size;
+    impl->complete   = true;
   }
 
   void        set_fileid(const FileId& fileid) { impl->fileid = fileid; }
