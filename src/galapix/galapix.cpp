@@ -346,23 +346,30 @@ Galapix::view(const Options& opts,
   
   std::vector<FileEntry> file_entries;
 
-  // Request FileEntries from the database
-  if (view_all)
   {
-    if (opts.patterns.empty())
+    // Request FileEntries from the database
+    if (view_all)
     {
-      // When no files are given, display everything in the database
-      //database_thread.request_all_files(boost::bind(&Workspace::receive_file, &workspace, _1));
-      database.files.get_file_entries(file_entries);
-    }
-    else 
-    {
-      for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
+      if (opts.patterns.empty())
       {
-        std::cout << "Using pattern: '" << *i << "'" << std::endl;
-        //database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), *i);
-        database.files.get_file_entries(*i, file_entries);
+        // When no files are given, display everything in the database
+        //database_thread.request_all_files(boost::bind(&Workspace::receive_file, &workspace, _1));
+        database.files.get_file_entries(file_entries);
       }
+      else 
+      {
+        for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
+        {
+          std::cout << "Using pattern: '" << *i << "'" << std::endl;
+          //database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), *i);
+          database.files.get_file_entries(*i, file_entries);
+        }
+      }
+    }
+
+    for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
+    {
+      workspace.add_image(*i);
     }
   }
 
@@ -377,13 +384,8 @@ Galapix::view(const Options& opts,
     else
     {
       //database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
-      file_entries.push_back(FileEntry::create_incomplete(*i));
+      workspace.add_image(*i);
     }
-  }
-
-  for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
-  {
-    workspace.add_image(*i);
   }
 
   tile_job_manager.start_thread();  

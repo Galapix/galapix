@@ -27,14 +27,15 @@
 #include "galapix/image_renderer.hpp"
 
 ImageHandle
-Image::create(const FileEntry& file_entry)
+Image::create(const URL& url, const FileEntry& file_entry)
 {
-  return ImageHandle(new Image(file_entry));
+  return ImageHandle(new Image(url, file_entry));
 }
 
-Image::Image(const FileEntry& file_entry) :
-  m_visible(false),
+Image::Image(const URL& url, const FileEntry& file_entry) :
+  m_url(url),
   m_file_entry(file_entry),
+  m_visible(false),
   m_pos(),
   m_last_pos(),
   m_target_pos(),
@@ -43,9 +44,14 @@ Image::Image(const FileEntry& file_entry) :
   m_target_scale(1.0f),
   m_angle(0.0f),
   m_file_entry_requested(false),
-  m_cache(new ImageTileCache(m_file_entry)),
-  m_renderer(new ImageRenderer(*this, *m_cache))
+  m_cache(),
+  m_renderer()
 {
+  if (m_file_entry)
+  {
+    m_cache.reset(new ImageTileCache(m_file_entry));
+    m_renderer.reset(new ImageRenderer(*this, *m_cache));
+  }
 }
 
 Vector2f
@@ -146,7 +152,7 @@ Image::get_scaled_height() const
 int
 Image::get_original_width() const
 {
-  if (m_file_entry.is_complete())
+  if (m_file_entry)
   {
     return m_file_entry.get_width();
   }
@@ -159,7 +165,7 @@ Image::get_original_width() const
 int
 Image::get_original_height() const
 {
-  if (m_file_entry.is_complete())
+  if (m_file_entry)
   {
     return m_file_entry.get_height();
   }
@@ -185,9 +191,7 @@ Image::cache_cleanup()
 void
 Image::draw(const Rectf& cliprect, float zoom)
 {
-  boost::mutex::scoped_lock lock(mutex);
-  
-  if (!m_file_entry.is_complete())
+  if (!m_file_entry)
   {
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
                            RGB(255,255,0));
@@ -195,7 +199,7 @@ Image::draw(const Rectf& cliprect, float zoom)
     if (!m_file_entry_requested)
     {
       m_file_entry_requested = true;
-      DatabaseThread::current()->request_file(m_file_entry.get_url(),
+      DatabaseThread::current()->request_file(m_url,
                                               boost::bind(&Image::receive_file_entry, this, _1));
       //std::cout << "Image::draw(): receive_file_entry" << std::endl;
     }
@@ -250,7 +254,7 @@ Image::overlaps(const Rectf& cliprect) const
 URL
 Image::get_url() const
 {
-  return m_file_entry.get_url();
+  return m_url;
 }
 
 void
@@ -290,7 +294,6 @@ void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
   std::cout << this << " Image::receive_file_entry(const FileEntry& file_entry)" << std::endl;
-  boost::mutex::scoped_lock lock(mutex);
 
   m_file_entry_requested = false;
   m_file_entry = file_entry;

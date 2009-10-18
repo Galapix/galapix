@@ -60,6 +60,7 @@ private:
     kDone
   } m_state;
 
+  URL       m_url;
   FileEntry m_file_entry;
 
   /** Only valid if state is kRunning or kDone */

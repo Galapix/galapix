@@ -40,12 +40,12 @@ class Rectf;
 class Image
 {
 private:
-  boost::mutex mutex;
+  URL       m_url;
+  FileEntry m_file_entry;
 
   bool m_visible;
   Rectf m_image_rect;
-  FileEntry m_file_entry;
-
+  
   /** Position refers to the center of the image */
   Vector2f m_pos;
   Vector2f m_last_pos;
@@ -65,10 +65,10 @@ private:
   boost::scoped_ptr<ImageRenderer>  m_renderer;
 
 private:
-  Image(const FileEntry& file_entry);
+  Image(const URL& url, const FileEntry& file_entry);
 
 public:
-  static ImageHandle create(const FileEntry& file_entry);
+  static ImageHandle create(const URL& url, const FileEntry& file_entry);
 
   // _____________________________________________________
   // Drawing stuff

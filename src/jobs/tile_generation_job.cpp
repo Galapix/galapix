@@ -31,7 +31,8 @@ TileGenerationJob::TileGenerationJob(const URL& url,
                                      const boost::function<void (FileEntry)>& file_callback,
                                      const boost::function<void (TileEntry)>& tile_callback) :
   m_state(kWaiting),
-  m_file_entry(FileEntry::create_incomplete(url)),
+  m_url(url),
+  m_file_entry(),
   m_min_scale(-1),
   m_max_scale(-1),
   m_min_scale_in_db(-1),
@@ -47,6 +48,7 @@ TileGenerationJob::TileGenerationJob(const URL& url,
 TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
                                      const boost::function<void (TileEntry)>& callback) :
   m_state(kWaiting),
+  m_url(file_entry.get_url()),
   m_file_entry(file_entry),
   m_min_scale(-1),
   m_max_scale(-1),
@@ -171,8 +173,8 @@ TileGenerationJob::is_aborted()
 void
 TileGenerationJob::run()
 {
-  if (!m_file_entry.is_complete())
-  { // generate file entry
+  if (!m_file_entry)
+  { // generate FileEntry if not already given
     Size size;
     if (!SoftwareSurfaceFactory::get_size(m_file_entry.get_url(), size))
     {
@@ -181,7 +183,8 @@ TileGenerationJob::run()
     }
     else
     {
-      m_file_entry.complete(size);
+      m_file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
+                                                      size.width, size.height);
       m_file_callback(m_file_entry);
     }
   }

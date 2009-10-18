@@ -83,7 +83,7 @@ Workspace::get_image(const Vector2f& pos) const
 void
 Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 {
-  ImageHandle image = Image::create(FileEntry::create_incomplete(url));
+  ImageHandle image = Image::create(url, FileEntry());
   m_images.add(image);
   image->set_scale(scale);
   image->set_pos(pos);
@@ -92,28 +92,25 @@ Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
 void
 Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float scale)
 {
-  ImageHandle image = Image::create(file_entry);
+  ImageHandle image = Image::create(file_entry.get_url(), file_entry);
   m_images.add(image);
   image->set_scale(scale);
   image->set_pos(pos);
 }
 
-ImageHandle
+void
 Workspace::add_image(const FileEntry& file_entry)
 {
   //std::cout << "Workspace::add_image(const FileEntry& file_entry)" << std::endl;
 
-  if (file_entry.is_complete() &&
-      (file_entry.get_width()  == 0 || file_entry.get_height() == 0))
+  if (file_entry && (file_entry.get_width()  == 0 || file_entry.get_height() == 0))
   {
     std::cout << "Workspace: Error: ignoring " << file_entry.get_url() << " as its size is (0, 0)" << std::endl;
-    return ImageHandle();
   }
   else
   {
-    ImageHandle image = Image::create(file_entry);
+    ImageHandle image = Image::create(file_entry.get_url(), file_entry);
     m_images.add(image);
-    return image;
   }
 }
 
