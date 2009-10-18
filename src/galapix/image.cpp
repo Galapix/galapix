@@ -52,6 +52,8 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
     m_cache.reset(new ImageTileCache(m_file_entry));
     m_renderer.reset(new ImageRenderer(*this, *m_cache));
   }
+
+  m_image_rect = calc_image_rect();
 }
 
 Vector2f
@@ -293,12 +295,13 @@ Image::calc_image_rect() const
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
-  std::cout << this << " Image::receive_file_entry(const FileEntry& file_entry)" << std::endl;
-
+  // FIXME: mutex this
   m_file_entry_requested = false;
   m_file_entry = file_entry;
-  m_target_scale  *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
+  m_target_scale *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
                                                    m_file_entry.get_height()));
+  m_scale = m_target_scale;
+
   m_image_rect = calc_image_rect();
 
   m_cache.reset(new ImageTileCache(m_file_entry));
