@@ -42,16 +42,16 @@
 Viewer* Viewer::current_ = 0;
 
 Viewer::Viewer(Workspace* workspace_) :
-  workspace(workspace_),
-  mark_for_redraw(false),
-  draw_grid(false),
-  pin_grid(false),
-  gamma(1.0f),
-  brightness(0.0f),
-  contrast(1.0f),
-  grid_offset(0.0f, 0.0f),
-  grid_size(400.0f, 300.0f),
-  grid_color(255, 0, 0, 255)
+  m_workspace(workspace_),
+  m_mark_for_redraw(false),
+  m_draw_grid(false),
+  m_pin_grid(false),
+  m_gamma(1.0f),
+  m_brightness(0.0f),
+  m_contrast(1.0f),
+  m_grid_offset(0.0f, 0.0f),
+  m_grid_size(400.0f, 300.0f),
+  m_grid_color(255, 0, 0, 255)
 {
   current_ = this;
 
@@ -74,34 +74,34 @@ Viewer::Viewer(Workspace* workspace_) :
   middle_tool = pan_tool.get();
   right_tool  = zoom_out_tool.get();
 
-  background_color = 0;
+  m_background_color = 0;
   // Black to White
-  background_colors.push_back(RGBA(  0,   0,   0));
-  background_colors.push_back(RGBA( 64,  64,  64));
-  background_colors.push_back(RGBA(128, 128, 128));
-  background_colors.push_back(RGBA(255, 255, 255));
+  m_background_colors.push_back(RGBA(  0,   0,   0));
+  m_background_colors.push_back(RGBA( 64,  64,  64));
+  m_background_colors.push_back(RGBA(128, 128, 128));
+  m_background_colors.push_back(RGBA(255, 255, 255));
   // Rainbow
-  background_colors.push_back(RGBA(255,   0,   0));
-  background_colors.push_back(RGBA(255, 255,   0));
-  background_colors.push_back(RGBA(255,   0, 255));
-  background_colors.push_back(RGBA(  0, 255,   0));
-  background_colors.push_back(RGBA(  0, 255, 255));
-  background_colors.push_back(RGBA(  0,   0, 255));
+  m_background_colors.push_back(RGBA(255,   0,   0));
+  m_background_colors.push_back(RGBA(255, 255,   0));
+  m_background_colors.push_back(RGBA(255,   0, 255));
+  m_background_colors.push_back(RGBA(  0, 255,   0));
+  m_background_colors.push_back(RGBA(  0, 255, 255));
+  m_background_colors.push_back(RGBA(  0,   0, 255));
   // Dimmed Rainbow
-  background_colors.push_back(RGBA(128,   0,   0));
-  background_colors.push_back(RGBA(128, 128,   0));
-  background_colors.push_back(RGBA(128,   0, 128));
-  background_colors.push_back(RGBA(  0, 128,   0));
-  background_colors.push_back(RGBA(  0, 128, 128));
-  background_colors.push_back(RGBA(  0,   0, 128));
+  m_background_colors.push_back(RGBA(128,   0,   0));
+  m_background_colors.push_back(RGBA(128, 128,   0));
+  m_background_colors.push_back(RGBA(128,   0, 128));
+  m_background_colors.push_back(RGBA(  0, 128,   0));
+  m_background_colors.push_back(RGBA(  0, 128, 128));
+  m_background_colors.push_back(RGBA(  0,   0, 128));
 }
 
 void
 Viewer::redraw()
 {
-  if (!mark_for_redraw)
+  if (!m_mark_for_redraw)
   {
-    mark_for_redraw = true;
+    m_mark_for_redraw = true;
   
 #ifdef GALAPIX_SDL
     SDL_Event event;
@@ -118,8 +118,8 @@ Viewer::redraw()
 void
 Viewer::draw()
 {
-  mark_for_redraw = false;
-  Framebuffer::clear(background_colors[background_color]);
+  m_mark_for_redraw = false;
+  Framebuffer::clear(m_background_colors[m_background_color]);
 
   bool clip_debug = false;
 
@@ -132,12 +132,12 @@ Viewer::draw()
     glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
   }
 
-  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
+  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
 
-  if (state.get_angle() != 0.0f)
+  if (m_state.get_angle() != 0.0f)
   {
     glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
-    glRotatef(state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
+    glRotatef(m_state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
     glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
 
     // FIXME: We enlarge the cliprect so much that we can rotate
@@ -151,14 +151,14 @@ Viewer::draw()
     cliprect.bottom = center.y + diagonal;
   }
 
-  glTranslatef(state.get_offset().x, state.get_offset().y, 0.0f);
-  glScalef(state.get_scale(), state.get_scale(), 1.0f);
+  glTranslatef(m_state.get_offset().x, m_state.get_offset().y, 0.0f);
+  glScalef(m_state.get_scale(), m_state.get_scale(), 1.0f);
 
   if (clip_debug)
     Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));
   
-  workspace->draw(cliprect,
-                  state.get_scale());
+  m_workspace->draw(cliprect,
+                  m_state.get_scale());
 
   left_tool->draw();
   middle_tool->draw();
@@ -166,17 +166,17 @@ Viewer::draw()
 
   glPopMatrix();
 
-  if (draw_grid)
+  if (m_draw_grid)
   {
-    if (pin_grid)
+    if (m_pin_grid)
     {
-      Framebuffer::draw_grid(grid_offset * state.get_scale() + state.get_offset(), 
-                             grid_size * state.get_scale(),
-                             grid_color);
+      Framebuffer::draw_grid(m_grid_offset * m_state.get_scale() + m_state.get_offset(), 
+                             m_grid_size * m_state.get_scale(),
+                             m_grid_color);
     }
     else
     {
-      Framebuffer::draw_grid(grid_offset, grid_size, grid_color);
+      Framebuffer::draw_grid(m_grid_offset, m_grid_size, m_grid_color);
     }
   }
 }
@@ -184,31 +184,31 @@ Viewer::draw()
 void
 Viewer::update(float delta)
 {
-  workspace->update(delta);
+  m_workspace->update(delta);
 
-  zoom_in_tool ->update(mouse_pos, delta);
-  zoom_out_tool->update(mouse_pos, delta);
+  zoom_in_tool ->update(m_mouse_pos, delta);
+  zoom_out_tool->update(m_mouse_pos, delta);
 
-  keyboard_zoom_in_tool ->update(mouse_pos, delta);
-  keyboard_zoom_out_tool->update(mouse_pos, delta);
+  keyboard_zoom_in_tool ->update(m_mouse_pos, delta);
+  keyboard_zoom_out_tool->update(m_mouse_pos, delta);
 }
 
 void
 Viewer::on_mouse_motion(const Vector2i& pos, const Vector2i& rel)
 {
-  mouse_pos = pos;
+  m_mouse_pos = pos;
 
-  left_tool  ->move(mouse_pos, rel);
-  middle_tool->move(mouse_pos, rel);
-  right_tool ->move(mouse_pos, rel);
+  left_tool  ->move(m_mouse_pos, rel);
+  middle_tool->move(m_mouse_pos, rel);
+  right_tool ->move(m_mouse_pos, rel);
 
-  keyboard_view_rotate_tool->move(mouse_pos, rel);
+  keyboard_view_rotate_tool->move(m_mouse_pos, rel);
 }
 
 void
 Viewer::on_mouse_button_down(const Vector2i& pos, int btn)
 {
-  mouse_pos = pos;
+  m_mouse_pos = pos;
 
   switch(btn)
   {
@@ -229,7 +229,7 @@ Viewer::on_mouse_button_down(const Vector2i& pos, int btn)
 void
 Viewer::on_mouse_button_up(const Vector2i& pos, int btn)
 {
-  mouse_pos = pos;
+  m_mouse_pos = pos;
 
   switch(btn)
   {
@@ -253,16 +253,16 @@ Viewer::on_key_up(int key)
   switch(key)
   {
     case SDLK_END:
-      keyboard_zoom_out_tool->up(mouse_pos);
+      keyboard_zoom_out_tool->up(m_mouse_pos);
       break;
 
     case SDLK_HOME:
-      keyboard_zoom_in_tool->up(mouse_pos);
+      keyboard_zoom_in_tool->up(m_mouse_pos);
       break;
 
     case SDLK_RSHIFT:
     case SDLK_LSHIFT:
-      keyboard_view_rotate_tool->up(mouse_pos);
+      keyboard_view_rotate_tool->up(m_mouse_pos);
       break;
   }
 }
@@ -273,16 +273,16 @@ Viewer::on_key_down(int key)
   switch(key)
   {
     case SDLK_END:
-      keyboard_zoom_out_tool->down(mouse_pos);
+      keyboard_zoom_out_tool->down(m_mouse_pos);
       break;
 
     case SDLK_HOME:
-      keyboard_zoom_in_tool->down(mouse_pos);
+      keyboard_zoom_in_tool->down(m_mouse_pos);
       break;
 
     case SDLK_RSHIFT:
     case SDLK_LSHIFT:
-      keyboard_view_rotate_tool->down(mouse_pos);
+      keyboard_view_rotate_tool->down(m_mouse_pos);
       break;
   }
 }
@@ -291,7 +291,7 @@ bool
 Viewer::is_active() const
 {
   return
-    workspace->is_animated()   ||
+    m_workspace->is_animated()   ||
     zoom_in_tool ->is_active() ||
     zoom_out_tool->is_active() ||
     keyboard_zoom_in_tool ->is_active() ||
@@ -301,15 +301,15 @@ Viewer::is_active() const
 void
 Viewer::set_grid(const Vector2f& offset, const Sizef& size)
 {
-  if (pin_grid)
+  if (m_pin_grid)
   {
-    grid_offset = offset;
-    grid_size   = size;
+    m_grid_offset = offset;
+    m_grid_size   = size;
   }
   else
   {
-    grid_offset = offset * state.get_scale() + state.get_offset();
-    grid_size   = size * state.get_scale();
+    m_grid_offset = offset * m_state.get_scale() + m_state.get_offset();
+    m_grid_size   = size * m_state.get_scale() ;
   }
 }
 
@@ -362,120 +362,120 @@ void
 Viewer::increase_contrast()
 {
   //contrast += 0.1f;
-  contrast *= 1.1f;
-  std::cout << "Contrast: " << contrast << std::endl;
-  Framebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  m_contrast *= 1.1f;
+  std::cout << "Contrast: " << m_contrast << std::endl;
+  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
 Viewer::decrease_contrast()
 {
   //contrast -= 0.1f;
-  contrast /= 1.1f;
-  std::cout << "Contrast: " << contrast << std::endl;
-  Framebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  m_contrast /= 1.1f;
+  std::cout << "Contrast: " << m_contrast << std::endl;
+  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
 Viewer::increase_brightness()
 {
-  brightness += 0.03f;
-  std::cout << "Brightness: " << brightness << std::endl;
-  Framebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  m_brightness += 0.03f;
+  std::cout << "Brightness: " << m_brightness << std::endl;
+  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
 Viewer::decrease_brightness()
 {
-  brightness -= 0.03f;
-  std::cout << "Brightness: " << brightness << std::endl;
-  Framebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  m_brightness -= 0.03f;
+  std::cout << "Brightness: " << m_brightness << std::endl;
+  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
 Viewer::increase_gamma()
 {
-  gamma *= 1.1f;
-  std::cout << "Gamma: " << gamma << std::endl;
-  Framebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  m_gamma *= 1.1f;
+  std::cout << "Gamma: " << m_gamma << std::endl;
+  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
 Viewer::decrease_gamma()
 {
-  gamma /= 1.1f;
-  std::cout << "Gamma: " << gamma << std::endl;
-  Framebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  m_gamma /= 1.1f;
+  std::cout << "Gamma: " << m_gamma << std::endl;
+  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
 Viewer::reset_gamma()
 {
-  brightness = 0.0f;
-  contrast   = 1.0f;
-  gamma      = 1.0f;
-  Framebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  m_brightness = 0.0f;
+  m_contrast   = 1.0f;
+  m_gamma      = 1.0f;
+  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
 Viewer::toggle_grid()
 {
-  draw_grid = !draw_grid;
-  std::cout << "Draw Grid: " << draw_grid << std::endl;
+  m_draw_grid = !m_draw_grid;
+  std::cout << "Draw Grid: " << m_draw_grid << std::endl;
 }
 
 void
 Viewer::layout_auto()
 {
-  workspace->layout_aspect(static_cast<float>(Framebuffer::get_width()),
-                           static_cast<float>(Framebuffer::get_height()));
+  m_workspace->layout_aspect(static_cast<float>(Framebuffer::get_width()),
+                             static_cast<float>(Framebuffer::get_height()));
 }
 
 void
 Viewer::layout_random()
 {
-  workspace->layout_random();
+  m_workspace->layout_random();
 }
 
 void
 Viewer::layout_solve_overlaps()
 {
-  workspace->solve_overlaps();
+  m_workspace->solve_overlaps();
 }
 
 void
 Viewer::layout_spiral()
 {
-  workspace->layout_spiral();
+  m_workspace->layout_spiral();
 }
 
 void
 Viewer::layout_tight()
 {
-  workspace->layout_tight(static_cast<float>(Framebuffer::get_width()),
+  m_workspace->layout_tight(static_cast<float>(Framebuffer::get_width()),
                           static_cast<float>(Framebuffer::get_height()));
 }
 
 void
 Viewer::layout_vertical()
 {
-  workspace->layout_vertical();
+  m_workspace->layout_vertical();
 }
 
 void
 Viewer::toggle_pinned_grid()
 {
-  pin_grid = !pin_grid;
-  std::cout << "Pin Grid: " << pin_grid << std::endl;
-  if (!pin_grid)
+  m_pin_grid = !m_pin_grid;
+  std::cout << "Pin Grid: " << m_pin_grid << std::endl;
+  if (!m_pin_grid)
   {
-    grid_offset = grid_offset * state.get_scale() + state.get_offset();
-    grid_size  *= state.get_scale();
+    m_grid_offset = m_grid_offset * m_state.get_scale() + m_state.get_offset();
+    m_grid_size  *= m_state.get_scale();
   }
   else
   {
-    grid_offset = (grid_offset - state.get_offset()) / state.get_scale();
-    grid_size  /= state.get_scale();            
+    m_grid_offset = (m_grid_offset - m_state.get_offset()) / m_state.get_scale();
+    m_grid_size  /= m_state.get_scale();            
   }
 }
 
@@ -484,63 +484,63 @@ Viewer::toggle_background_color(bool backwards)
 {
   if (backwards)
   {
-    background_color -= 1;
-    if (background_color < 0)
-      background_color = static_cast<int>(background_colors.size()) - 1;
+    m_background_color -= 1;
+    if (m_background_color < 0)
+      m_background_color = static_cast<int>(m_background_colors.size()) - 1;
   }
   else
   {
-    background_color += 1;
-    if (background_color >= static_cast<int>(background_colors.size()))
-      background_color = 0;
+    m_background_color += 1;
+    if (m_background_color >= static_cast<int>(m_background_colors.size()))
+      m_background_color = 0;
   }
 }
 
 void
 Viewer::zoom_home()
 {
-  state.set_offset(Vector2f(0.0f, 0.0f));
-  state.set_angle(0.0f);
-  state.set_scale(1.0f);
+  m_state.set_offset(Vector2f(0.0f, 0.0f));
+  m_state.set_angle(0.0f);
+  m_state.set_scale(1.0f);
 }
 
 void
 Viewer::zoom_to_selection()
 {
-  if (!workspace->get_selection().empty())
+  if (!m_workspace->get_selection().empty())
   {
-    state.zoom_to(Framebuffer::get_size(),
-                  workspace->get_selection().get_bounding_rect());
+    m_state.zoom_to(Framebuffer::get_size(),
+                  m_workspace->get_selection().get_bounding_rect());
   }
   else
   {
-    state.zoom_to(Framebuffer::get_size(),
-                  workspace->get_bounding_rect());
+    m_state.zoom_to(Framebuffer::get_size(),
+                  m_workspace->get_bounding_rect());
   }
 }
 
 void 
 Viewer::rotate_view_90()
 {
-  state.rotate(90.0f);
+  m_state.rotate(90.0f);
 }
 
 void 
 Viewer::rotate_view_270()
 {
-  state.rotate(-90.0f);
+  m_state.rotate(-90.0f);
 }
 
 void
 Viewer::delete_selection()
 {
-  workspace->delete_selection();
+  m_workspace->delete_selection();
 }
 
 void
 Viewer::reset_view_rotation()
 {
-  state.set_angle(0.0f);
+  m_state.set_angle(0.0f);
 }
 
 void
@@ -564,14 +564,14 @@ Viewer::toggle_trackball_mode()
 void
 Viewer::load()
 {
-  workspace->load("/tmp/workspace-dump.galapix");
+  m_workspace->load("/tmp/workspace-dump.galapix");
 }
 
 void
 Viewer::save()
 {
   std::ofstream out("/tmp/workspace-dump.galapix");
-  workspace->save(out);
+  m_workspace->save(out);
   out.close();
 }
 
@@ -580,7 +580,7 @@ Viewer::refresh_selection()
 {
   // FIXME: Make force on Shift-F5 and normal F5 only refresh if the file changed
   std::cout << "Refreshing tiles..." << std::endl;
-  Selection selection = workspace->get_selection();
+  Selection selection = m_workspace->get_selection();
   bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
   for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
   {
@@ -592,54 +592,54 @@ void
 Viewer::clear_cache()
 {
   std::cout << "Workspace: Clearing cache" << std::endl;
-  workspace->clear_cache();
+  m_workspace->clear_cache();
 }
 
 void
 Viewer::cleanup_cache()
 {
   std::cout << "Workspace: Cache Cleanup" << std::endl;
-  workspace->cache_cleanup();
+  m_workspace->cache_cleanup();
 }
 
 void
 Viewer::sort_image_list()
 {
   std::cout << "Workspace: Sorting" << std::endl;
-  workspace->sort();
+  m_workspace->sort();
 }
 
 void
 Viewer::shuffle_image_list()
 {
   std::cout << "Workspace: Random Shuffle" << std::endl;
-  workspace->random_shuffle();
+  m_workspace->random_shuffle();
 }
 
 void
 Viewer::isolate_selection()
 {
-  workspace->isolate_selection();
+  m_workspace->isolate_selection();
 }
 
 void
 Viewer::print_images()
 {
-  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
-  workspace->print_images(cliprect);
+  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+  m_workspace->print_images(cliprect);
 }
 
 void
 Viewer::print_info()
 {
-  Rectf cliprect = state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
-  workspace->print_info(cliprect);
+  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+  m_workspace->print_info(cliprect);
 }
 
 void
 Viewer::print_state()
 {
-  std::cout << state.get_offset() << " " << state.get_scale() << std::endl;
+  std::cout << m_state.get_offset() << " " << m_state.get_scale() << std::endl;
 }
 
 /* EOF */

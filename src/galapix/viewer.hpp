@@ -49,15 +49,15 @@ public:
   static Viewer* current() { return current_; }
 
 private:
-  Workspace* workspace;
-  bool  mark_for_redraw;
-  bool  draw_grid;
-  bool  pin_grid;
-  float gamma;
-  float brightness;
-  float contrast;
+  Workspace* m_workspace;
+  bool  m_mark_for_redraw;
+  bool  m_draw_grid;
+  bool  m_pin_grid;
+  float m_gamma;
+  float m_brightness;
+  float m_contrast;
 
-  ViewerState state;
+  ViewerState m_state;
 
   boost::shared_ptr<ZoomTool>   keyboard_zoom_in_tool;
   boost::shared_ptr<ZoomTool>   keyboard_zoom_out_tool;
@@ -76,14 +76,14 @@ private:
   Tool* middle_tool;
   Tool* right_tool;
 
-  Vector2i mouse_pos;
+  Vector2i m_mouse_pos;
 
-  int background_color;
-  std::vector<RGBA> background_colors;
+  int m_background_color;
+  std::vector<RGBA> m_background_colors;
 
-  Vector2f grid_offset;
-  Sizef    grid_size;
-  RGBA     grid_color;
+  Vector2f m_grid_offset;
+  Sizef    m_grid_size;
+  RGBA     m_grid_color;
 
 public:
   Viewer(Workspace* workspace);
@@ -93,8 +93,8 @@ public:
 
   void redraw();
 
-  ViewerState& get_state() { return state; }
-  Workspace*   get_workspace() { return workspace; }
+  ViewerState& get_state() { return m_state; }
+  Workspace*   get_workspace() { return m_workspace; }
 
   void on_key_up(int key);
   void on_key_down(int key);
