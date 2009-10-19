@@ -227,6 +227,101 @@ SoftwareSurface::scale(const Size& size)
 }
 
 SoftwareSurfaceHandle
+SoftwareSurface::transform(Modifier mod)
+{
+  switch(mod)
+  {
+    case kRot0:
+      return shared_from_this();
+
+    case kRot90:
+      return rotate90();
+
+    case kRot180:
+      return rotate180();
+
+    case kRot270:
+      return rotate270();
+
+    case kRot0Flip:
+      return vflip();
+
+    case kRot90Flip:
+      return rotate90()->vflip();
+
+    case kRot180Flip:
+      return rotate180()->vflip();
+
+    case kRot270Flip:
+      return rotate270()->vflip();
+
+    default:
+      assert(!"never reached");
+      return shared_from_this();
+  }
+}
+
+SoftwareSurfaceHandle
+SoftwareSurface::rotate90()
+{
+  assert(!"Implement me");
+  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
+
+  for(int y = 0; y < impl->size.height; ++y)
+    for(int x = 0; x < impl->size.width; ++x)
+    {
+      // implement me
+    }
+
+  return out;
+}
+
+SoftwareSurfaceHandle
+SoftwareSurface::rotate180()
+{
+  assert(!"Implement me");
+  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
+
+  for(int y = 0; y < impl->size.height; ++y)
+    for(int x = 0; x < impl->size.width; ++x)
+    {
+      // implement me
+    }
+
+  return out; 
+}
+
+SoftwareSurfaceHandle
+SoftwareSurface::rotate270()
+{
+  assert(!"Implement me");
+  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
+
+  for(int y = 0; y < impl->size.height; ++y)
+    for(int x = 0; x < impl->size.width; ++x)
+    {
+      // implement me
+    }
+
+  return out; 
+}
+
+SoftwareSurfaceHandle
+SoftwareSurface::hflip()
+{
+  assert(!"Implement me");
+  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
+
+  for(int y = 0; y < impl->size.height; ++y)
+    for(int x = 0; x < impl->size.width; ++x)
+    {
+      // implement me
+    }
+
+  return out; 
+}
+
+SoftwareSurfaceHandle
 SoftwareSurface::vflip()
 {
   SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);

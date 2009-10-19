@@ -40,7 +40,23 @@ typedef boost::shared_ptr<SoftwareSurface> SoftwareSurfaceHandle;
 class SoftwareSurface : public boost::enable_shared_from_this<SoftwareSurface>
 {
 public:
-  enum Format { RGB_FORMAT, RGBA_FORMAT };
+  enum Format 
+  { 
+    RGB_FORMAT, 
+    RGBA_FORMAT 
+  };
+
+  enum Modifier 
+  {
+    kRot0,
+    kRot180,
+    kRot270,
+    kRot90,
+    kRot0Flip,
+    kRot180Flip,
+    kRot270Flip,
+    kRot90Flip
+  };
 
 private:
   SoftwareSurface(Format format, const Size& size);
@@ -56,7 +72,13 @@ public:
   SoftwareSurfaceHandle halve();
   SoftwareSurfaceHandle scale(const Size& size);
   SoftwareSurfaceHandle crop(const Rect& rect);
+
+  SoftwareSurfaceHandle transform(Modifier mod);
+  SoftwareSurfaceHandle rotate90();
+  SoftwareSurfaceHandle rotate180();
+  SoftwareSurfaceHandle rotate270();
   SoftwareSurfaceHandle vflip();
+  SoftwareSurfaceHandle hflip();
 
   BlobHandle get_raw_data()  const;
    
