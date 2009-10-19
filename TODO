@@ -95,7 +95,8 @@ General Problems:
 
 * cleanup exceptions:
 
-  - they must tell which part of the code caused them JPEG::read_header()
+  - they must tell which part of the code caused them, i.e. a prefix
+    like "JPEG::read_header()"
 
   - they must no include "Error"
 
@@ -106,7 +107,8 @@ galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::reques
 * failed loading does not propagate to the image, need some kind of
   callback to report errors
 
-* requests can stack up so that galapix is busy flushing the cache multiple times in a row before stuff can continue
+* requests can stack up so that galapix is busy flushing the cache
+  multiple times in a row before stuff can continue
 
 * TileEntry::get_blob vs TileEntry::get_surface who uses what?
 
@@ -123,18 +125,11 @@ galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::reques
 
 * make tile and file cache size configurable
 
-* break up tile generation some more, as other parts of the code, such
-  as "galapix thumbgen" don't need the complexity of TileGenerationJob
-
 * DatabaseThread is very similar to JobWorkerThread, maybe merge them
 
 * maybe have something like JobHandle->spawn_child_job()
 
 * current use of cURL is not thread safe due to curl_global_init()
-
-* Quadtree stuff in Workspace could be speed up by recycling the
-  std::vector object and by using marks on Image instead of a std::set
-  to find things no longer on screen
 
 * quality of small thumbnails is very bad, should start with larger
   thumbnails and then halve() them down instead of using scale()
