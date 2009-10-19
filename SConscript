@@ -104,6 +104,7 @@ if compile_galapix_tests:
     libgalapix_test_env.Program("test/jpeg_size_test", ["test/jpeg_size_test.cpp"])
     libgalapix_test_env.Program("test/curl_test", ["test/curl_test.cpp"])
     libgalapix_test_env.Program("test/exif_test", ["test/exif_test.cpp"])
+    libgalapix_test_env.Program("test/software_surface_test", ["test/software_surface_test.cpp"])
 
 if compile_galapix_sdl:
     sdl_env = Environment(CXX=preset_cxx,
