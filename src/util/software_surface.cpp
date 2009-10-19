@@ -28,6 +28,30 @@
 // FIXME: Stuff in this file is currently written to just work, not to
 // be fast
 
+namespace {
+
+inline
+void copy_pixel_rgb(SoftwareSurface& dst, int dst_x, int dst_y,
+                    SoftwareSurface& src, int src_x, int src_y)
+{
+  uint8_t* const d = dst.get_row_data(dst_y) + 3*dst_x;
+  uint8_t* const s = src.get_row_data(src_y) + 3*src_x;
+  d[0] = s[0];
+  d[1] = s[1];
+  d[2] = s[2];
+}
+
+inline
+void copy_pixel_rgba(SoftwareSurface& dst, int dst_x, int dst_y,
+                     SoftwareSurface& src, int src_x, int src_y)
+{
+  uint32_t* const d = reinterpret_cast<uint32_t*>(dst.get_row_data(dst_y) + 4*dst_x);
+  uint32_t* const s = reinterpret_cast<uint32_t*>(src.get_row_data(src_y) + 4*src_x);
+  *d = *s;
+}
+
+} // namespace
+
 class SoftwareSurfaceImpl
 {
 public:
@@ -179,7 +203,7 @@ SoftwareSurface::scale(const Size& size)
 {
   if (size == impl->size)
   {
-    return shared_from_this();
+    return clone();
   }
   else
   {
@@ -227,12 +251,20 @@ SoftwareSurface::scale(const Size& size)
 }
 
 SoftwareSurfaceHandle
+SoftwareSurface::clone()
+{
+  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
+  memcpy(out->impl->pixels.get(), impl->pixels.get(), impl->pitch * impl->size.height);
+  return out;
+}
+
+SoftwareSurfaceHandle
 SoftwareSurface::transform(Modifier mod)
 {
   switch(mod)
   {
     case kRot0:
-      return shared_from_this();
+      return clone();
 
     case kRot90:
       return rotate90();
@@ -247,31 +279,50 @@ SoftwareSurface::transform(Modifier mod)
       return vflip();
 
     case kRot90Flip:
+      // FIXME: Could be made faster
       return rotate90()->vflip();
 
     case kRot180Flip:
+      // FIXME: Could be made faster
       return rotate180()->vflip();
 
     case kRot270Flip:
+      // FIXME: Could be made faster
       return rotate270()->vflip();
 
     default:
       assert(!"never reached");
-      return shared_from_this();
+      return clone();
   }
 }
 
 SoftwareSurfaceHandle
 SoftwareSurface::rotate90()
 {
-  assert(!"Implement me");
   SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
 
-  for(int y = 0; y < impl->size.height; ++y)
-    for(int x = 0; x < impl->size.width; ++x)
-    {
-      // implement me
-    }
+  switch(impl->format)
+  {
+    case SoftwareSurface::RGB_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgb(*out, impl->size.height - y - 1, x,
+                         *this, x, y);
+        }
+      break;
+
+    case SoftwareSurface::RGBA_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+      {
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgba(*out, impl->size.height - y - 1, x,
+                          *this, x, y);
+        }
+      }
+      break;
+  }
 
   return out;
 }
@@ -279,14 +330,30 @@ SoftwareSurface::rotate90()
 SoftwareSurfaceHandle
 SoftwareSurface::rotate180()
 {
-  assert(!"Implement me");
   SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
 
-  for(int y = 0; y < impl->size.height; ++y)
-    for(int x = 0; x < impl->size.width; ++x)
-    {
-      // implement me
-    }
+  switch(impl->format)
+  {
+    case SoftwareSurface::RGB_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgb(*out, impl->size.width - x - 1, impl->size.height - 1 - y,
+                         *this, x, y);
+        }
+      break;
+
+    case SoftwareSurface::RGBA_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+      {
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgba(*out, impl->size.width - x - 1, impl->size.height - 1 - y,
+                          *this, x, y);
+        }
+      }
+      break;
+  }
 
   return out; 
 }
@@ -294,14 +361,30 @@ SoftwareSurface::rotate180()
 SoftwareSurfaceHandle
 SoftwareSurface::rotate270()
 {
-  assert(!"Implement me");
   SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
 
-  for(int y = 0; y < impl->size.height; ++y)
-    for(int x = 0; x < impl->size.width; ++x)
-    {
-      // implement me
-    }
+  switch(impl->format)
+  {
+    case SoftwareSurface::RGB_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgb(*out, y, impl->size.width - 1 - x,
+                         *this, x, y);
+        }
+      break;
+
+    case SoftwareSurface::RGBA_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+      {
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgba(*out, y, impl->size.width - 1 - x,
+                          *this, x, y);
+        }
+      }
+      break;
+  }
 
   return out; 
 }
@@ -309,14 +392,30 @@ SoftwareSurface::rotate270()
 SoftwareSurfaceHandle
 SoftwareSurface::hflip()
 {
-  assert(!"Implement me");
   SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
 
-  for(int y = 0; y < impl->size.height; ++y)
-    for(int x = 0; x < impl->size.width; ++x)
-    {
-      // implement me
-    }
+  switch(impl->format)
+  {
+    case SoftwareSurface::RGB_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgb(*out, impl->size.width - 1 - x, y,
+                         *this, x, y);
+        }
+      break;
+
+    case SoftwareSurface::RGBA_FORMAT:
+      for(int y = 0; y < impl->size.height; ++y)
+      {
+        for(int x = 0; x < impl->size.width; ++x)
+        {
+          copy_pixel_rgba(*out, impl->size.width - 1 - x, y,
+                          *this, x, y);
+        }
+      }
+      break;
+  }
 
   return out; 
 }
@@ -327,7 +426,9 @@ SoftwareSurface::vflip()
   SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
 
   for(int y = 0; y < impl->size.height; ++y)
+  {
     memcpy(out->get_row_data(impl->size.height - y - 1), get_row_data(y), impl->pitch);
+  }
 
   return out;
 }
@@ -441,7 +542,7 @@ SoftwareSurface::to_rgb()
   switch(impl->format)
   {
     case RGB_FORMAT:
-      return shared_from_this();
+      return clone();
         
     case RGBA_FORMAT:
     {

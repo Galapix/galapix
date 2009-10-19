@@ -20,7 +20,6 @@
 #define HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_HPP
 
 #include <stdint.h>
-#include <boost/enable_shared_from_this.hpp>
 
 #include "util/blob.hpp"
 
@@ -34,10 +33,7 @@ class SoftwareSurface;
 
 typedef boost::shared_ptr<SoftwareSurface> SoftwareSurfaceHandle;
 
-// boost::enable_shared_from_this gives warning, so we switch the warning off
-#pragma GCC diagnostic ignored "-Weffc++"
-
-class SoftwareSurface : public boost::enable_shared_from_this<SoftwareSurface>
+class SoftwareSurface
 {
 public:
   enum Format 
@@ -69,6 +65,7 @@ public:
   int  get_height() const;
   int  get_pitch()  const;
 
+  SoftwareSurfaceHandle clone();
   SoftwareSurfaceHandle halve();
   SoftwareSurfaceHandle scale(const Size& size);
   SoftwareSurfaceHandle crop(const Rect& rect);
