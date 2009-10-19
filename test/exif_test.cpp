@@ -17,29 +17,28 @@
 
 enum 
 {
-  kRot0       = 1,
+  kRot0       = 1, // top - left
   kRot0Flip   = 2,
   kRot180     = 3,
   kRot180Flip = 4,
   kRot270Flip = 5,
-  kRot90      = 6,
+  kRot90      = 6, // right - top
   kRot90Flip  = 7,
-  kRot270     = 8
+  kRot270     = 8  // left - bottom
 };
 
 int
 get_orientation (ExifData *exif_data)
 {
   ExifEntry *entry;
-  gint       byte_order;
-
-  byte_order = exif_data_get_byte_order (exif_data);
+  
+  ExifByteOrder byte_order = exif_data_get_byte_order(exif_data);
 
   /* get orientation and rotate image accordingly if necessary */
   if ((entry = exif_content_get_entry (exif_data->ifd[EXIF_IFD_0],
                                        EXIF_TAG_ORIENTATION)))
     {
-      return exif_get_short (entry->data, byte_order);
+      return exif_get_short(entry->data, byte_order);
     }
   return 0;
 }
@@ -64,17 +63,19 @@ int main(int argc, char** argv)
       }
       else
       {
-        printf("read entry\n");
         char buf[1024];
    
         /* Get the contents of the tag in human-readable form */
-        exif_entry_get_value(entry, buf, sizeof(buf));
+        int v = get_orientation(ed);
         exif_entry_get_value(entry, buf, sizeof(buf));
    
         /* Don't bother printing it if it's entirely blank */
         if (*buf) 
         {
-          printf("%s: \"%s\"\n", exif_tag_get_name_in_ifd(EXIF_TAG_ORIENTATION, EXIF_IFD_0), buf);
+          printf("%s: %d \"%s\"\n", 
+                 exif_tag_get_name_in_ifd(EXIF_TAG_ORIENTATION, EXIF_IFD_0), 
+                 v,
+                 buf);
         }
       }
     }
