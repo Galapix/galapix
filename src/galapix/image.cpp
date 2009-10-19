@@ -36,6 +36,7 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
   m_url(url),
   m_file_entry(file_entry),
   m_visible(false),
+  m_image_rect(),
   m_pos(),
   m_last_pos(),
   m_target_pos(),

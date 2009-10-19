@@ -34,7 +34,7 @@ protected:
   JPEGCompressor();
 
 public:
-  ~JPEGCompressor();
+  virtual ~JPEGCompressor();
   
   void save(SoftwareSurfaceHandle surface_in, int quality);
 

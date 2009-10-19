@@ -30,6 +30,7 @@
 TileGenerationJob::TileGenerationJob(const URL& url,
                                      const boost::function<void (FileEntry)>& file_callback,
                                      const boost::function<void (TileEntry)>& tile_callback) :
+  m_state_mutex(),
   m_state(kWaiting),
   m_url(url),
   m_file_entry(),
@@ -47,6 +48,7 @@ TileGenerationJob::TileGenerationJob(const URL& url,
 
 TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
                                      const boost::function<void (TileEntry)>& callback) :
+  m_state_mutex(),
   m_state(kWaiting),
   m_url(file_entry.get_url()),
   m_file_entry(file_entry),
@@ -54,6 +56,7 @@ TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_
   m_max_scale(-1),
   m_min_scale_in_db(min_scale_in_db),
   m_max_scale_in_db(max_scale_in_db),
+  m_file_callback(),
   m_tile_callback(callback),
   m_tile_requests(),
   m_late_tile_requests(),

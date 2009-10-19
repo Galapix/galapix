@@ -18,7 +18,9 @@
 
 #include "plugins/jpeg_compressor.hpp"
 
-JPEGCompressor::JPEGCompressor()
+JPEGCompressor::JPEGCompressor() :
+  m_cinfo(),
+  m_jerr()
 {
   jpeg_std_error(&m_jerr);
 

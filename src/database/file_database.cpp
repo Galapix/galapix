@@ -33,7 +33,8 @@ FileDatabase::FileDatabase(Database& db) :
   m_file_entry_get_by_fileid(m_db.get_db()),
   m_file_entry_get_by_pattern(m_db.get_db()),
   m_file_entry_get_by_url(m_db.get_db()),
-  m_file_entry_store(m_db.get_db())
+  m_file_entry_store(m_db.get_db()),
+  m_file_entry_cache()
 {
 }
 
