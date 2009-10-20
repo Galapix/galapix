@@ -29,10 +29,19 @@
 ImageHandle
 Image::create(const URL& url, const FileEntry& file_entry)
 {
-  return ImageHandle(new Image(url, file_entry));
+  ImageHandle image(new Image(url, file_entry));
+  image->set_weak_ptr(image);
+  return image;
+}
+
+void
+Image::set_weak_ptr(ImageHandle self)
+{
+  m_self = self;
 }
 
 Image::Image(const URL& url, const FileEntry& file_entry) :
+  m_self(),
   m_url(url),
   m_file_entry(file_entry),
   m_visible(false),
@@ -181,14 +190,16 @@ Image::get_original_height() const
 void
 Image::clear_cache()
 {
-  m_cache->clear();
+  if (m_cache)
+    m_cache->clear();
 }
 
 void
 Image::cache_cleanup()
 {
   m_visible = false;
-  m_cache->cleanup();
+  if (m_cache)
+    m_cache->cleanup();
 }
 
 void

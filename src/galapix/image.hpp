@@ -40,6 +40,8 @@ class Rectf;
 class Image
 {
 private:
+  boost::weak_ptr<Image> m_self;
+
   URL       m_url;
   FileEntry m_file_entry;
 
@@ -66,6 +68,8 @@ private:
 
 private:
   Image(const URL& url, const FileEntry& file_entry);
+
+  void set_weak_ptr(ImageHandle self);
 
 public:
   static ImageHandle create(const URL& url, const FileEntry& file_entry);
