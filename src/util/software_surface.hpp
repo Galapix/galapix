@@ -45,13 +45,13 @@ public:
   enum Modifier 
   {
     kRot0,
+    kRot90,
     kRot180,
     kRot270,
-    kRot90,
-    kRot0Flip,
-    kRot180Flip,
-    kRot270Flip,
-    kRot90Flip
+    kRot0Flip,   // vflip
+    kRot90Flip,
+    kRot180Flip, // hflip
+    kRot270Flip
   };
 
 private:
