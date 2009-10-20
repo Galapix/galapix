@@ -29,13 +29,13 @@ unsigned int make_cache_id(int x, int y, int scale)
   return x | (y << 8) | (scale << 16);
 }
 
-ImageTileCache::ImageTileCache(const FileEntry& file_entry_) :
-  cache(),
-  jobs(),
-  tile_queue(),
-  file_entry(file_entry_),
-  max_scale(file_entry.get_thumbnail_scale()),
-  min_keep_scale(max_scale - 2)
+ImageTileCache::ImageTileCache(const FileEntry& file_entry) :
+  m_cache(),
+  m_jobs(),
+  m_tile_queue(),
+  m_file_entry(file_entry),
+  m_max_scale(file_entry.get_thumbnail_scale()),
+  m_min_keep_scale(m_max_scale - 2)
 {
 }
 
@@ -48,10 +48,10 @@ ImageTileCache::get_tile(int x, int y, int scale)
   }
   else
   {
-    unsigned int cache_id = make_cache_id(x, y, scale);
-    Cache::iterator i = cache.find(cache_id);
+    const unsigned int cache_id = make_cache_id(x, y, scale);
+    Cache::iterator i = m_cache.find(cache_id);
 
-    if (i != cache.end())
+    if (i != m_cache.end())
     {
       return i->second.surface;
     }
@@ -65,18 +65,18 @@ ImageTileCache::get_tile(int x, int y, int scale)
 ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
-  unsigned int cache_id = make_cache_id(x, y, scale);
-  Cache::iterator i = cache.find(cache_id);
+  const unsigned int cache_id = make_cache_id(x, y, scale);
+  Cache::iterator i = m_cache.find(cache_id);
 
-  if (i == cache.end())
+  if (i == m_cache.end())
   {
     // Important: it must be '*this', not 'this', since the 'this'
     // pointer might disappear any time, its only the impl that
     // stays and which we can link to by making a copy of the Image
     // object via *this.
     // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
-    jobs.push_back(DatabaseThread::current()->request_tile(file_entry, scale, Vector2i(x, y), 
-                                                           boost::bind(&ImageTileCache::receive_tile, this, _1)));
+    m_jobs.push_back(DatabaseThread::current()->request_tile(m_file_entry, scale, Vector2i(x, y), 
+                                                             boost::bind(&ImageTileCache::receive_tile, this, _1)));
 
     // FIXME: Something to try: Request the next smaller tile too,
     // so we get a lower quality image fast and a higher quality one
@@ -92,7 +92,7 @@ ImageTileCache::request_tile(int x, int y, int scale)
     s.surface = SurfaceHandle();
     s.status  = SurfaceStruct::SURFACE_REQUESTED;
 
-    cache[cache_id] = s;
+    m_cache[cache_id] = s;
 
     return s;
   }
@@ -105,13 +105,13 @@ ImageTileCache::request_tile(int x, int y, int scale)
 void
 ImageTileCache::clear()
 {
-  for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
+  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
   {
     i->set_aborted();
   }
-  jobs.clear();
+  m_jobs.clear();
 
-  cache.clear();
+  m_cache.clear();
 }
 
 void
@@ -121,11 +121,11 @@ ImageTileCache::cleanup()
   // visible, not if the image is visible
 
   // Image is not visible, so cancel all jobs
-  for(Jobs::iterator i = jobs.begin(); i != jobs.end(); ++i)
+  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
   {
     i->set_aborted();
   }
-  jobs.clear();
+  m_jobs.clear();
         
   // FIXME: We also need to purge the cache more often, since with
   // big gigapixel images we would end up never clearing it
@@ -138,13 +138,14 @@ ImageTileCache::cleanup()
   // will lead to unnecessary loading artifacts.      
 
   // FIXME: Code can hang here for some reason
-  for(Cache::iterator i = cache.begin(); i != cache.end();)
+  for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
   {
-    int tiledb_scale = (i->first >> 16);
-    if (tiledb_scale < min_keep_scale ||
+    const int tiledb_scale = (i->first >> 16);
+
+    if (tiledb_scale < m_min_keep_scale ||
         i->second.status == SurfaceStruct::SURFACE_REQUESTED)
     {
-      cache.erase(i++);
+      m_cache.erase(i++);
     }
     else
     {
@@ -158,15 +159,15 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
 {
   int  downscale_factor = 1;
 
-  while(downscale_factor < max_scale)
+  while(downscale_factor < m_max_scale)
   {
     downscale_out = Math::pow2(downscale_factor);
 
     uint32_t cache_id = make_cache_id(x / downscale_out, y / downscale_out,
                                       tiledb_scale+downscale_factor);
 
-    Cache::iterator i = cache.find(cache_id);
-    if (i != cache.end() && i->second.surface)
+    Cache::iterator i = m_cache.find(cache_id);
+    if (i != m_cache.end() && i->second.surface)
     {
       return i->second.surface;
     }
@@ -181,11 +182,11 @@ void
 ImageTileCache::process_queue()
 {
   // Check the queue for newly arrived tiles
-  while (!tile_queue.empty())
+  while (!m_tile_queue.empty())
   {
-    TileEntry tile = tile_queue.front();
-    tile_queue.pop();
-
+    TileEntry tile = m_tile_queue.front();
+    m_tile_queue.pop();
+    
     int tile_id = make_cache_id(tile.get_pos().x, tile.get_pos().y, tile.get_scale());
   
     SurfaceStruct s;
@@ -201,14 +202,14 @@ ImageTileCache::process_queue()
       s.status  = SurfaceStruct::SURFACE_FAILED;
     }
 
-    cache[tile_id] = s;
+    m_cache[tile_id] = s;
   }
 }
 
 void
 ImageTileCache::receive_tile(const TileEntry& tile)
 {
-  tile_queue.push(tile);
+  m_tile_queue.push(tile);
 
   Viewer::current()->redraw();
 }

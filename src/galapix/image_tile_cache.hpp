@@ -54,20 +54,20 @@ private:
   typedef std::vector<JobHandle> Jobs;
 
 public:
-  Cache cache;
+  Cache m_cache;
 
   /** FIXME: Jobs array does not get cleared after jobs are done */
-  Jobs jobs;
+  Jobs m_jobs;
 
-  ThreadMessageQueue<TileEntry> tile_queue;
+  ThreadMessageQueue<TileEntry> m_tile_queue;
   
-  FileEntry file_entry; 
+  FileEntry m_file_entry; 
 
   /** The maximum scale for which tiles exist */
-  int max_scale;
+  int m_max_scale;
 
   /** The smallest scale that is stored permanently */
-  int min_keep_scale; 
+  int m_min_keep_scale; 
 
 public:
   ImageTileCache(const FileEntry& file_entry);
@@ -86,7 +86,7 @@ public:
 
   void receive_tile(const TileEntry& tile);
 
-  int get_max_scale() const { return max_scale; }
+  int get_max_scale() const { return m_max_scale; }
 
 private:
   ImageTileCache(const ImageTileCache&);
