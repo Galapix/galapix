@@ -29,7 +29,22 @@ unsigned int make_cache_id(int x, int y, int scale)
   return x | (y << 8) | (scale << 16);
 }
 
+ImageTileCacheHandle
+ImageTileCache::create(const FileEntry& file_entry)
+{
+  ImageTileCacheHandle tile_cache(new ImageTileCache(file_entry));
+  tile_cache->set_weak_ptr(tile_cache);
+  return tile_cache;
+}
+
+void
+ImageTileCache::set_weak_ptr(ImageTileCacheHandle self)
+{
+  m_self = self;
+}
+
 ImageTileCache::ImageTileCache(const FileEntry& file_entry) :
+  m_self(),
   m_cache(),
   m_jobs(),
   m_tile_queue(),
@@ -62,6 +77,27 @@ ImageTileCache::get_tile(int x, int y, int scale)
   }
 }
 
+struct WeakPtrFunctor
+{
+  boost::weak_ptr<ImageTileCache> m_ptr;
+
+  WeakPtrFunctor(boost::weak_ptr<ImageTileCache> ptr) :
+    m_ptr(ptr)
+  {}
+
+  void operator()(const TileEntry& tile)
+  {
+    if (boost::shared_ptr<ImageTileCache> tile_cache = m_ptr.lock())
+    {
+      tile_cache->receive_tile(tile);
+    }
+    else
+    {
+      std::cout << "WeakPtrFunctor: ImageTileCache got deleted" << std::endl;
+    }
+  }
+};
+
 ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
@@ -75,8 +111,17 @@ ImageTileCache::request_tile(int x, int y, int scale)
     // stays and which we can link to by making a copy of the Image
     // object via *this.
     // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
-    m_jobs.push_back(DatabaseThread::current()->request_tile(m_file_entry, scale, Vector2i(x, y), 
-                                                             boost::bind(&ImageTileCache::receive_tile, this, _1)));
+
+    if (0)
+    { // old unsafe code
+      m_jobs.push_back(DatabaseThread::current()->request_tile(m_file_entry, scale, Vector2i(x, y), 
+                                                               boost::bind(&ImageTileCache::receive_tile, this, _1)));
+    }
+    else
+    {
+      m_jobs.push_back(DatabaseThread::current()->request_tile(m_file_entry, scale, Vector2i(x, y), 
+                                                               WeakPtrFunctor(m_self)));
+    }
 
     // FIXME: Something to try: Request the next smaller tile too,
     // so we get a lower quality image fast and a higher quality one

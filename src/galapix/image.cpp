@@ -55,12 +55,13 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
   m_angle(0.0f),
   m_file_entry_requested(false),
   m_cache(),
-  m_renderer()
+  m_renderer(),
+  m_file_entry_queue()
 {
   if (m_file_entry)
   {
-    m_cache.reset(new ImageTileCache(m_file_entry));
-    m_renderer.reset(new ImageRenderer(*this, *m_cache));
+    m_cache = ImageTileCache::create(m_file_entry);
+    m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
   m_image_rect = calc_image_rect();
@@ -205,6 +206,25 @@ Image::cache_cleanup()
 void
 Image::draw(const Rectf& cliprect, float zoom)
 {
+  // Check if there was an update of the FileEntry
+  while(!m_file_entry_queue.empty())
+  {
+    m_file_entry = m_file_entry_queue.front();
+    m_file_entry_queue.pop();
+
+    std::cout << "Image::draw(): " << m_file_entry.get_image_size() << std::endl;
+
+    m_file_entry_requested = false;
+    m_target_scale *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
+                                                           m_file_entry.get_height()));
+    m_scale = m_target_scale;
+
+    m_image_rect = calc_image_rect();
+
+    m_cache = ImageTileCache::create(m_file_entry);
+    m_renderer.reset(new ImageRenderer(*this, m_cache));
+  }
+
   if (!m_file_entry)
   {
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
@@ -235,13 +255,19 @@ Image::refresh(bool force)
 {
   if (force || m_file_entry.get_url().get_mtime() != m_file_entry.get_mtime())
   {
-    clear_cache();
-    DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
+    if (m_file_entry && m_file_entry.get_fileid())
+    {
+      clear_cache();
+      DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
 
-    // FIXME: Add this point the FileEntry is invalid and points to
-    // something that no longer exists, newly generated Tiles point
-    // to that obsolete fileid number
-    // do stuff with receive_file_entry() to fix this
+      m_target_scale *= static_cast<float>(std::max(m_file_entry.get_width(), 
+                                                    m_file_entry.get_height())) / 256.0f;
+      m_scale = m_target_scale;
+      m_file_entry = FileEntry();
+      m_cache.reset();
+      m_renderer.reset();
+      m_image_rect = calc_image_rect();
+    }
   }
 }
 
@@ -294,16 +320,7 @@ Image::calc_image_rect() const
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
-  m_file_entry_requested = false;
-  m_file_entry = file_entry;
-  m_target_scale *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
-                                                   m_file_entry.get_height()));
-  m_scale = m_target_scale;
-
-  m_image_rect = calc_image_rect();
-
-  m_cache.reset(new ImageTileCache(m_file_entry));
-  m_renderer.reset(new ImageRenderer(*this, *m_cache));
+  m_file_entry_queue.push(file_entry);
 }
 
 /* EOF */

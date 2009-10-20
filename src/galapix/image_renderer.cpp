@@ -27,7 +27,7 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 
-ImageRenderer::ImageRenderer(Image& image, ImageTileCache& cache)
+ImageRenderer::ImageRenderer(Image& image, ImageTileCacheHandle cache)
   : m_image(image),
     m_cache(cache)
 {
@@ -48,7 +48,7 @@ ImageRenderer::get_vertex(int x, int y, float zoom) const
 void
 ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
 {
-  ImageTileCache::SurfaceStruct sstruct = m_cache.request_tile(x, y, scale);
+  ImageTileCache::SurfaceStruct sstruct = m_cache->request_tile(x, y, scale);
   if (sstruct.surface)
   {
     sstruct.surface->draw(Rectf(get_vertex(x,   y,   zoom),
@@ -57,16 +57,16 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
   else // tile not found, so find a replacement
   {
     // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
-    SurfaceHandle nw = m_cache.get_tile(2*x,   2*y,   scale - 1);
-    SurfaceHandle ne = m_cache.get_tile(2*x+1, 2*y,   scale - 1);
-    SurfaceHandle sw = m_cache.get_tile(2*x,   2*y+1, scale - 1);
-    SurfaceHandle se = m_cache.get_tile(2*x+1, 2*y+1, scale - 1);
+    SurfaceHandle nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
+    SurfaceHandle ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
+    SurfaceHandle sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
+    SurfaceHandle se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
 
     if (!nw || !ne || !sw || !se)
     {
       // draw lower resolution tiles
       int downscale;
-      SurfaceHandle surface = m_cache.find_smaller_tile(x, y, scale, downscale);
+      SurfaceHandle surface = m_cache->find_smaller_tile(x, y, scale, downscale);
 
       if (surface)
       { 
@@ -133,7 +133,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
 
   if (!cliprect.is_overlapped(image_rect))
   {
-    m_cache.cleanup();
+    m_cache->cleanup();
     return false;
   }
   else
@@ -141,7 +141,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
     // scale factor for requesting the tile from the TileDatabase
     // FIXME: Can likely be done without float
     int tiledb_scale = Math::clamp(0, static_cast<int>(log(1.0f / (zoom * m_image.get_scale())) /
-                                                       log(2)), m_cache.get_max_scale());
+                                                       log(2)), m_cache->get_max_scale());
     int scale_factor = Math::pow2(tiledb_scale);
 
     int scaled_width  = m_image.get_original_width()  / scale_factor;

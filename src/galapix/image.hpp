@@ -28,6 +28,7 @@
 #include "database/file_entry.hpp"
 #include "galapix/image_handle.hpp"
 #include "job/job_handle.hpp"
+#include "job/thread_message_queue.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
@@ -63,8 +64,10 @@ private:
 
   bool m_file_entry_requested;
 
-  boost::scoped_ptr<ImageTileCache> m_cache;
+  boost::shared_ptr<ImageTileCache> m_cache;
   boost::scoped_ptr<ImageRenderer>  m_renderer;
+
+  ThreadMessageQueue<FileEntry> m_file_entry_queue;
 
 private:
   Image(const URL& url, const FileEntry& file_entry);

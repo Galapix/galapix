@@ -28,6 +28,10 @@
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue.hpp"
 
+class ImageTileCache;
+
+typedef boost::shared_ptr<ImageTileCache> ImageTileCacheHandle;
+
 class ImageTileCache
 {
 public:
@@ -54,6 +58,7 @@ private:
   typedef std::vector<JobHandle> Jobs;
 
 public:
+  boost::weak_ptr<ImageTileCache> m_self;
   Cache m_cache;
 
   /** FIXME: Jobs array does not get cleared after jobs are done */
@@ -69,8 +74,13 @@ public:
   /** The smallest scale that is stored permanently */
   int m_min_keep_scale; 
 
-public:
+private:
   ImageTileCache(const FileEntry& file_entry);
+
+  void set_weak_ptr(ImageTileCacheHandle self);
+
+public:
+  static ImageTileCacheHandle create(const FileEntry& file_entry);
 
   SurfaceStruct request_tile(int x, int y, int scale);
   SurfaceHandle get_tile(int x, int y, int scale);

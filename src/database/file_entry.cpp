@@ -22,8 +22,17 @@
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
-  return os << entry.get_fileid() << " " << entry.get_url() 
-            << " size: "<< entry.get_width() << "x" << entry.get_height();
+  if (entry)
+  {
+    return os << "FileEntry(" 
+              << entry.get_fileid() << ", " 
+              << entry.get_url() << ", "
+              << entry.get_image_size() << ")";
+  }
+  else
+  {
+    return os << "FileEntry(NULL)";
+  }
 }
 
 /* EOF */

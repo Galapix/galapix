@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_IMAGE_RENDERER_HPP
 #define HEADER_GALAPIX_GALAPIX_IMAGE_RENDERER_HPP
 
+#include <boost/shared_ptr.hpp>
+
 class Image;
 class ImageTileCache;
 class Rect;
@@ -29,10 +31,10 @@ class ImageRenderer
 {
 private:
   Image& m_image;
-  ImageTileCache& m_cache;
+  boost::shared_ptr<ImageTileCache> m_cache;
 
 public:
-  ImageRenderer(Image& image, ImageTileCache& cache);
+  ImageRenderer(Image& image, boost::shared_ptr<ImageTileCache> cache);
 
   /** Return true if something was drawn to the screen, false when
    *  image was outside the cliprect */

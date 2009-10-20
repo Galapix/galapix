@@ -247,28 +247,30 @@ public:
 class DeleteFileEntryDatabaseMessage : public DatabaseMessage
 {
 public:
-  FileId fileid;
+  FileId m_fileid;
 
-  DeleteFileEntryDatabaseMessage(const FileId& fileid_)
-    : fileid(fileid_)
+  DeleteFileEntryDatabaseMessage(const FileId& fileid)
+    : m_fileid(fileid)
   {}
 
   void run(Database& db)
   {
+    std::cout << "Begin Delete" << std::endl;
     SQLiteStatement(db.get_db())
       .prepare("BEGIN;")
       .execute();
     SQLiteStatement(db.get_db())
       .prepare("DELETE FROM files WHERE fileid = ?1;")
-      .bind_int64(1, fileid.get_id())
+      .bind_int64(1, m_fileid.get_id())
       .execute();
     SQLiteStatement(db.get_db())
       .prepare("DELETE FROM tiles WHERE fileid = ?1;")
-      .bind_int64(1, fileid.get_id())
+      .bind_int64(1, m_fileid.get_id())
       .execute();
     SQLiteStatement(db.get_db())
       .prepare("END;")
       .execute();
+    std::cout << "End Delete" << std::endl;
   }
 };
 
