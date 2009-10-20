@@ -85,6 +85,13 @@ Galapix 0.1.0 Release ToDo:
 General Problems:
 =================
 
+* review the API of SoftwareSurface and clean it up,
+  shared_ptr_from_this() could be avoided when static functions are
+  used instead of member functions, i.e.
+
+  SoftwareSurfaceFactory::transform(surface, kRot90);
+  SoftwareSurfaceFactory::clone(surface);
+
 * make thumbnail generation output optional --verbose
 
 * very small images seem broken

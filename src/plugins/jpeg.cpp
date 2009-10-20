@@ -27,27 +27,58 @@
 #include "plugins/mem_jpeg_compressor.hpp"
 #include "plugins/file_jpeg_decompressor.hpp"
 #include "plugins/mem_jpeg_decompressor.hpp"
+#include "plugins/exif.hpp"
 
 Size
 JPEG::get_size(const std::string& filename)
 {
   FileJPEGDecompressor loader(filename);
   loader.read_header();
-  return loader.get_size();
+  Size size = loader.get_size();
+
+  SoftwareSurface::Modifier modifier = EXIF::get_orientation(filename);
+  switch(modifier)
+  {
+    case SoftwareSurface::kRot90:
+    case SoftwareSurface::kRot90Flip:
+    case SoftwareSurface::kRot270:
+    case SoftwareSurface::kRot270Flip:
+      return Size(size.height, size.width);
+
+    case SoftwareSurface::kRot0:
+    case SoftwareSurface::kRot0Flip:
+    case SoftwareSurface::kRot180:
+    case SoftwareSurface::kRot180Flip:
+    default:
+      return size;
+  }
 }
 
 SoftwareSurfaceHandle
 JPEG::load_from_file(const std::string& filename, int scale)
 {
   FileJPEGDecompressor loader(filename);
-  return loader.read_image(scale);
+  SoftwareSurfaceHandle surface = loader.read_image(scale);
+
+  SoftwareSurface::Modifier modifier = EXIF::get_orientation(filename);
+
+  if (modifier == SoftwareSurface::kRot0)
+  {
+    return surface;
+  }
+  else
+  {
+    return surface->transform(modifier);
+  }
 }
 
 SoftwareSurfaceHandle
 JPEG::load_from_mem(uint8_t* mem, int len, int scale)
 {
   MemJPEGDecompressor loader(mem, len);
-  return loader.read_image(scale);
+  SoftwareSurfaceHandle surface = loader.read_image(scale);
+
+  return surface;
 }
 
 void

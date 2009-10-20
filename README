@@ -65,6 +65,7 @@ Required Libraries and Tools:
   * Magick++ - http://www.imagemagick.org/Magick%2B%2B/
   * boost    - http://www.boost.org/
   * librsvg  - http://librsvg.sourceforge.net/
+  * libexif  - http://libexif.sourceforge.net/
 
 On Ubuntu 9.04 one can install all required libraries with this call:
 
@@ -79,7 +80,8 @@ On Ubuntu 9.04 one can install all required libraries with this call:
     libglademm-2.4-dev \
     libgtkglextmm-x11-1.2-dev \
     libboost-thread-dev \
-    libspnav-dev
+    libspnav-dev \
+    libexif-dev
 
 The following packages are optional and used to handle some more
 exotic image formats:
