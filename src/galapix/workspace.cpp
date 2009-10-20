@@ -274,7 +274,6 @@ Workspace::print_info(const Rectf& rect)
     if ((*i)->overlaps(rect))
     {
       (*i)->print_info();
-      std::cout << std::endl;
     }
   }
   std::cout << "  Number of Images: " << m_images.size() << std::endl;
