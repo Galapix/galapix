@@ -283,7 +283,7 @@ SoftwareSurface::transform(Modifier mod)
       return rotate90()->vflip();
 
     case kRot180Flip:
-      return rotate180()->hflip();
+      return hflip();
 
     case kRot270Flip:
       // FIXME: Could be made faster
