@@ -38,9 +38,11 @@ JobWorkerThread::run()
   while(!m_quit)
   {
     m_queue.wait();
-
+    
     while(!m_abort && !m_queue.empty())
     {
+      // std::cout << "JobWorkerThread::run(): " << this << " size: " << m_queue.size() << std::endl;
+    
       Task task = m_queue.front();
       m_queue.pop();
 
@@ -65,7 +67,10 @@ JobWorkerThread::run()
       }
       else
       {
-        task.callback(task.job, false);
+        if (task.callback)
+        {
+          task.callback(task.job, false);
+        }
       }
     }
   }
@@ -83,7 +88,7 @@ void
 JobWorkerThread::stop_thread()
 {
   m_quit = true;
-  m_queue.wakeup();  
+  m_queue.wakeup();
 }
 
 JobHandle
