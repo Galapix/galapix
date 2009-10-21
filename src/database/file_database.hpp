@@ -29,6 +29,7 @@
 #include "database/file_entry_get_by_file_id_statement.hpp"
 #include "database/file_entry_store_statement.hpp"
 #include "database/file_entry_get_by_pattern_statement.hpp"
+#include "database/file_entry_delete_statement.hpp"
 
 class URL;
 class FileEntry;
@@ -53,6 +54,7 @@ private:
   FileEntryGetByPatternStatement m_file_entry_get_by_pattern;
   FileEntryGetByUrlStatement     m_file_entry_get_by_url;
   FileEntryStoreStatement        m_file_entry_store;
+  FileEntryDeleteStatement       m_file_entry_delete;
 
   std::vector<FileEntry> m_file_entry_cache;
 
@@ -79,6 +81,8 @@ public:
   FileEntry store_file_entry(const FileEntry& entry);
   FileEntry store_file_entry(const URL& url, const Size& size);
   FileEntry store_file_entry_without_cache(const FileEntry& entry);
+
+  void delete_file_entry(const FileId& fileid);
 
   void check();
   void flush_cache();

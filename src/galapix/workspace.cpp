@@ -491,12 +491,6 @@ Workspace::get_bounding_rect() const
   {
     Rectf rect = m_images.front()->get_image_rect();
 
-    std::cout << m_images.front()->get_url() << " " << m_images.front()->get_pos() << " " 
-              << m_images.front()->get_scale() << " "
-              << m_images.front()->get_scaled_width() << " "
-              << m_images.front()->get_scaled_height()
-              << std::endl;
-
     for(ImageCollection::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
       const Rectf& image_rect = (*i)->get_image_rect(); 

@@ -34,6 +34,7 @@ FileDatabase::FileDatabase(Database& db) :
   m_file_entry_get_by_pattern(m_db.get_db()),
   m_file_entry_get_by_url(m_db.get_db()),
   m_file_entry_store(m_db.get_db()),
+  m_file_entry_delete(m_db.get_db()),
   m_file_entry_cache()
 {
 }
@@ -112,16 +113,26 @@ FileDatabase::check()
 }
 
 void
+FileDatabase::delete_file_entry(const FileId& fileid)
+{
+  // FIXME: Ignoring cache
+  m_file_entry_delete(fileid);
+}
+
+void
 FileDatabase::flush_cache()
 {
-  std::cout << "FileDatabes::flush_cache()" << std::endl;
-  m_db.get_db().exec("BEGIN;");
-  for(std::vector<FileEntry>::iterator i = m_file_entry_cache.begin(); i != m_file_entry_cache.end(); ++i)
+  if (!m_file_entry_cache.empty())
   {
-    store_file_entry_without_cache(*i);
+    std::cout << "FileDatabes::flush_cache()" << std::endl;
+    m_db.get_db().exec("BEGIN;");
+    for(std::vector<FileEntry>::iterator i = m_file_entry_cache.begin(); i != m_file_entry_cache.end(); ++i)
+    {
+      store_file_entry_without_cache(*i);
+    }
+    m_db.get_db().exec("END;");
+    m_file_entry_cache.clear();
   }
-  m_db.get_db().exec("COMMIT;");
-  m_file_entry_cache.clear();
 }
 
 /* EOF */

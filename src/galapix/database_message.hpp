@@ -256,20 +256,10 @@ public:
   void run(Database& db)
   {
     std::cout << "Begin Delete" << std::endl;
-    SQLiteStatement(db.get_db())
-      .prepare("BEGIN;")
-      .execute();
-    SQLiteStatement(db.get_db())
-      .prepare("DELETE FROM files WHERE fileid = ?1;")
-      .bind_int64(1, m_fileid.get_id())
-      .execute();
-    SQLiteStatement(db.get_db())
-      .prepare("DELETE FROM tiles WHERE fileid = ?1;")
-      .bind_int64(1, m_fileid.get_id())
-      .execute();
-    SQLiteStatement(db.get_db())
-      .prepare("END;")
-      .execute();
+    db.get_db().exec("BEGIN;");
+    db.files.delete_file_entry(m_fileid);
+    db.tiles.delete_tiles(m_fileid);
+    db.get_db().exec("END;");
     std::cout << "End Delete" << std::endl;
   }
 };

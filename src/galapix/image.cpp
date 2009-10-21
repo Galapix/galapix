@@ -212,7 +212,7 @@ Image::draw(const Rectf& cliprect, float zoom)
     m_file_entry = m_file_entry_queue.front();
     m_file_entry_queue.pop();
 
-    std::cout << "Image::draw(): " << m_file_entry.get_image_size() << std::endl;
+    //std::cout << "Image::draw(): " << m_file_entry.get_image_size() << std::endl;
 
     m_file_entry_requested = false;
     m_target_scale *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 

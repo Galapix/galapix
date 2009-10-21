@@ -35,6 +35,7 @@ TileDatabase::TileDatabase(Database& db)
     m_tile_entry_has(m_db.get_db()),
     m_tile_entry_get_by_file_entry(m_db.get_db()),
     m_tile_entry_get_min_max_scale(m_db.get_db()),
+    m_tile_entry_delete(m_db.get_db()),
     m_cache()
 {}
 
@@ -135,7 +136,14 @@ TileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
   {
     m_tile_entry_store(*i);
   }
-  m_db.get_db().exec("COMMIT;");
+  m_db.get_db().exec("END;");
+}
+
+void
+TileDatabase::delete_tiles(const FileId& fileid)
+{
+  // FIXME: Ignoring cache
+  m_tile_entry_delete(fileid);
 }
 
 void
