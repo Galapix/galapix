@@ -55,6 +55,11 @@ Thread::run_wrap()
   catch(std::exception& err) 
   {
     std::cout << "Thread: Error: " << err.what() << std::endl;
+    assert(!"Thread::run_wrap(): Should never happen");
+  }
+  catch(...)
+  {
+    assert(!"Thread::run_wrap(): Unknown exception, should never happen");
   }
 }
 

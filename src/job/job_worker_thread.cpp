@@ -62,7 +62,9 @@ JobWorkerThread::run()
         {
           task.callback(task.job, true);
         }
-        task.job->get_handle().set_finished();
+
+        // FIXME: Do something to check that the JobHandle is in is_finished() state
+        //if (task.job->get_handle().is_finished();
         //std::cout << "done job: " << task.job << std::endl;
       }
       else

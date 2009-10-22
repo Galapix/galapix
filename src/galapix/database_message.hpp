@@ -96,12 +96,12 @@ public:
 
   RequestTileDatabaseMessage(const JobHandle& job_handle_,
                              const FileEntry& file_entry_, int tilescale_, const Vector2i& pos_,
-                             const boost::function<void (TileEntry)>& callback_)
-    : job_handle(job_handle_),
-      file_entry(file_entry_),
-      tilescale(tilescale_),
-      pos(pos_),
-      callback(callback_)
+                             const boost::function<void (TileEntry)>& callback_) :
+    job_handle(job_handle_),
+    file_entry(file_entry_),
+    tilescale(tilescale_),
+    pos(pos_),
+    callback(callback_)
   {}
 
   void run(Database& db)
@@ -138,34 +138,34 @@ public:
 class RequestFileDatabaseMessage : public DatabaseMessage
 {
 public:
-  JobHandle job_handle;
-  URL url;
-  boost::function<void (FileEntry)> callback;
+  JobHandle m_job_handle;
+  URL m_url;
+  boost::function<void (FileEntry)> m_callback;
 
-  RequestFileDatabaseMessage(const JobHandle& job_handle_,
-                             const URL& url_,
-                             const boost::function<void (FileEntry)>& callback_)
-    : job_handle(job_handle_),
-      url(url_),
-      callback(callback_)
+  RequestFileDatabaseMessage(const JobHandle& job_handle,
+                             const URL& url,
+                             const boost::function<void (FileEntry)>& callback)
+    : m_job_handle(job_handle),
+      m_url(url),
+      m_callback(callback)
   {}
-
+  
   void run(Database& db)
   {
-    if (!job_handle.is_aborted())
+    if (!m_job_handle.is_aborted())
+    {
+      FileEntry entry = db.files.get_file_entry(m_url);
+      if (!entry)
       {
-        FileEntry entry = db.files.get_file_entry(url);
-        if (!entry)
-          {
-            // file entry is not in the database, so try to generate it
-            DatabaseThread::current()->generate_file_entry(job_handle, url, callback);
-          }
-        else
-          {
-            callback(entry);
-            job_handle.set_finished();
-          }
+        // file entry is not in the database, so try to generate it
+        DatabaseThread::current()->generate_file_entry(m_job_handle, m_url, m_callback);
       }
+      else
+      {
+        m_callback(entry);
+        m_job_handle.set_finished();
+      }
+    }
   }
 };
 
@@ -290,6 +290,23 @@ public:
       m_callback(file_entry);
     }
     m_job_handle.set_finished();
+  }
+};
+
+
+class ReceiveFileEntryDatabaseMessage : public DatabaseMessage
+{
+private:
+  FileEntry m_file_entry;
+  
+public:
+  ReceiveFileEntryDatabaseMessage(const FileEntry& file_entry) :
+    m_file_entry(file_entry)
+  {}
+
+  void run(Database& db)
+  {
+    db.files.store_file_entry(m_file_entry);
   }
 };
 

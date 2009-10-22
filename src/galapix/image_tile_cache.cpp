@@ -20,6 +20,7 @@
 
 #include <boost/bind.hpp>
 
+#include "util/weak_functor.hpp"
 #include "math/math.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/database_thread.hpp"
@@ -112,10 +113,10 @@ ImageTileCache::request_tile(int x, int y, int scale)
     // object via *this.
     // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
 
-    if (0)
-    { // old unsafe code
+    if (1)
+    {
       m_jobs.push_back(DatabaseThread::current()->request_tile(m_file_entry, scale, Vector2i(x, y), 
-                                                               boost::bind(&ImageTileCache::receive_tile, this, _1)));
+                                                               weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
     }
     else
     {

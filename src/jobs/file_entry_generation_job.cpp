@@ -25,23 +25,30 @@
 
 FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url,
                                                const boost::function<void (const FileEntry&)>& callback)
-  : m_job_handle(job_handle),
+  : Job(job_handle),
     m_url(url),
     m_callback(callback)
 {
+  //std::cout << "FileEntryGenerationJob::FileEntryGenerationJob()" << std::endl;
+}
+
+FileEntryGenerationJob::~FileEntryGenerationJob()
+{
+  //std::cout << "FileEntryGenerationJob::~FileEntryGenerationJob()" << std::endl;
 }
 
 void
 FileEntryGenerationJob::run()
 {
+  std::cout << "FileEntryGenerationJob::run()" << std::endl;
   Size size;
   if (SoftwareSurfaceFactory::get_size(m_url, size))
   {
-    DatabaseThread::current()->store_file_entry(m_job_handle, m_url, size, m_callback);
+    DatabaseThread::current()->store_file_entry(get_handle(), m_url, size, m_callback);
   }
   else
   {
-    m_job_handle.set_finished();
+    get_handle().set_finished();
   }
 }
 

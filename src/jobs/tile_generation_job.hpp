@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_JOBS_TILE_GENERATION_JOB_HPP
 
 #include <boost/function.hpp>
+#include <boost/signals.hpp>
 #include <boost/thread/mutex.hpp>
 
 #include "database/file_entry.hpp"
@@ -70,12 +71,6 @@ private:
   int       m_min_scale_in_db;
   int       m_max_scale_in_db;
   
-  /** Callback for the FileEntry, only used when FileEntry isn't passed in the constructor*/
-  boost::function<void (FileEntry)> m_file_callback;
-
-  /** All generated tiles go through this callback */
-  boost::function<void (TileEntry)> m_tile_callback;
-
   /** Regular TileRequests */
   TileRequests m_tile_requests;
 
@@ -85,13 +80,15 @@ private:
   typedef std::vector<TileEntry> Tiles;
   Tiles m_tiles;
 
-public:
-  TileGenerationJob(const URL& url,
-                    const boost::function<void (FileEntry)>& file_callback,
-                    const boost::function<void (TileEntry)>& tile_callback);
+  boost::signal<void (FileEntry)> m_sig_file_callback;
+  boost::signal<void (TileEntry)> m_sig_tile_callback;
 
-  TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
-                    const boost::function<void (TileEntry)>& callback);
+public:
+  TileGenerationJob(const JobHandle& job_handle, const URL& url);
+
+  TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
+
+  ~TileGenerationJob();
 
   /** Request a tile to be generated, returns true if the request will
       be honored, false if the tile generation is already in progress
@@ -103,6 +100,9 @@ public:
   FileEntry get_file_entry() const { return m_file_entry; }
 
   bool is_aborted();
+
+  boost::signal<void (FileEntry)>& sig_file_callback() { return m_sig_file_callback; }
+  boost::signal<void (TileEntry)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
   void generate_tile_entries(SoftwareSurfaceFactory::FileFormat format, 

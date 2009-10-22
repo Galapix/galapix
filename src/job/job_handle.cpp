@@ -88,5 +88,10 @@ JobHandle::wait()
     }
   }
 }
+
+std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle)
+{
+  return os << "JobHandle(aborted=" << job_handle.is_aborted() << ", done=" << job_handle.is_done() << ")";
+}
 
 /* EOF */

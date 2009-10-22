@@ -133,7 +133,8 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
 
   if (!cliprect.is_overlapped(image_rect))
   {
-    m_cache->cleanup();
+    //m_cache->cleanup();
+    m_image.cache_cleanup();
     return false;
   }
   else

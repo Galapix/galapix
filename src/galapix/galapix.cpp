@@ -83,10 +83,8 @@ Galapix::test(const Options& opts,
   job_manager.start_thread();
 
   std::cout << "<<<--- launching jobs" << std::endl;
-  JobHandle handle1 = job_manager.request(boost::shared_ptr<Job>(new TestJob()),
-                                          boost::function<void (boost::shared_ptr<Job>, bool)>());
-  JobHandle handle2 = job_manager.request(boost::shared_ptr<Job>(new TestJob()), 
-                                          boost::function<void (boost::shared_ptr<Job>, bool)>());
+  JobHandle handle1 = job_manager.request(boost::shared_ptr<Job>(new TestJob()));
+  JobHandle handle2 = job_manager.request(boost::shared_ptr<Job>(new TestJob()));
   std::cout << "--->>> waiting for jobs" << std::endl;
   handle1.wait();
   std::cout << "handle1 finished" << std::endl;

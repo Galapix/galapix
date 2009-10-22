@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_JOB_JOB_HANDLE_HPP
 
 #include <boost/shared_ptr.hpp>
+#include <iosfwd>
 
 class JobHandleImpl;
 
@@ -33,7 +34,15 @@ public:
   JobHandle();
   ~JobHandle();
 
+  /** 
+   * Aborts a Job so that it gets removed from the JobManager without
+   * being called.
+   */
   void set_aborted();
+
+  /** 
+   * Used by a Job to indicate that the Job is completed
+   */
   void set_finished();
 
   bool is_done() const;
@@ -44,6 +53,8 @@ public:
 private:
   boost::shared_ptr<JobHandleImpl> impl;
 };
+
+std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
 
 #endif
 

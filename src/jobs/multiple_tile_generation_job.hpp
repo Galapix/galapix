@@ -24,6 +24,10 @@
 #include "jobs/tile_generator.hpp"
 #include "job/job.hpp"
 
+/**
+ * Simple Job for generating a range of Tiles, it doesn't allow any
+ * way to add late Jobs like TileGenerationJob does 
+ */
 class MultipleTileGenerationJob : public Job
 {
 private:

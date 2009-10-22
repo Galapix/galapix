@@ -27,13 +27,13 @@
 class FileEntryGenerationJob : public Job
 {
 private:
-  JobHandle m_job_handle;
   URL m_url;
   boost::function<void (const FileEntry&)> m_callback;
 
 public:
   FileEntryGenerationJob(const JobHandle& job_handle, const URL& url,
                          const boost::function<void (const FileEntry&)>& callback);
+  ~FileEntryGenerationJob();
   void run();
 
 private:

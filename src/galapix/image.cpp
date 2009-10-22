@@ -18,13 +18,14 @@
 
 #include "galapix/image.hpp"
 
-#include "math/rgb.hpp"
-#include "display/framebuffer.hpp"
 #include "database/file_entry.hpp"
+#include "display/framebuffer.hpp"
 #include "galapix/database_thread.hpp"
-#include "galapix/viewer.hpp"
-#include "galapix/image_tile_cache.hpp"
 #include "galapix/image_renderer.hpp"
+#include "galapix/image_tile_cache.hpp"
+#include "galapix/viewer.hpp"
+#include "math/rgb.hpp"
+#include "util/weak_functor.hpp"
 
 ImageHandle
 Image::create(const URL& url, const FileEntry& file_entry)
@@ -56,7 +57,8 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
   m_file_entry_requested(false),
   m_cache(),
   m_renderer(),
-  m_file_entry_queue()
+  m_file_entry_queue(),
+  m_jobs()
 {
   if (m_file_entry)
   {
@@ -193,6 +195,13 @@ Image::clear_cache()
 {
   if (m_cache)
     m_cache->clear();
+
+  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
+  {
+    i->set_aborted();
+  }
+  m_jobs.clear();
+  m_file_entry_requested = false;
 }
 
 void
@@ -201,6 +210,13 @@ Image::cache_cleanup()
   m_visible = false;
   if (m_cache)
     m_cache->cleanup();
+
+  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
+  {
+    i->set_aborted();
+  }
+  m_jobs.clear();
+  m_file_entry_requested = false;
 }
 
 void
@@ -227,14 +243,16 @@ Image::draw(const Rectf& cliprect, float zoom)
 
   if (!m_file_entry)
   {
+    //std::cout << m_file_entry << " " << m_file_entry_requested << std::endl;
+
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
                            RGB(255,255,0));
 
     if (!m_file_entry_requested)
     {
       m_file_entry_requested = true;
-      DatabaseThread::current()->request_file(m_url,
-                                              boost::bind(&Image::receive_file_entry, this, _1));
+      m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
+                                                               weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self)));
       //std::cout << "Image::draw(): receive_file_entry" << std::endl;
     }
   }
@@ -253,7 +271,8 @@ Image::draw(const Rectf& cliprect, float zoom)
 void
 Image::refresh(bool force)
 {
-  if (force || m_file_entry.get_url().get_mtime() != m_file_entry.get_mtime())
+  if (force || 
+      m_file_entry.get_url().get_mtime() != m_file_entry.get_mtime())
   {
     if (m_file_entry && m_file_entry.get_fileid())
     {
@@ -320,6 +339,7 @@ Image::calc_image_rect() const
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
+  // std::cout << "Image::receive_file_entry: " << file_entry << std::endl;
   m_file_entry_queue.push(file_entry);
 }
 

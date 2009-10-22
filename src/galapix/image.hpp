@@ -68,6 +68,8 @@ private:
   boost::scoped_ptr<ImageRenderer>  m_renderer;
 
   ThreadMessageQueue<FileEntry> m_file_entry_queue;
+  typedef std::vector<JobHandle> Jobs;
+  Jobs m_jobs;
 
 private:
   Image(const URL& url, const FileEntry& file_entry);

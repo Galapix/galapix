@@ -27,9 +27,8 @@
 #include "jobs/tile_generator.hpp"
 #include "database/tile_entry.hpp"
 
-TileGenerationJob::TileGenerationJob(const URL& url,
-                                     const boost::function<void (FileEntry)>& file_callback,
-                                     const boost::function<void (TileEntry)>& tile_callback) :
+TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const URL& url) :
+  Job(job_handle),
   m_state_mutex(),
   m_state(kWaiting),
   m_url(url),
@@ -38,16 +37,15 @@ TileGenerationJob::TileGenerationJob(const URL& url,
   m_max_scale(-1),
   m_min_scale_in_db(-1),
   m_max_scale_in_db(-1),
-  m_file_callback(file_callback),
-  m_tile_callback(tile_callback),
   m_tile_requests(),
   m_late_tile_requests(),
-  m_tiles() 
+  m_tiles(),
+  m_sig_file_callback(),
+  m_sig_tile_callback()
 {
 }
 
-TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db,
-                                     const boost::function<void (TileEntry)>& callback) :
+TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db) :
   m_state_mutex(),
   m_state(kWaiting),
   m_url(file_entry.get_url()),
@@ -56,12 +54,17 @@ TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_
   m_max_scale(-1),
   m_min_scale_in_db(min_scale_in_db),
   m_max_scale_in_db(max_scale_in_db),
-  m_file_callback(),
-  m_tile_callback(callback),
   m_tile_requests(),
   m_late_tile_requests(),
-  m_tiles()
+  m_tiles(),
+  m_sig_file_callback(),
+  m_sig_tile_callback()
 {
+}
+
+TileGenerationJob::~TileGenerationJob()
+{
+  // FIXME: Verify that all JobHandles got finished
 }
 
 bool
@@ -134,7 +137,7 @@ TileGenerationJob::process_tile_entry(const TileEntry& tile_entry)
 {
   m_tiles.push_back(tile_entry);
 
-  m_tile_callback(tile_entry);
+  m_sig_tile_callback(tile_entry);
 
   for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
   {
@@ -162,15 +165,31 @@ TileGenerationJob::is_aborted()
 {
   boost::mutex::scoped_lock lock(m_state_mutex);
 
-  for(TileRequests::const_iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
-  {
-    if (!i->job_handle.is_aborted())
-      return false;
-  }
+  // FIXME: Not pretty
 
-  m_state = kAborted;
- 
-  return true;
+  if (m_tile_requests.empty())
+  {
+    if (get_handle().is_aborted())
+    {
+      m_state = kAborted;
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+  else
+  {
+    for(TileRequests::const_iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+    {
+      if (!i->job_handle.is_aborted())
+        return false;
+    }
+
+    m_state = kAborted;
+    return true;
+  }
 }
 
 void
@@ -178,17 +197,22 @@ TileGenerationJob::run()
 {
   if (!m_file_entry)
   { // generate FileEntry if not already given
+
+    std::cout << "TileGenerationJob::run()" << std::endl;
+
     Size size;
-    if (!SoftwareSurfaceFactory::get_size(m_file_entry.get_url(), size))
+    if (!SoftwareSurfaceFactory::get_size(m_url, size))
     {
-      std::cout << "TileGenerationJob::run(): Couldn't get size for " << m_file_entry.get_url() << std::endl;
+      std::cout << "TileGenerationJob::run(): Couldn't get size for " << m_url << std::endl;
       return;
     }
     else
     {
       m_file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
                                                       size.width, size.height);
-      m_file_callback(m_file_entry);
+      m_sig_file_callback(m_file_entry);
+      m_min_scale = m_file_entry.get_thumbnail_scale();
+      m_max_scale = m_file_entry.get_thumbnail_scale();
     }
   }
 

@@ -107,6 +107,7 @@ public:
 
   /** Place tile into the database */
   void      receive_tile(const TileEntry& tile);
+  void      receive_file(const FileEntry& file_entry);
   void      receive_tiles(const std::vector<TileEntry>& tiles);
 
   /** Delete the given FileEntry along with all TileEntry refering to it */

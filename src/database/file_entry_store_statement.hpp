@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_STORE_STATEMENT_HPP
 
 #include <iostream>
+#include <assert.h>
 
 class FileEntryStoreStatement
 {
@@ -38,6 +39,7 @@ public:
     if (file_entry.get_fileid())
     {
       std::cout << "FileEntryStoreStatement: Warning file_entry already has fileid: " << file_entry.get_fileid() << std::endl;
+      assert(!"Should never happen");
     }
 
     m_stmt.bind_text(1, file_entry.get_url().str());
