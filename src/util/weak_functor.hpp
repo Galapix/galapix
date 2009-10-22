@@ -48,7 +48,7 @@ public:
 
   void operator()()
   {
-    C obj = m_obj.lock();
+    boost::shared_ptr<typename C::element_type> obj = m_obj.lock();
     if (obj)
     {
       m_func(obj);
@@ -62,7 +62,8 @@ public:
   template<class A1>
   void operator()(A1 a)
   {
-    if (C obj = m_obj.lock())
+    boost::shared_ptr<typename C::element_type> obj = m_obj.lock();
+    if (obj)
     {
       m_func(obj, a);
     }
