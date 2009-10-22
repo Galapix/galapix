@@ -85,15 +85,14 @@ Galapix 0.1.0 Release ToDo:
 General Problems:
 =================
 
-* DeleteFileEntryDatabaseMessage doesn't use prepared statements and
-  is extremely slow
+* sometimes images end up tiny, some race condition in getting image size likely
+
+* deletion of tiles/fileentries is extremely slow, maybe grouping could help
 
 * do something to ensure that callbacks always go back to a valid
   object, not an already deleted one
 
 * temp mousegrab while middle button is held for better scrolling
-
-* F5 needs fixing
 
 * review the API of SoftwareSurface and clean it up,
   shared_ptr_from_this() could be avoided when static functions are

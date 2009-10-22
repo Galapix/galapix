@@ -28,10 +28,22 @@
 #include "util/weak_functor.hpp"
 
 ImageHandle
-Image::create(const URL& url, const FileEntry& file_entry)
+Image::create(const URL& url)
 {
-  ImageHandle image(new Image(url, file_entry));
+  ImageHandle image(new Image(url, FileEntry()));
   image->set_weak_ptr(image);
+  return image;
+}
+
+ImageHandle
+Image::create(const FileEntry& file_entry, const TileEntry& tile_entry)
+{
+  ImageHandle image(new Image(file_entry.get_url(), file_entry));
+  image->set_weak_ptr(image);
+  if (tile_entry)
+  {
+    image->receive_tile_entry(tile_entry);
+  }
   return image;
 }
 
@@ -362,12 +374,14 @@ void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
   // std::cout << "Image::receive_file_entry: " << file_entry << std::endl;
+  assert(file_entry);
   m_file_entry_queue.push(file_entry);
 }
 
 void
 Image::receive_tile_entry(const TileEntry& tile_entry)
 {
+  assert(tile_entry);
   m_tile_entry_queue.push(tile_entry);
 }
 

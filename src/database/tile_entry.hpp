@@ -72,6 +72,11 @@ public:
   void set_surface(SoftwareSurfaceHandle surface)  { m_surface = surface; }
   void set_blob(const BlobHandle& blob) { m_blob = blob; }
   void set_format(int format) { m_format = format; }
+
+  operator bool() const
+  {
+    return m_file_entry;
+  }
 };
 
 #endif

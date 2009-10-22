@@ -93,10 +93,7 @@ public:
   ImageHandle get_image(const Vector2f& pos) const;
 
   // ---------------------------------------------
-
-  void add_image(const FileEntry& file_entry); 
-  void add_image(const URL& url, const Vector2f& pos = Vector2f(0,0), float scale = 1.0f);
-  void add_image(const FileEntry& file_entry, const Vector2f& pos, float scale); 
+  void add_image(const ImageHandle& image);
 
   // Selection Commands
   Selection get_selection() const { return m_selection; }
@@ -132,8 +129,6 @@ public:
   Rectf get_bounding_rect() const;
 
   bool is_animated() const;
-
-  void receive_file(const FileEntry& entry);
 
 private:
   void start_animation();

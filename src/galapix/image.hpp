@@ -79,7 +79,8 @@ private:
   void set_weak_ptr(ImageHandle self);
 
 public:
-  static ImageHandle create(const URL& url, const FileEntry& file_entry);
+  static ImageHandle create(const URL& url);
+  static ImageHandle create(const FileEntry& file_entry, const TileEntry& tile_entry); 
 
   // _____________________________________________________
   // Drawing stuff

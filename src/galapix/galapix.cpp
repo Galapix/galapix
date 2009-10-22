@@ -343,9 +343,9 @@ Galapix::view(const Options& opts,
 
   Workspace workspace;
   
-  std::vector<FileEntry> file_entries;
-
   {
+    std::vector<FileEntry> file_entries;
+
     // Request FileEntries from the database
     if (view_all)
     {
@@ -368,7 +368,9 @@ Galapix::view(const Options& opts,
 
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
-      workspace.add_image(*i);
+      TileEntry tile_entry;
+      database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry);
+      workspace.add_image(Image::create(*i, tile_entry));
     }
   }
 
@@ -383,7 +385,7 @@ Galapix::view(const Options& opts,
     else
     {
       //database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
-      workspace.add_image(*i);
+      workspace.add_image(Image::create(*i));
     }
   }
 

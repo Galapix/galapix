@@ -81,37 +81,9 @@ Workspace::get_image(const Vector2f& pos) const
 }
 
 void
-Workspace::add_image(const URL& url, const Vector2f& pos, float scale)
+Workspace::add_image(const ImageHandle& image)
 {
-  ImageHandle image = Image::create(url, FileEntry());
-  m_images.add(image);
-  image->set_scale(scale);
-  image->set_pos(pos);
-}
-
-void
-Workspace::add_image(const FileEntry& file_entry, const Vector2f& pos, float scale)
-{
-  ImageHandle image = Image::create(file_entry.get_url(), file_entry);
-  m_images.add(image);
-  image->set_scale(scale);
-  image->set_pos(pos);
-}
-
-void
-Workspace::add_image(const FileEntry& file_entry)
-{
-  //std::cout << "Workspace::add_image(const FileEntry& file_entry)" << std::endl;
-
-  if (file_entry && (file_entry.get_width()  == 0 || file_entry.get_height() == 0))
-  {
-    std::cout << "Workspace: Error: ignoring " << file_entry.get_url() << " as its size is (0, 0)" << std::endl;
-  }
-  else
-  {
-    ImageHandle image = Image::create(file_entry.get_url(), file_entry);
-    m_images.add(image);
-  }
+  m_images.add(image);  
 }
 
 void
@@ -211,13 +183,6 @@ Workspace::draw(const Rectf& cliprect, float zoom)
 void
 Workspace::update(float delta)
 {
-  while (!m_file_queue.empty())
-  {
-    const FileEntry& entry = m_file_queue.front();
-    add_image(entry);
-    m_file_queue.pop();
-  }
-
   if (m_progress != 1.0f)
   {
     m_progress += delta * 2.0f;
@@ -479,7 +444,10 @@ Workspace::load(const std::string& filename)
 
         std::cout << url << " " << pos << " " << scale << std::endl;
 
-        add_image(url, pos, scale);
+        ImageHandle image = Image::create(url);
+        image->set_pos(pos);
+        image->set_scale(scale);
+        add_image(Image::create(url));
       }
     }
   }
@@ -523,19 +491,6 @@ bool
 Workspace::is_animated() const
 {
   return m_progress != 1.0f;
-}
-
-void
-Workspace::receive_file(const FileEntry& entry)
-{
-  if (entry)
-  {
-    m_file_queue.push(entry);
-  }
-  else
-  {
-    // FIXME: Don't have any info for a meaningfull error message
-  }
 }
 
 /* EOF */

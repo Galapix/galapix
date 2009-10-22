@@ -6,6 +6,7 @@ build_mode = 'development'
 default_env = Environment()
 
 preset_cxx = default_env["CXX"]
+# preset_cxx = "/home/ingo/bin/g++-snapshot"
 
 preset_cxxflags = {
     'release':     [ "-O3", "-s"  ],
@@ -85,7 +86,7 @@ libgalapix_env = Environment(CXX=preset_cxx,
                              LINKFLAGS=preset_linkflags[build_mode],
                              CPPPATH=['src'],
                              CPPDEFINES = optional_defines,
-                             LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt'] + optional_libs)
+                             LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + optional_libs)
 libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
 libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
 libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
@@ -104,6 +105,7 @@ if compile_galapix_tests:
     libgalapix_test_env.Program("test/jpeg_size_test", ["test/jpeg_size_test.cpp"])
     libgalapix_test_env.Program("test/curl_test", ["test/curl_test.cpp"])
     libgalapix_test_env.Program("test/exif_test", ["test/exif_test.cpp"])
+    libgalapix_test_env.Program("test/signals_test", ["test/signals_test.cpp"])
     libgalapix_test_env.Program("test/software_surface_test", ["test/software_surface_test.cpp"])
 
 if compile_galapix_sdl:
@@ -113,7 +115,7 @@ if compile_galapix_sdl:
                           CPPPATH=['src'],
                           CPPDEFINES = ['GALAPIX_SDL'] + optional_defines,
                           LIBS = [libgalapix, libgalapix_util,
-                                  'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt'] + optional_libs,
+                                  'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + optional_libs,
                           OBJPREFIX="sdl.")
     sdl_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
     sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
@@ -129,7 +131,7 @@ if compile_galapix_gtk:
                           CPPPATH=['src'],
                           CPPDEFINES = ['GALAPIX_GTK'] + optional_defines,
                           LIBS = [libgalapix, libgalapix_util,
-                                  'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt'] + optional_libs,
+                                  'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + optional_libs,
                           OBJPREFIX="gtk.")
     gtk_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
     gtk_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
