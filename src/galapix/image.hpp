@@ -69,6 +69,7 @@ private:
   boost::scoped_ptr<ImageRenderer>  m_renderer;
 
   ThreadMessageQueue<FileEntry> m_file_entry_queue;
+  ThreadMessageQueue<TileEntry> m_tile_entry_queue;
   typedef std::vector<JobHandle> Jobs;
   Jobs m_jobs;
 

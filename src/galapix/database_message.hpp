@@ -168,6 +168,20 @@ public:
       else
       {
         m_file_callback(entry);
+
+        TileEntry tile_entry;
+        if (db.tiles.get_tile(entry, entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
+        {
+          if (m_tile_callback)
+          {
+            m_tile_callback(tile_entry);
+          }
+        }
+        else
+        {
+          std::cout << "RequestFileDatabaseMessage: " << entry << " " << Vector2i(0,0) << entry.get_thumbnail_scale() << std::endl;
+        }
+
         m_job_handle.set_finished();
       }
     }

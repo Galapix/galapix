@@ -58,6 +58,7 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
   m_cache(),
   m_renderer(),
   m_file_entry_queue(),
+  m_tile_entry_queue(),
   m_jobs()
 {
   if (m_file_entry)
@@ -242,6 +243,12 @@ Image::draw(const Rectf& cliprect, float zoom)
     m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
+  while(!m_tile_entry_queue.empty())
+  {
+    m_cache->receive_tile(m_tile_entry_queue.front());
+    m_tile_entry_queue.pop();
+  }
+
   if (!m_file_entry)
   {
     //std::cout << m_file_entry << " " << m_file_entry_requested << std::endl;
@@ -361,11 +368,7 @@ Image::receive_file_entry(const FileEntry& file_entry)
 void
 Image::receive_tile_entry(const TileEntry& tile_entry)
 {
-  // FIXME: Mutex me
-  if (m_cache)
-  {
-    m_cache->receive_tile(tile_entry);
-  }
+  m_tile_entry_queue.push(tile_entry);
 }
 
 /* EOF */
