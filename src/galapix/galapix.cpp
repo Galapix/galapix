@@ -371,7 +371,14 @@ Galapix::view(const Options& opts,
       TileEntry tile_entry;
       database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry);
       workspace.add_image(Image::create(*i, tile_entry));
+
+      int n = (i - file_entries.begin());
+      int total = file_entries.size();
+        std::cout << "Getting tiles: " << n << "/" << total << " - "
+                  << (100 * n / total) << '%'
+                  << '\r' << std::flush;
     }
+    std::cout << std::endl;
   }
 
   // Create FileEntries from URLs 
