@@ -207,9 +207,10 @@ Image::clear_cache()
 void
 Image::cache_cleanup()
 {
-  m_visible = false;
   if (m_cache)
+  {
     m_cache->cleanup();
+  }
 
   for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
   {
@@ -252,14 +253,13 @@ Image::draw(const Rectf& cliprect, float zoom)
     {
       m_file_entry_requested = true;
       m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
-                                                               weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self)));
+                                                               weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
+                                                               weak(boost::bind(&Image::receive_tile_entry, _1, _2), m_self)));
       //std::cout << "Image::draw(): receive_file_entry" << std::endl;
     }
   }
   else
   {
-    m_visible = true;
-
     if (m_file_entry)
     {
       m_cache->process_queue();
@@ -335,12 +335,37 @@ Image::calc_image_rect() const
                Sizef(get_scaled_width(), 
                      get_scaled_height()));
 }
+
+void
+Image::on_enter_screen()
+{
+  m_visible = true;
+  //std::cout << "Image::on_enter_screen(): " << this << std::endl;
+}
+
+void
+Image::on_leave_screen()
+{
+  m_visible = false;
+  //std::cout << "Image::on_leave_screen(): " << this << std::endl;
+  cache_cleanup();
+}
 
 void
 Image::receive_file_entry(const FileEntry& file_entry)
 {
   // std::cout << "Image::receive_file_entry: " << file_entry << std::endl;
   m_file_entry_queue.push(file_entry);
+}
+
+void
+Image::receive_tile_entry(const TileEntry& tile_entry)
+{
+  // FIXME: Mutex me
+  if (m_cache)
+  {
+    m_cache->receive_tile(tile_entry);
+  }
 }
 
 /* EOF */

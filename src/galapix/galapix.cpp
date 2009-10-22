@@ -268,8 +268,7 @@ Galapix::filegen(const Options& opts,
   
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
   {
-    database_thread.request_file(url[i],
-                           boost::function<void (const FileEntry&)>());
+    database_thread.request_file(url[i], boost::function<void (const FileEntry&)>(), boost::function<void (const TileEntry&)>());
   }
 
   job_manager.stop_thread();
@@ -298,7 +297,9 @@ Galapix::thumbgen(const Options& opts,
   // gather FileEntries
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
   {
-    job_handle_group.add(database_thread.request_file(*i, boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1))); 
+    job_handle_group.add(database_thread.request_file(*i, 
+                                                      boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1),
+                                                      boost::function<void (const TileEntry&)>())); 
   }
   job_handle_group.wait();
   job_handle_group.clear();

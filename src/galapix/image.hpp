@@ -35,6 +35,7 @@
 
 class ImageTileCache;
 class ImageRenderer;
+class TileEntry;
 class Image;
 class Rectf;
 
@@ -131,8 +132,12 @@ public:
 
   bool is_visible() const { return m_visible; }
 
+  void on_enter_screen();
+  void on_leave_screen();
+
   /** Syncronized function to acquire data from other threads */
   void receive_file_entry(const FileEntry& file_entry);
+  void receive_tile_entry(const TileEntry& tile_entry);
 };
 
 #endif

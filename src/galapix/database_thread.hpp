@@ -76,7 +76,8 @@ public:
                      const boost::function<void (TileEntry)>& callback);
 
   void generate_file_entry(const JobHandle& job_handle, const URL& url,
-                           const boost::function<void (FileEntry)>& callback);
+                           const boost::function<void (FileEntry)>& file_callback,
+                           const boost::function<void (TileEntry)>& tile_callback);
   void remove_job(boost::shared_ptr<Job> job);
 
   /* @{ */ // syncronized functions to be used by other threads
@@ -93,7 +94,9 @@ public:
   void      request_job_removal(boost::shared_ptr<Job> job, bool);
 
   /** Request the FileEntry for \a filename */
-  JobHandle request_file(const URL& url, const boost::function<void (const FileEntry&)>& callback);
+  JobHandle request_file(const URL& url, 
+                         const boost::function<void (const FileEntry&)>& file_callback,
+                         const boost::function<void (const TileEntry&)>& tile_callback);
 
   /** Request FileEntrys by glob pattern from the database */
   void      request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern);

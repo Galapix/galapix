@@ -34,19 +34,22 @@ TileGenerator::generate(const FileEntry& m_file_entry,
                         int min_scale, int max_scale,
                         const boost::function<void(const TileEntry& tile_entry)>& callback)
 {
-  std::cout << "TileGenerator::generate(): have ";
-  if (m_min_scale_in_db == -1 && m_max_scale_in_db == -1)
+  if (true /* verbose */)
   {
-    std::cout << "[empty]";
+    std::cout << "TileGenerator::generate(): have ";
+    if (m_min_scale_in_db == -1 && m_max_scale_in_db == -1)
+    {
+      std::cout << "[empty]";
+    }
+    else
+    {
+      std::cout << "[" << m_min_scale_in_db << ".." << m_max_scale_in_db << "]";
+    }
+    std::cout << " generating ["
+              << min_scale << ".." << max_scale << "]: " << m_file_entry.get_fileid()
+              << ": " 
+              << m_file_entry.get_url() << std::endl;
   }
-  else
-  {
-    std::cout << "[" << m_min_scale_in_db << ".." << m_max_scale_in_db << "]";
-  }
-  std::cout << " generating ["
-            << min_scale << ".." << max_scale << "]: " << m_file_entry.get_fileid()
-            << ": " 
-            << m_file_entry.get_url() << std::endl;
   
   // Find scale at which the image fits on one tile
   int width  = m_file_entry.get_width();

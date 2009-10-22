@@ -97,7 +97,7 @@ public:
                     const boost::function<void (TileEntry)>& callback);
   void run();
 
-  FileEntry get_file_entry() const { return m_file_entry; }
+  URL get_url() const { return m_url; }
 
   bool is_aborted();
 
@@ -105,8 +105,6 @@ public:
   boost::signal<void (TileEntry)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
-  void generate_tile_entries(SoftwareSurfaceFactory::FileFormat format, 
-                             int min_scale, int max_scale);
   void process_tile_entry(const TileEntry& tile_entry);
 };
 

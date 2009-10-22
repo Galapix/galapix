@@ -185,14 +185,19 @@ Workspace::draw(const Rectf& cliprect, float zoom)
   for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if ((*i)->overlaps(cliprect))
-    {
+    {  
+      if (!(*i)->is_visible())
+      {
+        (*i)->on_enter_screen();
+      }
+
       (*i)->draw(cliprect, zoom);
     }
     else
     {
       if ((*i)->is_visible())
       {
-        (*i)->cache_cleanup();
+        (*i)->on_leave_screen();
       }
     }
   }

@@ -113,7 +113,9 @@ public:
       {
         // Tile has been found, so return it and finish up
         if (callback)
+        {
           callback(tile);
+        }
         job_handle.set_finished();
       }
       else
@@ -140,14 +142,17 @@ class RequestFileDatabaseMessage : public DatabaseMessage
 public:
   JobHandle m_job_handle;
   URL m_url;
-  boost::function<void (FileEntry)> m_callback;
+  boost::function<void (FileEntry)> m_file_callback;
+  boost::function<void (TileEntry)> m_tile_callback;
 
   RequestFileDatabaseMessage(const JobHandle& job_handle,
                              const URL& url,
-                             const boost::function<void (FileEntry)>& callback)
+                             const boost::function<void (FileEntry)>& file_callback,
+                             const boost::function<void (TileEntry)>& tile_callback)
     : m_job_handle(job_handle),
       m_url(url),
-      m_callback(callback)
+      m_file_callback(file_callback),
+      m_tile_callback(tile_callback)
   {}
   
   void run(Database& db)
@@ -158,11 +163,11 @@ public:
       if (!entry)
       {
         // file entry is not in the database, so try to generate it
-        DatabaseThread::current()->generate_file_entry(m_job_handle, m_url, m_callback);
+        DatabaseThread::current()->generate_file_entry(m_job_handle, m_url, m_file_callback, m_tile_callback);
       }
       else
       {
-        m_callback(entry);
+        m_file_callback(entry);
         m_job_handle.set_finished();
       }
     }
