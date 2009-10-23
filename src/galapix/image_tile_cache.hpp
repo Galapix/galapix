@@ -22,9 +22,8 @@
 #include <map>
 #include <vector>
 
-#include "database/file_entry.hpp"
-#include "database/tile_entry.hpp"
 #include "display/surface.hpp"
+#include "galapix/tile.hpp"
 #include "galapix/tile_provider.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue.hpp"
@@ -65,7 +64,7 @@ public:
   /** FIXME: Jobs array does not get cleared after jobs are done */
   Jobs m_jobs;
 
-  ThreadMessageQueue<TileEntry> m_tile_queue;
+  ThreadMessageQueue<Tile> m_tile_queue;
   
   TileProviderHandle m_tile_provider;
 
@@ -95,7 +94,7 @@ public:
   /** Cleanup the bigger tiles of the cache */
   void cleanup();
 
-  void receive_tile(const TileEntry& tile);
+  void receive_tile(const Tile& tile);
 
   int get_max_scale() const { return m_max_scale; }
 

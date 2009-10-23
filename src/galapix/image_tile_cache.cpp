@@ -201,7 +201,7 @@ ImageTileCache::process_queue()
   // Check the queue for newly arrived tiles
   while (!m_tile_queue.empty())
   {
-    TileEntry tile = m_tile_queue.front();
+    Tile tile = m_tile_queue.front();
     m_tile_queue.pop();
     
     int tile_id = make_cache_id(tile.get_pos().x, tile.get_pos().y, tile.get_scale());
@@ -224,7 +224,7 @@ ImageTileCache::process_queue()
 }
 
 void
-ImageTileCache::receive_tile(const TileEntry& tile)
+ImageTileCache::receive_tile(const Tile& tile)
 {
   m_tile_queue.push(tile);
 

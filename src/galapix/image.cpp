@@ -37,14 +37,16 @@ Image::create(const URL& url)
 }
 
 ImageHandle
-Image::create(const FileEntry& file_entry, const TileEntry& tile_entry)
+Image::create(const FileEntry& file_entry, const Tile& tile)
 {
   ImageHandle image(new Image(file_entry.get_url(), file_entry));
   image->set_weak_ptr(image);
-  if (tile_entry)
+
+  if (tile)
   {
-    image->receive_tile_entry(tile_entry);
+    image->receive_tile(tile);
   }
+
   return image;
 }
 
@@ -71,7 +73,7 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
   m_cache(),
   m_renderer(),
   m_file_entry_queue(),
-  m_tile_entry_queue(),
+  m_tile_queue(),
   m_jobs()
 {
   if (m_file_entry)
@@ -256,10 +258,10 @@ Image::draw(const Rectf& cliprect, float zoom)
     m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
-  while(!m_tile_entry_queue.empty())
+  while(!m_tile_queue.empty())
   {
-    m_cache->receive_tile(m_tile_entry_queue.front());
-    m_tile_entry_queue.pop();
+    m_cache->receive_tile(m_tile_queue.front());
+    m_tile_queue.pop();
   }
 
   if (!m_file_entry)
@@ -274,7 +276,7 @@ Image::draw(const Rectf& cliprect, float zoom)
       m_file_entry_requested = true;
       m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
                                                                weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
-                                                               weak(boost::bind(&Image::receive_tile_entry, _1, _2), m_self)));
+                                                               weak(boost::bind(&Image::receive_tile, _1, _2), m_self)));
       //std::cout << "Image::draw(): receive_file_entry" << std::endl;
     }
   }
@@ -380,10 +382,10 @@ Image::receive_file_entry(const FileEntry& file_entry)
 }
 
 void
-Image::receive_tile_entry(const TileEntry& tile_entry)
+
+Image::receive_tile(const Tile& tile)
 {
-  assert(tile_entry);
-  m_tile_entry_queue.push(tile_entry);
+  m_tile_queue.push(tile);
 }
 
 /* EOF */

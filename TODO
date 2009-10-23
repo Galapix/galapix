@@ -28,13 +28,6 @@ Release procedure:
 Galapix 0.2.0 Release ToDo:
 ---------------------------
 
-* fix random layout so that all image sizes are handled equally,
-  currently low-res images get really small
-
-* add function to relayout just the selection instead of all images
-
-* make middle button exit trackball mode
-
 * add check for boost header files and make scons somewhat more solid
 
 * check with sqlite3_table_column_metadata() that the table has the
@@ -62,8 +55,18 @@ Galapix 0.2.0 Release ToDo:
   galapix-db cleanup
   galapix-db delete -d database1.sqlite [PATTERN]...
 
-Galapix 0.1.0 Release ToDo:
+Galapix 0.1.1 Release ToDo:
 ===========================
+
+* rewrite overlap solving to be fast or disable it, as it currently
+  just halts the whole app
+
+* fix random layout so that all image sizes are handled equally,
+  currently low-res images get really small
+
+* add function to relayout just the selection instead of all images
+
+* make middle button exit trackball mode
 
 * (!) viewdb -p PATTERN doesn't work as expected, as the viewer isn't updated in
   SDLViewer::run(), pressing '1' works as a workaround
@@ -73,15 +76,36 @@ Galapix 0.1.0 Release ToDo:
 
 * (!) mouse buttons can get stuck when you press them both at once
 
+* broken images must be detected and marked, so they aren't
+  re-requested over and over again
+
 * ZoomTool doesn't know about trackball_mode and thus zooms not into
   the center of the picture, but to the mouse cursor
 
 * trackball mode in window mode doesn't zoom to center, but some abitary point
 
-* flush file cache from time to time
+* cleanup exceptions:
+
+  - they must tell which part of the code caused them, i.e. a prefix
+    like "JPEG::read_header()"
+
+  - they must no include "Error"
+
+* flush file cache from time to time (not sure if that would actually help)
+
+* make thumbnail generation output optional --verbose
+
+* add custom sorter (sort by date, name, reverse, shuffle, ...)
+
+* fix NAN issues
+
 
 General Problems:
 =================
+
+* need a framework do handle downloads in a multithreaded fashion
+
+* add zoomify support
 
 * a separate table for small tiles could speed things up (i.e. either
   just the lowres'est tile or all tiles that contain the whole image)
@@ -110,22 +134,11 @@ select count(*) from files;
   SoftwareSurfaceFactory::transform(surface, kRot90);
   SoftwareSurfaceFactory::clone(surface);
 
-* make thumbnail generation output optional --verbose
-
 * very small images seem broken
 
  TileGenerationJob: have [0..1] generating [-1..-1]: FileId(51152):
 
 * separate animation from Image, maybe even position
-
-* cleanup exceptions:
-
-  - they must tell which part of the code caused them, i.e. a prefix
-    like "JPEG::read_header()"
-
-  - they must no include "Error"
-
-* implement loading of small thumbnails that are always kept
 
 galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::request_tile(const JobHandle&, int, const Vector2i&, const boost::function<void(TileEntry)>&): Assertion `scale < m_min_scale_in_db || scale > m_max_scale_in_db' failed.
 
@@ -152,16 +165,13 @@ galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::reques
 
 * DatabaseThread is very similar to JobWorkerThread, maybe merge them
 
-* maybe have something like JobHandle->spawn_child_job()
-
-* current use of cURL is not thread safe due to curl_global_init()
+* maybe have something like JobHandle->spawn_child_job() -> No
+ 
+* current use of cURL is not thread safe due to curl_global_init(),
+  use singleton and mutex
 
 * quality of small thumbnails is very bad, should start with larger
   thumbnails and then halve() them down instead of using scale()
-
-* getting small tiles on startup should be much faster then getting
-  them later, as it would need much less sql calls (one select vs one
-  for each of thousands of pictures)
 
 * shared_ptr<> impl is evil
 
@@ -186,8 +196,6 @@ Graphical User Interface
 * add optional fullscreen-sized cross to indicate cursor position
 
 * add two button mode: hold-right button for drag&drop zoom
-
-* add custom sorter (sort by date, name, reverse, shuffle, ...)
 
 * when view is rotated, zooming in position is not rotated with it
 

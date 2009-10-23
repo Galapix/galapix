@@ -369,7 +369,9 @@ Galapix::view(const Options& opts,
     {
       TileEntry tile_entry;
       database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry);
-      workspace.add_image(Image::create(*i, tile_entry));
+      workspace.add_image(Image::create(*i, Tile(tile_entry.get_scale(), 
+                                                 tile_entry.get_pos(),
+                                                 tile_entry.get_surface())));
 
       int n = (i - file_entries.begin())+1;
       int total = file_entries.size();
@@ -406,7 +408,9 @@ Galapix::view(const Options& opts,
       {
         TileEntry tile_entry;
         database.tiles.get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0,0), tile_entry);
-        workspace.add_image(Image::create(file_entry, tile_entry)); 
+        workspace.add_image(Image::create(file_entry, Tile(tile_entry.get_scale(),
+                                                           tile_entry.get_pos(),
+                                                           tile_entry.get_surface()))); 
       }
     }
   }

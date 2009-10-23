@@ -27,6 +27,7 @@
 
 #include "database/file_entry.hpp"
 #include "galapix/image_handle.hpp"
+#include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue.hpp"
 #include "math/rect.hpp"
@@ -69,7 +70,7 @@ private:
   boost::scoped_ptr<ImageRenderer>  m_renderer;
 
   ThreadMessageQueue<FileEntry> m_file_entry_queue;
-  ThreadMessageQueue<TileEntry> m_tile_entry_queue;
+  ThreadMessageQueue<Tile> m_tile_queue;
   typedef std::vector<JobHandle> Jobs;
   Jobs m_jobs;
 
@@ -80,7 +81,7 @@ private:
 
 public:
   static ImageHandle create(const URL& url);
-  static ImageHandle create(const FileEntry& file_entry, const TileEntry& tile_entry);
+  static ImageHandle create(const FileEntry& file_entry, const Tile& tile);
 
   // _____________________________________________________
   // Drawing stuff
@@ -139,7 +140,7 @@ public:
 
   /** Syncronized function to acquire data from other threads */
   void receive_file_entry(const FileEntry& file_entry);
-  void receive_tile_entry(const TileEntry& tile_entry);
+  void receive_tile(const Tile& tile);
 };
 
 #endif

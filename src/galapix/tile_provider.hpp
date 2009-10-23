@@ -22,6 +22,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 
+#include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 
 class TileProvider
@@ -32,7 +33,7 @@ public:
   virtual ~TileProvider() {}
   
   virtual JobHandle request_tile(int tilescale, const Vector2i& pos, 
-                                 const boost::function<void (TileEntry)>& callback) =0;
+                                 const boost::function<void (Tile)>& callback) =0;
 
   virtual int get_max_scale() const =0;
 

@@ -38,7 +38,7 @@ public:
   }
 
   JobHandle request_tile(int tilescale, const Vector2i& pos, 
-                         const boost::function<void (TileEntry)>& callback)
+                         const boost::function<void (Tile)>& callback)
   {
     return DatabaseThread::current()->request_tile(m_file_entry, tilescale, pos, callback);
   }

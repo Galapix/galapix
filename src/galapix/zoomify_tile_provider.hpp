@@ -70,7 +70,7 @@ public:
   }
 
   JobHandle request_tile(int scale, const Vector2i& pos, 
-                         const boost::function<void (TileEntry)>& callback)
+                         const boost::function<void (Tile)>& callback)
   {
     int tile_group = get_tile_group(scale, pos);
 
@@ -84,7 +84,7 @@ public:
     BlobHandle blob = CURLHandler::get_data(out.str());
     SoftwareSurfaceHandle surface = JPEG::load_from_mem(blob->get_data(), blob->size());
 
-    callback(TileEntry(FileEntry file_entry, scale, pos, surface));
+    callback(Tile(scale, pos, surface));
 
     JobHandle job_handle;
     job_handle.set_finished();
