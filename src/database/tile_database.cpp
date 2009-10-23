@@ -118,9 +118,9 @@ TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& p
 }
 
 void
-TileDatabase::store_tile(const TileEntry& tile)
+TileDatabase::store_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_cache.store_tile(tile);
+  m_cache.store_tile(TileEntry(file_entry, tile.get_scale(), tile.get_pos(), tile.get_surface()));
 
   // A single tile is ~10KB, but only in compressed JPEG form,
   // uncompressed tiles can be much bigger

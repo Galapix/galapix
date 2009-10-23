@@ -19,11 +19,12 @@
 #ifndef HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
 #define HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
 
-#include "job/thread.hpp"
-#include "job/thread_message_queue.hpp"
 #include "database/tile_entry.hpp"
+#include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 #include "job/job_manager.hpp"
+#include "job/thread.hpp"
+#include "job/thread_message_queue.hpp"
 
 class URL;
 class Database;
@@ -66,16 +67,16 @@ public:
   /** Generates the requested tile from its original image */
   void generate_tiles(const JobHandle& job_handle, const FileEntry&,
                       int min_scale, int max_scale,
-                      const boost::function<void (TileEntry)>& callback);
+                      const boost::function<void (Tile)>& callback);
 
   /** Generates the requested tile from its original image */
   void generate_tile(const JobHandle& job_handle,
                      const FileEntry&, int tilescale, const Vector2i& pos, 
-                     const boost::function<void (TileEntry)>& callback);
+                     const boost::function<void (Tile)>& callback);
 
   void generate_file_entry(const JobHandle& job_handle, const URL& url,
                            const boost::function<void (FileEntry)>& file_callback,
-                           const boost::function<void (TileEntry)>& tile_callback);
+                           const boost::function<void (FileEntry, Tile)>& tile_callback);
   void remove_job(boost::shared_ptr<Job> job);
 
   /* @{ */ // syncronized functions to be used by other threads
@@ -84,17 +85,17 @@ public:
    *  tile will be generated from the source image
    */
   JobHandle request_tile(const FileEntry&, int tilescale, const Vector2i& pos, 
-                         const boost::function<void (TileEntry)>& callback);
+                         const boost::function<void (Tile)>& callback);
 
   JobHandle request_tiles(const FileEntry&, int min_scale, int max_scale, 
-                          const boost::function<void (TileEntry)>& callback);
+                          const boost::function<void (Tile)>& callback);
 
   void      request_job_removal(boost::shared_ptr<Job> job, bool);
 
   /** Request the FileEntry for \a filename */
   JobHandle request_file(const URL& url, 
-                         const boost::function<void (const FileEntry&)>& file_callback,
-                         const boost::function<void (const TileEntry&)>& tile_callback);
+                         const boost::function<void (FileEntry)>& file_callback,
+                         const boost::function<void (FileEntry, Tile)>& tile_callback);
 
   /** Request FileEntrys by glob pattern from the database */
   void      request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern);
@@ -107,7 +108,7 @@ public:
                              const boost::function<void (FileEntry)>& callback);
 
   /** Place tile into the database */
-  void      receive_tile(const TileEntry& tile);
+  void      receive_tile(const FileEntry& file_entry, const Tile& tile);
   void      receive_file(const FileEntry& file_entry);
   void      receive_tiles(const std::vector<TileEntry>& tiles);
 

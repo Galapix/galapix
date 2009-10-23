@@ -22,9 +22,9 @@
 #include <boost/function.hpp>
 
 #include "util/software_surface_factory.hpp"
+#include "galapix/tile.hpp"
 
 class FileEntry;
-class TileEntry;
 
 class TileGenerator
 {
@@ -34,7 +34,7 @@ public:
                        SoftwareSurfaceFactory::FileFormat format,
                        int m_min_scale_in_db, int m_max_scale_in_db,
                        int min_scale, int max_scale,
-                       const boost::function<void (const TileEntry& tile_entry)>& callback);
+                       const boost::function<void (Tile)>& callback);
 
 private:
   TileGenerator(const TileGenerator&);

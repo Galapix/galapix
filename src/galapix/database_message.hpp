@@ -60,11 +60,11 @@ public:
   FileEntry m_file_entry;
   int m_min_scale;
   int m_max_scale;
-  boost::function<void (TileEntry)> m_callback;
+  boost::function<void (Tile)> m_callback;
 
   RequestTilesDatabaseMessage(const JobHandle& job_handle, const FileEntry& file_entry, 
                               int min_scale, int max_scale,
-                              const boost::function<void (TileEntry)>& callback) :
+                              const boost::function<void (Tile)>& callback) :
     m_job_handle(job_handle),
     m_file_entry(file_entry),
     m_min_scale(min_scale),
@@ -92,11 +92,11 @@ public:
   FileEntry file_entry;
   int tilescale;
   Vector2i pos;
-  boost::function<void (TileEntry)> callback;
+  boost::function<void (Tile)> callback;
 
   RequestTileDatabaseMessage(const JobHandle& job_handle_,
                              const FileEntry& file_entry_, int tilescale_, const Vector2i& pos_,
-                             const boost::function<void (TileEntry)>& callback_) :
+                             const boost::function<void (Tile)>& callback_) :
     job_handle(job_handle_),
     file_entry(file_entry_),
     tilescale(tilescale_),
@@ -143,43 +143,44 @@ public:
   JobHandle m_job_handle;
   URL m_url;
   boost::function<void (FileEntry)> m_file_callback;
-  boost::function<void (TileEntry)> m_tile_callback;
+  boost::function<void (FileEntry, Tile)> m_tile_callback;
 
   RequestFileDatabaseMessage(const JobHandle& job_handle,
                              const URL& url,
                              const boost::function<void (FileEntry)>& file_callback,
-                             const boost::function<void (TileEntry)>& tile_callback)
-    : m_job_handle(job_handle),
-      m_url(url),
-      m_file_callback(file_callback),
-      m_tile_callback(tile_callback)
+                             const boost::function<void (FileEntry, Tile)>& tile_callback) :
+    m_job_handle(job_handle),
+    m_url(url),
+    m_file_callback(file_callback),
+    m_tile_callback(tile_callback)
   {}
   
   void run(Database& db)
   {
     if (!m_job_handle.is_aborted())
     {
-      FileEntry entry = db.files.get_file_entry(m_url);
-      if (!entry)
+      FileEntry file_entry = db.files.get_file_entry(m_url);
+      if (!file_entry)
       {
         // file entry is not in the database, so try to generate it
-        DatabaseThread::current()->generate_file_entry(m_job_handle, m_url, m_file_callback, m_tile_callback);
+        DatabaseThread::current()->generate_file_entry(m_job_handle, m_url, 
+                                                       m_file_callback, m_tile_callback);
       }
       else
       {
-        m_file_callback(entry);
+        m_file_callback(file_entry);
 
         TileEntry tile_entry;
-        if (db.tiles.get_tile(entry, entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
+        if (db.tiles.get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
         {
           if (m_tile_callback)
           {
-            m_tile_callback(tile_entry);
+            m_tile_callback(file_entry, tile_entry);
           }
         }
         else
         {
-          std::cout << "RequestFileDatabaseMessage: " << entry << " " << Vector2i(0,0) << entry.get_thumbnail_scale() << std::endl;
+          std::cout << "RequestFileDatabaseMessage: " << file_entry << " " << Vector2i(0,0) << file_entry.get_thumbnail_scale() << std::endl;
         }
 
         m_job_handle.set_finished();
@@ -235,31 +236,27 @@ public:
 class ReceiveTileDatabaseMessage : public DatabaseMessage
 {
 public:
-  TileEntry tile;
+  Tile m_tile;
+  FileEntry m_file_entry;
 
-  ReceiveTileDatabaseMessage(const TileEntry& tile_)
-    : tile(tile_)
+  ReceiveTileDatabaseMessage(const FileEntry& file_entry, const Tile& tile) :
+    m_tile(tile),
+    m_file_entry(file_entry)
   {}
 
   void run(Database& db)
   {
-    if (0)
-      std::cout << "Received Tile: "
-                << tile.get_file_entry().get_fileid() << " pos: " 
-                << tile.get_pos()    << " scale: " 
-                << tile.get_scale()  << std::endl;
-
     // FIXME: Make some better error checking in case of loading failure
-    if (tile.get_surface())
-      {
-        // FIXME: Test the performance of this
-        //if (!db.tiles.has_tile(tile.fileid, tile.pos, tile.scale))
-        db.tiles.store_tile(tile);
-      }
+    if (m_tile)
+    {
+      // FIXME: Test the performance of this
+      //if (!db.tiles.has_tile(tile.fileid, tile.pos, tile.scale))
+      db.tiles.store_tile(m_file_entry, m_tile);
+    }
     else
-      {
+    {
         
-      }
+    }
   }
 };
 

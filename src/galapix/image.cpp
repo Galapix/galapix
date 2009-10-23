@@ -44,7 +44,7 @@ Image::create(const FileEntry& file_entry, const Tile& tile)
 
   if (tile)
   {
-    image->receive_tile(tile);
+    image->receive_tile(file_entry, tile);
   }
 
   return image;
@@ -276,7 +276,7 @@ Image::draw(const Rectf& cliprect, float zoom)
       m_file_entry_requested = true;
       m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
                                                                weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
-                                                               weak(boost::bind(&Image::receive_tile, _1, _2), m_self)));
+                                                               weak(boost::bind(&Image::receive_tile, _1, _2, _3), m_self)));
       //std::cout << "Image::draw(): receive_file_entry" << std::endl;
     }
   }
@@ -383,7 +383,7 @@ Image::receive_file_entry(const FileEntry& file_entry)
 
 void
 
-Image::receive_tile(const Tile& tile)
+Image::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
   m_tile_queue.push(tile);
 }

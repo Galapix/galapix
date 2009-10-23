@@ -24,11 +24,10 @@
 #include <boost/thread/mutex.hpp>
 
 #include "database/file_entry.hpp"
+#include "galapix/tile.hpp"
 #include "job/job.hpp"
 #include "math/vector2i.hpp"
 #include "util/software_surface_factory.hpp"
-
-class TileEntry;
 
 class TileGenerationJob : public Job
 {
@@ -38,11 +37,11 @@ private:
     JobHandle job_handle;
     int       scale;
     Vector2i  pos;
-    boost::function<void (TileEntry)> callback;
+    boost::function<void (Tile)> callback;
     
     TileRequest(const JobHandle& job_handle_,
                 int scale_, const Vector2i& pos_,
-                const boost::function<void (TileEntry)>& callback_) :
+                const boost::function<void (Tile)>& callback_) :
       job_handle(job_handle_),
       scale(scale_), pos(pos_),
       callback(callback_)
@@ -77,11 +76,11 @@ private:
   /** TileRequests that came in when the process was already running */
   TileRequests m_late_tile_requests;
   
-  typedef std::vector<TileEntry> Tiles;
+  typedef std::vector<Tile> Tiles;
   Tiles m_tiles;
 
   boost::signal<void (FileEntry)> m_sig_file_callback;
-  boost::signal<void (TileEntry)> m_sig_tile_callback;
+  boost::signal<void (FileEntry, Tile)> m_sig_tile_callback;
 
 public:
   TileGenerationJob(const JobHandle& job_handle, const URL& url);
@@ -94,7 +93,7 @@ public:
       be honored, false if the tile generation is already in progress
       and the request has to be discarded */
   bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
-                    const boost::function<void (TileEntry)>& callback);
+                    const boost::function<void (Tile)>& callback);
   void run();
 
   URL get_url() const { return m_url; }
@@ -102,10 +101,10 @@ public:
   bool is_aborted();
 
   boost::signal<void (FileEntry)>& sig_file_callback() { return m_sig_file_callback; }
-  boost::signal<void (TileEntry)>& sig_tile_callback() { return m_sig_tile_callback; }
+  boost::signal<void (FileEntry, Tile)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
-  void process_tile_entry(const TileEntry& tile_entry);
+  void process_tile(const Tile& tile);
 };
 
 #endif

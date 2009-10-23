@@ -72,6 +72,20 @@ public:
       std::cout << "Object deleted" << std::endl;
     }
   }
+
+  template<class A1, class A2>
+  void operator()(A1 a1, A2 a2)
+  {
+    boost::shared_ptr<typename C::element_type> obj = m_obj.lock();
+    if (obj)
+    {
+      m_func(obj, a1, a2);
+    }
+    else
+    {
+      std::cout << "Object deleted" << std::endl;
+    }
+  }
 };
 
 template<class F, class C>

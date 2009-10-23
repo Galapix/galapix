@@ -69,7 +69,7 @@ TileGenerationJob::~TileGenerationJob()
 
 bool
 TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
-                                const boost::function<void (TileEntry)>& callback)
+                                const boost::function<void (Tile)>& callback)
 {
   boost::mutex::scoped_lock lock(m_state_mutex);
   
@@ -133,19 +133,19 @@ TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Ve
 }
 
 void
-TileGenerationJob::process_tile_entry(const TileEntry& tile_entry)
+TileGenerationJob::process_tile(const Tile& tile)
 {
-  m_tiles.push_back(tile_entry);
+  m_tiles.push_back(tile);
 
-  m_sig_tile_callback(tile_entry);
+  m_sig_tile_callback(m_file_entry, tile);
 
   for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
   {
     if (!i->job_handle.is_aborted() &&
-        i->pos   == tile_entry.get_pos() &&
-        i->scale == tile_entry.get_scale())
+        i->pos   == tile.get_pos() &&
+        i->scale == tile.get_scale())
     {
-      i->callback(tile_entry);
+      i->callback(tile);
     }
   }
 }
@@ -256,7 +256,7 @@ TileGenerationJob::run()
     TileGenerator::generate(m_file_entry, format,
                             m_min_scale_in_db, m_max_scale_in_db,
                             m_min_scale, m_max_scale,
-                            boost::bind(&TileGenerationJob::process_tile_entry, this, _1));
+                            boost::bind(&TileGenerationJob::process_tile, this, _1));
   }
   catch(const std::exception& err)
   {

@@ -22,6 +22,7 @@
 #include "sqlite/statement.hpp"
 #include "math/vector2i.hpp"
 
+#include "galapix/tile.hpp"
 #include "database/tiles_table.hpp"
 #include "database/tile_entry_get_all_by_file_entry_statement.hpp"
 #include "database/tile_entry_has_statement.hpp"
@@ -60,7 +61,7 @@ public:
   void get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles);
   bool get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out);
 
-  void store_tile(const TileEntry& tile);
+  void store_tile(const FileEntry& file_entry, const Tile& tile);
   void store_tiles(const std::vector<TileEntry>& tiles);
 
   void delete_tiles(const FileId& fileid);

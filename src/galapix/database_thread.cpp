@@ -48,7 +48,7 @@ DatabaseThread::~DatabaseThread()
 
 JobHandle
 DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
-                             const boost::function<void (TileEntry)>& callback)
+                             const boost::function<void (Tile)>& callback)
 {
   assert(file_entry);
   JobHandle job_handle;
@@ -58,7 +58,7 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
 
 JobHandle
 DatabaseThread::request_tiles(const FileEntry& file_entry, int min_scale, int max_scale,
-                              const boost::function<void (TileEntry)>& callback)
+                              const boost::function<void (Tile)>& callback)
 {
   JobHandle job_handle;
   m_queue.push(new RequestTilesDatabaseMessage(job_handle, file_entry, min_scale, max_scale, callback));
@@ -73,8 +73,8 @@ DatabaseThread::request_job_removal(boost::shared_ptr<Job> job, bool)
 
 JobHandle
 DatabaseThread::request_file(const URL& url, 
-                             const boost::function<void (const FileEntry&)>& file_callback,
-                             const boost::function<void (const TileEntry&)>& tile_callback)
+                             const boost::function<void (FileEntry)>& file_callback,
+                             const boost::function<void (FileEntry, Tile)>& tile_callback)
 {
   JobHandle job_handle;
   m_queue.push(new RequestFileDatabaseMessage(job_handle, url, file_callback, tile_callback));
@@ -94,9 +94,9 @@ DatabaseThread::request_files_by_pattern(const boost::function<void (FileEntry)>
 }
 
 void
-DatabaseThread::receive_tile(const TileEntry& tile)
+DatabaseThread::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_queue.push(new ReceiveTileDatabaseMessage(tile));
+  m_queue.push(new ReceiveTileDatabaseMessage(file_entry, tile));
 }
 
 void
@@ -173,7 +173,7 @@ struct FindByFileEntry
 void
 DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& file_entry,
                                int min_scale, int max_scale,
-                               const boost::function<void (TileEntry)>& callback)
+                               const boost::function<void (Tile)>& callback)
 {
   // FIXME: We are ignoring the callback, but shouldn't so assert in
   // case somebody tries to use one
@@ -189,7 +189,7 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
                                           file_entry,
                                           min_scale_in_db, max_scale_in_db,
                                           min_scale, max_scale,
-                                          boost::bind(&DatabaseThread::receive_tile, this, _1)));
+                                          boost::bind(&DatabaseThread::receive_tile, this, file_entry, _1)));
 
   // Not removing the job from the queue
   m_tile_job_manager.request(job_ptr);
@@ -198,7 +198,7 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
 void
 DatabaseThread::generate_tile(const JobHandle& job_handle,
                               const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
-                              const boost::function<void (TileEntry)>& callback)
+                              const boost::function<void (Tile)>& callback)
 { 
   std::list<boost::shared_ptr<TileGenerationJob> >::iterator it = 
     std::find_if(m_tile_generation_jobs.begin(), m_tile_generation_jobs.end(), 
@@ -239,7 +239,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     }
 
     boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db));
-    job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1));
+    job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1, _2));
 
     job_ptr->request_tile(job_handle, tilescale, pos, callback);
 
@@ -252,7 +252,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
 void
 DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
                                     const boost::function<void (FileEntry)>& file_callback,
-                                    const boost::function<void (TileEntry)>& tile_callback)
+                                    const boost::function<void (FileEntry, Tile)>& tile_callback)
 {
   //std::cout << "DatabaseThread::generate_file_entry: " << url << " " << job_handle << std::endl;
   boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(job_handle, url));
@@ -268,7 +268,7 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
   }
 
   job_ptr->sig_file_callback().connect(boost::bind(&DatabaseThread::receive_file, this, _1));
-  job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1));
+  job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1, _2));
 
   m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
   m_tile_generation_jobs.push_front(job_ptr);

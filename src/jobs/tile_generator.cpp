@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "database/file_entry.hpp"
-#include "database/tile_entry.hpp"
+#include "galapix/tile.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 #include "plugins/jpeg.hpp"
@@ -32,7 +32,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
                         SoftwareSurfaceFactory::FileFormat format,
                         int m_min_scale_in_db, int m_max_scale_in_db,
                         int min_scale, int max_scale,
-                        const boost::function<void(const TileEntry& tile_entry)>& callback)
+                        const boost::function<void(Tile)>& callback)
 {
   if (true /* verbose */)
   {
@@ -105,7 +105,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
         SoftwareSurfaceHandle croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
                                                                   Size(256, 256)));
 
-        callback(TileEntry(m_file_entry, scale, Vector2i(x, y), croped_surface));
+        callback(/*m_file_entry, */Tile(scale, Vector2i(x, y), croped_surface));
       }
 
     scale += 1;

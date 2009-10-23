@@ -118,15 +118,15 @@ Galapix::merge(const std::string& database,
         std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
 
         // FIXME: Must catch URL collisions here (or maybe not?)
-        FileEntry entry = out_db.files.store_file_entry(*i);
+        FileEntry file_entry = out_db.files.store_file_entry(*i);
 
         std::vector<TileEntry> tiles;
         in_db.tiles.get_tiles(*i, tiles);
         for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
         {
           // Change the fileid
-          j->set_file_entry(entry);
-          out_db.tiles.store_tile(*j);
+          j->set_file_entry(file_entry);
+          out_db.tiles.store_tile(file_entry, *j);
         }
       } catch(std::exception& err) {
         std::cout << "Galapix:merge: Error: " << err.what() << std::endl;
@@ -268,7 +268,9 @@ Galapix::filegen(const Options& opts,
   
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
   {
-    database_thread.request_file(url[i], boost::function<void (const FileEntry&)>(), boost::function<void (const TileEntry&)>());
+    database_thread.request_file(url[i], 
+                                 boost::function<void (FileEntry)>(), 
+                                 boost::function<void (FileEntry, Tile)>());
   }
 
   job_manager.stop_thread();
@@ -299,7 +301,7 @@ Galapix::thumbgen(const Options& opts,
   {
     job_handle_group.add(database_thread.request_file(*i, 
                                                       boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1),
-                                                      boost::function<void (const TileEntry&)>())); 
+                                                      boost::function<void (FileEntry, Tile)>())); 
   }
   job_handle_group.wait();
   job_handle_group.clear();
@@ -318,7 +320,7 @@ Galapix::thumbgen(const Options& opts,
     }
 
     job_handle_group.add(database_thread.request_tiles(*i, min_scale, max_scale,
-                                                       boost::function<void(const TileEntry&)>()));
+                                                       boost::function<void(Tile)>()));
   }
 
   job_handle_group.wait();
