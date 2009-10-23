@@ -77,7 +77,7 @@ Galapix::test(const Options& opts,
 
   Database database(opts.database);
   JobManager job_manager(opts.threads);
-  DatabaseThread database_thread(database, job_manager, job_manager);
+  DatabaseThread database_thread(database, job_manager);
 
   database_thread.start_thread();
   job_manager.start_thread();
@@ -261,7 +261,7 @@ Galapix::filegen(const Options& opts,
 {
   Database database(opts.database);
   JobManager job_manager(opts.threads);
-  DatabaseThread database_thread(database, job_manager, job_manager);
+  DatabaseThread database_thread(database, job_manager);
 
   job_manager.start_thread();
   database_thread.start_thread();
@@ -285,7 +285,7 @@ Galapix::thumbgen(const Options& opts,
 {
   Database       database(opts.database);
   JobManager     job_manager(opts.threads);
-  DatabaseThread database_thread(database, job_manager, job_manager);
+  DatabaseThread database_thread(database, job_manager);
   
   database_thread.start_thread();
   job_manager.start_thread();
@@ -337,9 +337,8 @@ Galapix::view(const Options& opts,
               bool view_all)
 {
   Database       database(opts.database);
-  JobManager     tile_job_manager(opts.threads);
-  JobManager     file_entry_job_manager(opts.threads);
-  DatabaseThread database_thread(database, tile_job_manager, file_entry_job_manager);
+  JobManager     job_manager(opts.threads);
+  DatabaseThread database_thread(database, job_manager);
 
   Workspace workspace;
   
@@ -414,8 +413,7 @@ Galapix::view(const Options& opts,
   if (!urls.empty())
     std::cout << std::endl;
 
-  tile_job_manager.start_thread();  
-  file_entry_job_manager.start_thread();  
+  job_manager.start_thread();  
   database_thread.start_thread();
 
 #ifdef GALAPIX_SDL
@@ -433,12 +431,10 @@ Galapix::view(const Options& opts,
   gtk_viewer.run();
 #endif
 
-  tile_job_manager.abort_thread();
-  file_entry_job_manager.abort_thread();
+  job_manager.abort_thread();
   database_thread.abort_thread();
 
-  tile_job_manager.join_thread();
-  file_entry_job_manager.join_thread();
+  job_manager.join_thread();
   database_thread.join_thread();
 }
 

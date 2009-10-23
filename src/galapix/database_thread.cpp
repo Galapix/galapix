@@ -29,11 +29,9 @@
 DatabaseThread* DatabaseThread::current_ = 0;
 
 DatabaseThread::DatabaseThread(Database& database,
-                               JobManager& tile_job_manager,
-                               JobManager& file_entry_job_manager) :
+                               JobManager& tile_job_manager) :
   m_database(database),
   m_tile_job_manager(tile_job_manager),
-  m_file_entry_job_manager(file_entry_job_manager),
   m_quit(false),
   m_abort(false),
   m_queue(),
@@ -272,15 +270,8 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
   job_ptr->sig_file_callback().connect(boost::bind(&DatabaseThread::receive_file, this, _1));
   job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1));
 
-  if (0)
-  {
-    m_file_entry_job_manager.request(job_ptr);
-  }
-  else
-  {
-    m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
-    m_tile_generation_jobs.push_front(job_ptr);
-  }
+  m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
+  m_tile_generation_jobs.push_front(job_ptr);
 }
 
 void

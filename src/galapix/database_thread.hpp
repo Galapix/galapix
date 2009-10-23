@@ -45,7 +45,6 @@ private:
   Database& m_database;
 
   JobManager& m_tile_job_manager;
-  JobManager& m_file_entry_job_manager;
 
   bool m_quit;
   bool m_abort;
@@ -58,8 +57,7 @@ protected:
 
 public:
   DatabaseThread(Database& database,
-                 JobManager& tile_job_manager,
-                 JobManager& file_entry_job_manager);
+                 JobManager& tile_job_manager);
   virtual ~DatabaseThread();
 
   void stop_thread();
