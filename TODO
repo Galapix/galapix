@@ -46,8 +46,10 @@ Galapix 0.2.0 Release ToDo:
 * seperate galapix from the thumbgen code, so that there is a
   galapix-tool and a galapix program
 
-* galapix --help
-   -d, --database FILE
+* galapix FILE...
+   -h, --help
+   -d, --database FILE    Use database FILE
+   -p, --pattern PATTERN  Show all files in the database matching PATTERN
 
 * galapix-thumbgen
    -m, --minsize X      Generate tiles till this size
@@ -76,18 +78,25 @@ Galapix 0.1.0 Release ToDo:
 
 * trackball mode in window mode doesn't zoom to center, but some abitary point
 
-* write script to convert old database to new database
-
-* improve layouter, so that new images come in more cleanly
-
 * flush file cache from time to time
 
 General Problems:
 =================
 
+* a separate table for small tiles could speed things up (i.e. either
+  just the lowres'est tile or all tiles that contain the whole image)
+
+select count(*) from tiles;
+5695025
+select count(*) from files;
+500126
+
+* including all fields of the tiles table in the tiles_index could
+  speed things up 2x, but would require 2x the storage
+
 * sometimes images end up tiny, some race condition in getting image size likely
 
-* deletion of tiles/fileentries is extremely slow, maybe grouping could help
+* deletion of tiles/fileentries is *extremely* slow, maybe grouping could help
 
 * do something to ensure that callbacks always go back to a valid
   object, not an already deleted one
