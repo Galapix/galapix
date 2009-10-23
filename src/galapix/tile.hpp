@@ -43,7 +43,7 @@ public:
     m_scale(tile_entry.get_scale()),
     m_pos(tile_entry.get_pos()),
     m_surface(tile_entry.get_surface()),
-    m_valid(true)
+    m_valid(tile_entry)
   {}
 
   Tile(int scale, const Vector2i& pos, const SoftwareSurfaceHandle& surface) :
