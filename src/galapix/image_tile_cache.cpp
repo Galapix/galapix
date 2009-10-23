@@ -31,9 +31,9 @@ unsigned int make_cache_id(int x, int y, int scale)
 }
 
 ImageTileCacheHandle
-ImageTileCache::create(const FileEntry& file_entry)
+ImageTileCache::create(TileProviderHandle tile_provider)
 {
-  ImageTileCacheHandle tile_cache(new ImageTileCache(file_entry));
+  ImageTileCacheHandle tile_cache(new ImageTileCache(tile_provider));
   tile_cache->set_weak_ptr(tile_cache);
   return tile_cache;
 }
@@ -44,13 +44,13 @@ ImageTileCache::set_weak_ptr(ImageTileCacheHandle self)
   m_self = self;
 }
 
-ImageTileCache::ImageTileCache(const FileEntry& file_entry) :
+ImageTileCache::ImageTileCache(TileProviderHandle tile_provider) :
   m_self(),
   m_cache(),
   m_jobs(),
   m_tile_queue(),
-  m_file_entry(file_entry),
-  m_max_scale(file_entry.get_thumbnail_scale()),
+  m_tile_provider(tile_provider),
+  m_max_scale(m_tile_provider->get_max_scale()),
   m_min_keep_scale(m_max_scale - 2)
 {
 }
@@ -78,27 +78,6 @@ ImageTileCache::get_tile(int x, int y, int scale)
   }
 }
 
-struct WeakPtrFunctor
-{
-  boost::weak_ptr<ImageTileCache> m_ptr;
-
-  WeakPtrFunctor(boost::weak_ptr<ImageTileCache> ptr) :
-    m_ptr(ptr)
-  {}
-
-  void operator()(const TileEntry& tile)
-  {
-    if (boost::shared_ptr<ImageTileCache> tile_cache = m_ptr.lock())
-    {
-      tile_cache->receive_tile(tile);
-    }
-    else
-    {
-      std::cout << "WeakPtrFunctor: ImageTileCache got deleted" << std::endl;
-    }
-  }
-};
-
 ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
@@ -113,16 +92,8 @@ ImageTileCache::request_tile(int x, int y, int scale)
     // object via *this.
     // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
 
-    if (1)
-    {
-      m_jobs.push_back(DatabaseThread::current()->request_tile(m_file_entry, scale, Vector2i(x, y), 
-                                                               weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
-    }
-    else
-    {
-      m_jobs.push_back(DatabaseThread::current()->request_tile(m_file_entry, scale, Vector2i(x, y), 
-                                                               WeakPtrFunctor(m_self)));
-    }
+    m_jobs.push_back(m_tile_provider->request_tile(scale, Vector2i(x, y), 
+                                                   weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
 
     // FIXME: Something to try: Request the next smaller tile too,
     // so we get a lower quality image fast and a higher quality one

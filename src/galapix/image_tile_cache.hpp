@@ -25,6 +25,7 @@
 #include "database/file_entry.hpp"
 #include "database/tile_entry.hpp"
 #include "display/surface.hpp"
+#include "galapix/tile_provider.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue.hpp"
 
@@ -66,7 +67,7 @@ public:
 
   ThreadMessageQueue<TileEntry> m_tile_queue;
   
-  FileEntry m_file_entry; 
+  TileProviderHandle m_tile_provider;
 
   /** The maximum scale for which tiles exist */
   int m_max_scale;
@@ -75,12 +76,12 @@ public:
   int m_min_keep_scale; 
 
 private:
-  ImageTileCache(const FileEntry& file_entry);
+  ImageTileCache(TileProviderHandle tile_provider);
 
   void set_weak_ptr(ImageTileCacheHandle self);
 
 public:
-  static ImageTileCacheHandle create(const FileEntry& file_entry);
+  static ImageTileCacheHandle create(TileProviderHandle tile_provider);
 
   SurfaceStruct request_tile(int x, int y, int scale);
   SurfaceHandle get_tile(int x, int y, int scale);

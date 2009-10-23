@@ -21,6 +21,7 @@
 #include "database/file_entry.hpp"
 #include "display/framebuffer.hpp"
 #include "galapix/database_thread.hpp"
+#include "galapix/database_tile_provider.hpp"
 #include "galapix/image_renderer.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer.hpp"
@@ -75,7 +76,7 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
 {
   if (m_file_entry)
   {
-    m_cache = ImageTileCache::create(m_file_entry);
+    m_cache = ImageTileCache::create(DatabaseTileProvider::create(m_file_entry));
     m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
@@ -251,7 +252,7 @@ Image::draw(const Rectf& cliprect, float zoom)
 
     m_image_rect = calc_image_rect();
 
-    m_cache = ImageTileCache::create(m_file_entry);
+    m_cache = ImageTileCache::create(DatabaseTileProvider::create(m_file_entry));
     m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
