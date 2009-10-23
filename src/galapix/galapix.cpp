@@ -372,18 +372,24 @@ Galapix::view(const Options& opts,
       database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry);
       workspace.add_image(Image::create(*i, tile_entry));
 
-      int n = (i - file_entries.begin());
+      int n = (i - file_entries.begin())+1;
       int total = file_entries.size();
-        std::cout << "Getting tiles: " << n << "/" << total << " - "
-                  << (100 * n / total) << '%'
-                  << '\r' << std::flush;
+      std::cout << "Getting tiles: " << n << "/" << total << " - "
+                << (100 * n / total) << '%'
+                << '\r' << std::flush;
     }
-    std::cout << std::endl;
+    if (!file_entries.empty())
+      std::cout << std::endl;
   }
 
   // Create FileEntries from URLs 
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
   {
+    int n = (i - urls.begin())+1;
+    int total = urls.size();
+
+    std::cout << "Processing URLs: " << n << "/" << total << " - " << (100 * n / total) << "%\r" << std::flush;
+
     if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))
     {
       // FIXME: Right place for this?
@@ -392,9 +398,21 @@ Galapix::view(const Options& opts,
     else
     {
       //database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
-      workspace.add_image(Image::create(*i));
+      FileEntry file_entry = database.files.get_file_entry(*i);
+      if (!file_entry)
+      {
+        workspace.add_image(Image::create(*i));
+      }
+      else
+      {
+        TileEntry tile_entry;
+        database.tiles.get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0,0), tile_entry);
+        workspace.add_image(Image::create(file_entry, tile_entry)); 
+      }
     }
   }
+  if (!urls.empty())
+    std::cout << std::endl;
 
   tile_job_manager.start_thread();  
   file_entry_job_manager.start_thread();  
