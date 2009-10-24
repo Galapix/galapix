@@ -19,6 +19,7 @@
 #include "galapix/zoomify_tile_provider.hpp"
 
 #include <sstream>
+#include <iostream>
 
 #include "math/math.hpp"
 #include "plugins/curl.hpp"
@@ -28,20 +29,22 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
   m_size(size),
   m_basedir(basedir),
   m_max_scale(max_scale),
-  m_info()
+  m_info(m_max_scale+1)
 {
-  m_info.resize(m_max_scale);
-  for(int i = m_max_scale-1; i >= 0; ++i)
+  for(int i = m_max_scale; i >= 0; --i)
   {
     int previous_tiles_count = 0;
-    for(int j = i; j < m_max_scale; ++j)
+    for(int j = i; j <= m_max_scale; ++j)
     {
       previous_tiles_count += m_info[j].m_size.width * m_info[j].m_size.height;
     }
 
-    m_info[i] = Info(Size(m_size.width  / Math::pow2(i) / get_tilesize(),
-                          m_size.height / Math::pow2(i) / get_tilesize()),
-                     previous_tiles_count);
+    Size size_in_tiles((m_size.width  / Math::pow2(i) - 1) / get_tilesize() + 1,
+                       (m_size.height / Math::pow2(i) - 1) / get_tilesize() + 1);
+
+    std::cout << i << " " << previous_tiles_count << " " << size_in_tiles << " - " << size_in_tiles.get_area() << std::endl;
+
+    m_info[i] = Info(size_in_tiles, previous_tiles_count);
   }
 }
 
@@ -59,7 +62,8 @@ ZoomifyTileProvider::create(const URL& url)
 int
 ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 {
-  return (m_info[scale].m_size.width * pos.y + pos.x) + m_info[scale].m_previous_tiles_count;
+  int tilenum = (m_info[scale].m_size.width * pos.y + pos.x) + m_info[scale].m_previous_tiles_count;
+  return tilenum / 256;
 }
 
 JobHandle
@@ -70,15 +74,31 @@ ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
 
   // construct the URL of the tile
   std::ostringstream out;
-  out << m_basedir << "/TileGroup" << tile_group << "/" 
+  out << m_basedir << "TileGroup" << tile_group << "/" 
       << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
 
-  // load the tile
-  // FIXME: Could/should do this in a separate thread for http://
-  BlobHandle blob = CURLHandler::get_data(out.str());
-  SoftwareSurfaceHandle surface = JPEG::load_from_mem(blob->get_data(), blob->size());
+  std::cout << out.str() << std::endl;
 
-  callback(Tile(scale, pos, surface));
+  // load the tile
+  if (0)
+  {
+    // FIXME: Could/should do this in a separate thread for http://
+    BlobHandle blob = CURLHandler::get_data(out.str());
+    SoftwareSurfaceHandle surface = JPEG::load_from_mem(blob->get_data(), blob->size());
+    callback(Tile(scale, pos, surface));
+  }
+  else
+  {
+    try 
+    {
+      SoftwareSurfaceHandle surface = JPEG::load_from_file(out.str());
+      callback(Tile(scale, pos, surface));
+    }
+    catch(std::exception& err)
+    {
+      std::cout << "ZoomifyTileProvider: " << err.what() << std::endl;
+    }
+  }
 
   JobHandle job_handle;
   job_handle.set_finished();

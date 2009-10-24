@@ -51,7 +51,7 @@ private:
   int         m_max_scale;
   std::vector<Info> m_info;
 
-private:
+public:
   ZoomifyTileProvider(const std::string& basedir, const Size& size, int max_scale);
 
 public:
