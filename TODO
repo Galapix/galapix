@@ -107,6 +107,8 @@ General Problems:
 
 * add zoomify support
 
+http://gasi.ch/blog/openzoom-description-format/
+
 * a separate table for small tiles could speed things up (i.e. either
   just the lowres'est tile or all tiles that contain the whole image)
 
@@ -166,9 +168,6 @@ galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::reques
 * DatabaseThread is very similar to JobWorkerThread, maybe merge them
 
 * maybe have something like JobHandle->spawn_child_job() -> No
- 
-* current use of cURL is not thread safe due to curl_global_init(),
-  use singleton and mutex
 
 * quality of small thumbnails is very bad, should start with larger
   thumbnails and then halve() them down instead of using scale()
