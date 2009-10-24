@@ -55,7 +55,7 @@ Galapix 0.2.0 Release ToDo:
   galapix-db cleanup
   galapix-db delete -d database1.sqlite [PATTERN]...
 
-Galapix 0.1.1 Release ToDo:
+Galapix 0.1.2 Release ToDo:
 ===========================
 
 * rewrite overlap solving to be fast or disable it, as it currently
@@ -67,12 +67,6 @@ Galapix 0.1.1 Release ToDo:
 * add function to relayout just the selection instead of all images
 
 * make middle button exit trackball mode
-
-* (!) viewdb -p PATTERN doesn't work as expected, as the viewer isn't updated in
-  SDLViewer::run(), pressing '1' works as a workaround
-
-  - moving left/right/up/down doesn't cause a screen refresh,
-    zoom-in/out on the other side does
 
 * (!) mouse buttons can get stuck when you press them both at once
 
@@ -107,9 +101,37 @@ General Problems:
 
 * need a framework do handle downloads in a multithreaded fashion
 
-* add zoomify support
+* add other gigapixel format support
 
 http://gasi.ch/blog/openzoom-description-format/
+
+http://gigapan.org/gigapans/15374/
+var fl_vars = {
+ url:"http://tile15.gigapan.org/gigapans0/15374/tiles/",
+ suffix:".jpg",
+ startHideControls:"0",
+ width:"59783",
+ height:"24658",
+ nlevels:"9",
+ cleft:"0",
+ ctop:"0",
+ cright:"59783.0",
+ cbottom:"24658.0",
+ startEnabled:"1",
+ notifyWhenLoaded:"1",
+ startHideWatermark:"1"
+};
+
+1 http://tile15.gigapan.org/gigapans0/15374/tiles/r0.jpg
+2 http://tile15.gigapan.org/gigapans0/15374/tiles/r00.jpg
+3 http://tile15.gigapan.org/gigapans0/15374/tiles/r00/r000.jpg
+4 http://tile15.gigapan.org/gigapans0/15374/tiles/r00/r0000.jpg
+5 http://tile15.gigapan.org/gigapans0/15374/tiles/r00/000/r00000.jpg
+6 http://tile15.gigapan.org/gigapans0/15374/tiles/r00/000/r000000.jpg
+7 http://tile15.gigapan.org/gigapans0/15374/tiles/r00/000/r0000000.jpg
+8 http://tile15.gigapan.org/gigapans0/15374/tiles/r00/000/r00000000.jpg
+
+- http://tile15.gigapan.org/gigapans0/15374/tiles/r00/000/000/r000000000.jpg
 
 * a separate table for small tiles could speed things up (i.e. either
   just the lowres'est tile or all tiles that contain the whole image)
