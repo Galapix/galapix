@@ -59,7 +59,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
     int previous_tiles_count = 0;
     for(int j = i; j <= m_max_scale; ++j)
     {
-      previous_tiles_count += m_info[j].m_size.width * m_info[j].m_size.height;
+      previous_tiles_count += m_info[j].m_size.get_area();
     }
 
     Size size_in_tiles((m_size.width  / Math::pow2(i) - 1) / get_tilesize() + 1,
@@ -69,6 +69,8 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
 
     m_info[i] = Info(size_in_tiles, previous_tiles_count);
   }
+
+  std::cout << "ZoomifyTileProvider: " << basedir << " " << m_size << " " << m_tilesize << " " << m_max_scale << std::endl;
 }
 
 boost::shared_ptr<ZoomifyTileProvider> 
@@ -82,6 +84,7 @@ ZoomifyTileProvider::create(const URL& url)
   int  tilesize;
   int  num_tiles;
   
+  // FIXME: this isn't exactly a tolerant way to parse the xml file
   int ret = sscanf(content.c_str(),
                    "<IMAGE_PROPERTIES WIDTH=\"%d\" HEIGHT=\"%d\" NUMTILES=\"%d\" NUMIMAGES=\"1\" VERSION=\"1.8\" TILESIZE=\"%d\" />",
                    &size.width, &size.height, &num_tiles, &tilesize);
@@ -99,6 +102,7 @@ int
 ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 {
   int tilenum = (m_info[scale].m_size.width * pos.y + pos.x) + m_info[scale].m_previous_tiles_count;
+  // a tilegroup has 256 tiles
   return tilenum / 256;
 }
 
@@ -112,8 +116,6 @@ ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
   std::ostringstream out;
   out << m_basedir << "TileGroup" << tile_group << "/" 
       << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
-
-  std::cout << out.str() << std::endl;
 
   // load the tile
   if (0)
