@@ -77,6 +77,12 @@ JobHandle::is_done() const
 }
 
 void
+JobHandle::set_failed()
+{
+  // FIXME: implement me
+}
+
+void
 JobHandle::wait()
 {
   boost::mutex::scoped_lock lock(impl->mutex);

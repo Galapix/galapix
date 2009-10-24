@@ -20,7 +20,10 @@
 #define HEADER_GALAPIX_GALAPIX_ZOOMIFY_TILE_PROVIDER_HPP
 
 #include "math/size.hpp"
+#include "galapix/zoomify_tile_job.hpp"
 #include "galapix/tile_provider.hpp"
+
+class JobManager;
 
 class ZoomifyTileProvider : public TileProvider
 {
@@ -51,12 +54,13 @@ private:
   std::string m_basedir;
   int         m_max_scale;
   std::vector<Info> m_info;
+  JobManager& m_job_manager;
+
+private:
+  ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, JobManager& job_manager);
 
 public:
-  ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize);
-
-public:
-  static boost::shared_ptr<ZoomifyTileProvider> create(const URL& url);
+  static boost::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
 
   int get_tile_group(int scale, const Vector2i& pos);
   JobHandle request_tile(int scale, const Vector2i& pos, 

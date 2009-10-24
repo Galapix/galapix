@@ -400,9 +400,9 @@ Galapix::view(const Options& opts,
       // FIXME: Right place for this?
       workspace.load(i->get_stdio_name());
     }
-    else if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), "ImageProperties.xml"))
+    else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
     {
-      workspace.add_image(Image::create(ZoomifyTileProvider::create(*i)));
+      workspace.add_image(Image::create(ZoomifyTileProvider::create(*i, job_manager)));
     }
     else
     {

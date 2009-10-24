@@ -103,6 +103,8 @@ Galapix 0.1.1 Release ToDo:
 General Problems:
 =================
 
+* currently only out-of-screen cancels jobs, but zooming need to cancel jobs too
+
 * need a framework do handle downloads in a multithreaded fashion
 
 * add zoomify support

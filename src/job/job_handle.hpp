@@ -45,6 +45,8 @@ public:
    */
   void set_finished();
 
+  void set_failed();
+
   bool is_done() const;
   bool is_aborted() const;
   

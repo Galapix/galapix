@@ -2,6 +2,7 @@ Galapix 0.1.1 (??. Oct 2009)
 ============================
 
 * EXIF support
+* Zoomify support
 * available thumbnails are now loaded directly at startup, instead of
   dynamically later on
 * FileEntry and TileEntry generation has been merged to allow faster
