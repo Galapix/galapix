@@ -58,6 +58,9 @@ Galapix 0.2.0 Release ToDo:
 Galapix 0.1.2 Release ToDo:
 ===========================
 
+* fix build system to automatically detect presents of spacnav
+  libraries and other optional stuff
+
 * rewrite overlap solving to be fast or disable it, as it currently
   just halts the whole app
 

@@ -1,7 +1,7 @@
 # -*- mode: python -*-
 
-compile_galapix_tests = True
-build_mode = 'development'
+compile_galapix_tests = False
+build_mode = 'release'
 
 default_env = Environment()
 
