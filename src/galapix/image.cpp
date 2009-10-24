@@ -288,11 +288,10 @@ Image::draw(const Rectf& cliprect, float zoom)
                                                            file_entry.get_height()));
     m_scale = m_target_scale;
 
-    m_image_rect = calc_image_rect();
-
     m_provider = DatabaseTileProvider::create(file_entry);
     m_cache = ImageTileCache::create(m_provider);
     m_renderer.reset(new ImageRenderer(*this, m_cache));
+    m_image_rect = calc_image_rect();
   }
 
   while(!m_tile_queue.empty())
