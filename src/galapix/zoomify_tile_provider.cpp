@@ -20,17 +20,40 @@
 
 #include <sstream>
 #include <iostream>
+#include <stdio.h>
 
 #include "math/math.hpp"
 #include "plugins/curl.hpp"
 #include "plugins/jpeg.hpp"
 
-ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size& size, int max_scale) :
+namespace {
+
+int get_max_scale(const Size& size, int tilesize)
+{
+  int width = std::max(size.width, size.height);
+  int i = 0;
+
+  while(width > tilesize)
+  {
+    width /= 2;
+    i += 1;
+  }
+
+  return i;
+}
+
+} // namespace
+
+ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize) :
   m_size(size),
+  m_tilesize(tilesize),
   m_basedir(basedir),
-  m_max_scale(max_scale),
+  m_max_scale(::get_max_scale(size, tilesize)),
   m_info(m_max_scale+1)
 {
+  std::cout << "ZoomifyTileProvider(): " << m_basedir << " " 
+            << m_size << " " << m_tilesize << " " << m_max_scale << std::endl;
+
   for(int i = m_max_scale; i >= 0; --i)
   {
     int previous_tiles_count = 0;
@@ -51,12 +74,25 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
 boost::shared_ptr<ZoomifyTileProvider> 
 ZoomifyTileProvider::create(const URL& url)
 {
-  // get XML and parse it
-  Size        size;
-  std::string basedir = "";
-  int         max_scale = 11;
+  std::string content = url.get_blob()->str();
 
-  return boost::shared_ptr<ZoomifyTileProvider>(new ZoomifyTileProvider(basedir, size, max_scale));
+  std::string url_str = url.str();
+  std::string basedir = url_str.substr(7, url_str.size() - 26); // FIXME: use basedir() instead of raw string cutting
+  Size size;
+  int  tilesize;
+  int  num_tiles;
+  
+  int ret = sscanf(content.c_str(),
+                   "<IMAGE_PROPERTIES WIDTH=\"%d\" HEIGHT=\"%d\" NUMTILES=\"%d\" NUMIMAGES=\"1\" VERSION=\"1.8\" TILESIZE=\"%d\" />",
+                   &size.width, &size.height, &num_tiles, &tilesize);
+  if (ret != 4)
+  {
+    throw std::runtime_error("ZoomifyTileProvider::create: Couldn't parse ImageProperties.xml");
+  }
+  else
+  {
+    return boost::shared_ptr<ZoomifyTileProvider>(new ZoomifyTileProvider(basedir, size, tilesize));
+  }
 }
 
 int

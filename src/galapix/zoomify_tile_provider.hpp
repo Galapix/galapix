@@ -47,12 +47,13 @@ private:
 
 private:
   Size        m_size;
+  int         m_tilesize;
   std::string m_basedir;
   int         m_max_scale;
   std::vector<Info> m_info;
 
 public:
-  ZoomifyTileProvider(const std::string& basedir, const Size& size, int max_scale);
+  ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize);
 
 public:
   static boost::shared_ptr<ZoomifyTileProvider> create(const URL& url);
@@ -62,7 +63,7 @@ public:
                          const boost::function<void (Tile)>& callback);
 
   int  get_max_scale() const { return m_max_scale; }
-  int  get_tilesize()  const { return 256; }
+  int  get_tilesize()  const { return m_tilesize; }
   int  get_overlap()   const { return 0; }
   Size get_size()      const { return m_size; }
   
