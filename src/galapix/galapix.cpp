@@ -19,6 +19,7 @@
 #include "galapix/galapix.hpp"
 
 #include <boost/bind.hpp>
+#include <curl/curl.h>
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -500,6 +501,12 @@ Galapix::main(int argc, char** argv)
   // if (!sqlite3_threadsafe())
   //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
+  if (curl_global_init(CURL_GLOBAL_ALL) != 0)
+  {
+    std::cout << "Galapix::main(): curl_global_init() failed" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   try 
   {
     Options opts;
@@ -514,6 +521,8 @@ Galapix::main(int argc, char** argv)
     std::cout << "Exception: " << err.what() << std::endl;
     return EXIT_FAILURE;
   }
+
+  curl_global_cleanup();
 }
   
 void
