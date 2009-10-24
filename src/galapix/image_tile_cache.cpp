@@ -86,12 +86,6 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
   if (i == m_cache.end())
   {
-    // Important: it must be '*this', not 'this', since the 'this'
-    // pointer might disappear any time, its only the impl that
-    // stays and which we can link to by making a copy of the Image
-    // object via *this.
-    // std::cout << "  Requesting: " << impl->file_entry.size << " " << x << "x" << y << " scale: " << scale << std::endl;
-
     m_jobs.push_back(m_tile_provider->request_tile(scale, Vector2i(x, y), 
                                                    weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
 
@@ -102,8 +96,8 @@ ImageTileCache::request_tile(int x, int y, int scale)
     // DatabaseThread, we should request the whole group of lower
     // res tiles at once, instead of one by one, since that eats up
     // the possible speed up
-    // impl->jobs.push_back(DatabaseThread::current()->request_tile(impl->file_entry, scale+1, Vector2i(x, y), 
-    //                                                              boost::bind(&Image::receive_tile, *this, _1)));
+    m_jobs.push_back(m_tile_provider->request_tile(scale, Vector2i(x, y), 
+                                                   weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
     SurfaceStruct s;
       
     s.surface = SurfaceHandle();

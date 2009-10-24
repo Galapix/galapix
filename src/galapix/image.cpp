@@ -59,7 +59,7 @@ Image::set_weak_ptr(ImageHandle self)
 Image::Image(const URL& url, const FileEntry& file_entry) :
   m_self(),
   m_url(url),
-  m_file_entry(file_entry),
+  m_provider(),
   m_visible(false),
   m_image_rect(),
   m_pos(),
@@ -76,9 +76,10 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
   m_tile_queue(),
   m_jobs()
 {
-  if (m_file_entry)
+  if (file_entry)
   {
-    m_cache = ImageTileCache::create(DatabaseTileProvider::create(m_file_entry));
+    m_provider = DatabaseTileProvider::create(file_entry);
+    m_cache = ImageTileCache::create(m_provider);
     m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
@@ -183,9 +184,9 @@ Image::get_scaled_height() const
 int
 Image::get_original_width() const
 {
-  if (m_file_entry)
+  if (m_provider)
   {
-    return m_file_entry.get_width();
+    return m_provider->get_size().width;
   }
   else
   {
@@ -196,9 +197,9 @@ Image::get_original_width() const
 int
 Image::get_original_height() const
 {
-  if (m_file_entry)
+  if (m_provider)
   {
-    return m_file_entry.get_height();
+    return m_provider->get_size().height;
   }
   else
   {
@@ -210,7 +211,9 @@ void
 Image::clear_cache()
 {
   if (m_cache)
+  {
     m_cache->clear();
+  }
 
   for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
   {
@@ -242,19 +245,20 @@ Image::draw(const Rectf& cliprect, float zoom)
   // Check if there was an update of the FileEntry
   while(!m_file_entry_queue.empty())
   {
-    m_file_entry = m_file_entry_queue.front();
+    FileEntry file_entry = m_file_entry_queue.front();
     m_file_entry_queue.pop();
 
     //std::cout << "Image::draw(): " << m_file_entry.get_image_size() << std::endl;
 
     m_file_entry_requested = false;
-    m_target_scale *= 256.0f / static_cast<float>(std::max(m_file_entry.get_width(), 
-                                                           m_file_entry.get_height()));
+    m_target_scale *= 256.0f / static_cast<float>(std::max(file_entry.get_width(), 
+                                                           file_entry.get_height()));
     m_scale = m_target_scale;
 
     m_image_rect = calc_image_rect();
 
-    m_cache = ImageTileCache::create(DatabaseTileProvider::create(m_file_entry));
+    m_provider = DatabaseTileProvider::create(file_entry);
+    m_cache = ImageTileCache::create(m_provider);
     m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
@@ -264,10 +268,8 @@ Image::draw(const Rectf& cliprect, float zoom)
     m_tile_queue.pop();
   }
 
-  if (!m_file_entry)
+  if (!m_provider)
   {
-    //std::cout << m_file_entry << " " << m_file_entry_requested << std::endl;
-
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
                            RGB(255,255,0));
 
@@ -277,27 +279,24 @@ Image::draw(const Rectf& cliprect, float zoom)
       m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
                                                                weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
                                                                weak(boost::bind(&Image::receive_tile, _1, _2, _3), m_self)));
-      //std::cout << "Image::draw(): receive_file_entry" << std::endl;
     }
   }
   else
   {
-    if (m_file_entry)
-    {
-      m_cache->process_queue();
-      m_renderer->draw(cliprect, zoom);
-    }
+    m_cache->process_queue();
+    m_renderer->draw(cliprect, zoom);
   }
 }
 
 void
 Image::refresh(bool force)
 {
-  if (force || 
-      m_file_entry.get_url().get_mtime() != m_file_entry.get_mtime())
+  if (force)
   {
-    if (m_file_entry && m_file_entry.get_fileid())
+    if (m_provider)        
     {
+#if 0
+      // FIXME: implement me for m_provider
       clear_cache();
       DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
 
@@ -308,6 +307,7 @@ Image::refresh(bool force)
       m_cache.reset();
       m_renderer.reset();
       m_image_rect = calc_image_rect();
+#endif
     }
   }
 }
@@ -315,7 +315,7 @@ Image::refresh(bool force)
 void
 Image::print_info() const
 {
-  std::cout << "  Image: " << this << " " << m_file_entry << std::endl;
+  std::cout << "  Image: " << this << std::endl;
   //std::cout << "    Cache Size: " << m_cache.size() << std::endl;
   //std::cout << "    Job Size:   " << m_jobs.size() << std::endl;
 }

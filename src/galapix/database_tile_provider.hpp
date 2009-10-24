@@ -48,6 +48,21 @@ public:
     return m_file_entry.get_thumbnail_scale(); 
   }
 
+  int get_tilesize() const 
+  {
+    return 256;
+  }
+  
+  int get_overlap() const 
+  {
+    return 0;
+  }
+
+  Size get_size() const
+  {
+    return m_file_entry.get_image_size();
+  }
+
 private:
   DatabaseTileProvider(const DatabaseTileProvider&);
   DatabaseTileProvider& operator=(const DatabaseTileProvider&);

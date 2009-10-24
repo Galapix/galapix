@@ -27,6 +27,7 @@
 
 #include "database/file_entry.hpp"
 #include "galapix/image_handle.hpp"
+#include "galapix/tile_provider.hpp"
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue.hpp"
@@ -46,7 +47,7 @@ private:
   boost::weak_ptr<Image> m_self;
 
   URL       m_url;
-  FileEntry m_file_entry;
+  TileProviderHandle m_provider;
 
   bool m_visible;
   Rectf m_image_rect;
