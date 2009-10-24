@@ -19,6 +19,7 @@
 #include "galapix/image_tile_cache.hpp"
 
 #include <boost/bind.hpp>
+#include <assert.h>
 
 #include "util/weak_functor.hpp"
 #include "math/math.hpp"
@@ -27,7 +28,11 @@
 
 unsigned int make_cache_id(int x, int y, int scale)
 {
-  return x | (y << 8) | (scale << 16);
+  assert(x >= 0 && x < 4096);
+  assert(y >= 0 && y < 4096);
+  assert(scale >= 0 && y < 256);
+
+  return x | (y << 12) | (scale << 24);
 }
 
 ImageTileCacheHandle
