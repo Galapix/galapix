@@ -77,11 +77,13 @@ private:
 
 private:
   Image(const URL& url, const FileEntry& file_entry);
+  Image(TileProviderHandle provider);
 
   void set_weak_ptr(ImageHandle self);
 
 public:
   static ImageHandle create(const URL& url);
+  static ImageHandle create(TileProviderHandle provider);
   static ImageHandle create(const FileEntry& file_entry, const Tile& tile);
 
   // _____________________________________________________
@@ -107,6 +109,7 @@ public:
   void  set_angle(float a);
   float get_angle() const;
 
+  // Used for sorting and debugging
   URL get_url() const;
 
   // _____________________________________________________

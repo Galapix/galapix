@@ -37,6 +37,14 @@ Image::create(const URL& url)
 }
 
 ImageHandle
+Image::create(TileProviderHandle provider)
+{
+  ImageHandle image(new Image(provider));
+  image->set_weak_ptr(image);
+  return image;
+}
+
+ImageHandle
 Image::create(const FileEntry& file_entry, const Tile& tile)
 {
   ImageHandle image(new Image(file_entry.get_url(), file_entry));
@@ -56,6 +64,31 @@ Image::set_weak_ptr(ImageHandle self)
   m_self = self;
 }
 
+Image::Image(TileProviderHandle provider) :
+  m_self(),
+  m_url(),
+  m_provider(provider),
+  m_visible(false),
+  m_image_rect(),
+  m_pos(),
+  m_last_pos(),
+  m_target_pos(),
+  m_scale(1.0f),
+  m_last_scale(1.0f),
+  m_target_scale(1.0f),
+  m_angle(0.0f),
+  m_file_entry_requested(false),
+  m_cache(),
+  m_renderer(),
+  m_file_entry_queue(),
+  m_tile_queue(),
+  m_jobs()
+{
+  m_cache = ImageTileCache::create(m_provider);
+  m_renderer.reset(new ImageRenderer(*this, m_cache));
+  m_image_rect = calc_image_rect();
+}
+
 Image::Image(const URL& url, const FileEntry& file_entry) :
   m_self(),
   m_url(url),

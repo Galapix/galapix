@@ -19,6 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_ZOOMIFY_TILE_PROVIDER_HPP
 #define HEADER_GALAPIX_GALAPIX_ZOOMIFY_TILE_PROVIDER_HPP
 
+#include "math/size.hpp"
 #include "galapix/tile_provider.hpp"
 
 class ZoomifyTileProvider : public TileProvider
@@ -32,7 +33,12 @@ private:
     /** Number of tiles used by previous zoom levels */
     int m_previous_tiles_count;
 
-    Info(const Size& size;
+    Info() :
+      m_size(),
+      m_previous_tiles_count()
+    {}
+
+    Info(const Size& size,
          int previous_tiles_count) :
       m_size(size),
       m_previous_tiles_count(previous_tiles_count)
@@ -40,62 +46,26 @@ private:
   };
 
 private:
-  URL m_url;
-  int m_max_scale;
+  Size        m_size;
   std::string m_basedir;
+  int         m_max_scale;
   std::vector<Info> m_info;
 
 private:
-  ZoomifyTileProvider(const URL& url) :
-    m_url(url),
-    m_max_scale(11), // FIXME: calculate max scale
-    m_basedir(dirname(url.get_stdio_name()))
-  {
-    for(int i = 0; i < m_max_scale; ++i)
-    {
-      // FIXME: do some math
-      m_info.push_back(Info());
-    }
-  }
+  ZoomifyTileProvider(const std::string& basedir, const Size& size, int max_scale);
 
 public:
-  static boost::shared_ptr<ZoomifTileProvider> create(const URL& url)
-  {
-    return boost::shared_ptr<ZoomifTileProvider>(new ZoomifTileProvider(url));
-  }
+  static boost::shared_ptr<ZoomifyTileProvider> create(const URL& url);
 
-  int get_tile_group(int scale, const Vector2i& pos)
-  {
-    int tilenum = (info[scale].m_size.width * pos.y + pos.x) + info[scale].m_previous_tiles_count
-  }
-
+  int get_tile_group(int scale, const Vector2i& pos);
   JobHandle request_tile(int scale, const Vector2i& pos, 
-                         const boost::function<void (Tile)>& callback)
-  {
-    int tile_group = get_tile_group(scale, pos);
+                         const boost::function<void (Tile)>& callback);
 
-    // construct the URL of the tile
-    std::ostringstream out;
-    out << basedir << "/TileGroup" << tile_group << "/" 
-        << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
-
-    // load the tile
-    // FIXME: Could/should do this in a separate thread for http://
-    BlobHandle blob = CURLHandler::get_data(out.str());
-    SoftwareSurfaceHandle surface = JPEG::load_from_mem(blob->get_data(), blob->size());
-
-    callback(Tile(scale, pos, surface));
-
-    JobHandle job_handle;
-    job_handle.set_finished();
-    return job_handle;
-  }
+  int  get_max_scale() const { return m_max_scale; }
+  int  get_tilesize()  const { return 256; }
+  int  get_overlap()   const { return 0; }
+  Size get_size()      const { return m_size; }
   
-  int get_max_scale() const 
-  {
-    return m_max_scale;
-  }
-
 private:
   ZoomifyTileProvider(const ZoomifyTileProvider&);
   ZoomifyTileProvider& operator=(const ZoomifyTileProvider&);

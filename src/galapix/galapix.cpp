@@ -35,6 +35,7 @@
 #include "galapix/options.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
+#include "galapix/zoomify_tile_provider.hpp"
 #include "job/job_handle_group.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/test_job.hpp"
