@@ -40,6 +40,9 @@ public:
   virtual int  get_overlap() const =0;
   virtual Size get_size() const =0;
 
+  /** Force a reload of the image data from the original source */
+  virtual void refresh() =0;
+
 private:
   TileProvider(const TileProvider&);
   TileProvider& operator=(const TileProvider&);

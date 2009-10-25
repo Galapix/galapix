@@ -63,6 +63,11 @@ public:
     return m_file_entry.get_image_size();
   }
 
+  void refresh()
+  {
+    DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
+  }
+
 private:
   DatabaseTileProvider(const DatabaseTileProvider&);
   DatabaseTileProvider& operator=(const DatabaseTileProvider&);

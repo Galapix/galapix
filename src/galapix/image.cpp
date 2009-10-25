@@ -111,9 +111,16 @@ Image::Image(const URL& url, const FileEntry& file_entry) :
 {
   if (file_entry)
   {
-    m_provider = DatabaseTileProvider::create(file_entry);
-    m_cache = ImageTileCache::create(m_provider);
-    m_renderer.reset(new ImageRenderer(*this, m_cache));
+    if (file_entry.get_image_size() == Size(0, 0))
+    { // reject images with invalid size
+      std::cout << "Image::Image(): invalid image size: " << file_entry << std::endl;
+    }
+    else
+    {
+      m_provider = DatabaseTileProvider::create(file_entry);
+      m_cache    = ImageTileCache::create(m_provider);
+      m_renderer.reset(new ImageRenderer(*this, m_cache));
+    }
   }
 
   m_image_rect = calc_image_rect();
@@ -281,22 +288,31 @@ Image::draw(const Rectf& cliprect, float zoom)
     FileEntry file_entry = m_file_entry_queue.front();
     m_file_entry_queue.pop();
 
-    //std::cout << "Image::draw(): " << m_file_entry.get_image_size() << std::endl;
+    if (file_entry.get_image_size() == Size(0, 0))
+    { // reject images with invalid size
+      std::cout << "Image::Image(): invalid image size: " << file_entry << std::endl;
+    }
+    else
+    {
+      m_file_entry_requested = false;
+      m_target_scale *= 256.0f / static_cast<float>(std::max(file_entry.get_width(), 
+                                                             file_entry.get_height()));
+      m_scale = m_target_scale;
 
-    m_file_entry_requested = false;
-    m_target_scale *= 256.0f / static_cast<float>(std::max(file_entry.get_width(), 
-                                                           file_entry.get_height()));
-    m_scale = m_target_scale;
-
-    m_provider = DatabaseTileProvider::create(file_entry);
-    m_cache = ImageTileCache::create(m_provider);
-    m_renderer.reset(new ImageRenderer(*this, m_cache));
-    m_image_rect = calc_image_rect();
+      m_provider = DatabaseTileProvider::create(file_entry);
+      m_cache = ImageTileCache::create(m_provider);
+      m_renderer.reset(new ImageRenderer(*this, m_cache));
+      m_image_rect = calc_image_rect();
+    }
   }
 
   while(!m_tile_queue.empty())
   {
-    m_cache->receive_tile(m_tile_queue.front());
+    if (m_cache)
+    {
+      m_cache->receive_tile(m_tile_queue.front());
+    }
+
     m_tile_queue.pop();
   }
 
@@ -327,19 +343,25 @@ Image::refresh(bool force)
   {
     if (m_provider)        
     {
-#if 0
-      // FIXME: implement me for m_provider
       clear_cache();
-      DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
 
-      m_target_scale *= static_cast<float>(std::max(m_file_entry.get_width(), 
-                                                    m_file_entry.get_height())) / 256.0f;
+      m_target_scale *= static_cast<float>(std::max(m_provider->get_size().width, 
+                                                    m_provider->get_size().height)) / 256.0f;
       m_scale = m_target_scale;
-      m_file_entry = FileEntry();
+      m_image_rect = calc_image_rect();
+
       m_cache.reset();
       m_renderer.reset();
-      m_image_rect = calc_image_rect();
-#endif
+
+      m_provider->refresh();
+
+      // FIXME: This should be moved into the provider as it only works with DatabaseTileProvider
+      m_file_entry_requested = true;
+      m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
+                                                               weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
+                                                               weak(boost::bind(&Image::receive_tile, _1, _2, _3), m_self)));
+
+      m_provider.reset();
     }
   }
 }

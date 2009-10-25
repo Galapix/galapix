@@ -62,7 +62,7 @@ JPEGDecompressor::read_header()
     (m_cinfo.err->format_message)(reinterpret_cast<jpeg_common_struct*>(&m_cinfo), buffer);
 
     std::ostringstream out;
-    out << "Error: JPEG::read_header: " /*<< filename << ": "*/ << buffer;
+    out << "JPEG::read_header: " /*<< filename << ": "*/ << buffer;
     throw std::runtime_error(out.str());
   }
   else
@@ -89,7 +89,7 @@ JPEGDecompressor::read_image(int scale)
     (m_cinfo.err->format_message)(reinterpret_cast<jpeg_common_struct*>(&m_cinfo), buffer);
 
     std::ostringstream out;
-    out << "Error: JPEG::read_image: " /*<< filename << ": "*/ << buffer;
+    out << "JPEG::read_image: " /*<< filename << ": "*/ << buffer;
     throw std::runtime_error(out.str());
   }
   else
