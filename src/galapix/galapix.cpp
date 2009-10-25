@@ -336,9 +336,7 @@ Galapix::thumbgen(const Options& opts,
 }
 
 void
-Galapix::view(const Options& opts,
-              const std::vector<URL>& urls, 
-              bool view_all)
+Galapix::view(const Options& opts, const std::vector<URL>& urls)
 {
   Database       database(opts.database);
   JobManager     job_manager(opts.threads);
@@ -346,53 +344,58 @@ Galapix::view(const Options& opts,
 
   Workspace workspace;
 
-  {
+  { // process all -p PATTERN options 
     std::vector<FileEntry> file_entries;
 
-    // Request FileEntries from the database
-    if (view_all)
+    for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
     {
-      if (opts.patterns.empty())
-      {
-        // When no files are given, display everything in the database
-        //database_thread.request_all_files(boost::bind(&Workspace::receive_file, &workspace, _1));
+      std::cout << "Processing pattern: '" << *i << "'" << std::endl;
+
+      if (*i == "*")
+      { 
+        // special case to display everything, might be faster then
+        // using the pattern
         database.files.get_file_entries(file_entries);
       }
-      else 
+      else
       {
-        for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
-        {
-          std::cout << "Using pattern: '" << *i << "'" << std::endl;
-          //database_thread.request_files_by_pattern(boost::bind(&Workspace::receive_file, &workspace, _1), *i);
-          database.files.get_file_entries(*i, file_entries);
-        }
+        database.files.get_file_entries(*i, file_entries);
       }
     }
 
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
       TileEntry tile_entry;
-      database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry);
-      workspace.add_image(Image::create(*i, Tile(tile_entry.get_scale(), 
-                                                 tile_entry.get_pos(),
-                                                 tile_entry.get_surface())));
-
+      if (!database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+      {
+        workspace.add_image(Image::create(*i));
+      }
+      else
+      {
+        workspace.add_image(Image::create(*i, Tile(tile_entry.get_scale(), 
+                                                   tile_entry.get_pos(),
+                                                   tile_entry.get_surface())));
+      }
+       
+      // print progress
       int n = (i - file_entries.begin())+1;
       int total = file_entries.size();
       std::cout << "Getting tiles: " << n << "/" << total << " - "
                 << (100 * n / total) << '%'
                 << '\r' << std::flush;
     }
+
     if (!file_entries.empty())
+    {
       std::cout << std::endl;
+    }
   }
 
-  // Create FileEntries from URLs 
+  // process regular URLs
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
   {
     int n = (i - urls.begin())+1;
     int total = urls.size();
-
     std::cout << "Processing URLs: " << n << "/" << total << " - " << (100 * n / total) << "%\r" << std::flush;
 
     if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))
@@ -422,8 +425,11 @@ Galapix::view(const Options& opts,
       }
     }
   }
+
   if (!urls.empty())
+  {
     std::cout << std::endl;
+  }
 
   job_manager.start_thread();  
   database_thread.start_thread();
@@ -454,7 +460,6 @@ void
 Galapix::print_usage()
 {
   std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
-            << "       galapix viewdb   [OPTIONS]... [FILES]...\n"
             << "       galapix prepare  [OPTIONS]... [FILES]...\n"
             << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
             << "       galapix filegen  [OPTIONS]... [FILES]...\n"
@@ -466,7 +471,6 @@ Galapix::print_usage()
             << "\n"
             << "Commands:\n"
             << "  view      Display the given files\n"
-            << "  viewdb    Display all files in the database\n"
             << "  prepare   Generate all thumbnail for all given images\n"
             << "  thumbgen  Generate only small thumbnails for all given images\n"
             << "  filegen   Generate only small the file entries in the database\n"
@@ -537,7 +541,7 @@ Galapix::run(const Options& opts)
 #ifdef GALAPIX_SDL
     print_usage();
 #else
-    view(opts, std::vector<URL>(), false);
+    view(opts, std::vector<URL>());
 #endif
   }
   else
@@ -557,18 +561,14 @@ Galapix::run(const Options& opts)
         
     if (command == "view")
     {
-      if (!urls.empty())
-      {
-        view(opts, urls, false);
-      }
-      else
+      if (urls.empty() && opts.patterns.empty())
       {
         std::cout << "Galapix::run: Error: No URLs given" << std::endl;
       }
-    }
-    else if (command == "viewdb")
-    {
-      view(opts, urls, true);
+      else
+      {
+        view(opts, urls);
+      }
     }
     else if (command == "check")
     {

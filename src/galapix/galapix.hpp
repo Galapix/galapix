@@ -44,21 +44,19 @@ public:
   int  main(int argc, char** argv);
 
   void merge(const std::string& database, const std::vector<std::string>& filenames);
-  void test(const Options& opts, const std::vector<URL>& filenames);
-  void info(const std::vector<URL>& filenames);
-  void downscale(const std::vector<URL>& filenames);
+  void test(const Options& opts, const std::vector<URL>& urls);
+  void info(const std::vector<URL>& urls);
+  void downscale(const std::vector<URL>& urls);
   void cleanup(const std::string& database);
   void check(const std::string& database);
   void list(const Options& opts);
   void thumbgen(const Options& opts,
-                const std::vector<URL>& filenames, 
+                const std::vector<URL>& urls, 
                 bool generate_all_tiles);
   void filegen(const Options& opts,
-               const std::vector<URL>& filenames);
-  void export_images(const std::string& database, const std::vector<URL>& url);
-  void view(const Options& opts,
-            const std::vector<URL>& filenames,
-            bool view_all);
+               const std::vector<URL>& urls);
+  void export_images(const std::string& database, const std::vector<URL>& urls);
+  void view(const Options& opts, const std::vector<URL>& urls);
 };
 
 #endif

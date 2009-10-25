@@ -84,7 +84,7 @@ private:
 public:
   static ImageHandle create(const URL& url);
   static ImageHandle create(TileProviderHandle provider);
-  static ImageHandle create(const FileEntry& file_entry, const Tile& tile);
+  static ImageHandle create(const FileEntry& file_entry, const Tile& tile = Tile());
 
   // _____________________________________________________
   // Drawing stuff
