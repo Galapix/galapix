@@ -28,7 +28,7 @@ ImageCollection::~ImageCollection()
 }
 
 void
-ImageCollection::add(ImageHandle image)
+ImageCollection::add(ImagePtr image)
 {
   m_images.push_back(image);
 }

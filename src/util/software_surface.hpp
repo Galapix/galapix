@@ -31,7 +31,7 @@ class Size;
 class SoftwareSurfaceImpl;
 class SoftwareSurface;
 
-typedef boost::shared_ptr<SoftwareSurface> SoftwareSurfaceHandle;
+typedef boost::shared_ptr<SoftwareSurface> SoftwareSurfacePtr;
 
 class SoftwareSurface
 {
@@ -58,26 +58,26 @@ private:
   SoftwareSurface(Format format, const Size& size);
 
 public:
-  static SoftwareSurfaceHandle create(Format format, const Size& size);
+  static SoftwareSurfacePtr create(Format format, const Size& size);
 
   Size get_size()   const;
   int  get_width()  const;
   int  get_height() const;
   int  get_pitch()  const;
 
-  SoftwareSurfaceHandle clone();
-  SoftwareSurfaceHandle halve();
-  SoftwareSurfaceHandle scale(const Size& size);
-  SoftwareSurfaceHandle crop(const Rect& rect);
+  SoftwareSurfacePtr clone();
+  SoftwareSurfacePtr halve();
+  SoftwareSurfacePtr scale(const Size& size);
+  SoftwareSurfacePtr crop(const Rect& rect);
 
-  SoftwareSurfaceHandle transform(Modifier mod);
-  SoftwareSurfaceHandle rotate90();
-  SoftwareSurfaceHandle rotate180();
-  SoftwareSurfaceHandle rotate270();
-  SoftwareSurfaceHandle vflip();
-  SoftwareSurfaceHandle hflip();
+  SoftwareSurfacePtr transform(Modifier mod);
+  SoftwareSurfacePtr rotate90();
+  SoftwareSurfacePtr rotate180();
+  SoftwareSurfacePtr rotate270();
+  SoftwareSurfacePtr vflip();
+  SoftwareSurfacePtr hflip();
 
-  BlobHandle get_raw_data()  const;
+  BlobPtr get_raw_data()  const;
    
   void put_pixel(int x, int y, const RGB& rgb);
   void get_pixel(int x, int y, RGB& rgb) const;
@@ -92,12 +92,12 @@ public:
 
   Format get_format() const;
 
-  SoftwareSurfaceHandle to_rgb();
+  SoftwareSurfacePtr to_rgb();
 
   int get_bytes_per_pixel() const;
 
   /** Performs a simple copy from this to \a test, no blending is performed */
-  void blit(SoftwareSurfaceHandle& dst, const Vector2i& pos);
+  void blit(SoftwareSurfacePtr& dst, const Vector2i& pos);
 
 private:
   boost::scoped_ptr<SoftwareSurfaceImpl> impl;

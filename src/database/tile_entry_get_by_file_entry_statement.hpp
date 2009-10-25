@@ -59,7 +59,7 @@ public:
       
         // FIXME: Do this in a DecoderThread
 
-        BlobHandle blob = tile.get_blob();
+        BlobPtr blob = tile.get_blob();
         switch(tile.get_format())
         {
           case SoftwareSurfaceFactory::JPEG_FILEFORMAT:

@@ -48,7 +48,7 @@ private:
   TileProvider& operator=(const TileProvider&);
 };
 
-typedef boost::shared_ptr<TileProvider> TileProviderHandle;
+typedef boost::shared_ptr<TileProvider> TileProviderPtr;
 
 #endif
 

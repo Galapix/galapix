@@ -132,7 +132,7 @@ SQLiteStatement::bind_null(int n)
 }
 
 SQLiteStatement&
-SQLiteStatement::bind_blob(int n, const BlobHandle& blob)
+SQLiteStatement::bind_blob(int n, const BlobPtr& blob)
 {
   if (sqlite3_bind_blob(m_stmt, n, blob->get_data(), blob->size(), SQLITE_TRANSIENT) != SQLITE_OK)
   {

@@ -29,7 +29,7 @@ public:
   GLuint handle;
   Size   size;
 
-  TextureImpl(const SoftwareSurfaceHandle& src, const Rect& srcrect) :
+  TextureImpl(const SoftwareSurfacePtr& src, const Rect& srcrect) :
     handle(),
     size(srcrect.get_size())
   {
@@ -80,13 +80,13 @@ public:
   }
 };
 
-TextureHandle
-Texture::create(const SoftwareSurfaceHandle& src, const Rect& srcrect)
+TexturePtr
+Texture::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
 {
-  return TextureHandle(new Texture(src, srcrect));
+  return TexturePtr(new Texture(src, srcrect));
 }
 
-Texture::Texture(const SoftwareSurfaceHandle& src, const Rect& srcrect) :
+Texture::Texture(const SoftwareSurfacePtr& src, const Rect& srcrect) :
   impl(new TextureImpl(src, srcrect))
 {
 }

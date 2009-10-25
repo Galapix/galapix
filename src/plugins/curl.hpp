@@ -26,7 +26,7 @@
 class CURLHandler
 {
 public:
-  static BlobHandle get_data(const std::string& url);
+  static BlobPtr get_data(const std::string& url);
 };
 
 #endif

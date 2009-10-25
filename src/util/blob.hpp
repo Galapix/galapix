@@ -25,7 +25,7 @@
 
 class Blob;
 
-typedef boost::shared_ptr<Blob> BlobHandle;
+typedef boost::shared_ptr<Blob> BlobPtr;
 
 class Blob
 {
@@ -51,13 +51,13 @@ public:
   void append(const void* data, int len);
 
 public:
-  static BlobHandle create(int len);
+  static BlobPtr create(int len);
 
-  static BlobHandle from_file(const std::string& filename);
+  static BlobPtr from_file(const std::string& filename);
  
   /** Copy the given data into a Blob object */
-  static BlobHandle copy(const void* data, int len);
-  static BlobHandle copy(const std::vector<uint8_t>& data);
+  static BlobPtr copy(const void* data, int len);
+  static BlobPtr copy(const std::vector<uint8_t>& data);
 };
 
 #endif

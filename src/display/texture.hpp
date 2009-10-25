@@ -30,15 +30,15 @@ class SoftwareSurface;
 class TextureImpl;
 class Texture;
 
-typedef boost::shared_ptr<Texture> TextureHandle;
+typedef boost::shared_ptr<Texture> TexturePtr;
 
 class Texture
 {
 private:
-  Texture(const SoftwareSurfaceHandle& src, const Rect& srcrect);
+  Texture(const SoftwareSurfacePtr& src, const Rect& srcrect);
 
 public:
-  static TextureHandle create(const SoftwareSurfaceHandle& src, const Rect& srcrect);
+  static TexturePtr create(const SoftwareSurfacePtr& src, const Rect& srcrect);
 
   int get_width() const;
   int get_height() const;

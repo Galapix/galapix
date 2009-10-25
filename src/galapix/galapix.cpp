@@ -162,7 +162,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
         size /= 2;
       }
 
-      SoftwareSurfaceHandle target = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, size);
+      SoftwareSurfacePtr target = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, size);
       for(int y = 0; y < (size.height+255)/256; ++y)
         for(int x = 0; x < (size.width+255)/256; ++x)
         {
@@ -204,11 +204,11 @@ Galapix::downscale(const std::vector<URL>& url)
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i, ++num)
   {
     std::cout << *i << std::endl;
-    SoftwareSurfaceHandle surface = JPEG::load_from_file(i->get_stdio_name(), 8);
+    SoftwareSurfacePtr surface = JPEG::load_from_file(i->get_stdio_name(), 8);
 
     std::ostringstream out;
     out << "/tmp/out-" << num << ".jpg";
-    BlobHandle blob = JPEG::save(surface, 75);
+    BlobPtr blob = JPEG::save(surface, 75);
     blob->write_to_file(out.str());
 
     std::cout << "Wrote: " << out.str() << std::endl;

@@ -28,7 +28,7 @@
 
 struct ImageSorter
 {
-  bool operator()(const ImageHandle& lhs, const ImageHandle& rhs)
+  bool operator()(const ImagePtr& lhs, const ImagePtr& rhs)
   {
     return lhs->get_url() < rhs->get_url();
   }
@@ -69,7 +69,7 @@ Workspace::get_images(const Rectf& rect) const
   return result;
 }
 
-ImageHandle
+ImagePtr
 Workspace::get_image(const Vector2f& pos) const
 {
   for(ImageCollection::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
@@ -77,11 +77,11 @@ Workspace::get_image(const Vector2f& pos) const
     if ((*i)->overlaps(pos))
       return *i;
   }
-  return ImageHandle();
+  return ImagePtr();
 }
 
 void
-Workspace::add_image(const ImageHandle& image)
+Workspace::add_image(const ImagePtr& image)
 {
   m_images.add(image);  
 }
@@ -321,7 +321,7 @@ struct ImagesMemberOf
     : selection(selection_)
   {}
 
-  bool operator()(const ImageHandle& image)
+  bool operator()(const ImagePtr& image)
   {
     for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
     {
@@ -351,9 +351,9 @@ Workspace::solve_overlaps()
   {
     num_overlappings = 0;
     // Use QuadTree to make this fast
-    for(std::vector<ImageHandle>::iterator i = m_images.begin(); i != m_images.end(); ++i)
+    for(std::vector<ImagePtr>::iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
-      for(std::vector<ImageHandle>::iterator j = i+1; j != m_images.end(); ++j)
+      for(std::vector<ImagePtr>::iterator j = i+1; j != m_images.end(); ++j)
       {
         Rectf irect = (*i)->get_image_rect();
         Rectf jrect = (*j)->get_image_rect();
@@ -444,7 +444,7 @@ Workspace::load(const std::string& filename)
 
         std::cout << url << " " << pos << " " << scale << std::endl;
 
-        ImageHandle image = Image::create(url);
+        ImagePtr image = Image::create(url);
         image->set_pos(pos);
         image->set_scale(scale);
         add_image(Image::create(url));

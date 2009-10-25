@@ -54,7 +54,7 @@ public:
         // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
         // Blob, so we don't do encode/decode when doing a database
         // merge
-        BlobHandle blob = tile.get_blob();
+        BlobPtr blob = tile.get_blob();
         switch(tile.get_format())
         {
           case SoftwareSurfaceFactory::JPEG_FILEFORMAT:

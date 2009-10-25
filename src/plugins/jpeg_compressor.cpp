@@ -35,9 +35,9 @@ JPEGCompressor::~JPEGCompressor()
 }
 
 void
-JPEGCompressor::save(SoftwareSurfaceHandle surface_in, int quality)
+JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
 {
-  SoftwareSurfaceHandle surface = surface_in->to_rgb();
+  SoftwareSurfacePtr surface = surface_in->to_rgb();
 
   m_cinfo.image_width  = surface->get_width();
   m_cinfo.image_height = surface->get_height();

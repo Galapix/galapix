@@ -30,7 +30,7 @@
 
 class ImageTileCache;
 
-typedef boost::shared_ptr<ImageTileCache> ImageTileCacheHandle;
+typedef boost::shared_ptr<ImageTileCache> ImageTileCachePtr;
 
 class ImageTileCache
 {
@@ -45,7 +45,7 @@ public:
     };
     
     Status  status;
-    SurfaceHandle surface;
+    SurfacePtr surface;
 
     SurfaceStruct() :
       status(),
@@ -66,7 +66,7 @@ public:
 
   ThreadMessageQueue<Tile> m_tile_queue;
   
-  TileProviderHandle m_tile_provider;
+  TileProviderPtr m_tile_provider;
 
   /** The maximum scale for which tiles exist */
   int m_max_scale;
@@ -75,16 +75,16 @@ public:
   int m_min_keep_scale; 
 
 private:
-  ImageTileCache(TileProviderHandle tile_provider);
+  ImageTileCache(TileProviderPtr tile_provider);
 
-  void set_weak_ptr(ImageTileCacheHandle self);
+  void set_weak_ptr(ImageTileCachePtr self);
 
 public:
-  static ImageTileCacheHandle create(TileProviderHandle tile_provider);
+  static ImageTileCachePtr create(TileProviderPtr tile_provider);
 
   SurfaceStruct request_tile(int x, int y, int scale);
-  SurfaceHandle get_tile(int x, int y, int scale);
-  SurfaceHandle find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
+  SurfacePtr get_tile(int x, int y, int scale);
+  SurfacePtr find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
 
   void process_queue();
 

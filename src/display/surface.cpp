@@ -24,11 +24,11 @@
 class SurfaceImpl
 {
 public:
-  TextureHandle texture;
+  TexturePtr texture;
   Rectf   uv;
   Size    size;
   
-  SurfaceImpl(const TextureHandle& texture_, const Rectf& uv_, const Size& size_)
+  SurfaceImpl(const TexturePtr& texture_, const Rectf& uv_, const Size& size_)
     : texture(texture_),
       uv(uv_),
       size(size_)
@@ -36,7 +36,7 @@ public:
     //std::cout << uv << std::endl;
   }
 
-  SurfaceImpl(const SoftwareSurfaceHandle& src, const Rect& srcrect) :
+  SurfaceImpl(const SoftwareSurfacePtr& src, const Rect& srcrect) :
     texture(),
     uv(),
     size()
@@ -111,24 +111,24 @@ public:
   }
 };
 
-SurfaceHandle
-Surface::create(const SoftwareSurfaceHandle& src, const Rect& srcrect)
+SurfacePtr
+Surface::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
 {
-  return SurfaceHandle(new Surface(src, srcrect));
+  return SurfacePtr(new Surface(src, srcrect));
 }
 
-SurfaceHandle
-Surface::create(const SoftwareSurfaceHandle& src)
+SurfacePtr
+Surface::create(const SoftwareSurfacePtr& src)
 {
-  return SurfaceHandle(new Surface(src));
+  return SurfacePtr(new Surface(src));
 }
 
-Surface::Surface(const SoftwareSurfaceHandle& src) :
+Surface::Surface(const SoftwareSurfacePtr& src) :
   impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src->get_size())))
 {
 }
 
-Surface::Surface(const SoftwareSurfaceHandle& src, const Rect& srcrect)
+Surface::Surface(const SoftwareSurfacePtr& src, const Rect& srcrect)
   : impl(new SurfaceImpl(src, srcrect))
 {
 }

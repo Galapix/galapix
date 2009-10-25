@@ -32,7 +32,7 @@ KRA::get_size(const std::string& filename, Size& size)
   return PNG::get_size((uint8_t*)&*koconverter.get_stdout().begin(), koconverter.get_stdout().size(), size);
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 KRA::load_from_file(const std::string& filename)
 {
   // koconverter --batch --mimetype image/png sketch39.kra /dev/stdout  > /tmp/test.png

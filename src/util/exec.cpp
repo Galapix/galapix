@@ -44,7 +44,7 @@ Exec::arg(const std::string& argument)
 }
 
 void
-Exec::set_stdin(const BlobHandle& blob)
+Exec::set_stdin(const BlobPtr& blob)
 {
   stdin_data = blob;
 }

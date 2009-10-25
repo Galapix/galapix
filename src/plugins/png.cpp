@@ -111,7 +111,7 @@ PNG::get_size(const std::string& filename, Size& size)
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 PNG::load_from_file(const std::string& filename)
 {
   FILE* in = fopen(filename.c_str(), "rb");
@@ -149,7 +149,7 @@ PNG::load_from_file(const std::string& filename)
     int height = png_get_image_height(png_ptr, info_ptr);
     //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
-    SoftwareSurfaceHandle surface;
+    SoftwareSurfacePtr surface;
 
     switch(png_get_color_type(png_ptr, info_ptr))
     {
@@ -186,7 +186,7 @@ PNG::load_from_file(const std::string& filename)
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 PNG::load_from_mem(uint8_t* data, int len)
 {
   // FIXME: Merge this with load_from_file
@@ -223,7 +223,7 @@ PNG::load_from_mem(uint8_t* data, int len)
   int height = png_get_image_height(png_ptr, info_ptr);
   //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
-  SoftwareSurfaceHandle surface;
+  SoftwareSurfacePtr surface;
 
   switch(png_get_color_type(png_ptr, info_ptr))
   {
@@ -258,7 +258,7 @@ PNG::load_from_mem(uint8_t* data, int len)
 }
 
 void
-PNG::save(const SoftwareSurfaceHandle& surface, const std::string& filename)
+PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
 {
   FILE* out = fopen(filename.c_str(), "wb");
   if (!out)
@@ -318,8 +318,8 @@ void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
   std::copy(data, data+length, std::back_inserter(mem->data));
 }
 
-BlobHandle
-PNG::save(const SoftwareSurfaceHandle& surface)
+BlobPtr
+PNG::save(const SoftwareSurfacePtr& surface)
 {
   // FIXME: Merge this with the save to file function
   png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);

@@ -47,7 +47,7 @@ private:
   boost::weak_ptr<Image> m_self;
 
   URL       m_url;
-  TileProviderHandle m_provider;
+  TileProviderPtr m_provider;
 
   bool m_visible;
   Rectf m_image_rect;
@@ -77,14 +77,14 @@ private:
 
 private:
   Image(const URL& url, const FileEntry& file_entry);
-  Image(TileProviderHandle provider);
+  Image(TileProviderPtr provider);
 
-  void set_weak_ptr(ImageHandle self);
+  void set_weak_ptr(ImagePtr self);
 
 public:
-  static ImageHandle create(const URL& url);
-  static ImageHandle create(TileProviderHandle provider);
-  static ImageHandle create(const FileEntry& file_entry, const Tile& tile = Tile());
+  static ImagePtr create(const URL& url);
+  static ImagePtr create(TileProviderPtr provider);
+  static ImagePtr create(const FileEntry& file_entry, const Tile& tile = Tile());
 
   // _____________________________________________________
   // Drawing stuff

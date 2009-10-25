@@ -56,7 +56,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
   int height = m_file_entry.get_height();
   int scale  = min_scale;
 
-  SoftwareSurfaceHandle surface;
+  SoftwareSurfacePtr surface;
 
   switch(format)
   {
@@ -72,7 +72,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
       }
       else
       {
-        BlobHandle blob = m_file_entry.get_url().get_blob();
+        BlobPtr blob = m_file_entry.get_url().get_blob();
         surface = JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale);
       }
       
@@ -102,7 +102,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
     for(int y = 0; 256*y < surface->get_height(); ++y)
       for(int x = 0; 256*x < surface->get_width(); ++x)
       {
-        SoftwareSurfaceHandle croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
+        SoftwareSurfacePtr croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
                                                                   Size(256, 256)));
 
         callback(/*m_file_entry, */Tile(scale, Vector2i(x, y), croped_surface));

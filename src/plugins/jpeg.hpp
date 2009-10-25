@@ -37,17 +37,17 @@ public:
       @param filename   Filename of the file to load
       @param scale      Scale the image by 1/scale (only 1,2,4,8 allowed)
    */
-  static SoftwareSurfaceHandle load_from_file(const std::string& filename, int scale = 1);
+  static SoftwareSurfacePtr load_from_file(const std::string& filename, int scale = 1);
 
   /** Load a JPEG from memory 
       
       @param mem   Address of the JPEG data
       @param len   Length of the JPEG data
    */
-  static SoftwareSurfaceHandle load_from_mem(uint8_t* mem, int len, int scale = 1);
+  static SoftwareSurfacePtr load_from_mem(uint8_t* mem, int len, int scale = 1);
 
-  static void save(const SoftwareSurfaceHandle& surface, int quality, const std::string& filename);
-  static BlobHandle save(const SoftwareSurfaceHandle& surface, int quality);
+  static void save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename);
+  static BlobPtr save(const SoftwareSurfacePtr& surface, int quality);
 };
 
 #endif

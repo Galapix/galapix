@@ -56,14 +56,14 @@ public:
     {
       if (m_url.has_stdio_name())
       {
-        SoftwareSurfaceHandle surface = JPEG::load_from_file(m_url.get_stdio_name());
+        SoftwareSurfacePtr surface = JPEG::load_from_file(m_url.get_stdio_name());
         m_callback(Tile(m_scale, m_pos, surface));
         get_handle().set_finished();
       }
       else
       {
-        BlobHandle blob = CURLHandler::get_data(m_url.str());
-        SoftwareSurfaceHandle surface = JPEG::load_from_mem(blob->get_data(), blob->size());
+        BlobPtr blob = CURLHandler::get_data(m_url.str());
+        SoftwareSurfacePtr surface = JPEG::load_from_mem(blob->get_data(), blob->size());
         m_callback(Tile(m_scale, m_pos, surface));
         get_handle().set_finished();
       }

@@ -23,11 +23,11 @@
 class JPEGDecodeJob : public Job
 {
 private:
-  BlobHandle blob;
-  SoftwareSurfaceHandle surface;
+  BlobPtr blob;
+  SoftwareSurfacePtr surface;
 
 public:
-  JPEGDecodeJob(const BlobHandle& blob)
+  JPEGDecodeJob(const BlobPtr& blob)
     : blob(blob)
   {}
   
@@ -35,7 +35,7 @@ public:
     surface = JPEG::load_from_mem(blob.get_data(), blob.size());
   }
 
-  SoftwareSurfaceHandle get_surface() const { return surface; }
+  SoftwareSurfacePtr get_surface() const { return surface; }
 };
 
 #endif

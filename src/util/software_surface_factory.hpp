@@ -41,7 +41,7 @@ public:
   static FileFormat get_fileformat(const URL& url);
   static bool       get_size(const URL& url, Size& size);
 
-  static SoftwareSurfaceHandle from_url(const URL& url);
+  static SoftwareSurfacePtr from_url(const URL& url);
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);

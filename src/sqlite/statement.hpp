@@ -41,7 +41,7 @@ public:
   SQLiteStatement& bind_int(int n, int i);
   SQLiteStatement& bind_int64(int n, int64_t i);
   SQLiteStatement& bind_text(int n, const std::string&);
-  SQLiteStatement& bind_blob(int n, const BlobHandle&);
+  SQLiteStatement& bind_blob(int n, const BlobPtr&);
 
   void execute();
   SQLiteReader execute_query();

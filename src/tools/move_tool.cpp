@@ -70,7 +70,7 @@ MoveTool::down(const Vector2i& pos)
 {
   click_pos = viewer->get_state().screen2world(pos);
 
-  ImageHandle image = viewer->get_workspace()->get_image(click_pos);
+  ImagePtr image = viewer->get_workspace()->get_image(click_pos);
 
   if (image)
   {

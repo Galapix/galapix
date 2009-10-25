@@ -84,10 +84,10 @@ public:
   }
 };
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::create(Format format, const Size& size)
 {
-  return SoftwareSurfaceHandle(new SoftwareSurface(format, size));
+  return SoftwareSurfacePtr(new SoftwareSurface(format, size));
 }
 
 SoftwareSurface::SoftwareSurface(Format format_, const Size& size_) :
@@ -145,10 +145,10 @@ SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
   rgb.b = impl->pixels[y * impl->pitch + x*3 + 2];
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::halve()
 {
-  SoftwareSurfaceHandle dstsrc = SoftwareSurface::create(impl->format, impl->size/2);
+  SoftwareSurfacePtr dstsrc = SoftwareSurface::create(impl->format, impl->size/2);
   
   uint8_t* dst = dstsrc->get_data();
   uint8_t* src = get_data();
@@ -198,7 +198,7 @@ SoftwareSurface::halve()
   return dstsrc;
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::scale(const Size& size)
 {
   if (size == impl->size)
@@ -207,7 +207,7 @@ SoftwareSurface::scale(const Size& size)
   }
   else
   {
-    SoftwareSurfaceHandle surface = SoftwareSurface::create(impl->format, size);
+    SoftwareSurfacePtr surface = SoftwareSurface::create(impl->format, size);
     // FIXME: very much non-fast
     switch(impl->format)
     {
@@ -250,15 +250,15 @@ SoftwareSurface::scale(const Size& size)
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::clone()
 {
-  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
+  SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
   memcpy(out->impl->pixels.get(), impl->pixels.get(), impl->pitch * impl->size.height);
   return out;
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::transform(Modifier mod)
 {
   switch(mod)
@@ -295,10 +295,10 @@ SoftwareSurface::transform(Modifier mod)
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::rotate90()
 {
-  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
+  SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
 
   switch(impl->format)
   {
@@ -326,10 +326,10 @@ SoftwareSurface::rotate90()
   return out;
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::rotate180()
 {
-  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
+  SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
 
   switch(impl->format)
   {
@@ -357,10 +357,10 @@ SoftwareSurface::rotate180()
   return out; 
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::rotate270()
 {
-  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
+  SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
 
   switch(impl->format)
   {
@@ -388,10 +388,10 @@ SoftwareSurface::rotate270()
   return out; 
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::hflip()
 {
-  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
+  SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
 
   switch(impl->format)
   {
@@ -419,10 +419,10 @@ SoftwareSurface::hflip()
   return out; 
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::vflip()
 {
-  SoftwareSurfaceHandle out = SoftwareSurface::create(impl->format, impl->size);
+  SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
 
   for(int y = 0; y < impl->size.height; ++y)
   {
@@ -432,7 +432,7 @@ SoftwareSurface::vflip()
   return out;
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::crop(const Rect& rect_in)
 {
   // FIXME: We could do a crop without copying contain, simply
@@ -446,7 +446,7 @@ SoftwareSurface::crop(const Rect& rect_in)
             Math::clamp(0, rect_in.right,  get_width()), 
             Math::clamp(0, rect_in.bottom, get_height()));
 
-  SoftwareSurfaceHandle surface = SoftwareSurface::create(impl->format, rect.get_size());
+  SoftwareSurfacePtr surface = SoftwareSurface::create(impl->format, rect.get_size());
 
   for(int y = rect.top; y < rect.bottom; ++y)
   {
@@ -482,7 +482,7 @@ SoftwareSurface::get_pitch()  const
   return impl->pitch;
 }
 
-BlobHandle
+BlobPtr
 SoftwareSurface::get_raw_data() const
 {
   assert(impl->pitch != impl->size.width*3);
@@ -535,7 +535,7 @@ SoftwareSurface::get_average_color() const
              static_cast<uint8_t>(b / num_pixels));
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurface::to_rgb()
 {
   switch(impl->format)
@@ -545,7 +545,7 @@ SoftwareSurface::to_rgb()
         
     case RGBA_FORMAT:
     {
-      SoftwareSurfaceHandle surface = SoftwareSurface::create(RGB_FORMAT, impl->size);
+      SoftwareSurfacePtr surface = SoftwareSurface::create(RGB_FORMAT, impl->size);
 
       int num_pixels      = get_width() * get_height();
       uint8_t* src_pixels = get_data();
@@ -563,7 +563,7 @@ SoftwareSurface::to_rgb()
         
     default:
       assert(!"SoftwareSurface::to_rgb: Unknown format");
-      return SoftwareSurfaceHandle();
+      return SoftwareSurfacePtr();
   }
 }
 
@@ -585,7 +585,7 @@ SoftwareSurface::get_bytes_per_pixel() const
 }
 
 void
-SoftwareSurface::blit(SoftwareSurfaceHandle& dst, const Vector2i& pos)
+SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
 {
   int start_x = std::max(0, -pos.x);
   int start_y = std::max(0, -pos.y);

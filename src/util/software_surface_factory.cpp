@@ -131,31 +131,31 @@ SoftwareSurfaceFactory::get_size(const URL& url, Size& size)
       {
         case JPEG_FILEFORMAT:
         {
-          BlobHandle blob = url.get_blob();
-          SoftwareSurfaceHandle surface = JPEG::load_from_mem(blob->get_data(), blob->size());
+          BlobPtr blob = url.get_blob();
+          SoftwareSurfacePtr surface = JPEG::load_from_mem(blob->get_data(), blob->size());
           size = surface->get_size();
           return true;
         }
 
         case PNG_FILEFORMAT:
         {
-          BlobHandle blob = url.get_blob();
-          SoftwareSurfaceHandle surface = PNG::load_from_mem(blob->get_data(), blob->size());
+          BlobPtr blob = url.get_blob();
+          SoftwareSurfacePtr surface = PNG::load_from_mem(blob->get_data(), blob->size());
           size = surface->get_size();
           return true;
         }
 
         case XCF_FILEFORMAT:
         {
-          BlobHandle blob = url.get_blob();
-          SoftwareSurfaceHandle surface = XCF::load_from_mem(blob->get_data(), blob->size());
+          BlobPtr blob = url.get_blob();
+          SoftwareSurfacePtr surface = XCF::load_from_mem(blob->get_data(), blob->size());
           size = surface->get_size();
           return true;
         }
 
         case KRA_FILEFORMAT:
           //             {
-          //               BlobHandle blob = url.get_blob();
+          //               BlobPtr blob = url.get_blob();
           //               SoftwareSurface surface = KRA::load_from_mem(blob->get_data(), blob->size());
           //               size = surface->get_size();
           //               return false;
@@ -165,8 +165,8 @@ SoftwareSurfaceFactory::get_size(const URL& url, Size& size)
 
         case MAGICK_FILEFORMAT:
         {
-          BlobHandle blob = url.get_blob();
-          SoftwareSurfaceHandle surface = Imagemagick::load_from_mem(blob->get_data(), blob->size());
+          BlobPtr blob = url.get_blob();
+          SoftwareSurfacePtr surface = Imagemagick::load_from_mem(blob->get_data(), blob->size());
           size = surface->get_size();
           return true;
         }
@@ -185,7 +185,7 @@ SoftwareSurfaceFactory::get_size(const URL& url, Size& size)
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 SoftwareSurfaceFactory::from_url(const URL& url)
 {
   if (url.has_stdio_name())
@@ -212,7 +212,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
             
       default:
         throw std::runtime_error(url.str() + ": unknown file type");
-        return SoftwareSurfaceHandle();
+        return SoftwareSurfacePtr();
     }  
   }
   else
@@ -221,37 +221,37 @@ SoftwareSurfaceFactory::from_url(const URL& url)
     {
       case JPEG_FILEFORMAT:
       {
-        BlobHandle blob = url.get_blob();
+        BlobPtr blob = url.get_blob();
         return JPEG::load_from_mem(blob->get_data(), blob->size());
       }
 
       case PNG_FILEFORMAT:
       {
-        BlobHandle blob = url.get_blob();
+        BlobPtr blob = url.get_blob();
         return PNG::load_from_mem(blob->get_data(), blob->size());
       }
 
       case XCF_FILEFORMAT:
       {
-        BlobHandle blob = url.get_blob();
+        BlobPtr blob = url.get_blob();
         return XCF::load_from_mem(blob->get_data(), blob->size());
       }
 
       //           case KRA_FILEFORMAT:
       //             {
-      //               BlobHandle blob = url.get_blob();
+      //               BlobPtr blob = url.get_blob();
       //               return KRA::load_from_mem(blob->get_data(), blob->size());
       //             }
 
       case MAGICK_FILEFORMAT:
       {
-        BlobHandle blob = url.get_blob();
+        BlobPtr blob = url.get_blob();
         return Imagemagick::load_from_mem(blob->get_data(), blob->size());
       }
       /*
         case SVG_FILEFORMAT:
         {
-        BlobHandle blob = url.get_blob();
+        BlobPtr blob = url.get_blob();
         return RSVG::load_from_mem(blob->get_data(), blob->size());
         }            
         break;
@@ -259,7 +259,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
 
       default:
         throw std::runtime_error("SoftwareSurfaceFactory::from_url: " + url.str() + ": unknown file type");
-        return SoftwareSurfaceHandle();
+        return SoftwareSurfacePtr();
     }      
   }
 }

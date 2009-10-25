@@ -31,7 +31,7 @@ JobManager::JobManager(int num_threads) :
   assert(num_threads > 0);
 
   for(int i = 0; i < num_threads; ++i)
-    threads.push_back(JobWorkerThreadHandle(new JobWorkerThread()));
+    threads.push_back(JobWorkerThreadPtr(new JobWorkerThread()));
 }
 
 JobManager::~JobManager()

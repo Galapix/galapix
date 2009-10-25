@@ -49,7 +49,7 @@ Rar::get_filenames(const std::string& rar_filename)
   }
 }
 
-BlobHandle
+BlobPtr
 Rar::get_file(const std::string& rar_filename, const std::string& filename)
 {
   Exec rar("rar");
@@ -62,7 +62,7 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
   else
   {
     throw std::runtime_error("Rar: " + rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
-    return BlobHandle();
+    return BlobPtr();
   }
 }
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
     }
     else if (argc == 3)
     {
-      BlobHandle blob = Rar::get_file(argv[1], argv[2]);
+      BlobPtr blob = Rar::get_file(argv[1], argv[2]);
       blob.write_to_file("/tmp/out.file");
       std::cout << "Writting /tmp/out.file" << std::endl;
     }

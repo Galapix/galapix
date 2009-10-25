@@ -24,7 +24,7 @@
 #include "util/url.hpp"
 #include "plugins/pnm.hpp"
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 UFRaw::load_from_url(const URL& url)
 {
   if (url.has_stdio_name())
@@ -34,11 +34,11 @@ UFRaw::load_from_url(const URL& url)
   else
   {
     assert(!"UFRaw: Not supported");
-    return SoftwareSurfaceHandle();
+    return SoftwareSurfacePtr();
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 UFRaw::load_from_file(const std::string& filename)
 {
   Exec ufraw("ufraw-batch");

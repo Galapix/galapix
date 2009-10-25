@@ -90,10 +90,10 @@ public:
   // Image Query Functions (dangerous: need to now when Image position
   // changes) -> Return "const Image"? -> can't do breaks due to impl
   ImageCollection get_images(const Rectf& rect) const;
-  ImageHandle get_image(const Vector2f& pos) const;
+  ImagePtr get_image(const Vector2f& pos) const;
 
   // ---------------------------------------------
-  void add_image(const ImageHandle& image);
+  void add_image(const ImagePtr& image);
 
   // Selection Commands
   Selection get_selection() const { return m_selection; }

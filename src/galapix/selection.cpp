@@ -35,7 +35,7 @@ Selection::Selection()
 }
 
 void
-Selection::add_image(const ImageHandle& image)
+Selection::add_image(const ImagePtr& image)
 {
   impl->images.add(image);
 }
@@ -48,7 +48,7 @@ Selection::add_images(const ImageCollection& images)
 }
 
 void
-Selection::remove_image(const ImageHandle& image)
+Selection::remove_image(const ImagePtr& image)
 {
   impl->images.add(image);
 }
@@ -66,7 +66,7 @@ Selection::scale(float factor)
 }
 
 bool
-Selection::has(const ImageHandle& image) const
+Selection::has(const ImagePtr& image) const
 {
   for(ImageCollection::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
   {

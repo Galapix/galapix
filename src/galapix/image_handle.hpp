@@ -23,7 +23,7 @@
 
 class Image;
 
-typedef boost::shared_ptr<Image> ImageHandle;
+typedef boost::shared_ptr<Image> ImagePtr;
 
 #endif
 

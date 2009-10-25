@@ -42,7 +42,7 @@ Imagemagick::get_size(const std::string& filename, Size& size)
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 Imagemagick::load_from_url(const URL& url)
 {
   if (url.has_stdio_name())
@@ -51,16 +51,16 @@ Imagemagick::load_from_url(const URL& url)
   }
   else
   {
-    BlobHandle blob = url.get_blob();
+    BlobPtr blob = url.get_blob();
     return load_from_mem(blob->get_data(), blob->size());
   }
 }
 
 static 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 MagickImage2SoftwareSurface(const Magick::Image& image)
 {
-  SoftwareSurfaceHandle surface;
+  SoftwareSurfacePtr surface;
 
   int width  = image.columns();
   int height = image.rows();
@@ -113,14 +113,14 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
   return surface;
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 Imagemagick::load_from_mem(void* data, int len)
 {
   // FIXME: Magick::Blob creates an unneeded copy of the data
   return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len))); 
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 Imagemagick::load_from_file(const std::string& filename)
 {
   return MagickImage2SoftwareSurface(Magick::Image(filename));

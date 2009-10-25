@@ -159,7 +159,7 @@ TileDatabase::check()
       int scale  = reader.get_int(1);
       int x      = reader.get_int(2);
       int y      = reader.get_int(3);
-      BlobHandle blob  = reader.get_blob(4);
+      BlobPtr blob  = reader.get_blob(4);
     */
   }
 #endif

@@ -48,7 +48,7 @@ TightLayouter::layout(const ImageCollection& images, bool animated)
   
   for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
   {
-    const ImageHandle& image = *i;
+    const ImagePtr& image = *i;
 
     const float scale = 1000.0f / static_cast<float>(image->get_original_height());
     image->set_target_scale(scale);

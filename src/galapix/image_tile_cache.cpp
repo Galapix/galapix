@@ -35,21 +35,21 @@ unsigned int make_cache_id(int x, int y, int scale)
   return x | (y << 12) | (scale << 24);
 }
 
-ImageTileCacheHandle
-ImageTileCache::create(TileProviderHandle tile_provider)
+ImageTileCachePtr
+ImageTileCache::create(TileProviderPtr tile_provider)
 {
-  ImageTileCacheHandle tile_cache(new ImageTileCache(tile_provider));
+  ImageTileCachePtr tile_cache(new ImageTileCache(tile_provider));
   tile_cache->set_weak_ptr(tile_cache);
   return tile_cache;
 }
 
 void
-ImageTileCache::set_weak_ptr(ImageTileCacheHandle self)
+ImageTileCache::set_weak_ptr(ImageTileCachePtr self)
 {
   m_self = self;
 }
 
-ImageTileCache::ImageTileCache(TileProviderHandle tile_provider) :
+ImageTileCache::ImageTileCache(TileProviderPtr tile_provider) :
   m_self(),
   m_cache(),
   m_jobs(),
@@ -60,12 +60,12 @@ ImageTileCache::ImageTileCache(TileProviderHandle tile_provider) :
 {
 }
 
-SurfaceHandle
+SurfacePtr
 ImageTileCache::get_tile(int x, int y, int scale)
 {
   if (x < 0 || y < 0 || scale < 0)
   {
-    return SurfaceHandle();
+    return SurfacePtr();
   }
   else
   {
@@ -78,7 +78,7 @@ ImageTileCache::get_tile(int x, int y, int scale)
     }
     else
     {
-      return SurfaceHandle();
+      return SurfacePtr();
     }
   }
 }
@@ -105,7 +105,7 @@ ImageTileCache::request_tile(int x, int y, int scale)
                                                    weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
     SurfaceStruct s;
       
-    s.surface = SurfaceHandle();
+    s.surface = SurfacePtr();
     s.status  = SurfaceStruct::SURFACE_REQUESTED;
 
     m_cache[cache_id] = s;
@@ -170,7 +170,7 @@ ImageTileCache::cleanup()
   }
 }
 
-SurfaceHandle
+SurfacePtr
 ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
   int  downscale_factor = 1;
@@ -191,7 +191,7 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
     downscale_factor += 1;
   }
 
-  return SurfaceHandle();
+  return SurfacePtr();
 }
 
 void
@@ -214,7 +214,7 @@ ImageTileCache::process_queue()
     }
     else
     {
-      s.surface = SurfaceHandle();
+      s.surface = SurfacePtr();
       s.status  = SurfaceStruct::SURFACE_FAILED;
     }
 

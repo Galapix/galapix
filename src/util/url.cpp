@@ -109,7 +109,7 @@ URL::get_protocol() const
   return protocol;
 }
 
-BlobHandle
+BlobPtr
 URL::get_blob() const
 {
   if (protocol == "file")
@@ -142,7 +142,7 @@ URL::get_blob() const
   else
   {
     throw std::runtime_error("URL: Unhandled protocol: " + protocol);
-    return BlobHandle();
+    return BlobPtr();
   }
 }
 

@@ -27,7 +27,7 @@
 class ImageCollection
 {
 public:
-  typedef std::vector<ImageHandle> Images;
+  typedef std::vector<ImagePtr> Images;
   typedef Images::iterator iterator;
   typedef Images::const_iterator const_iterator;
   typedef Images::reverse_iterator reverse_iterator;
@@ -41,7 +41,7 @@ public:
   ImageCollection();
   ~ImageCollection();
 
-  void add(ImageHandle image);
+  void add(ImagePtr image);
 
   void clear() { m_images.clear(); }
 
@@ -57,19 +57,19 @@ public:
   const_reverse_iterator rbegin() const;
   const_reverse_iterator rend() const;
 
-  ImageHandle& front() { return m_images.front(); }
-  const ImageHandle& front() const { return m_images.front(); }
+  ImagePtr& front() { return m_images.front(); }
+  const ImagePtr& front() const { return m_images.front(); }
 
-  ImageHandle& back() { return m_images.back(); }
-  const ImageHandle& back() const { return m_images.back(); }
+  ImagePtr& back() { return m_images.back(); }
+  const ImagePtr& back() const { return m_images.back(); }
 
   size_type size() const;
   bool empty() const;
 
   void erase(iterator first, iterator last) { m_images.erase(first, last); }
 
-  ImageHandle& operator[](size_type i) { return m_images[i]; }
-  const ImageHandle& operator[](size_type i) const { return m_images[i]; }
+  ImagePtr& operator[](size_type i) { return m_images[i]; }
+  const ImagePtr& operator[](size_type i) const { return m_images[i]; }
 };
 
 #endif

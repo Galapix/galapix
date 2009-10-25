@@ -23,12 +23,12 @@
 #include "plugins/pnm_mem_reader.hpp"
 #include "math/size.hpp"
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 PNM::load_from_mem(const char* data, int len)
 {
   PNMMemReader pnm(data, len);
 
-  SoftwareSurfaceHandle surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, pnm.get_size());
+  SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, pnm.get_size());
   const uint8_t* src_pixels = (uint8_t*)pnm.get_pixel_data();
   uint8_t* dst_pixels = surface->get_data();
   //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;

@@ -172,7 +172,7 @@ Zip::get_filenames(const std::string& zip_filename)
   }
 }
 
-BlobHandle
+BlobPtr
 Zip::get_file(const std::string& zip_filename, const std::string& filename)
 {
   Exec unzip("unzip");
@@ -215,7 +215,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename)
       }
       else if (argc == 3)
       {
-        BlobHandle blob = Zip::get_file(argv[1], argv[2]);
+        BlobPtr blob = Zip::get_file(argv[1], argv[2]);
         blob.write_to_file("/tmp/out.file");
         std::cout << "Writting /tmp/out.file" << std::endl;
       }

@@ -71,7 +71,7 @@ JPEGDecompressor::read_header()
   }
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 JPEGDecompressor::read_image(int scale)
 {
   if (!(scale == 1 ||
@@ -108,7 +108,7 @@ JPEGDecompressor::read_image(int scale)
 
     jpeg_start_decompress(&m_cinfo);
 
-    SoftwareSurfaceHandle surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(m_cinfo.output_width,
+    SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(m_cinfo.output_width,
                                                                                               m_cinfo.output_height));
  
     if (m_cinfo.output_components == 3) // RGB Image

@@ -27,7 +27,7 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 
-ImageRenderer::ImageRenderer(Image& image, ImageTileCacheHandle cache)
+ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr cache)
   : m_image(image),
     m_cache(cache)
 {
@@ -64,16 +64,16 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
   else // tile not found, so find a replacement
   {
     // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
-    SurfaceHandle nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
-    SurfaceHandle ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
-    SurfaceHandle sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
-    SurfaceHandle se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
+    SurfacePtr nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
+    SurfacePtr ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
+    SurfacePtr sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
+    SurfacePtr se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
 
     if (!nw || !ne || !sw || !se)
     {
       // draw lower resolution tiles
       int downscale;
-      SurfaceHandle surface = m_cache->find_smaller_tile(x, y, scale, downscale);
+      SurfacePtr surface = m_cache->find_smaller_tile(x, y, scale, downscale);
 
       if (surface)
       { 

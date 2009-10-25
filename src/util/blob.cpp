@@ -73,13 +73,13 @@ Blob::append(const void* data, int len)
   assert(!"Blob::append(const void* data, int len): Implement me");
 }
 
-BlobHandle
+BlobPtr
 Blob::create(int len)
 {
-  return BlobHandle(new Blob(len));  
+  return BlobPtr(new Blob(len));  
 }
 
-BlobHandle
+BlobPtr
 Blob::from_file(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::binary);
@@ -102,16 +102,16 @@ Blob::from_file(const std::string& filename)
   }
 }
 
-BlobHandle
+BlobPtr
 Blob::copy(const void* data, int len)
 {
-  return BlobHandle(new Blob(data, len));
+  return BlobPtr(new Blob(data, len));
 }
 
-BlobHandle
+BlobPtr
 Blob::copy(const std::vector<uint8_t>& data)
 {
-  return BlobHandle(new Blob(data));
+  return BlobPtr(new Blob(data));
 }
 
 /* EOF */

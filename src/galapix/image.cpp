@@ -28,26 +28,26 @@
 #include "math/rgb.hpp"
 #include "util/weak_functor.hpp"
 
-ImageHandle
+ImagePtr
 Image::create(const URL& url)
 {
-  ImageHandle image(new Image(url, FileEntry()));
+  ImagePtr image(new Image(url, FileEntry()));
   image->set_weak_ptr(image);
   return image;
 }
 
-ImageHandle
-Image::create(TileProviderHandle provider)
+ImagePtr
+Image::create(TileProviderPtr provider)
 {
-  ImageHandle image(new Image(provider));
+  ImagePtr image(new Image(provider));
   image->set_weak_ptr(image);
   return image;
 }
 
-ImageHandle
+ImagePtr
 Image::create(const FileEntry& file_entry, const Tile& tile)
 {
-  ImageHandle image(new Image(file_entry.get_url(), file_entry));
+  ImagePtr image(new Image(file_entry.get_url(), file_entry));
   image->set_weak_ptr(image);
 
   if (tile)
@@ -59,12 +59,12 @@ Image::create(const FileEntry& file_entry, const Tile& tile)
 }
 
 void
-Image::set_weak_ptr(ImageHandle self)
+Image::set_weak_ptr(ImagePtr self)
 {
   m_self = self;
 }
 
-Image::Image(TileProviderHandle provider) :
+Image::Image(TileProviderPtr provider) :
   m_self(),
   m_url(),
   m_provider(provider),

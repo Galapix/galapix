@@ -24,7 +24,7 @@
 #include "util/exec.hpp"
 #include "plugins/png.hpp"
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 RSVG::load_from_url(const URL& url)
 {
   if (url.has_stdio_name())
@@ -34,12 +34,12 @@ RSVG::load_from_url(const URL& url)
   else
   {
     assert(!"RSVG: Not supported");
-    return SoftwareSurfaceHandle();
+    return SoftwareSurfacePtr();
   }
  
 }
 
-SoftwareSurfaceHandle
+SoftwareSurfacePtr
 RSVG::load_from_file(const std::string& filename)
 {
   Exec rsvg("rsvg");
@@ -50,8 +50,8 @@ RSVG::load_from_file(const std::string& filename)
 
   if (rsvg.exec() == 0)
   {
-    BlobHandle blob = Blob::copy(&*rsvg.get_stdout().begin(), rsvg.get_stdout().size());
-    SoftwareSurfaceHandle surface = PNG::load_from_mem(blob->get_data(), blob->size());
+    BlobPtr blob = Blob::copy(&*rsvg.get_stdout().begin(), rsvg.get_stdout().size());
+    SoftwareSurfacePtr surface = PNG::load_from_mem(blob->get_data(), blob->size());
     return surface;
   }
   else

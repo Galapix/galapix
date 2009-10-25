@@ -28,7 +28,7 @@ class Tile
 private:
   int m_scale;
   Vector2i m_pos;
-  SoftwareSurfaceHandle m_surface;
+  SoftwareSurfacePtr m_surface;
   bool m_valid;
 
 public:
@@ -46,14 +46,14 @@ public:
     m_valid(tile_entry)
   {}
 
-  Tile(int scale, const Vector2i& pos, const SoftwareSurfaceHandle& surface) :
+  Tile(int scale, const Vector2i& pos, const SoftwareSurfacePtr& surface) :
     m_scale(scale),
     m_pos(pos),
     m_surface(surface),
     m_valid(true)
   {}
 
-  SoftwareSurfaceHandle get_surface() const { return m_surface; }
+  SoftwareSurfacePtr get_surface() const { return m_surface; }
   int      get_scale()  const { return m_scale; }
   Vector2i get_pos()    const { return m_pos; }
 

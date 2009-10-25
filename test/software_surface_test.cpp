@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   }
   else
   {
-    SoftwareSurfaceHandle surface = SoftwareSurfaceFactory::from_url(URL::from_filename(argv[1]));
+    SoftwareSurfacePtr surface = SoftwareSurfaceFactory::from_url(URL::from_filename(argv[1]));
     
     PNG::save(surface,              "/tmp/software_surface_test_original.png");
     PNG::save(surface->clone(),     "/tmp/software_surface_test_clone.png");

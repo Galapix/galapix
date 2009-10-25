@@ -65,7 +65,7 @@ private:
   JobWorkerThread& operator= (const JobWorkerThread&);
 };
 
-typedef boost::shared_ptr<JobWorkerThread> JobWorkerThreadHandle;
+typedef boost::shared_ptr<JobWorkerThread> JobWorkerThreadPtr;
 
 #endif
 
