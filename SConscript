@@ -97,7 +97,7 @@ class Project:
         self.env = conf.Finish()
 
     def build(self):
-        self.env = Environment()
+        self.env = Environment(CPPPATH=['src'])
 
         opts = Variables(['custom.py'], ARGUMENTS)
         opts.Add('CXX', 'C++ Compiler')
@@ -123,8 +123,7 @@ class Project:
 
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
-        self.libgalapix_env.Append(CPPPATH=['src'],
-                                   CPPDEFINES = self.optional_defines,
+        self.libgalapix_env.Append(CPPDEFINES = self.optional_defines,
                                    LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs)
         self.libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
@@ -148,8 +147,7 @@ class Project:
                                                             self.optional_sources)
     def build_galapix_sdl(self):
         sdl_env = self.env.Clone()
-        sdl_env.Append(CPPPATH=['src'],
-                       CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
+        sdl_env.Append(CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
                                'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs,
                        OBJPREFIX="sdl.")
@@ -166,8 +164,7 @@ class Project:
 
     def build_galapix_gtk(self):
         gtk_env = self.env.Clone()
-        gtk_env.Append(CPPPATH=['src'],
-                       CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
+        gtk_env.Append(CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
                                'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs,
                        OBJPREFIX="gtk.")
