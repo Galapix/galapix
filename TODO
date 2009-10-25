@@ -14,15 +14,13 @@ Release procedure:
 
 * test database compatibilty
 
+* increment the version number
+
 * check that all keyboard shortcuts are documented and sort them a bit to be logical
 
-* svn cp https://galapix.googlecode.com/svn/trunk/galapix@563 tags/galapix-0.1.0
+* svn cp https://galapix.googlecode.com/svn/trunk/galapix@${NUM} tags/galapix-0.1.2
 
-* svn export http://galapix.googlecode.com/svn/tags/galapix-0.1.0
-
-* need to handle mtime properly
-
-* updating an image with F5 doesn't update its size in the FileEntry
+* svn export http://galapix.googlecode.com/svn/tags/galapix-0.1.2
 
 
 Galapix 0.2.0 Release ToDo:
@@ -55,11 +53,8 @@ Galapix 0.2.0 Release ToDo:
   galapix-db cleanup
   galapix-db delete -d database1.sqlite [PATTERN]...
 
-Galapix 0.1.2 Release ToDo:
+Galapix 0.1.3 Release ToDo:
 ===========================
-
-* fix build system to automatically detect presents of spacnav
-  libraries and other optional stuff
 
 * rewrite overlap solving to be fast or disable it, as it currently
   just halts the whole app
@@ -99,6 +94,8 @@ Galapix 0.1.2 Release ToDo:
 
 General Problems:
 =================
+
+* need to handle mtime properly
 
 * currently only out-of-screen cancels jobs, but zooming need to cancel jobs too
 

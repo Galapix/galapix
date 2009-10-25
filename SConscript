@@ -1,13 +1,5 @@
 # -*- mode: python -*-
 
-compile_galapix_tests = False
-build_mode = 'release'
-
-default_env = Environment()
-
-preset_cxx = default_env["CXX"]
-# preset_cxx = "/home/ingo/bin/g++-snapshot"
-
 preset_cxxflags = {
     'release':     [ "-O3", "-s"  ],
     'profile':     [ "-O2", "-g3", "-pg" ],
@@ -25,7 +17,7 @@ preset_cxxflags = {
                      "-Wcast-qual",
                      "-Winit-self", # only works with >= -O1
                      "-Wno-unused-parameter",
-                     
+
                      # "-Winline",
                      # "-Wfloat-equal",
                      # "-Wunreachable-code",
@@ -39,106 +31,150 @@ preset_linkflags = {
     'development': []
     }
 
-Import("compile_galapix_gtk",
-       "compile_galapix_sdl",
-       "compile_spacenav")
+class Project:
+    def __init__(self):
+        self.optional_sources = []
+        self.optional_defines = []
+        self.optional_libs    = []
 
-libgalapix_util_sources = Glob("src/util/*.cpp") + \
-                          Glob("src/plugins/*.cpp") + \
-                          Glob("src/lisp/*.cpp") + \
-                          Glob("src/math/*.cpp")                                               
+        self.galapix_sources = [
+            'src/display/framebuffer.cpp',
+            'src/galapix/galapix.cpp',
+            'src/galapix/viewer.cpp',
+            ]
 
-libgalapix_sources = Glob("src/database/*.cpp") + \
-                     Glob("src/display/*.cpp") + \
-                     Glob("src/galapix/*.cpp") + \
-                     Glob("src/job/*.cpp") + \
-                     Glob("src/jobs/*.cpp") + \
-                     Glob("src/sqlite/*.cpp") + \
-                     Glob("src/tools/*.cpp")
+    def configure(self):       
+        if 'BUILD' in self.env:
+            print "Build type: %s" % self.env['BUILD']
+            self.env.Append(CXXFLAGS  = preset_cxxflags[self.env['BUILD']],
+                            LINKFLAGS = preset_linkflags[self.env['BUILD']])
+        else:
+            print "Build type: release"
+            self.env.Append(CXXFLAGS  = preset_cxxflags['release'],
+                            LINKFLAGS = preset_linkflags['release'])
 
-galapix_sources = [
-    'src/display/framebuffer.cpp',
-    'src/galapix/galapix.cpp',
-    'src/galapix/viewer.cpp',
-    ]
+        conf = Configure(self.env)
 
-spacenav_sources = ['src/spnav/space_navigator.cpp']
+        if self.env['CXX']:
+            print "Using C++ compiler...", self.env['CXX']
+        else:
+            print "Error: C++ compiler missing"
+            Exit(1)
 
-sdl_sources = ['src/sdl/sdl_framebuffer.cpp',
-               'src/sdl/sdl_viewer.cpp']
+        if conf.CheckLibWithHeader("spnav", "spnav.h", "c++"):
+            self.optional_sources += ['src/spnav/space_navigator.cpp']
+            self.optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
+            self.optional_libs    += ['spnav']
 
-gtk_sources =['src/gtk/gtk_viewer.cpp',
-              'src/gtk/gtk_viewer_widget.cpp']
+        self.env = conf.Finish()
 
-optional_sources = []
-optional_defines = []
-optional_libs    = []
+    def build(self):
+        self.env = Environment()
 
-if compile_spacenav:
-    optional_sources += spacenav_sources
-    optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
-    optional_libs    += ['spnav']
+        opts = Variables(['custom.py'], ARGUMENTS)
+        opts.Add('CXX', 'C++ Compiler')
+        opts.Add('BUILD', 'Build type: release, profile, debug, development')
+        opts.Add(BoolVariable("GALAPIX_SDL", "Build galapix.sdl", True))
+        opts.Add(BoolVariable("GALAPIX_GTK", "Build galapix.gtk", True))
+        opts.Add(BoolVariable("BUILD_TESTS", "Build tests", False))
+        Help(opts.GenerateHelpText(self.env))
+        opts.Update(self.env)
 
-BuildDir('build', 'src')
+        self.configure()
+        
+        self.build_libgalapix();
 
-libgalapix_env = Environment(CXX=preset_cxx,
-                             CXXFLAGS=preset_cxxflags[build_mode],
-                             LINKFLAGS=preset_linkflags[build_mode],
-                             CPPPATH=['src'],
-                             CPPDEFINES = optional_defines,
-                             LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + optional_libs)
-libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
-libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
-libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
-libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
+        if self.env['GALAPIX_SDL']:
+            self.build_galapix_sdl()
 
-libgalapix_util = libgalapix_env.StaticLibrary('galapix_util', libgalapix_util_sources)
-libgalapix = libgalapix_env.StaticLibrary('galapix.sdl', 
-                                          libgalapix_sources + optional_sources)
+        if self.env['GALAPIX_GTK']:
+            self.build_galapix_gtk()
 
-if compile_galapix_tests:
-    libgalapix_test_env = libgalapix_env.Clone()
-    libgalapix_test_env.Append(LIBS=libgalapix_util)
-    libgalapix_test_env.Program("test/exec_test", ["test/exec_test.cpp"])
-    libgalapix_test_env.Program("test/url_test",  ["test/url_test.cpp"])
-    libgalapix_test_env.Program("test/pnm_test",  ["test/pnm_test.cpp"])
-    libgalapix_test_env.Program("test/jpeg_size_test", ["test/jpeg_size_test.cpp"])
-    libgalapix_test_env.Program("test/curl_test", ["test/curl_test.cpp"])
-    libgalapix_test_env.Program("test/exif_test", ["test/exif_test.cpp"])
-    libgalapix_test_env.Program("test/signals_test", ["test/signals_test.cpp"])
-    libgalapix_test_env.Program("test/software_surface_test", ["test/software_surface_test.cpp"])
+        if self.env['BUILD_TESTS']:
+            self.build_tests()
 
-if compile_galapix_sdl:
-    sdl_env = Environment(CXX=preset_cxx,
-                          CXXFLAGS=preset_cxxflags[build_mode],
-                          LINKFLAGS=preset_linkflags[build_mode],
-                          CPPPATH=['src'],
-                          CPPDEFINES = ['GALAPIX_SDL'] + optional_defines,
-                          LIBS = [libgalapix, libgalapix_util,
-                                  'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + optional_libs,
-                          OBJPREFIX="sdl.")
-    sdl_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
-    sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
-    sdl_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
-    sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
-    sdl_env.Program('galapix.sdl', 
-                    galapix_sources + sdl_sources + optional_sources)
+    def build_libgalapix(self):
+        self.libgalapix_env = self.env.Clone()
+        self.libgalapix_env.Append(CPPPATH=['src'],
+                                   CPPDEFINES = self.optional_defines,
+                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs)
+        self.libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
+        self.libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
+        self.libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
+        self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
+        
+        self.libgalapix_util = self.libgalapix_env.StaticLibrary('galapix_util',
+                                                                 Glob("src/util/*.cpp") + \
+                                                                 Glob("src/plugins/*.cpp") + \
+                                                                 Glob("src/lisp/*.cpp") + \
+                                                                 Glob("src/math/*.cpp"))
+        
+        self.libgalapix = self.libgalapix_env.StaticLibrary('galapix.sdl', 
+                                                            Glob("src/database/*.cpp") + \
+                                                            Glob("src/display/*.cpp") + \
+                                                            Glob("src/galapix/*.cpp") + \
+                                                            Glob("src/job/*.cpp") + \
+                                                            Glob("src/jobs/*.cpp") + \
+                                                            Glob("src/sqlite/*.cpp") + \
+                                                            Glob("src/tools/*.cpp") + \
+                                                            self.optional_sources)
+    def build_galapix_sdl(self):
+        sdl_env = self.env.Clone()
+        sdl_env.Append(CPPPATH=['src'],
+                       CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
+                       LIBS = [self.libgalapix, self.libgalapix_util,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs,
+                       OBJPREFIX="sdl.")
+        sdl_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
+        sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
+        sdl_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
+        sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
+        sdl_env.Program('galapix.sdl', 
+                        ['src/sdl/sdl_framebuffer.cpp',
+                         'src/sdl/sdl_viewer.cpp'] + \
+                        self.galapix_sources + \
+                        self.optional_sources)
 
-if compile_galapix_gtk:
-    gtk_env = Environment(CXX=preset_cxx,
-                          CXXFLAGS=preset_cxxflags[build_mode],
-                          LINKFLAGS=preset_linkflags[build_mode],
-                          CPPPATH=['src'],
-                          CPPDEFINES = ['GALAPIX_GTK'] + optional_defines,
-                          LIBS = [libgalapix, libgalapix_util,
-                                  'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + optional_libs,
-                          OBJPREFIX="gtk.")
-    gtk_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
-    gtk_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
-    gtk_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
-    gtk_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
-    gtk_env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2 | sed "s/-I/-isystem/g"')
-    gtk_env.Program('galapix.gtk', 
-                    galapix_sources + gtk_sources + optional_sources)
+
+    def build_galapix_gtk(self):
+        gtk_env = self.env.Clone()
+        gtk_env.Append(CPPPATH=['src'],
+                       CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
+                       LIBS = [self.libgalapix, self.libgalapix_util,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs,
+                       OBJPREFIX="gtk.")
+        gtk_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
+        gtk_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
+        gtk_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
+        gtk_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
+        gtk_env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2 | sed "s/-I/-isystem/g"')
+        gtk_env.Program('galapix.gtk', 
+                        ['src/gtk/gtk_viewer.cpp',
+                         'src/gtk/gtk_viewer_widget.cpp'] + \
+                        self.galapix_sources + \
+                        self.optional_sources)
+
+    def build_tests(self):
+        libgalapix_test_env = self.libgalapix_env.Clone()
+        libgalapix_test_env.Append(LIBS=self.libgalapix_util)
+        libgalapix_test_env.Program("test/exec_test",
+                                    ["test/exec_test.cpp"])
+        libgalapix_test_env.Program("test/url_test",
+                                    ["test/url_test.cpp"])
+        libgalapix_test_env.Program("test/pnm_test",
+                                    ["test/pnm_test.cpp"])
+        libgalapix_test_env.Program("test/jpeg_size_test",
+                                    ["test/jpeg_size_test.cpp"])
+        libgalapix_test_env.Program("test/curl_test",
+                                    ["test/curl_test.cpp"])
+        libgalapix_test_env.Program("test/exif_test",
+                                    ["test/exif_test.cpp"])
+        libgalapix_test_env.Program("test/signals_test",
+                                    ["test/signals_test.cpp"])
+        libgalapix_test_env.Program("test/software_surface_test",
+                                    ["test/software_surface_test.cpp"])
+
+project = Project()
+project.build()
 
 # EOF #
