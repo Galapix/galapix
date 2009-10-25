@@ -51,7 +51,8 @@ Workspace::Workspace() :
   m_images(),
   m_selection(),
   m_progress(0.0f),
-  m_file_queue()
+  m_file_queue(),
+  m_layouter()
 {
 }
 
@@ -119,8 +120,8 @@ void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
   std::cout << "Workspace::layout_aspect()" << std::endl;
-  RegularLayouter regular_layouter(aspect_w, aspect_h);
-  regular_layouter.layout(m_images, true);
+  m_layouter.reset(new RegularLayouter(aspect_w, aspect_h));
+  m_layouter->layout(m_images, true);
   start_animation();
 }
 
@@ -128,8 +129,8 @@ void
 Workspace::layout_spiral()
 {
   std::cout << "Workspace::layout_spiral()" << std::endl;
-  SpiralLayouter spiral_layouter;
-  spiral_layouter.layout(m_images, true);
+  m_layouter.reset(new SpiralLayouter());
+  m_layouter->layout(m_images, true);
   start_animation();
 }
 
@@ -137,8 +138,8 @@ void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
   std::cout << "Workspace::layout_tight()" << std::endl;
-  TightLayouter tight_layouter(aspect_w, aspect_h);
-  tight_layouter.layout(m_images, true);
+  m_layouter.reset(new TightLayouter(aspect_w, aspect_h));
+  m_layouter->layout(m_images, true);
   start_animation();
 }
 
@@ -146,8 +147,8 @@ void
 Workspace::layout_random()
 {
   std::cout << "Workspace::layout_random()" << std::endl;
-  RandomLayouter random_layouter;
-  random_layouter.layout(m_images, true);
+  m_layouter.reset(new RandomLayouter());
+  m_layouter->layout(m_images, true);
   start_animation();
 }
 
@@ -208,12 +209,22 @@ void
 Workspace::sort()
 {
   std::sort(m_images.begin(), m_images.end(), ImageSorter());
+  if (m_layouter)
+  {
+    m_layouter->layout(m_images, true);
+    start_animation();
+  }
 }
 
 void
 Workspace::random_shuffle()
 {
   std::random_shuffle(m_images.begin(), m_images.end());
+  if (m_layouter)
+  {
+    m_layouter->layout(m_images, true);
+    start_animation();
+  }
 }
 
 void

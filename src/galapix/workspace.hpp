@@ -65,9 +65,10 @@ private:
 
   ThreadMessageQueue<FileEntry> m_file_queue;
 
+  LayouterPtr m_layouter;
+
 public:
   Workspace();
-
   // ---------------------------------------------
 
   // Layout hints
