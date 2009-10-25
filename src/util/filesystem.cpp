@@ -59,11 +59,11 @@ Filesystem::find_exe(const std::string& name)
       
     free(path);
 
-    throw std::runtime_error("Couldn't find " + name + " in PATH");
+    throw std::runtime_error("Filesystem::find_exe(): Couldn't find " + name + " in PATH");
   }
   else
   {
-    throw std::runtime_error("Couldn't get PATH environment variable");
+    throw std::runtime_error("Filesystem::find_exe(): Couldn't get PATH environment variable");
   }
 }
 
@@ -162,7 +162,7 @@ Filesystem::init()
   }
   else
   {
-    throw std::runtime_error("Couldn't get HOME environment variable");
+    throw std::runtime_error("Filesystem::init(): Couldn't get HOME environment variable");
   }
 
   mkdir(home_directory + "/.galapix");
@@ -175,7 +175,7 @@ Filesystem::mkdir(const std::string& pathname)
   {
     if (::mkdir(pathname.c_str(), S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP) != 0)
     {
-      throw std::runtime_error("Filesystem::mkdir: " + pathname + ": " + strerror(errno));
+      throw std::runtime_error("Filesystem::mkdir(): " + pathname + ": " + strerror(errno));
     }
     else
     {
@@ -204,7 +204,7 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
   struct stat stat_buf;
   if (stat(from_filename.c_str(), &stat_buf) != 0)
   {
-    throw std::runtime_error(from_filename + ": " + strerror(errno));
+    throw std::runtime_error("Filesystem::copy_mtime(): " + from_filename + ": " + strerror(errno));
   }
 
   struct utimbuf time_buf; 
@@ -223,7 +223,7 @@ Filesystem::get_size(const std::string& filename)
   struct stat stat_buf;
   if (stat(filename.c_str(), &stat_buf) != 0)
   {
-    throw std::runtime_error(filename + ": " + strerror(errno));
+    throw std::runtime_error("Filesystem::get_size(): " + filename + ": " + strerror(errno));
   } 
   return stat_buf.st_size; // Is this reliable? or should be use fopen() and ftell()?
 }
@@ -234,7 +234,7 @@ Filesystem::get_mtime(const std::string& filename)
   struct stat stat_buf;
   if (stat(filename.c_str(), &stat_buf) != 0)
   {
-    throw std::runtime_error(filename + ": " + strerror(errno));
+    throw std::runtime_error("Filesystem::get_mtime(): " + filename + ": " + strerror(errno));
   } 
   return stat_buf.st_mtime;
 }
@@ -407,14 +407,18 @@ Filesystem::readlines_from_file(const std::string& pathname, std::vector<std::st
   std::ifstream in(pathname.c_str());
 
   if (!in)
-    throw std::runtime_error("Couldn't open file: " + pathname);
-  
-  std::string line;
-  while(std::getline(in, line))
   {
-    lst.push_back(line);
+    throw std::runtime_error("Filesystem::readlines_from_file(): Couldn't open file: " + pathname);
   }
-  in.close();
+  else
+  {
+    std::string line;
+    while(std::getline(in, line))
+    {
+      lst.push_back(line);
+    }
+    in.close();
+  }
 }
 
 /* EOF */

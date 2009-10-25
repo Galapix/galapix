@@ -211,7 +211,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
         return RSVG::load_from_file(url.get_stdio_name());
             
       default:
-        throw std::runtime_error(url.str() + ": unknown file type");
+        throw std::runtime_error("SoftwareSurfaceFactory::from_url(): " + url.str() + ": unknown file type");
         return SoftwareSurfacePtr();
     }  
   }
@@ -258,7 +258,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
       */
 
       default:
-        throw std::runtime_error("SoftwareSurfaceFactory::from_url: " + url.str() + ": unknown file type");
+        throw std::runtime_error("SoftwareSurfaceFactory::from_url(): " + url.str() + ": unknown file type");
         return SoftwareSurfacePtr();
     }      
   }

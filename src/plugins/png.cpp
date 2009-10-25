@@ -117,7 +117,7 @@ PNG::load_from_file(const std::string& filename)
   FILE* in = fopen(filename.c_str(), "rb");
   if (!in)
   {
-    throw std::runtime_error("JPEG::load_from_file: Couldn't open " + filename);
+    throw std::runtime_error("PNG::load_from_file(): Couldn't open " + filename);
   }
   else
   {
@@ -127,7 +127,7 @@ PNG::load_from_file(const std::string& filename)
     if (setjmp(png_ptr->jmpbuf))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-      throw std::runtime_error("PNG::load_from_mem: setjmp: Couldn't load " + filename);
+      throw std::runtime_error("PNG::load_from_mem(): setjmp: Couldn't load " + filename);
     }
 
     png_init_io(png_ptr, in);
@@ -201,7 +201,7 @@ PNG::load_from_mem(uint8_t* data, int len)
   if (setjmp(png_ptr->jmpbuf))
   {
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-    throw std::runtime_error("PNG::load_from_mem: setjmp: Couldn't load from mem");
+    throw std::runtime_error("PNG::load_from_mem(): setjmp: Couldn't load from mem");
   }
 
   png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
@@ -264,7 +264,7 @@ PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
   if (!out)
   {
     perror(filename.c_str());
-    throw std::runtime_error("PNG::save: Couldn't save " + filename);
+    throw std::runtime_error("PNG::save(): Couldn't save " + filename);
   }
   else
   {
@@ -276,7 +276,7 @@ PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
     {
       fclose(out);
       png_destroy_write_struct(&png_ptr, &info_ptr);
-      throw std::runtime_error("PNG::save: setjmp: Couldn't save " + filename);
+      throw std::runtime_error("PNG::save(): setjmp: Couldn't save " + filename);
     }
 
     // set up the output control if you are using standard C streams
@@ -329,7 +329,7 @@ PNG::save(const SoftwareSurfacePtr& surface)
   if (setjmp(png_ptr->jmpbuf))
   {
     png_destroy_write_struct(&png_ptr, &info_ptr);
-    throw std::runtime_error("PNG::save: setjmp: Couldn't save to Blob");
+    throw std::runtime_error("PNG::save(): setjmp: Couldn't save to Blob");
   }
 
   PNGWriteMemory mem;

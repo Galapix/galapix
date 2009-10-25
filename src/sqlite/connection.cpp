@@ -35,7 +35,7 @@ SQLiteConnection::SQLiteConnection(const std::string& filename)
   if (sqlite3_open(filename.c_str(), &db) != SQLITE_OK)
   {
     std::ostringstream str; 
-    str << "SQLiteConnection: can't open database: " << sqlite3_errmsg(db);
+    str << "SQLiteConnection(): can't open database: " << sqlite3_errmsg(db);
     throw SQLiteError(str.str());
   }
 
@@ -60,7 +60,7 @@ SQLiteConnection::exec(const std::string& sqlstmt)
   {
     std::ostringstream out;
 
-    out << "SQLiteConnection: " << errmsg << std::endl;
+    out << "SQLiteConnection::exec(): " << errmsg << std::endl;
 
     sqlite3_free(errmsg);
     errmsg = 0;

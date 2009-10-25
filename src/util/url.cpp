@@ -132,7 +132,7 @@ URL::get_blob() const
     }
     else
     {
-      throw std::runtime_error("URL: Unhandled plugin: " + plugin);
+      throw std::runtime_error("URL::get_blob(): Unhandled plugin: " + plugin);
     }
   }
   else if (protocol == "http" || protocol == "https" || protocol == "ftp")
@@ -141,7 +141,7 @@ URL::get_blob() const
   }
   else
   {
-    throw std::runtime_error("URL: Unhandled protocol: " + protocol);
+    throw std::runtime_error("URL::get_blob(): Unhandled protocol: " + protocol);
     return BlobPtr();
   }
 }

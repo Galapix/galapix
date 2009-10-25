@@ -31,18 +31,22 @@ MD5::md5_string(const std::string& str)
   unsigned char hash[16]; /* enough size for MD5 */
   MHASH td = mhash_init(MHASH_MD5);
   if (td == MHASH_FAILED)
-    throw std::runtime_error("Failed to init MHash");
+  {
+    throw std::runtime_error("MD5::md5_string(): Failed to init MHash");
+  }
+  else
+  {  
+    mhash(td, str.c_str(), str.length());
   
-  mhash(td, str.c_str(), str.length());
-  
-  mhash_deinit(td, hash);
+    mhash_deinit(td, hash);
 
-  // Convert to string representation
-  std::ostringstream out;
-  for (int i = 0; i < 16; i++) 
-    out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
+    // Convert to string representation
+    std::ostringstream out;
+    for (int i = 0; i < 16; i++) 
+      out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
 
-  return out.str();
+    return out.str();
+  }
 }
 
 std::string
@@ -51,29 +55,39 @@ MD5::md5_file(const std::string& filename)
   unsigned char hash[16]; /* enough size for MD5 */
   MHASH td = mhash_init(MHASH_MD5);
   if (td == MHASH_FAILED) 
-    throw std::runtime_error("Failed to init MHash");
-  
-  const unsigned int buf_size = 32768;
-  char buf[buf_size];
-  std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary); 
-  if (!in)
-    throw std::runtime_error("MD5: Couldn't open file " + filename);
-    
-  while(!in.eof())
   {
-    in.read(buf, buf_size);
-    mhash(td, buf, in.gcount());
+    throw std::runtime_error("Failed to init MHash");
   }
-
-  in.close();
+  else
+  {  
+    const unsigned int buf_size = 32768;
+    char buf[buf_size];
+    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary); 
+    if (!in)
+    {
+      throw std::runtime_error("MD5::md5_file(): Couldn't open file " + filename);
+    }
+    else
+    {
     
-  mhash_deinit(td, hash);
+      while(!in.eof())
+      {
+        in.read(buf, buf_size);
+        mhash(td, buf, in.gcount());
+      }
 
-  // Convert to string representation
-  std::ostringstream out;
-  for (int i = 0; i < 16; i++)
-    out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
-  return out.str();  
+      in.close();
+    
+      mhash_deinit(td, hash);
+
+      // Convert to string representation
+      std::ostringstream out;
+      for (int i = 0; i < 16; i++)
+        out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
+
+      return out.str();  
+    }
+  }
 }
 
 /* EOF */

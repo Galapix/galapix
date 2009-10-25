@@ -50,7 +50,7 @@ UFRaw::load_from_file(const std::string& filename)
      
   if (ufraw.exec())
   {
-    throw std::runtime_error("UFRaw::load_from_file: " + std::string(ufraw.get_stderr().begin(), ufraw.get_stderr().end()));
+    throw std::runtime_error("UFRaw::load_from_file(): " + std::string(ufraw.get_stderr().begin(), ufraw.get_stderr().end()));
   }
   else
   {

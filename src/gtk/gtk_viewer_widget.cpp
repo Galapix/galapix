@@ -45,7 +45,7 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
                                        Gdk::GL::MODE_DEPTH);
     if (!glconfig)
     {
-      throw std::runtime_error("*** Cannot find any OpenGL-capable visual.");
+      throw std::runtime_error("GtkViewerWidget(): *** Cannot find any OpenGL-capable visual.");
     }
   }
  

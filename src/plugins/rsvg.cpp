@@ -56,7 +56,7 @@ RSVG::load_from_file(const std::string& filename)
   }
   else
   {
-    throw std::runtime_error("RSVG: " + std::string(rsvg.get_stderr().begin(), rsvg.get_stderr().end()));
+    throw std::runtime_error("RSVG::load_from_file(): " + std::string(rsvg.get_stderr().begin(), rsvg.get_stderr().end()));
   }
 }
 

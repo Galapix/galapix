@@ -91,7 +91,7 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
                    &size.width, &size.height, &num_tiles, &tilesize);
   if (ret != 4)
   {
-    throw std::runtime_error("ZoomifyTileProvider::create: Couldn't parse ImageProperties.xml");
+    throw std::runtime_error("ZoomifyTileProvider::create(): Couldn't parse ImageProperties.xml");
   }
   else
   {

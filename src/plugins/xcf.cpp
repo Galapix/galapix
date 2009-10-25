@@ -64,7 +64,7 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
                &visible, &width, &height, &x_sign, &x, &y_sign, &y,
                color, mode, layer_name) != 10)
     {
-      throw std::runtime_error("XCF::get_layer: Couldn't parse output line:\n" + line);
+      throw std::runtime_error("XCF::get_layer(): Couldn't parse output line:\n" + line);
     }
 
     layer_names.push_back(layer_name);
@@ -89,7 +89,7 @@ XCF::get_layers(const URL& url)
     std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
     if (line_end == stdout_lst.end())
     {
-      throw std::runtime_error("XCF::get_layer: Couldn't parse output");
+      throw std::runtime_error("XCF::get_layers(): Couldn't parse output");
       return std::vector<std::string>();
     }
     else
@@ -99,7 +99,7 @@ XCF::get_layers(const URL& url)
   }
   else
   {
-    throw std::runtime_error("XCF::get_layer: " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
+    throw std::runtime_error("XCF::get_layers(): " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
     return std::vector<std::string>();
   }
 }
@@ -155,7 +155,7 @@ XCF::load_from_url(const URL& url)
 
   if (xcf2pnm.exec() != 0)
   {
-    throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+    throw std::runtime_error("XCF::load_from_url(): " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
   }
   else
   {
@@ -171,7 +171,7 @@ XCF::load_from_file(const std::string& filename)
   xcf2pnm.arg(filename);
   if (xcf2pnm.exec() != 0)
   {
-    throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+    throw std::runtime_error("XCF::load_from_file(): " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
   }
   else
   {
@@ -188,7 +188,7 @@ XCF::load_from_mem(void* data, int len)
   xcf2pnm.set_stdin(Blob::copy(data, len));
   if (xcf2pnm.exec() != 0)
   {
-    throw std::runtime_error("XCF::load_from_file: " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+    throw std::runtime_error("XCF::load_from_mem(): " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
   }
   else
   {

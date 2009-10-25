@@ -87,13 +87,6 @@ Other Things:
 * broken images must be detected and marked, so they aren't
   re-requested over and over again
 
-* cleanup exceptions:
-
-  - they must tell which part of the code caused them, i.e. a prefix
-    like "JPEG::read_header()"
-
-  - they must no include "Error"
-
 * flush file cache from time to time (not sure if that would actually help)
 
 * make thumbnail generation output optional --verbose

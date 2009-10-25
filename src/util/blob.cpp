@@ -85,7 +85,7 @@ Blob::from_file(const std::string& filename)
   std::ifstream in(filename.c_str(), std::ios::binary);
   if (!in)
   {
-    throw std::runtime_error("Blob::from_file: Couldn't read " + filename);
+    throw std::runtime_error("Blob::from_file(): Couldn't read " + filename);
   }
   else
   {

@@ -36,7 +36,7 @@ void assert_gl(const char* message)
   GLenum error = glGetError();
   if(error != GL_NO_ERROR) {
     std::ostringstream msg;
-    msg << "OpenGLError while '" << message << "': "
+    msg << "assert_gl(): OpenGLError while '" << message << "': "
         << gluErrorString(error);
     throw std::runtime_error(msg.str());
   }
@@ -51,13 +51,13 @@ Framebuffer::init()
   if (GLEW_OK != err)
   {
     std::ostringstream str;
-    str << "Error: " << glewGetErrorString(err) << std::endl;
+    str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
     throw std::runtime_error(str.str());
   }
   
   if (!GLEW_ARB_texture_rectangle)
   {
-    throw std::runtime_error("OpenGL ARB_texture_rectangle extension not found, but required");
+    throw std::runtime_error("Framebuffer::init(): OpenGL ARB_texture_rectangle extension not found, but required");
   }
 }
 

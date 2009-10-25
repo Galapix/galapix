@@ -29,7 +29,7 @@ FileJPEGCompressor::FileJPEGCompressor(const std::string& filename) :
   if (!m_out)
   {
     std::ostringstream out;
-    out << "FileJPEGCompressor: Error: " << filename << strerror(errno);
+    out << "FileJPEGCompressor(): Error: " << filename << strerror(errno);
     throw std::runtime_error(out.str());
   }
   else

@@ -44,7 +44,7 @@ Tar::get_filenames(const std::string& tar_filename)
   }
   else
   {
-    throw std::runtime_error("Tar: " + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
+    throw std::runtime_error("Tar::get_filenames(): " + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
     return std::vector<std::string>();
   }
 }
@@ -61,7 +61,7 @@ Tar::get_file(const std::string& tar_filename, const std::string& filename)
   }
   else
   {
-    throw std::runtime_error("Tar: " + tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
+    throw std::runtime_error("Tar::get_file(): " + tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
   }
 
 }

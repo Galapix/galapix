@@ -57,7 +57,7 @@ Exec::exec()
   int stderr_fd[2];
 
   if (pipe(stdout_fd) < 0 || pipe(stderr_fd) < 0 || pipe(stdin_fd) < 0)
-    throw std::runtime_error("Exec: pipe failed");
+    throw std::runtime_error("Exec:exec(): pipe failed");
 
   pid_t pid = fork();
   if (pid < 0)
@@ -70,7 +70,7 @@ Exec::exec()
     close(stdin_fd[0]);
     close(stdin_fd[1]);
 
-    throw std::runtime_error("Exec: fork failed");
+    throw std::runtime_error("Exec::exec(): fork failed");
   }
   else if (pid == 0) 
   { // child
@@ -107,7 +107,7 @@ Exec::exec()
       free(c_arguments[i]);
 
     // execvp() only returns on failure 
-    throw std::runtime_error("Exec: " + program + ": " + strerror(error_code));
+    throw std::runtime_error("Exec::exec(): " + program + ": " + strerror(error_code));
   }
   else // if (pid > 0)
   { // parent
@@ -132,13 +132,13 @@ Exec::exec()
       stdout_vec.insert(stdout_vec.end(), buffer, buffer+len);
 
     if (len == -1)
-      throw std::runtime_error("error reading stdout from xcfinfo");
+      throw std::runtime_error("Exec::exec(): error reading stdout from xcfinfo");
 
     while((len = read(stderr_fd[0], buffer, sizeof(buffer))) > 0)
       stderr_vec.insert(stderr_vec.end(), buffer, buffer+len);
 
     if (len == -1)
-      throw std::runtime_error("error reading stderr from xcfinfo");
+      throw std::runtime_error("Exec::exec(): error reading stderr from xcfinfo");
 
     int child_status = 0;
     waitpid(pid, &child_status, 0);

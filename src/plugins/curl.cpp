@@ -56,7 +56,7 @@ CURLHandler::get_data(const std::string& url)
   if (response_code/100 != 2 && response_code/100 != 3)
   {
     std::ostringstream str;
-    str << "Error: CURLHandler::get_data(): HTTP Error: " << response_code;
+    str << "CURLHandler::get_data(): HTTP Error: " << response_code;
     throw std::runtime_error(str.str());
   }
 
@@ -66,7 +66,7 @@ CURLHandler::get_data(const std::string& url)
   }
   else
   {
-    throw std::runtime_error("Error: CURLHandler::get_data(): " + std::string(errbuf));
+    throw std::runtime_error("CURLHandler::get_data(): " + std::string(errbuf));
     return BlobPtr();
   }
 }

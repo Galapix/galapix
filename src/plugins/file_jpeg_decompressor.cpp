@@ -30,7 +30,7 @@ FileJPEGDecompressor::FileJPEGDecompressor(const std::string& filename) :
   if (!m_in)
   {
     std::ostringstream out;
-    out << filename << ": " << strerror(errno);
+    out << "FileJPEGDecompressor(): " << filename << ": " << strerror(errno);
     throw std::runtime_error(out.str());
   }
   else

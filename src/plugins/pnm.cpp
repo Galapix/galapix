@@ -53,7 +53,7 @@ PNM::load_from_mem(const char* data, int len)
   }
   else
   {
-    throw std::runtime_error("Unhandled PNM format: '" + pnm.get_magic() + "'");
+    throw std::runtime_error("PNM::load_from_mem(): Unhandled PNM format: '" + pnm.get_magic() + "'");
   }
 
   return surface;

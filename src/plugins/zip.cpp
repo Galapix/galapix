@@ -165,7 +165,7 @@ Zip::get_filenames(const std::string& zip_filename)
   else
   {
     std::ostringstream out;
-    out << "Zip: " << unzip.str()
+    out << "Zip::get_filenames(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
     throw std::runtime_error(out.str());
@@ -188,7 +188,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename)
     // "unzip -p" does not report any error messages at all, so we
     // have to do them manually
     std::ostringstream out;
-    out << "Zip: " << unzip.str()
+    out << "Zip::get_file(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
     throw std::runtime_error(out.str());
