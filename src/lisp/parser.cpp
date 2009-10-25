@@ -112,7 +112,7 @@ Parser::parse()
       case Lexer::TOKEN_OPEN_PAREN:
         token = lexer->getNextToken();
       
-        // Ptr (_ "blup") strings that need to be translated
+        // Handle (_ "blup") strings that need to be translated
         if(token == Lexer::TOKEN_SYMBOL
             && strcmp(lexer->getString(), "_") == 0) {
           token = lexer->getNextToken();
