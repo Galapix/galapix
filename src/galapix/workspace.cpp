@@ -217,6 +217,17 @@ Workspace::sort()
 }
 
 void
+Workspace::sort_reverse()
+{
+  std::sort(m_images.rbegin(), m_images.rend(), ImageSorter());
+  if (m_layouter)
+  {
+    m_layouter->layout(m_images, true);
+    start_animation();
+  } 
+}
+
+void
 Workspace::random_shuffle()
 {
   std::random_shuffle(m_images.begin(), m_images.end());

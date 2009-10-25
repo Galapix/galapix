@@ -159,6 +159,7 @@ public:
   void cleanup_cache();
 
   void sort_image_list();
+  void sort_reverse_image_list();
   void shuffle_image_list();
   
   void isolate_selection();

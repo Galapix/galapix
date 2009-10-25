@@ -627,6 +627,13 @@ Viewer::cleanup_cache()
 }
 
 void
+Viewer::sort_reverse_image_list()
+{
+  std::cout << "Workspace: Reverse Sorting" << std::endl;
+  m_workspace->sort_reverse();
+}
+
+void
 Viewer::sort_image_list()
 {
   std::cout << "Workspace: Sorting" << std::endl;

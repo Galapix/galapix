@@ -237,7 +237,14 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_s:
-          m_viewer.sort_image_list();
+          if (keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT])
+          {
+            m_viewer.sort_reverse_image_list();
+          }
+          else
+          {
+            m_viewer.sort_image_list();
+          }
           break;
 
         case SDLK_n:
