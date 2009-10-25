@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_UTIL_WEAK_HPP
-#define HEADER_GALAPIX_UTIL_WEAK_HPP
+#ifndef HEADER_GALAPIX_UTIL_WEAK_FUNCTOR_HPP
+#define HEADER_GALAPIX_UTIL_WEAK_FUNCTOR_HPP
 
 #include <boost/weak_ptr.hpp>
 
