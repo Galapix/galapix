@@ -280,7 +280,7 @@ Image::cache_cleanup()
 }
 
 void
-Image::draw(const Rectf& cliprect, float zoom)
+Image::process_queues()
 {
   // Check if there was an update of the FileEntry
   while(!m_file_entry_queue.empty())
@@ -315,6 +315,12 @@ Image::draw(const Rectf& cliprect, float zoom)
 
     m_tile_queue.pop();
   }
+}
+
+void
+Image::draw(const Rectf& cliprect, float zoom)
+{
+  process_queues();
 
   if (!m_provider)
   {

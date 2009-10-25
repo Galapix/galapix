@@ -145,6 +145,9 @@ public:
   /** Syncronized function to acquire data from other threads */
   void receive_file_entry(const FileEntry& file_entry);
   void receive_tile(const FileEntry& file_entry, const Tile& tile);
+
+private:
+  void process_queues();
 };
 
 #endif
