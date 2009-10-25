@@ -563,7 +563,7 @@ Galapix::run(const Options& opts)
     {
       if (urls.empty() && opts.patterns.empty())
       {
-        std::cout << "Galapix::run: Error: No URLs given" << std::endl;
+        std::cout << "Galapix::run(): Error: No URLs given" << std::endl;
       }
       else
       {

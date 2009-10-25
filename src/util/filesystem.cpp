@@ -252,7 +252,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 {
   if (!exist(pathname))
   {
-    std::cout << "Filesystem::generate_jpeg_file_list: Error: " << pathname << " does not exist" << std::endl;
+    std::cout << "Filesystem::generate_jpeg_file_list(): " << pathname << " does not exist" << std::endl;
   }
   else
   {
