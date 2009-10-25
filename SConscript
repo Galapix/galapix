@@ -66,6 +66,34 @@ class Project:
             self.optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
             self.optional_libs    += ['spnav']
 
+        if not conf.CheckLibWithHeader("boost_thread-mt", "boost/thread.hpp", "c++", autoadd=0):
+            print "Error: boost_thread-mt is missing"
+            Exit(1)
+            
+        if not conf.CheckLibWithHeader("boost_signals-mt", "boost/signals.hpp", "c++", autoadd=0):
+            print "Error: boost_signals-mt is missing"
+            Exit(1)
+
+        if not conf.CheckLibWithHeader("exif", "libexif/exif-data.h", "c++", autoadd=0):
+            print "Error: libexif is missing"
+            Exit(1)
+
+        if not conf.CheckLibWithHeader("sqlite3", "sqlite3.h", "c++", autoadd=0):
+            print "Error: sqlite3 is missing"
+            Exit(1)
+
+        if not conf.CheckLib("jpeg", autoadd=0):
+            print "Error: libjpeg is missing"
+            Exit(1)
+
+        if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", autoadd=0):
+            print "Error: libGL is missing"
+            Exit(1)
+
+        if not conf.CheckLibWithHeader("GLEW", "GL/glew.h", "c++", autoadd=0):
+            print "Error: libGLEW is missing"
+            Exit(1)
+
         self.env = conf.Finish()
 
     def build(self):
