@@ -471,7 +471,7 @@ void
 Viewer::layout_tight()
 {
   m_workspace->layout_tight(static_cast<float>(Framebuffer::get_width()),
-                          static_cast<float>(Framebuffer::get_height()));
+                            static_cast<float>(Framebuffer::get_height()));
 }
 
 void

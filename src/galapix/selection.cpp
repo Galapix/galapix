@@ -19,45 +19,34 @@
 #include "math/rect.hpp"
 #include "galapix/selection.hpp"
 
-class SelectionImpl
-{
-public:
-  ImageCollection images;
-  
-  SelectionImpl() :
-    images()
-  {}
-};
-
 Selection::Selection()
-  : impl(new SelectionImpl())
 {
 }
 
 void
 Selection::add_image(const ImagePtr& image)
 {
-  impl->images.add(image);
+  m_images.add(image);
 }
 
 void
 Selection::add_images(const ImageCollection& images)
 {
   for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
-    impl->images.add(*i);
+    m_images.add(*i);
 }
 
 void
 Selection::remove_image(const ImagePtr& image)
 {
-  impl->images.add(image);
+  m_images.add(image);
 }
 
 void
 Selection::scale(float factor)
 {
   Vector2f center = get_center();
-  for(ImageCollection::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     (*i)->set_scale((*i)->get_scale() * factor);
 
@@ -68,7 +57,7 @@ Selection::scale(float factor)
 bool
 Selection::has(const ImagePtr& image) const
 {
-  for(ImageCollection::iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+  for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
     if (image == *i)
     {
@@ -81,75 +70,75 @@ Selection::has(const ImagePtr& image) const
 void
 Selection::clear()
 {
-  impl->images.clear();
+  m_images.clear();
 }
 
 ImageCollection
 Selection::get_images() const 
 {
-  return impl->images; 
+  return m_images; 
 }
 
 bool
 Selection::empty() const
 {
-  return impl->images.empty();
+  return m_images.empty();
 }
 
 Vector2f
 Selection::get_center() const
 {
-  if (impl->images.empty())
+  if (m_images.empty())
   {
     return Vector2f();
   }
   else
   {
     Vector2f pos;
-    for(ImageCollection::const_iterator i = impl->images.begin(); i != impl->images.end(); ++i)
+    for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
       pos += (*i)->get_pos();
     }
-    return pos / static_cast<float>(impl->images.size());
+    return pos / static_cast<float>(m_images.size());
   }
 }
 
 Selection::iterator
 Selection::begin()
 {
-  return impl->images.begin();
+  return m_images.begin();
 }
 
 Selection::iterator
 Selection::end()
 {
-  return impl->images.end();
+  return m_images.end();
 }
 
 Selection::const_iterator
 Selection::begin() const
 {
-  return impl->images.begin();
+  return m_images.begin();
 }
 
 Selection::const_iterator
 Selection::end() const
 {
-  return impl->images.end();
+  return m_images.end();
 }
 
 Rectf
 Selection::get_bounding_rect() const
 {
-  if (impl->images.empty())
+  if (m_images.empty())
   {
     return Rectf();
   }
   else
   {
-    Rectf rect = impl->images.front()->get_image_rect();
+    Rectf rect = m_images.front()->get_image_rect();
 
-    for(ImageCollection::const_iterator i = impl->images.begin()+1; i != impl->images.end(); ++i)
+    for(ImageCollection::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
       const Rectf& image_rect = (*i)->get_image_rect(); 
           

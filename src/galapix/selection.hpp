@@ -30,6 +30,10 @@ public:
   typedef ImageCollection::iterator iterator;
   typedef ImageCollection::const_iterator const_iterator;
 
+private:
+  ImageCollection m_images;
+
+public:
   Selection();
 
   void   add_image(const ImagePtr& image);
