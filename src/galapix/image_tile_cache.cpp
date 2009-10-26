@@ -26,15 +26,6 @@
 #include "galapix/viewer.hpp"
 #include "galapix/database_thread.hpp"
 
-unsigned int make_cache_id(int x, int y, int scale)
-{
-  assert(0 <= x && x < 4096);
-  assert(0 <= y && y < 4096);
-  assert(0 <= scale && scale < 256);
-
-  return x | (y << 12) | (scale << 24);
-}
-
 ImageTileCachePtr
 ImageTileCache::create(TileProviderPtr tile_provider)
 {
@@ -69,7 +60,7 @@ ImageTileCache::get_tile(int x, int y, int scale)
   }
   else
   {
-    const unsigned int cache_id = make_cache_id(x, y, scale);
+    TileCacheId cache_id(Vector2i(x, y), scale);
     Cache::iterator i = m_cache.find(cache_id);
 
     if (i != m_cache.end())
@@ -86,7 +77,7 @@ ImageTileCache::get_tile(int x, int y, int scale)
 ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
-  const unsigned int cache_id = make_cache_id(x, y, scale);
+  TileCacheId cache_id = TileCacheId(Vector2i(x, y), scale);
   Cache::iterator i = m_cache.find(cache_id);
 
   if (i == m_cache.end())
@@ -156,7 +147,7 @@ ImageTileCache::cleanup()
   // FIXME: Code can hang here for some reason
   for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
   {
-    const int tiledb_scale = (i->first >> 16);
+    const int tiledb_scale = i->first.get_scale();
 
     if (tiledb_scale < m_min_keep_scale ||
         i->second.status == SurfaceStruct::SURFACE_REQUESTED)
@@ -179,8 +170,8 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
   {
     downscale_out = Math::pow2(downscale_factor);
 
-    uint32_t cache_id = make_cache_id(x / downscale_out, y / downscale_out,
-                                      tiledb_scale+downscale_factor);
+    TileCacheId cache_id(Vector2i(x / downscale_out, y / downscale_out),
+                         tiledb_scale+downscale_factor);
 
     Cache::iterator i = m_cache.find(cache_id);
     if (i != m_cache.end() && i->second.surface)
@@ -203,7 +194,7 @@ ImageTileCache::process_queue()
     Tile tile = m_tile_queue.front();
     m_tile_queue.pop();
     
-    int tile_id = make_cache_id(tile.get_pos().x, tile.get_pos().y, tile.get_scale());
+    TileCacheId tile_id(tile.get_pos(), tile.get_scale());
   
     SurfaceStruct s;
   

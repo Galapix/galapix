@@ -57,10 +57,10 @@ public:
         float y = 0;
 
         int iteration = 0;
-        int max_iteration = 1000;
+        int max_iteration = 256;
     
         while(x*x + y*y <= (2*2) && 
-              iteration < max_iteration) 
+              iteration < max_iteration)
         {
           float xtemp = x * x - y * y + x0;
           y = 2 * x * y + y0;

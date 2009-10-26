@@ -24,6 +24,7 @@
 
 #include "display/surface.hpp"
 #include "galapix/tile.hpp"
+#include "galapix/tile_cache_id.hpp"
 #include "galapix/tile_provider.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue.hpp"
@@ -54,7 +55,7 @@ public:
   };
 
 private:
-  typedef std::map<unsigned int, SurfaceStruct> Cache; 
+  typedef std::map<TileCacheId, SurfaceStruct> Cache; 
   typedef std::vector<JobHandle> Jobs;
 
 public:
