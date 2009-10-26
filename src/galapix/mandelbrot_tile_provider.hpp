@@ -16,34 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_JOB_JOB_HPP
-#define HEADER_GALAPIX_JOB_JOB_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_PROVIDER_HPP
+#define HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_PROVIDER_HPP
 
+#include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
+
+#include "galapix/tile_provider.hpp"
+#include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
-
-class Job
+
+class JobManager;
+
+class MandelbrotTileProvider : public TileProvider
 {
 private:
-  JobHandle m_handle;
+  Size m_size;
+  int  m_max_scale;
+  JobManager& m_job_manager;
 
 public:
-  Job() : m_handle() {}
-  Job(JobHandle handle) : m_handle(handle) {}
-  virtual ~Job() {}
+  MandelbrotTileProvider(JobManager& job_manager);
+  ~MandelbrotTileProvider();
+  
+  JobHandle request_tile(int tilescale, const Vector2i& pos, 
+                                 const boost::function<void (Tile)>& callback);
 
-  JobHandle get_handle() const { return m_handle; }
-
-  virtual void run() =0;
-
-  virtual bool is_aborted() { return m_handle.is_aborted(); }
+  int  get_max_scale() const;
+  int  get_tilesize() const;
+  int  get_overlap() const;
+  Size get_size() const;
 
 private:
-  Job (const Job&);
-  Job& operator= (const Job&);
+  MandelbrotTileProvider(const MandelbrotTileProvider&);
+  MandelbrotTileProvider& operator=(const MandelbrotTileProvider&);
 };
 
-typedef boost::shared_ptr<Job> JobPtr;
-
 #endif
 
 /* EOF */

@@ -245,7 +245,7 @@ Image::process_queues()
       m_scale = m_target_scale;
 
       m_provider = DatabaseTileProvider::create(file_entry);
-      m_cache = ImageTileCache::create(m_provider);
+      m_cache    = ImageTileCache::create(m_provider);
       m_renderer.reset(new ImageRenderer(*this, m_cache));
       m_image_rect = calc_image_rect();
     }

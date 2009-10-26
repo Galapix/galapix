@@ -296,6 +296,10 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         {
           file_list.push_back(url);
         }
+        else if (has_extension(*i, "mandelbrot"))
+        {
+          file_list.push_back(url);
+        }
         else
         {
           if (SoftwareSurfaceFactory::get_fileformat(url) != SoftwareSurfaceFactory::UNKNOWN_FILEFORMAT)

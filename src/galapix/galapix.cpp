@@ -37,6 +37,7 @@
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
+#include "galapix/mandelbrot_tile_provider.hpp"
 #include "galapix/database_tile_provider.hpp"
 #include "job/job_handle_group.hpp"
 #include "job/job_manager.hpp"
@@ -400,6 +401,10 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     {
       // FIXME: Right place for this?
       workspace.load(i->get_stdio_name());
+    }
+    else if (Filesystem::has_extension(i->str(), "mandelbrot"))
+    {
+      workspace.add_image(Image::create(*i, TileProviderPtr(new MandelbrotTileProvider(job_manager))));
     }
     else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
     {
