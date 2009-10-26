@@ -28,9 +28,9 @@
 
 unsigned int make_cache_id(int x, int y, int scale)
 {
-  assert(x >= 0 && x < 4096);
-  assert(y >= 0 && y < 4096);
-  assert(scale >= 0 && y < 256);
+  assert(0 <= x && x < 4096);
+  assert(0 <= y && y < 4096);
+  assert(0 <= scale && scale < 256);
 
   return x | (y << 12) | (scale << 24);
 }

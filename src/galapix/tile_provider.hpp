@@ -25,6 +25,10 @@
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 
+class TileProvider;
+
+typedef boost::shared_ptr<TileProvider> TileProviderPtr;
+
 class TileProvider
 {
 private:
@@ -40,15 +44,12 @@ public:
   virtual int  get_overlap() const =0;
   virtual Size get_size() const =0;
 
-  /** Force a reload of the image data from the original source */
-  virtual void refresh() =0;
+  virtual void refresh(const boost::function<void (TileProviderPtr)>& callback) {}
 
 private:
   TileProvider(const TileProvider&);
   TileProvider& operator=(const TileProvider&);
 };
-
-typedef boost::shared_ptr<TileProvider> TileProviderPtr;
 
 #endif
 

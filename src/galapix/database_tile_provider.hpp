@@ -63,9 +63,25 @@ public:
     return m_file_entry.get_image_size();
   }
 
-  void refresh()
+  struct FileEntry2TileProvider
+  {
+    boost::function<void (TileProviderPtr)> m_callback;
+
+    FileEntry2TileProvider(const boost::function<void (TileProviderPtr)>& callback) :
+      m_callback(callback)
+    {}
+
+    void operator()(const FileEntry& file_entry)
+    {
+      m_callback(DatabaseTileProvider::create(file_entry));
+    }
+  };
+
+  void refresh(const boost::function<void (TileProviderPtr)>& callback)
   {
     DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
+    DatabaseThread::current()->request_file(m_file_entry.get_url(), 
+                                            FileEntry2TileProvider(callback));
   }
 
 private:

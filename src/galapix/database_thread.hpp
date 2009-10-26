@@ -95,7 +95,7 @@ public:
   /** Request the FileEntry for \a filename */
   JobHandle request_file(const URL& url, 
                          const boost::function<void (FileEntry)>& file_callback,
-                         const boost::function<void (FileEntry, Tile)>& tile_callback);
+                         const boost::function<void (FileEntry, Tile)>& tile_callback = boost::function<void (FileEntry, Tile)>());
 
   /** Request FileEntrys by glob pattern from the database */
   void      request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern);

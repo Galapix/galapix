@@ -72,6 +72,7 @@ private:
 
   ThreadMessageQueue<FileEntry> m_file_entry_queue;
   ThreadMessageQueue<Tile> m_tile_queue;
+  ThreadMessageQueue<TileProviderPtr> m_tile_provider_queue;
   typedef std::vector<JobHandle> Jobs;
   Jobs m_jobs;
 
@@ -143,6 +144,7 @@ public:
   /** Syncronized function to acquire data from other threads */
   void receive_file_entry(const FileEntry& file_entry);
   void receive_tile(const FileEntry& file_entry, const Tile& tile);
+  void receive_tile_provider(TileProviderPtr provider);
 
 private:
   void process_queues();

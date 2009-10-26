@@ -70,7 +70,6 @@ public:
   int  get_tilesize()  const { return m_tilesize; }
   int  get_overlap()   const { return 0; }
   Size get_size()      const { return m_size; }
-  void refresh() {}
   
 private:
   ZoomifyTileProvider(const ZoomifyTileProvider&);

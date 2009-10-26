@@ -260,6 +260,20 @@ Image::process_queues()
 
     m_tile_queue.pop();
   }
+
+  while(!m_tile_provider_queue.empty())
+  {
+    m_provider = m_tile_provider_queue.front();
+    m_tile_provider_queue.pop();
+
+    if (m_provider)
+    {
+      m_cache = ImageTileCache::create(m_provider);
+      m_renderer.reset(new ImageRenderer(*this, m_cache));
+
+      m_image_rect = calc_image_rect();
+    }
+  }
 }
 
 void
@@ -304,14 +318,9 @@ Image::refresh(bool force)
       m_cache.reset();
       m_renderer.reset();
 
-      m_provider->refresh();
+      m_provider->refresh(weak(boost::bind(&Image::receive_tile_provider, _1, _2), m_self));
 
-      // FIXME: This should be moved into the provider as it only works with DatabaseTileProvider
       m_file_entry_requested = true;
-      m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
-                                                               weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
-                                                               weak(boost::bind(&Image::receive_tile, _1, _2, _3), m_self)));
-
       m_provider.reset();
     }
   }
@@ -391,6 +400,12 @@ void
 Image::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
   m_tile_queue.push(tile);
+}
+
+void
+Image::receive_tile_provider(TileProviderPtr provider)
+{
+  m_tile_provider_queue.push(provider);
 }
 
 /* EOF */
