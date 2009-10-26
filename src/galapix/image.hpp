@@ -76,15 +76,12 @@ private:
   Jobs m_jobs;
 
 private:
-  Image(const URL& url, const FileEntry& file_entry);
-  Image(TileProviderPtr provider);
+  Image(const URL& url, TileProviderPtr provider);
 
   void set_weak_ptr(ImagePtr self);
 
 public:
-  static ImagePtr create(const URL& url);
-  static ImagePtr create(TileProviderPtr provider);
-  static ImagePtr create(const FileEntry& file_entry, const Tile& tile = Tile());
+  static ImagePtr create(const URL& url, TileProviderPtr provider = TileProviderPtr());
 
   // _____________________________________________________
   // Drawing stuff
@@ -142,6 +139,7 @@ public:
   void on_enter_screen();
   void on_leave_screen();
 
+public:
   /** Syncronized function to acquire data from other threads */
   void receive_file_entry(const FileEntry& file_entry);
   void receive_tile(const FileEntry& file_entry, const Tile& tile);

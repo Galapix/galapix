@@ -29,32 +29,10 @@
 #include "util/weak_functor.hpp"
 
 ImagePtr
-Image::create(const URL& url)
+Image::create(const URL& url, TileProviderPtr provider)
 {
-  ImagePtr image(new Image(url, FileEntry()));
+  ImagePtr image(new Image(url, provider));
   image->set_weak_ptr(image);
-  return image;
-}
-
-ImagePtr
-Image::create(TileProviderPtr provider)
-{
-  ImagePtr image(new Image(provider));
-  image->set_weak_ptr(image);
-  return image;
-}
-
-ImagePtr
-Image::create(const FileEntry& file_entry, const Tile& tile)
-{
-  ImagePtr image(new Image(file_entry.get_url(), file_entry));
-  image->set_weak_ptr(image);
-
-  if (tile)
-  {
-    image->receive_tile(file_entry, tile);
-  }
-
   return image;
 }
 
@@ -64,9 +42,9 @@ Image::set_weak_ptr(ImagePtr self)
   m_self = self;
 }
 
-Image::Image(TileProviderPtr provider) :
+Image::Image(const URL& url, TileProviderPtr provider) :
   m_self(),
-  m_url(),
+  m_url(url),
   m_provider(provider),
   m_visible(false),
   m_image_rect(),
@@ -84,43 +62,10 @@ Image::Image(TileProviderPtr provider) :
   m_tile_queue(),
   m_jobs()
 {
-  m_cache = ImageTileCache::create(m_provider);
-  m_renderer.reset(new ImageRenderer(*this, m_cache));
-  m_image_rect = calc_image_rect();
-}
-
-Image::Image(const URL& url, const FileEntry& file_entry) :
-  m_self(),
-  m_url(url),
-  m_provider(),
-  m_visible(false),
-  m_image_rect(),
-  m_pos(),
-  m_last_pos(),
-  m_target_pos(),
-  m_scale(1.0f),
-  m_last_scale(1.0f),
-  m_target_scale(1.0f),
-  m_angle(0.0f),
-  m_file_entry_requested(false),
-  m_cache(),
-  m_renderer(),
-  m_file_entry_queue(),
-  m_tile_queue(),
-  m_jobs()
-{
-  if (file_entry)
+  if (m_provider)
   {
-    if (file_entry.get_image_size() == Size(0, 0))
-    { // reject images with invalid size
-      std::cout << "Image::Image(): invalid image size: " << file_entry << std::endl;
-    }
-    else
-    {
-      m_provider = DatabaseTileProvider::create(file_entry);
-      m_cache    = ImageTileCache::create(m_provider);
-      m_renderer.reset(new ImageRenderer(*this, m_cache));
-    }
+    m_cache = ImageTileCache::create(m_provider);
+    m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 
   m_image_rect = calc_image_rect();

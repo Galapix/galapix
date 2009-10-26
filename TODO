@@ -75,14 +75,20 @@ User Interface:
 
 * trackball mode in window mode doesn't zoom to center, but some abitary point
 
-* add custom sorter (sort by date, name, reverse, shuffle, ...)
-
 
 Other Things:
 -------------
 
-* Image::refresh() no longer works, as there is no FileEntry,
+* add more custom sorter (sort by date, ...)
+
+* need to handle mtime properly
+
+* (!) Image::refresh() no longer works, as there is no FileEntry,
   TileProvider::refresh() is still somewhat incomplete
+
+  - sorting needs to be changed, as a TileProvider doesn't necesarrily
+    have a URL (pass URL and TileProvider to Image? Have a
+    TileProvider::get_url()?)
 
 * broken images must be detected and marked, so they aren't
   re-requested over and over again
@@ -91,13 +97,9 @@ Other Things:
 
 * make thumbnail generation output optional --verbose
 
-* fix NAN issues
-
 
 General Problems:
 =================
-
-* need to handle mtime properly
 
 * currently only out-of-screen cancels jobs, but zooming need to cancel jobs too
 

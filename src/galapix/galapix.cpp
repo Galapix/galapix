@@ -37,6 +37,7 @@
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
+#include "galapix/database_tile_provider.hpp"
 #include "job/job_handle_group.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/test_job.hpp"
@@ -365,16 +366,13 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
 
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
+      ImagePtr image = Image::create(i->get_url(), DatabaseTileProvider::create(*i));
+      workspace.add_image(image);
+      
       TileEntry tile_entry;
-      if (!database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+      if (database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
       {
-        workspace.add_image(Image::create(*i));
-      }
-      else
-      {
-        workspace.add_image(Image::create(*i, Tile(tile_entry.get_scale(), 
-                                                   tile_entry.get_pos(),
-                                                   tile_entry.get_surface())));
+        image->receive_tile(*i, Tile(tile_entry));
       }
        
       // print progress
@@ -405,7 +403,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     }
     else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
     {
-      workspace.add_image(Image::create(ZoomifyTileProvider::create(*i, job_manager)));
+      workspace.add_image(Image::create(*i, ZoomifyTileProvider::create(*i, job_manager)));
     }
     else
     {
@@ -417,11 +415,14 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
       else
       {
+        ImagePtr image = Image::create(file_entry.get_url(), DatabaseTileProvider::create(file_entry));
+        workspace.add_image(image);
+
         TileEntry tile_entry;
-        database.tiles.get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0,0), tile_entry);
-        workspace.add_image(Image::create(file_entry, Tile(tile_entry.get_scale(),
-                                                           tile_entry.get_pos(),
-                                                           tile_entry.get_surface()))); 
+        if (database.tiles.get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+        {
+          image->receive_tile(file_entry, Tile(tile_entry));
+        }
       }
     }
   }

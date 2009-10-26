@@ -46,7 +46,7 @@ private:
 public:
   SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
             Viewer& viewer);
-  virtual ~SDLViewer();
+  ~SDLViewer();
 
   void run();
 

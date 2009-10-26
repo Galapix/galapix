@@ -159,21 +159,20 @@ Key       | Function
 ----------+------------------------------
 F11       | toggle fullscreen
 t         | toggle trackball mode (mouse is grabbed and cursor hidden)
-1 	  | layout images 4:3
-2 	  | layout images 16:9
-3 	  | random layout
+1 	  | regular image layout
+2 	  | tight image layout
+3 	  | random image layout
 4         | relayout images in a non-overlapping form
 5         | layout images in a tight fashion
-7         | scale selection down
-8         | scale selection up
 g 	  | toggle grid
 h         | reset zoom and scroll
 m         | switch to move/resize tools
 p         | switch pan/zoom tools
 b         | toggle background color
 i         | only display selected images, remove the rest
-n         | random shuffle images (not visible until layout it done via 1 or 2)
-s         | sort images alphabetically  (not visible until layout it done via 1 or 2)
+n         | random shuffle images
+s         | sort images alphabetically
+shift+s   | sort images alphabetically in reverse order
 page up   | increase gamma
 page down | increase gamma
 space     | print the currently visible images to stdout 
