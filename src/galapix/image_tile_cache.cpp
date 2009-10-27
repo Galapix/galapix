@@ -119,17 +119,21 @@ void
 ImageTileCache::cleanup()
 {
   // Cancel all jobs and remove tiles smaller m_min_keep_scale
-  for(Cache::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
+  for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
   {
     if (i->second.status == SurfaceStruct::SURFACE_REQUESTED)
     {
       i->second.job_handle.set_aborted();
-      m_cache.erase(i);
+      m_cache.erase(i++);
     }
     else if (i->second.status == SurfaceStruct::SURFACE_SUCCEEDED &&
              i->first.get_scale() < m_min_keep_scale)
     {
-      m_cache.erase(i);
+      m_cache.erase(i++);
+    }
+    else
+    {
+      ++i;
     }
   }
 }
@@ -204,13 +208,17 @@ ImageTileCache::cancel_jobs(const Rect& rect, int scale)
 {
   if (!m_cache.empty())
   {
-    for(Cache::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
+    for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
     {
       if (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
           (scale != i->first.get_scale() || !rect.contains(i->first.get_pos())))
       {
-        i->second.job_handle.set_aborted();              
-        m_cache.erase(i);
+        i->second.job_handle.set_aborted();
+        m_cache.erase(i++);
+      }
+      else
+      {
+        ++i;
       }
     }
   }
