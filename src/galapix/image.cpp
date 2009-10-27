@@ -62,13 +62,7 @@ Image::Image(const URL& url, TileProviderPtr provider) :
   m_tile_queue(),
   m_jobs()
 {
-  if (m_provider)
-  {
-    m_cache = ImageTileCache::create(m_provider);
-    m_renderer.reset(new ImageRenderer(*this, m_cache));
-  }
-
-  m_image_rect = calc_image_rect();
+  set_provider(m_provider);
 }
 
 Vector2f
@@ -199,13 +193,18 @@ Image::clear_cache()
   {
     m_cache->clear();
   }
+  abort_all_jobs();
+  m_file_entry_requested = false;
+}
 
+void
+Image::abort_all_jobs()
+{
   for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
   {
     i->set_aborted();
   }
-  m_jobs.clear();
-  m_file_entry_requested = false;
+  m_jobs.clear();  
 }
 
 void
@@ -215,12 +214,7 @@ Image::cache_cleanup()
   {
     m_cache->cleanup();
   }
-
-  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
-  {
-    i->set_aborted();
-  }
-  m_jobs.clear();
+  abort_all_jobs();
   m_file_entry_requested = false;
 }
 
@@ -240,14 +234,7 @@ Image::process_queues()
     else
     {
       m_file_entry_requested = false;
-      m_target_scale *= 256.0f / static_cast<float>(std::max(file_entry.get_width(), 
-                                                             file_entry.get_height()));
-      m_scale = m_target_scale;
-
-      m_provider = DatabaseTileProvider::create(file_entry);
-      m_cache    = ImageTileCache::create(m_provider);
-      m_renderer.reset(new ImageRenderer(*this, m_cache));
-      m_image_rect = calc_image_rect();
+      set_provider(DatabaseTileProvider::create(file_entry));
     }
   }
 
@@ -263,16 +250,8 @@ Image::process_queues()
 
   while(!m_tile_provider_queue.empty())
   {
-    m_provider = m_tile_provider_queue.front();
+    set_provider(m_tile_provider_queue.front());
     m_tile_provider_queue.pop();
-
-    if (m_provider)
-    {
-      m_cache = ImageTileCache::create(m_provider);
-      m_renderer.reset(new ImageRenderer(*this, m_cache));
-
-      m_image_rect = calc_image_rect();
-    }
   }
 }
 
@@ -302,26 +281,54 @@ Image::draw(const Rectf& cliprect, float zoom)
 }
 
 void
+Image::set_provider(TileProviderPtr provider)
+{
+  float old_size = static_cast<float>(std::max(get_original_width(),
+                                               get_original_height()));
+
+  // cleanup the old provider if present
+  if (m_provider)        
+  {
+    abort_all_jobs();
+
+    m_cache.reset();
+    m_renderer.reset();
+    m_provider.reset();
+  }
+
+  // set the new provider and related data
+  if (provider)
+  {
+    m_provider = provider;
+    m_cache    = ImageTileCache::create(m_provider);
+    m_renderer.reset(new ImageRenderer(*this, m_cache));
+  }
+
+  // Fixup the scale to fit into the old constrains more or less (only
+  // works with regular layouts)
+  float new_size = static_cast<float>(std::max(get_original_width(),
+                                               get_original_height()));
+  m_scale *= old_size / new_size;
+  m_target_scale = m_scale;
+
+  m_image_rect = calc_image_rect();
+}
+
+void
+Image::clear_provider()
+{
+  set_provider(TileProviderPtr());
+}
+
+void
 Image::refresh(bool force)
 {
   if (force)
   {
-    if (m_provider)        
+    if (m_provider)
     {
-      clear_cache();
-
-      m_target_scale *= static_cast<float>(std::max(m_provider->get_size().width, 
-                                                    m_provider->get_size().height)) / 256.0f;
-      m_scale = m_target_scale;
-      m_image_rect = calc_image_rect();
-
-      m_cache.reset();
-      m_renderer.reset();
-
       m_provider->refresh(weak(boost::bind(&Image::receive_tile_provider, _1, _2), m_self));
-
-      m_file_entry_requested = true;
-      m_provider.reset();
+      clear_provider();
     }
   }
 }
@@ -337,6 +344,8 @@ Image::print_info() const
 bool
 Image::overlaps(const Vector2f& pos) const
 {
+  std::cout << "Image::overlaps(): " << pos << " " << m_image_rect << " " << m_image_rect.contains(pos) << std::endl;
+
   return m_image_rect.contains(pos);
 }
 
@@ -385,6 +394,12 @@ Image::on_leave_screen()
   m_visible = false;
   //std::cout << "Image::on_leave_screen(): " << this << std::endl;
   cache_cleanup();
+}
+
+void
+Image::on_zoom_level_change()
+{
+  abort_all_jobs();
 }
 
 void

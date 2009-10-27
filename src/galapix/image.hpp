@@ -107,6 +107,9 @@ public:
   void  set_angle(float a);
   float get_angle() const;
 
+  void set_provider(TileProviderPtr provider);
+  void clear_provider();
+
   // Used for sorting and debugging
   URL get_url() const;
 
@@ -139,6 +142,10 @@ public:
 
   void on_enter_screen();
   void on_leave_screen();
+
+  void on_zoom_level_change();
+
+  void abort_all_jobs();
 
 public:
   /** Syncronized function to acquire data from other threads */

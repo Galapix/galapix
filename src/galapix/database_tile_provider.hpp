@@ -79,9 +79,13 @@ public:
 
   void refresh(const boost::function<void (TileProviderPtr)>& callback)
   {
-    DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
-    DatabaseThread::current()->request_file(m_file_entry.get_url(), 
-                                            FileEntry2TileProvider(callback));
+    // FIXME: delete_file_entry() needs to handle database cache properly
+    if (m_file_entry.get_fileid())
+    {
+      DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
+      DatabaseThread::current()->request_file(m_file_entry.get_url(), 
+                                              FileEntry2TileProvider(callback));
+    }
   }
 
 private:
