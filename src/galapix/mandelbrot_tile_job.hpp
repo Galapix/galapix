@@ -19,7 +19,12 @@
 #ifndef HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_JOB_HPP
 #define HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_JOB_HPP
 
-#include "math/rgb.hpp"
+#include <boost/function.hpp>
+
+#include "job/job.hpp"
+#include "math/size.hpp"
+#include "math/vector2i.hpp"
+#include "galapix/tile.hpp"
 
 class MandelbrotTileJob : public Job
 {
@@ -31,61 +36,9 @@ private:
 
 public:
   MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
-                    const boost::function<void (Tile)>& callback) :
-    Job(job_handle),
-    m_size(size),
-    m_scale(scale),
-    m_pos(pos),
-    m_callback(callback)
-  {}
+                    const boost::function<void (Tile)>& callback);
 
-  void run()
-  {
-    SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(256, 256));
-
-    Size imagesize(m_size.width  / Math::pow2(m_scale),
-                   m_size.height / Math::pow2(m_scale));
-
-    for(int py = 0; py < surface->get_height(); ++py)
-    {
-      for(int px = 0; px < surface->get_width(); ++px)
-      {
-        float x0 = static_cast<float>(256 * m_pos.x + px) / static_cast<float>(imagesize.width)  * 4.0f - 2.5f;
-        float y0 = static_cast<float>(256 * m_pos.y + py) / static_cast<float>(imagesize.height) * 3.0f - 1.5f;
-
-        float x = 0;
-        float y = 0;
-
-        int iteration = 0;
-        int max_iteration = 256;
-    
-        while(x*x + y*y <= (2*2) && 
-              iteration < max_iteration)
-        {
-          float xtemp = x * x - y * y + x0;
-          y = 2 * x * y + y0;
-
-          x = xtemp;
-
-          iteration = iteration + 1;
-        }
- 
-        if (iteration == max_iteration)
-        {
-          surface->put_pixel(px, py, RGB(255,255,255));
-        }
-        else 
-        {
-          surface->put_pixel(px, py, RGB(255 * iteration / max_iteration,
-                                         255 * iteration / max_iteration,
-                                         255 * iteration / max_iteration));
-        }
-      }
-    }
-  
-    m_callback(Tile(m_scale, m_pos, surface));
-    get_handle().set_finished();
-  }
+  void run();
 };
 
 #endif
