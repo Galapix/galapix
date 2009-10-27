@@ -74,14 +74,14 @@ MoveTool::down(const Vector2i& pos)
 
   if (image)
   {
-    if (viewer->get_workspace()->get_selection().has(image))
+    if (viewer->get_workspace()->get_selection()->has(image))
     {
       // Ok, so move the whole selection 
     }
     else
     {
       viewer->get_workspace()->clear_selection();
-      viewer->get_workspace()->get_selection().add_image(image);
+      viewer->get_workspace()->get_selection()->add_image(image);
     }
     move_active = true;
   }

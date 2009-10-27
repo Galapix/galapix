@@ -57,7 +57,7 @@ private:
 private:
   ImageCollection m_images;
 
-  Selection     m_selection;
+  SelectionPtr m_selection;
 
   /** Progress of the animation when relayouting, must be set to 0 to
       start animation */
@@ -98,7 +98,7 @@ public:
   void add_image(const ImagePtr& image);
 
   // Selection Commands
-  Selection get_selection() const { return m_selection; }
+  SelectionPtr get_selection() const { return m_selection; }
   bool selection_clicked(const Vector2f& pos) const;
   void select_images(const ImageCollection& images);
   void clear_selection();

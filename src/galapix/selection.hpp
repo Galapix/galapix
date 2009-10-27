@@ -19,11 +19,15 @@
 #ifndef HEADER_GALAPIX_GALAPIX_SELECTION_HPP
 #define HEADER_GALAPIX_GALAPIX_SELECTION_HPP
 
+#include <boost/shared_ptr.hpp>
+
 #include "galapix/image.hpp"
 #include "galapix/image_collection.hpp"
-
-class SelectionImpl;
-
+
+class Selection;
+
+typedef boost::shared_ptr<Selection> SelectionPtr;
+
 class Selection
 {
 public:
@@ -33,8 +37,11 @@ public:
 private:
   ImageCollection m_images;
 
-public:
+private:
   Selection();
+
+public:
+  static SelectionPtr create() { return SelectionPtr(new Selection); }
 
   void   add_image(const ImagePtr& image);
   void   add_images(const ImageCollection& images);
@@ -55,11 +62,8 @@ public:
   const_iterator end()   const;
 
   Rectf get_bounding_rect() const;
-  
-private:
-  boost::shared_ptr<SelectionImpl> impl;
 };
-
+
 #endif
 
 /* EOF */

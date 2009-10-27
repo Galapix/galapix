@@ -531,10 +531,10 @@ Viewer::zoom_home()
 void
 Viewer::zoom_to_selection()
 {
-  if (!m_workspace->get_selection().empty())
+  if (!m_workspace->get_selection()->empty())
   {
     m_state.zoom_to(Framebuffer::get_size(),
-                  m_workspace->get_selection().get_bounding_rect());
+                  m_workspace->get_selection()->get_bounding_rect());
   }
   else
   {
@@ -604,9 +604,9 @@ Viewer::refresh_selection()
 {
   // FIXME: Make force on Shift-F5 and normal F5 only refresh if the file changed
   std::cout << "Viewer::refresh_selection()" << std::endl;
-  Selection selection = m_workspace->get_selection();
+  SelectionPtr selection = m_workspace->get_selection();
   bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
-  for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+  for(Selection::iterator i = selection->begin(); i != selection->end(); ++i)
   {
     (*i)->refresh(force);
   }

@@ -49,7 +49,7 @@ struct ImageRequestFinder
 
 Workspace::Workspace() :
   m_images(),
-  m_selection(),
+  m_selection(Selection::create()),
   m_progress(0.0f),
   m_file_queue(),
   m_layouter()
@@ -76,7 +76,9 @@ Workspace::get_image(const Vector2f& pos) const
   for(ImageCollection::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
   {
     if ((*i)->overlaps(pos))
+    {
       return *i;
+    }
   }
   return ImagePtr();
 }
@@ -175,7 +177,7 @@ Workspace::draw(const Rectf& cliprect, float zoom)
     }
   }
 
-  for(Selection::iterator i = m_selection.begin(); i != m_selection.end(); ++i)
+  for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
   {
     (*i)->draw_mark();
   }
@@ -291,14 +293,14 @@ Workspace::print_images(const Rectf& rect)
 void
 Workspace::select_images(const ImageCollection& lst)
 {
-  m_selection.clear();
-  m_selection.add_images(lst);
+  m_selection->clear();
+  m_selection->add_images(lst);
 }
 
 bool
 Workspace::selection_clicked(const Vector2f& pos) const
 {
-  for(Selection::const_iterator i = m_selection.begin(); i != m_selection.end(); ++i)
+  for(Selection::const_iterator i = m_selection->begin(); i != m_selection->end(); ++i)
   {
     if ((*i)->overlaps(pos))
       return true;
@@ -309,20 +311,20 @@ Workspace::selection_clicked(const Vector2f& pos) const
 void
 Workspace::clear_selection()
 {
-  m_selection.clear();
+  m_selection->clear();
 }
 
 void
 Workspace::clear()
 {
-  m_selection.clear();
+  m_selection->clear();
   m_images.clear();
 }
 
 void
 Workspace::move_selection(const Vector2f& rel)
 {
-  for(Selection::iterator i = m_selection.begin(); i != m_selection.end(); ++i)
+  for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
   {
     (*i)->set_pos((*i)->get_pos() + rel);
   }
@@ -331,21 +333,21 @@ Workspace::move_selection(const Vector2f& rel)
 void
 Workspace::isolate_selection()
 {
-  m_images = m_selection.get_images();
-  m_selection.clear();
+  m_images = m_selection->get_images();
+  m_selection->clear();
 }
 
 struct ImagesMemberOf
 {
-  Selection selection;
+  SelectionPtr selection;
 
-  ImagesMemberOf(const Selection& selection_)
+  ImagesMemberOf(const SelectionPtr& selection_)
     : selection(selection_)
   {}
 
   bool operator()(const ImagePtr& image)
   {
-    for(Selection::iterator i = selection.begin(); i != selection.end(); ++i)
+    for(Selection::iterator i = selection->begin(); i != selection->end(); ++i)
     {
       if (*i == image)
         return true;
@@ -359,7 +361,7 @@ Workspace::delete_selection()
 {
   m_images.erase(std::remove_if(m_images.begin(), m_images.end(), ImagesMemberOf(m_selection)),
                  m_images.end());
-  m_selection.clear();
+  m_selection->clear();
 }
 
 void
