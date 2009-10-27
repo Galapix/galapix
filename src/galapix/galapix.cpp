@@ -511,19 +511,23 @@ Galapix::main(int argc, char** argv)
   // if (!sqlite3_threadsafe())
   //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
-  if (curl_global_init(CURL_GLOBAL_ALL) != 0)
-  {
-    std::cout << "Galapix::main(): curl_global_init() failed" << std::endl;
-    return EXIT_FAILURE;
-  }
-
   try 
   {
     Options opts;
     opts.threads  = 2;
     opts.database = Filesystem::get_home() + "/.galapix/cache2.sqlite";
     parse_args(argc, argv, opts);
+
+    if (curl_global_init(CURL_GLOBAL_ALL) != 0)
+    {
+      std::cout << "Galapix::main(): curl_global_init() failed" << std::endl;
+      return EXIT_FAILURE;
+    }
+
     run(opts);
+
+    curl_global_cleanup();
+
     return EXIT_SUCCESS;
   }
   catch(const std::exception& err) 
@@ -531,8 +535,6 @@ Galapix::main(int argc, char** argv)
     std::cout << "Exception: " << err.what() << std::endl;
     return EXIT_FAILURE;
   }
-
-  curl_global_cleanup();
 }
   
 void
