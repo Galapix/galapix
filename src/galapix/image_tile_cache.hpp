@@ -41,8 +41,7 @@ public:
     enum Status 
     {
       SURFACE_SUCCEEDED,
-      SURFACE_REQUESTED,
-      SURFACE_FAILED 
+      SURFACE_REQUESTED
     };
 
     JobHandle  job_handle;

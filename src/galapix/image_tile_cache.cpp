@@ -170,27 +170,23 @@ ImageTileCache::process_queue()
   {
     Tile tile = m_tile_queue.front();
     m_tile_queue.pop();
-    
+    assert(tile.get_surface());
+
     TileCacheId tile_id(tile.get_pos(), tile.get_scale());
   
     Cache::iterator i = m_cache.find(tile_id);
 
     if (i == m_cache.end())
     {
-      std::cout << "ImageTileCache::process_queue(): received unrequested tile" << std::endl;
+      // std::cout << "ImageTileCache::process_queue(): received unrequested tile" << std::endl;
+      m_cache[tile_id] = SurfaceStruct(JobHandle::create(),
+                                       SurfaceStruct::SURFACE_SUCCEEDED,
+                                       Surface::create(tile.get_surface()));
     }
     else
     {
-      if (tile.get_surface())
-      {
-        i->second.surface = Surface::create(tile.get_surface());
-        i->second.status  = SurfaceStruct::SURFACE_SUCCEEDED;
-      }
-      else
-      {
-        i->second.surface = SurfacePtr();
-        i->second.status  = SurfaceStruct::SURFACE_FAILED;
-      }
+      i->second.surface = Surface::create(tile.get_surface());
+      i->second.status  = SurfaceStruct::SURFACE_SUCCEEDED;
     }
   }
 }

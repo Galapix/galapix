@@ -101,12 +101,6 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
                                          get_vertex(x+1, y+1, zoom)),
                                    RGB(155, 0, 155));
             break;
-
-          case ImageTileCache::SurfaceStruct::SURFACE_FAILED:
-            Framebuffer::fill_rect(Rectf(get_vertex(x,   y,   zoom),
-                                         get_vertex(x+1, y+1, zoom)),
-                                   RGB(155, 0, 0));
-            break;
         
           default:
             assert(!"should never happen either");
