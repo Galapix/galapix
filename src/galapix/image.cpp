@@ -344,8 +344,6 @@ Image::print_info() const
 bool
 Image::overlaps(const Vector2f& pos) const
 {
-  std::cout << "Image::overlaps(): " << pos << " " << m_image_rect << " " << m_image_rect.contains(pos) << std::endl;
-
   return m_image_rect.contains(pos);
 }
 
