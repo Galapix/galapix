@@ -34,9 +34,6 @@ MandelbrotTileJob::MandelbrotTileJob(JobHandle job_handle, const Size& size, int
 void
 MandelbrotTileJob::run()
 {
-  std::cout << "MandelbrotTileJob::run(): " << get_handle()
-            << " " << m_scale << " " << m_pos 
-            << std::endl;
   SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(256, 256));
 
   Size imagesize(m_size.width  / Math::pow2(m_scale),
@@ -44,6 +41,9 @@ MandelbrotTileJob::run()
 
   for(int py = 0; py < surface->get_height(); ++py)
   {
+    if (get_handle().is_aborted())
+      return;
+
     for(int px = 0; px < surface->get_width(); ++px)
     {
       float x0 = static_cast<float>(256 * m_pos.x + px) / static_cast<float>(imagesize.width)  * 4.0f - 2.5f;

@@ -24,9 +24,12 @@
 #include "job/job_manager.hpp"
 #include "galapix/mandelbrot_tile_job.hpp"
 
+const int c_max_scale = 18;
+
 MandelbrotTileProvider::MandelbrotTileProvider(JobManager& job_manager) :
-  m_size(4 * 256 * Math::pow2(15), 3 * 256 * Math::pow2(15)),
-  m_max_scale(15),
+  m_size(4 * 256 * Math::pow2(c_max_scale), 
+         3 * 256 * Math::pow2(c_max_scale)),
+  m_max_scale(c_max_scale),
   m_job_manager(job_manager)
 {
 }

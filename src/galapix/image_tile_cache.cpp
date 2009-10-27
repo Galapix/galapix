@@ -43,7 +43,6 @@ ImageTileCache::set_weak_ptr(ImageTileCachePtr self)
 ImageTileCache::ImageTileCache(TileProviderPtr tile_provider) :
   m_self(),
   m_cache(),
-  m_jobs(),
   m_tile_queue(),
   m_tile_provider(tile_provider),
   m_max_scale(m_tile_provider->get_max_scale()),
@@ -78,14 +77,13 @@ ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
   TileCacheId cache_id(Vector2i(x, y), scale);
+
   Cache::iterator i = m_cache.find(cache_id);
 
   if (i == m_cache.end())
   {
     JobHandle job_handle = m_tile_provider->request_tile(scale, Vector2i(x, y), 
                                                          weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self));
-
-    m_jobs.push_back(TileRequest(job_handle, scale, Vector2i(x, y)));
 
     // FIXME: Something to try: Request the next smaller tile too,
     // so we get a lower quality image fast and a higher quality one
@@ -95,14 +93,11 @@ ImageTileCache::request_tile(int x, int y, int scale)
     // res tiles at once, instead of one by one, since that eats up
     // the possible speed up
 
-    SurfaceStruct s;
-      
-    s.surface = SurfacePtr();
-    s.status  = SurfaceStruct::SURFACE_REQUESTED;
-
-    m_cache[cache_id] = s;
-
-    return s;
+    SurfaceStruct surface_struct(job_handle,
+                                 SurfaceStruct::SURFACE_REQUESTED,
+                                 SurfacePtr());
+    m_cache[cache_id] = surface_struct;
+    return surface_struct;
   }
   else
   {
@@ -113,51 +108,28 @@ ImageTileCache::request_tile(int x, int y, int scale)
 void
 ImageTileCache::clear()
 {
-  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
+  for(Cache::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    i->m_job_handle.set_aborted();
+    i->second.job_handle.set_aborted();
   }
-  m_jobs.clear();
-
   m_cache.clear();
 }
 
 void
 ImageTileCache::cleanup()
 {
-  // FIXME: Cache cleanup should happen based on if the Tile is
-  // visible, not if the image is visible
-
-  // Image is not visible, so cancel all jobs
-  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
+  // Cancel all jobs and remove tiles smaller m_min_keep_scale
+  for(Cache::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    i->m_job_handle.set_aborted();
-  }
-  m_jobs.clear();
-        
-  // FIXME: We also need to purge the cache more often, since with
-  // big gigapixel images we would end up never clearing it
-      
-  // Erase all tiles larger then 32x32
-
-  // FIXME: Could make this more clever and relative to the number
-  // of the images we display, since with large collections 32x32
-  // might be to much for memory while with small collections it
-  // will lead to unnecessary loading artifacts.      
-
-  // FIXME: Code can hang here for some reason
-  for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
-  {
-    const int tiledb_scale = i->first.get_scale();
-
-    if (tiledb_scale < m_min_keep_scale ||
-        i->second.status == SurfaceStruct::SURFACE_REQUESTED)
+    if (i->second.status == SurfaceStruct::SURFACE_REQUESTED)
     {
-      m_cache.erase(i++);
+      i->second.job_handle.set_aborted();
+      m_cache.erase(i);
     }
-    else
+    else if (i->second.status == SurfaceStruct::SURFACE_SUCCEEDED &&
+             i->first.get_scale() < m_min_keep_scale)
     {
-      ++i;
+      m_cache.erase(i);
     }
   }
 }
@@ -197,56 +169,49 @@ ImageTileCache::process_queue()
     
     TileCacheId tile_id(tile.get_pos(), tile.get_scale());
   
-    SurfaceStruct s;
-  
-    if (tile.get_surface())
+    Cache::iterator i = m_cache.find(tile_id);
+
+    if (i == m_cache.end())
     {
-      s.surface = Surface::create(tile.get_surface());
-      s.status  = SurfaceStruct::SURFACE_OK;
+      std::cout << "ImageTileCache::process_queue(): received unrequested tile" << std::endl;
     }
     else
     {
-      s.surface = SurfacePtr();
-      s.status  = SurfaceStruct::SURFACE_FAILED;
+      if (tile.get_surface())
+      {
+        i->second.surface = Surface::create(tile.get_surface());
+        i->second.status  = SurfaceStruct::SURFACE_SUCCEEDED;
+      }
+      else
+      {
+        i->second.surface = SurfacePtr();
+        i->second.status  = SurfaceStruct::SURFACE_FAILED;
+      }
     }
-
-    m_cache[tile_id] = s;
   }
 }
 
 struct TileReqestIsAborted
 {
-  bool operator()(const ImageTileCache::TileRequest& request)
+  bool operator()(const ImageTileCache::SurfaceStruct& request)
   {
-    return request.m_job_handle.is_aborted();
+    return request.job_handle.is_aborted();
   }
 };
 
 void
 ImageTileCache::cancel_jobs(const Rect& rect, int scale)
 {
-  if (!m_jobs.empty())
+  if (!m_cache.empty())
   {
-    int before = m_jobs.size();
-    
-    for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
+    for(Cache::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
     {
-      if (scale != i->m_scale ||
-          !rect.contains(i->m_pos))
+      if (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+          (scale != i->first.get_scale() || !rect.contains(i->first.get_pos())))
       {
-        i->m_job_handle.set_aborted();
-        m_cache.erase(TileCacheId(i->m_pos, scale));
-        std::cout << "ImageTileCache::cancel_jobs(): aborted " << i->m_job_handle << std::endl;
+        i->second.job_handle.set_aborted();              
+        m_cache.erase(i);
       }
-    }
-
-    m_jobs.erase(std::remove_if(m_jobs.begin(), m_jobs.end(), TileReqestIsAborted()),
-                 m_jobs.end());
-    
-    if (before != m_jobs.size())
-    {
-      std::cout << "ImageTileCache::cancel_jobs(): " << before << " -> " << m_jobs.size()
-                << " " << rect << " " << scale << std::endl;
     }
   }
 }

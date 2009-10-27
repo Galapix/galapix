@@ -97,6 +97,9 @@ Other Things:
 
 * make thumbnail generation output optional --verbose
 
+* Mandelbrot should increase iterations on high zoom, maybe switch to
+  double instead of float
+
 
 General Problems:
 =================

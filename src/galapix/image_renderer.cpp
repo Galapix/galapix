@@ -92,7 +92,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
       {         
         switch (sstruct.status)
         {
-          case ImageTileCache::SurfaceStruct::SURFACE_OK:
+          case ImageTileCache::SurfaceStruct::SURFACE_SUCCEEDED:
             //assert(!"should never happen");
             break;
 

@@ -40,46 +40,36 @@ public:
   {
     enum Status 
     {
-      SURFACE_OK,
+      SURFACE_SUCCEEDED,
       SURFACE_REQUESTED,
       SURFACE_FAILED 
     };
-    
+
+    JobHandle  job_handle;
     Status     status;
     SurfacePtr surface;
-
+  
     SurfaceStruct() :
+      job_handle(JobHandle::create()),
       status(),
       surface()
     {}
-  };
-
-public:
-  class TileRequest
-  {
-  public:
-    JobHandle m_job_handle;
-    int       m_scale;
-    Vector2i  m_pos;
-
-  public:   
-    TileRequest(JobHandle job_handle, int scale, const Vector2i& pos) :
-      m_job_handle(job_handle),
-      m_scale(scale),
-      m_pos(pos)
+  
+    SurfaceStruct(JobHandle  job_handle_,
+                  Status     status_,
+                  SurfacePtr surface_) :
+      job_handle(job_handle_),
+      status(status_),
+      surface(surface_)
     {}
   };
 
 private:
   typedef std::map<TileCacheId, SurfaceStruct> Cache; 
-  typedef std::vector<TileRequest> Jobs;
 
 public:
   boost::weak_ptr<ImageTileCache> m_self;
   Cache m_cache;
-
-  /** FIXME: Jobs array does not get cleared after jobs are done */
-  Jobs m_jobs;
 
   ThreadMessageQueue<Tile> m_tile_queue;
   
