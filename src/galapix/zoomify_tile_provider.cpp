@@ -118,7 +118,7 @@ ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
   out << m_basedir << "TileGroup" << tile_group << "/" 
       << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
 
-  JobHandle job_handle;
+  JobHandle job_handle = JobHandle::create();
   m_job_manager.request(boost::shared_ptr<Job>(new ZoomifyTileJob(job_handle, URL::from_string(out.str()), scale, pos, callback)));
   return job_handle;
 }

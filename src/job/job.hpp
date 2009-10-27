@@ -27,7 +27,6 @@ private:
   JobHandle m_handle;
 
 public:
-  Job() : m_handle() {}
   Job(JobHandle handle) : m_handle(handle) {}
   virtual ~Job() {}
 

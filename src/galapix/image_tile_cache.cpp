@@ -77,13 +77,15 @@ ImageTileCache::get_tile(int x, int y, int scale)
 ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
-  TileCacheId cache_id = TileCacheId(Vector2i(x, y), scale);
+  TileCacheId cache_id(Vector2i(x, y), scale);
   Cache::iterator i = m_cache.find(cache_id);
 
   if (i == m_cache.end())
   {
-    m_jobs.push_back(m_tile_provider->request_tile(scale, Vector2i(x, y), 
-                                                   weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
+    JobHandle job_handle = m_tile_provider->request_tile(scale, Vector2i(x, y), 
+                                                         weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self));
+
+    m_jobs.push_back(TileRequest(job_handle, scale, Vector2i(x, y)));
 
     // FIXME: Something to try: Request the next smaller tile too,
     // so we get a lower quality image fast and a higher quality one
@@ -92,8 +94,7 @@ ImageTileCache::request_tile(int x, int y, int scale)
     // DatabaseThread, we should request the whole group of lower
     // res tiles at once, instead of one by one, since that eats up
     // the possible speed up
-    m_jobs.push_back(m_tile_provider->request_tile(scale, Vector2i(x, y), 
-                                                   weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self)));
+
     SurfaceStruct s;
       
     s.surface = SurfacePtr();
@@ -114,7 +115,7 @@ ImageTileCache::clear()
 {
   for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
   {
-    i->set_aborted();
+    i->m_job_handle.set_aborted();
   }
   m_jobs.clear();
 
@@ -130,7 +131,7 @@ ImageTileCache::cleanup()
   // Image is not visible, so cancel all jobs
   for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
   {
-    i->set_aborted();
+    i->m_job_handle.set_aborted();
   }
   m_jobs.clear();
         
@@ -210,6 +211,43 @@ ImageTileCache::process_queue()
     }
 
     m_cache[tile_id] = s;
+  }
+}
+
+struct TileReqestIsAborted
+{
+  bool operator()(const ImageTileCache::TileRequest& request)
+  {
+    return request.m_job_handle.is_aborted();
+  }
+};
+
+void
+ImageTileCache::cancel_jobs(const Rect& rect, int scale)
+{
+  if (!m_jobs.empty())
+  {
+    int before = m_jobs.size();
+    
+    for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
+    {
+      if (scale != i->m_scale ||
+          !rect.contains(i->m_pos))
+      {
+        i->m_job_handle.set_aborted();
+        m_cache.erase(TileCacheId(i->m_pos, scale));
+        std::cout << "ImageTileCache::cancel_jobs(): aborted " << i->m_job_handle << std::endl;
+      }
+    }
+
+    m_jobs.erase(std::remove_if(m_jobs.begin(), m_jobs.end(), TileReqestIsAborted()),
+                 m_jobs.end());
+    
+    if (before != m_jobs.size())
+    {
+      std::cout << "ImageTileCache::cancel_jobs(): " << before << " -> " << m_jobs.size()
+                << " " << rect << " " << scale << std::endl;
+    }
   }
 }
 

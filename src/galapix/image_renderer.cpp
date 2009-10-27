@@ -157,6 +157,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
 
     if (scaled_width  < 256 && scaled_height < 256)
     { // So small that only one tile is to be drawn
+      m_cache->cancel_jobs(Rect(0,0,1,1), tiledb_scale);
       draw_tile(0, 0, tiledb_scale, 
                 static_cast<float>(scale_factor) * m_image.get_scale());
     }
@@ -177,8 +178,9 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
       int start_y = static_cast<int>(image_region.top / static_cast<float>(itilesize));
       int end_y   = Math::ceil_div(static_cast<int>(image_region.bottom), itilesize);
 
-      draw_tiles(Rect(start_x, start_y, end_x, end_y), 
-                 tiledb_scale, 
+      Rect rect(start_x, start_y, end_x, end_y);
+      m_cache->cancel_jobs(rect, tiledb_scale);
+      draw_tiles(rect, tiledb_scale, 
                  static_cast<float>(scale_factor) * m_image.get_scale());
     }
 

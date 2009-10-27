@@ -20,7 +20,8 @@
 
 #include "jobs/test_job.hpp"
 
-TestJob::TestJob()
+TestJob::TestJob() :
+  Job(JobHandle::create())
 {
 }
 

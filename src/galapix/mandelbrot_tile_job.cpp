@@ -18,6 +18,8 @@
 
 #include "galapix/mandelbrot_tile_job.hpp"
 
+#include <iostream>
+
 #include "math/rgb.hpp"
 
 MandelbrotTileJob::MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
@@ -32,6 +34,9 @@ MandelbrotTileJob::MandelbrotTileJob(JobHandle job_handle, const Size& size, int
 void
 MandelbrotTileJob::run()
 {
+  std::cout << "MandelbrotTileJob::run(): " << get_handle()
+            << " " << m_scale << " " << m_pos 
+            << std::endl;
   SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(256, 256));
 
   Size imagesize(m_size.width  / Math::pow2(m_scale),

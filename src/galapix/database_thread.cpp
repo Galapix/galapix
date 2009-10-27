@@ -51,7 +51,7 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
                              const boost::function<void (Tile)>& callback)
 {
   assert(file_entry);
-  JobHandle job_handle;
+  JobHandle job_handle = JobHandle::create();
   m_queue.push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
   return job_handle;
 }
@@ -60,7 +60,7 @@ JobHandle
 DatabaseThread::request_tiles(const FileEntry& file_entry, int min_scale, int max_scale,
                               const boost::function<void (Tile)>& callback)
 {
-  JobHandle job_handle;
+  JobHandle job_handle = JobHandle::create();
   m_queue.push(new RequestTilesDatabaseMessage(job_handle, file_entry, min_scale, max_scale, callback));
   return job_handle;
 }
@@ -76,7 +76,7 @@ DatabaseThread::request_file(const URL& url,
                              const boost::function<void (FileEntry)>& file_callback,
                              const boost::function<void (FileEntry, Tile)>& tile_callback)
 {
-  JobHandle job_handle;
+  JobHandle job_handle = JobHandle::create();
   m_queue.push(new RequestFileDatabaseMessage(job_handle, url, file_callback, tile_callback));
   return job_handle;
 }

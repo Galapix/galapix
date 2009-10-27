@@ -151,6 +151,13 @@ public:
   {
     return (r.left < right && r.right > left && r.top < bottom && r.bottom > top);
   }
+
+  bool contains(const Vector2i& pos) const
+  {
+    return
+      left <= pos.x && pos.x < right &&
+      top  <= pos.y && pos.y < bottom;
+  }
 	
   //: Returns another Rect containing a rotated version of this one.
   //param hotspot: Vector2i to rotate around.

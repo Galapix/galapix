@@ -30,8 +30,11 @@ class JobHandleImpl;
     that the Job is finished. (FIXME: Do we need that last thing for something?) */
 class JobHandle
 {
-public:
+private:
   JobHandle();
+
+public:
+  static JobHandle create();
   ~JobHandle();
 
   /** 
@@ -51,6 +54,8 @@ public:
   bool is_aborted() const;
   
   void wait();
+
+  friend std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
 
 private:
   boost::shared_ptr<JobHandleImpl> impl;

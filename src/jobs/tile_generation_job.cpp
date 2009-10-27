@@ -46,6 +46,7 @@ TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const URL& url
 }
 
 TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db) :
+  Job(JobHandle::create()),
   m_state_mutex(),
   m_state(kWaiting),
   m_url(file_entry.get_url()),

@@ -39,8 +39,8 @@ JobHandle
 MandelbrotTileProvider::request_tile(int scale, const Vector2i& pos, 
                                      const boost::function<void (Tile)>& callback)
 {
-  std::cout << "MandelbrotTileProvider::request_tile(): " << scale << " " << pos << std::endl;
-  JobHandle job_handle;
+  //std::cout << "MandelbrotTileProvider::request_tile(): " << scale << " " << pos << std::endl;
+  JobHandle job_handle = JobHandle::create();
   m_job_manager.request(JobPtr(new MandelbrotTileJob(job_handle, m_size, scale, pos, callback)));
   return job_handle;
 }

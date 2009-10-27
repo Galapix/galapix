@@ -45,7 +45,7 @@ public:
       SURFACE_FAILED 
     };
     
-    Status  status;
+    Status     status;
     SurfacePtr surface;
 
     SurfaceStruct() :
@@ -54,9 +54,25 @@ public:
     {}
   };
 
+public:
+  class TileRequest
+  {
+  public:
+    JobHandle m_job_handle;
+    int       m_scale;
+    Vector2i  m_pos;
+
+  public:   
+    TileRequest(JobHandle job_handle, int scale, const Vector2i& pos) :
+      m_job_handle(job_handle),
+      m_scale(scale),
+      m_pos(pos)
+    {}
+  };
+
 private:
   typedef std::map<TileCacheId, SurfaceStruct> Cache; 
-  typedef std::vector<JobHandle> Jobs;
+  typedef std::vector<TileRequest> Jobs;
 
 public:
   boost::weak_ptr<ImageTileCache> m_self;
@@ -94,6 +110,12 @@ public:
 
   /** Cleanup the bigger tiles of the cache */
   void cleanup();
+
+  /**
+   *  \a rect and \a scale are the currently visible area, everything
+   *  not in there will be canceled 
+   */
+  void cancel_jobs(const Rect& rect, int scale);
 
   void receive_tile(const Tile& tile);
 
