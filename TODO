@@ -57,6 +57,8 @@ Galapix 0.1.3 Release ToDo:
 User Interface:
 ---------------
 
+* refresh fails at high zoom levels (displays wrong tiles)
+
 * rewrite overlap solving to be fast or disable it, as it currently
   just halts the whole app
 
@@ -68,12 +70,8 @@ User Interface:
 
 * make middle button exit trackball mode
 
-* (!) mouse buttons can get stuck when you press them both at once
-
 * ZoomTool doesn't know about trackball_mode and thus zooms not into
   the center of the picture, but to the mouse cursor
-
-* trackball mode in window mode doesn't zoom to center, but some abitary point
 
 
 Other Things:
@@ -81,24 +79,19 @@ Other Things:
 
 * add more custom sorter (sort by date, ...)
 
-* need to handle mtime properly
+* need to handle mtime properly (checking is expensive for thousands
+  of images)
 
-* (!) Image::refresh() no longer works, as there is no FileEntry,
-  TileProvider::refresh() is still somewhat incomplete
-
-  - sorting needs to be changed, as a TileProvider doesn't necesarrily
-    have a URL (pass URL and TileProvider to Image? Have a
-    TileProvider::get_url()?)
+* sorting needs to be changed, as a TileProvider doesn't necesarrily
+  have a URL (pass URL and TileProvider to Image? Have a
+  TileProvider::get_url()?)
 
 * broken images must be detected and marked, so they aren't
   re-requested over and over again
 
-* flush file cache from time to time (not sure if that would actually help)
-
 * make thumbnail generation output optional --verbose
 
-* Mandelbrot should increase iterations on high zoom, maybe switch to
-  double instead of float
+* need to find proper location to filter out Size(0,0) FileEntries
 
 
 General Problems:
@@ -208,7 +201,8 @@ galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::reques
 * implement some proper stuff to report the current status (what jobs
   are running, what an image is doing, etc)
 
-* add a is_queued() is_running() to the Job handle
+* add a is_queued() is_running() to the JobHandle maybe that could be
+  useful for something
 
 * use highres tiles when they are in cache when zooming out (currently
   only using one level of highres data)

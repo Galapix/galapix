@@ -151,6 +151,12 @@ different databases for different files. If you give an empty string
 -d "", no database file will be created, the database will resist in
 memory only.
 
+As a special gimmick you can run:
+
+  build/galapix.gtk view buildin://mandelbrot
+
+To get a classic Mandelbrot set.
+
 
 Keyboard Commands for Galapix SDL:
 ==================================
