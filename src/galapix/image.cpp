@@ -63,6 +63,7 @@ Image::Image(const URL& url, TileProviderPtr provider) :
   m_renderer(),
   m_file_entry_queue(),
   m_tile_queue(),
+  m_tile_provider_queue(),
   m_jobs()
 {
   set_provider(m_provider);

@@ -20,17 +20,23 @@
 #define HEADER_GALAPIX_UTIL_IMAGEMAGICK_SOFTWARE_SURFACE_LOADER_HPP
 
 #include "util/software_surface_loader.hpp"
+#include "util/software_surface_factory.hpp"
 #include "plugins/imagemagick.hpp"
 
 class ImagemagickSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {
-private:
 public:
   ImagemagickSoftwareSurfaceLoader()
   {}
 
   void register_loader(SoftwareSurfaceFactory& factory)
   {
+    std::vector<std::string> lst = Imagemagick::get_supported_extensions();
+    for(std::vector<std::string>::iterator i = lst.begin();
+        i != lst.end(); ++i)
+    {
+      factory.register_by_extension(this, *i);
+    }
   }
 
   SoftwareSurfacePtr from_file(const std::string& filename) 

@@ -63,10 +63,12 @@ MandelbrotTileJob::run()
 
         x = xtemp;
 
-        iteration = iteration + 1;
+        ++iteration;
       }
  
-      surface->put_pixel(px, py, RGB(iteration, iteration, iteration));
+      surface->put_pixel(px, py, RGB(static_cast<uint8_t>(iteration / max_iteration),
+                                     static_cast<uint8_t>(iteration / max_iteration), 
+                                     static_cast<uint8_t>(iteration / max_iteration)));
     }
   }
   

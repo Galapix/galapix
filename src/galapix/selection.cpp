@@ -19,7 +19,8 @@
 #include "math/rect.hpp"
 #include "galapix/selection.hpp"
 
-Selection::Selection()
+Selection::Selection() :
+  m_images()
 {
 }
 

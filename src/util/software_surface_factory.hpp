@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_FACTORY_HPP
 #define HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_FACTORY_HPP
 
+#include <map>
+
 #include "util/software_surface.hpp"
 
 class SoftwareSurfaceLoader;
@@ -46,6 +48,8 @@ public:
 
 private:
   std::vector<boost::shared_ptr<SoftwareSurfaceLoader> > m_loader;
+  std::map<std::string, SoftwareSurfaceLoader*> m_extension_map;
+  std::map<std::string, SoftwareSurfaceLoader*> m_mime_type_map;
 
 public:
   SoftwareSurfaceFactory();

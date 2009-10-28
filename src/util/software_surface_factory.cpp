@@ -272,13 +272,18 @@ SoftwareSurfaceFactory::from_url(const URL& url)
   }
 }
 
-SoftwareSurfaceFactory::SoftwareSurfaceFactory()
+SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
+  m_loader(),
+  m_extension_map(),
+  m_mime_type_map()
 {
+  // order matters, first come, first serve, later registratinos will
+  // be ignored
   add_loader(new JPEGSoftwareSurfaceLoader);
   add_loader(new PNGSoftwareSurfaceLoader);
   add_loader(new XCFSoftwareSurfaceLoader);
-  add_loader(new ImagemagickSoftwareSurfaceLoader);
   add_loader(new UFRawSoftwareSurfaceLoader);
+  add_loader(new ImagemagickSoftwareSurfaceLoader);
 }
 
 void
@@ -291,16 +296,35 @@ SoftwareSurfaceFactory::add_loader(SoftwareSurfaceLoader* loader)
 void
 SoftwareSurfaceFactory::register_by_magick(SoftwareSurfaceLoader* loader, int offset, const std::string& magick)
 {
+  // FIXME: implement me
 }
 
 void
 SoftwareSurfaceFactory::register_by_mime_type(SoftwareSurfaceLoader* loader, const std::string& mime_type)
 {
+  std::map<std::string, SoftwareSurfaceLoader*>::iterator i = m_mime_type_map.find(mime_type);
+  if (i == m_mime_type_map.end())
+  {
+    m_mime_type_map[mime_type] = loader;
+  }
+  else
+  {
+    // ignoring registration if something is already registered
+  }
 }
 
 void
 SoftwareSurfaceFactory::register_by_extension(SoftwareSurfaceLoader* loader, const std::string& extension)
 {
+  std::map<std::string, SoftwareSurfaceLoader*>::iterator i = m_extension_map.find(extension);
+  if (i == m_extension_map.end())
+  {
+    m_extension_map[extension] = loader;
+  }
+  else
+  {
+    // ignoring registration if something is already registered
+  }
 }
 
 /* EOF */

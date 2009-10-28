@@ -33,7 +33,7 @@ public:
   static SoftwareSurfacePtr load_from_file(const std::string& filename);
   static SoftwareSurfacePtr load_from_mem(void* data, int len);
   static SoftwareSurfacePtr load_from_url(const URL& url);
-  
+  static std::vector<std::string> get_supported_extensions();
 };
 
 #endif

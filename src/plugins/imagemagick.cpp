@@ -22,6 +22,8 @@
 #include <stdexcept>
 #include <Magick++.h>
 #include <iostream>
+#include <algorithm>
+#include <list>
 
 #include "util/url.hpp"
 #include "math/size.hpp"
@@ -29,17 +31,44 @@
 bool
 Imagemagick::get_size(const std::string& filename, Size& size)
 {
-  try {
+  try 
+  {
     Magick::Image image(filename);
   
     size.width  = image.columns();
     size.height = image.rows();
 
     return true;
-  } catch(std::exception& err) {
+  } 
+  catch(std::exception& err) 
+  {
     std::cout << "Imagemagick: " << filename << ": " << err.what() << std::endl;
     return false;
   }
+}
+
+std::vector<std::string>
+Imagemagick::get_supported_extensions()
+{
+  std::list<Magick::CoderInfo> coderList;
+
+  Magick::coderInfoList(&coderList,
+                        Magick::CoderInfo::TrueMatch, // Match readable formats
+                        Magick::CoderInfo::AnyMatch,  // Don't care about writable formats
+                        Magick::CoderInfo::AnyMatch); // Don't care about multi-frame support
+
+  std::vector<std::string> lst;
+
+  for(std::list<Magick::CoderInfo>::iterator entry = coderList.begin();
+      entry != coderList.end();
+      ++entry)
+  {
+    std::string data = entry->name();
+    std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+    lst.push_back(data);
+  }
+
+  return lst;
 }
 
 SoftwareSurfacePtr
@@ -85,9 +114,9 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
       for(int x = 0; x < width; ++x)
       {
-        dst_pixels[4*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
-        dst_pixels[4*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
-        dst_pixels[4*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
+        dst_pixels[4*x + 0] = static_cast<uint8_t>(src_pixels[x].red   >> shift);
+        dst_pixels[4*x + 1] = static_cast<uint8_t>(src_pixels[x].green >> shift);
+        dst_pixels[4*x + 2] = static_cast<uint8_t>(src_pixels[x].blue  >> shift);
         dst_pixels[4*x + 3] = static_cast<uint8_t>(255 - (src_pixels[x].opacity >> shift));
       }
     }
@@ -103,9 +132,9 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
       for(int x = 0; x < width; ++x)
       {
-        dst_pixels[3*x + 0] = static_cast<uint8_t>(src_pixels[x].red     >> shift);
-        dst_pixels[3*x + 1] = static_cast<uint8_t>(src_pixels[x].green   >> shift);
-        dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue    >> shift);
+        dst_pixels[3*x + 0] = static_cast<uint8_t>(src_pixels[x].red   >> shift);
+        dst_pixels[3*x + 1] = static_cast<uint8_t>(src_pixels[x].green >> shift);
+        dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue  >> shift);
       }
     }
   }  
