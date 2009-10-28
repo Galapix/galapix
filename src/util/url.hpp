@@ -35,10 +35,10 @@ private:
   // Example:
   // http://www.example.com/foobar.jpg
   // file:///www.example.com/foobar.rar//rar:Filename.jpg
-  std::string protocol;
-  std::string payload;
-  std::string plugin;
-  std::string plugin_payload;
+  std::string m_protocol;
+  std::string m_payload;
+  std::string m_plugin;
+  std::string m_plugin_payload;
 
 public:
   URL();
@@ -52,6 +52,7 @@ public:
   static URL from_string(const std::string& str);
 
   std::string get_protocol() const;
+  std::string get_payload() const;
 
   /** Get unique representation of this URL */
   std::string str() const;

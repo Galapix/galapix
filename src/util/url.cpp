@@ -27,10 +27,10 @@
 #include "util/filesystem.hpp"
 
 URL::URL() :
-  protocol(),
-  payload(),
-  plugin(),
-  plugin_payload()
+  m_protocol(),
+  m_payload(),
+  m_plugin(),
+  m_plugin_payload()
 {
 }
 
@@ -42,8 +42,8 @@ URL
 URL::from_filename(const std::string& filename)
 {
   URL url;
-  url.protocol = "file";
-  url.payload  = Filesystem::realpath(filename);
+  url.m_protocol = "file";
+  url.m_payload  = Filesystem::realpath(filename);
   return url;
 }
 
@@ -55,18 +55,18 @@ URL::from_string(const std::string& url)
   std::string::size_type i = url.find_first_of("//");
   assert(i != std::string::npos);
 
-  ret.protocol = url.substr(0, i-1);
+  ret.m_protocol = url.substr(0, i-1);
   std::string::size_type j = url.find("//", i+2);
   if (j == std::string::npos)
   { // no plugin given
-    ret.payload = url.substr(i+2);
+    ret.m_payload = url.substr(i+2);
   }
   else
   {
-    ret.payload  = url.substr(i+2, j-i-2);
+    ret.m_payload  = url.substr(i+2, j-i-2);
     std::string::size_type k = url.find(":", j+2);
-    ret.plugin          = url.substr(j+2, k-j-2);
-    ret.plugin_payload  = url.substr(k+1);
+    ret.m_plugin          = url.substr(j+2, k-j-2);
+    ret.m_plugin_payload  = url.substr(k+1);
     //std::cout << "'" << protocol << "' '" << payload << "' '" << plugin << "' " << plugin_payload << std::endl;
   }
   
@@ -76,10 +76,10 @@ URL::from_string(const std::string& url)
 std::string
 URL::str() const
 {
-  std::string url = protocol + "://" + payload;
-  if (!plugin.empty())
+  std::string url = m_protocol + "://" + m_payload;
+  if (!m_plugin.empty())
   {
-    return url + "//" + plugin + ":" + plugin_payload;
+    return url + "//" + m_plugin + ":" + m_plugin_payload;
   }
   else
   {
@@ -91,13 +91,13 @@ std::string
 URL::get_stdio_name() const
 {
   assert(has_stdio_name());
-  return payload;
+  return m_payload;
 }
 
 bool
 URL::has_stdio_name() const
 {
-  if (protocol == "file" && plugin.empty())
+  if (m_protocol == "file" && m_plugin.empty())
     return true;
   else
     return false;
@@ -106,42 +106,48 @@ URL::has_stdio_name() const
 std::string
 URL::get_protocol() const
 {
-  return protocol;
+  return m_protocol;
+}
+
+std::string
+URL::get_payload() const
+{
+  return m_payload;
 }
 
 BlobPtr
 URL::get_blob() const
 {
-  if (protocol == "file")
+  if (m_protocol == "file")
   {
-    if (plugin.empty())
+    if (m_plugin.empty())
     {
-      return Blob::from_file(payload);
+      return Blob::from_file(m_payload);
     }
-    else if (plugin == "rar")
+    else if (m_plugin == "rar")
     {
-      return Rar::get_file(payload, plugin_payload);
+      return Rar::get_file(m_payload, m_plugin_payload);
     }
-    else if (plugin == "zip")
+    else if (m_plugin == "zip")
     {
-      return Zip::get_file(payload, plugin_payload);
+      return Zip::get_file(m_payload, m_plugin_payload);
     }
-    else if (plugin == "tar")
+    else if (m_plugin == "tar")
     {
-      return Tar::get_file(payload, plugin_payload);
+      return Tar::get_file(m_payload, m_plugin_payload);
     }
     else
     {
-      throw std::runtime_error("URL::get_blob(): Unhandled plugin: " + plugin);
+      throw std::runtime_error("URL::get_blob(): Unhandled plugin: " + m_plugin);
     }
   }
-  else if (protocol == "http" || protocol == "https" || protocol == "ftp")
+  else if (m_protocol == "http" || m_protocol == "https" || m_protocol == "ftp")
   {
     return CURLHandler::get_data(str());
   }
   else
   {
-    throw std::runtime_error("URL::get_blob(): Unhandled protocol: " + protocol);
+    throw std::runtime_error("URL::get_blob(): Unhandled protocol: " + m_protocol);
     return BlobPtr();
   }
 }
@@ -203,10 +209,10 @@ bool operator<(const URL& lhs, const URL& rhs)
 
 bool operator==(const URL& lhs, const URL& rhs)
 {
-  return (lhs.payload  == rhs.payload  &&
-          lhs.protocol == rhs.protocol &&
-          lhs.plugin   == rhs.plugin   &&
-          lhs.plugin_payload == rhs.plugin_payload);
+  return (lhs.m_payload  == rhs.m_payload  &&
+          lhs.m_protocol == rhs.m_protocol &&
+          lhs.m_plugin   == rhs.m_plugin   &&
+          lhs.m_plugin_payload == rhs.m_plugin_payload);
 }
 
 /* EOF */
