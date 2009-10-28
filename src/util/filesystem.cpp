@@ -306,7 +306,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         }
         else
         {
-          std::cout << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
+          //std::cout << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
         }
       } 
       catch(std::exception& err) 

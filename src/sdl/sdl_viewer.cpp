@@ -100,7 +100,7 @@ SDLViewer::process_event(const SDL_Event& event)
               m_viewer.get_state().zoom(1.0f/(1.0f+factor));
 
             m_viewer.get_state().move(Vector2f(static_cast<float>(-spnav_ev->motion.x) / 10.0f,
-                                                static_cast<float>(+spnav_ev->motion.z) / 10.0f));
+                                               static_cast<float>(+spnav_ev->motion.z) / 10.0f));
 
             if (m_spnav_allow_rotate)
               m_viewer.get_state().rotate(static_cast<float>(spnav_ev->motion.ry) / 200.0f);
@@ -145,10 +145,11 @@ SDLViewer::process_event(const SDL_Event& event)
 
     case SDL_MOUSEMOTION:
       m_viewer.on_mouse_motion(Vector2i(event.motion.x,    event.motion.y),
-                                Vector2i(event.motion.xrel, event.motion.yrel));
+                               Vector2i(event.motion.xrel, event.motion.yrel));
       break;
 
-      // FIXME: SDL Reverses the mouse buttons when a grab is active!
+      // FIXME: When the mouse is set to left-hand mode, SDL reverses
+      // the mouse buttons when a grab is active!
     case SDL_MOUSEBUTTONDOWN:
       switch(event.button.button)
       {
@@ -162,7 +163,7 @@ SDLViewer::process_event(const SDL_Event& event)
 
         default:
           m_viewer.on_mouse_button_down(Vector2i(event.button.x, event.button.y),
-                                         event.button.button);
+                                        event.button.button);
           break;
       }
       break;
@@ -172,7 +173,7 @@ SDLViewer::process_event(const SDL_Event& event)
       {
         default:
           m_viewer.on_mouse_button_up(Vector2i(event.button.x, event.button.y),
-                                     event.button.button);
+                                      event.button.button);
           break;
       }
       break;
