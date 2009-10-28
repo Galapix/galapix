@@ -21,6 +21,7 @@
 
 #include "util/software_surface.hpp"
 
+class SoftwareSurfaceLoader;
 class URL;
 
 class SoftwareSurfaceFactory
@@ -42,6 +43,19 @@ public:
   static bool       get_size(const URL& url, Size& size);
 
   static SoftwareSurfacePtr from_url(const URL& url);
+
+private:
+  std::vector<boost::shared_ptr<SoftwareSurfaceLoader> > m_loader;
+
+public:
+  SoftwareSurfaceFactory();
+  ~SoftwareSurfaceFactory();
+
+  void add_loader(SoftwareSurfaceLoader* loader);
+
+  void register_by_magick(SoftwareSurfaceLoader* loader, int offset, const std::string& magick);
+  void register_by_mime_type(SoftwareSurfaceLoader* loader, const std::string& mime_type);
+  void register_by_extension(SoftwareSurfaceLoader* loader, const std::string& extension);
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);

@@ -20,14 +20,22 @@
 
 #include <iostream>
 
+#include "util/filesystem.hpp"
+#include "util/software_surface_loader.hpp"
+#include "util/url.hpp"
+
 #include "plugins/imagemagick.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/kra.hpp"
 #include "plugins/png.hpp"
 #include "plugins/rsvg.hpp"
 #include "plugins/xcf.hpp"
-#include "util/filesystem.hpp"
-#include "util/url.hpp"
+
+#include "util/imagemagick_software_surface_loader.hpp"
+#include "util/jpeg_software_surface_loader.hpp"
+#include "util/png_software_surface_loader.hpp"
+#include "util/ufraw_software_surface_loader.hpp"
+#include "util/xcf_software_surface_loader.hpp"
 
 SoftwareSurfaceFactory::FileFormat
 SoftwareSurfaceFactory::get_fileformat(const URL& url)
@@ -262,6 +270,37 @@ SoftwareSurfaceFactory::from_url(const URL& url)
         return SoftwareSurfacePtr();
     }      
   }
+}
+
+SoftwareSurfaceFactory::SoftwareSurfaceFactory()
+{
+  add_loader(new JPEGSoftwareSurfaceLoader);
+  add_loader(new PNGSoftwareSurfaceLoader);
+  add_loader(new XCFSoftwareSurfaceLoader);
+  add_loader(new ImagemagickSoftwareSurfaceLoader);
+  add_loader(new UFRawSoftwareSurfaceLoader);
+}
+
+void
+SoftwareSurfaceFactory::add_loader(SoftwareSurfaceLoader* loader)
+{
+  m_loader.push_back(boost::shared_ptr<SoftwareSurfaceLoader>(loader));
+  loader->register_loader(*this);
+}
+
+void
+SoftwareSurfaceFactory::register_by_magick(SoftwareSurfaceLoader* loader, int offset, const std::string& magick)
+{
+}
+
+void
+SoftwareSurfaceFactory::register_by_mime_type(SoftwareSurfaceLoader* loader, const std::string& mime_type)
+{
+}
+
+void
+SoftwareSurfaceFactory::register_by_extension(SoftwareSurfaceLoader* loader, const std::string& extension)
+{
 }
 
 /* EOF */
