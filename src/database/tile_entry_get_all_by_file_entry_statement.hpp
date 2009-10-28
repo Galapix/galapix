@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_ALL_BY_FILE_ENTRY_STATEMENT_HPP
 #define HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_ALL_BY_FILE_ENTRY_STATEMENT_HPP
 
+#include <assert.h>
+
 #include "database/file_entry.hpp"
 #include "database/tile_entry.hpp"
 #include "util/software_surface_factory.hpp"
@@ -49,7 +51,7 @@ public:
                        Vector2i(reader.get_int (2),  // x
                                 reader.get_int (3)), // y
                        reader.get_blob(4),
-                       reader.get_int(6));     
+                       static_cast<TileEntry::Format>(reader.get_int(6)));
       
         // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
         // Blob, so we don't do encode/decode when doing a database
@@ -57,13 +59,16 @@ public:
         BlobPtr blob = tile.get_blob();
         switch(tile.get_format())
         {
-          case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
+          case TileEntry::JPEG_FORMAT:
             tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
             break;
 
-          case SoftwareSurfaceFactory::PNG_FILEFORMAT:
+          case TileEntry::PNG_FORMAT:
             tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
             break;
+
+          default:
+            assert(!"never reached");
         }
 
         tiles.push_back(tile);

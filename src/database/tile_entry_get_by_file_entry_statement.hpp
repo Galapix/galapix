@@ -54,21 +54,21 @@ public:
                          Vector2i(reader.get_int(2), // pos
                                   reader.get_int(3)),
                          reader.get_blob(4),
-                         reader.get_int(6));
-
-      
-        // FIXME: Do this in a DecoderThread
+                         static_cast<TileEntry::Format>(reader.get_int(6)));
 
         BlobPtr blob = tile.get_blob();
         switch(tile.get_format())
         {
-          case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
+          case TileEntry::JPEG_FORMAT:
             tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
             break;
 
-          case SoftwareSurfaceFactory::PNG_FILEFORMAT:
+          case TileEntry::PNG_FORMAT:
             tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
             break;
+
+          default:
+            assert(!"never reached");
         }
       
         return true;

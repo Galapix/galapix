@@ -50,12 +50,12 @@ public:
       {
         case SoftwareSurface::RGB_FORMAT:
           tile.set_blob(JPEG::save(tile.get_surface(), 75));
-          tile.set_format(SoftwareSurfaceFactory::JPEG_FILEFORMAT);
+          tile.set_format(TileEntry::JPEG_FORMAT);
           break;
 
         case SoftwareSurface::RGBA_FORMAT:
           tile.set_blob(PNG::save(tile.get_surface()));
-          tile.set_format(SoftwareSurfaceFactory::PNG_FILEFORMAT);
+          tile.set_format(TileEntry::PNG_FORMAT);
           break;
 
         default:
