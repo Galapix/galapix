@@ -45,7 +45,6 @@ public:
 
   void merge(const std::string& database, const std::vector<std::string>& filenames);
   void test(const Options& opts, const std::vector<URL>& urls);
-  void info(const std::vector<URL>& urls);
   void downscale(const std::vector<URL>& urls);
   void cleanup(const std::string& database);
   void check(const std::string& database);

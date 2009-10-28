@@ -186,20 +186,6 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 }
 
 void
-Galapix::info(const std::vector<URL>& url)
-{
-  for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
-  {
-    Size size;
-
-    if (SoftwareSurfaceFactory::get_size(*i, size))
-      std::cout << *i << " " << size.width << "x" << size.height << std::endl;
-    else
-      std::cout << "Error reading " << *i << std::endl;
-  }
-}
-
-void
 Galapix::downscale(const std::vector<URL>& url)
 {
   int num = 0;
@@ -476,7 +462,6 @@ Galapix::print_usage()
             << "       galapix prepare  [OPTIONS]... [FILES]...\n"
             << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
             << "       galapix filegen  [OPTIONS]... [FILES]...\n"
-            << "       galapix info     [OPTIONS]... [FILES]...\n"
             << "       galapix check    [OPTIONS]...\n"
             << "       galapix list     [OPTIONS]...\n"
             << "       galapix cleanup  [OPTIONS]...\n"
@@ -489,7 +474,6 @@ Galapix::print_usage()
             << "  filegen   Generate only small the file entries in the database\n"
             << "  list      Lists all files in the database\n"
             << "  check     Checks the database for consistency\n"
-            << "  info      Display size of the given files\n"
             << "  cleanup   Runs garbage collection on the database\n"
             << "  merge     Merges the given databases into the database given by -d FILE\n"
             << "\n"
@@ -604,10 +588,6 @@ Galapix::run(const Options& opts)
     else if (command == "merge")
     {
       merge(opts.database, std::vector<std::string>(opts.rest.begin()+1, opts.rest.end()));
-    }
-    else if (command == "info")
-    {
-      info(urls);
     }
     else if (command == "test")
     {
