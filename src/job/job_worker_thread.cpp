@@ -18,6 +18,8 @@
 
 #include "job/job_worker_thread.hpp"
 
+#include <iostream>
+
 #include "job/job.hpp"
 
 JobWorkerThread::JobWorkerThread()

@@ -17,6 +17,9 @@
 */
 
 #include "job/thread.hpp"
+
+#include <boost/bind.hpp>
+#include <iostream>
 
 Thread::Thread()
   : m_thread()

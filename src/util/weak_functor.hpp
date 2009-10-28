@@ -19,6 +19,7 @@
 #ifndef HEADER_GALAPIX_UTIL_WEAK_FUNCTOR_HPP
 #define HEADER_GALAPIX_UTIL_WEAK_FUNCTOR_HPP
 
+#include <iostream>
 #include <boost/weak_ptr.hpp>
 
 /** 

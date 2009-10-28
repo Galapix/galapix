@@ -18,6 +18,8 @@
 
 #include "galapix/workspace.hpp"
 
+#include <iostream>
+
 #include "database/file_entry.hpp"
 #include "galapix/database_thread.hpp"
 #include "galapix/random_layouter.hpp"

@@ -18,6 +18,9 @@
 
 #include "galapix/image.hpp"
 
+#include <boost/bind.hpp>
+#include <iostream>
+
 #include "database/file_entry.hpp"
 #include "display/framebuffer.hpp"
 #include "galapix/database_thread.hpp"

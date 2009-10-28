@@ -19,6 +19,7 @@
 #include "galapix/database_thread.hpp"
 
 #include <typeinfo>
+#include <boost/bind.hpp>
 
 #include "database/database.hpp"
 #include "galapix/database_message.hpp"

@@ -18,6 +18,7 @@
 
 #include "sdl/sdl_viewer.hpp"
 
+#include <iostream>
 #include <boost/format.hpp>
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>

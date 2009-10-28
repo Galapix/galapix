@@ -19,6 +19,7 @@
 #include <boost/thread/condition.hpp>
 
 #include <boost/bind.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "job/job_handle.hpp"
 
