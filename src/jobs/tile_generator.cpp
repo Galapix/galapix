@@ -29,7 +29,6 @@
 
 void
 TileGenerator::generate(const FileEntry& m_file_entry, 
-                        SoftwareSurfaceFactory::FileFormat format,
                         int m_min_scale_in_db, int m_max_scale_in_db,
                         int min_scale, int max_scale,
                         const boost::function<void(Tile)>& callback)
@@ -51,7 +50,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
               << m_file_entry.get_url() << std::endl;
   }
 
-  generate(m_file_entry, format, min_scale, max_scale, callback);
+  generate(m_file_entry, min_scale, max_scale, callback);
 
   if (0)
     std::cout << "TileGeneratorThread: processing scales "
@@ -60,11 +59,10 @@ TileGenerator::generate(const FileEntry& m_file_entry,
 
 void
 TileGenerator::generate(const FileEntry& m_file_entry, 
-                        SoftwareSurfaceFactory::FileFormat format,
                         int min_scale, int max_scale,
                         const boost::function<void(Tile)>& callback)
 {
-  SoftwareSurfacePtr surface = load_surface(m_file_entry.get_url(), format, min_scale);
+  SoftwareSurfacePtr surface = load_surface(m_file_entry.get_url(), min_scale);
 
   // Scale the image
   Size size(m_file_entry.get_width()  / Math::pow2(min_scale),
@@ -78,12 +76,10 @@ TileGenerator::generate(const FileEntry& m_file_entry,
 }
 
 SoftwareSurfacePtr
-TileGenerator::load_surface(const URL& url, 
-                            SoftwareSurfaceFactory::FileFormat format,
-                            int min_scale)
+TileGenerator::load_surface(const URL& url, int min_scale)
 {
   // Load the image
-  switch(format)
+  switch(SoftwareSurfaceFactory::get_fileformat(url))
   {
     case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
     {

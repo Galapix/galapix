@@ -31,17 +31,15 @@ class TileGenerator
 private:
 public:
   static void generate(const FileEntry& m_file_entry, 
-                       SoftwareSurfaceFactory::FileFormat format,
                        int m_min_scale_in_db, int m_max_scale_in_db,
                        int min_scale, int max_scale,
                        const boost::function<void (Tile)>& callback);
 
   static void generate(const FileEntry& m_file_entry, 
-                       SoftwareSurfaceFactory::FileFormat format,
                        int min_scale, int max_scale,
                        const boost::function<void(Tile)>& callback);
 
-  static SoftwareSurfacePtr load_surface(const URL& url, SoftwareSurfaceFactory::FileFormat format, int min_scale);
+  static SoftwareSurfacePtr load_surface(const URL& url, int min_scale);
 
   static void cut_into_tiles(SoftwareSurfacePtr surface,
                              int min_scale, int max_scale,

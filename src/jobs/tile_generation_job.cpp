@@ -254,7 +254,7 @@ TileGenerationJob::run()
   try 
   {
     // Do the main work
-    TileGenerator::generate(m_file_entry, format,
+    TileGenerator::generate(m_file_entry, 
                             m_min_scale_in_db, m_max_scale_in_db,
                             m_min_scale, m_max_scale,
                             boost::bind(&TileGenerationJob::process_tile, this, _1));
