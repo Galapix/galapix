@@ -193,9 +193,33 @@ bool
 Filesystem::has_extension(const std::string& str, const std::string& suffix)
 {
   if (str.length() >= suffix.length())
+  {
     return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
+  }
   else
+  {
     return false;
+  }
+}
+
+std::string
+Filesystem::get_extension(const std::string& pathname)
+{
+  // FIXME: should take '/' into account and only check the actual
+  // filename, instead of the whole pathname
+  std::string::size_type p = pathname.rfind('.');
+  std::string extension = pathname.substr(p+1, pathname.size() - p);
+  if (extension == "gz" || 
+      extension == "bz2")
+  {
+    p = pathname.rfind('.', p-1);
+    extension = pathname.substr(p+1, pathname.size() - p);
+    return extension;
+  }
+  else
+  {
+    return extension;
+  }
 }
 
 void
@@ -269,24 +293,34 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 
       try 
       {
-        if (has_extension(*i, ".rar") || has_extension(*i, ".rar.part") || has_extension(*i, ".cbr"))
+        if (has_extension(*i, ".rar")      || 
+            has_extension(*i, ".rar.part") ||
+            has_extension(*i, ".cbr"))
         {
           const std::vector<std::string>& files = Rar::get_filenames(*i);
           for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
             file_list.push_back(URL::from_string(url.str() + "//rar:" + *j));
         }
-        else if (has_extension(*i, ".zip") || has_extension(*i, ".cbz"))
+        else if (has_extension(*i, ".zip") || 
+                 has_extension(*i, ".cbz"))
         {
           const std::vector<std::string>& files = Zip::get_filenames(*i);
           for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
+          {
             file_list.push_back(URL::from_string(url.str() + "//zip:" + *j));
+          }
         }
-        else if (has_extension(*i, ".tar") || has_extension(*i, ".tar.bz") || has_extension(*i, ".tar.gz") ||
-                 has_extension(*i, ".tgz") || has_extension(*i, ".tbz"))
+        else if (has_extension(*i, ".tar")    || 
+                 has_extension(*i, ".tar.bz") || 
+                 has_extension(*i, ".tar.gz") ||
+                 has_extension(*i, ".tgz")    || 
+                 has_extension(*i, ".tbz"))
         {
           const std::vector<std::string>& files = Tar::get_filenames(*i);
           for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
+          {
             file_list.push_back(URL::from_string(url.str() + "//tar:" + *j));
+          }
         }
         else if (has_extension(*i, ".galapix"))
         {
@@ -300,7 +334,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         {
           file_list.push_back(url);
         }
-        else if (SoftwareSurfaceFactory::get_fileformat(url) != SoftwareSurfaceFactory::UNKNOWN_FILEFORMAT)
+        else if (SoftwareSurfaceFactory::instance()->has_supported_extension(url))
         {
           file_list.push_back(url);
         }
