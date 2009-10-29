@@ -26,8 +26,10 @@ class SoftwareSurfaceFactory;
 class SoftwareSurfaceLoader
 {
 public:
-  SoftwareSurfaceLoader()  {}
+  SoftwareSurfaceLoader() {}
   virtual ~SoftwareSurfaceLoader() {}
+
+  virtual std::string get_name() const =0;
 
   virtual void register_loader(SoftwareSurfaceFactory& factory) =0;
 

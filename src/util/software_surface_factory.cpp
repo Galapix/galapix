@@ -37,6 +37,22 @@
 #include "util/ufraw_software_surface_loader.hpp"
 #include "util/xcf_software_surface_loader.hpp"
 
+SoftwareSurfaceFactory* SoftwareSurfaceFactory::instance_ = 0;
+
+SoftwareSurfaceFactory* 
+SoftwareSurfaceFactory::instance()
+{
+  if (instance_)
+  {
+    return instance_;
+  }
+  else
+  {
+    instance_ = new SoftwareSurfaceFactory();
+    return instance_;
+  }
+}
+
 SoftwareSurfaceFactory::FileFormat
 SoftwareSurfaceFactory::get_fileformat(const URL& url)
 {
@@ -291,6 +307,14 @@ SoftwareSurfaceFactory::add_loader(SoftwareSurfaceLoader* loader)
 {
   m_loader.push_back(boost::shared_ptr<SoftwareSurfaceLoader>(loader));
   loader->register_loader(*this);
+}
+
+bool
+SoftwareSurfaceFactory::has_supported_extension(const URL& url)
+{
+  std::string extension = Filesystem::get_extension(url.str());
+  ExtensionMap::iterator i = m_extension_map.find(extension);
+  return (i != m_extension_map.end());
 }
 
 void

@@ -29,6 +29,11 @@ public:
   UFRawSoftwareSurfaceLoader()
   {}
 
+  std::string get_name() const
+  {
+    return "ufraw";
+  }
+
   void register_loader(SoftwareSurfaceFactory& factory)
   {
     factory.register_by_extension(this, "3fr");

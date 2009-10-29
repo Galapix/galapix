@@ -29,6 +29,11 @@ public:
   ImagemagickSoftwareSurfaceLoader()
   {}
 
+  std::string get_name() const
+  {
+    return "imagemagick";
+  }
+
   void register_loader(SoftwareSurfaceFactory& factory)
   {
     std::vector<std::string> lst = Imagemagick::get_supported_extensions();

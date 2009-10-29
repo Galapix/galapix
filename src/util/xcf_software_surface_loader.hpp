@@ -28,6 +28,11 @@ public:
   XCFSoftwareSurfaceLoader()
   {}
   
+  std::string get_name() const
+  {
+    return "xcf";
+  }
+
   void register_loader(SoftwareSurfaceFactory& factory)
   {
     factory.register_by_extension(this, "xcf");

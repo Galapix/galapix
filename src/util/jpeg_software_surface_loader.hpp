@@ -27,6 +27,11 @@ public:
   JPEGSoftwareSurfaceLoader()
   {}
 
+  std::string get_name() const
+  {
+    return "jpeg";
+  }
+
   void register_loader(SoftwareSurfaceFactory& factory)
   {
     factory.register_by_magick(this, 0, "\xff\xd8");

@@ -29,10 +29,10 @@ class URL;
 class SoftwareSurfaceFactory
 {
 public:
-  // Do not change the value of these, since they are stored in the database
-  enum FileFormat { 
-    JPEG_FILEFORMAT = 0,
-    PNG_FILEFORMAT  = 1, 
+  enum FileFormat 
+  { 
+    JPEG_FILEFORMAT,
+    PNG_FILEFORMAT,
     XCF_FILEFORMAT, 
     KRA_FILEFORMAT, 
     SVG_FILEFORMAT, 
@@ -47,16 +47,26 @@ public:
   static SoftwareSurfacePtr from_url(const URL& url);
 
 private:
+  static SoftwareSurfaceFactory* instance_;
+
+public:
+  static SoftwareSurfaceFactory* instance(); 
+
+private:
+  typedef std::map<std::string, SoftwareSurfaceLoader*> ExtensionMap;
+  typedef std::map<std::string, SoftwareSurfaceLoader*> MimeTypeMap;
+
   std::vector<boost::shared_ptr<SoftwareSurfaceLoader> > m_loader;
-  std::map<std::string, SoftwareSurfaceLoader*> m_extension_map;
-  std::map<std::string, SoftwareSurfaceLoader*> m_mime_type_map;
+  ExtensionMap m_extension_map;
+  MimeTypeMap  m_mime_type_map;
 
 public:
   SoftwareSurfaceFactory();
   ~SoftwareSurfaceFactory();
 
   void add_loader(SoftwareSurfaceLoader* loader);
-
+  bool has_supported_extension(const URL& url);
+  
   void register_by_magick(SoftwareSurfaceLoader* loader, int offset, const std::string& magick);
   void register_by_mime_type(SoftwareSurfaceLoader* loader, const std::string& mime_type);
   void register_by_extension(SoftwareSurfaceLoader* loader, const std::string& extension);
