@@ -50,48 +50,71 @@ TileGenerator::generate(const FileEntry& m_file_entry,
               << ": " 
               << m_file_entry.get_url() << std::endl;
   }
-  
-  // Find scale at which the image fits on one tile
-  int width  = m_file_entry.get_width();
-  int height = m_file_entry.get_height();
-  int scale  = min_scale;
 
-  SoftwareSurfacePtr surface;
+  generate(m_file_entry, format, min_scale, max_scale, callback);
 
+  if (0)
+    std::cout << "TileGeneratorThread: processing scales "
+              << min_scale << "-" << max_scale << ": " << m_file_entry.get_url() << ": done" << std::endl;
+}
+
+void
+TileGenerator::generate(const FileEntry& m_file_entry, 
+                        SoftwareSurfaceFactory::FileFormat format,
+                        int min_scale, int max_scale,
+                        const boost::function<void(Tile)>& callback)
+{
+  SoftwareSurfacePtr surface = load_surface(m_file_entry.get_url(), format, min_scale);
+
+  // Scale the image
+  Size size(m_file_entry.get_width()  / Math::pow2(min_scale),
+            m_file_entry.get_height() / Math::pow2(min_scale));
+  if (size != surface->get_size())
+  {
+    surface = surface->scale(size);
+  }
+
+  cut_into_tiles(surface, min_scale, max_scale, callback);
+}
+
+SoftwareSurfacePtr
+TileGenerator::load_surface(const URL& url, 
+                            SoftwareSurfaceFactory::FileFormat format,
+                            int min_scale)
+{
+  // Load the image
   switch(format)
   {
     case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
     {
       // The JPEG class can only scale down by factor 2,4,8, so we have to
       // limit things (FIXME: is that true? if so, why?)
-      int jpeg_scale = Math::min(Math::pow2(scale), 8);
+      int jpeg_scale = Math::min(Math::pow2(min_scale), 8);
               
-      if (m_file_entry.get_url().has_stdio_name())
+      if (url.has_stdio_name())
       {
-        surface = JPEG::load_from_file(m_file_entry.get_url().get_stdio_name(), jpeg_scale);
+        return JPEG::load_from_file(url.get_stdio_name(), jpeg_scale);
       }
       else
       {
-        BlobPtr blob = m_file_entry.get_url().get_blob();
-        surface = JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale);
+        BlobPtr blob = url.get_blob();
+        return JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale);
       }
-      
-      surface = surface->scale(Size(width  / Math::pow2(scale),
-                                    height / Math::pow2(scale)));
     }
     break;
 
     default:
-    {
-      // FIXME: This is terrible, min/max_scale are meaningless
-      // for non-jpeg formats, so we should just forget them
-      surface = SoftwareSurfaceFactory::from_url(m_file_entry.get_url());
-      surface = surface->scale(Size(width  / Math::pow2(scale),
-                                    height / Math::pow2(scale)));
-    }
-    break;
+      return SoftwareSurfaceFactory::from_url(url);
+      break;
   }
+}
 
+void
+TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
+                              int min_scale, int max_scale,
+                              const boost::function<void (Tile)>& callback)
+{
+  int scale = min_scale;
   do
   {
     if (scale != min_scale)
@@ -103,18 +126,14 @@ TileGenerator::generate(const FileEntry& m_file_entry,
       for(int x = 0; 256*x < surface->get_width(); ++x)
       {
         SoftwareSurfacePtr croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
-                                                                  Size(256, 256)));
+                                                               Size(256, 256)));
 
-        callback(/*m_file_entry, */Tile(scale, Vector2i(x, y), croped_surface));
+        callback(Tile(scale, Vector2i(x, y), croped_surface));
       }
 
     scale += 1;
-  } 
+  }
   while (scale <= max_scale);
-
-  if (0)
-    std::cout << "TileGeneratorThread: processing scales "
-              << min_scale << "-" << max_scale << ": " << m_file_entry.get_url() << ": done" << std::endl;
 }
 
 /* EOF */

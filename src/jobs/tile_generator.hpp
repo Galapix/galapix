@@ -36,6 +36,17 @@ public:
                        int min_scale, int max_scale,
                        const boost::function<void (Tile)>& callback);
 
+  static void generate(const FileEntry& m_file_entry, 
+                       SoftwareSurfaceFactory::FileFormat format,
+                       int min_scale, int max_scale,
+                       const boost::function<void(Tile)>& callback);
+
+  static SoftwareSurfacePtr load_surface(const URL& url, SoftwareSurfaceFactory::FileFormat format, int min_scale);
+
+  static void cut_into_tiles(SoftwareSurfacePtr surface,
+                             int min_scale, int max_scale,
+                             const boost::function<void (Tile)>& callback);
+
 private:
   TileGenerator(const TileGenerator&);
   TileGenerator& operator=(const TileGenerator&);
