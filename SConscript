@@ -1,5 +1,7 @@
 # -*- mode: python -*-
 
+import glob
+
 CacheDir('cache')
 
 preset_cxxflags = {
@@ -183,30 +185,10 @@ class Project:
 
     def build_tests(self):
         libgalapix_test_env = self.libgalapix_env.Clone()
-        libgalapix_test_env.Append(LIBS=self.libgalapix_util)       
-        libgalapix_test_env.Program("test/exec_test",
-                                    ["test/exec_test.cpp"])
-        libgalapix_test_env.Program("test/url_test",
-                                    ["test/url_test.cpp"])
-        libgalapix_test_env.Program("test/pnm_test",
-                                    ["test/pnm_test.cpp"])
-        libgalapix_test_env.Program("test/jpeg_size_test",
-                                    ["test/jpeg_size_test.cpp"])
-        libgalapix_test_env.Program("test/curl_test",
-                                    ["test/curl_test.cpp"])
-        libgalapix_test_env.Program("test/exif_test",
-                                    ["test/exif_test.cpp"])
-        libgalapix_test_env.Program("test/signals_test",
-                                    ["test/signals_test.cpp"])
-        libgalapix_test_env.Program("test/software_surface_test",
-                                    ["test/software_surface_test.cpp"])
-        libgalapix_test_env.Program("test/imagemagick_test",
-                                    ["test/imagemagick_test.cpp"])
-        libgalapix_test_env.Program("test/filesystem_test",
-                                    ["test/filesystem_test.cpp"])
-        libgalapix_test_env.Program("test/log_test",
-                                    ["test/log_test.cpp"])
-
+        libgalapix_test_env.Append(LIBS=self.libgalapix_util)
+        for filename in Glob("test/*_test.cpp", strings=True):
+            libgalapix_test_env.Program(filename[:-4], filename)
+            
 project = Project()
 project.build()
 
