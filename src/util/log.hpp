@@ -29,13 +29,14 @@ std::string log_pretty_print(const std::string& str);
     program */
 #define log_info  (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
 
-/** messages that indicate an recoverable error */
+/** messages that indicate an recoverable error (i.e. catched
+    exceptions) */
 #define log_warning (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
 
-/** things that shouldn't happen */
+/** things that shouldn't happen (i.e. catched exceptions) */
 #define log_error (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
 
-/** temporary debugging messages */
+/** extra verbose debugging messages */
 #define log_debug (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
 
 #endif

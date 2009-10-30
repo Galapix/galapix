@@ -22,6 +22,7 @@
 
 std::string log_pretty_print(const std::string& str)
 {
+  // FIXME: very basic, might not work with complex return types
   std::string::size_type function_start = 0;
   for(std::string::size_type i = 0; i < str.size(); ++i)
   {
