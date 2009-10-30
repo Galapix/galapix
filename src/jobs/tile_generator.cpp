@@ -50,7 +50,7 @@ TileGenerator::generate(const FileEntry& m_file_entry,
               << m_file_entry.get_url() << std::endl;
   }
 
-  generate(m_file_entry, min_scale, max_scale, callback);
+  generate(m_file_entry.get_url(), m_file_entry.get_image_size(), min_scale, max_scale, callback);
 
   if (0)
     std::cout << "TileGeneratorThread: processing scales "
@@ -58,18 +58,20 @@ TileGenerator::generate(const FileEntry& m_file_entry,
 }
 
 void
-TileGenerator::generate(const FileEntry& m_file_entry, 
+TileGenerator::generate(const URL& url, const Size& orignal_size,
                         int min_scale, int max_scale,
                         const boost::function<void(Tile)>& callback)
 {
-  SoftwareSurfacePtr surface = load_surface(m_file_entry.get_url(), min_scale);
+  // Load the image, try to load an already downsized version if possible
+  SoftwareSurfacePtr surface = load_surface(url, min_scale);
 
-  // Scale the image
-  Size size(m_file_entry.get_width()  / Math::pow2(min_scale),
-            m_file_entry.get_height() / Math::pow2(min_scale));
-  if (size != surface->get_size())
+  // Scale the image if loading a downsized version was not possible
+  Size target_size(orignal_size.width  / Math::pow2(min_scale),
+                   orignal_size.height / Math::pow2(min_scale));
+
+  if (target_size != surface->get_size())
   {
-    surface = surface->scale(size);
+    surface = surface->scale(target_size);
   }
 
   cut_into_tiles(surface, min_scale, max_scale, callback);
@@ -110,6 +112,8 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
                               int min_scale, int max_scale,
                               const boost::function<void (Tile)>& callback)
 {
+  // Cut the given image into tiles, give created tiles to callback(),
+  // surface is expected to be pre-scaled and already at min_scale size
   int scale = min_scale;
   do
   {

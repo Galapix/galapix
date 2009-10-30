@@ -35,7 +35,7 @@ public:
                        int min_scale, int max_scale,
                        const boost::function<void (Tile)>& callback);
 
-  static void generate(const FileEntry& m_file_entry, 
+  static void generate(const URL& url, const Size& orignal_size,
                        int min_scale, int max_scale,
                        const boost::function<void(Tile)>& callback);
 
