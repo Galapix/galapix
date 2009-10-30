@@ -32,19 +32,25 @@ private:
 public:
   static Size get_size(const std::string& filename);
 
-  /** Load a SoftwareSurface from a JPEG file
+  /** Load a SoftwareSurface from the filesystem
       
-      @param filename   Filename of the file to load
-      @param scale      Scale the image by 1/scale (only 1,2,4,8 allowed)
+      @param[in]  filename Filename of the file to load
+      @param[in]  scale    Scale the image by 1/scale (only 1,2,4,8 allowed)
+      @param[out] size     The size of the unscaled image
+
+      @return reference counted pointer to a SoftwareSurface object
    */
-  static SoftwareSurfacePtr load_from_file(const std::string& filename, int scale = 1);
+  static SoftwareSurfacePtr load_from_file(const std::string& filename, int scale = 1, Size* size = NULL);
 
   /** Load a JPEG from memory 
       
-      @param mem   Address of the JPEG data
-      @param len   Length of the JPEG data
+      @param[in]  mem   Address of the JPEG data
+      @param[in]  len   Length of the JPEG data
+      @param[out] size  The size of the unscaled image
+
+      @return reference counted pointer to a SoftwareSurface object
    */
-  static SoftwareSurfacePtr load_from_mem(uint8_t* mem, int len, int scale = 1);
+  static SoftwareSurfacePtr load_from_mem(uint8_t* mem, int len, int scale = 1, Size* size = NULL);
 
   static void save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename);
   static BlobPtr save(const SoftwareSurfacePtr& surface, int quality);

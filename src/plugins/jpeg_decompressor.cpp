@@ -72,7 +72,7 @@ JPEGDecompressor::read_header()
 }
 
 SoftwareSurfacePtr
-JPEGDecompressor::read_image(int scale)
+JPEGDecompressor::read_image(int scale, Size* image_size)
 {
   if (!(scale == 1 ||
         scale == 2 ||
@@ -96,6 +96,12 @@ JPEGDecompressor::read_image(int scale)
   {
     jpeg_read_header(&m_cinfo, /*require_image*/ FALSE);
 
+    if (image_size)
+    {
+      image_size->width  = m_cinfo.image_width;
+      image_size->height = m_cinfo.image_height;
+    }
+
     if (scale != 1) // scale the image down by \a scale
     { 
       // by default all those values below are on 1
@@ -109,7 +115,7 @@ JPEGDecompressor::read_image(int scale)
     jpeg_start_decompress(&m_cinfo);
 
     SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(m_cinfo.output_width,
-                                                                                              m_cinfo.output_height));
+                                                                                           m_cinfo.output_height));
  
     if (m_cinfo.output_components == 3) // RGB Image
     { 

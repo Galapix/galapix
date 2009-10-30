@@ -55,10 +55,10 @@ JPEG::get_size(const std::string& filename)
 }
 
 SoftwareSurfacePtr
-JPEG::load_from_file(const std::string& filename, int scale)
+JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
 {
   FileJPEGDecompressor loader(filename);
-  SoftwareSurfacePtr surface = loader.read_image(scale);
+  SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
 
   SoftwareSurface::Modifier modifier = EXIF::get_orientation(filename);
 
@@ -73,10 +73,10 @@ JPEG::load_from_file(const std::string& filename, int scale)
 }
 
 SoftwareSurfacePtr
-JPEG::load_from_mem(uint8_t* mem, int len, int scale)
+JPEG::load_from_mem(uint8_t* mem, int len, int scale, Size* image_size)
 {
   MemJPEGDecompressor loader(mem, len);
-  SoftwareSurfacePtr surface = loader.read_image(scale);
+  SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
 
   return surface;
 }
