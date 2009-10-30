@@ -183,7 +183,7 @@ class Project:
 
     def build_tests(self):
         libgalapix_test_env = self.libgalapix_env.Clone()
-        libgalapix_test_env.Append(LIBS=self.libgalapix_util)
+        libgalapix_test_env.Append(LIBS=self.libgalapix_util)       
         libgalapix_test_env.Program("test/exec_test",
                                     ["test/exec_test.cpp"])
         libgalapix_test_env.Program("test/url_test",
@@ -200,6 +200,12 @@ class Project:
                                     ["test/signals_test.cpp"])
         libgalapix_test_env.Program("test/software_surface_test",
                                     ["test/software_surface_test.cpp"])
+        libgalapix_test_env.Program("test/imagemagick_test",
+                                    ["test/imagemagick_test.cpp"])
+        libgalapix_test_env.Program("test/filesystem_test",
+                                    ["test/filesystem_test.cpp"])
+        libgalapix_test_env.Program("test/log_test",
+                                    ["test/log_test.cpp"])
 
 project = Project()
 project.build()
