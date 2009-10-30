@@ -64,7 +64,7 @@ public:
 
     if (m_min_scale_in_db == -1 || m_min_scale < m_min_scale_in_db) // range is non-empty
     {
-      TileGenerator::generate(m_file_entry, 
+      TileGenerator::generate(m_file_entry.get_url(), 
                               m_min_scale_in_db, m_max_scale_in_db,
                               m_min_scale, m_max_scale,
                               m_callback);

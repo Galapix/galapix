@@ -18,7 +18,6 @@
 
 #include "jobs/tile_generation_job.hpp"
 
-#include <iostream>
 #include <boost/bind.hpp>
 
 #include "math/rect.hpp"
@@ -195,8 +194,6 @@ TileGenerationJob::run()
     if (!m_file_entry)
     { // generate FileEntry if not already given
 
-      //std::cout << "TileGenerationJob::run()" << std::endl;
-
       Size size;
       if (!SoftwareSurfaceFactory::get_size(m_url, size))
       {
@@ -240,10 +237,10 @@ TileGenerationJob::run()
       // catch weird database inconsisntencies
       if (m_min_scale == -1 || m_max_scale == -1)
       {
-        std::cout << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
+        log_debug << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
         for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
         {
-          std::cout << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
+          log_debug << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
         }
 
         m_min_scale = 0;
@@ -255,15 +252,15 @@ TileGenerationJob::run()
   try 
   {
     // Do the main work
-    TileGenerator::generate(m_file_entry, 
+    TileGenerator::generate(m_file_entry.get_url(), 
                             m_min_scale_in_db, m_max_scale_in_db,
                             m_min_scale, m_max_scale,
                             boost::bind(&TileGenerationJob::process_tile, this, _1));
   }
   catch(const std::exception& err)
   {
-    std::cout << "TileGenerationJob: Error while processing " << m_file_entry << std::endl;
-    std::cout << "  Error: " << err.what() << std::endl;
+    log_error << "Error while processing " << m_file_entry << std::endl;
+    log_error << "  Exception: " << err.what() << std::endl;
   }
 
   {

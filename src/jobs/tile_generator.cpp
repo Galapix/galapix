@@ -21,7 +21,6 @@
 #include <iostream>
 #include <sstream>
 
-#include "database/file_entry.hpp"
 #include "galapix/tile.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
@@ -30,7 +29,7 @@
 #include "util/software_surface.hpp"
 
 void
-TileGenerator::generate(const FileEntry& m_file_entry, 
+TileGenerator::generate(const URL& url,
                         int m_min_scale_in_db, int m_max_scale_in_db,
                         int min_scale, int max_scale,
                         const boost::function<void(Tile)>& callback)
@@ -48,28 +47,26 @@ TileGenerator::generate(const FileEntry& m_file_entry,
       out << "[" << m_min_scale_in_db << ".." << m_max_scale_in_db << "]";
     }
     out << " generating ["
-        << min_scale << ".." << max_scale << "]: " << m_file_entry.get_fileid()
-        << ": " 
-        << m_file_entry.get_url() << std::endl;
+        << min_scale << ".." << max_scale << "]: " << url << std::endl;
     log_warning << out.str();
   }
 
-  generate(m_file_entry.get_url(), m_file_entry.get_image_size(), min_scale, max_scale, callback);
+  generate(url, min_scale, max_scale, callback);
 
   if (0)
   {
     log_info << "TileGeneratorThread: processing scales "
-             << min_scale << "-" << max_scale << ": " << m_file_entry.get_url() << ": done" << std::endl;
+             << min_scale << "-" << max_scale << ": " << url << ": done" << std::endl;
   }
 }
 
 void
-TileGenerator::generate(const URL& url, const Size& orignal_size,
-                        int min_scale, int max_scale,
+TileGenerator::generate(const URL& url, int min_scale, int max_scale,
                         const boost::function<void(Tile)>& callback)
 {
   // Load the image, try to load an already downsized version if possible
-  SoftwareSurfacePtr surface = load_surface(url, min_scale);
+  Size orignal_size;
+  SoftwareSurfacePtr surface = load_surface(url, min_scale, &orignal_size);
 
   // Scale the image if loading a downsized version was not possible
   Size target_size(orignal_size.width  / Math::pow2(min_scale),
@@ -84,7 +81,7 @@ TileGenerator::generate(const URL& url, const Size& orignal_size,
 }
 
 SoftwareSurfacePtr
-TileGenerator::load_surface(const URL& url, int min_scale)
+TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
 {
   // Load the image
   switch(SoftwareSurfaceFactory::get_fileformat(url))
@@ -97,19 +94,23 @@ TileGenerator::load_surface(const URL& url, int min_scale)
               
       if (url.has_stdio_name())
       {
-        return JPEG::load_from_file(url.get_stdio_name(), jpeg_scale);
+        return JPEG::load_from_file(url.get_stdio_name(), jpeg_scale, size);
       }
       else
       {
         BlobPtr blob = url.get_blob();
-        return JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale);
+        return JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale, size);
       }
     }
     break;
 
     default:
-      return SoftwareSurfaceFactory::from_url(url);
-      break;
+    {
+      SoftwareSurfacePtr surface = SoftwareSurfaceFactory::from_url(url);
+      *size = surface->get_size();
+      return surface;
+    }
+    break;
   }
 }
 

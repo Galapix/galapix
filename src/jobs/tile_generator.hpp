@@ -30,16 +30,15 @@ class TileGenerator
 {
 private:
 public:
-  static void generate(const FileEntry& m_file_entry, 
+  static void generate(const URL& url,
                        int m_min_scale_in_db, int m_max_scale_in_db,
                        int min_scale, int max_scale,
                        const boost::function<void (Tile)>& callback);
 
-  static void generate(const URL& url, const Size& orignal_size,
-                       int min_scale, int max_scale,
+  static void generate(const URL& url, int min_scale, int max_scale,
                        const boost::function<void(Tile)>& callback);
 
-  static SoftwareSurfacePtr load_surface(const URL& url, int min_scale);
+  static SoftwareSurfacePtr load_surface(const URL& url, int min_scale, Size* size);
 
   static void cut_into_tiles(SoftwareSurfacePtr surface,
                              int min_scale, int max_scale,
