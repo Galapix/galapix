@@ -184,16 +184,14 @@ TileGenerationJob::is_aborted()
 void
 TileGenerationJob::run()
 {
-  SoftwareSurfaceFactory::FileFormat format;
-    
   { // Calculate min/max_scale
     boost::mutex::scoped_lock lock(m_state_mutex);
     assert(m_state == kWaiting);
     m_state = kRunning;
 
     if (!m_file_entry)
-    { // generate FileEntry if not already given
-
+    { 
+      // generate FileEntry if not already given
       Size size;
       if (!SoftwareSurfaceFactory::get_size(m_url, size))
       {
@@ -206,18 +204,14 @@ TileGenerationJob::run()
                                                         size.width, size.height);
         m_sig_file_callback(m_file_entry);
 
-        format = SoftwareSurfaceFactory::get_fileformat(m_url);
-
         // FIXME: here we are just guessing which tiles might be useful
         m_min_scale = std::max(0, m_file_entry.get_thumbnail_scale() - 3);
         m_max_scale = m_file_entry.get_thumbnail_scale();
       }
     }
     else
-    {  
-      format = SoftwareSurfaceFactory::get_fileformat(m_url);
-
-      if (format != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
+    {
+      if (SoftwareSurfaceFactory::get_fileformat(m_url) != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
       { 
         // Generate all tiles instead of just the requested for non-jpeg formats
         m_min_scale = 0;
@@ -232,19 +226,19 @@ TileGenerationJob::run()
         {
           m_min_scale = std::min(m_min_scale, i->scale);
         }
-      }
-
-      // catch weird database inconsisntencies
-      if (m_min_scale == -1 || m_max_scale == -1)
-      {
-        log_debug << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
-        for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+      
+        // catch weird database inconsisntencies
+        if (m_min_scale == -1 || m_max_scale == -1)
         {
-          log_debug << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
-        }
+          log_error << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
+          for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+          {
+            log_error << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
+          }
 
-        m_min_scale = 0;
-        m_max_scale = m_file_entry.get_thumbnail_scale();
+          m_min_scale = 0;
+          m_max_scale = m_file_entry.get_thumbnail_scale();
+        }
       }
     }
   }
@@ -252,9 +246,7 @@ TileGenerationJob::run()
   try 
   {
     // Do the main work
-    TileGenerator::generate(m_file_entry.get_url(), 
-                            m_min_scale_in_db, m_max_scale_in_db,
-                            m_min_scale, m_max_scale,
+    TileGenerator::generate(m_url, m_min_scale, m_max_scale,
                             boost::bind(&TileGenerationJob::process_tile, this, _1));
   }
   catch(const std::exception& err)

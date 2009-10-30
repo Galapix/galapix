@@ -84,9 +84,7 @@ private:
 
 public:
   TileGenerationJob(const JobHandle& job_handle, const URL& url);
-
   TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
-
   ~TileGenerationJob();
 
   /** Request a tile to be generated, returns true if the request will
