@@ -26,6 +26,7 @@
 #include "job/job_manager.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "jobs/multiple_tile_generation_job.hpp"
+#include "util/log.hpp"
 
 DatabaseThread* DatabaseThread::current_ = 0;
 
@@ -255,7 +256,7 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
                                     const boost::function<void (FileEntry)>& file_callback,
                                     const boost::function<void (FileEntry, Tile)>& tile_callback)
 {
-  //std::cout << "DatabaseThread::generate_file_entry: " << url << " " << job_handle << std::endl;
+  //log_info << " << url << " " << job_handle << std::endl;
   boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(job_handle, url));
 
   if (file_callback)

@@ -18,9 +18,8 @@
 
 #include "util/software_surface_factory.hpp"
 
-#include <iostream>
-
 #include "util/filesystem.hpp"
+#include "util/log.hpp"
 #include "util/software_surface_loader.hpp"
 #include "util/url.hpp"
 
@@ -150,7 +149,7 @@ SoftwareSurfaceFactory::get_size(const URL& url, Size& size)
     }
     else
     {
-      std::cout << "Warning: Using very slow SoftwareSurfaceFactory::get_size() for " << url.str() << std::endl;
+      log_warning << "Warning: Using very slow SoftwareSurfaceFactory::get_size() for " << url.str() << std::endl;
       switch(format)
       {
         case JPEG_FILEFORMAT:

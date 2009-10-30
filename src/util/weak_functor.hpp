@@ -22,6 +22,8 @@
 #include <iostream>
 #include <boost/weak_ptr.hpp>
 
+#include "util/log.hpp"
+
 /** 
  *  WeakFunctor allows you to create functors from objects that are
  *  stored in a shared_ptr<> by using a weak_ptr<>. When the object
@@ -56,7 +58,7 @@ public:
     }
     else
     {
-      std::cout << "WeakFunctor(): object deleted, not calling callback" << std::endl;
+      log_debug << "WeakFunctor(): object deleted, not calling callback" << std::endl;
     }
   }
 
@@ -70,7 +72,7 @@ public:
     }
     else
     {
-      std::cout << "WeakFunctor(): object deleted, not calling callback" << std::endl;
+      log_debug << "WeakFunctor(): object deleted, not calling callback" << std::endl;
     }
   }
 
@@ -84,7 +86,7 @@ public:
     }
     else
     {
-      std::cout << "WeakFunctor(): object deleted, not calling callback" << std::endl;
+      log_debug << "WeakFunctor(): object deleted, not calling callback" << std::endl;
     }
   }
 };

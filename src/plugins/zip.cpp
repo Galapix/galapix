@@ -22,7 +22,7 @@
 #include <sstream>
 
 #include "util/exec.hpp"
-
+
 std::string zip_error_to_string(int err)
 {
   // codes are taken from the unzip manpage
@@ -194,44 +194,5 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename)
     throw std::runtime_error(out.str());
   }
 }
-
-#ifdef __TEST_ZIP__
 
-  // g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp zip.cpp -o myzip -D__TEST_ZIP__  
-
-#include <iostream>
-
-  int main(int argc, char** argv)
-  {
-    try
-    {
-      if (argc == 2)
-      {
-        const std::vector<std::string>& files = Zip::get_filenames(argv[1]);
-        for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
-        {
-          std::cout << "File: '" << *i << "'" << std::endl;
-        }
-      }
-      else if (argc == 3)
-      {
-        BlobPtr blob = Zip::get_file(argv[1], argv[2]);
-        blob.write_to_file("/tmp/out.file");
-        std::cout << "Writting /tmp/out.file" << std::endl;
-      }
-      else 
-      {
-        std::cout << "Usage: " << argv[0] << " ZIPFILE" << std::endl;
-        std::cout << "       " << argv[0] << " ZIPFILE FILETOEXTRACT" << std::endl;
-      }
-    }
-    catch(std::exception& err) 
-    {
-      std::cout << "Error: " << err.what() << std::endl;
-    }
-    return 0;
-  }
-
-#endif
-
-  /* EOF */
+/* EOF */

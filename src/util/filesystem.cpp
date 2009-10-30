@@ -34,6 +34,7 @@
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
+#include "util/log.hpp"
 
 std::string Filesystem::home_directory;
 
@@ -340,12 +341,12 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         }
         else
         {
-          //std::cout << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
+          //log_debug << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
         }
       } 
       catch(std::exception& err) 
       {
-        std::cout << "Warning: " << err.what() << std::endl;
+        log_warning << "Warning: " << err.what() << std::endl;
       }
     }
   }

@@ -35,15 +35,11 @@ void jpeg_memory_init_source(j_decompress_ptr cinfo)
 
 void jpeg_memory_term_source(j_decompress_ptr)
 {
-  //std::cout << "jpeg_memory_term" << std::endl;
-
   // nothing to do destruct the source
 }
 
 boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
 {
-  //std::cout << "jpeg_memory_fill_input_buffer" << std::endl;
-
   if (cinfo->src->next_input_byte != NULL)
   {
     (cinfo)->err->msg_code = JERR_INPUT_EOF;
@@ -63,8 +59,6 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
 
 void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 {
-  //std::cout << "jpeg_memory_skip_input_data" << std::endl;
-
   cinfo->src->next_input_byte = cinfo->src->next_input_byte + num_bytes;
   cinfo->src->bytes_in_buffer = cinfo->src->bytes_in_buffer - num_bytes;
 

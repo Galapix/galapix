@@ -23,6 +23,7 @@
 
 #include "math/rect.hpp"
 #include "plugins/jpeg.hpp"
+#include "util/log.hpp"
 #include "util/software_surface_factory.hpp"
 #include "jobs/tile_generator.hpp"
 #include "database/tile_entry.hpp"
@@ -199,7 +200,7 @@ TileGenerationJob::run()
       Size size;
       if (!SoftwareSurfaceFactory::get_size(m_url, size))
       {
-        std::cout << "TileGenerationJob::run(): Couldn't get size for " << m_url << std::endl;
+        log_warning << "Couldn't get size for " << m_url << std::endl;
         return;
       }
       else

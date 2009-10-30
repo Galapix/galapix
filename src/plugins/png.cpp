@@ -19,8 +19,9 @@
 #include "plugins/png.hpp"
 
 #include <png.h>
-#include <iostream>
 #include <stdexcept>
+
+#include "util/log.hpp"
 
 struct PNGReadMemory
 {
@@ -53,26 +54,29 @@ PNG::get_size(void* data, int len, Size& size)
 
   if (setjmp(png_ptr->jmpbuf))
   {
+    // FIXME: get a proper error message from libpng
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-    std::cout << "PNG::get_size: setjmp: Couldn't load from memory" << std::endl;
+    log_warning << "PNG::get_size: setjmp: Couldn't load from memory" << std::endl;
     return false;
   }
+  else
+  {
+    PNGReadMemory png_memory;
+    png_memory.data = (png_bytep)data;
+    png_memory.len  = len;
+    png_memory.pos  = 0;
 
-  PNGReadMemory png_memory;
-  png_memory.data = (png_bytep)data;
-  png_memory.len  = len;
-  png_memory.pos  = 0;
+    png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
 
-  png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
+    png_read_info(png_ptr, info_ptr); 
 
-  png_read_info(png_ptr, info_ptr); 
+    size.width  = png_get_image_width(png_ptr, info_ptr);
+    size.height = png_get_image_height(png_ptr, info_ptr);
 
-  size.width  = png_get_image_width(png_ptr, info_ptr);
-  size.height = png_get_image_height(png_ptr, info_ptr);
+    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
-  png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-
-  return true;
+    return true;
+  }
 }
 
 bool
@@ -92,22 +96,24 @@ PNG::get_size(const std::string& filename, Size& size)
     if (setjmp(png_ptr->jmpbuf))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-      std::cout << "PNG::get_size: setjmp: Couldn't load " << filename << std::endl;
+      log_warning << "PNG::get_size: setjmp: Couldn't load " << filename << std::endl;
       return false;
     }
+    else
+    {
+      png_init_io(png_ptr, in);
 
-    png_init_io(png_ptr, in);
+      png_read_info(png_ptr, info_ptr); 
 
-    png_read_info(png_ptr, info_ptr); 
+      size.width  = png_get_image_width(png_ptr, info_ptr);
+      size.height = png_get_image_height(png_ptr, info_ptr);
 
-    size.width  = png_get_image_width(png_ptr, info_ptr);
-    size.height = png_get_image_height(png_ptr, info_ptr);
+      png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
-    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-
-    fclose(in);
+      fclose(in);
         
-    return true;
+      return true;
+    }
   }
 }
 

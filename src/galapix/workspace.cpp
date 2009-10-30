@@ -27,6 +27,7 @@
 #include "galapix/spiral_layouter.hpp"
 #include "galapix/tight_layouter.hpp"
 #include "util/file_reader.hpp"
+#include "util/log.hpp"
 
 struct ImageSorter
 {
@@ -94,20 +95,20 @@ Workspace::add_image(const ImagePtr& image)
 void
 Workspace::start_animation()
 {
-  //std::cout << "Start Animation" << std::endl;
+  //log_info << "Start Animation" << std::endl;
   m_progress = 0.0f;  
 }
 
 void
 Workspace::animation_finished()
 {
-  //std::cout << "Animation Finished" << std::endl;
+  //log_info << "Animation Finished" << std::endl;
 }
 
 void
 Workspace::layout_vertical()
 {
-  std::cout << "Workspace::layout_vertical()" << std::endl;
+  log_info << std::endl;
   float spacing = 10.0f;
   Vector2f next_pos(0.0f, 0.0f);
   for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
@@ -123,7 +124,7 @@ Workspace::layout_vertical()
 void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
-  std::cout << "Workspace::layout_aspect()" << std::endl;
+  log_info << std::endl;
   m_layouter.reset(new RegularLayouter(aspect_w, aspect_h));
   m_layouter->layout(m_images, true);
   start_animation();
@@ -132,7 +133,7 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
 void
 Workspace::layout_spiral()
 {
-  std::cout << "Workspace::layout_spiral()" << std::endl;
+  log_info << std::endl;
   m_layouter.reset(new SpiralLayouter());
   m_layouter->layout(m_images, true);
   start_animation();
@@ -141,7 +142,7 @@ Workspace::layout_spiral()
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
-  std::cout << "Workspace::layout_tight()" << std::endl;
+  log_info << std::endl;
   m_layouter.reset(new TightLayouter(aspect_w, aspect_h));
   m_layouter->layout(m_images, true);
   start_animation();
@@ -150,7 +151,7 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
 void
 Workspace::layout_random()
 {
-  std::cout << "Workspace::layout_random()" << std::endl;
+  log_info << std::endl;
   m_layouter.reset(new RandomLayouter());
   m_layouter->layout(m_images, true);
   start_animation();

@@ -21,7 +21,7 @@
 #include <stdexcept>
 
 #include "util/exec.hpp"
-
+
 std::vector<std::string>
 Rar::get_filenames(const std::string& rar_filename)
 {
@@ -65,44 +65,5 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
     return BlobPtr();
   }
 }
-
-#ifdef __TEST_RAR__
 
-// g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp rar.cpp -o myrar -D__TEST_RAR__  
-
-#include <iostream>
-
-int main(int argc, char** argv)
-{
-  try
-  {
-    if (argc == 2)
-    {
-      const std::vector<std::string>& files = Rar::get_filenames(argv[1]);
-      for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
-      {
-        std::cout << "File: '" << *i << "'" << std::endl;
-      }
-    }
-    else if (argc == 3)
-    {
-      BlobPtr blob = Rar::get_file(argv[1], argv[2]);
-      blob.write_to_file("/tmp/out.file");
-      std::cout << "Writting /tmp/out.file" << std::endl;
-    }
-    else 
-    {
-      std::cout << "Usage: " << argv[0] << " RARFILE" << std::endl;
-      std::cout << "       " << argv[0] << " RARFILE FILETOEXTRACT" << std::endl;
-    }
-  }
-  catch(std::exception& err) 
-  {
-    std::cout << "Error: " << err.what() << std::endl;
-  }
-  return 0;
-}
-
-#endif
-
 /* EOF */

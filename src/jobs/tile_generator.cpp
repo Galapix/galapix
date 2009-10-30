@@ -19,12 +19,14 @@
 #include "jobs/tile_generator.hpp"
 
 #include <iostream>
+#include <sstream>
 
 #include "database/file_entry.hpp"
 #include "galapix/tile.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 #include "plugins/jpeg.hpp"
+#include "util/log.hpp"
 #include "util/software_surface.hpp"
 
 void
@@ -35,26 +37,30 @@ TileGenerator::generate(const FileEntry& m_file_entry,
 {
   if (true /* verbose */)
   {
-    std::cout << "TileGenerator::generate(): have ";
+    std::ostringstream out;
+    out << "TileGenerator::generate(): have ";
     if (m_min_scale_in_db == -1 && m_max_scale_in_db == -1)
     {
-      std::cout << "[empty]";
+      out << "[empty]";
     }
     else
     {
-      std::cout << "[" << m_min_scale_in_db << ".." << m_max_scale_in_db << "]";
+      out << "[" << m_min_scale_in_db << ".." << m_max_scale_in_db << "]";
     }
-    std::cout << " generating ["
-              << min_scale << ".." << max_scale << "]: " << m_file_entry.get_fileid()
-              << ": " 
-              << m_file_entry.get_url() << std::endl;
+    out << " generating ["
+        << min_scale << ".." << max_scale << "]: " << m_file_entry.get_fileid()
+        << ": " 
+        << m_file_entry.get_url() << std::endl;
+    log_warning << out.str();
   }
 
   generate(m_file_entry.get_url(), m_file_entry.get_image_size(), min_scale, max_scale, callback);
 
   if (0)
-    std::cout << "TileGeneratorThread: processing scales "
-              << min_scale << "-" << max_scale << ": " << m_file_entry.get_url() << ": done" << std::endl;
+  {
+    log_info << "TileGeneratorThread: processing scales "
+             << min_scale << "-" << max_scale << ": " << m_file_entry.get_url() << ": done" << std::endl;
+  }
 }
 
 void
