@@ -32,13 +32,16 @@ public:
     return "jpeg";
   }
 
-  void register_loader(SoftwareSurfaceFactory& factory)
+  void register_loader(SoftwareSurfaceFactory& factory) const
   {
     factory.register_by_magick(this, 0, "\xff\xd8");
     factory.register_by_mime_type(this, "image/jpeg");
     factory.register_by_extension(this, "jpeg");
     factory.register_by_extension(this, "jpg");
   }
+
+  bool supports_from_file() const { return true; }
+  bool supports_from_mem()  const { return true; }
 
   SoftwareSurfacePtr from_file(const std::string& filename) const
   {

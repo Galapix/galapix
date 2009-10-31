@@ -41,10 +41,6 @@ public:
     UNKNOWN_FILEFORMAT 
   };
 
-  static FileFormat get_fileformat(const URL& url);
-
-  static SoftwareSurfacePtr from_url(const URL& url);
-
 private:
   static SoftwareSurfaceFactory* instance_;
 
@@ -52,13 +48,13 @@ public:
   static SoftwareSurfaceFactory* instance(); 
 
 private:
-  typedef std::map<std::string, SoftwareSurfaceLoader*> ExtensionMap;
-  typedef std::map<std::string, SoftwareSurfaceLoader*> MimeTypeMap;
+  typedef std::map<std::string, const SoftwareSurfaceLoader*> ExtensionMap;
+  typedef std::map<std::string, const SoftwareSurfaceLoader*> MimeTypeMap;
 
   std::vector<boost::shared_ptr<SoftwareSurfaceLoader> > m_loader;
   ExtensionMap m_extension_map;
   MimeTypeMap  m_mime_type_map;
-
+  
 public:
   SoftwareSurfaceFactory();
   ~SoftwareSurfaceFactory();
@@ -66,9 +62,14 @@ public:
   void add_loader(SoftwareSurfaceLoader* loader);
   bool has_supported_extension(const URL& url);
   
-  void register_by_magick(SoftwareSurfaceLoader* loader, int offset, const std::string& magick);
-  void register_by_mime_type(SoftwareSurfaceLoader* loader, const std::string& mime_type);
-  void register_by_extension(SoftwareSurfaceLoader* loader, const std::string& extension);
+  void register_by_magick(const SoftwareSurfaceLoader* loader, int offset, const std::string& magick);
+  void register_by_mime_type(const SoftwareSurfaceLoader* loader, const std::string& mime_type);
+  void register_by_extension(const SoftwareSurfaceLoader* loader, const std::string& extension);
+
+  SoftwareSurfacePtr from_url(const URL& url);
+
+private:
+  FileFormat get_fileformat(const URL& url);
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);

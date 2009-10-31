@@ -33,7 +33,7 @@ public:
     return "xcf";
   }
 
-  void register_loader(SoftwareSurfaceFactory& factory)
+  void register_loader(SoftwareSurfaceFactory& factory) const
   {
     factory.register_by_extension(this, "xcf");
     factory.register_by_extension(this, "xcf.bz2");
@@ -44,12 +44,15 @@ public:
     factory.register_by_magick(this, 0, "gimp xcf");
   }
 
-  virtual SoftwareSurfacePtr from_file(const std::string& filename)
+  bool supports_from_file() const { return true; }
+  bool supports_from_mem()  const { return true; }
+
+  SoftwareSurfacePtr from_file(const std::string& filename) const
   { 
     return XCF::load_from_file(filename);
   }
   
-  SoftwareSurfacePtr from_mem(uint8_t* data, int len)
+  SoftwareSurfacePtr from_mem(uint8_t* data, int len) const
   {
     return XCF::load_from_mem(data, len);
   }

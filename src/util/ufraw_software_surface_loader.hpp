@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_UTIL_UFRAW_SOFTWARE_SURFACE_LOADER_HPP
 #define HEADER_GALAPIX_UTIL_UFRAW_SOFTWARE_SURFACE_LOADER_HPP
 
+#include <assert.h>
+
 #include "plugins/ufraw.hpp"
 #include "util/software_surface_factory.hpp"
 
@@ -34,7 +36,7 @@ public:
     return "ufraw";
   }
 
-  void register_loader(SoftwareSurfaceFactory& factory)
+  void register_loader(SoftwareSurfaceFactory& factory) const
   {
     factory.register_by_extension(this, "3fr");
     factory.register_by_extension(this, "arw");
@@ -71,9 +73,17 @@ public:
     factory.register_by_mime_type(this, "image/x-sony-srf");
   }
 
+  bool supports_from_file() const { return true; }
+  bool supports_from_mem()  const { return false; }
+
   SoftwareSurfacePtr from_file(const std::string& filename) const
   {
     return UFRaw::load_from_file(filename);
+  }
+
+  SoftwareSurfacePtr from_mem(uint8_t* data, int len) const
+  {
+    assert(!"not implemented");
   }
 
 private:

@@ -34,22 +34,26 @@ public:
     return "imagemagick";
   }
 
-  void register_loader(SoftwareSurfaceFactory& factory)
+  void register_loader(SoftwareSurfaceFactory& factory) const
   {
     std::vector<std::string> lst = Imagemagick::get_supported_extensions();
-    for(std::vector<std::string>::iterator i = lst.begin();
+    for(std::vector<std::string>::const_iterator i = lst.begin();
         i != lst.end(); ++i)
     {
       factory.register_by_extension(this, *i);
     }
   }
 
-  SoftwareSurfacePtr from_file(const std::string& filename) 
+
+  bool supports_from_file() const { return true; }
+  bool supports_from_mem()  const { return true; }
+
+  SoftwareSurfacePtr from_file(const std::string& filename) const
   {
     return Imagemagick::load_from_file(filename);
   }
 
-  SoftwareSurfacePtr from_mem(uint8_t* data, int len) 
+  SoftwareSurfacePtr from_mem(uint8_t* data, int len) const
   {
     return Imagemagick::load_from_mem(data, len);
   }

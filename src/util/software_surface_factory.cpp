@@ -18,6 +18,8 @@
 
 #include "util/software_surface_factory.hpp"
 
+#include <sstream>
+
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
 #include "util/software_surface_loader.hpp"
@@ -119,50 +121,60 @@ SoftwareSurfaceFactory::from_url(const URL& url)
 {
   if (url.has_stdio_name())
   {
-    switch(get_fileformat(url))
+    std::string filename = url.get_stdio_name();
+    std::string extension = Filesystem::get_extension(filename);
+
+    ExtensionMap::iterator i = m_extension_map.find(extension);
+    if (i == m_extension_map.end())
     {
-      case JPEG_FILEFORMAT:
-        return JPEG::load_from_file(url.get_stdio_name());
-
-      case PNG_FILEFORMAT:
-        return PNG::load_from_file(url.get_stdio_name());
-
-      case XCF_FILEFORMAT:
-        return XCF::load_from_file(url.get_stdio_name());
-
-      case KRA_FILEFORMAT:
-        return KRA::load_from_file(url.get_stdio_name());
-
-      case MAGICK_FILEFORMAT:
-        return Imagemagick::load_from_file(url.get_stdio_name());
-
-      case SVG_FILEFORMAT:
-        return RSVG::load_from_file(url.get_stdio_name());
-            
-      default:
-        throw std::runtime_error("SoftwareSurfaceFactory::from_url(): " + url.str() + ": unknown file type");
-        return SoftwareSurfacePtr();
-    }  
+      std::ostringstream out;
+      out << "SoftwareSurfaceFactory::from_url(): " + url.str() + ": unknown file type";
+      throw std::runtime_error(out.str());
+    }
+    else
+    {
+      // Try to load from file first, then fallback to loading from
+      // memory blob
+      SoftwareSurfacePtr surface = i->second->from_file(filename);
+      if (surface)
+      {
+        return surface;
+      }
+      else
+      {
+        BlobPtr blob = url.get_blob();
+        surface = i->second->from_mem(blob->get_data(), blob->size());
+        if (surface)
+        {
+          return surface;
+        }
+        else
+        {
+          std::ostringstream out;
+          out << "SoftwareSurfaceFactory::from_url(): " + url.str() + ": failed to load";
+          throw std::runtime_error(out.str());        
+        }
+      }
+    }
   }
   else
   {
+    BlobPtr blob = url.get_blob();
+
     switch(get_fileformat(url))
     {
       case JPEG_FILEFORMAT:
       {
-        BlobPtr blob = url.get_blob();
         return JPEG::load_from_mem(blob->get_data(), blob->size());
       }
 
       case PNG_FILEFORMAT:
       {
-        BlobPtr blob = url.get_blob();
         return PNG::load_from_mem(blob->get_data(), blob->size());
       }
 
       case XCF_FILEFORMAT:
       {
-        BlobPtr blob = url.get_blob();
         return XCF::load_from_mem(blob->get_data(), blob->size());
       }
 
@@ -174,7 +186,6 @@ SoftwareSurfaceFactory::from_url(const URL& url)
 
       case MAGICK_FILEFORMAT:
       {
-        BlobPtr blob = url.get_blob();
         return Imagemagick::load_from_mem(blob->get_data(), blob->size());
       }
       /*
@@ -189,7 +200,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
       default:
         throw std::runtime_error("SoftwareSurfaceFactory::from_url(): " + url.str() + ": unknown file type");
         return SoftwareSurfacePtr();
-    }      
+    }
   }
 }
 
@@ -223,15 +234,15 @@ SoftwareSurfaceFactory::has_supported_extension(const URL& url)
 }
 
 void
-SoftwareSurfaceFactory::register_by_magick(SoftwareSurfaceLoader* loader, int offset, const std::string& magick)
+SoftwareSurfaceFactory::register_by_magick(const SoftwareSurfaceLoader* loader, int offset, const std::string& magick)
 {
   // FIXME: implement me
 }
 
 void
-SoftwareSurfaceFactory::register_by_mime_type(SoftwareSurfaceLoader* loader, const std::string& mime_type)
+SoftwareSurfaceFactory::register_by_mime_type(const SoftwareSurfaceLoader* loader, const std::string& mime_type)
 {
-  std::map<std::string, SoftwareSurfaceLoader*>::iterator i = m_mime_type_map.find(mime_type);
+  MimeTypeMap::iterator i = m_mime_type_map.find(mime_type);
   if (i == m_mime_type_map.end())
   {
     m_mime_type_map[mime_type] = loader;
@@ -243,9 +254,9 @@ SoftwareSurfaceFactory::register_by_mime_type(SoftwareSurfaceLoader* loader, con
 }
 
 void
-SoftwareSurfaceFactory::register_by_extension(SoftwareSurfaceLoader* loader, const std::string& extension)
+SoftwareSurfaceFactory::register_by_extension(const SoftwareSurfaceLoader* loader, const std::string& extension)
 {
-  std::map<std::string, SoftwareSurfaceLoader*>::iterator i = m_extension_map.find(extension);
+  ExtensionMap::iterator i = m_extension_map.find(extension);
   if (i == m_extension_map.end())
   {
     m_extension_map[extension] = loader;

@@ -33,7 +33,7 @@ public:
     return "png";
   }
 
-  void register_loader(SoftwareSurfaceFactory& factory)
+  void register_loader(SoftwareSurfaceFactory& factory) const
   {
     factory.register_by_extension(this, "png");
 
@@ -42,6 +42,9 @@ public:
     factory.register_by_mime_type(this, "image/png");
     factory.register_by_mime_type(this, "image/x-png");
   }
+
+  bool supports_from_file() const { return true; }
+  bool supports_from_mem()  const { return true; }
 
   SoftwareSurfacePtr from_file(const std::string& filename) const
   {
