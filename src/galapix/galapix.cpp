@@ -515,6 +515,8 @@ Galapix::main(int argc, char** argv)
       return EXIT_FAILURE;
     }
 
+    SoftwareSurfaceFactory software_surface_factory;
+
     run(opts);
 
     curl_global_cleanup();

@@ -38,22 +38,6 @@
 #include "util/ufraw_software_surface_loader.hpp"
 #include "util/xcf_software_surface_loader.hpp"
 
-SoftwareSurfaceFactory* SoftwareSurfaceFactory::instance_ = 0;
-
-SoftwareSurfaceFactory* 
-SoftwareSurfaceFactory::instance()
-{
-  if (instance_)
-  {
-    return instance_;
-  }
-  else
-  {
-    instance_ = new SoftwareSurfaceFactory();
-    return instance_;
-  }
-}
-
 SoftwareSurfaceFactory::FileFormat
 SoftwareSurfaceFactory::get_fileformat(const URL& url)
 {
@@ -209,13 +193,17 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
   m_extension_map(),
   m_mime_type_map()
 {
-  // order matters, first come, first serve, later registratinos will
-  // be ignored
+  // order matters, first come, first serve, later registrations for
+  // an already registered type will be ignored
   add_loader(new JPEGSoftwareSurfaceLoader);
   add_loader(new PNGSoftwareSurfaceLoader);
   add_loader(new XCFSoftwareSurfaceLoader);
   add_loader(new UFRawSoftwareSurfaceLoader);
   add_loader(new ImagemagickSoftwareSurfaceLoader);
+}
+
+SoftwareSurfaceFactory::~SoftwareSurfaceFactory()
+{
 }
 
 void

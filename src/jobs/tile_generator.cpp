@@ -92,7 +92,7 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
   }
   else
   {
-    SoftwareSurfacePtr surface = SoftwareSurfaceFactory::instance()->from_url(url);
+    SoftwareSurfacePtr surface = SoftwareSurfaceFactory::current().from_url(url);
     *size = surface->get_size();
     return surface;
   }

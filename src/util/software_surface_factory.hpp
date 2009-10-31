@@ -21,12 +21,13 @@
 
 #include <map>
 
+#include "util/currenton.hpp"
 #include "util/software_surface.hpp"
 
 class SoftwareSurfaceLoader;
 class URL;
 
-class SoftwareSurfaceFactory
+class SoftwareSurfaceFactory : public Currenton<SoftwareSurfaceFactory>
 {
 public:
   enum FileFormat 
@@ -40,12 +41,6 @@ public:
     UFRAW_FILEFORMAT, 
     UNKNOWN_FILEFORMAT 
   };
-
-private:
-  static SoftwareSurfaceFactory* instance_;
-
-public:
-  static SoftwareSurfaceFactory* instance(); 
 
 private:
   typedef std::map<std::string, const SoftwareSurfaceLoader*> ExtensionMap;

@@ -72,7 +72,7 @@ FileEntryGenerationJob::run()
       file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
                                                     size.width, size.height);
 
-      surface = SoftwareSurfaceFactory::instance()->from_url(m_url);
+      surface = SoftwareSurfaceFactory::current().from_url(m_url);
       size = surface->get_size();
       min_scale = 0;
       max_scale = file_entry.get_thumbnail_scale();
