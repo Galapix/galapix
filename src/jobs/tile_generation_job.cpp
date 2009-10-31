@@ -27,24 +27,6 @@
 #include "jobs/tile_generator.hpp"
 #include "database/tile_entry.hpp"
 
-TileGenerationJob::TileGenerationJob(const JobHandle& job_handle, const URL& url) :
-  Job(job_handle),
-  m_state_mutex(),
-  m_state(kWaiting),
-  m_url(url),
-  m_file_entry(),
-  m_min_scale(-1),
-  m_max_scale(-1),
-  m_min_scale_in_db(-1),
-  m_max_scale_in_db(-1),
-  m_tile_requests(),
-  m_late_tile_requests(),
-  m_tiles(),
-  m_sig_file_callback(),
-  m_sig_tile_callback()
-{
-}
-
 TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db) :
   Job(JobHandle::create()),
   m_state_mutex(),
@@ -189,56 +171,33 @@ TileGenerationJob::run()
     assert(m_state == kWaiting);
     m_state = kRunning;
 
-    if (!m_file_entry)
+    if (SoftwareSurfaceFactory::get_fileformat(m_url) != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
     { 
-      // generate FileEntry if not already given
-      Size size;
-      if (!SoftwareSurfaceFactory::get_size(m_url, size))
-      {
-        log_warning << "Couldn't get size for " << m_url << std::endl;
-        return;
-      }
-      else
-      {
-        m_file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                        size.width, size.height);
-        m_sig_file_callback(m_file_entry);
-
-        // FIXME: here we are just guessing which tiles might be useful
-        m_min_scale = std::max(0, m_file_entry.get_thumbnail_scale() - 3);
-        m_max_scale = m_file_entry.get_thumbnail_scale();
-      }
+      // Generate all tiles instead of just the requested for non-jpeg formats
+      m_min_scale = 0;
+      m_max_scale = m_file_entry.get_thumbnail_scale();
     }
     else
     {
-      if (SoftwareSurfaceFactory::get_fileformat(m_url) != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
-      { 
-        // Generate all tiles instead of just the requested for non-jpeg formats
-        m_min_scale = 0;
-        m_max_scale = m_file_entry.get_thumbnail_scale();
-      }
-      else
-      {
-        m_max_scale = (m_min_scale_in_db != -1) ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
-        m_min_scale = m_max_scale;
+      m_max_scale = (m_min_scale_in_db != -1) ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
+      m_min_scale = m_max_scale;
     
+      for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
+      {
+        m_min_scale = std::min(m_min_scale, i->scale);
+      }
+      
+      // catch weird database inconsisntencies
+      if (m_min_scale == -1 || m_max_scale == -1)
+      {
+        log_error << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
         for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
         {
-          m_min_scale = std::min(m_min_scale, i->scale);
+          log_error << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
         }
-      
-        // catch weird database inconsisntencies
-        if (m_min_scale == -1 || m_max_scale == -1)
-        {
-          log_error << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
-          for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
-          {
-            log_error << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
-          }
 
-          m_min_scale = 0;
-          m_max_scale = m_file_entry.get_thumbnail_scale();
-        }
+        m_min_scale = 0;
+        m_max_scale = m_file_entry.get_thumbnail_scale();
       }
     }
   }

@@ -83,7 +83,6 @@ private:
   boost::signal<void (FileEntry, Tile)> m_sig_tile_callback;
 
 public:
-  TileGenerationJob(const JobHandle& job_handle, const URL& url);
   TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
   ~TileGenerationJob();
 

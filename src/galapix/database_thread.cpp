@@ -24,8 +24,9 @@
 #include "database/database.hpp"
 #include "galapix/database_message.hpp"
 #include "job/job_manager.hpp"
-#include "jobs/tile_generation_job.hpp"
+#include "jobs/file_entry_generation_job.hpp"
 #include "jobs/multiple_tile_generation_job.hpp"
+#include "jobs/tile_generation_job.hpp"
 #include "util/log.hpp"
 
 DatabaseThread* DatabaseThread::current_ = 0;
@@ -257,7 +258,7 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
                                     const boost::function<void (FileEntry, Tile)>& tile_callback)
 {
   //log_info << " << url << " " << job_handle << std::endl;
-  boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(job_handle, url));
+  boost::shared_ptr<FileEntryGenerationJob> job_ptr(new FileEntryGenerationJob(job_handle, url));
 
   if (file_callback)
   {
@@ -272,8 +273,9 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
   job_ptr->sig_file_callback().connect(boost::bind(&DatabaseThread::receive_file, this, _1));
   job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1, _2));
 
-  m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
-  m_tile_generation_jobs.push_front(job_ptr);
+  m_tile_job_manager.request(job_ptr);
+  //m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
+  //m_tile_generation_jobs.push_front(job_ptr);
 }
 
 void
