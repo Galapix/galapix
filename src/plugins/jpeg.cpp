@@ -78,7 +78,16 @@ JPEG::load_from_mem(uint8_t* mem, int len, int scale, Size* image_size)
   MemJPEGDecompressor loader(mem, len);
   SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
 
-  return surface;
+  SoftwareSurface::Modifier modifier = EXIF::get_orientation(mem, len);
+
+  if (modifier == SoftwareSurface::kRot0)
+  {
+    return surface;
+  }
+  else
+  {
+    return surface->transform(modifier);
+  }
 }
 
 void
