@@ -30,6 +30,8 @@ class JPEG
 private:
 
 public:
+  static bool filename_is_jpeg(const std::string& filename);
+
   static Size get_size(const std::string& filename);
   static Size get_size(uint8_t* data, int len);
 

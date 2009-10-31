@@ -22,12 +22,13 @@
 #include <setjmp.h>
 
 #include "math/size.hpp"
-#include "plugins/jpeg.hpp"
-#include "plugins/file_jpeg_compressor.hpp"
-#include "plugins/mem_jpeg_compressor.hpp"
-#include "plugins/file_jpeg_decompressor.hpp"
-#include "plugins/mem_jpeg_decompressor.hpp"
 #include "plugins/exif.hpp"
+#include "plugins/file_jpeg_compressor.hpp"
+#include "plugins/file_jpeg_decompressor.hpp"
+#include "plugins/jpeg.hpp"
+#include "plugins/mem_jpeg_compressor.hpp"
+#include "plugins/mem_jpeg_decompressor.hpp"
+#include "util/filesystem.hpp"
 
 namespace {
 
@@ -51,7 +52,16 @@ Size apply_orientation(SoftwareSurface::Modifier modifier, const Size& size)
 }
 
 } // namespace
-
+
+
+bool
+JPEG::filename_is_jpeg(const std::string& filename)
+{
+  // FIXME: Merge this with util/jpeg_software_surface_loader
+  return (Filesystem::get_extension(filename) == "jpg" ||
+          Filesystem::get_extension(filename) == "jpeg");
+}
+
 Size
 JPEG::get_size(const std::string& filename)
 {
@@ -59,7 +69,8 @@ JPEG::get_size(const std::string& filename)
   Size size = loader.read_size();
   return apply_orientation(EXIF::get_orientation(filename), size);
 }
-
+
+
 Size
 JPEG::get_size(uint8_t* data, int len)
 {
@@ -67,7 +78,8 @@ JPEG::get_size(uint8_t* data, int len)
   Size size = loader.read_size();
   return apply_orientation(EXIF::get_orientation(data, len), size);
 }
-
+
+
 SoftwareSurfacePtr
 JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
 {
@@ -85,7 +97,8 @@ JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
     return surface->transform(modifier);
   }
 }
-
+
+
 SoftwareSurfacePtr
 JPEG::load_from_mem(uint8_t* mem, int len, int scale, Size* image_size)
 {
@@ -103,14 +116,16 @@ JPEG::load_from_mem(uint8_t* mem, int len, int scale, Size* image_size)
     return surface->transform(modifier);
   }
 }
-
+
+
 void
 JPEG::save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename)
 {
   FileJPEGCompressor compressor(filename);
   compressor.save(surface, quality);
 }
-
+
+
 BlobPtr
 JPEG::save(const SoftwareSurfacePtr& surface, int quality)
 {
@@ -120,5 +135,5 @@ JPEG::save(const SoftwareSurfacePtr& surface, int quality)
   // FIXME: Unneeded copy of data
   return Blob::copy(data);
 }
-  
+  
 /* EOF */
