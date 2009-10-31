@@ -34,6 +34,7 @@
 #include "sdl/sdl_framebuffer.hpp"
 #include "spnav/space_navigator.hpp"
 #include "util/filesystem.hpp"
+#include "util/log.hpp"
 
 #ifdef HAVE_SPACE_NAVIGATOR
 #  include <spnav.h>
@@ -50,7 +51,7 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
 {
   if (SDL_Init(SDL_INIT_VIDEO) != 0)
   {
-    std::cout << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
+    log_error << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
     exit(1);
   }
   atexit(SDL_Quit); 
@@ -82,7 +83,7 @@ SDLViewer::process_event(const SDL_Event& event)
           case SPNAV_EVENT_MOTION:
           {
             if (0)
-              std::cout << "MotionEvent: " 
+              log_debug << "MotionEvent: " 
                         << "("
                         << spnav_ev->motion.x << ", "
                         << spnav_ev->motion.y << ", "
@@ -474,7 +475,7 @@ SDLViewer::run()
   // space_navigator_thread.join();
 #endif
 
-  std::cout << "SDLViewer: done" << std::endl;
+  log_info << "done" << std::endl;
 }
 
 /* EOF */
