@@ -29,19 +29,6 @@ class URL;
 
 class SoftwareSurfaceFactory : public Currenton<SoftwareSurfaceFactory>
 {
-public:
-  enum FileFormat 
-  { 
-    JPEG_FILEFORMAT,
-    PNG_FILEFORMAT,
-    XCF_FILEFORMAT, 
-    KRA_FILEFORMAT, 
-    SVG_FILEFORMAT, 
-    MAGICK_FILEFORMAT, 
-    UFRAW_FILEFORMAT, 
-    UNKNOWN_FILEFORMAT 
-  };
-
 private:
   typedef std::map<std::string, const SoftwareSurfaceLoader*> ExtensionMap;
   typedef std::map<std::string, const SoftwareSurfaceLoader*> MimeTypeMap;
@@ -62,9 +49,6 @@ public:
   void register_by_extension(const SoftwareSurfaceLoader* loader, const std::string& extension);
 
   SoftwareSurfacePtr from_url(const URL& url);
-
-private:
-  FileFormat get_fileformat(const URL& url);
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);

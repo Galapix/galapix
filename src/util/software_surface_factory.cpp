@@ -38,156 +38,6 @@
 #include "util/ufraw_software_surface_loader.hpp"
 #include "util/xcf_software_surface_loader.hpp"
 
-SoftwareSurfaceFactory::FileFormat
-SoftwareSurfaceFactory::get_fileformat(const URL& url)
-{
-  std::string filename = url.str();
-
-  // FIXME: Make this more clever
-  if (Filesystem::has_extension(filename, ".jpg")  ||
-      Filesystem::has_extension(filename, ".JPG")  ||
-      Filesystem::has_extension(filename, ".jpe")  ||
-      Filesystem::has_extension(filename, ".JPE")  ||
-      Filesystem::has_extension(filename, ".JPEG") ||
-      Filesystem::has_extension(filename, ".jpeg"))
-  {
-    return JPEG_FILEFORMAT;
-  }
-  else if (Filesystem::has_extension(filename, ".CR2"))
-  {
-    return UFRAW_FILEFORMAT;
-  }
-  else if (Filesystem::has_extension(filename, ".PNG")  ||
-           Filesystem::has_extension(filename, ".png"))
-  {
-    return PNG_FILEFORMAT;
-  }
-  else if (Filesystem::has_extension(filename, ".xcf") ||
-           Filesystem::has_extension(filename, ".xcf.bz2") ||
-           Filesystem::has_extension(filename, ".xcf.gz"))
-  {
-    return XCF_FILEFORMAT;
-  }
-  else if (Filesystem::has_extension(filename, ".kra"))
-  {
-    return KRA_FILEFORMAT;
-  }
-  else if (Filesystem::has_extension(filename, ".svg"))
-  {
-    return SVG_FILEFORMAT;
-  }
-  else if (Filesystem::has_extension(filename, ".gif") ||
-           Filesystem::has_extension(filename, ".GIF") ||
-           Filesystem::has_extension(filename, ".pnm") ||
-           Filesystem::has_extension(filename, ".bmp") ||
-           Filesystem::has_extension(filename, ".BMP") ||
-           Filesystem::has_extension(filename, ".tif") ||
-           Filesystem::has_extension(filename, ".TIF") ||
-           Filesystem::has_extension(filename, ".tiff") ||
-           Filesystem::has_extension(filename, ".iff") ||
-           Filesystem::has_extension(filename, ".IFF"))
-    // FIXME: Add more stuff
-  {
-    return MAGICK_FILEFORMAT;
-  }
-  //else if (Filesystem::has_extension(filename, ".cmx")) ||
-  //    {
-  //    return CMX_FILEFORMAT;
-  //  }
-  else
-  {
-    return UNKNOWN_FILEFORMAT;
-  }
-}
-
-SoftwareSurfacePtr
-SoftwareSurfaceFactory::from_url(const URL& url)
-{
-  if (url.has_stdio_name())
-  {
-    std::string filename = url.get_stdio_name();
-    std::string extension = Filesystem::get_extension(filename);
-
-    ExtensionMap::iterator i = m_extension_map.find(extension);
-    if (i == m_extension_map.end())
-    {
-      std::ostringstream out;
-      out << "SoftwareSurfaceFactory::from_url(): " + url.str() + ": unknown file type";
-      throw std::runtime_error(out.str());
-    }
-    else
-    {
-      // Try to load from file first, then fallback to loading from
-      // memory blob
-      SoftwareSurfacePtr surface = i->second->from_file(filename);
-      if (surface)
-      {
-        return surface;
-      }
-      else
-      {
-        BlobPtr blob = url.get_blob();
-        surface = i->second->from_mem(blob->get_data(), blob->size());
-        if (surface)
-        {
-          return surface;
-        }
-        else
-        {
-          std::ostringstream out;
-          out << "SoftwareSurfaceFactory::from_url(): " + url.str() + ": failed to load";
-          throw std::runtime_error(out.str());        
-        }
-      }
-    }
-  }
-  else
-  {
-    BlobPtr blob = url.get_blob();
-
-    switch(get_fileformat(url))
-    {
-      case JPEG_FILEFORMAT:
-      {
-        return JPEG::load_from_mem(blob->get_data(), blob->size());
-      }
-
-      case PNG_FILEFORMAT:
-      {
-        return PNG::load_from_mem(blob->get_data(), blob->size());
-      }
-
-      case XCF_FILEFORMAT:
-      {
-        return XCF::load_from_mem(blob->get_data(), blob->size());
-      }
-
-      //           case KRA_FILEFORMAT:
-      //             {
-      //               BlobPtr blob = url.get_blob();
-      //               return KRA::load_from_mem(blob->get_data(), blob->size());
-      //             }
-
-      case MAGICK_FILEFORMAT:
-      {
-        return Imagemagick::load_from_mem(blob->get_data(), blob->size());
-      }
-      /*
-        case SVG_FILEFORMAT:
-        {
-        BlobPtr blob = url.get_blob();
-        return RSVG::load_from_mem(blob->get_data(), blob->size());
-        }            
-        break;
-      */
-
-      default:
-        throw std::runtime_error("SoftwareSurfaceFactory::from_url(): " + url.str() + ": unknown file type");
-        return SoftwareSurfacePtr();
-    }
-  }
-}
-
 SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
   m_loader(),
   m_extension_map(),
@@ -252,6 +102,84 @@ SoftwareSurfaceFactory::register_by_extension(const SoftwareSurfaceLoader* loade
   else
   {
     // ignoring registration if something is already registered
+  }
+}
+
+SoftwareSurfacePtr
+SoftwareSurfaceFactory::from_url(const URL& url)
+{
+  log_debug << url << std::endl;
+
+  if (url.has_stdio_name())
+  {
+    std::string filename = url.get_stdio_name();
+    std::string extension = Filesystem::get_extension(filename);
+
+    ExtensionMap::iterator i = m_extension_map.find(extension);
+    if (i == m_extension_map.end())
+    {
+      std::ostringstream out;
+      out << "SoftwareSurfaceFactory::from_url(): " << filename << ": unknown file type";
+      throw std::runtime_error(out.str());
+    }
+    else
+    {
+      const SoftwareSurfaceLoader& loader = *i->second;
+
+      if (loader.supports_from_file())
+      {
+        return loader.from_file(filename);
+      }
+      else if (loader.supports_from_mem())
+      {
+        BlobPtr blob = Blob::from_file(filename);
+        return loader.from_mem(blob->get_data(), blob->size());
+      }
+      else
+      {
+        throw std::runtime_error("SoftwareSurfaceFactory::from_url(): loader does not support loading");
+      }
+    }
+  }
+  else
+  {
+    std::string mime_type;
+    BlobPtr blob = url.get_blob(&mime_type);
+
+    const SoftwareSurfaceLoader* loader = NULL;
+
+    // try to find a loader by mime-type
+    if (!mime_type.empty())
+    {
+      MimeTypeMap::const_iterator i = m_mime_type_map.find(mime_type);
+      if (i != m_mime_type_map.end())
+      {
+        loader = i->second;
+      }
+    }
+
+    // try to find a loader by file extension
+    if (!loader)
+    {
+      std::string extension = Filesystem::get_extension(url.str());
+      ExtensionMap::iterator i = m_mime_type_map.find(extension);
+      if (i != m_extension_map.end())
+      {
+        loader = i->second;
+      }
+    }
+
+    // load the image or fail if no loader is present
+    if (!loader)
+    {
+      std::ostringstream out;
+      out << "SoftwareSurfaceFactory::from_url(): " << url.str() << ": unknown file type";
+      throw std::runtime_error(out.str());      
+    }
+    else
+    {
+      return loader->from_mem(blob->get_data(), blob->size()); 
+    }
   }
 }
 
