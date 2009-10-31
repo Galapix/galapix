@@ -65,19 +65,9 @@ TileGenerator::generate(const URL& url, int min_scale, int max_scale,
                         const boost::function<void(Tile)>& callback)
 {
   // Load the image, try to load an already downsized version if possible
-  Size orignal_size;
-  SoftwareSurfacePtr surface = load_surface(url, min_scale, &orignal_size);
-
-  // Scale the image if loading a downsized version was not possible
-  Size target_size(orignal_size.width  / Math::pow2(min_scale),
-                   orignal_size.height / Math::pow2(min_scale));
-
-  if (target_size != surface->get_size())
-  {
-    surface = surface->scale(target_size);
-  }
-
-  cut_into_tiles(surface, min_scale, max_scale, callback);
+  Size original_size;
+  SoftwareSurfacePtr surface = load_surface(url, min_scale, &original_size);
+  cut_into_tiles(surface, original_size, min_scale, max_scale, callback);
 }
 
 SoftwareSurfacePtr
@@ -116,9 +106,22 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
 
 void
 TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
+                              const Size& original_size,
                               int min_scale, int max_scale,
                               const boost::function<void (Tile)>& callback)
 {
+  // Scale the image if loading a downsized version was not possible
+  // or the downscale wasn't enough
+  Size target_size(original_size.width  / Math::pow2(min_scale),
+                   original_size.height / Math::pow2(min_scale));
+
+  if (target_size != surface->get_size())
+  {
+    log_debug << "image doesn't match target size, doing scaling: " 
+              << target_size << " vs " << surface->get_size() << std::endl;
+    surface = surface->scale(target_size);
+  }
+
   // Cut the given image into tiles, give created tiles to callback(),
   // surface is expected to be pre-scaled and already at min_scale size
   int scale = min_scale;

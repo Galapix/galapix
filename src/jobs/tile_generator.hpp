@@ -40,7 +40,12 @@ public:
 
   static SoftwareSurfacePtr load_surface(const URL& url, int min_scale, Size* size);
 
+  /** Takes the given surface and cuts it into tiles which are then
+      passed to callback. Surface can already be prescaled.
+      min_scale/max_scale are the exact range for which tiles are
+      generated. */
   static void cut_into_tiles(SoftwareSurfacePtr surface,
+                             const Size& original_size,
                              int min_scale, int max_scale,
                              const boost::function<void (Tile)>& callback);
 

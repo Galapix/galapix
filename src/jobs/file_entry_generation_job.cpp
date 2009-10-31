@@ -20,9 +20,11 @@
 
 #include <boost/bind.hpp>
 
-#include "util/software_surface_factory.hpp"
-#include "util/log.hpp"
 #include "jobs/tile_generator.hpp"
+#include "plugins/jpeg.hpp"
+#include "util/filesystem.hpp"
+#include "util/log.hpp"
+#include "util/software_surface_factory.hpp"
 
 FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url) :
   Job(job_handle),
@@ -35,34 +37,55 @@ FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, cons
 void
 FileEntryGenerationJob::run()
 {
-  // generate FileEntry if not already given
-  Size size;
-  if (!SoftwareSurfaceFactory::get_size(m_url, size))
+  try 
   {
-    log_warning << "Couldn't get size for " << m_url << std::endl;
-    return;
-  }
-  else
-  {
-    FileEntry file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                            size.width, size.height);
+    SoftwareSurfacePtr surface;
+    Size size;
+    int min_scale;
+    int max_scale;
+    FileEntry file_entry;
+
+    if (m_url.has_stdio_name() && JPEG::filename_is_jpeg(m_url.get_stdio_name()))
+    {
+      size = JPEG::get_size(m_url.get_stdio_name());
+
+      // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
+      file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
+                                                    size.width, size.height);
+
+      // FIXME: here we are just guessing which tiles might be useful,
+      // there might be a better way to pick \a min_scale
+      min_scale = std::max(0, file_entry.get_thumbnail_scale() - 3);
+      max_scale = file_entry.get_thumbnail_scale();
+
+      // 2^3 is the highest scale JPEG supports, so we limit the
+      // min_scale to that
+      min_scale = Math::min(min_scale, 3);
+
+      // FIXME: recalc min_scale from jpeg scale
+      surface = JPEG::load_from_file(m_url.get_stdio_name(), Math::pow2(min_scale));
+    }
+    else
+    {
+      // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
+      file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
+                                                    size.width, size.height);
+
+      surface = SoftwareSurfaceFactory::from_url(m_url);
+      size = surface->get_size();
+      min_scale = 0;
+      max_scale = file_entry.get_thumbnail_scale();
+    }
+
     m_sig_file_callback(file_entry);
-
-    // FIXME: here we are just guessing which tiles might be useful
-    int min_scale = std::max(0, file_entry.get_thumbnail_scale() - 3);
-    int max_scale = file_entry.get_thumbnail_scale();
-
-    try 
-    {
-      // Do the main work
-      TileGenerator::generate(m_url, min_scale, max_scale, 
-                              boost::bind(&FileEntryGenerationJob::process_tile, this, file_entry, _1));
-    }
-    catch(const std::exception& err)
-    {
-      log_error << "Error while processing " << file_entry << std::endl;
-      log_error << "  Exception: " << err.what() << std::endl;
-    }
+    
+    TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale, 
+                                  boost::bind(&FileEntryGenerationJob::process_tile, this, file_entry, _1));
+  }
+  catch(const std::exception& err)
+  {
+    log_error << "Error while processing " << m_url << std::endl;
+    log_error << "  Exception: " << err.what() << std::endl;
   }
 }
 
