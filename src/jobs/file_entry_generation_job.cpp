@@ -69,11 +69,10 @@ FileEntryGenerationJob::run()
     else
     {
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
-      file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                    size.width, size.height);
-
       surface = SoftwareSurfaceFactory::current().from_url(m_url);
       size = surface->get_size();
+      file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
+                                                    size.width, size.height);
       min_scale = 0;
       max_scale = file_entry.get_thumbnail_scale();
     }
