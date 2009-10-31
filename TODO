@@ -77,10 +77,12 @@ User Interface:
 Other Things:
 -------------
 
+* double-load of .kra files is still present
+
 * add more custom sorter (sort by date, ...)
 
 * need to handle mtime properly (checking is expensive for thousands
-  of images)
+  of images), currently mtime is recorded, but not checked on load
 
 * sorting needs to be changed, as a TileProvider doesn't necesarrily
   have a URL (pass URL and TileProvider to Image? Have a
