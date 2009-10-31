@@ -33,8 +33,7 @@ Size
 JPEG::get_size(const std::string& filename)
 {
   FileJPEGDecompressor loader(filename);
-  loader.read_header();
-  Size size = loader.get_size();
+  Size size = loader.read_size();
 
   SoftwareSurface::Modifier modifier = EXIF::get_orientation(filename);
   switch(modifier)

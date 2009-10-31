@@ -47,14 +47,7 @@ JPEGDecompressor::~JPEGDecompressor()
 }
 
 Size
-JPEGDecompressor::get_size() const
-{
-  return Size(m_cinfo.image_width,
-              m_cinfo.image_height);
-}
-
-void
-JPEGDecompressor::read_header()
+JPEGDecompressor::read_size()
 {
   if (setjmp(m_err.setjmp_buffer))
   {
@@ -62,12 +55,15 @@ JPEGDecompressor::read_header()
     (m_cinfo.err->format_message)(reinterpret_cast<jpeg_common_struct*>(&m_cinfo), buffer);
 
     std::ostringstream out;
-    out << "JPEG::read_header(): " /*<< filename << ": "*/ << buffer;
+    out << "JPEG::read_size(): " /*<< filename << ": "*/ << buffer;
     throw std::runtime_error(out.str());
   }
   else
   {
     jpeg_read_header(&m_cinfo, /*require_image*/ FALSE);
+
+    return Size(m_cinfo.image_width,
+                m_cinfo.image_height);
   }
 }
 

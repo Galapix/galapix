@@ -45,9 +45,7 @@ protected:
 public:
   virtual ~JPEGDecompressor();
   
-  Size get_size() const;
-
-  void read_header();
+  Size read_size();
   SoftwareSurfacePtr read_image(int scale, Size* image_size);
 
 private:
