@@ -210,11 +210,15 @@ Filesystem::get_extension(const std::string& pathname)
   // filename, instead of the whole pathname
   std::string::size_type p = pathname.rfind('.');
   std::string extension = pathname.substr(p+1, pathname.size() - p);
+
+  std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+
   if (extension == "gz" || 
       extension == "bz2")
   {
     p = pathname.rfind('.', p-1);
     extension = pathname.substr(p+1, pathname.size() - p);
+    std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
     return extension;
   }
   else
