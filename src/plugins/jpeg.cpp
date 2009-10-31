@@ -28,14 +28,11 @@
 #include "plugins/file_jpeg_decompressor.hpp"
 #include "plugins/mem_jpeg_decompressor.hpp"
 #include "plugins/exif.hpp"
-
-Size
-JPEG::get_size(const std::string& filename)
-{
-  FileJPEGDecompressor loader(filename);
-  Size size = loader.read_size();
 
-  SoftwareSurface::Modifier modifier = EXIF::get_orientation(filename);
+namespace {
+
+Size apply_orientation(SoftwareSurface::Modifier modifier, const Size& size)
+{
   switch(modifier)
   {
     case SoftwareSurface::kRot90:
@@ -51,6 +48,24 @@ JPEG::get_size(const std::string& filename)
     default:
       return size;
   }
+}
+
+} // namespace
+
+Size
+JPEG::get_size(const std::string& filename)
+{
+  FileJPEGDecompressor loader(filename);
+  Size size = loader.read_size();
+  return apply_orientation(EXIF::get_orientation(filename), size);
+}
+
+Size
+JPEG::get_size(uint8_t* data, int len)
+{
+  MemJPEGDecompressor loader(data, len);
+  Size size = loader.read_size();
+  return apply_orientation(EXIF::get_orientation(data, len), size);
 }
 
 SoftwareSurfacePtr
