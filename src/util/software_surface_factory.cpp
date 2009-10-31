@@ -49,10 +49,19 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
   // an already registered type will be ignored
   add_loader(new JPEGSoftwareSurfaceLoader);
   add_loader(new PNGSoftwareSurfaceLoader);
-  add_loader(new XCFSoftwareSurfaceLoader);
+
+  if (XCF::is_available())
+    add_loader(new XCFSoftwareSurfaceLoader);
+
+  if (UFRaw::is_available())
   add_loader(new UFRawSoftwareSurfaceLoader);
-  add_loader(new RSVGSoftwareSurfaceLoader);
-  add_loader(new KRASoftwareSurfaceLoader);
+
+  if (RSVG::is_available())
+    add_loader(new RSVGSoftwareSurfaceLoader);
+
+  if (KRA::is_available())
+    add_loader(new KRASoftwareSurfaceLoader);
+
   add_loader(new ImagemagickSoftwareSurfaceLoader);
 }
 

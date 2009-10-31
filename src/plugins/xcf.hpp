@@ -23,21 +23,23 @@
 #include <vector>
 
 #include "util/software_surface.hpp"
-
+
 class URL;
 class Size;
-
+
 class XCF
 {
 private:
 public:
+  static bool is_available();
+  
   static std::vector<std::string> get_layers(const URL& url);
   static bool get_size(const std::string& filename, Size& size);
 
   static SoftwareSurfacePtr load_from_file(const std::string& filename);
   static SoftwareSurfacePtr load_from_mem(void* data, int len);
 };
-
+
 #endif
 
 /* EOF */

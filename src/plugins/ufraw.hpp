@@ -28,6 +28,7 @@ class Size;
 class UFRaw
 {
 public:
+  static bool is_available();
   static SoftwareSurfacePtr load_from_file(const std::string& filename); 
 };
 

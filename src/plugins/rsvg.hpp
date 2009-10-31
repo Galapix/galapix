@@ -22,15 +22,16 @@
 #include <string>
 
 #include "util/software_surface.hpp"
-
+
 class URL;
-
+
 class RSVG
 {
 public:
+  static bool is_available();
   static SoftwareSurfacePtr load_from_file(const std::string& filename);
 };
-
+
 #endif
 
 /* EOF */

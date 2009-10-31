@@ -25,8 +25,10 @@
 #include "math/size.hpp"
 #include "plugins/pnm.hpp"
 #include "util/exec.hpp"
+#include "util/filesystem.hpp"
+#include "util/log.hpp"
 #include "util/url.hpp"
-
+
 // Example xcfinfo output:
 // Version 0, 800x800 RGB color, 6 layers, compressed RLE
 //  ...
@@ -71,6 +73,22 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
   }
   
   return layer_names;
+}
+
+bool
+XCF::is_available()
+{
+  try 
+  {
+    std::string exe = Filesystem::find_exe("xcfinfo");
+    log_info << "found " << exe << std::endl;
+    return true;
+  }
+  catch(std::exception& err)
+  {
+    log_warning << err.what() << std::endl;
+    return false;
+  }  
 }
 
 std::vector<std::string>
@@ -174,5 +192,5 @@ XCF::load_from_mem(void* data, int len)
     return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
   }
 }
-
+
 /* EOF */

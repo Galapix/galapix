@@ -20,10 +20,28 @@
 
 #include <stdexcept>
 
-#include "util/exec.hpp"
-#include "util/url.hpp"
 #include "plugins/pnm.hpp"
-
+#include "util/exec.hpp"
+#include "util/filesystem.hpp"
+#include "util/log.hpp"
+#include "util/url.hpp"
+
+bool
+UFRaw::is_available()
+{
+  try 
+  {
+    std::string exe = Filesystem::find_exe("ufraw-batch");
+    log_info << "found " << exe << std::endl;
+    return true;
+  }
+  catch(std::exception& err)
+  {
+    log_warning << err.what() << std::endl;
+    return false;
+  }  
+}
+
 SoftwareSurfacePtr
 UFRaw::load_from_file(const std::string& filename)
 {
@@ -43,5 +61,5 @@ UFRaw::load_from_file(const std::string& filename)
     return PNM::load_from_mem(&*ufraw.get_stdout().begin(), ufraw.get_stdout().size());
   }
 }
-
+
 /* EOF */

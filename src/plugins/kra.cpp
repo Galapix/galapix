@@ -18,9 +18,27 @@
 
 #include "plugins/kra.hpp"
 
-#include "util/exec.hpp"
 #include "plugins/png.hpp"
-
+#include "util/exec.hpp"
+#include "util/filesystem.hpp"
+#include "util/log.hpp"
+
+bool
+KRA::is_available()
+{    
+  try 
+  {
+    std::string exe = Filesystem::find_exe("koconverter");
+    log_info << "found " << exe << std::endl;
+    return true;
+  }
+  catch(std::exception& err)
+  {
+    log_warning << err.what() << std::endl;
+    return false;
+  }
+}
+
 bool
 KRA::get_size(const std::string& filename, Size& size)
 {
@@ -55,5 +73,5 @@ KRA::load_from_file(const std::string& filename)
   
 //   return PNG::load_from_mem((uint8_t*)&*koconverter.get_stdout().begin(), koconverter.get_stdout().size());
 // }
-
+
 /* EOF */

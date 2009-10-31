@@ -20,10 +20,28 @@
 
 #include <stdexcept>
 
-#include "util/url.hpp"
-#include "util/exec.hpp"
 #include "plugins/png.hpp"
-
+#include "util/exec.hpp"
+#include "util/filesystem.hpp"
+#include "util/log.hpp"
+#include "util/url.hpp"
+
+bool
+RSVG::is_available()
+{
+  try 
+  {
+    std::string exe = Filesystem::find_exe("rsvg");
+    log_info << "found " << exe << std::endl;
+    return true;
+  }
+  catch(std::exception& err)
+  {
+    log_warning << err.what() << std::endl;
+    return false;
+  }
+}
+
 SoftwareSurfacePtr
 RSVG::load_from_file(const std::string& filename)
 {
@@ -44,5 +62,5 @@ RSVG::load_from_file(const std::string& filename)
     throw std::runtime_error("RSVG::load_from_file(): " + std::string(rsvg.get_stderr().begin(), rsvg.get_stderr().end()));
   }
 }
-
+
 /* EOF */
