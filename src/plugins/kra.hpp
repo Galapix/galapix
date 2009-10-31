@@ -27,7 +27,6 @@ class KRA
 {
 public:
   static bool is_available();
-  static bool get_size(const std::string& filename, Size& size);
   static SoftwareSurfacePtr load_from_file(const std::string& filename);
 };
 
