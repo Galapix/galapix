@@ -26,7 +26,9 @@
 class CURLHandler
 {
 public:
-  static BlobPtr get_data(const std::string& url);
+  /** Download the given \a url and return the result. If mime_type is
+      provided, the returned mime_type is stored therein. */
+  static BlobPtr get_data(const std::string& url, std::string* mime_type = NULL); 
 };
 
 #endif

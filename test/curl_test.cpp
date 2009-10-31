@@ -36,7 +36,9 @@ int main(int argc, char** argv)
       for(int i = 1; i < argc; ++i)
         {
           std::cout << "Trying to get: " << argv[i] << std::endl;
-          CURLHandler::get_data(argv[i])->write_to_file("/tmp/out");
+          std::string mime_type;
+          CURLHandler::get_data(argv[i], &mime_type)->write_to_file("/tmp/out");
+          std::cout << "Got: " << argv[i] << " -> '" << mime_type << "'" << std::endl;
         }
   
       //curl_global_cleanup(); 

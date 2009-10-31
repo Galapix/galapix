@@ -30,7 +30,7 @@ static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void*
 }
 
 BlobPtr
-CURLHandler::get_data(const std::string& url)
+CURLHandler::get_data(const std::string& url, std::string* mime_type)
 {
   CURL* handle = curl_easy_init();
 
@@ -50,6 +50,22 @@ CURLHandler::get_data(const std::string& url)
   long response_code;
   curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &response_code);
   // curl_easy_getinfo(handle, CURLINFO_FILETIME, ...) // mtime
+
+  // get the mime-type
+  if (mime_type)
+  {
+    char* content_type = NULL;
+    curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);
+
+    if (content_type)
+    {
+      *mime_type = content_type;
+    }
+    else
+    {
+      *mime_type = "";
+    }
+  }
 
   curl_easy_cleanup(handle);
 
