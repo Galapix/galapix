@@ -44,7 +44,8 @@ FileEntryGenerationJob::run()
     int min_scale;
     int max_scale;
     FileEntry file_entry;
-
+    
+    // FIXME: JPEG::filename_is_jpeg() is ugly
     if (m_url.has_stdio_name() && JPEG::filename_is_jpeg(m_url.get_stdio_name()))
     {
       size = JPEG::get_size(m_url.get_stdio_name());

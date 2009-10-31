@@ -171,7 +171,7 @@ TileGenerationJob::run()
     assert(m_state == kWaiting);
     m_state = kRunning;
 
-    if (SoftwareSurfaceFactory::get_fileformat(m_url) != SoftwareSurfaceFactory::JPEG_FILEFORMAT)
+    if (!(m_url.has_stdio_name() && JPEG::filename_is_jpeg(m_url.get_stdio_name())))
     { 
       // Generate all tiles instead of just the requested for non-jpeg formats
       m_min_scale = 0;

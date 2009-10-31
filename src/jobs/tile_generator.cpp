@@ -74,33 +74,27 @@ SoftwareSurfacePtr
 TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
 {
   // Load the image
-  switch(SoftwareSurfaceFactory::get_fileformat(url))
+  if (JPEG::filename_is_jpeg(url.str())) // FIXME: filename_is_jpeg() is ugly
   {
-    case SoftwareSurfaceFactory::JPEG_FILEFORMAT:
-    {
-      // The JPEG class can only scale down by factor 2,4,8, so we have to
-      // limit things (FIXME: is that true? if so, why?)
-      int jpeg_scale = Math::min(Math::pow2(min_scale), 8);
+    // The JPEG class can only scale down by factor 2,4,8, so we have to
+    // limit things (FIXME: is that true? if so, why?)
+    int jpeg_scale = Math::min(Math::pow2(min_scale), 8);
               
-      if (url.has_stdio_name())
-      {
-        return JPEG::load_from_file(url.get_stdio_name(), jpeg_scale, size);
-      }
-      else
-      {
-        BlobPtr blob = url.get_blob();
-        return JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale, size);
-      }
-    }
-    break;
-
-    default:
+    if (url.has_stdio_name())
     {
-      SoftwareSurfacePtr surface = SoftwareSurfaceFactory::from_url(url);
-      *size = surface->get_size();
-      return surface;
+      return JPEG::load_from_file(url.get_stdio_name(), jpeg_scale, size);
     }
-    break;
+    else
+    {
+      BlobPtr blob = url.get_blob();
+      return JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale, size);
+    }
+  }
+  else
+  {
+    SoftwareSurfacePtr surface = SoftwareSurfaceFactory::from_url(url);
+    *size = surface->get_size();
+    return surface;
   }
 }
 
