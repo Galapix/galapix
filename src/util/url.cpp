@@ -116,7 +116,7 @@ URL::get_payload() const
 }
 
 BlobPtr
-URL::get_blob() const
+URL::get_blob(std::string* mime_type) const
 {
   if (m_protocol == "file")
   {
@@ -143,7 +143,7 @@ URL::get_blob() const
   }
   else if (m_protocol == "http" || m_protocol == "https" || m_protocol == "ftp")
   {
-    return CURLHandler::get_data(str());
+    return CURLHandler::get_data(str(), mime_type);
   }
   else
   {
