@@ -28,7 +28,6 @@ class Size;
 class UFRaw
 {
 public:
-  static SoftwareSurfacePtr load_from_url(const URL& url);
   static SoftwareSurfacePtr load_from_file(const std::string& filename); 
 };
 

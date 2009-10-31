@@ -25,21 +25,6 @@
 #include "plugins/png.hpp"
 
 SoftwareSurfacePtr
-RSVG::load_from_url(const URL& url)
-{
-  if (url.has_stdio_name())
-  {
-    return load_from_file(url.get_stdio_name());
-  }
-  else
-  {
-    assert(!"RSVG: Not supported");
-    return SoftwareSurfacePtr();
-  }
- 
-}
-
-SoftwareSurfacePtr
 RSVG::load_from_file(const std::string& filename)
 {
   Exec rsvg("rsvg");

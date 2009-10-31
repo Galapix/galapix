@@ -71,20 +71,6 @@ Imagemagick::get_supported_extensions()
   return lst;
 }
 
-SoftwareSurfacePtr
-Imagemagick::load_from_url(const URL& url)
-{
-  if (url.has_stdio_name())
-  {
-    return load_from_file(url.get_stdio_name());
-  }
-  else
-  {
-    BlobPtr blob = url.get_blob();
-    return load_from_mem(blob->get_data(), blob->size());
-  }
-}
-
 static 
 SoftwareSurfacePtr
 MagickImage2SoftwareSurface(const Magick::Image& image)

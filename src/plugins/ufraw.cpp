@@ -25,20 +25,6 @@
 #include "plugins/pnm.hpp"
 
 SoftwareSurfacePtr
-UFRaw::load_from_url(const URL& url)
-{
-  if (url.has_stdio_name())
-  {
-    return load_from_file(url.get_stdio_name());
-  }
-  else
-  {
-    assert(!"UFRaw: Not supported");
-    return SoftwareSurfacePtr();
-  }
-}
-
-SoftwareSurfacePtr
 UFRaw::load_from_file(const std::string& filename)
 {
   Exec ufraw("ufraw-batch");

@@ -34,7 +34,9 @@
 
 #include "util/imagemagick_software_surface_loader.hpp"
 #include "util/jpeg_software_surface_loader.hpp"
+#include "util/kra_software_surface_loader.hpp"
 #include "util/png_software_surface_loader.hpp"
+#include "util/rsvg_software_surface_loader.hpp"
 #include "util/ufraw_software_surface_loader.hpp"
 #include "util/xcf_software_surface_loader.hpp"
 
@@ -49,6 +51,8 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
   add_loader(new PNGSoftwareSurfaceLoader);
   add_loader(new XCFSoftwareSurfaceLoader);
   add_loader(new UFRawSoftwareSurfaceLoader);
+  add_loader(new RSVGSoftwareSurfaceLoader);
+  add_loader(new KRASoftwareSurfaceLoader);
   add_loader(new ImagemagickSoftwareSurfaceLoader);
 }
 
@@ -178,7 +182,16 @@ SoftwareSurfaceFactory::from_url(const URL& url)
     }
     else
     {
-      return loader->from_mem(blob->get_data(), blob->size()); 
+      if (loader->supports_from_mem())
+      {
+        return loader->from_mem(blob->get_data(), blob->size()); 
+      }
+      else
+      {
+        std::ostringstream out;
+        out << "SoftwareSurfaceFactory::from_url(): " << url.str() << ": loader doesn't support from_mem(), workaround not implemented";
+        throw std::runtime_error(out.str());        
+      }
     }
   }
 }
