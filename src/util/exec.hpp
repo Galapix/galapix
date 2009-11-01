@@ -39,7 +39,7 @@ private:
   BlobPtr stdin_data;
 
 public:
-  static const bool ABSOLUTE_PATH;
+  static const bool ABSOLUTE_PATH = true;
 
   /** Construct an Exec object 
 

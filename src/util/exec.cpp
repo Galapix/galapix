@@ -24,8 +24,6 @@
 #include <sys/wait.h>
 #include <sstream>
 
-const bool Exec::ABSOLUTE_PATH = true;
-
 Exec::Exec(const std::string& program_, bool absolute_path_) :
   program(program_),
   absolute_path(absolute_path_),
@@ -96,9 +94,13 @@ Exec::exec()
       
     // Execute the program
     if (absolute_path)
+    {
       execv(c_arguments[0], c_arguments.get());
+    }
     else
+    {
       execvp(c_arguments[0], c_arguments.get());
+    }
       
     int error_code = errno;
 
@@ -129,16 +131,28 @@ Exec::exec()
     close(stdin_fd[1]);
 
     while((len = read(stdout_fd[0], buffer, sizeof(buffer))) > 0)
+    {
       stdout_vec.insert(stdout_vec.end(), buffer, buffer+len);
+    }
 
     if (len == -1)
-      throw std::runtime_error("Exec::exec(): error reading stdout from xcfinfo");
+    {
+      std::ostringstream out;
+      out << "Exec::exec(): error reading stdout from: " << str();
+      throw std::runtime_error(out.str());
+    }
 
     while((len = read(stderr_fd[0], buffer, sizeof(buffer))) > 0)
+    {
       stderr_vec.insert(stderr_vec.end(), buffer, buffer+len);
+    }
 
     if (len == -1)
-      throw std::runtime_error("Exec::exec(): error reading stderr from xcfinfo");
+    {
+      std::ostringstream out;
+      out << "Exec::exec(): error reading stderr from: " << str();
+      throw std::runtime_error(out.str());
+    }
 
     int child_status = 0;
     waitpid(pid, &child_status, 0);
