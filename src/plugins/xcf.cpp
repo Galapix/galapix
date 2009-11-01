@@ -23,7 +23,7 @@
 #include <stdio.h>
 
 #include "math/size.hpp"
-#include "plugins/pnm.hpp"
+#include "plugins/png.hpp"
 #include "util/exec.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
@@ -80,8 +80,9 @@ XCF::is_available()
 {
   try 
   {
-    std::string exe = Filesystem::find_exe("xcfinfo");
-    log_info << "found " << exe << std::endl;
+    std::string xcfinfo_exe = Filesystem::find_exe("xcfinfo");
+    std::string xcf2png_exe = Filesystem::find_exe("xcf2png");
+    log_info << "found " << xcfinfo_exe << ", " << xcf2png_exe << std::endl;
     return true;
   }
   catch(std::exception& err)
@@ -163,33 +164,33 @@ XCF::get_size(const std::string& filename, Size& size)
 SoftwareSurfacePtr
 XCF::load_from_file(const std::string& filename)
 {
-  Exec xcf2pnm("xcf2pnm");
-  xcf2pnm.arg("--background").arg("#000"); // Makes transparent pixels black
-  xcf2pnm.arg(filename);
-  if (xcf2pnm.exec() != 0)
+  Exec xcf2png("xcf2png");
+  xcf2png.arg(filename);
+  if (xcf2png.exec() != 0)
   {
-    throw std::runtime_error("XCF::load_from_file(): " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+    throw std::runtime_error("XCF::load_from_file(): " + std::string(xcf2png.get_stderr().begin(), xcf2png.get_stderr().end()));
   }
   else
   {
-    return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
+    return PNG::load_from_mem(reinterpret_cast<const uint8_t*>(&*xcf2png.get_stdout().begin()),
+                              xcf2png.get_stdout().size());
   }
 }
 
 SoftwareSurfacePtr
 XCF::load_from_mem(void* data, int len)
 {
-  Exec xcf2pnm("xcf2pnm");
-  xcf2pnm.arg("--background").arg("#000"); // Makes transparent pixels black
-  xcf2pnm.arg("-"); // Read from stdin
-  xcf2pnm.set_stdin(Blob::copy(data, len));
-  if (xcf2pnm.exec() != 0)
+  Exec xcf2png("xcf2png");
+  xcf2png.arg("-"); // Read from stdin
+  xcf2png.set_stdin(Blob::copy(data, len));
+  if (xcf2png.exec() != 0)
   {
-    throw std::runtime_error("XCF::load_from_mem(): " + std::string(xcf2pnm.get_stderr().begin(), xcf2pnm.get_stderr().end()));
+    throw std::runtime_error("XCF::load_from_mem(): " + std::string(xcf2png.get_stderr().begin(), xcf2png.get_stderr().end()));
   }
   else
   {
-    return PNM::load_from_mem(&*xcf2pnm.get_stdout().begin(), xcf2pnm.get_stdout().size());
+    return PNG::load_from_mem(reinterpret_cast<const uint8_t*>(&*xcf2png.get_stdout().begin()),
+                              xcf2png.get_stdout().size());
   }
 }
 

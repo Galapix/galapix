@@ -77,8 +77,6 @@ User Interface:
 Other Things:
 -------------
 
-* use xcftopng instead of xcf2pnm
-
 * create a directory with test images for all supported formats
 
 * double-load of .kra files is still present
