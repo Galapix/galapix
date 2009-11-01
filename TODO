@@ -77,7 +77,19 @@ User Interface:
 Other Things:
 -------------
 
+* use xcftopng instead of xcf2pnm
+
+* create a directory with test images for all supported formats
+
 * double-load of .kra files is still present
+
+  - FileEntry is generated -> send to image
+  - Tiles start generating
+  - image request tiles
+  - new TileGeneration job is started as FileEntryGenerationJob isn't tracked
+
+  Solution: either add tracking of FileEntryGenerationJob or merge it
+  back into TileGenerationJob
 
 * add more custom sorter (sort by date, ...)
 
@@ -595,8 +607,6 @@ Possible Future Improvements:
 
 * record how long an image has been viewed and allow to display which
   images have been viewed most
-
-* basic exif support to get the orientation right (libexif)
 
 * support for greyscale in SoftwareSurface (not really important)
 
