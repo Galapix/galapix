@@ -111,9 +111,23 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
 
   if (target_size != surface->get_size())
   {
-    log_debug << "image doesn't match target size, doing scaling: " 
-              << target_size << " vs " << surface->get_size() << std::endl;
-    surface = surface->scale(target_size);
+    // JPEG that are downscaled on loading might not match target_size
+    // exactly and be one pixel larger
+    int x_miss = surface->get_size().width  - target_size.width;
+    int y_miss = surface->get_size().height - target_size.height;
+
+    if (0 <= x_miss && x_miss <= 1 &&
+        0 <= y_miss && y_miss <= 1)
+    {
+      log_debug << "image doesn't match target size, ignoring as it is close enough: target=" 
+                << target_size << " vs surface=" << surface->get_size() << std::endl;      
+    }
+    else
+    {
+      log_debug << "image doesn't match target size, doing scaling: target=" 
+                << target_size << " vs surface=" << surface->get_size() << std::endl;
+      surface = surface->scale(target_size);
+    }
   }
 
   // Cut the given image into tiles, give created tiles to callback(),
