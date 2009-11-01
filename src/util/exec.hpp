@@ -29,14 +29,14 @@
 class Exec
 {
 private:
-  std::string program;
-  bool absolute_path;
-  std::vector<std::string> arguments;
+  std::string m_program;
+  bool m_absolute_path;
+  std::vector<std::string> m_arguments;
 
-  std::vector<char> stdout_vec;
-  std::vector<char> stderr_vec;
+  std::vector<char> m_stdout_vec;
+  std::vector<char> m_stderr_vec;
 
-  BlobPtr stdin_data;
+  BlobPtr m_stdin_data;
 
 public:
   static const bool ABSOLUTE_PATH = true;
@@ -71,10 +71,10 @@ public:
   int exec();
 
   /** Access the stdout output of the program */
-  const std::vector<char>& get_stdout() const { return stdout_vec; }
+  const std::vector<char>& get_stdout() const { return m_stdout_vec; }
 
   /** Access the stderr output of the program */
-  const std::vector<char>& get_stderr() const { return stderr_vec; }
+  const std::vector<char>& get_stderr() const { return m_stderr_vec; }
 
   /** Returns a representation of the command call in simple string
       form, for visualitation only, no gurantee is made that arguments

@@ -24,27 +24,27 @@
 #include <sys/wait.h>
 #include <sstream>
 
-Exec::Exec(const std::string& program_, bool absolute_path_) :
-  program(program_),
-  absolute_path(absolute_path_),
-  arguments(),
-  stdout_vec(),
-  stderr_vec(),
-  stdin_data()
+Exec::Exec(const std::string& program, bool absolute_path) :
+  m_program(program),
+  m_absolute_path(absolute_path),
+  m_arguments(),
+  m_stdout_vec(),
+  m_stderr_vec(),
+  m_stdin_data()
 {
 }
 
 Exec&
 Exec::arg(const std::string& argument)
 {
-  arguments.push_back(argument);
+  m_arguments.push_back(argument);
   return *this;
 }
 
 void
 Exec::set_stdin(const BlobPtr& blob)
 {
-  stdin_data = blob;
+  m_stdin_data = blob;
 }
 
 int
@@ -86,14 +86,14 @@ Exec::exec()
     close(stderr_fd[1]);
 
     // Create C-style array for arguments 
-    boost::scoped_array<char*> c_arguments(new char*[arguments.size()+2]);
-    c_arguments[0] = strdup(program.c_str());
-    for(std::vector<std::string>::size_type i = 0; i < arguments.size(); ++i)
-      c_arguments[i+1] = strdup(arguments[i].c_str());
-    c_arguments[arguments.size()+1] = NULL;
+    boost::scoped_array<char*> c_arguments(new char*[m_arguments.size()+2]);
+    c_arguments[0] = strdup(m_program.c_str());
+    for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
+      c_arguments[i+1] = strdup(m_arguments[i].c_str());
+    c_arguments[m_arguments.size()+1] = NULL;
       
     // Execute the program
-    if (absolute_path)
+    if (m_absolute_path)
     {
       execv(c_arguments[0], c_arguments.get());
     }
@@ -109,7 +109,7 @@ Exec::exec()
       free(c_arguments[i]);
 
     // execvp() only returns on failure 
-    throw std::runtime_error("Exec::exec(): " + program + ": " + strerror(error_code));
+    throw std::runtime_error("Exec::exec(): " + m_program + ": " + strerror(error_code));
   }
   else // if (pid > 0)
   { // parent
@@ -120,9 +120,9 @@ Exec::exec()
     int len;
     char buffer[4096];
       
-    if (stdin_data)
+    if (m_stdin_data)
     {
-      if (write(stdin_fd[1], stdin_data->get_data(), stdin_data->size()) < 0)
+      if (write(stdin_fd[1], m_stdin_data->get_data(), m_stdin_data->size()) < 0)
       {
         throw std::runtime_error(strerror(errno));
       }
@@ -132,7 +132,7 @@ Exec::exec()
 
     while((len = read(stdout_fd[0], buffer, sizeof(buffer))) > 0)
     {
-      stdout_vec.insert(stdout_vec.end(), buffer, buffer+len);
+      m_stdout_vec.insert(m_stdout_vec.end(), buffer, buffer+len);
     }
 
     if (len == -1)
@@ -144,7 +144,7 @@ Exec::exec()
 
     while((len = read(stderr_fd[0], buffer, sizeof(buffer))) > 0)
     {
-      stderr_vec.insert(stderr_vec.end(), buffer, buffer+len);
+      m_stderr_vec.insert(m_stderr_vec.end(), buffer, buffer+len);
     }
 
     if (len == -1)
@@ -170,10 +170,10 @@ Exec::str() const
 {
   std::ostringstream out;
 
-  out << program << " ";
+  out << m_program << " ";
 
-  for(std::vector<std::string>::size_type i = 0; i < arguments.size(); ++i)
-    out << "'" << arguments[i] << "' ";
+  for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
+    out << "'" << m_arguments[i] << "' ";
 
   return out.str();
 }
