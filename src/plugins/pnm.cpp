@@ -33,8 +33,16 @@ PNM::load_from_mem(const char* data, int len)
   uint8_t* dst_pixels = surface->get_data();
   //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;
   assert(pnm.get_maxval() == 255);
+
+  const int pixel_data_len = ((reinterpret_cast<const uint8_t*>(data) + len) - src_pixels);
+   
   if (pnm.get_magic() == "P6") // RGB
   {
+    if (surface->get_width() * surface->get_height() * 3 > pixel_data_len)
+    {
+      throw std::runtime_error("PNM::load_from_mem(): premature end of pixel data");
+    }
+
     for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
     {
       dst_pixels[3*i+0] = src_pixels[3*i+0];
@@ -44,6 +52,11 @@ PNM::load_from_mem(const char* data, int len)
   }
   else if (pnm.get_magic() == "P5") // Grayscale
   {
+    if (surface->get_width() * surface->get_height()  > pixel_data_len)
+    {
+      throw std::runtime_error("PNM::load_from_mem(): premature end of pixel data");
+    }
+
     for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
     {
       dst_pixels[3*i+0] = src_pixels[i];

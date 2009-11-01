@@ -24,95 +24,95 @@
 class PNMMemReader
 {
 private:
-  const char* data;
-  int len;
-  const char* ptr;
-  int token_count;
+  const char* m_data;
+  const int m_len;
+  const char* m_ptr;
+  int m_token_count;
 
-  std::string magic;
-  Size size;
-  int maxval;
-  const char* pixel_data;
-
-private:
-  bool eof() const { return ptr >= (data+len); }
-  void forward()  { ptr += 1; }
-
-  void parse()
-  {
-    token_count = 0;
-
-    while(!eof())
-    {
-      if (*ptr == '#')
-      {
-        // skip comment
-        forward();
-        while(!eof() && *ptr != '\n')
-          forward();
-      }
-      else if (isspace(*ptr))
-      {
-        // skip whitespace
-        forward();
-        while(!eof() && isspace(*ptr))
-          forward();
-      }
-      else
-      {
-        const char* start = ptr;
-        forward();
-        while(!eof() && !isspace(*ptr) && *ptr != '#')
-        {
-          forward();
-        }
-
-        std::string token(start, ptr);
-        switch(token_count)
-        {
-          case 0:
-            magic = token;
-            break;
-
-          case 1:
-            size.width = atoi(token.c_str());
-            break;
-
-          case 2:
-            size.height = atoi(token.c_str());
-            break;
-
-          case 3:
-            maxval = atoi(token.c_str());
-            forward();
-            pixel_data = ptr;
-            ptr = data+len; // set ptr to EOF 
-            break;
-        }
-
-        token_count += 1;
-      }
-    }
-  }
+  std::string m_magic;
+  Size m_size;
+  int m_maxval;
+  const char* m_pixel_data;
 
 public:
-  PNMMemReader(const char* data_, int len_) :
-    data(data_),
-    len(len_),
-    ptr(data_),
-    token_count(),
-    magic(),
-    size(),
-    maxval(),
-    pixel_data()
+  PNMMemReader(const char* data, int len) :
+    m_data(data),
+    m_len(len),
+    m_ptr(data),
+    m_token_count(),
+    m_magic(),
+    m_size(),
+    m_maxval(),
+    m_pixel_data()
   {
     parse();
   }
 
-  std::string get_magic() const { return magic; }
-  const char* get_pixel_data() const { return pixel_data; }
-  Size get_size() const { return size; }
-  int  get_maxval() const { return maxval; }
+  std::string get_magic() const { return m_magic; }
+  const char* get_pixel_data() const { return m_pixel_data; }
+  Size get_size() const { return m_size; }
+  int  get_maxval() const { return m_maxval; }
+
+private:
+  bool eof() const { return m_ptr >= (m_data + m_len); }
+  void forward() { m_ptr += 1; }
+
+  void parse()
+  {
+    m_token_count = 0;
+
+    while(!eof())
+    {
+      if (*m_ptr == '#')
+      {
+        // skip comment
+        forward();
+        while(!eof() && *m_ptr != '\n')
+          forward();
+      }
+      else if (isspace(*m_ptr))
+      {
+        // skip whitespace
+        forward();
+        while(!eof() && isspace(*m_ptr))
+          forward();
+      }
+      else
+      {
+        const char* start = m_ptr;
+        forward();
+        while(!eof() && !isspace(*m_ptr) && *m_ptr != '#')
+        {
+          forward();
+        }
+
+        std::string token(start, m_ptr);
+        switch(m_token_count)
+        {
+          case 0:
+            m_magic = token;
+            break;
+
+          case 1:
+            m_size.width = atoi(token.c_str());
+            break;
+
+          case 2:
+            m_size.height = atoi(token.c_str());
+            break;
+
+          case 3:
+            m_maxval = atoi(token.c_str());
+            forward();
+            m_pixel_data = m_ptr;
+            m_ptr = m_data + m_len; // set ptr to EOF 
+            break;
+        }
+
+        m_token_count += 1;
+      }
+    }
+  }
 
 private:
   PNMMemReader(const PNMMemReader&);
