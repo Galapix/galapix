@@ -35,7 +35,7 @@ private:
   const char* pixel_data;
 
 private:
-  bool eof() { return ptr >= (data+len); }
+  bool eof() const { return ptr >= (data+len); }
   void forward()  { ptr += 1; }
 
   void parse()
