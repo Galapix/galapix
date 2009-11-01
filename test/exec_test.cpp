@@ -44,6 +44,9 @@ int main(int argc, char** argv)
       std::cout << "### STERR BEGIN: " << std::endl;
       std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
       std::cout << "### STDERR END" << std::endl;
+
+      std::cout << "stdout size: " << prgn.get_stdout().size() << std::endl;
+      std::cout << "stderr size: " << prgn.get_stderr().size() << std::endl;
     }
   }
   catch(std::exception& err)

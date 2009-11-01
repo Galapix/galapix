@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,33 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
 #include <sstream>
+#include <iostream>
 
-#include "util/blob.hpp"
-#include "plugins/pnm.hpp"
+#include "plugins/xcf.hpp"
 #include "plugins/png.hpp"
 
 int main(int argc, char** argv)
 {
-  if (argc < 2)
+  for(int i = 1; i < argc; ++i)
   {
-    std::cout << "Usage: " << argv[0] << " [PNMFiles]..." << std::endl;
+    SoftwareSurfacePtr surface = XCF::load_from_file(argv[i]);
+    std::ostringstream output_filename;
+    output_filename << "/tmp/xcf_test" << i << ".png";
+    PNG::save(surface, output_filename.str());
+    std::cout << argv[i] << " -> " << output_filename.str() << std::endl;
   }
-  else
-  {
-    for(int i = 1; i < argc; ++i)
-    {
-      BlobPtr blob = Blob::from_file(argv[i]);
-
-      SoftwareSurfacePtr surface = PNM::load_from_mem((char*)blob->get_data(), blob->size());
-
-      std::ostringstream output_filename;
-      output_filename << "/tmp/pnm_test" << i << ".png";
-      PNG::save(surface, output_filename.str());
-      std::cout << argv[i] << " -> " << output_filename.str() << std::endl;
-    }
-  }
+  
+  return 0;
 }
 
 /* EOF */
