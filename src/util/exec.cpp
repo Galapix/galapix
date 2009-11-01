@@ -164,7 +164,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
   // start reading from stdout/stderr
   bool stdout_eof = false;
   bool stderr_eof = false;
-  while(!stdout_eof && !stderr_eof)
+  while(!(stdout_eof && stderr_eof))
   {
     fd_set rfds;   
     FD_ZERO(&rfds);
