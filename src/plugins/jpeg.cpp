@@ -88,6 +88,9 @@ JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
 
   SoftwareSurface::Modifier modifier = EXIF::get_orientation(filename);
 
+  if (image_size)
+    *image_size = apply_orientation(modifier, *image_size);
+
   if (modifier == SoftwareSurface::kRot0)
   {
     return surface;
@@ -106,6 +109,9 @@ JPEG::load_from_mem(uint8_t* mem, int len, int scale, Size* image_size)
   SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
 
   SoftwareSurface::Modifier modifier = EXIF::get_orientation(mem, len);
+
+  if (image_size)
+    *image_size = apply_orientation(modifier, *image_size);
 
   if (modifier == SoftwareSurface::kRot0)
   {
