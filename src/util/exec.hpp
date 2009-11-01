@@ -82,6 +82,9 @@ public:
   std::string str() const;
 
 private:
+  void process_io(int stdin_fd, int stdout_fd, int stderr_fd);
+
+private:
   Exec (const Exec&);
   Exec& operator= (const Exec&);
 };

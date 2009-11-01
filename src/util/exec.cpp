@@ -18,11 +18,18 @@
 
 #include "util/exec.hpp"
 
-#include <string.h>
 #include <errno.h>
-#include <stdexcept>
-#include <sys/wait.h>
 #include <sstream>
+#include <stdexcept>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+#include "util/log.hpp"
 
 Exec::Exec(const std::string& program, bool absolute_path) :
   m_program(program),
@@ -31,8 +38,7 @@ Exec::Exec(const std::string& program, bool absolute_path) :
   m_stdout_vec(),
   m_stderr_vec(),
   m_stdin_data()
-{
-}
+{}
 
 Exec&
 Exec::arg(const std::string& argument)
@@ -117,51 +123,108 @@ Exec::exec()
     close(stdout_fd[1]);
     close(stderr_fd[1]);
 
-    int len;
-    char buffer[4096];
-      
-    if (m_stdin_data)
-    {
-      if (write(stdin_fd[1], m_stdin_data->get_data(), m_stdin_data->size()) < 0)
-      {
-        throw std::runtime_error(strerror(errno));
-      }
-    }
-
-    close(stdin_fd[1]);
-
-    while((len = read(stdout_fd[0], buffer, sizeof(buffer))) > 0)
-    {
-      m_stdout_vec.insert(m_stdout_vec.end(), buffer, buffer+len);
-    }
-
-    if (len == -1)
-    {
-      std::ostringstream out;
-      out << "Exec::exec(): error reading stdout from: " << str();
-      throw std::runtime_error(out.str());
-    }
-
-    while((len = read(stderr_fd[0], buffer, sizeof(buffer))) > 0)
-    {
-      m_stderr_vec.insert(m_stderr_vec.end(), buffer, buffer+len);
-    }
-
-    if (len == -1)
-    {
-      std::ostringstream out;
-      out << "Exec::exec(): error reading stderr from: " << str();
-      throw std::runtime_error(out.str());
-    }
+    process_io(stdin_fd[1], stdout_fd[0], stderr_fd[0]);
 
     int child_status = 0;
     waitpid(pid, &child_status, 0);
 
-    // Cleanup
-    close(stdout_fd[0]);
-    close(stderr_fd[0]);
-
     return WEXITSTATUS(child_status);
+  }
+}
+
+void
+Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
+{
+  char buffer[4096];
+      
+  // write data to stdin
+  if (m_stdin_data)
+  {
+    if (write(stdin_fd, m_stdin_data->get_data(), m_stdin_data->size()) < 0)
+    {
+      throw std::runtime_error(strerror(errno));
+    }
+  }
+  close(stdin_fd);
+
+  // start reading from stdout/stderr
+  bool stdout_eof = false;
+  bool stderr_eof = false;
+  while(!stdout_eof && !stderr_eof)
+  {
+    fd_set rfds;   
+    FD_ZERO(&rfds);
+
+    int nfds = 0;
+
+    if (!stdout_eof) 
+    {
+      FD_SET(stdout_fd, &rfds);
+      nfds = std::max(nfds, stdout_fd);
+    }
+
+    if (!stderr_eof) 
+    {
+      FD_SET(stderr_fd, &rfds);
+      nfds = std::max(nfds, stderr_fd);
+    }
+
+    int retval = select(nfds+1, &rfds, NULL, NULL, NULL);
+
+    if (retval < 0)
+    {
+      // error
+    }
+    else if (retval == 0)
+    {
+      // timeout, should never happe
+    }
+    else // retval > 0
+    {
+      if (!stdout_eof && FD_ISSET(stdout_fd, &rfds))
+      {
+        ssize_t len = read(stdout_fd, buffer, sizeof(buffer));
+        
+        if (len > 0)
+        {
+          m_stdout_vec.insert(m_stdout_vec.end(), buffer, buffer+len);
+        }
+        else if (len == -1)
+        {
+          // FIXME: this doesn't clean up
+          std::ostringstream out;
+          out << "Exec::exec(): error reading stdout from: " << str();
+          throw std::runtime_error(out.str());
+        }
+        else if (len == 0)
+        {
+          close(stdout_fd);
+          stdout_eof = true;
+        }
+      }
+
+      if (!stderr_eof && FD_ISSET(stderr_fd, &rfds))
+      {
+        ssize_t len = read(stderr_fd, buffer, sizeof(buffer));
+
+        if (len > 0)
+        {
+          m_stderr_vec.insert(m_stderr_vec.end(), buffer, buffer+len);
+        }
+        else if (len == -1)
+        {
+          // FIXME: this doesn't clean up
+          std::ostringstream out;
+          out << "Exec::exec(): error reading stderr from: " << str();
+          throw std::runtime_error(out.str());
+        }
+        else if (len == 0)
+        {
+          close(stderr_fd);
+          stderr_eof = true;
+        }
+      }
+    }
   }
 }
 
