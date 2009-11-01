@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -123,7 +122,16 @@ Exec::exec()
     close(stdout_fd[1]);
     close(stderr_fd[1]);
 
-    process_io(stdin_fd[1], stdout_fd[0], stderr_fd[0]);
+    try 
+    {
+      process_io(stdin_fd[1], stdout_fd[0], stderr_fd[0]);
+    }
+    catch(std::exception& err)
+    {
+      int child_status = 0;
+      waitpid(pid, &child_status, 0);
+      throw err;
+    }
 
     int child_status = 0;
     waitpid(pid, &child_status, 0);
@@ -142,7 +150,13 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
   {
     if (write(stdin_fd, m_stdin_data->get_data(), m_stdin_data->size()) < 0)
     {
-      throw std::runtime_error(strerror(errno));
+      close(stdin_fd);
+      close(stdout_fd);
+      close(stderr_fd);
+
+      std::ostringstream out;
+      out << "Exec::process_io(): stdin write failure: " << str() << ": " << strerror(errno);
+      throw std::runtime_error(out.str());
     }
   }
   close(stdin_fd);
@@ -173,11 +187,16 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
     if (retval < 0)
     {
-      // error
+      close(stdout_fd);
+      close(stderr_fd);
+
+      std::ostringstream out;
+      out << "Exec::process_io(): select() failure: " << str() << ": " << strerror(errno);
+      throw std::runtime_error(out.str());
     }
     else if (retval == 0)
     {
-      // timeout, should never happe
+      log_error << "select() returned without results, this shouldn't happen" << std::endl;
     }
     else // retval > 0
     {
@@ -185,18 +204,20 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
       {
         ssize_t len = read(stdout_fd, buffer, sizeof(buffer));
         
-        if (len > 0)
+        if (len < 0) // error
+        {
+          close(stdout_fd);
+          close(stderr_fd);
+
+          std::ostringstream out;
+          out << "Exec::process_io(): stdout read failure: " << str() << ": " << strerror(errno);
+          throw std::runtime_error(out.str());
+        }
+        else if (len > 0) // ok
         {
           m_stdout_vec.insert(m_stdout_vec.end(), buffer, buffer+len);
         }
-        else if (len == -1)
-        {
-          // FIXME: this doesn't clean up
-          std::ostringstream out;
-          out << "Exec::exec(): error reading stdout from: " << str();
-          throw std::runtime_error(out.str());
-        }
-        else if (len == 0)
+        else if (len == 0) // eof
         {
           close(stdout_fd);
           stdout_eof = true;
@@ -207,18 +228,20 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
       {
         ssize_t len = read(stderr_fd, buffer, sizeof(buffer));
 
-        if (len > 0)
+        if (len < 0) // error
+        {
+          close(stdout_fd);
+          close(stderr_fd);
+
+          std::ostringstream out;
+          out << "Exec::process_io(): stderr read failure: " << str() << ": " << strerror(errno);
+          throw std::runtime_error(out.str());
+        }
+        else if (len > 0) // ok
         {
           m_stderr_vec.insert(m_stderr_vec.end(), buffer, buffer+len);
         }
-        else if (len == -1)
-        {
-          // FIXME: this doesn't clean up
-          std::ostringstream out;
-          out << "Exec::exec(): error reading stderr from: " << str();
-          throw std::runtime_error(out.str());
-        }
-        else if (len == 0)
+        else if (len == 0) // eof
         {
           close(stderr_fd);
           stderr_eof = true;
