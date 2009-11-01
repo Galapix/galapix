@@ -27,7 +27,7 @@ class EXIF
 {
 public:
   static SoftwareSurface::Modifier get_orientation(const std::string& filename);
-  static SoftwareSurface::Modifier get_orientation(uint8_t* mem, int len);
+  static SoftwareSurface::Modifier get_orientation(const uint8_t* data, int len);
 
 private:
   EXIF(const EXIF&);

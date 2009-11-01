@@ -20,9 +20,9 @@
 
 #include "plugins/jpeg_memory_src.hpp"
 
-MemJPEGDecompressor::MemJPEGDecompressor(uint8_t* mem, int len)
+MemJPEGDecompressor::MemJPEGDecompressor(const uint8_t* data, int len)
 {
-  jpeg_memory_src(&m_cinfo, mem, len);
+  jpeg_memory_src(&m_cinfo, data, len);
 }
 
 MemJPEGDecompressor::~MemJPEGDecompressor()

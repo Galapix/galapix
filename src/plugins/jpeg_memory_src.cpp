@@ -23,7 +23,7 @@
 struct jpeg_memory_source_mgr {
   struct jpeg_source_mgr pub;   /* public fields */
 
-  uint8_t* mem;
+  const uint8_t* data;
   int      len;
 };
 
@@ -50,7 +50,7 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
   {
     struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
   
-    cinfo->src->next_input_byte = mgr->mem;
+    cinfo->src->next_input_byte = mgr->data;
     cinfo->src->bytes_in_buffer = mgr->len;
 
     return TRUE;
@@ -64,14 +64,14 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 
   struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
 
-  if (cinfo->src->next_input_byte >= &mgr->mem[mgr->len])
+  if (cinfo->src->next_input_byte >= &mgr->data[mgr->len])
   {
     (cinfo)->err->msg_code = JERR_INPUT_EOF;
     (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
   }
 }
 
-void jpeg_memory_src(j_decompress_ptr cinfo, uint8_t* mem, int len)
+void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
 {
   if (cinfo->src == NULL) 
   {
@@ -90,8 +90,8 @@ void jpeg_memory_src(j_decompress_ptr cinfo, uint8_t* mem, int len)
   cinfo->src->next_input_byte = NULL; /* until buffer loaded */
 
   struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
-  mgr->mem = mem;
-  mgr->len = len;
+  mgr->data = data;
+  mgr->len  = len;
 }
 
 /* EOF */

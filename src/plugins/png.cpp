@@ -25,7 +25,7 @@
 
 struct PNGReadMemory
 {
-  png_bytep  data;
+  const png_byte* data;
   png_size_t len;
   png_size_t pos;
 };
@@ -193,7 +193,7 @@ PNG::load_from_file(const std::string& filename)
 }
 
 SoftwareSurfacePtr
-PNG::load_from_mem(uint8_t* data, int len)
+PNG::load_from_mem(const uint8_t* data, int len)
 {
   // FIXME: Merge this with load_from_file
   png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);

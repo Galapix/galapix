@@ -57,7 +57,9 @@ Size apply_orientation(SoftwareSurface::Modifier modifier, const Size& size)
 bool
 JPEG::filename_is_jpeg(const std::string& filename)
 {
-  // FIXME: Merge this with util/jpeg_software_surface_loader
+  // FIXME: Merge this with util/jpeg_software_surface_loader, maybe
+  // store the fileformat/SoftwareSurfaceLoader in the database intead
+  // of figuring out the format each time anew
   return (Filesystem::get_extension(filename) == "jpg" ||
           Filesystem::get_extension(filename) == "jpeg");
 }
@@ -72,7 +74,7 @@ JPEG::get_size(const std::string& filename)
 
 
 Size
-JPEG::get_size(uint8_t* data, int len)
+JPEG::get_size(const uint8_t* data, int len)
 {
   MemJPEGDecompressor loader(data, len);
   Size size = loader.read_size();
@@ -103,12 +105,12 @@ JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
 
 
 SoftwareSurfacePtr
-JPEG::load_from_mem(uint8_t* mem, int len, int scale, Size* image_size)
+JPEG::load_from_mem(const uint8_t* data, int len, int scale, Size* image_size)
 {
-  MemJPEGDecompressor loader(mem, len);
+  MemJPEGDecompressor loader(data, len);
   SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
 
-  SoftwareSurface::Modifier modifier = EXIF::get_orientation(mem, len);
+  SoftwareSurface::Modifier modifier = EXIF::get_orientation(data, len);
 
   if (image_size)
     *image_size = apply_orientation(modifier, *image_size);

@@ -32,7 +32,7 @@ public:
   static bool get_size(const std::string& filename, Size& size);
 
   static SoftwareSurfacePtr load_from_file(const std::string& filename);
-  static SoftwareSurfacePtr load_from_mem(uint8_t* mem, int len);
+  static SoftwareSurfacePtr load_from_mem(const uint8_t* data, int len);
 
   static void save(const SoftwareSurfacePtr& surface, const std::string& filename);
   static BlobPtr save(const SoftwareSurfacePtr& surface);

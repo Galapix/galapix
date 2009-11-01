@@ -48,11 +48,12 @@ KRA::load_from_file(const std::string& filename)
   koconverter.arg(filename).arg("/dev/stdout");
   koconverter.exec();
   
-  return PNG::load_from_mem((uint8_t*)&*koconverter.get_stdout().begin(), koconverter.get_stdout().size());
+  return PNG::load_from_mem(reinterpret_cast<const uint8_t*>(&*koconverter.get_stdout().begin()),
+                            koconverter.get_stdout().size());
 }
 
 // SoftwareSurface
-// KRA::load_from_mem(uint8_t* data, int len)
+// KRA::load_from_mem(const uint8_t* data, int len)
 // {
 //   Exec koconverter("koconverter");
 //   koconverter.arg("--batch").arg("--mimetype").arg("image/png");

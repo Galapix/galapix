@@ -24,7 +24,7 @@
 #include <jpeglib.h>
 
 /** Setup IO handling so that a JPEG can be read from memory */
-void jpeg_memory_src(j_decompress_ptr cinfo, uint8_t* mem, int len);
+void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len);
 
 #endif
 
