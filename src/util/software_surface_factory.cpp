@@ -119,7 +119,7 @@ SoftwareSurfaceFactory::register_by_extension(const SoftwareSurfaceLoader* loade
 }
 
 SoftwareSurfacePtr
-SoftwareSurfaceFactory::from_url(const URL& url)
+SoftwareSurfaceFactory::from_url(const URL& url) const
 {
   log_debug << url << std::endl;
 
@@ -128,7 +128,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
     std::string filename = url.get_stdio_name();
     std::string extension = Filesystem::get_extension(filename);
 
-    ExtensionMap::iterator i = m_extension_map.find(extension);
+    ExtensionMap::const_iterator i = m_extension_map.find(extension);
     if (i == m_extension_map.end())
     {
       std::ostringstream out;
@@ -159,7 +159,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
     std::string mime_type;
     BlobPtr blob = url.get_blob(&mime_type);
 
-    const SoftwareSurfaceLoader* loader = NULL;
+    const SoftwareSurfaceLoader* loader = 0;
 
     // try to find a loader by mime-type
     if (!mime_type.empty())
@@ -175,7 +175,7 @@ SoftwareSurfaceFactory::from_url(const URL& url)
     if (!loader)
     {
       std::string extension = Filesystem::get_extension(url.str());
-      ExtensionMap::iterator i = m_mime_type_map.find(extension);
+      ExtensionMap::const_iterator i = m_extension_map.find(extension);
       if (i != m_extension_map.end())
       {
         loader = i->second;

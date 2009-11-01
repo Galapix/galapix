@@ -48,7 +48,7 @@ public:
   void register_by_mime_type(const SoftwareSurfaceLoader* loader, const std::string& mime_type);
   void register_by_extension(const SoftwareSurfaceLoader* loader, const std::string& extension);
 
-  SoftwareSurfacePtr from_url(const URL& url);
+  SoftwareSurfacePtr from_url(const URL& url) const;
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);
