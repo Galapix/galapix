@@ -77,7 +77,8 @@ User Interface:
 Other Things:
 -------------
 
-* create a directory with test images for all supported formats
+* create a directory with test images for all supported image and
+  archive formats
 
 * double-load of .kra files is still present
 
@@ -92,7 +93,8 @@ Other Things:
 * add more custom sorter (sort by date, ...)
 
 * need to handle mtime properly (checking is expensive for thousands
-  of images), currently mtime is recorded, but not checked on load
+  of images), currently mtime is recorded, but not checked on load, at
+  least for some files (archives might differ)
 
 * sorting needs to be changed, as a TileProvider doesn't necesarrily
   have a URL (pass URL and TileProvider to Image? Have a
@@ -101,7 +103,7 @@ Other Things:
 * broken images must be detected and marked, so they aren't
   re-requested over and over again
 
-* make thumbnail generation output optional --verbose
+* make thumbnail generation output optional --log all --verbose == --log info
 
 * need to find proper location to filter out Size(0,0) FileEntries
 
