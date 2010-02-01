@@ -50,25 +50,42 @@ Imagemagick::get_size(const std::string& filename, Size& size)
 std::vector<std::string>
 Imagemagick::get_supported_extensions()
 {
-  std::list<Magick::CoderInfo> coderList;
-
-  Magick::coderInfoList(&coderList,
-                        Magick::CoderInfo::TrueMatch, // Match readable formats
-                        Magick::CoderInfo::AnyMatch,  // Don't care about writable formats
-                        Magick::CoderInfo::AnyMatch); // Don't care about multi-frame support
-
-  std::vector<std::string> lst;
-
-  for(std::list<Magick::CoderInfo>::iterator entry = coderList.begin();
-      entry != coderList.end();
-      ++entry)
+  if (false)
   {
-    std::string data = entry->name();
-    std::transform(data.begin(), data.end(), data.begin(), ::tolower);
-    lst.push_back(data);
-  }
+    /* Generating the list automatic doesn't work, as there ends up to
+       be to much weird stuff in it (txt, avi, mpeg, etc.) that causes
+       trouble */
+    std::list<Magick::CoderInfo> coderList;
 
-  return lst;
+    Magick::coderInfoList(&coderList,
+                          Magick::CoderInfo::TrueMatch, // Match readable formats
+                          Magick::CoderInfo::AnyMatch,  // Don't care about writable formats
+                          Magick::CoderInfo::AnyMatch); // Don't care about multi-frame support
+
+    std::vector<std::string> lst;
+
+    for(std::list<Magick::CoderInfo>::iterator entry = coderList.begin();
+        entry != coderList.end();
+        ++entry)
+    {
+      std::string data = entry->name();
+      std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+      lst.push_back(data);
+    }
+
+    return lst;
+  }
+  else
+  {
+    std::vector<std::string> lst;
+
+    lst.push_back("gif");
+    lst.push_back("tga");
+    lst.push_back("bmp");
+    lst.push_back("tiff");
+
+    return lst;
+  }
 }
 
 static 
