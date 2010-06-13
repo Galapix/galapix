@@ -304,7 +304,13 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         {
           const std::vector<std::string>& files = Rar::get_filenames(*i);
           for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
-            file_list.push_back(URL::from_string(url.str() + "//rar:" + *j));
+          {
+            URL archive_url = URL::from_string(url.str() + "//rar:" + *j);
+            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
+            {
+              file_list.push_back(archive_url);
+            }
+          }
         }
         else if (has_extension(*i, ".zip") || 
                  has_extension(*i, ".cbz"))
@@ -312,7 +318,11 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           const std::vector<std::string>& files = Zip::get_filenames(*i);
           for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
           {
-            file_list.push_back(URL::from_string(url.str() + "//zip:" + *j));
+            URL archive_url = URL::from_string(url.str() + "//zip:" + *j);
+            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
+            {
+              file_list.push_back(archive_url);
+            }
           }
         }
         else if (has_extension(*i, ".tar")    || 
@@ -324,7 +334,11 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           const std::vector<std::string>& files = Tar::get_filenames(*i);
           for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
           {
-            file_list.push_back(URL::from_string(url.str() + "//tar:" + *j));
+            URL archive_url = URL::from_string(url.str() + "//tar:" + *j);
+            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
+            {
+              file_list.push_back(archive_url);
+            }
           }
         }
         else if (has_extension(*i, ".galapix"))
