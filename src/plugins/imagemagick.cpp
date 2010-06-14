@@ -83,6 +83,10 @@ Imagemagick::get_supported_extensions()
     lst.push_back("tga");
     lst.push_back("bmp");
     lst.push_back("tiff");
+    lst.push_back("tif");
+    lst.push_back("pbm");
+    lst.push_back("ppm");
+    lst.push_back("pgm");
 
     return lst;
   }
