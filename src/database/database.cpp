@@ -20,6 +20,7 @@
 
 #include "database/file_tile_database.hpp"
 #include "database/tile_database.hpp"
+#include "database/cached_tile_database.hpp"
 #include "util/filesystem.hpp"
 
 Database::Database(const std::string& prefix) :
@@ -31,13 +32,13 @@ Database::Database(const std::string& prefix) :
   m_db.reset(new SQLiteConnection(prefix + "/cache3.sqlite3"));
   files.reset(new FileDatabase(*this));
 
-  if (true)
+  if (false)
   {
     tiles.reset(new TileDatabase(*this));
   }
   else
   {
-    tiles.reset(new FileTileDatabase(prefix + "/tiles"));
+    tiles.reset(new CachedTileDatabase(*this, new FileTileDatabase(prefix + "/tiles")));
   }
 }
 

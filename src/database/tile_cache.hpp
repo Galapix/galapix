@@ -24,8 +24,6 @@
 #include "database/tile_entry.hpp"
 #include "database/tile_database_interface.hpp"
 
-class TileDatabase;
-
 class TileCache : public TileDatabaseInterface
 {
 private:
@@ -45,7 +43,7 @@ public:
   void delete_tiles(const FileId& fileid);
 
   int  size() const { return static_cast<int>(m_cache.size()); }
-  void flush(TileDatabase& tile_database);
+  void flush(TileDatabaseInterface& tile_database);
   void flush_cache();
 
 private:

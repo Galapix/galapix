@@ -132,7 +132,7 @@ TileCache::delete_tiles(const FileId& fileid)
 }
 
 void
-TileCache::flush(TileDatabase& tile_database)
+TileCache::flush(TileDatabaseInterface& tile_database)
 {
   if (!m_cache.empty())
   {

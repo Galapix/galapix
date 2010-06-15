@@ -16,22 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_TILE_DATABASE_INTERFACE_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_TILE_DATABASE_INTERFACE_HPP
+#ifndef HEADER_GALAPIX_DATABASE_CACHED_TILE_DATABASE_HPP
+#define HEADER_GALAPIX_DATABASE_CACHED_TILE_DATABASE_HPP
+
+#include <memory>
 
 #include "database/tile_database_interface.hpp"
 
-#include <string>
+class TileCache;
+class Database;
 
-class FileTileDatabase : public TileDatabaseInterface
+class CachedTileDatabase : public TileDatabaseInterface
 {
 private:
-  std::string m_prefix;
+  Database& m_db;
+  std::auto_ptr<TileCache> m_tile_cache;
+  std::auto_ptr<TileDatabaseInterface> m_tile_database;
 
 public:
-  FileTileDatabase(const std::string& prefix);
-  ~FileTileDatabase();
-
+  CachedTileDatabase(Database& db, TileDatabaseInterface* tile_database);
+  ~CachedTileDatabase();
+  
   bool has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale);
   bool get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out);
   void get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles);
@@ -41,24 +46,11 @@ public:
   void store_tiles(const std::vector<TileEntry>& tiles);
 
   void delete_tiles(const FileId& fileid);
-
-  void check() {}
-
-  void flush_cache() {}
+  void flush_cache();
 
 private:
-  std::string get_directory(const FileId& file_id);
-  std::string get_filename(const FileEntry& file_entry, const Vector2i& pos, int scale);
-
-  std::string get_complete_filename(const FileEntry& file_entry, const Vector2i& pos, int scale);
-  std::string get_complete_directory(const FileId& file_id);
-
-  bool parse_filename(const std::string& filename, Vector2i* pos_out, int* scale_out, int* format);
-  void ensure_directory_exists(const FileId& file_id);
-
-private:
-  FileTileDatabase(const FileTileDatabase&);
-  FileTileDatabase& operator=(const FileTileDatabase&);
+  CachedTileDatabase(const CachedTileDatabase&);
+  CachedTileDatabase& operator=(const CachedTileDatabase&);
 };
 
 #endif
