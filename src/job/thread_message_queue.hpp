@@ -27,17 +27,20 @@ template<class C>
 class ThreadMessageQueue
 {
 private:
-  boost::mutex     mutex;
-  boost::condition cond;
-  std::queue<C>    values;
+  boost::mutex     m_mutex;
+  boost::condition m_wait_cond;
+  boost::condition m_full_cond;
+  std::queue<C>    m_values;
+  int              m_max_size;
 
 public:
-  ThreadMessageQueue()
-    : mutex(),
-      cond(),
-      values()
-  {
-  }
+  ThreadMessageQueue(int max_size = -1) :
+    m_mutex(),
+    m_wait_cond(),
+    m_full_cond(),
+    m_values(),
+    m_max_size(max_size)
+  {}
 
   ~ThreadMessageQueue()
   {
@@ -45,50 +48,61 @@ public:
 
   void push(const C& value)
   {
-    boost::mutex::scoped_lock lock(mutex);
-    values.push(value);
-    cond.notify_all();
+    boost::mutex::scoped_lock lock(m_mutex);
+    if(m_max_size != -1 && static_cast<int>(m_values.size()) == m_max_size)
+    {
+      while(static_cast<int>(m_values.size()) == m_max_size)
+      {
+        m_full_cond.wait(lock);
+      }
+      assert(static_cast<int>(m_values.size()) < m_max_size);
+    }
+    m_values.push(value);
+    m_wait_cond.notify_all();
   }
 
   void pop()
   {
-    boost::mutex::scoped_lock lock(mutex);
-    values.pop();
+    boost::mutex::scoped_lock lock(m_mutex);
+    m_values.pop();
+    m_full_cond.notify_all();
   }
 
   C front()
   {
-    boost::mutex::scoped_lock lock(mutex);
-    assert(!values.empty());
-    C c(values.front());
+    boost::mutex::scoped_lock lock(m_mutex);
+    assert(!m_values.empty());
+    C c(m_values.front());
     return c;
   }
 
   int size()
   {
-    boost::mutex::scoped_lock lock(mutex);
-    int s = values.size();
+    boost::mutex::scoped_lock lock(m_mutex);
+    int s = m_values.size();
     return s;
   }
 
   bool empty() 
   {
-    boost::mutex::scoped_lock lock(mutex);
-    bool e = values.empty();
+    boost::mutex::scoped_lock lock(m_mutex);
+    bool e = m_values.empty();
     return e;
   }
 
   void wait()
   {
-    boost::mutex::scoped_lock lock(mutex);
-    if (values.empty())
-      cond.wait(lock);
+    boost::mutex::scoped_lock lock(m_mutex);
+    if (m_values.empty())
+    {
+      m_wait_cond.wait(lock);
+    }
   }
 
   void wakeup()
   {
-    boost::mutex::scoped_lock lock(mutex);
-    cond.notify_all();   
+    boost::mutex::scoped_lock lock(m_mutex);
+    m_wait_cond.notify_all();
   }
 
 private:
