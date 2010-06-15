@@ -104,7 +104,7 @@ public:
   void      request_all_files(const boost::function<void (FileEntry)>& callback);
 
   void      store_file_entry(const JobHandle& job_handle, 
-                             const URL& url, const Size& size, 
+                             const URL& url, const Size& size, int format,
                              const boost::function<void (FileEntry)>& callback);
 
   /** Place tile into the database */

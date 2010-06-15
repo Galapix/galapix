@@ -53,9 +53,9 @@ FileDatabase::store_file_entry(const FileEntry& entry)
 }
  
 FileEntry
-FileDatabase::store_file_entry(const URL& url, const Size& size)
+FileDatabase::store_file_entry(const URL& url, const Size& size, int format)
 {
-  FileEntry entry = FileEntry::create_without_fileid(url, url.get_size(), url.get_mtime(), size.width, size.height);
+  FileEntry entry = FileEntry::create_without_fileid(url, url.get_size(), url.get_mtime(), size.width, size.height, format);
   //store_file_entry(entry);
   m_file_entry_cache.push_back(entry);
   return entry;

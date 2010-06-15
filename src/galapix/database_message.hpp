@@ -109,7 +109,7 @@ public:
     if (!job_handle.is_aborted())
     {
       TileEntry tile;
-      if (db.tiles.get_tile(file_entry, tilescale, pos, tile))
+      if (db.get_tiles().get_tile(file_entry, tilescale, pos, tile))
       {
         // Tile has been found, so return it and finish up
         if (callback)
@@ -159,7 +159,7 @@ public:
   {
     if (!m_job_handle.is_aborted())
     {
-      FileEntry file_entry = db.files.get_file_entry(m_url);
+      FileEntry file_entry = db.get_files().get_file_entry(m_url);
       if (!file_entry)
       {
         // file entry is not in the database, so try to generate it
@@ -171,7 +171,7 @@ public:
         m_file_callback(file_entry);
 
         TileEntry tile_entry;
-        if (db.tiles.get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
+        if (db.get_tiles().get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
         {
           if (m_tile_callback)
           {
@@ -202,7 +202,7 @@ public:
   void run(Database& db)
   {
     std::vector<FileEntry> entries;
-    db.files.get_file_entries(entries);
+    db.get_files().get_file_entries(entries);
     for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
         callback(*i);
@@ -225,7 +225,7 @@ public:
   void run(Database& db)
   {
     std::vector<FileEntry> entries;
-    db.files.get_file_entries(m_pattern, entries);
+    db.get_files().get_file_entries(m_pattern, entries);
     for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
         m_callback(*i);
@@ -250,8 +250,8 @@ public:
     if (m_tile)
     {
       // FIXME: Test the performance of this
-      //if (!db.tiles.has_tile(tile.fileid, tile.pos, tile.scale))
-      db.tiles.store_tile(m_file_entry, m_tile);
+      //if (!db.get_tiles().has_tile(tile.fileid, tile.pos, tile.scale))
+      db.get_tiles().store_tile(m_file_entry, m_tile);
     }
     else
     {
@@ -273,8 +273,8 @@ public:
   {
     std::cout << "Begin Delete" << std::endl;
     db.get_db().exec("BEGIN;");
-    db.files.delete_file_entry(m_fileid);
-    db.tiles.delete_tiles(m_fileid);
+    db.get_files().delete_file_entry(m_fileid);
+    db.get_tiles().delete_tiles(m_fileid);
     db.get_db().exec("END;");
     std::cout << "End Delete" << std::endl;
   }
@@ -286,21 +286,23 @@ private:
   JobHandle m_job_handle;
   URL  m_url;
   Size m_size;
+  int  m_format;
   boost::function<void (FileEntry)> m_callback;
 
 public:
   StoreFileEntryDatabaseMessage(const JobHandle& job_handle, 
-                                const URL& url, const Size& size,
+                                const URL& url, const Size& size, int format,
                                 const boost::function<void (FileEntry)>& callback)
     : m_job_handle(job_handle),
       m_url(url),
       m_size(size),
+      m_format(format),
       m_callback(callback)
   {}
 
   void run(Database& db)
   {
-    FileEntry file_entry = db.files.store_file_entry(m_url, m_size);
+    FileEntry file_entry = db.get_files().store_file_entry(m_url, m_size, m_format);
     if (m_callback)
     {
       m_callback(file_entry);
@@ -322,7 +324,7 @@ public:
 
   void run(Database& db)
   {
-    db.files.store_file_entry(m_file_entry);
+    db.get_files().store_file_entry(m_file_entry);
   }
 };
 

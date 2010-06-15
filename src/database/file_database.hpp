@@ -79,7 +79,7 @@ public:
   void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
 
   FileEntry store_file_entry(const FileEntry& entry);
-  FileEntry store_file_entry(const URL& url, const Size& size);
+  FileEntry store_file_entry(const URL& url, const Size& size, int format);
   FileEntry store_file_entry_without_cache(const FileEntry& entry);
 
   void delete_file_entry(const FileId& fileid);

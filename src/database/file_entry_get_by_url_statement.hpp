@@ -38,10 +38,11 @@ public:
     {
       return FileEntry::create(FileId(reader.get_int(0)),  // fileid
                                URL::from_string(reader.get_text(1)),  // url
-                               reader.get_int(2),   // file size
-                               reader.get_int(3),   // mtime
-                               reader.get_int (4),  // width
-                               reader.get_int (5)); // height
+                               reader.get_int(2), // file size
+                               reader.get_int(3), // mtime
+                               reader.get_int(4), // width
+                               reader.get_int(5), // height
+                               reader.get_int(6));
     }
     else
     {

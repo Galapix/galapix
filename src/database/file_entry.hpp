@@ -39,6 +39,7 @@ public:
 
   /** The size of the image in pixels */
   Size image_size;
+  int  format;
 
   int file_size;
   int file_mtime;
@@ -49,6 +50,7 @@ public:
     fileid(),
     url(),
     image_size(),
+    format(),
     file_size(),
     file_mtime(),
     thumbnail_size()
@@ -63,13 +65,15 @@ private:
             int size,
             int mtime,
             int width,
-            int height) :
+            int height,
+            int format) :
     impl(new FileEntryImpl())
   {
     impl->fileid     = fileid;
     impl->url        = url;
     impl->image_size = Size(width, height);
     impl->file_size  = size;
+    impl->format     = format;
     impl->file_mtime = mtime;
 
     int s = Math::max(width, height);
@@ -82,6 +86,14 @@ private:
   }
 
 public:
+  enum Format 
+  {
+    UNKNOWN_FORMAT = -1,
+    JPEG_FORMAT =  0,
+    PNG_FORMAT  =  1
+  };
+
+
   FileEntry() :
     impl()
   {}
@@ -90,9 +102,10 @@ public:
                                          int size,
                                          int mtime,
                                          int width,
-                                         int height)
+                                         int height,
+                                         int format)
   {
-    return FileEntry(FileId(), url, size, mtime, width, height);
+    return FileEntry(FileId(), url, size, mtime, width, height, format);
   }
 
   static FileEntry create(const FileId& fileid, 
@@ -100,9 +113,10 @@ public:
                           int size,
                           int mtime,
                           int width,
-                          int height)
+                          int height,
+                          int format)
   {
-    return FileEntry(fileid, url, size, mtime, width, height);
+    return FileEntry(fileid, url, size, mtime, width, height, format);
   }
 
   void        set_fileid(const FileId& fileid) { impl->fileid = fileid; }
@@ -111,6 +125,7 @@ public:
   int         get_width()      const { return impl->image_size.width; }
   int         get_height()     const { return impl->image_size.height; }
   Size        get_image_size() const { return impl->image_size; }
+  int         get_format()     const { return impl->format; }
 
   int         get_size()  const { return impl->file_size;  }
   int         get_mtime() const { return impl->file_mtime; }

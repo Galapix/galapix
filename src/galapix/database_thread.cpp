@@ -185,7 +185,7 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
   int min_scale_in_db = -1;
   int max_scale_in_db = -1;
 
-  m_database.tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
+  m_database.get_tiles().get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
 
   boost::shared_ptr<MultipleTileGenerationJob> 
     job_ptr(new MultipleTileGenerationJob(job_handle, 
@@ -218,7 +218,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     int min_scale_in_db = -1;
     int max_scale_in_db = -1;
 
-    if (m_database.tiles.get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db))
+    if (m_database.get_tiles().get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db))
     {
       if (tilescale >= min_scale_in_db &&
           tilescale <= max_scale_in_db)
@@ -280,10 +280,10 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
 
 void
 DatabaseThread::store_file_entry(const JobHandle& job_handle, 
-                                 const URL& url, const Size& size,
+                                 const URL& url, const Size& size, int format,
                                  const boost::function<void (FileEntry)>& callback)
 {
-  m_queue.push(new StoreFileEntryDatabaseMessage(job_handle, url, size, callback));
+  m_queue.push(new StoreFileEntryDatabaseMessage(job_handle, url, size, format, callback));
 }
 
 void

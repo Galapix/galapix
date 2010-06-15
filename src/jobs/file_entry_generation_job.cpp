@@ -52,7 +52,7 @@ FileEntryGenerationJob::run()
 
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
       file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                    size.width, size.height);
+                                                    size.width, size.height, FileEntry::JPEG_FORMAT);
 
       // FIXME: here we are just guessing which tiles might be useful,
       // there might be a better way to pick \a min_scale
@@ -71,8 +71,19 @@ FileEntryGenerationJob::run()
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
       surface = SoftwareSurfaceFactory::current().from_url(m_url);
       size = surface->get_size();
+      int format = FileEntry::UNKNOWN_FORMAT;
+      switch(surface->get_format())
+      {
+        case SoftwareSurface::RGB_FORMAT:
+          format = FileEntry::JPEG_FORMAT;
+          break;
+
+        case SoftwareSurface::RGBA_FORMAT:
+          format = FileEntry::PNG_FORMAT;
+          break;
+      }
       file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                    size.width, size.height);
+                                                    size.width, size.height, format);
       min_scale = 0;
       max_scale = file_entry.get_thumbnail_scale();
     }

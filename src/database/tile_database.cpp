@@ -169,7 +169,7 @@ void
 TileDatabase::flush_cache()
 {
   std::cout << "TileDatabes::flush_cache()" << std::endl;
-  m_db.files.flush_cache();
+  m_db.get_files().flush_cache();
   m_cache.flush(*this);
 }
 

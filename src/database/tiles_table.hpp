@@ -38,7 +38,7 @@ public:
                "format  INTEGER"   // format of the data (0: JPEG, 1: PNG)
                ");");
 
-    m_db.exec("CREATE INDEX IF NOT EXISTS tiles_index ON tiles ( fileid, x, y, scale );");
+    m_db.exec("CREATE INDEX IF NOT EXISTS tiles_index ON tiles ( fileid );");
   }
 
 private:

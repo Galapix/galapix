@@ -17,12 +17,18 @@
 */
 
 #include "database/database.hpp"
+
+#include "util/filesystem.hpp"
 
-Database::Database(const std::string& filename) :
-  m_db(filename),
-  files(*this),
-  tiles(*this)
+Database::Database(const std::string& prefix) :
+  m_db(),
+  files(),
+  tiles()
 {
+  Filesystem::mkdir(prefix);
+  m_db.reset(new SQLiteConnection(prefix + "/cache3.sqlite3"));
+  files.reset(new FileDatabase(*this));
+  tiles.reset(new TileDatabase(*this));
 }
 
 Database::~Database()
@@ -32,7 +38,7 @@ Database::~Database()
 void
 Database::cleanup()
 {
-  m_db.vacuum();
+  m_db->vacuum();
 }
 
 /* EOF */

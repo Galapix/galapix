@@ -43,7 +43,8 @@ public:
                                           reader.get_int(2),
                                           reader.get_int(3),
                                           reader.get_int(4),  // width
-                                          reader.get_int(5)); // height
+                                          reader.get_int(5), // height
+                                          reader.get_int(6));
       entries_out.push_back(entry);
     }
   }

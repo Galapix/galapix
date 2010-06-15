@@ -35,7 +35,9 @@ public:
               "mtime     INTEGER, "
            
               "width     INTEGER, "
-              "height    INTEGER);");
+              "height    INTEGER, "
+              "format    INTEGER"   // format of the data (0: JPEG, 1: PNG)
+              ");");
 
     m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( url );");
   }

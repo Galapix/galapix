@@ -115,22 +115,22 @@ Galapix::merge(const std::string& database,
     Database in_db(*db_it);
           
     std::vector<FileEntry> entries;
-    in_db.files.get_file_entries(entries);
+    in_db.get_files().get_file_entries(entries);
     for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
     {
       try {
         std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
 
         // FIXME: Must catch URL collisions here (or maybe not?)
-        FileEntry file_entry = out_db.files.store_file_entry(*i);
+        FileEntry file_entry = out_db.get_files().store_file_entry(*i);
 
         std::vector<TileEntry> tiles;
-        in_db.tiles.get_tiles(*i, tiles);
+        in_db.get_tiles().get_tiles(*i, tiles);
         for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
         {
           // Change the fileid
           j->set_file_entry(file_entry);
-          out_db.tiles.store_tile(file_entry, *j);
+          out_db.get_tiles().store_tile(file_entry, *j);
         }
       } catch(std::exception& err) {
         std::cout << "Galapix:merge: Error: " << err.what() << std::endl;
@@ -149,7 +149,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
   int image_num = 0;
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
   {
-    FileEntry entry = db.files.get_file_entry(*i);
+    FileEntry entry = db.get_files().get_file_entry(*i);
     if (!entry)
     {
       std::cerr << "Error: Couldn't get file entry for " << *i << std::endl;
@@ -169,7 +169,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
         for(int x = 0; x < (size.width+255)/256; ++x)
         {
           TileEntry tile;
-          if (db.tiles.get_tile(entry, scale, Vector2i(x, y), tile))
+          if (db.get_tiles().get_tile(entry, scale, Vector2i(x, y), tile))
           {
             tile.get_surface()->blit(target, Vector2i(x, y) * 256);
           }
@@ -221,13 +221,13 @@ Galapix::list(const Options& opts)
   std::vector<FileEntry> entries;
   if (opts.patterns.empty())
   {
-    db.files.get_file_entries(entries);
+    db.get_files().get_file_entries(entries);
   }
   else
   {
     for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
     {
-      db.files.get_file_entries(*i, entries);
+      db.get_files().get_file_entries(*i, entries);
     }
   }
 
@@ -241,8 +241,8 @@ void
 Galapix::check(const std::string& database)
 {
   Database db(database);
-  db.files.check();
-  db.tiles.check();
+  db.get_files().check();
+  db.get_tiles().check();
 }
 
 void
@@ -343,11 +343,11 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       { 
         // special case to display everything, might be faster then
         // using the pattern
-        database.files.get_file_entries(file_entries);
+        database.get_files().get_file_entries(file_entries);
       }
       else
       {
-        database.files.get_file_entries(*i, file_entries);
+        database.get_files().get_file_entries(*i, file_entries);
       }
     }
 
@@ -357,7 +357,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       workspace.add_image(image);
       
       TileEntry tile_entry;
-      if (database.tiles.get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+      if (database.get_tiles().get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
       {
         image->receive_tile(*i, Tile(tile_entry));
       }
@@ -406,7 +406,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     else
     {
       //database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
-      FileEntry file_entry = database.files.get_file_entry(*i);
+      FileEntry file_entry = database.get_files().get_file_entry(*i);
       if (!file_entry)
       {
         workspace.add_image(Image::create(*i));
@@ -417,7 +417,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
         workspace.add_image(image);
 
         TileEntry tile_entry;
-        if (database.tiles.get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+        if (database.get_tiles().get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0,0), tile_entry))
         {
           image->receive_tile(file_entry, Tile(tile_entry));
         }
@@ -506,7 +506,7 @@ Galapix::main(int argc, char** argv)
   {
     Options opts;
     opts.threads  = 2;
-    opts.database = Filesystem::get_home() + "/.galapix/cache2.sqlite";
+    opts.database = Filesystem::get_home() + "/.galapix/cache3";
     parse_args(argc, argv, opts);
 
     if (curl_global_init(CURL_GLOBAL_ALL) != 0)
