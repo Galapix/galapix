@@ -59,6 +59,7 @@ Exec::exec()
   int stdout_fd[2];
   int stderr_fd[2];
 
+  // FIXME: Bad, we potentially leak file descriptors
   if (pipe(stdout_fd) < 0 || pipe(stderr_fd) < 0 || pipe(stdin_fd) < 0)
     throw std::runtime_error("Exec:exec(): pipe failed");
 
