@@ -120,7 +120,7 @@ TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& p
 void
 TileDatabase::store_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_cache.store_tile(TileEntry(file_entry, tile.get_scale(), tile.get_pos(), tile.get_surface()));
+  m_cache.store_tile(file_entry, tile);
 
   // A single tile is ~10KB, but only in compressed JPEG form,
   // uncompressed tiles can be much bigger
@@ -144,25 +144,6 @@ TileDatabase::delete_tiles(const FileId& fileid)
 {
   // FIXME: Ignoring cache
   m_tile_entry_delete(fileid);
-}
-
-void
-TileDatabase::check()
-{
-#if 0
-  SQLiteReader reader = get_all_stmt.execute_query();
-
-  while(reader.next())
-  {
-    /*
-      int64_t fileid = reader.get_int64(0);
-      int scale  = reader.get_int(1);
-      int x      = reader.get_int(2);
-      int y      = reader.get_int(3);
-      BlobPtr blob  = reader.get_blob(4);
-    */
-  }
-#endif
 }
 
 void

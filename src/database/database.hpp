@@ -21,7 +21,7 @@
 
 #include <boost/scoped_ptr.hpp>
 
-#include "database/tile_database.hpp"
+#include "database/tile_database_interface.hpp"
 #include "database/file_database.hpp"
 #include "database/tile_cache.hpp"
 
@@ -31,7 +31,7 @@ class Database
 private:
   boost::scoped_ptr<SQLiteConnection> m_db;
   boost::scoped_ptr<FileDatabase> files;
-  boost::scoped_ptr<TileDatabase> tiles;
+  boost::scoped_ptr<TileDatabaseInterface> tiles;
 
 public:
   Database(const std::string& prefix);
@@ -40,7 +40,7 @@ public:
   SQLiteConnection& get_db() { return *m_db; }
 
   FileDatabase& get_files() { return *files; }
-  TileDatabase& get_tiles() { return *tiles; }
+  TileDatabaseInterface& get_tiles() { return *tiles; }
 
   void cleanup();
 

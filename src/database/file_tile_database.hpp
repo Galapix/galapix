@@ -1,38 +1,36 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
 **  the Free Software Foundation, either version 3 of the License, or
 **  (at your option) any later version.
-**  
+**
 **  This program is distributed in the hope that it will be useful,
 **  but WITHOUT ANY WARRANTY; without even the implied warranty of
 **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 **  GNU General Public License for more details.
-**  
+**
 **  You should have received a copy of the GNU General Public License
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_CACHE_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_CACHE_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_TILE_DATABASE_INTERFACE_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_TILE_DATABASE_INTERFACE_HPP
 
-#include <vector>
-
-#include "database/tile_entry.hpp"
 #include "database/tile_database_interface.hpp"
 
-class TileDatabase;
+#include <string>
 
-class TileCache : public TileDatabaseInterface
+class FileTileDatabase : public TileDatabaseInterface
 {
 private:
-  std::vector<TileEntry> m_cache;
+  std::string m_prefix;
 
 public:
-  TileCache();
+  FileTileDatabase(const std::string& prefix);
+  ~FileTileDatabase();
 
   bool has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale);
   bool get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out);
@@ -44,13 +42,22 @@ public:
 
   void delete_tiles(const FileId& fileid);
 
-  int  size() const { return static_cast<int>(m_cache.size()); }
-  void flush(TileDatabase& tile_database);
-  void flush_cache();
+  void check() {}
+
+  void flush_cache() {}
 
 private:
-  TileCache(const TileCache&);
-  TileCache& operator=(const TileCache&);
+  std::string get_directory(const FileId& file_id);
+  std::string get_filename(const FileEntry& file_entry, const Vector2i& pos, int scale);
+
+  std::string get_complete_filename(const FileEntry& file_entry, const Vector2i& pos, int scale);
+  std::string get_complete_directory(const FileId& file_id);
+
+  bool parse_filename(const std::string& filename, Vector2i* pos_out, int* scale_out, int* format);
+
+private:
+  FileTileDatabase(const FileTileDatabase&);
+  FileTileDatabase& operator=(const FileTileDatabase&);
 };
 
 #endif

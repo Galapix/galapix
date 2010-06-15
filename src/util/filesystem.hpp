@@ -32,6 +32,7 @@ public:
   static bool is_directory(const std::string& pathname);
   static bool exist(const std::string& pathname);
   static void mkdir(const std::string& pathname);
+  static void remove(const std::string& filename);
   static std::vector<std::string> open_directory(const std::string& pathname);
 
   static void open_directory_recursivly(const std::string& pathname, std::vector<std::string>& lst);

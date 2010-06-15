@@ -242,7 +242,7 @@ Galapix::check(const std::string& database)
 {
   Database db(database);
   db.get_files().check();
-  db.get_tiles().check();
+  //db.get_tiles().check();
 }
 
 void

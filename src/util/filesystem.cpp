@@ -478,5 +478,16 @@ Filesystem::readlines_from_file(const std::string& pathname, std::vector<std::st
     in.close();
   }
 }
+
+void
+Filesystem::remove(const std::string& filename)
+{
+  if (unlink(filename.c_str()) < 0)
+  {
+    std::ostringstream str;
+    str << "Filesystem::remove: " << strerror(errno);
+    throw std::runtime_error(str.str());
+  }
+}
 
 /* EOF */

@@ -114,9 +114,15 @@ TileCache::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, in
 }
 
 void
-TileCache::store_tile(const TileEntry& tile)
+TileCache::store_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_cache.push_back(tile);
+  m_cache.push_back(TileEntry(file_entry, tile.get_scale(), tile.get_pos(), tile.get_surface()));
+}
+
+void
+TileCache::delete_tiles(const FileId& fileid)
+{
+  assert(!"not implemented");
 }
 
 void
@@ -127,6 +133,11 @@ TileCache::flush(TileDatabase& tile_database)
     tile_database.store_tiles(m_cache);
     m_cache.clear();
   }
+}
+
+void
+TileCache::flush_cache()
+{
 }
 
 /* EOF */

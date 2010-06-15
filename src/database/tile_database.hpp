@@ -23,6 +23,7 @@
 #include "math/vector2i.hpp"
 
 #include "galapix/tile.hpp"
+#include "database/file_tile_database.hpp"
 #include "database/tiles_table.hpp"
 #include "database/tile_entry_get_all_by_file_entry_statement.hpp"
 #include "database/tile_entry_has_statement.hpp"
@@ -37,7 +38,7 @@ class TileEntry;
 class FileEntry;
 class Database;
 
-class TileDatabase
+class TileDatabase : public TileDatabaseInterface
 {
 private:
   Database& m_db;
@@ -65,8 +66,6 @@ public:
   void store_tiles(const std::vector<TileEntry>& tiles);
 
   void delete_tiles(const FileId& fileid);
-
-  void check();
 
   void flush_cache();
 
