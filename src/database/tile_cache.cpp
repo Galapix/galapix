@@ -120,6 +120,12 @@ TileCache::store_tile(const FileEntry& file_entry, const Tile& tile)
 }
 
 void
+TileCache::store_tiles(const std::vector<TileEntry>& tiles)
+{
+  m_cache.insert(m_cache.end(), tiles.begin(), tiles.end());
+}
+
+void
 TileCache::delete_tiles(const FileId& fileid)
 {
   assert(!"not implemented");
