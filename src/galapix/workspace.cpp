@@ -501,13 +501,15 @@ Workspace::get_bounding_rect() const
           isnan(image_rect.bottom))
       {
         std::cout << "NAN ERROR: " << (*i)->get_url() << " " << (*i)->get_pos() << " " << image_rect << std::endl;
-        assert(0);
+        //assert(0);
       }
-
-      rect.left   = Math::min(rect.left,   image_rect.left);
-      rect.right  = Math::max(rect.right,  image_rect.right);
-      rect.top    = Math::min(rect.top,    image_rect.top);
-      rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+      else
+      {
+        rect.left   = Math::min(rect.left,   image_rect.left);
+        rect.right  = Math::max(rect.right,  image_rect.right);
+        rect.top    = Math::min(rect.top,    image_rect.top);
+        rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+      }
     }
   
     return rect;
