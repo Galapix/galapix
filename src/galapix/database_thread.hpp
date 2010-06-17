@@ -50,7 +50,8 @@ private:
   bool m_quit;
   bool m_abort;
   
-  ThreadMessageQueue<DatabaseMessage*> m_queue;
+  ThreadMessageQueue<DatabaseMessage*> m_request_queue;
+  ThreadMessageQueue<DatabaseMessage*> m_receive_queue;
   std::list<boost::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
 
 protected: 
@@ -115,6 +116,9 @@ public:
   /** Delete the given FileEntry along with all TileEntry refering to it */
   void      delete_file_entry(const FileId& fileid);
   /* @} */
+
+private:
+  void process_queue(ThreadMessageQueue<DatabaseMessage*>& queue);
 
 private:
   DatabaseThread (const DatabaseThread&);
