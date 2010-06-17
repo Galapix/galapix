@@ -70,12 +70,12 @@ class Project:
             self.optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
             self.optional_libs    += ['spnav']
 
-        if not conf.CheckLibWithHeader("boost_thread-mt", "boost/thread.hpp", "c++", autoadd=0):
-            print "Error: boost_thread-mt is missing"
+        if not conf.CheckLibWithHeader("boost_thread", "boost/thread.hpp", "c++", autoadd=0):
+            print "Error: boost_thread is missing"
             Exit(1)
             
-        if not conf.CheckLibWithHeader("boost_signals-mt", "boost/signals.hpp", "c++", autoadd=0):
-            print "Error: boost_signals-mt is missing"
+        if not conf.CheckLibWithHeader("boost_signals", "boost/signals.hpp", "c++", autoadd=0):
+            print "Error: boost_signals is missing"
             Exit(1)
 
         if not conf.CheckLibWithHeader("exif", "libexif/exif-data.h", "c++", autoadd=0):
@@ -109,6 +109,7 @@ class Project:
         opts.Add(BoolVariable("GALAPIX_SDL", "Build galapix.sdl", True))
         opts.Add(BoolVariable("GALAPIX_GTK", "Build galapix.gtk", True))
         opts.Add(BoolVariable("BUILD_TESTS", "Build tests", False))
+        opts.Add(BoolVariable('BUILD_EXTRA_APPS', "Build extra apps", True))
         Help(opts.GenerateHelpText(self.env))
         opts.Update(self.env)
 
@@ -125,10 +126,13 @@ class Project:
         if self.env['BUILD_TESTS']:
             self.build_tests()
 
+        if self.env['BUILD_EXTRA_APPS']:
+            self.build_extra_apps()
+
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
         self.libgalapix_env.Append(CPPDEFINES = self.optional_defines,
-                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs)
+                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread', 'boost_signals'] + self.optional_libs)
         self.libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
@@ -153,7 +157,7 @@ class Project:
         sdl_env = self.env.Clone()
         sdl_env.Append(CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread', 'boost_signals'] + self.optional_libs,
                        OBJPREFIX="sdl.")
         sdl_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
@@ -170,7 +174,7 @@ class Project:
         gtk_env = self.env.Clone()
         gtk_env.Append(CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread-mt', 'boost_signals-mt'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_thread', 'boost_signals'] + self.optional_libs,
                        OBJPREFIX="gtk.")
         gtk_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
@@ -188,6 +192,12 @@ class Project:
         libgalapix_test_env.Append(LIBS=self.libgalapix_util)
         for filename in Glob("test/*_test.cpp", strings=True):
             libgalapix_test_env.Program(filename[:-4], filename)
+
+    def build_extra_apps(self):
+        libgalapix_extra_apps_env = self.libgalapix_env.Clone()
+        libgalapix_extra_apps_env.Append(LIBS=self.libgalapix_util)
+        for filename in Glob("extra/*.cpp", strings=True):
+            libgalapix_extra_apps_env.Program(filename[:-4], filename)
             
 project = Project()
 project.build()
