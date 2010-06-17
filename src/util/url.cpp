@@ -196,6 +196,12 @@ URL::is_url(const std::string& url)
     return true;
   }
 }
+
+bool
+URL::is_remote() const
+{
+  return m_protocol != "file";
+}
 
 std::ostream& operator<<(std::ostream& out, const URL& url)
 {

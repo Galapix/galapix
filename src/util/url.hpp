@@ -68,6 +68,10 @@ public:
   int         get_mtime() const;
   int         get_size() const;
 
+  /** Return true when the URL is only accessible via a very slow
+      connection */
+  bool is_remote() const;
+
   static bool is_url(const std::string& url);
   friend bool operator==(const URL& lhs, const URL& rhs);  
 };
