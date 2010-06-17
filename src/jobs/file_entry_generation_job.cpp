@@ -46,9 +46,19 @@ FileEntryGenerationJob::run()
     FileEntry file_entry;
     
     // FIXME: JPEG::filename_is_jpeg() is ugly
-    if (m_url.has_stdio_name() && JPEG::filename_is_jpeg(m_url.get_stdio_name()))
+    if (!m_url.is_remote() && JPEG::filename_is_jpeg(m_url.str()))
     {
-      size = JPEG::get_size(m_url.get_stdio_name());
+      BlobPtr blob;
+
+      if (m_url.has_stdio_name())
+      {
+        size = JPEG::get_size(m_url.get_stdio_name());
+      }
+      else
+      {
+        blob = m_url.get_blob();
+        size = JPEG::get_size(blob->get_data(), blob->size());
+      }
 
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
       file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
@@ -64,7 +74,14 @@ FileEntryGenerationJob::run()
       min_scale = Math::min(min_scale, 3);
 
       // FIXME: recalc min_scale from jpeg scale
-      surface = JPEG::load_from_file(m_url.get_stdio_name(), Math::pow2(min_scale));
+      if (!blob)
+      {
+        surface = JPEG::load_from_file(m_url.get_stdio_name(), Math::pow2(min_scale));
+      }
+      else
+      {
+        surface = JPEG::load_from_mem(blob->get_data(), blob->size(), Math::pow2(min_scale));
+      }
     }
     else
     {
