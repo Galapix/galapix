@@ -30,6 +30,7 @@
 
 #include "plugins/tar.hpp"
 #include "plugins/zip.hpp"
+#include "plugins/seven_zip.hpp"
 #include "plugins/rar.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
@@ -319,6 +320,18 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
           {
             URL archive_url = URL::from_string(url.str() + "//zip:" + *j);
+            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
+            {
+              file_list.push_back(archive_url);
+            }
+          }
+        }
+        else if (has_extension(*i, ".7z"))
+        {
+          const std::vector<std::string>& files = SevenZip::get_filenames(*i);
+          for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
+          {
+            URL archive_url = URL::from_string(url.str() + "//7zip:" + *j);
             if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
             {
               file_list.push_back(archive_url);

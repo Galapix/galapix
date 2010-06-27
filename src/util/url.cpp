@@ -22,6 +22,7 @@
 #include <ostream>
 #include "plugins/rar.hpp"
 #include "plugins/zip.hpp"
+#include "plugins/seven_zip.hpp"
 #include "plugins/tar.hpp"
 #include "plugins/curl.hpp"
 #include "util/filesystem.hpp"
@@ -131,6 +132,10 @@ URL::get_blob(std::string* mime_type) const
     else if (m_plugin == "zip")
     {
       return Zip::get_file(m_payload, m_plugin_payload);
+    }
+    else if (m_plugin == "7zip")
+    {
+      return SevenZip::get_file(m_payload, m_plugin_payload);
     }
     else if (m_plugin == "tar")
     {
