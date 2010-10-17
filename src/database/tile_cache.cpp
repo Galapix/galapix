@@ -125,10 +125,24 @@ TileCache::store_tiles(const std::vector<TileEntry>& tiles)
   m_cache.insert(m_cache.end(), tiles.begin(), tiles.end());
 }
 
+struct FileIdEqual
+{
+  FileId m_fileid;
+
+  FileIdEqual(const FileId& fileid)
+    : m_fileid(fileid)
+  {}
+
+  bool operator()(const TileEntry& tile_entry) const
+  {
+    return tile_entry.get_file_entry().get_fileid() == m_fileid;
+  }
+};
+
 void
 TileCache::delete_tiles(const FileId& fileid)
 {
-  assert(!"not implemented");
+  m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(), FileIdEqual(fileid)), m_cache.end());
 }
 
 void
