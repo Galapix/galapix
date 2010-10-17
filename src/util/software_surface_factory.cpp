@@ -32,6 +32,7 @@
 #include "plugins/rsvg.hpp"
 #include "plugins/xcf.hpp"
 
+#include "util/dds_software_surface_loader.hpp"
 #include "util/imagemagick_software_surface_loader.hpp"
 #include "util/jpeg_software_surface_loader.hpp"
 #include "util/kra_software_surface_loader.hpp"
@@ -61,6 +62,8 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
 
   if (KRA::is_available())
     add_loader(new KRASoftwareSurfaceLoader);
+
+  add_loader(new DDSSoftwareSurfaceLoader);
 
   add_loader(new ImagemagickSoftwareSurfaceLoader);
 }
@@ -119,40 +122,45 @@ SoftwareSurfaceFactory::register_by_extension(const SoftwareSurfaceLoader* loade
 }
 
 SoftwareSurfacePtr
+SoftwareSurfaceFactory::from_file(const std::string& filename) const
+{
+  std::string extension = Filesystem::get_extension(filename);
+
+  ExtensionMap::const_iterator i = m_extension_map.find(extension);
+  if (i == m_extension_map.end())
+  {
+    std::ostringstream out;
+    out << "SoftwareSurfaceFactory::from_file(): " << filename << ": unknown file type";
+    throw std::runtime_error(out.str());
+  }
+  else
+  {
+    const SoftwareSurfaceLoader& loader = *i->second;
+
+    if (loader.supports_from_file())
+    {
+      return loader.from_file(filename);
+    }
+    else if (loader.supports_from_mem())
+    {
+      BlobPtr blob = Blob::from_file(filename);
+      return loader.from_mem(blob->get_data(), blob->size());
+    }
+    else
+    {
+      throw std::runtime_error("SoftwareSurfaceFactory::from_file(): loader does not support loading");
+    }
+  }
+}
+
+SoftwareSurfacePtr
 SoftwareSurfaceFactory::from_url(const URL& url) const
 {
   log_debug << url << std::endl;
 
   if (url.has_stdio_name())
   {
-    std::string filename = url.get_stdio_name();
-    std::string extension = Filesystem::get_extension(filename);
-
-    ExtensionMap::const_iterator i = m_extension_map.find(extension);
-    if (i == m_extension_map.end())
-    {
-      std::ostringstream out;
-      out << "SoftwareSurfaceFactory::from_url(): " << filename << ": unknown file type";
-      throw std::runtime_error(out.str());
-    }
-    else
-    {
-      const SoftwareSurfaceLoader& loader = *i->second;
-
-      if (loader.supports_from_file())
-      {
-        return loader.from_file(filename);
-      }
-      else if (loader.supports_from_mem())
-      {
-        BlobPtr blob = Blob::from_file(filename);
-        return loader.from_mem(blob->get_data(), blob->size());
-      }
-      else
-      {
-        throw std::runtime_error("SoftwareSurfaceFactory::from_url(): loader does not support loading");
-      }
-    }
+    return from_file(url.get_stdio_name());
   }
   else
   {

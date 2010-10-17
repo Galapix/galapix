@@ -49,6 +49,7 @@ public:
   void register_by_extension(const SoftwareSurfaceLoader* loader, const std::string& extension);
 
   SoftwareSurfacePtr from_url(const URL& url) const;
+  SoftwareSurfacePtr from_file(const std::string& filename) const;
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);
