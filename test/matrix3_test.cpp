@@ -25,16 +25,33 @@
 int main(int argc, char* argv[])
 {
   srand(time(NULL));
+
+  Matrix3 s(0, 3, 6, 
+            1, 4, 7, 
+            2, 5, 8);
   
   Matrix3 m(Math::frand()*10.0f, Math::frand()*10.0f, Math::frand()*10.0f,
             Math::frand()*10.0f, Math::frand()*10.0f, Math::frand()*10.0f,
             Math::frand()*10.0f, Math::frand()*10.0f, Math::frand()*10.0f);
 
+  Matrix3 rx1 = Matrix3::rotation_x(0.2451f);
+  Matrix3 rx2 = Matrix3::rotation(0.2451f, 1.0f, 0.0f, 0.0f);
+
+  Matrix3 ry1 = Matrix3::rotation_y(0.2451f);
+  Matrix3 ry2 = Matrix3::rotation(0.2451f, 0.0f, 1.0f, 0.0f);
+
+  Matrix3 rz1 = Matrix3::rotation_z(0.2451f);
+  Matrix3 rz2 = Matrix3::rotation(0.2451f, 0.0f, 0.0f, 1.0f);
+
   std::cout << "start:\n" << m << '\n'
+            << "simple:\n" << s << '\n'
             << "determinant: " << m.determinant() << '\n'
             << "inverse:\n" << m.inverse() << '\n'
             << "mult:\n" << (m * m.inverse()) << '\n'
             << "transpose:\n" << (m.transpose()) << '\n'
+            << "rotationX:\n" << rx1 << "\n\n" << rx2 << "\n\n"
+            << "rotationY:\n" << ry1 << "\n\n" << ry2 << "\n\n"
+            << "rotationZ:\n" << rz1 << "\n\n" << rz2 << "\n\n"
     ;
   return 0;
 }

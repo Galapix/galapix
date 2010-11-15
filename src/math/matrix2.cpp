@@ -23,10 +23,8 @@
 
 std::ostream& operator<<(std::ostream& s, const Matrix2& m)
 {
-  return s << boost::format(",-              -.\n"
-                            "| %6.2f, %6.2f |\n"
-                            "| %6.2f, %6.2f |\n"
-                            "'-              -'")
+  return s << boost::format("[ [ %6.2f, %6.2f ]\n"
+                            "  [ %6.2f, %6.2f ] ]")
     % m(0,0) % m(0,1) % m(1,0) % m(1,1);
 }
 

@@ -23,6 +23,7 @@
 #include <math.h>
 #include <assert.h>
 
+#include "math/math.hpp"
 #include "math/vector2f.hpp"
 
 class Matrix3
@@ -45,14 +46,34 @@ public:
                    0, 0, z);
   }
 
+  static inline Matrix3 rotation(float rad, float x, float y, float z)
+  {
+    // normalize the input vector
+    const float f = Math::sqrt(x*x + y*y + z*z);
+
+    if (f != 0.0f)
+    {
+      x /= f;
+      y /= f;
+      z /= f;
+    }
+
+    const float c = cosf(rad);
+    const float s = sinf(rad);
+
+    return Matrix3(x*x * (1-c) + c,   x*y * (1-c) - z*s, x*z * (1-c) + y*s,
+                   y*x * (1-c) + z*s, y*y * (1-c) + c,   y*z * (1-c) - x*s,
+                   x*z * (1-c) - y*s, y*z * (1-c) + x*s, z*z * (1-c) + c);
+  }
+
   static inline Matrix3 rotation_x(float rad)
   {
     const float c = cosf(rad);
     const float s = sinf(rad);
 
     return Matrix3(1, 0, 0,
-                   0, c, s,
-                   0, -s, c);
+                   0, c, -s,
+                   0, s, c);
   }
 
   static inline Matrix3 rotation_y(float rad)
@@ -60,9 +81,9 @@ public:
     const float c = cosf(rad);
     const float s = sinf(rad);
 
-    return Matrix3(c, 0, -s,
+    return Matrix3(c, 0, s,
                    0,  1, 0,
-                   s,  0, c);
+                   -s,  0, c);
   }
 
   static inline Matrix3 rotation_z(float rad)
@@ -70,8 +91,8 @@ public:
     const float c = cosf(rad);
     const float s = sinf(rad);
 
-    return Matrix3(c, -s, 0,
-                   s,  c, 0,
+    return Matrix3(c,-s, 0,
+                   s, c, 0,
                    0,  0, 1);
   }
 
@@ -87,31 +108,26 @@ public:
           float m20, float m21, float m22)
   {
     m_m[0] = m00;
-    m_m[1] = m01;
-    m_m[2] = m02;
+    m_m[1] = m10;
+    m_m[2] = m20;
 
-    m_m[3] = m10;
+    m_m[3] = m01;
     m_m[4] = m11;
-    m_m[5] = m12;
+    m_m[5] = m21;
 
-    m_m[6] = m20;
-    m_m[7] = m21;
+    m_m[6] = m02;
+    m_m[7] = m12;
     m_m[8] = m22;
   }
   
   inline float& operator()(int row, int col)
   {
-    return m_m[3*row + col];
+    return m_m[3*col + row];
   }
 
   inline const float& operator()(int row, int col) const
   {
-    return m_m[3*row + col];
-  }
-
-  inline float* operator[](int row)
-  {
-    return &m_m[3*row];
+    return m_m[3*col + row];
   }
 
   inline Matrix3 operator*(const Matrix3& rhs) const
@@ -140,6 +156,12 @@ public:
     const Matrix3& m = *this;
     return Vector2f(v.x * m(0,0) + v.y * m(0,1) + m(0,2),
                     v.x * m(1,0) + v.y * m(1,1) + m(1,2));
+  }
+
+  inline Vector2f get_translate() const
+  {
+    const Matrix3& m = *this;
+    return Vector2f(m(0, 2), m(1, 2));
   }
 
   inline float determinant() const

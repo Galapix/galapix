@@ -40,8 +40,8 @@ int main(int argc, char* argv[])
             << "mult:\n" << (m * m.inverse()) << '\n'
             << "transpose:\n" << (m.transpose()) << '\n'
             << "vec: " << v << '\n'
-            << "rot1: " << r1 << '\n'
-            << "rot2: " << r2 << '\n'
+            << "rot1:\n" << r1 << '\n'
+            << "rot2:\n" << r2 << '\n'
             << "vecmult: " << r1* r2 * v << '\n';
 
   return 0;

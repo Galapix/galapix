@@ -62,24 +62,19 @@ public:
                  float m10, float m11)
   {
     m_m[0] = m00;
-    m_m[1] = m01;
-    m_m[2] = m10;
+    m_m[1] = m10;
+    m_m[2] = m01;
     m_m[3] = m11;
   }
   
   inline float& operator()(int row, int col)
   {
-    return m_m[2*row + col];
+    return m_m[2*col + row];
   }
 
   inline const float& operator()(int row, int col) const
   {
-    return m_m[2*row + col];
-  }
-
-  inline float* operator[](int row)
-  {
-    return &m_m[2*row];
+    return m_m[2*col + row];
   }
 
   inline Matrix2 operator*(const Matrix2& rhs) const
