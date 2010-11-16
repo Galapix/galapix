@@ -29,6 +29,7 @@
 class Matrix3
 {
 private:
+  /** matrix data in column-major ordering */
   float m_m[9];
   
 public:
