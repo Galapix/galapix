@@ -110,12 +110,11 @@ Exec::exec()
       
     int error_code = errno;
 
-    // Cleanup
-    for(int i = 0; c_arguments[i] != NULL; ++i)
-      free(c_arguments[i]);
+    // FIXME: this ain't proper, need to exit(1) on failure and signal error to parent somehow
 
     // execvp() only returns on failure 
-    throw std::runtime_error("Exec::exec(): " + m_program + ": " + strerror(error_code));
+    std::cout << "Exec::exec(): " << m_program << ": " << strerror(error_code) << std::endl;
+    _exit(EXIT_FAILURE);
   }
   else // if (pid > 0)
   { // parent
