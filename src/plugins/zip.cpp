@@ -173,8 +173,27 @@ Zip::get_filenames(const std::string& zip_filename)
 }
 
 BlobPtr
-Zip::get_file(const std::string& zip_filename, const std::string& filename)
+Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
 {
+  // unzip uses wildcard expressions, not raw filenames, thus we have
+  // to escape a few special characters
+  std::string filename;
+  for(std::string::const_iterator i = filename_in.begin(); i != filename_in.end(); ++i)
+  {
+    if (*i == '[' || 
+        *i == ']' ||
+        *i == '?' ||
+        *i == '*')
+    {
+      filename += '\\';
+      filename += *i;
+    }
+    else
+    {
+      filename += *i;
+    }
+  }
+
   Exec unzip("unzip");
   unzip.arg("-pqq").arg(zip_filename).arg(filename);
   int zip_return_code = unzip.exec();
