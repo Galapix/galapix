@@ -182,7 +182,7 @@ FileTileDatabase::delete_tiles(const FileId& fileid)
 {
   // Filesystem::remove()
   // get_complete_filename()
-  
+  // FIXME: implement me
 }
 
 std::string

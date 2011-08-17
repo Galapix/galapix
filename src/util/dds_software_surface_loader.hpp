@@ -33,6 +33,7 @@ public:
   void register_loader(SoftwareSurfaceFactory& factory) const 
   {
     factory.register_by_extension(this, "dds");       
+    factory.register_by_extension(this, "tex");
   }
 
   bool supports_from_file() const { return true; }

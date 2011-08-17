@@ -74,13 +74,13 @@ MoveTool::down(const Vector2i& pos)
 
   if (image)
   {
+    // FIXME: add shift/ctrl modifier
     if (viewer->get_workspace()->get_selection()->has(image))
     {
-      // Ok, so move the whole selection 
+      viewer->get_workspace()->get_selection()->remove_image(image);
     }
     else
     {
-      viewer->get_workspace()->clear_selection();
       viewer->get_workspace()->get_selection()->add_image(image);
     }
     move_active = true;

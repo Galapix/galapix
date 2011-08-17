@@ -19,6 +19,7 @@
 #include "sqlite/connection.hpp"
 
 #include <sstream>
+#include <unistd.h>
 
 #include "sqlite/error.hpp"
 
