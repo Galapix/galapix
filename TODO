@@ -77,6 +77,16 @@ User Interface:
 Other Things:
 -------------
 
+* always flush database completly in one go (whey do we get multi
+  flushes in a row?)
+
+* io kills interactivity (why?)
+
+* (!!!) jpeg's from archive should only generate tiles fro their zoom level,
+  generating all kills performance and eats tons of memory (why?)
+
+* we might need a ThreadMessageQueue with a size limit, that blocks when it is full
+
 * create a directory with test images for all supported image and
   archive formats
 
