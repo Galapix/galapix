@@ -1,6 +1,7 @@
 # -*- mode: python -*-
 
 import glob
+import os
 
 CacheDir('cache')
 
@@ -101,7 +102,9 @@ class Project:
         self.env = conf.Finish()
 
     def build(self):
-        self.env = Environment(CPPPATH=['src'])
+        self.env = Environment(ENV = {'PATH' : os.environ['PATH'],
+                                      'HOME' : os.environ['HOME']},
+                               CPPPATH=['src'])
 
         opts = Variables(['custom.py'], ARGUMENTS)
         opts.Add('CXX', 'C++ Compiler')
