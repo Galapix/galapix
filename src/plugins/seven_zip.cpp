@@ -49,7 +49,6 @@ SevenZip::get_filenames(const std::string& zip_filename)
   else
   {
     const std::vector<char>& stdout_lst = zip.get_stdout();
-    std::vector<char>::const_iterator start = stdout_lst.begin();
     std::vector<char>::const_iterator line_start = stdout_lst.begin();
     bool parse_files = false;
     std::string file_start = "----------";

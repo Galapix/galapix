@@ -23,7 +23,9 @@
 
 #include <errno.h>
 #include <fstream>
+#include <iostream>
 #include <string.h>
+#include <sstream>
 
 #include "plugins/dds_surface.hpp"
 
@@ -62,7 +64,15 @@ DDS::load_from_file(const std::string& filename)
     SoftwareSurfacePtr surface 
       = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(dds.get_width(), dds.get_height()));
     
-    memcpy(surface->get_data(), dds.get_data(), dds.get_width() * dds.get_height() * 4);
+    if (dds.get_length() != surface->get_width() * surface->get_height() * 4)
+    {
+      std::ostringstream out;
+      out << "DDS::load_from_file(): length missmatch " << dds.get_length() 
+          << " - " << surface->get_width() << "x" << surface->get_height();
+      throw std::runtime_error(out.str());
+    }
+
+    memcpy(surface->get_data(), dds.get_data(), dds.get_length());
 
     return surface;
   }

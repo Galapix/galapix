@@ -244,6 +244,7 @@ public:
 
   int get_width() const;
   int get_height() const;
+  int get_length() const;
 
 private:
   /** Returns the image data in RGBA format */

@@ -81,6 +81,7 @@ Imagemagick::get_supported_extensions()
 
     lst.push_back("gif");
     lst.push_back("tga");
+    lst.push_back("rgb");
     lst.push_back("bmp");
     lst.push_back("tiff");
     lst.push_back("tif");
