@@ -52,7 +52,7 @@ TileGenerationJob::~TileGenerationJob()
 
 bool
 TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
-                                const boost::function<void (Tile)>& callback)
+                                const std::function<void (Tile)>& callback)
 {
   std::unique_lock<std::mutex> lock(m_state_mutex);
   
@@ -206,7 +206,7 @@ TileGenerationJob::run()
   {
     // Do the main work
     TileGenerator::generate(m_url, m_min_scale, m_max_scale,
-                            boost::bind(&TileGenerationJob::process_tile, this, _1));
+                            std::bind(&TileGenerationJob::process_tile, this, std::placeholders::_1));
   }
   catch(const std::exception& err)
   {

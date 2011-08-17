@@ -29,7 +29,7 @@ class Rectf;
 class Vector2f;
 class Surface;
 
-typedef boost::shared_ptr<Surface> SurfacePtr;
+typedef std::shared_ptr<Surface> SurfacePtr;
 
 class Surface
 {

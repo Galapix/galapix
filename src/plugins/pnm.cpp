@@ -18,6 +18,7 @@
 
 #include "plugins/pnm.hpp"
 
+#include <assert.h>
 #include <stdexcept>
 
 #include "plugins/pnm_mem_reader.hpp"

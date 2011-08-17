@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_JOBS_TILE_GENERATOR_HPP
 #define HEADER_GALAPIX_JOBS_TILE_GENERATOR_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 
 #include "util/software_surface_factory.hpp"
 #include "galapix/tile.hpp"
@@ -33,10 +33,10 @@ public:
   static void generate_old(const URL& url,
                            int m_min_scale_in_db, int m_max_scale_in_db,
                            int min_scale, int max_scale,
-                           const boost::function<void (Tile)>& callback);
+                           const std::function<void (Tile)>& callback);
 
   static void generate(const URL& url, int min_scale, int max_scale,
-                       const boost::function<void(Tile)>& callback);
+                       const std::function<void(Tile)>& callback);
 
   static SoftwareSurfacePtr load_surface(const URL& url, int min_scale, Size* size);
 
@@ -47,7 +47,7 @@ public:
   static void cut_into_tiles(SoftwareSurfacePtr surface,
                              const Size& original_size,
                              int min_scale, int max_scale,
-                             const boost::function<void (Tile)>& callback);
+                             const std::function<void (Tile)>& callback);
 
 private:
   TileGenerator(const TileGenerator&);

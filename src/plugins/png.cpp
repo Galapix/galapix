@@ -20,6 +20,8 @@
 
 #include <png.h>
 #include <stdexcept>
+#include <boost/scoped_ptr.hpp>
+#include <boost/scoped_array.hpp>
 
 #include "util/log.hpp"
 

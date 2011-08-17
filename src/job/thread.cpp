@@ -45,7 +45,7 @@ void
 Thread::start_thread()
 {
   assert(!m_thread);
-  m_thread.reset(new std::thread(boost::bind(&Thread::run_wrap, this)));
+  m_thread.reset(new std::thread(std::bind(&Thread::run_wrap, this)));
 }
 
 void

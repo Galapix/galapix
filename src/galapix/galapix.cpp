@@ -87,8 +87,8 @@ Galapix::test(const Options& opts,
   job_manager.start_thread();
 
   std::cout << "<<<--- launching jobs" << std::endl;
-  JobHandle handle1 = job_manager.request(boost::shared_ptr<Job>(new TestJob()));
-  JobHandle handle2 = job_manager.request(boost::shared_ptr<Job>(new TestJob()));
+  JobHandle handle1 = job_manager.request(std::shared_ptr<Job>(new TestJob()));
+  JobHandle handle2 = job_manager.request(std::shared_ptr<Job>(new TestJob()));
   std::cout << "--->>> waiting for jobs" << std::endl;
   handle1.wait();
   std::cout << "handle1 finished" << std::endl;
@@ -259,8 +259,8 @@ Galapix::filegen(const Options& opts,
   for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
   {
     database_thread.request_file(url[i], 
-                                 boost::function<void (FileEntry)>(), 
-                                 boost::function<void (FileEntry, Tile)>());
+                                 std::function<void (FileEntry)>(), 
+                                 std::function<void (FileEntry, Tile)>());
   }
 
   job_manager.stop_thread();
@@ -293,7 +293,7 @@ Galapix::thumbgen(const Options& opts,
                                                       [&file_entries](const FileEntry& entry) { 
                                                         file_entries.push_back(entry); 
                                                       },
-                                                      boost::function<void (FileEntry, Tile)>())); 
+                                                      std::function<void (FileEntry, Tile)>())); 
   }
   job_handle_group.wait();
   job_handle_group.clear();
@@ -312,7 +312,7 @@ Galapix::thumbgen(const Options& opts,
     }
 
     job_handle_group.add(database_thread.request_tiles(*i, min_scale, max_scale,
-                                                       boost::function<void(Tile)>()));
+                                                       std::function<void(Tile)>()));
   }
 
   job_handle_group.wait();
@@ -407,7 +407,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     }
     else
     {
-      //database_thread.request_file(*i, boost::bind(&Workspace::receive_file, &workspace, _1));
+      //database_thread.request_file(*i, std::bind(&Workspace::receive_file, &workspace, _1));
       FileEntry file_entry = database.get_files().get_file_entry(*i);
       if (!file_entry)
       {

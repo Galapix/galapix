@@ -33,7 +33,7 @@ private:
   typedef std::map<std::string, const SoftwareSurfaceLoader*> ExtensionMap;
   typedef std::map<std::string, const SoftwareSurfaceLoader*> MimeTypeMap;
 
-  std::vector<boost::shared_ptr<SoftwareSurfaceLoader> > m_loader;
+  std::vector<std::shared_ptr<SoftwareSurfaceLoader> > m_loader;
   ExtensionMap m_extension_map;
   MimeTypeMap  m_mime_type_map;
   

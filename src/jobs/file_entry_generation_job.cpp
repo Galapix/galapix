@@ -108,7 +108,7 @@ FileEntryGenerationJob::run()
     m_sig_file_callback(file_entry);
     
     TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale, 
-                                  boost::bind(&FileEntryGenerationJob::process_tile, this, file_entry, _1));
+                                  std::bind(&FileEntryGenerationJob::process_tile, this, file_entry, std::placeholders::_1));
   }
   catch(const std::exception& err)
   {

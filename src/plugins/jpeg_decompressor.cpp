@@ -18,8 +18,10 @@
 
 #include "plugins/jpeg_decompressor.hpp"
 
-#include <sstream>
+#include <assert.h>
+#include <boost/scoped_array.hpp>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 void

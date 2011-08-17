@@ -18,6 +18,7 @@
 
 #include "util/blob.hpp"
 
+#include <assert.h>
 #include <stdexcept>
 #include <fstream>
 #include <string.h>

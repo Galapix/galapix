@@ -19,7 +19,7 @@
 #define __LISPPARSER_H__
 
 #include <string>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "lisp/lexer.hpp"
 
 namespace lisp
@@ -31,15 +31,15 @@ class Parser
 {
 public:
   ~Parser();
-  static boost::shared_ptr<Lisp> parse(const std::string& filename);
-  static boost::shared_ptr<Lisp> parse(std::istream& stream, const std::string& filename = "");
+  static std::shared_ptr<Lisp> parse(const std::string& filename);
+  static std::shared_ptr<Lisp> parse(std::istream& stream, const std::string& filename = "");
 
 private:
   friend class ParseError;
 
   Parser();
   
-  boost::shared_ptr<Lisp> parse();
+  std::shared_ptr<Lisp> parse();
   
   std::string filename;
   Lexer* lexer;

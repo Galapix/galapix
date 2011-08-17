@@ -32,13 +32,13 @@ private:
   {}
 
 public:
-  static boost::shared_ptr<DatabaseTileProvider> create(const FileEntry& file_entry)
+  static std::shared_ptr<DatabaseTileProvider> create(const FileEntry& file_entry)
   {
-    return boost::shared_ptr<DatabaseTileProvider>(new DatabaseTileProvider(file_entry));
+    return std::shared_ptr<DatabaseTileProvider>(new DatabaseTileProvider(file_entry));
   }
 
   JobHandle request_tile(int tilescale, const Vector2i& pos, 
-                         const boost::function<void (Tile)>& callback)
+                         const std::function<void (Tile)>& callback)
   {
     return DatabaseThread::current()->request_tile(m_file_entry, tilescale, pos, callback);
   }
@@ -65,9 +65,9 @@ public:
 
   struct FileEntry2TileProvider
   {
-    boost::function<void (TileProviderPtr)> m_callback;
+    std::function<void (TileProviderPtr)> m_callback;
 
-    FileEntry2TileProvider(const boost::function<void (TileProviderPtr)>& callback) :
+    FileEntry2TileProvider(const std::function<void (TileProviderPtr)>& callback) :
       m_callback(callback)
     {}
 
@@ -77,7 +77,7 @@ public:
     }
   };
 
-  void refresh(const boost::function<void (TileProviderPtr)>& callback)
+  void refresh(const std::function<void (TileProviderPtr)>& callback)
   {
     // FIXME: delete_file_entry() needs to handle database cache properly
     if (m_file_entry.get_fileid())

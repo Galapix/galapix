@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_UTIL_FILE_READER_HPP
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class RGBA;
 class Size;
@@ -37,7 +37,7 @@ class URL;
 class FileReader
 {
 public:
-  FileReader(boost::shared_ptr<FileReaderImpl> impl_);
+  FileReader(std::shared_ptr<FileReaderImpl> impl_);
   FileReader();
   virtual ~FileReader() {}
 
@@ -79,7 +79,7 @@ public:
   static FileReader parse(const std::string& filename);
 
 private:
-  boost::shared_ptr<FileReaderImpl> impl;
+  std::shared_ptr<FileReaderImpl> impl;
 };
 
 #endif

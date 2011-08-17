@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_JOB_JOB_HANDLE_HPP
 #define HEADER_GALAPIX_JOB_JOB_HANDLE_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <iosfwd>
 
 class JobHandleImpl;
@@ -58,7 +58,7 @@ public:
   friend std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
 
 private:
-  boost::shared_ptr<JobHandleImpl> impl;
+  std::shared_ptr<JobHandleImpl> impl;
 };
 
 std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);

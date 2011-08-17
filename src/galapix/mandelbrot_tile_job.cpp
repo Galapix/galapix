@@ -23,7 +23,7 @@
 #include "math/rgb.hpp"
 
 MandelbrotTileJob::MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
-                                     const boost::function<void (Tile)>& callback) :
+                                     const std::function<void (Tile)>& callback) :
   Job(job_handle),
   m_size(size),
   m_scale(scale),

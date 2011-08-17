@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 #define HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <memory>
 #include <vector>
 
@@ -59,18 +59,18 @@ private:
 
   ViewerState m_state;
 
-  boost::shared_ptr<ZoomTool>   keyboard_zoom_in_tool;
-  boost::shared_ptr<ZoomTool>   keyboard_zoom_out_tool;
-  boost::shared_ptr<ViewRotateTool> keyboard_view_rotate_tool;
+  std::shared_ptr<ZoomTool>   keyboard_zoom_in_tool;
+  std::shared_ptr<ZoomTool>   keyboard_zoom_out_tool;
+  std::shared_ptr<ViewRotateTool> keyboard_view_rotate_tool;
 
-  boost::shared_ptr<PanTool>      pan_tool;
-  boost::shared_ptr<MoveTool>     move_tool;
-  boost::shared_ptr<ZoomRectTool> zoom_rect_tool;
-  boost::shared_ptr<ZoomTool>     zoom_in_tool;
-  boost::shared_ptr<ZoomTool>     zoom_out_tool;
-  boost::shared_ptr<ResizeTool>   resize_tool;
-  boost::shared_ptr<RotateTool>   rotate_tool;
-  boost::shared_ptr<GridTool>     grid_tool;
+  std::shared_ptr<PanTool>      pan_tool;
+  std::shared_ptr<MoveTool>     move_tool;
+  std::shared_ptr<ZoomRectTool> zoom_rect_tool;
+  std::shared_ptr<ZoomTool>     zoom_in_tool;
+  std::shared_ptr<ZoomTool>     zoom_out_tool;
+  std::shared_ptr<ResizeTool>   resize_tool;
+  std::shared_ptr<RotateTool>   rotate_tool;
+  std::shared_ptr<GridTool>     grid_tool;
 
   Tool* left_tool;
   Tool* middle_tool;

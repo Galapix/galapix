@@ -19,14 +19,14 @@
 #ifndef HEADER_GALAPIX_GALAPIX_SELECTION_HPP
 #define HEADER_GALAPIX_GALAPIX_SELECTION_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "galapix/image.hpp"
 #include "galapix/image_collection.hpp"
 
 class Selection;
 
-typedef boost::shared_ptr<Selection> SelectionPtr;
+typedef std::shared_ptr<Selection> SelectionPtr;
 
 class Selection
 {

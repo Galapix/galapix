@@ -73,7 +73,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
   std::cout << "ZoomifyTileProvider: " << basedir << " " << m_size << " " << m_tilesize << " " << m_max_scale << std::endl;
 }
 
-boost::shared_ptr<ZoomifyTileProvider> 
+std::shared_ptr<ZoomifyTileProvider> 
 ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
 {
   std::string content = url.get_blob()->str();
@@ -95,7 +95,7 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
   }
   else
   {
-    return boost::shared_ptr<ZoomifyTileProvider>(new ZoomifyTileProvider(basedir, size, tilesize, job_manager));
+    return std::shared_ptr<ZoomifyTileProvider>(new ZoomifyTileProvider(basedir, size, tilesize, job_manager));
   }
 }
 
@@ -109,7 +109,7 @@ ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 
 JobHandle
 ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos, 
-                                  const boost::function<void (Tile)>& callback)
+                                  const std::function<void (Tile)>& callback)
 {
   int tile_group = get_tile_group(scale, pos);
 
@@ -119,7 +119,7 @@ ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
       << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
 
   JobHandle job_handle = JobHandle::create();
-  m_job_manager.request(boost::shared_ptr<Job>(new ZoomifyTileJob(job_handle, URL::from_string(out.str()), scale, pos, callback)));
+  m_job_manager.request(std::shared_ptr<Job>(new ZoomifyTileJob(job_handle, URL::from_string(out.str()), scale, pos, callback)));
   return job_handle;
 }
   

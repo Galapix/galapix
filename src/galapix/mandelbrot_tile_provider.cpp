@@ -40,7 +40,7 @@ MandelbrotTileProvider::~MandelbrotTileProvider()
   
 JobHandle
 MandelbrotTileProvider::request_tile(int scale, const Vector2i& pos, 
-                                     const boost::function<void (Tile)>& callback)
+                                     const std::function<void (Tile)>& callback)
 {
   //std::cout << "MandelbrotTileProvider::request_tile(): " << scale << " " << pos << std::endl;
   JobHandle job_handle = JobHandle::create();

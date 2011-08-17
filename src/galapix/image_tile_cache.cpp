@@ -83,7 +83,7 @@ ImageTileCache::request_tile(int x, int y, int scale)
   if (i == m_cache.end())
   {
     JobHandle job_handle = m_tile_provider->request_tile(scale, Vector2i(x, y), 
-                                                         weak(boost::bind(&ImageTileCache::receive_tile, _1, _2), m_self));
+                                                         weak(std::bind(&ImageTileCache::receive_tile, std::placeholders::_1, std::placeholders::_2), m_self));
 
     // FIXME: Something to try: Request the next smaller tile too,
     // so we get a lower quality image fast and a higher quality one

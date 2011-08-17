@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_JOBS_FILE_ENTRY_GENERATION_JOB_HPP
 #define HEADER_GALAPIX_JOBS_FILE_ENTRY_GENERATION_JOB_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/signals.hpp>
 
 #include "util/url.hpp"

@@ -23,7 +23,7 @@
 #include "util/sexpr_file_reader.hpp"
 #include "util/url.hpp"
 
-FileReader::FileReader(boost::shared_ptr<FileReaderImpl> impl_) :
+FileReader::FileReader(std::shared_ptr<FileReaderImpl> impl_) :
   impl(impl_)
 {
 }
@@ -196,7 +196,7 @@ FileReader::read_section(const char* name)   const
 FileReader
 FileReader::parse(const std::string& filename)
 {
-  boost::shared_ptr<lisp::Lisp> sexpr = lisp::Parser::parse(filename);
+  std::shared_ptr<lisp::Lisp> sexpr = lisp::Parser::parse(filename);
   if (sexpr)
   {
     return SExprFileReader(sexpr->get_list_elem(0));

@@ -19,6 +19,7 @@
 #ifndef HEADER_GALAPIX_JOB_THREAD_MESSAGE_QUEUE_HPP
 #define HEADER_GALAPIX_JOB_THREAD_MESSAGE_QUEUE_HPP
 
+#include <assert.h>
 #include <queue>
 #include <condition_variable>
 #include <mutex>

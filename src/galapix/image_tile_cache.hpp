@@ -31,7 +31,7 @@
 
 class ImageTileCache;
 
-typedef boost::shared_ptr<ImageTileCache> ImageTileCachePtr;
+typedef std::shared_ptr<ImageTileCache> ImageTileCachePtr;
 
 class ImageTileCache
 {
@@ -67,7 +67,7 @@ private:
   typedef std::map<TileCacheId, SurfaceStruct> Cache; 
 
 public:
-  boost::weak_ptr<ImageTileCache> m_self;
+  std::weak_ptr<ImageTileCache> m_self;
   Cache m_cache;
 
   ThreadMessageQueue<Tile> m_tile_queue;

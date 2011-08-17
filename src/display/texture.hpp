@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 
 #include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "util/software_surface.hpp"
 
@@ -30,7 +30,7 @@ class SoftwareSurface;
 class TextureImpl;
 class Texture;
 
-typedef boost::shared_ptr<Texture> TexturePtr;
+typedef std::shared_ptr<Texture> TexturePtr;
 
 class Texture
 {

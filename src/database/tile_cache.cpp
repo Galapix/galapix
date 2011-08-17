@@ -18,6 +18,8 @@
 
 #include "database/tile_cache.hpp"
 
+#include <algorithm>
+
 #include "database/tile_database.hpp"
 
 TileCache::TileCache() :

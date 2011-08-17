@@ -32,7 +32,7 @@ Database::Database(const std::string& prefix) :
   m_db.reset(new SQLiteConnection(prefix + "/cache3.sqlite3"));
   files.reset(new FileDatabase(*this));
 
-  if (false)
+  if (true)
   {
     tiles.reset(new TileDatabase(*this));
   }

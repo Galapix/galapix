@@ -19,6 +19,7 @@
 #include "util/software_surface_factory.hpp"
 
 #include <sstream>
+#include <stdexcept>
 
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
@@ -75,7 +76,7 @@ SoftwareSurfaceFactory::~SoftwareSurfaceFactory()
 void
 SoftwareSurfaceFactory::add_loader(SoftwareSurfaceLoader* loader)
 {
-  m_loader.push_back(boost::shared_ptr<SoftwareSurfaceLoader>(loader));
+  m_loader.push_back(std::shared_ptr<SoftwareSurfaceLoader>(loader));
   loader->register_loader(*this);
 }
 

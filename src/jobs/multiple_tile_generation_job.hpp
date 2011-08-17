@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_JOBS_MULTIPLE_TILE_GENERATION_JOB_HPP
 #define HEADER_GALAPIX_JOBS_MULTIPLE_TILE_GENERATION_JOB_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 
 #include "jobs/tile_generator.hpp"
 #include "job/job.hpp"
@@ -36,14 +36,14 @@ private:
   int m_max_scale_in_db;
   int m_min_scale; 
   int m_max_scale;
-  boost::function<void (Tile)> m_callback;
+  std::function<void (Tile)> m_callback;
 
 public:
   MultipleTileGenerationJob(const JobHandle& job_handle, 
                             const FileEntry& file_entry,
                             int min_scale_in_db, int max_scale_in_db,
                             int min_scale, int max_scale,
-                            const boost::function<void (Tile)>& callback) :
+                            const std::function<void (Tile)>& callback) :
     Job(job_handle),
     m_file_entry(file_entry),
     m_min_scale_in_db(min_scale_in_db),

@@ -18,6 +18,9 @@
 
 #include "plugins/jpeg_compressor.hpp"
 
+#include <boost/scoped_ptr.hpp>
+#include <boost/scoped_array.hpp>
+
 JPEGCompressor::JPEGCompressor() :
   m_cinfo(),
   m_jerr()

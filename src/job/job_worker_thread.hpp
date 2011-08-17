@@ -19,8 +19,8 @@
 #ifndef HEADER_GALAPIX_JOB_JOB_WORKER_THREAD_HPP
 #define HEADER_GALAPIX_JOB_JOB_WORKER_THREAD_HPP
 
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include <functional>
+#include <memory>
 
 #include "job/thread_message_queue.hpp"
 #include "job/thread.hpp"
@@ -33,8 +33,8 @@ class JobWorkerThread : public Thread
 private:
   struct Task 
   {
-    boost::shared_ptr<Job> job;
-    boost::function<void (boost::shared_ptr<Job>, bool)> callback;
+    std::shared_ptr<Job> job;
+    std::function<void (std::shared_ptr<Job>, bool)> callback;
 
     Task() :
       job(),
@@ -51,7 +51,7 @@ public:
   JobWorkerThread();
   ~JobWorkerThread();
 
-  JobHandle request(boost::shared_ptr<Job> job, const boost::function<void (boost::shared_ptr<Job>, bool)>& callback);
+  JobHandle request(std::shared_ptr<Job> job, const std::function<void (std::shared_ptr<Job>, bool)>& callback);
 
   void run();
 
@@ -65,7 +65,7 @@ private:
   JobWorkerThread& operator= (const JobWorkerThread&);
 };
 
-typedef boost::shared_ptr<JobWorkerThread> JobWorkerThreadPtr;
+typedef std::shared_ptr<JobWorkerThread> JobWorkerThreadPtr;
 
 #endif
 

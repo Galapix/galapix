@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 
 #include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <map>
 #include <string>
 
@@ -44,7 +44,7 @@ class Rectf;
 class Image
 {
 private:
-  boost::weak_ptr<Image> m_self;
+  std::weak_ptr<Image> m_self;
 
   URL       m_url;
   TileProviderPtr m_provider;
@@ -67,7 +67,7 @@ private:
 
   bool m_file_entry_requested;
 
-  boost::shared_ptr<ImageTileCache> m_cache;
+  std::shared_ptr<ImageTileCache> m_cache;
   boost::scoped_ptr<ImageRenderer>  m_renderer;
 
   ThreadMessageQueue<FileEntry> m_file_entry_queue;

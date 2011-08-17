@@ -18,6 +18,7 @@
 
 #include "plugins/xcf.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 #include <stdio.h>

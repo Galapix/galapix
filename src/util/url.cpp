@@ -18,8 +18,10 @@
 
 #include "util/url.hpp"
 
+#include <assert.h>
 #include <stdexcept>
 #include <ostream>
+
 #include "plugins/rar.hpp"
 #include "plugins/zip.hpp"
 #include "plugins/seven_zip.hpp"

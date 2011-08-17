@@ -32,7 +32,7 @@ void
 TileGenerator::generate_old(const URL& url,
                             int m_min_scale_in_db, int m_max_scale_in_db,
                             int min_scale, int max_scale,
-                            const boost::function<void(Tile)>& callback)
+                            const std::function<void(Tile)>& callback)
 {
   if (true /* verbose */)
   {
@@ -62,7 +62,7 @@ TileGenerator::generate_old(const URL& url,
 
 void
 TileGenerator::generate(const URL& url, int min_scale, int max_scale,
-                        const boost::function<void(Tile)>& callback)
+                        const std::function<void(Tile)>& callback)
 {
   // Load the image, try to load an already downsized version if possible
   Size original_size;
@@ -102,7 +102,7 @@ void
 TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
                               const Size& original_size,
                               int min_scale, int max_scale,
-                              const boost::function<void (Tile)>& callback)
+                              const std::function<void (Tile)>& callback)
 {
   // Scale the image if loading a downsized version was not possible
   // or the downscale wasn't enough

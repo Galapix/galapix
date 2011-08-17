@@ -18,7 +18,7 @@
 
 #include "galapix/image.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 #include <iostream>
 
 #include "database/file_entry.hpp"
@@ -273,8 +273,8 @@ Image::draw(const Rectf& cliprect, float zoom)
     {
       m_file_entry_requested = true;
       m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
-                                                               weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
-                                                               weak(boost::bind(&Image::receive_tile, _1, _2, _3), m_self)));
+                                                               weak(std::bind(&Image::receive_file_entry, std::placeholders::_1, std::placeholders::_2), m_self),
+                                                               weak(std::bind(&Image::receive_tile, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), m_self)));
     }
   }
   else
@@ -331,7 +331,7 @@ Image::refresh(bool force)
   {
     if (m_provider)
     {
-      m_provider->refresh(weak(boost::bind(&Image::receive_tile_provider, _1, _2), m_self));
+      m_provider->refresh(weak(std::bind(&Image::receive_tile_provider, std::placeholders::_1, std::placeholders::_2), m_self));
       clear_provider();
     }
   }

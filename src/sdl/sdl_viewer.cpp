@@ -425,7 +425,7 @@ SDLViewer::run()
 
 #ifdef HAVE_SPACE_NAVIGATOR
   SpaceNavigator space_navigator;
-  std::thread  space_navigator_thread(boost::bind(&SpaceNavigator::run, &space_navigator));
+  std::thread  space_navigator_thread(std::bind(&SpaceNavigator::run, &space_navigator));
 #endif
 
   while(!m_quit)

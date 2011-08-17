@@ -27,6 +27,7 @@
 #include <sys/time.h>
 #include <utime.h>
 #include <sstream>
+#include <algorithm>
 
 #include "plugins/tar.hpp"
 #include "plugins/zip.hpp"

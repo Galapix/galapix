@@ -19,18 +19,18 @@
 #ifndef HEADER_GALAPIX_UTIL_BLOB_HPP
 #define HEADER_GALAPIX_UTIL_BLOB_HPP
 
-#include <boost/smart_ptr.hpp>
+#include <memory>
 #include <vector>
 #include <stdint.h>
 
 class Blob;
 
-typedef boost::shared_ptr<Blob> BlobPtr;
+typedef std::shared_ptr<Blob> BlobPtr;
 
 class Blob
 {
 private:
-  boost::scoped_array<uint8_t> m_data;
+  std::unique_ptr<uint8_t> m_data;
   int m_len;
 
 private:

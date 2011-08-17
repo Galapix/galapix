@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_DATABASE_MESSAGE_HPP
 #define HEADER_GALAPIX_GALAPIX_DATABASE_MESSAGE_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "database/file_entry.hpp"
 
@@ -40,10 +40,10 @@ public:
 class RequestJobRemovalDatabaseMessage : public DatabaseMessage
 {
 private:
-  boost::shared_ptr<Job> m_job;
+  std::shared_ptr<Job> m_job;
 
 public:
-  RequestJobRemovalDatabaseMessage(boost::shared_ptr<Job> job) :
+  RequestJobRemovalDatabaseMessage(std::shared_ptr<Job> job) :
     m_job(job)
   {}
 
@@ -60,11 +60,11 @@ public:
   FileEntry m_file_entry;
   int m_min_scale;
   int m_max_scale;
-  boost::function<void (Tile)> m_callback;
+  std::function<void (Tile)> m_callback;
 
   RequestTilesDatabaseMessage(const JobHandle& job_handle, const FileEntry& file_entry, 
                               int min_scale, int max_scale,
-                              const boost::function<void (Tile)>& callback) :
+                              const std::function<void (Tile)>& callback) :
     m_job_handle(job_handle),
     m_file_entry(file_entry),
     m_min_scale(min_scale),
@@ -92,11 +92,11 @@ public:
   FileEntry file_entry;
   int tilescale;
   Vector2i pos;
-  boost::function<void (Tile)> callback;
+  std::function<void (Tile)> callback;
 
   RequestTileDatabaseMessage(const JobHandle& job_handle_,
                              const FileEntry& file_entry_, int tilescale_, const Vector2i& pos_,
-                             const boost::function<void (Tile)>& callback_) :
+                             const std::function<void (Tile)>& callback_) :
     job_handle(job_handle_),
     file_entry(file_entry_),
     tilescale(tilescale_),
@@ -142,13 +142,13 @@ class RequestFileDatabaseMessage : public DatabaseMessage
 public:
   JobHandle m_job_handle;
   URL m_url;
-  boost::function<void (FileEntry)> m_file_callback;
-  boost::function<void (FileEntry, Tile)> m_tile_callback;
+  std::function<void (FileEntry)> m_file_callback;
+  std::function<void (FileEntry, Tile)> m_tile_callback;
 
   RequestFileDatabaseMessage(const JobHandle& job_handle,
                              const URL& url,
-                             const boost::function<void (FileEntry)>& file_callback,
-                             const boost::function<void (FileEntry, Tile)>& tile_callback) :
+                             const std::function<void (FileEntry)>& file_callback,
+                             const std::function<void (FileEntry, Tile)>& tile_callback) :
     m_job_handle(job_handle),
     m_url(url),
     m_file_callback(file_callback),
@@ -192,9 +192,9 @@ public:
 class AllFilesDatabaseMessage : public DatabaseMessage
 {
 public:
-  boost::function<void (FileEntry)> callback;
+  std::function<void (FileEntry)> callback;
 
-  AllFilesDatabaseMessage(const boost::function<void (FileEntry)>& callback_)
+  AllFilesDatabaseMessage(const std::function<void (FileEntry)>& callback_)
     : callback(callback_)
   {
   }
@@ -214,9 +214,9 @@ class FilesByPatternDatabaseMessage : public DatabaseMessage
 {
 public:
   std::string m_pattern;
-  boost::function<void (FileEntry)> m_callback;
+  std::function<void (FileEntry)> m_callback;
 
-  FilesByPatternDatabaseMessage(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
+  FilesByPatternDatabaseMessage(const std::function<void (FileEntry)>& callback, const std::string& pattern)
     : m_pattern(pattern),
       m_callback(callback)
   {
@@ -287,12 +287,12 @@ private:
   URL  m_url;
   Size m_size;
   int  m_format;
-  boost::function<void (FileEntry)> m_callback;
+  std::function<void (FileEntry)> m_callback;
 
 public:
   StoreFileEntryDatabaseMessage(const JobHandle& job_handle, 
                                 const URL& url, const Size& size, int format,
-                                const boost::function<void (FileEntry)>& callback)
+                                const std::function<void (FileEntry)>& callback)
     : m_job_handle(job_handle),
       m_url(url),
       m_size(size),

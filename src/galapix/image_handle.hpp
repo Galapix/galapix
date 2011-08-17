@@ -19,11 +19,11 @@
 #ifndef HEADER_GALAPIX_GALAPIX_IMAGE_HANDLE_HPP
 #define HEADER_GALAPIX_GALAPIX_IMAGE_HANDLE_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Image;
 
-typedef boost::shared_ptr<Image> ImagePtr;
+typedef std::shared_ptr<Image> ImagePtr;
 
 #endif
 

@@ -19,8 +19,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_PROVIDER_HPP
 #define HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_PROVIDER_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <boost/function.hpp>
+#include <memory>
+#include <functional>
 
 #include "galapix/tile_provider.hpp"
 #include "galapix/tile.hpp"
@@ -40,7 +40,7 @@ public:
   ~MandelbrotTileProvider();
   
   JobHandle request_tile(int tilescale, const Vector2i& pos, 
-                                 const boost::function<void (Tile)>& callback);
+                                 const std::function<void (Tile)>& callback);
 
   int  get_max_scale() const;
   int  get_tilesize() const;
