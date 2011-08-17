@@ -20,16 +20,16 @@
 #define HEADER_GALAPIX_JOB_THREAD_MESSAGE_QUEUE_HPP
 
 #include <queue>
-#include <boost/thread/condition.hpp>
-#include <boost/thread/mutex.hpp>
+#include <condition_variable>
+#include <mutex>
 
 template<class C>
 class ThreadMessageQueue
 {
 private:
-  boost::mutex     m_mutex;
-  boost::condition m_wait_cond;
-  boost::condition m_full_cond;
+  std::mutex     m_mutex;
+  std::condition_variable m_wait_cond;
+  std::condition_variable m_full_cond;
   std::queue<C>    m_values;
   int              m_max_size;
 
@@ -48,7 +48,7 @@ public:
 
   void push(const C& value)
   {
-    boost::mutex::scoped_lock lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     if(m_max_size != -1 && static_cast<int>(m_values.size()) == m_max_size)
     {
       while(static_cast<int>(m_values.size()) == m_max_size)
@@ -63,14 +63,14 @@ public:
 
   void pop()
   {
-    boost::mutex::scoped_lock lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     m_values.pop();
     m_full_cond.notify_all();
   }
 
   C front()
   {
-    boost::mutex::scoped_lock lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     assert(!m_values.empty());
     C c(m_values.front());
     return c;
@@ -78,21 +78,21 @@ public:
 
   int size()
   {
-    boost::mutex::scoped_lock lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     int s = m_values.size();
     return s;
   }
 
   bool empty() 
   {
-    boost::mutex::scoped_lock lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     bool e = m_values.empty();
     return e;
   }
 
   void wait()
   {
-    boost::mutex::scoped_lock lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     if (m_values.empty())
     {
       m_wait_cond.wait(lock);
@@ -101,7 +101,7 @@ public:
 
   void wakeup()
   {
-    boost::mutex::scoped_lock lock(m_mutex);
+    std::unique_lock<std::mutex> lock(m_mutex);
     m_wait_cond.notify_all();
   }
 

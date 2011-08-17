@@ -54,7 +54,7 @@ bool
 TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
                                 const boost::function<void (Tile)>& callback)
 {
-  boost::mutex::scoped_lock lock(m_state_mutex);
+  std::unique_lock<std::mutex> lock(m_state_mutex);
   
   switch(m_state)
   {
@@ -136,7 +136,7 @@ TileGenerationJob::process_tile(const Tile& tile)
 bool
 TileGenerationJob::is_aborted()
 {
-  boost::mutex::scoped_lock lock(m_state_mutex);
+  std::unique_lock<std::mutex> lock(m_state_mutex);
 
   if (!m_file_entry)
   {
@@ -167,7 +167,7 @@ void
 TileGenerationJob::run()
 {
   { // Calculate min/max_scale
-    boost::mutex::scoped_lock lock(m_state_mutex);
+    std::unique_lock<std::mutex> lock(m_state_mutex);
     assert(m_state == kWaiting);
     m_state = kRunning;
 
@@ -215,7 +215,7 @@ TileGenerationJob::run()
   }
 
   {
-    boost::mutex::scoped_lock lock(m_state_mutex);
+    std::unique_lock<std::mutex> lock(m_state_mutex);
     assert(m_state == kRunning);
     m_state = kDone;
 

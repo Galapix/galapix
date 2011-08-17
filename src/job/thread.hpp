@@ -19,13 +19,13 @@
 #ifndef HEADER_GALAPIX_JOB_THREAD_HPP
 #define HEADER_GALAPIX_JOB_THREAD_HPP
 
-#include <boost/thread.hpp>
+#include <thread>
 #include <boost/scoped_ptr.hpp>
 
 class Thread
 {
 private:
-  boost::scoped_ptr<boost::thread> m_thread;
+  boost::scoped_ptr<std::thread> m_thread;
 
   void run_wrap();
 

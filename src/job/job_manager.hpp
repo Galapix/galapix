@@ -19,10 +19,10 @@
 #ifndef HEADER_GALAPIX_JOB_JOB_MANAGER_HPP
 #define HEADER_GALAPIX_JOB_JOB_MANAGER_HPP
 
-#include <boost/thread/mutex.hpp>
 #include <boost/function.hpp>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <mutex>
 
 #include "job/job_handle.hpp"
 
@@ -36,7 +36,7 @@ private:
   Threads threads;
   Threads::size_type next_thread;
 
-  boost::mutex mutex;
+  std::mutex mutex;
 
 public:
   JobManager(int num_threads);

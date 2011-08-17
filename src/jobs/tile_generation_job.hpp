@@ -21,7 +21,7 @@
 
 #include <boost/function.hpp>
 #include <boost/signals.hpp>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 #include "database/file_entry.hpp"
 #include "galapix/tile.hpp"
@@ -51,7 +51,7 @@ private:
   typedef std::vector<TileRequest> TileRequests;
   
 private: 
-  boost::mutex m_state_mutex;
+  std::mutex m_state_mutex;
 
   enum { 
     kWaiting,

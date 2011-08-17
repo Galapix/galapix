@@ -23,7 +23,6 @@
 #include <boost/shared_ptr.hpp>
 #include <map>
 #include <string>
-#include <boost/thread/mutex.hpp>
 
 #include "database/file_entry.hpp"
 #include "galapix/image_handle.hpp"

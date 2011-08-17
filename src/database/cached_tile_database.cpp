@@ -23,8 +23,8 @@
 #include "database/tile_cache.hpp"
 #include "database/database.hpp"
 
-std::auto_ptr<TileCache> m_tile_cache;
-std::auto_ptr<TileDatabaseInterface> m_tile_database;
+std::unique_ptr<TileCache> m_tile_cache;
+std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
 CachedTileDatabase::CachedTileDatabase(Database& db, TileDatabaseInterface* tile_database) :
   m_db(db),

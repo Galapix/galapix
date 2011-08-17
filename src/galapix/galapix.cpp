@@ -290,7 +290,9 @@ Galapix::thumbgen(const Options& opts,
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
   {
     job_handle_group.add(database_thread.request_file(*i, 
-                                                      boost::bind(&std::vector<FileEntry>::push_back, &file_entries, _1),
+                                                      [&file_entries](const FileEntry& entry) { 
+                                                        file_entries.push_back(entry); 
+                                                      },
                                                       boost::function<void (FileEntry, Tile)>())); 
   }
   job_handle_group.wait();

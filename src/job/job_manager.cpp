@@ -41,7 +41,7 @@ JobManager::~JobManager()
 void 
 JobManager::start_thread()
 {
-  boost::mutex::scoped_lock lock(mutex);
+  std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->start_thread();
@@ -50,7 +50,7 @@ JobManager::start_thread()
 void
 JobManager::stop_thread()
 {
-  boost::mutex::scoped_lock lock(mutex);
+  std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->stop_thread();
@@ -59,7 +59,7 @@ JobManager::stop_thread()
 void
 JobManager::abort_thread()
 {
-  boost::mutex::scoped_lock lock(mutex);
+  std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->abort_thread();
@@ -68,7 +68,7 @@ JobManager::abort_thread()
 void
 JobManager::join_thread()
 {
-  boost::mutex::scoped_lock lock(mutex);
+  std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
     (*i)->join_thread();
@@ -78,7 +78,7 @@ JobHandle
 JobManager::request(boost::shared_ptr<Job> job, 
                     const boost::function<void (boost::shared_ptr<Job>, bool)>& callback)
 {
-  boost::mutex::scoped_lock lock(mutex);
+  std::unique_lock<std::mutex> lock(mutex);
 
   JobHandle handle = job->get_handle();
   threads[next_thread]->request(job, callback);

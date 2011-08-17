@@ -16,10 +16,10 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/thread/condition.hpp>
-
 #include <boost/bind.hpp>
-#include <boost/thread/mutex.hpp>
+#include <condition_variable>
+#include <mutex>
+#include <ostream>
 
 #include "job/job_handle.hpp"
 
@@ -36,8 +36,8 @@ public:
   bool aborted;
   bool finished;
 
-  boost::mutex     mutex;
-  boost::condition cond;
+  std::mutex     mutex;
+  std::condition_variable cond;
 };
 
 JobHandle 
@@ -58,7 +58,7 @@ JobHandle::~JobHandle()
 void
 JobHandle::set_aborted()
 {
-  boost::mutex::scoped_lock lock(impl->mutex);
+  std::unique_lock<std::mutex> lock(impl->mutex);
   impl->aborted = true;
   impl->cond.notify_all();
 }
@@ -66,7 +66,7 @@ JobHandle::set_aborted()
 void
 JobHandle::set_finished()
 {
-  boost::mutex::scoped_lock lock(impl->mutex);
+  std::unique_lock<std::mutex> lock(impl->mutex);
   impl->finished = true;
   impl->cond.notify_all();
 }
@@ -92,7 +92,7 @@ JobHandle::set_failed()
 void
 JobHandle::wait()
 {
-  boost::mutex::scoped_lock lock(impl->mutex);
+  std::unique_lock<std::mutex> lock(impl->mutex);
   if (!impl->finished && !impl->aborted)
   {
     while(!is_done())
@@ -104,7 +104,7 @@ JobHandle::wait()
 
 std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle)
 {
-  return os << "JobHandle(this=" << job_handle.impl 
+  return os << "JobHandle(this=" << job_handle.impl.get() 
             << ", aborted=" << job_handle.is_aborted()
             << ", done=" << job_handle.is_done() << ")";
 }

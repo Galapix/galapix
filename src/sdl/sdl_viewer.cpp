@@ -19,8 +19,8 @@
 #include "sdl/sdl_viewer.hpp"
 
 #include <iostream>
+#include <thread>
 #include <boost/format.hpp>
-#include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
 #include "database/file_entry.hpp"
@@ -425,7 +425,7 @@ SDLViewer::run()
 
 #ifdef HAVE_SPACE_NAVIGATOR
   SpaceNavigator space_navigator;
-  boost::thread  space_navigator_thread(boost::bind(&SpaceNavigator::run, &space_navigator));
+  std::thread  space_navigator_thread(boost::bind(&SpaceNavigator::run, &space_navigator));
 #endif
 
   while(!m_quit)

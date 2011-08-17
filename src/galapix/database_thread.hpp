@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
 #define HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
 
+#include <list>
+
 #include "database/tile_entry.hpp"
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
