@@ -18,7 +18,6 @@
 
 #include "galapix/image_tile_cache.hpp"
 
-#include <boost/bind.hpp>
 #include <assert.h>
 
 #include "util/weak_functor.hpp"

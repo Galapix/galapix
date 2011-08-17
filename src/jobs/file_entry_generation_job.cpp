@@ -18,8 +18,6 @@
 
 #include "jobs/file_entry_generation_job.hpp"
 
-#include <boost/bind.hpp>
-
 #include "jobs/tile_generator.hpp"
 #include "plugins/jpeg.hpp"
 #include "util/filesystem.hpp"

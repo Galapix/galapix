@@ -18,7 +18,6 @@
 
 #include <iostream>
 #include <sstream>
-#include <boost/bind.hpp>
 #include <setjmp.h>
 
 #include "math/size.hpp"

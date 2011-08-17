@@ -18,7 +18,6 @@
 
 #include "galapix/galapix.hpp"
 
-#include <boost/bind.hpp>
 #include <curl/curl.h>
 #include <algorithm>
 #include <fstream>

@@ -21,7 +21,6 @@
 #include <iostream>
 #include <thread>
 #include <boost/format.hpp>
-#include <boost/bind.hpp>
 
 #include "database/file_entry.hpp"
 #include "display/framebuffer.hpp"

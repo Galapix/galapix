@@ -18,8 +18,6 @@
 
 #include "jobs/tile_generation_job.hpp"
 
-#include <boost/bind.hpp>
-
 #include "math/rect.hpp"
 #include "plugins/jpeg.hpp"
 #include "util/log.hpp"
