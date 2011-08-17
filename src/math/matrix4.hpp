@@ -37,6 +37,12 @@ public:
     m_m()
   {}
 
+  Matrix4(float m[16])
+  {
+    for(int i = 0; i < 16; ++i)
+      m_m[i] = m[i];
+  }
+
   Matrix4(float m00, float m01, float m02, float m03,
           float m10, float m11, float m12, float m13,
           float m20, float m21, float m22, float m23,
@@ -73,7 +79,15 @@ public:
     return m_m[4*col + row];
   }
 
-  static inline Matrix4 scale(float x, float y, float z = 1.0f)
+  static inline Matrix4 identity()
+  {
+    return Matrix4(1, 0, 0, 0, 
+                   0, 1, 0, 0, 
+                   0, 0, 1, 0,
+                   0, 0, 0, 1);
+  }
+
+  static inline Matrix4 scale(float x, float y, float z, float w = 1.0f)
   {
     return Matrix4(x, 0, 0, 0, 
                    0, y, 0, 0, 
@@ -246,6 +260,14 @@ public:
       inv[i] *= det;
 
     return inv_m;
+  }
+
+  inline float* get() {
+    return m_m;
+  }
+
+  inline const float* get() const {
+    return m_m;
   }
 };
 

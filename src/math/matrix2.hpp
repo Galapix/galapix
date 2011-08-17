@@ -38,12 +38,6 @@ public:
                    0.0f, 1.0f);
   }
 
-  static inline Matrix2 shear(float x, float y)
-  {
-    return Matrix2(1.0f, x,
-                   y, 1.0f);
-  }
-
   static inline Matrix2 scale(float x, float y)
   {
     return Matrix2(x, 0,
@@ -57,6 +51,13 @@ public:
 
     return Matrix2(c, -s,
                    s,  c);
+  }
+
+public:
+  inline Matrix2(float m[4])
+  {
+    for(int i = 0; i < 4; ++i)
+      m_m[i] = m[i];
   }
 
   inline Matrix2(float m00, float m01,
@@ -118,6 +119,14 @@ public:
     const Matrix2& m = *this;
     return Matrix2(m(0,0), m(1,0),
                    m(0,1), m(1,1));
+  }
+
+  inline float* get() {
+    return m_m;
+  }
+
+  inline const float* get() const {
+    return m_m;
   }
 };
 

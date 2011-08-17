@@ -104,7 +104,13 @@ public:
                    0, 0, 1);
   }
 
-  Matrix3(float m00, float m01, float m02,
+  inline Matrix3(float m[9])
+  {
+    for(int i = 0; i < 9; ++i)
+      m_m[i] = m[i];
+  }
+
+  inline Matrix3(float m00, float m01, float m02,
           float m10, float m11, float m12,
           float m20, float m21, float m22)
   {
@@ -207,6 +213,14 @@ public:
     return Matrix3(m(0,0), m(1,0), m(2,0),
                    m(0,1), m(1,1), m(2,1),
                    m(0,2), m(1,2), m(2,2));
+  }
+
+  inline float* get() {
+    return m_m;
+  }
+
+  inline const float* get() const {
+    return m_m;
   }
 };
 
