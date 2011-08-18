@@ -27,6 +27,9 @@ class Blob;
 
 typedef std::shared_ptr<Blob> BlobPtr;
 
+/** A Blob a simple wrapper around an array holding raw binary data.
+    It is ref counted and provides convinient functions to be read and
+    written to a file */
 class Blob
 {
 private:
@@ -45,10 +48,6 @@ public:
   std::string str() const;
   
   void write_to_file(const std::string& filename);
-
-  /** Append data to the given Blob, only possible for non-wrap Blobs
-      (will invalidade the pointer returned by get_data() */
-  void append(const void* data, int len);
 
 public:
   static BlobPtr create(int len);
