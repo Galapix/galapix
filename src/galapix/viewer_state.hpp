@@ -37,6 +37,10 @@ private:
 public:
   ViewerState();
 
+  /** Zoom the view, keeping pos on the same position of the framebuffer.
+      
+      @param zoom  amount by which should be zoomed
+      @param pos   position in framebuffer coordinates */
   void zoom(float factor, const Vector2i& pos);
   void zoom(float factor);
   
