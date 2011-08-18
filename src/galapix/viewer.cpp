@@ -336,7 +336,7 @@ Viewer::set_pan_tool()
 {
   log_info << "Pan&Zoom Tools selected" << std::endl;
   left_tool   = zoom_in_tool.get();
-  right_tool  = zoom_out_tool.get();              
+  right_tool  = zoom_out_tool.get();
   middle_tool = pan_tool.get();
 }
 
@@ -571,6 +571,7 @@ void
 Viewer::toggle_trackball_mode()
 {
   pan_tool->set_trackball_mode(!pan_tool->get_trackball_mode());
+
   if (pan_tool->get_trackball_mode())
   {
     log_info << "Trackball mode active, press 't' to leave" << std::endl;
@@ -583,6 +584,12 @@ Viewer::toggle_trackball_mode()
     SDL_ShowCursor(SDL_ENABLE);
     SDL_WM_GrabInput(SDL_GRAB_OFF);
   }
+}
+
+bool
+Viewer::get_trackball_mode() const
+{
+  return pan_tool->get_trackball_mode();
 }
 
 void

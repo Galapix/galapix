@@ -149,6 +149,7 @@ public:
 
   void delete_selection();
   void toggle_trackball_mode();
+  bool get_trackball_mode() const;
 
   void load();
   void save();

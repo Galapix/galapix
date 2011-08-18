@@ -49,10 +49,28 @@ ZoomTool::update(const Vector2i& mouse_pos, float delta)
 {
   if (zoom_active)
   {
-    if (zoom_factor > 0)
-      viewer->get_state().zoom(1.0f / (1.0f + zoom_factor * delta), mouse_pos);
+    if (viewer->get_trackball_mode())
+    {
+      if (zoom_factor > 0)
+      {
+        viewer->get_state().zoom(1.0f / (1.0f + zoom_factor * delta));
+      }
+      else
+      {
+        viewer->get_state().zoom(1.0f - zoom_factor * delta);
+      }
+    }
     else
-      viewer->get_state().zoom(1.0f - zoom_factor * delta, mouse_pos);
+    {
+      if (zoom_factor > 0)
+      {
+        viewer->get_state().zoom(1.0f / (1.0f + zoom_factor * delta), mouse_pos);
+      }
+      else
+      {
+        viewer->get_state().zoom(1.0f - zoom_factor * delta, mouse_pos);
+      }
+    }
   }
 }
 
