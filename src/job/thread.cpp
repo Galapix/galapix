@@ -18,6 +18,7 @@
 
 #include "job/thread.hpp"
 
+#include <assert.h>
 #include <iostream>
 
 Thread::Thread()

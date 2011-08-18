@@ -20,7 +20,6 @@
 #define HEADER_GALAPIX_GALAPIX_TILE_PROVIDER_HPP
 
 #include <memory>
-#include <boost/function.hpp>
 
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"

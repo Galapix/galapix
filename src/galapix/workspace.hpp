@@ -19,7 +19,6 @@
 #ifndef HEADER_GALAPIX_GALAPIX_WORKSPACE_HPP
 #define HEADER_GALAPIX_GALAPIX_WORKSPACE_HPP
 
-#include <boost/scoped_ptr.hpp>
 #include <set>
 
 #include "galapix/image.hpp"
@@ -48,7 +47,11 @@ public:
     url(url_), pos(pos_), scale(scale_)
   {}
 };
+
 
+
+/** The Workspace houses all the images, the current selection and
+    things like layouting of the image collection */
 class Workspace
 {
 private:

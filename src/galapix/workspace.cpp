@@ -18,6 +18,7 @@
 
 #include "galapix/workspace.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 #include "database/file_entry.hpp"

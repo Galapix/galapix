@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DISPLAY_SURFACE_HPP
 #define HEADER_GALAPIX_DISPLAY_SURFACE_HPP
 
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include "display/texture.hpp"
 
@@ -50,7 +50,7 @@ public:
   static SurfacePtr create(const SoftwareSurfacePtr& src);
 
 private:
-  boost::scoped_ptr<SurfaceImpl> impl;
+  std::unique_ptr<SurfaceImpl> impl;
 };
 
 #endif

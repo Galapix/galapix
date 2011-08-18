@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_SDL_SDL_VIEWER_HPP
 
 #include <SDL.h>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include "math/size.hpp"
 

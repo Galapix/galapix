@@ -59,7 +59,7 @@ public:
   SoftwareSurface::Format format;
   Size     size;
   int      pitch;
-  boost::scoped_array<uint8_t> pixels;
+  std::unique_ptr<uint8_t[]> pixels;
   
   SoftwareSurfaceImpl(SoftwareSurface::Format format_, const Size& size_) :
     format(format_),

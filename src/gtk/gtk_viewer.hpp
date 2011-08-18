@@ -20,7 +20,6 @@
 #define HEADER_GALAPIX_GTK_GTK_VIEWER_HPP
 
 #include <gtkmm.h>
-#include <boost/scoped_ptr.hpp>
 
 class Viewer;
 class Workspace;
@@ -46,7 +45,7 @@ private:
   Gtk::RadioToolButton* layout_tight_button;
   Gtk::RadioToolButton* layout_random_button;
 
-  boost::scoped_ptr<Viewer> viewer;
+  std::unique_ptr<Viewer> viewer;
 
 public:
   GtkViewer();

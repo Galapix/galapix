@@ -19,7 +19,6 @@
 #ifndef HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 #define HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 
-#include <boost/scoped_ptr.hpp>
 #include <memory>
 #include <map>
 #include <string>
@@ -68,7 +67,7 @@ private:
   bool m_file_entry_requested;
 
   std::shared_ptr<ImageTileCache> m_cache;
-  boost::scoped_ptr<ImageRenderer>  m_renderer;
+  std::unique_ptr<ImageRenderer>  m_renderer;
 
   ThreadMessageQueue<FileEntry> m_file_entry_queue;
   ThreadMessageQueue<Tile> m_tile_queue;

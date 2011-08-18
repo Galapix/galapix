@@ -19,7 +19,6 @@
 #ifndef HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 #define HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 
-#include <boost/scoped_ptr.hpp>
 #include <memory>
 
 #include "util/software_surface.hpp"
@@ -46,7 +45,7 @@ public:
   void bind();
 
 private:
-  boost::scoped_ptr<TextureImpl> impl;
+  std::unique_ptr<TextureImpl> impl;
 };
 
 #endif

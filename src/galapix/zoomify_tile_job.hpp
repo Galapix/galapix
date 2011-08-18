@@ -19,7 +19,6 @@
 #ifndef HEADER_GALAPIX_GALAPIX_ZOOMIFY_TILE_JOB_HPP
 #define HEADER_GALAPIX_GALAPIX_ZOOMIFY_TILE_JOB_HPP
 
-#include <boost/function.hpp>
 #include <iostream>
 
 #include "util/url.hpp"
