@@ -3,7 +3,7 @@
 import glob
 import os
 
-CacheDir('cache')
+# CacheDir('cache')
 
 preset_cxxflags = {
     'release':     [ "-O3", "-s"  ],
