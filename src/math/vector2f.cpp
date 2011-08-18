@@ -42,8 +42,8 @@ Vector2f::magnitude() const
 Vector2f
 Vector2f::rotate(float angle) const
 {
-  float len = magnitude();
-  return Vector2f(len * Math::cos(angle), len * Math::sin(angle));
+  return Vector2f(x * Math::cos(angle) - y * Math::sin(angle),
+                  x * Math::sin(angle) + y * Math::cos(angle));
 }
 
 std::ostream& operator<<(std::ostream& s, const Vector2f& v)
