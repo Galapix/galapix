@@ -424,7 +424,7 @@ SDLViewer::run()
 
 #ifdef HAVE_SPACE_NAVIGATOR
   SpaceNavigator space_navigator;
-  std::thread  space_navigator_thread(std::bind(&SpaceNavigator::run, &space_navigator));
+  space_navigator.start_thread();
 #endif
 
   while(!m_quit)
@@ -470,8 +470,7 @@ SDLViewer::run()
   }
 
 #ifdef HAVE_SPACE_NAVIGATOR
-  // How should be join stuff that is waiting for stuff?
-  // space_navigator_thread.join();
+  space_navigator.stop_thread();
 #endif
 
   log_info << "done" << std::endl;
