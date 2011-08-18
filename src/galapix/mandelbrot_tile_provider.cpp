@@ -24,7 +24,9 @@
 #include "job/job_manager.hpp"
 #include "galapix/mandelbrot_tile_job.hpp"
 
-const int c_max_scale = 18;
+// 20 is the maximum value allowed on 32bit, larger values will make
+// the m_size field overflow
+const int c_max_scale = 20;
 
 MandelbrotTileProvider::MandelbrotTileProvider(JobManager& job_manager) :
   m_size(4 * 256 * Math::pow2(c_max_scale), 
