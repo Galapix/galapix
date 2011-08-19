@@ -33,7 +33,7 @@ typedef std::shared_ptr<Blob> BlobPtr;
 class Blob
 {
 private:
-  std::unique_ptr<uint8_t> m_data;
+  std::unique_ptr<uint8_t[]> m_data;
   int m_len;
 
 private:
