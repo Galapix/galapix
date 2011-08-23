@@ -53,7 +53,7 @@ MandelbrotTileJob::run()
       double y = 0;
 
       int iteration = 0;
-      int max_iteration = 255;
+      const int max_iteration = 160;
     
       while(x*x + y*y <= (2*2) && 
             iteration < max_iteration)
