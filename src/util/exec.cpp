@@ -130,7 +130,7 @@ Exec::exec()
     {
       int child_status = 0;
       waitpid(pid, &child_status, 0);
-      throw err;
+      throw;
     }
 
     int child_status = 0;
