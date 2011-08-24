@@ -37,7 +37,7 @@ public:
   {
     factory.register_by_extension(this, "png");
 
-    factory.register_by_magick(this, 1, "PNG");
+    factory.register_by_magic(this, "\x89PNG");
 
     factory.register_by_mime_type(this, "image/png");
     factory.register_by_mime_type(this, "image/x-png");

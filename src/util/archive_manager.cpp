@@ -20,8 +20,8 @@
 
 #include <string.h>
 #include <stdexcept>
-#include <fstream>
 
+#include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 
 #include "util/rar_archive_loader.hpp"
@@ -78,7 +78,7 @@ ArchiveManager::is_archive(const std::string& filename) const
   return find_loader_by_filename(filename) != 0;
 }
 
-ArchiveLoader*
+const ArchiveLoader*
 ArchiveManager::find_loader_by_filename(const std::string& filename) const
 {
   for(const auto& ext: m_loader_by_file_exts)
@@ -91,30 +91,10 @@ ArchiveManager::find_loader_by_filename(const std::string& filename) const
   return nullptr;
 }
 
-ArchiveLoader*
+const ArchiveLoader*
 ArchiveManager::find_loader_by_magic(const std::string& filename) const
 {
-  std::string start_of_file;
-
-  { // read the first 512 bytes of the archive for magic detection
-    char buf[512];
-    std::ifstream in(filename, std::ios::binary);
-    if (!in)
-    {
-      raise_exception(std::runtime_error, filename << ": " << strerror(errno));
-    }
-    else
-    {
-      if (!in.read(buf, sizeof(buf)))
-      {
-        raise_exception(std::runtime_error, filename << ": " << strerror(errno));
-      }
-      else
-      {
-        start_of_file.assign(buf, in.gcount());
-      }
-    }
-  }
+  std::string start_of_file = Filesystem::get_magic(filename);
 
   // search for a loader that can handle the magic
   for(const auto& it: m_loader_by_magic)
@@ -130,7 +110,7 @@ ArchiveManager::find_loader_by_magic(const std::string& filename) const
 
 std::vector<std::string>
 ArchiveManager::get_filenames(const std::string& zip_filename, 
-                              ArchiveLoader** loader_out) const
+                              const ArchiveLoader** loader_out) const
 {
   auto loader = find_loader_by_filename(zip_filename);
   if (!loader)
@@ -146,17 +126,26 @@ ArchiveManager::get_filenames(const std::string& zip_filename,
     }
     catch(const std::exception& err)
     {
-      log_warning << err.what() << std::endl;
-
-      loader = find_loader_by_magic(zip_filename);
-      if (!loader)
+      auto new_loader = find_loader_by_magic(zip_filename);
+      
+      if (!new_loader || new_loader == loader)
       {
-        raise_exception(std::runtime_error, "failed to find loader for archive file: " << zip_filename);
+        throw;
+        return std::vector<std::string>();
       }
       else
       {
-        if (loader_out) { *loader_out = loader; }
-        return loader->get_filenames(zip_filename);
+        loader = new_loader;
+        if (!loader)
+        {
+          raise_exception(std::runtime_error, "failed to find loader for archive file: " << zip_filename);
+        }
+        else
+        {
+          log_warning << err.what() << std::endl;
+          if (loader_out) { *loader_out = loader; }
+          return loader->get_filenames(zip_filename);
+        }
       }
     }
   }

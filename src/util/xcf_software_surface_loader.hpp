@@ -41,7 +41,7 @@ public:
 
     factory.register_by_mime_type(this, "application/x-gimp-image");
 
-    factory.register_by_magick(this, 0, "gimp xcf");
+    factory.register_by_magic(this, "gimp xcf");
   }
 
   bool supports_from_file() const { return true; }

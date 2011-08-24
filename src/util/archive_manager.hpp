@@ -45,14 +45,14 @@ public:
 
   bool is_archive(const std::string& filename) const;
 
-  ArchiveLoader* find_loader_by_filename(const std::string& filename) const;
-  ArchiveLoader* find_loader_by_magic(const std::string& filename) const;
-
+  const ArchiveLoader* find_loader_by_filename(const std::string& filename) const;
+  const ArchiveLoader* find_loader_by_magic(const std::string& filename) const;
+  
   /** Returns the list of files contained in the archive, if \a loader
       is supply the loader used in the process will be returned in
       it */
   std::vector<std::string> get_filenames(const std::string& zip_filename, 
-                                         ArchiveLoader** loader_out = nullptr) const;
+                                         const ArchiveLoader** loader_out = nullptr) const;
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
 
 private:

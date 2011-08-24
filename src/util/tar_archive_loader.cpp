@@ -48,13 +48,13 @@ TarArchiveLoader::register_loader(ArchiveManager& manager)
 }
 
 std::vector<std::string>
-TarArchiveLoader::get_filenames(const std::string& zip_filename)
+TarArchiveLoader::get_filenames(const std::string& zip_filename) const
 {
   return Tar::get_filenames(zip_filename);
 }
 
 BlobPtr
-TarArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename)
+TarArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return Tar::get_file(zip_filename, filename);
 }

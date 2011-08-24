@@ -37,13 +37,13 @@ ZipArchiveLoader::register_loader(ArchiveManager& manager)
 }
 
 std::vector<std::string>
-ZipArchiveLoader::get_filenames(const std::string& zip_filename)
+ZipArchiveLoader::get_filenames(const std::string& zip_filename) const
 {
   return Zip::get_filenames(zip_filename);
 }
 
 BlobPtr
-ZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename)
+ZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return Zip::get_file(zip_filename, filename);
 }

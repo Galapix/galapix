@@ -37,6 +37,7 @@
 #include "util/archive_loader.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
+#include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 
@@ -250,6 +251,28 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
   }
 }
 
+std::string
+Filesystem::get_magic(const std::string& filename)
+{
+  char buf[512];
+  std::ifstream in(filename, std::ios::binary);
+  if (!in)
+  {
+    raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+  }
+  else
+  {
+    if (!in.read(buf, sizeof(buf)))
+    {
+      raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+    }
+    else
+    {
+      return std::string(buf, in.gcount());
+    }
+  }
+}
+
 unsigned int
 Filesystem::get_size(const std::string& filename)
 {
@@ -304,7 +327,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
       {
         if (ArchiveManager::current().is_archive(*i))
         {           
-          ArchiveLoader* loader;
+          const ArchiveLoader* loader;
           const auto& files = ArchiveManager::current().get_filenames(*i, &loader);
           for(const auto& file: files)
           {

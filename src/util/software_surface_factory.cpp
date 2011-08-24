@@ -23,6 +23,7 @@
 
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
+#include "util/raise_exception.hpp"
 #include "util/software_surface_loader.hpp"
 #include "util/url.hpp"
 
@@ -42,6 +43,16 @@
 #include "util/ufraw_software_surface_loader.hpp"
 #include "util/xcf_software_surface_loader.hpp"
 
+namespace {
+bool has_prefix(const std::string& lhs, const std::string rhs)
+{
+  if (lhs.length() < rhs.length())
+    return false;
+  else
+    return lhs.compare(0, rhs.length(), rhs) == 0;
+}
+} // namespace
+
 SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
   m_loader(),
   m_extension_map(),
@@ -57,7 +68,7 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
     add_loader(new XCFSoftwareSurfaceLoader);
 
   if (UFRaw::is_available())
-  add_loader(new UFRawSoftwareSurfaceLoader);
+    add_loader(new UFRawSoftwareSurfaceLoader);
 
   if (RSVG::is_available())
     add_loader(new RSVGSoftwareSurfaceLoader);
@@ -77,7 +88,7 @@ SoftwareSurfaceFactory::~SoftwareSurfaceFactory()
 void
 SoftwareSurfaceFactory::add_loader(SoftwareSurfaceLoader* loader)
 {
-  m_loader.push_back(std::shared_ptr<SoftwareSurfaceLoader>(loader));
+  m_loader.push_back(std::unique_ptr<SoftwareSurfaceLoader>(loader));
   loader->register_loader(*this);
 }
 
@@ -90,13 +101,12 @@ SoftwareSurfaceFactory::has_supported_extension(const URL& url)
 }
 
 void
-SoftwareSurfaceFactory::register_by_magick(const SoftwareSurfaceLoader* loader, int offset, const std::string& magic)
+SoftwareSurfaceFactory::register_by_magic(const SoftwareSurfaceLoader* loader, const std::string& magic)
 {
-  Magic m{offset, magic};
-  auto it = m_magic_map.find(m);
+  auto it = m_magic_map.find(magic);
   if (it == m_magic_map.end())
   {
-    m_magic_map[m] = loader;
+    m_magic_map[magic] = loader;
   }
   else
   {
@@ -132,13 +142,59 @@ SoftwareSurfaceFactory::register_by_extension(const SoftwareSurfaceLoader* loade
   }
 }
 
+const SoftwareSurfaceLoader*
+SoftwareSurfaceFactory::find_loader_by_filename(const std::string& filename) const
+{
+  std::string extension = Filesystem::get_extension(filename);
+  const auto& it = m_extension_map.find(extension);
+  if (it == m_extension_map.end())
+  {
+    return nullptr;
+  }
+  else
+  {
+    return it->second;
+  }
+}
+
+const SoftwareSurfaceLoader*
+SoftwareSurfaceFactory::find_loader_by_magic(const std::string& data) const
+{
+  for(const auto& it: m_magic_map)
+  {
+    if (has_prefix(data, it.first))
+    {
+      return it.second;
+    }
+  }
+  return nullptr;
+}
+
+SoftwareSurfacePtr
+SoftwareSurfaceFactory::from_file(const std::string& filename, const SoftwareSurfaceLoader* loader) const
+{
+  assert(loader);
+  
+  if (loader->supports_from_file())
+  {
+    return loader->from_file(filename);
+  }
+  else if (loader->supports_from_mem())
+  {
+    BlobPtr blob = Blob::from_file(filename);
+    return loader->from_mem(blob->get_data(), blob->size());
+  }
+  else
+  {
+    raise_exception(std::runtime_error, "'" << loader->get_name() << "' loader does not support loading");
+  }
+}
+
 SoftwareSurfacePtr
 SoftwareSurfaceFactory::from_file(const std::string& filename) const
 {
-  std::string extension = Filesystem::get_extension(filename);
-
-  ExtensionMap::const_iterator i = m_extension_map.find(extension);
-  if (i == m_extension_map.end())
+  const SoftwareSurfaceLoader* loader = find_loader_by_filename(filename);
+  if (!loader)
   {
     std::ostringstream out;
     out << "SoftwareSurfaceFactory::from_file(): " << filename << ": unknown file type";
@@ -146,20 +202,24 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
   }
   else
   {
-    const SoftwareSurfaceLoader& loader = *i->second;
-
-    if (loader.supports_from_file())
+    try 
     {
-      return loader.from_file(filename);
+      return from_file(filename, loader);
     }
-    else if (loader.supports_from_mem())
+    catch (const std::exception& err)
     {
-      BlobPtr blob = Blob::from_file(filename);
-      return loader.from_mem(blob->get_data(), blob->size());
-    }
-    else
-    {
-      throw std::runtime_error("SoftwareSurfaceFactory::from_file(): loader does not support loading");
+      // retry with magic
+      std::string magic = Filesystem::get_magic(filename);
+      auto new_loader = find_loader_by_magic(magic);           
+      if (new_loader && new_loader != loader)
+      {
+        log_warning << filename << ": file extension error, file is a " << new_loader->get_name() << std::endl;
+        return from_file(filename, new_loader);
+      }
+      else
+      {
+        throw;
+      }
     }
   }
 }
@@ -178,7 +238,7 @@ SoftwareSurfaceFactory::from_url(const URL& url) const
     std::string mime_type;
     BlobPtr blob = url.get_blob(&mime_type);
 
-    const SoftwareSurfaceLoader* loader = 0;
+    const SoftwareSurfaceLoader* loader = nullptr;
 
     // try to find a loader by mime-type
     if (!mime_type.empty())

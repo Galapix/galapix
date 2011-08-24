@@ -18,6 +18,7 @@
 
 #include "seven_zip_archive_loader.hpp"
 
+#include "plugins/seven_zip.hpp"
 #include "util/archive_manager.hpp"
 
 SevenZipArchiveLoader::SevenZipArchiveLoader()
@@ -33,15 +34,15 @@ SevenZipArchiveLoader::register_loader(ArchiveManager& manager)
 }
 
 std::vector<std::string>
-SevenZipArchiveLoader::get_filenames(const std::string& zip_filename)
+SevenZipArchiveLoader::get_filenames(const std::string& zip_filename) const
 {
-  return SevenZipArchiveLoader::get_filenames(zip_filename);
+  return SevenZip::get_filenames(zip_filename);
 }
 
 BlobPtr
-SevenZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename)
+SevenZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
-  return SevenZipArchiveLoader::get_file(zip_filename, filename);
+  return SevenZip::get_file(zip_filename, filename);
 }
 
 /* EOF */

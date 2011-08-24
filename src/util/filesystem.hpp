@@ -49,6 +49,10 @@ public:
   static std::string get_extension(const std::string& pathname);
   static bool has_extension(const std::string& pathname, const std::string& ext);
   static void copy_mtime(const std::string& from_filename, const std::string& to_filename);
+
+  /** read the first 512 bytes of the archive for magic detection */
+  static std::string  get_magic(const std::string& filename);
+
   static unsigned int get_mtime(const std::string& filename);
   static unsigned int get_size(const std::string& filename);
   

@@ -34,7 +34,7 @@ public:
 
   void register_loader(SoftwareSurfaceFactory& factory) const
   {
-    factory.register_by_magick(this, 0, "\xff\xd8");
+    factory.register_by_magic(this, "\xff\xd8");
     factory.register_by_mime_type(this, "image/jpeg");
     factory.register_by_extension(this, "jpeg");
     factory.register_by_extension(this, "jpg");

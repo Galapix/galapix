@@ -29,8 +29,8 @@ public:
 
   void register_loader(ArchiveManager& manager);
 
-  std::vector<std::string> get_filenames(const std::string& zip_filename);
-  BlobPtr get_file(const std::string& zip_filename, const std::string& filename);
+  std::vector<std::string> get_filenames(const std::string& zip_filename) const;
+  BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
 
   std::string str() const { return "7z"; }
 

@@ -35,13 +35,13 @@ RarArchiveLoader::register_loader(ArchiveManager& manager)
 }
 
 std::vector<std::string>
-RarArchiveLoader::get_filenames(const std::string& zip_filename)
+RarArchiveLoader::get_filenames(const std::string& zip_filename) const
 {
   return Rar::get_filenames(zip_filename);
 }
 
 BlobPtr
-RarArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename)
+RarArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return Rar::get_file(zip_filename, filename);
 }
