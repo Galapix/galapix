@@ -45,7 +45,8 @@
 SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
   m_loader(),
   m_extension_map(),
-  m_mime_type_map()
+  m_mime_type_map(),
+  m_magic_map()
 {
   // order matters, first come, first serve, later registrations for
   // an already registered type will be ignored
@@ -89,9 +90,18 @@ SoftwareSurfaceFactory::has_supported_extension(const URL& url)
 }
 
 void
-SoftwareSurfaceFactory::register_by_magick(const SoftwareSurfaceLoader* loader, int offset, const std::string& magick)
+SoftwareSurfaceFactory::register_by_magick(const SoftwareSurfaceLoader* loader, int offset, const std::string& magic)
 {
-  // FIXME: implement me
+  Magic m{offset, magic};
+  auto it = m_magic_map.find(m);
+  if (it == m_magic_map.end())
+  {
+    m_magic_map[m] = loader;
+  }
+  else
+  {
+    // ignoring registration if something is already registered
+  }
 }
 
 void

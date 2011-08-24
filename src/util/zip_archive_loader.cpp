@@ -29,6 +29,7 @@ void
 ZipArchiveLoader::register_loader(ArchiveManager& manager)
 {
   manager.register_by_extension(this, "zip");
+  manager.register_by_extension(this, "cbz");
 
   manager.register_by_magic(this, "PK\003\004"); // regular archive
   manager.register_by_magic(this, "PK\005\006"); // empty archive

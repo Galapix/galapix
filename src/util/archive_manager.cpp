@@ -129,7 +129,8 @@ ArchiveManager::find_loader_by_magic(const std::string& filename) const
 }
 
 std::vector<std::string>
-ArchiveManager::get_filenames(const std::string& zip_filename) const
+ArchiveManager::get_filenames(const std::string& zip_filename, 
+                              ArchiveLoader** loader_out) const
 {
   auto loader = find_loader_by_filename(zip_filename);
   if (!loader)
@@ -140,6 +141,7 @@ ArchiveManager::get_filenames(const std::string& zip_filename) const
   {
     try
     {
+      if (loader_out) { *loader_out = loader; }
       return loader->get_filenames(zip_filename);
     }
     catch(const std::exception& err)
@@ -153,6 +155,7 @@ ArchiveManager::get_filenames(const std::string& zip_filename) const
       }
       else
       {
+        if (loader_out) { *loader_out = loader; }
         return loader->get_filenames(zip_filename);
       }
     }

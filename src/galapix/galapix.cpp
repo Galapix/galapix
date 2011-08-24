@@ -32,12 +32,12 @@
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
 #include "galapix/database_thread.hpp"
+#include "galapix/database_tile_provider.hpp"
+#include "galapix/mandelbrot_tile_provider.hpp"
 #include "galapix/options.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
-#include "galapix/mandelbrot_tile_provider.hpp"
-#include "galapix/database_tile_provider.hpp"
 #include "job/job_handle_group.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/test_job.hpp"
@@ -49,6 +49,7 @@
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "plugins/xcf.hpp"
+#include "util/archive_manager.hpp"
 #include "util/filesystem.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
@@ -516,6 +517,7 @@ Galapix::main(int argc, char** argv)
       return EXIT_FAILURE;
     }
 
+    ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
 
     run(opts);

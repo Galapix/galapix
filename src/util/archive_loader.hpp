@@ -35,6 +35,8 @@ public:
 
   virtual std::vector<std::string> get_filenames(const std::string& zip_filename) = 0;
   virtual BlobPtr get_file(const std::string& zip_filename, const std::string& filename) = 0;
+
+  virtual std::string str() const = 0;
 };
 
 #endif

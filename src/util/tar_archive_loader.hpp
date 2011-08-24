@@ -32,6 +32,8 @@ public:
   std::vector<std::string> get_filenames(const std::string& zip_filename);
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename);
 
+  std::string str() const { return "tar"; }
+
 private:
   TarArchiveLoader(const TarArchiveLoader&);
   TarArchiveLoader& operator=(const TarArchiveLoader&);

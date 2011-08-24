@@ -29,6 +29,7 @@ void
 RarArchiveLoader::register_loader(ArchiveManager& manager)
 {
   manager.register_by_extension(this, "rar");
+  manager.register_by_extension(this, "cbr");
 
   manager.register_by_magic(this, std::string("Rar!\x1A\a\0", 7));
 }

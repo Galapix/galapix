@@ -29,6 +29,8 @@ TarArchiveLoader::TarArchiveLoader()
 void
 TarArchiveLoader::register_loader(ArchiveManager& manager)
 {
+  manager.register_by_extension(this, "tar");
+
   manager.register_by_extension(this, "tgz");
   manager.register_by_extension(this, "tar.gz");
 
