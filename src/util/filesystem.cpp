@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
+#include <future>
 #include <string.h>
 #include <dirent.h>
 #include <errno.h>
@@ -312,13 +313,21 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
   }
   else
   {
+    // generate a list of all the files in the directories
     std::vector<std::string> lst;
 
     if (is_directory(pathname))
+    {
       open_directory_recursivly(pathname, lst);
+    }
     else
+    {
       lst.push_back(pathname);
+    }
   
+    // check the file list for valid entries, if entries are archives,
+    // get a file list from them
+    std::vector<std::future<std::vector<URL>>> archive_tasks;
     for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
     {
       URL url = URL::from_filename(*i);
@@ -326,17 +335,23 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
       try 
       {
         if (ArchiveManager::current().is_archive(*i))
-        {           
-          const ArchiveLoader* loader;
-          const auto& files = ArchiveManager::current().get_filenames(*i, &loader);
-          for(const auto& file: files)
-          {
-            URL archive_url = URL::from_string(url.str() + "//" + loader->str() + ":" + file);
-            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
-            {
-              file_list.push_back(archive_url);
-            }
-          }
+        {
+          archive_tasks.push_back(std::async([i, url]() -> std::vector<URL> {
+                std::vector<URL> sub_file_list;
+
+                const ArchiveLoader* loader;
+                const auto& files = ArchiveManager::current().get_filenames(*i, &loader);
+                for(const auto& file: files)
+                {
+                  URL archive_url = URL::from_string(url.str() + "//" + loader->str() + ":" + file);
+                  if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
+                  {
+                    sub_file_list.push_back(archive_url);
+                  }
+                }
+
+                return sub_file_list;
+              }));
         }
         else if (has_extension(*i, ".galapix"))
         {
@@ -359,7 +374,20 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           //log_debug << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
         }
       } 
-      catch(std::exception& err) 
+      catch(const std::exception& err) 
+      {
+        log_warning << "Warning: " << err.what() << std::endl;
+      }
+    }
+
+    for(auto& task: archive_tasks)
+    {
+      try 
+      {
+        const auto& sub_lst = task.get();
+        file_list.insert(file_list.end(), sub_lst.begin(), sub_lst.end());
+      }
+      catch(const std::exception& err)
       {
         log_warning << "Warning: " << err.what() << std::endl;
       }
