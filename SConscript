@@ -203,7 +203,9 @@ class Project:
         libgalapix_extra_apps_env.Append(LIBS=self.libgalapix_util)
         for filename in Glob("extra/*.cpp", strings=True):
             libgalapix_extra_apps_env.Program(filename[:-4], filename)
-            
+
+        libgalapix_extra_apps_env.Program("extra/imagescaler/imagescaler", Glob("extra/imagescaler/imagescaler.cpp"))
+                    
 project = Project()
 project.build()
 
