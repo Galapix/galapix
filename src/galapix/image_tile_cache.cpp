@@ -165,10 +165,9 @@ void
 ImageTileCache::process_queue()
 {
   // Check the queue for newly arrived tiles
-  while (!m_tile_queue.empty())
+  Tile tile;
+  while (m_tile_queue.try_pop(tile))
   {
-    Tile tile = m_tile_queue.front();
-    m_tile_queue.pop();
     assert(tile.get_surface());
 
     TileCacheId tile_id(tile.get_pos(), tile.get_scale());
@@ -222,7 +221,7 @@ ImageTileCache::cancel_jobs(const Rect& rect, int scale)
 void
 ImageTileCache::receive_tile(const Tile& tile)
 {
-  m_tile_queue.push(tile);
+  m_tile_queue.wait_and_push(tile);
 
   Viewer::current()->redraw();
 }

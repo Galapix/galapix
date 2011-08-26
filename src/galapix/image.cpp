@@ -234,11 +234,9 @@ void
 Image::process_queues()
 {
   // Check if there was an update of the FileEntry
-  while(!m_file_entry_queue.empty())
+  FileEntry file_entry;
+  while(m_file_entry_queue.try_pop(file_entry))
   {
-    FileEntry file_entry = m_file_entry_queue.front();
-    m_file_entry_queue.pop();
-
     if (file_entry.get_image_size() == Size(0, 0))
     { // reject images with invalid size
       std::cout << "Image::Image(): invalid image size: " << file_entry << std::endl;
@@ -250,20 +248,19 @@ Image::process_queues()
     }
   }
 
-  while(!m_tile_queue.empty())
+  Tile tile;
+  while(m_tile_queue.try_pop(tile))
   {
     if (m_cache)
     {
-      m_cache->receive_tile(m_tile_queue.front());
+      m_cache->receive_tile(tile);
     }
-
-    m_tile_queue.pop();
   }
-
-  while(!m_tile_provider_queue.empty())
+  
+  TileProviderPtr tile_provider;
+  while(m_tile_provider_queue.try_pop(tile_provider))
   {
-    set_provider(m_tile_provider_queue.front());
-    m_tile_provider_queue.pop();
+    set_provider(tile_provider);
   }
 }
 
@@ -417,20 +414,20 @@ Image::receive_file_entry(const FileEntry& file_entry)
 {
   // std::cout << "Image::receive_file_entry: " << file_entry << std::endl;
   assert(file_entry);
-  m_file_entry_queue.push(file_entry);
+  m_file_entry_queue.wait_and_push(file_entry);
 }
 
 void
 
 Image::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_tile_queue.push(tile);
+  m_tile_queue.wait_and_push(tile);
 }
 
 void
 Image::receive_tile_provider(TileProviderPtr provider)
 {
-  m_tile_provider_queue.push(provider);
+  m_tile_provider_queue.wait_and_push(provider);
 }
 
 /* EOF */

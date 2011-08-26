@@ -27,7 +27,7 @@
 #include "galapix/tile_cache_id.hpp"
 #include "galapix/tile_provider.hpp"
 #include "job/job_handle.hpp"
-#include "job/thread_message_queue.hpp"
+#include "job/thread_message_queue2.hpp"
 
 class ImageTileCache;
 
@@ -70,7 +70,7 @@ public:
   std::weak_ptr<ImageTileCache> m_self;
   Cache m_cache;
 
-  ThreadMessageQueue<Tile> m_tile_queue;
+  ThreadMessageQueue2<Tile> m_tile_queue;
   
   TileProviderPtr m_tile_provider;
 

@@ -66,7 +66,7 @@ private:
       start animation */
   float     m_progress;
 
-  ThreadMessageQueue<FileEntry> m_file_queue;
+  ThreadMessageQueue2<FileEntry> m_file_queue;
 
   LayouterPtr m_layouter;
 

@@ -28,7 +28,7 @@
 #include "galapix/tile_provider.hpp"
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
-#include "job/thread_message_queue.hpp"
+#include "job/thread_message_queue2.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
@@ -69,9 +69,9 @@ private:
   std::shared_ptr<ImageTileCache> m_cache;
   std::unique_ptr<ImageRenderer>  m_renderer;
 
-  ThreadMessageQueue<FileEntry> m_file_entry_queue;
-  ThreadMessageQueue<Tile> m_tile_queue;
-  ThreadMessageQueue<TileProviderPtr> m_tile_provider_queue;
+  ThreadMessageQueue2<FileEntry> m_file_entry_queue;
+  ThreadMessageQueue2<Tile> m_tile_queue;
+  ThreadMessageQueue2<TileProviderPtr> m_tile_provider_queue;
   typedef std::vector<JobHandle> Jobs;
   Jobs m_jobs;
 

@@ -22,7 +22,7 @@
 #include <functional>
 #include <memory>
 
-#include "job/thread_message_queue.hpp"
+#include "job/thread_message_queue2.hpp"
 #include "job/thread.hpp"
 #include "job/job_handle.hpp"
 
@@ -43,7 +43,7 @@ private:
   };
 
 private:
-  ThreadMessageQueue<Task> m_queue;
+  ThreadMessageQueue2<Task> m_queue;
   bool m_quit;
   bool m_abort;
   

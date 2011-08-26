@@ -39,15 +39,10 @@ JobWorkerThread::run()
 {
   while(!m_quit)
   {
-    m_queue.wait();
-    
-    while(!m_abort && !m_queue.empty())
+    Task task;
+    while(!m_abort && m_queue.try_pop(task))
     {
       // std::cout << "JobWorkerThread::run(): " << this << " size: " << m_queue.size() << std::endl;
-    
-      Task task = m_queue.front();
-      m_queue.pop();
-
       if (!task.job->is_aborted())
       {
         //std::cout << "start job: " << task.job << std::endl;
@@ -85,14 +80,14 @@ JobWorkerThread::abort_thread()
 {
   m_quit = true;
   m_abort = true;
-  m_queue.wakeup();
+  //m_queue.wakeup();
 }
 
 void
 JobWorkerThread::stop_thread()
 {
   m_quit = true;
-  m_queue.wakeup();
+  //m_queue.wakeup();
 }
 
 JobHandle
@@ -103,7 +98,7 @@ JobWorkerThread::request(std::shared_ptr<Job> job, const std::function<void (std
   Task task;
   task.job      = job;
   task.callback = callback;
-  m_queue.push(task);
+  m_queue.wait_and_push(task);
 
   return handle;
 }

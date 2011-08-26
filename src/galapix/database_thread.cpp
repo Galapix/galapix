@@ -55,7 +55,7 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
 {
   assert(file_entry);
   JobHandle job_handle = JobHandle::create();
-  m_request_queue.push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
+  m_request_queue.wait_and_push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
   return job_handle;
 }
 
@@ -64,14 +64,14 @@ DatabaseThread::request_tiles(const FileEntry& file_entry, int min_scale, int ma
                               const std::function<void (Tile)>& callback)
 {
   JobHandle job_handle = JobHandle::create();
-  m_request_queue.push(new RequestTilesDatabaseMessage(job_handle, file_entry, min_scale, max_scale, callback));
+  m_request_queue.wait_and_push(new RequestTilesDatabaseMessage(job_handle, file_entry, min_scale, max_scale, callback));
   return job_handle;
 }
 
 void
 DatabaseThread::request_job_removal(std::shared_ptr<Job> job, bool)
 {
-  m_request_queue.push(new RequestJobRemovalDatabaseMessage(job));
+  m_request_queue.wait_and_push(new RequestJobRemovalDatabaseMessage(job));
 }
 
 JobHandle
@@ -80,40 +80,40 @@ DatabaseThread::request_file(const URL& url,
                              const std::function<void (FileEntry, Tile)>& tile_callback)
 {
   JobHandle job_handle = JobHandle::create();
-  m_request_queue.push(new RequestFileDatabaseMessage(job_handle, url, file_callback, tile_callback));
+  m_request_queue.wait_and_push(new RequestFileDatabaseMessage(job_handle, url, file_callback, tile_callback));
   return job_handle;
 }
 
 void
 DatabaseThread::request_all_files(const std::function<void (FileEntry)>& callback)
 {
-  m_request_queue.push(new AllFilesDatabaseMessage(callback));
+  m_request_queue.wait_and_push(new AllFilesDatabaseMessage(callback));
 }
 
 void
 DatabaseThread::request_files_by_pattern(const std::function<void (FileEntry)>& callback, const std::string& pattern)
 {
-  m_request_queue.push(new FilesByPatternDatabaseMessage(callback, pattern));
+  m_request_queue.wait_and_push(new FilesByPatternDatabaseMessage(callback, pattern));
 }
 
 void
 DatabaseThread::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_receive_queue.push(new ReceiveTileDatabaseMessage(file_entry, tile));
+  m_receive_queue.wait_and_push(new ReceiveTileDatabaseMessage(file_entry, tile));
 }
 
 void
 DatabaseThread::delete_file_entry(const FileId& fileid)
 {
-  m_request_queue.push(new DeleteFileEntryDatabaseMessage(fileid));
+  m_request_queue.wait_and_push(new DeleteFileEntryDatabaseMessage(fileid));
 }
 
 void
 DatabaseThread::stop_thread()
 {
   m_quit  = true;
-  m_request_queue.wakeup();
-  m_receive_queue.wakeup();
+  //m_request_queue.wakeup();
+  //m_receive_queue.wakeup();
 }
 
 void
@@ -121,8 +121,8 @@ DatabaseThread::abort_thread()
 {
   m_quit  = true;
   m_abort = true;
-  m_request_queue.wakeup();
-  m_receive_queue.wakeup();
+  //m_request_queue.wakeup();
+  //m_receive_queue.wakeup();
 }
 
 void
@@ -142,15 +142,12 @@ DatabaseThread::run()
 }
 
 void
-DatabaseThread::process_queue(ThreadMessageQueue<DatabaseMessage*>& queue)
+DatabaseThread::process_queue(ThreadMessageQueue2<DatabaseMessage*>& queue)
 { 
-  while(!m_abort && !queue.empty())
+  DatabaseMessage* msg;
+  while(!m_abort && queue.try_pop(msg))
   {
-    DatabaseMessage* msg = queue.front();
-    queue.pop();
-
     //std::cout << "DatabaseThread::queue.size(): " << m_queue.size() << " - " << typeid(*msg).name() << std::endl;
-
     msg->run(m_database);
     delete msg;
   }
@@ -294,13 +291,13 @@ DatabaseThread::store_file_entry(const JobHandle& job_handle,
                                  const URL& url, const Size& size, int format,
                                  const std::function<void (FileEntry)>& callback)
 {
-  m_receive_queue.push(new StoreFileEntryDatabaseMessage(job_handle, url, size, format, callback));
+  m_receive_queue.wait_and_push(new StoreFileEntryDatabaseMessage(job_handle, url, size, format, callback));
 }
 
 void
 DatabaseThread::receive_file(const FileEntry& file_entry)
 {
-  m_receive_queue.push(new ReceiveFileEntryDatabaseMessage(file_entry));
+  m_receive_queue.wait_and_push(new ReceiveFileEntryDatabaseMessage(file_entry));
 }
 
 /* EOF */
