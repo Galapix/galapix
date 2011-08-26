@@ -83,6 +83,9 @@ private:
 public:
   static ImagePtr create(const URL& url, TileProviderPtr provider = TileProviderPtr());
 
+public:
+  ~Image();
+
   // _____________________________________________________
   // Drawing stuff
   void draw(const Rectf& cliprect, float zoom);

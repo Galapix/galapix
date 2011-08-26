@@ -69,6 +69,14 @@ Image::Image(const URL& url, TileProviderPtr provider) :
   set_provider(m_provider);
 }
 
+Image::~Image()
+{
+  for(auto& job: m_jobs)
+  {
+    job.set_aborted();
+  }
+}
+
 Vector2f
 Image::get_top_left_pos() const
 {
