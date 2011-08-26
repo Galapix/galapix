@@ -25,15 +25,17 @@
 class JobHandleImpl
 {
 public:
-  JobHandleImpl()
-    : aborted(false),
-      finished(false),
-      mutex(),
-      cond()
+  JobHandleImpl() :
+    aborted(false),
+    finished(false),
+    failed(false),
+    mutex(),
+    cond()
   {}
 
   bool aborted;
   bool finished;
+  bool failed;
 
   std::mutex     mutex;
   std::condition_variable cond;
@@ -57,16 +59,8 @@ JobHandle::~JobHandle()
 void
 JobHandle::set_aborted()
 {
-  std::unique_lock<std::mutex> lock(impl->mutex);
+  std::lock_guard<std::mutex> lock(impl->mutex);
   impl->aborted = true;
-  impl->cond.notify_all();
-}
-
-void
-JobHandle::set_finished()
-{
-  std::unique_lock<std::mutex> lock(impl->mutex);
-  impl->finished = true;
   impl->cond.notify_all();
 }
 
@@ -76,8 +70,16 @@ JobHandle::is_aborted() const
   return impl->aborted;
 }
 
+void
+JobHandle::set_finished()
+{
+  std::lock_guard<std::mutex> lock(impl->mutex);
+  impl->finished = true;
+  impl->cond.notify_all();
+}
+
 bool
-JobHandle::is_done() const
+JobHandle::is_finished() const
 {
   return impl->finished || impl->aborted;
 }
@@ -85,19 +87,25 @@ JobHandle::is_done() const
 void
 JobHandle::set_failed()
 {
-  // FIXME: implement me
+  std::lock_guard<std::mutex> lock(impl->mutex);
+  impl->finished = true;
+  impl->failed   = true;
+  impl->cond.notify_all();
+}
+
+bool
+JobHandle::is_failed() const
+{
+  return impl->failed;
 }
 
 void
 JobHandle::wait()
 {
   std::unique_lock<std::mutex> lock(impl->mutex);
-  if (!impl->finished && !impl->aborted)
+  if (!impl->finished && !impl->aborted && !impl->failed)
   {
-    while(!is_done())
-    {
-      impl->cond.wait(lock);
-    }
+    impl->cond.wait(lock, [this]{ return is_finished(); });
   }
 }
 
@@ -105,7 +113,7 @@ std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle)
 {
   return os << "JobHandle(this=" << job_handle.impl.get() 
             << ", aborted=" << job_handle.is_aborted()
-            << ", done=" << job_handle.is_done() << ")";
+            << ", done=" << job_handle.is_finished() << ")";
 }
 
 /* EOF */

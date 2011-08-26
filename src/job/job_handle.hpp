@@ -37,21 +37,18 @@ public:
   static JobHandle create();
   ~JobHandle();
 
-  /** 
-   * Aborts a Job so that it gets removed from the JobManager without
-   * being called.
-   */
+  /** Aborts a Job so that it gets removed from the JobManager without
+      being called. */
   void set_aborted();
-
-  /** 
-   * Used by a Job to indicate that the Job is completed
-   */
-  void set_finished();
-
-  void set_failed();
-
-  bool is_done() const;
   bool is_aborted() const;
+
+  /** Used by a Job to indicate that the Job is completed */
+  void set_finished();
+  bool is_finished() const;
+
+  /** Reports that the Job couldn't be completed */
+  void set_failed();
+  bool is_failed() const;
   
   void wait();
 
