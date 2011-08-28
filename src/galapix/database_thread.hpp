@@ -52,8 +52,8 @@ private:
   bool m_quit;
   bool m_abort;
   
-  ThreadMessageQueue2<DatabaseMessage*> m_request_queue;
-  ThreadMessageQueue2<DatabaseMessage*> m_receive_queue;
+  ThreadMessageQueue2<std::function<void()>> m_request_queue;
+  ThreadMessageQueue2<std::function<void()>> m_receive_queue;
   std::list<std::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
 
 protected: 
@@ -120,7 +120,7 @@ public:
   /* @} */
 
 private:
-  void process_queue(ThreadMessageQueue2<DatabaseMessage*>& queue);
+  void process_queue(ThreadMessageQueue2<std::function<void()>>& queue);
 
 private:
   DatabaseThread (const DatabaseThread&);

@@ -21,7 +21,6 @@
 #include <typeinfo>
 
 #include "database/database.hpp"
-#include "galapix/database_message.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/file_entry_generation_job.hpp"
 #include "jobs/multiple_tile_generation_job.hpp"
@@ -47,17 +46,6 @@ DatabaseThread::DatabaseThread(Database& database,
 DatabaseThread::~DatabaseThread()
 {
   assert(m_quit);
-
-  // delete messages hanging in the queue
-  DatabaseMessage* msg;
-  while(m_request_queue.try_pop(msg))
-  {
-    delete msg;
-  }
-  while(m_receive_queue.try_pop(msg))
-  {
-    delete msg;
-  }
 }
 
 JobHandle
@@ -65,9 +53,42 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
                              const std::function<void (Tile)>& callback)
 {
   assert(file_entry);
-  JobHandle job_handle = JobHandle::create();
-  m_request_queue.wait_and_push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
-  return job_handle;
+
+  JobHandle job_handle_ = JobHandle::create();
+
+  m_request_queue.wait_and_push([this, job_handle_, file_entry, tilescale, pos, callback](){
+      JobHandle job_handle = job_handle_;
+      if (!job_handle.is_aborted())
+      {
+        TileEntry tile;
+        if (m_database.get_tiles().get_tile(file_entry, tilescale, pos, tile))
+        {
+          // Tile has been found, so return it and finish up
+          if (callback)
+          {
+            callback(tile);
+          }
+          job_handle.set_finished();
+        }
+        else
+        {
+          // Tile hasn't been found, so we need to generate it
+          if (0)
+            std::cout << "Error: Couldn't get tile: " 
+                      << file_entry.get_fileid() << " "
+                      << pos.x << " "
+                      << pos.y << " "
+                      << tilescale
+                      << std::endl;
+        
+          {
+            DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
+          }
+        }
+      }
+    });
+
+  return job_handle_;
 }
 
 JobHandle
@@ -75,48 +96,130 @@ DatabaseThread::request_tiles(const FileEntry& file_entry, int min_scale, int ma
                               const std::function<void (Tile)>& callback)
 {
   JobHandle job_handle = JobHandle::create();
-  m_request_queue.wait_and_push(new RequestTilesDatabaseMessage(job_handle, file_entry, min_scale, max_scale, callback));
+
+  m_request_queue.wait_and_push([this, job_handle, file_entry, min_scale, max_scale, callback]{
+      if (!job_handle.is_aborted())
+      {
+        generate_tiles(job_handle,
+                       file_entry,
+                       min_scale, max_scale, 
+                       callback);
+      }
+    });
+
   return job_handle;
 }
 
 void
 DatabaseThread::request_job_removal(std::shared_ptr<Job> job, bool)
 {
-  m_request_queue.wait_and_push(new RequestJobRemovalDatabaseMessage(job));
+  m_request_queue.wait_and_push([this, job](){
+      remove_job(job);
+    });
 }
 
 JobHandle
 DatabaseThread::request_file(const URL& url, 
-                             const std::function<void (FileEntry)>& file_callback,
-                             const std::function<void (FileEntry, Tile)>& tile_callback)
+                             const std::function<void (FileEntry)>& file_callback_,
+                             const std::function<void (FileEntry, Tile)>& tile_callback_)
 {
-  JobHandle job_handle = JobHandle::create();
-  m_request_queue.wait_and_push(new RequestFileDatabaseMessage(job_handle, url, file_callback, tile_callback));
-  return job_handle;
+  JobHandle job_handle_ = JobHandle::create();
+  
+  std::function<void (FileEntry)> file_callback = file_callback_;
+  std::function<void (FileEntry, Tile)> tile_callback = tile_callback_;
+
+  m_request_queue.wait_and_push([this, job_handle_, url, file_callback, tile_callback](){
+      JobHandle job_handle = job_handle_;
+      if (!job_handle.is_aborted())
+      {
+        FileEntry file_entry = m_database.get_files().get_file_entry(url);
+        if (!file_entry)
+        {
+          // file entry is not in the database, so try to generate it
+          DatabaseThread::current()->generate_file_entry(job_handle, url, 
+                                                         file_callback, tile_callback);
+        }
+        else
+        {
+          file_callback(file_entry);
+
+          TileEntry tile_entry;
+          if (m_database.get_tiles().get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
+          {
+            if (tile_callback)
+            {
+              tile_callback(file_entry, tile_entry);
+            }
+          }
+          else
+          {
+            std::cout << "RequestFileDatabaseMessage: " << file_entry << " " << Vector2i(0,0) << file_entry.get_thumbnail_scale() << std::endl;
+          }
+
+          job_handle.set_finished();
+        }
+      }
+    });
+  
+  return job_handle_;
 }
 
 void
-DatabaseThread::request_all_files(const std::function<void (FileEntry)>& callback)
+DatabaseThread::request_all_files(const std::function<void (FileEntry)>& callback_)
 {
-  m_request_queue.wait_and_push(new AllFilesDatabaseMessage(callback));
+  std::function<void (FileEntry)> callback = callback_; // FIXME: internal error workaround
+  m_request_queue.wait_and_push([this, callback]{
+      std::vector<FileEntry> entries;
+      m_database.get_files().get_file_entries(entries);
+      for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+      {
+        callback(*i);
+      }
+    });
 }
 
 void
 DatabaseThread::request_files_by_pattern(const std::function<void (FileEntry)>& callback, const std::string& pattern)
 {
-  m_request_queue.wait_and_push(new FilesByPatternDatabaseMessage(callback, pattern));
+  m_request_queue.wait_and_push([this, callback, pattern](){
+      std::vector<FileEntry> entries;
+      m_database.get_files().get_file_entries(pattern, entries);
+      for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+      {
+        callback(*i);
+      }               
+      });
 }
 
 void
 DatabaseThread::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_receive_queue.wait_and_push(new ReceiveTileDatabaseMessage(file_entry, tile));
+  m_receive_queue.wait_and_push([this, file_entry, tile](){
+      // FIXME: Make some better error checking in case of loading failure
+      if (tile)
+      {
+        // FIXME: Test the performance of this
+        //if (!m_database.get_tiles().has_tile(tile.fileid, tile.pos, tile.scale))
+        m_database.get_tiles().store_tile(file_entry, tile);
+      }
+      else
+      {
+        
+      }
+    });
 }
 
 void
 DatabaseThread::delete_file_entry(const FileId& fileid)
 {
-  m_request_queue.wait_and_push(new DeleteFileEntryDatabaseMessage(fileid));
+  m_request_queue.wait_and_push([this, fileid](){
+      std::cout << "Begin Delete" << std::endl;
+      m_database.get_db().exec("BEGIN;");
+      m_database.get_files().delete_file_entry(fileid);
+      m_database.get_tiles().delete_tiles(fileid);
+      m_database.get_db().exec("END;");
+      std::cout << "End Delete" << std::endl;
+    });
 }
 
 void
@@ -152,14 +255,13 @@ DatabaseThread::run()
 }
 
 void
-DatabaseThread::process_queue(ThreadMessageQueue2<DatabaseMessage*>& queue)
+DatabaseThread::process_queue(ThreadMessageQueue2<std::function<void()>>& queue)
 { 
-  DatabaseMessage* msg;
-  while(!m_abort && queue.try_pop(msg))
+  std::function<void()> func;
+  while(!m_abort && queue.try_pop(func))
   {
     //std::cout << "DatabaseThread::queue.size(): " << m_queue.size() << " - " << typeid(*msg).name() << std::endl;
-    msg->run(m_database);
-    delete msg;
+    func();
   }
 }
 
@@ -297,17 +399,28 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
 }
 
 void
-DatabaseThread::store_file_entry(const JobHandle& job_handle, 
+DatabaseThread::store_file_entry(const JobHandle& job_handle_in, 
                                  const URL& url, const Size& size, int format,
                                  const std::function<void (FileEntry)>& callback)
 {
-  m_receive_queue.wait_and_push(new StoreFileEntryDatabaseMessage(job_handle, url, size, format, callback));
+  
+  m_receive_queue.wait_and_push([this, job_handle_in, url, size, format, callback](){
+      JobHandle job_handle = job_handle_in;
+      FileEntry file_entry = m_database.get_files().store_file_entry(url, size, format);
+      if (callback)
+      {
+        callback(file_entry);
+      }
+      job_handle.set_finished();
+    });
 }
 
 void
 DatabaseThread::receive_file(const FileEntry& file_entry)
 {
-  m_receive_queue.wait_and_push(new ReceiveFileEntryDatabaseMessage(file_entry));
+  m_receive_queue.wait_and_push([this, file_entry](){
+      m_database.get_files().store_file_entry(file_entry);
+    });
 }
 
 /* EOF */
