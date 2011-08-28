@@ -33,7 +33,7 @@ struct PNGReadMemory
 
 void readPNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-  PNGReadMemory* mem = static_cast<PNGReadMemory*>(png_ptr->io_ptr);
+  PNGReadMemory* mem = static_cast<PNGReadMemory*>(png_get_io_ptr(png_ptr));
 
   if (mem->pos + length > mem->len)
   {
@@ -53,7 +53,7 @@ PNG::get_size(void* data, int len, Size& size)
   png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   png_infop info_ptr  = png_create_info_struct(png_ptr);
 
-  if (setjmp(png_ptr->jmpbuf))
+  if (setjmp(png_jmpbuf(png_ptr)))
   {
     // FIXME: get a proper error message from libpng
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
@@ -94,7 +94,7 @@ PNG::get_size(const std::string& filename, Size& size)
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     png_infop info_ptr  = png_create_info_struct(png_ptr);
 
-    if (setjmp(png_ptr->jmpbuf))
+    if (setjmp(png_jmpbuf(png_ptr)))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
       log_warning << "PNG::get_size: setjmp: Couldn't load " << filename << std::endl;
@@ -131,7 +131,7 @@ PNG::load_from_file(const std::string& filename)
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     png_infop info_ptr  = png_create_info_struct(png_ptr);
 
-    if (setjmp(png_ptr->jmpbuf))
+    if (setjmp(png_jmpbuf(png_ptr)))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
       throw std::runtime_error("PNG::load_from_mem(): setjmp: Couldn't load " + filename);
@@ -205,7 +205,7 @@ PNG::load_from_mem(const uint8_t* data, int len)
   png_memory.len  = len;
   png_memory.pos  = 0;
 
-  if (setjmp(png_ptr->jmpbuf))
+  if (setjmp(png_jmpbuf(png_ptr)))
   {
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
     throw std::runtime_error("PNG::load_from_mem(): setjmp: Couldn't load from mem");
@@ -279,7 +279,7 @@ PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
     png_infop   info_ptr = png_create_info_struct(png_ptr);
     assert(png_ptr && info_ptr);
 
-    if (setjmp(png_ptr->jmpbuf))
+    if (setjmp(png_jmpbuf(png_ptr)))
     {
       fclose(out);
       png_destroy_write_struct(&png_ptr, &info_ptr);
@@ -321,7 +321,7 @@ public:
 
 void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-  PNGWriteMemory* mem = static_cast<PNGWriteMemory*>(png_ptr->io_ptr);
+  PNGWriteMemory* mem = static_cast<PNGWriteMemory*>(png_get_io_ptr(png_ptr));
   std::copy(data, data+length, std::back_inserter(mem->data));
 }
 
@@ -333,7 +333,7 @@ PNG::save(const SoftwareSurfacePtr& surface)
   png_infop   info_ptr = png_create_info_struct(png_ptr);
   assert(png_ptr && info_ptr);
 
-  if (setjmp(png_ptr->jmpbuf))
+  if (setjmp(png_jmpbuf(png_ptr)))
   {
     png_destroy_write_struct(&png_ptr, &info_ptr);
     throw std::runtime_error("PNG::save(): setjmp: Couldn't save to Blob");
