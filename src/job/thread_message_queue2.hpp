@@ -20,9 +20,10 @@
 #define HEADER_GALAPIX_JOB_THREAD_MESSAGE_QUEUE2_HPP
 
 #include <assert.h>
-#include <queue>
 #include <condition_variable>
+#include <functional>
 #include <mutex>
+#include <queue>
 
 template<typename Data>
 class ThreadMessageQueue2
@@ -99,10 +100,12 @@ public:
   }
 
   /** Waits till the queue is ready to accept a push */
-  void wait_for_push()
+  void wait_for_push(std::function<bool ()> abort_condition)
   {
     std::unique_lock<std::mutex> lock(m_mutex);
-    m_queue_not_full_cond.wait(lock, [this]{ return static_cast<int>(m_queue.size()) != m_max_size; });
+    m_queue_not_full_cond.wait(lock, [this, &abort_condition]{ 
+        return static_cast<int>(m_queue.size()) != m_max_size || abort_condition();
+      });
   }
 
   /** Try pop data from the queue, if it's empty return false */
@@ -144,10 +147,16 @@ public:
   }
 
   /** wait till the queue allows a pop */
-  void wait_for_pop()
+  void wait_for_pop(std::function<bool ()> abort_condition)
   {
     std::unique_lock<std::mutex> lock(m_mutex);
-    m_queue_not_empty_cond.wait(lock, [this]{ return !m_queue.empty(); });
+    m_queue_not_empty_cond.wait(lock, [this, &abort_condition]{ return !m_queue.empty() || abort_condition(); });
+  }
+
+  void wakeup()
+  {
+    m_queue_not_full_cond.notify_all();
+    m_queue_not_empty_cond.notify_all();
   }
 
 private:

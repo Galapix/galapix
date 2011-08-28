@@ -47,6 +47,17 @@ DatabaseThread::DatabaseThread(Database& database,
 DatabaseThread::~DatabaseThread()
 {
   assert(m_quit);
+
+  // delete messages hanging in the queue
+  DatabaseMessage* msg;
+  while(m_request_queue.try_pop(msg))
+  {
+    delete msg;
+  }
+  while(m_receive_queue.try_pop(msg))
+  {
+    delete msg;
+  }
 }
 
 JobHandle
@@ -112,8 +123,8 @@ void
 DatabaseThread::stop_thread()
 {
   m_quit  = true;
-  //m_request_queue.wakeup();
-  //m_receive_queue.wakeup();
+  m_request_queue.wakeup();
+  m_receive_queue.wakeup();
 }
 
 void
@@ -121,8 +132,8 @@ DatabaseThread::abort_thread()
 {
   m_quit  = true;
   m_abort = true;
-  //m_request_queue.wakeup();
-  //m_receive_queue.wakeup();
+  m_request_queue.wakeup();
+  m_receive_queue.wakeup();
 }
 
 void
@@ -132,8 +143,7 @@ DatabaseThread::run()
   
   while(!m_quit)
   {
-    //m_queue.wait();
-
+    // FIXME: This really should be a priority queue
     process_queue(m_receive_queue);
     process_queue(m_request_queue);
     
