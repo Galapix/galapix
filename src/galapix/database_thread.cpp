@@ -279,20 +279,6 @@ DatabaseThread::remove_job(std::shared_ptr<Job> job)
   }
 }
 
-struct FindByFileEntry
-{
-  URL m_url;
-
-  FindByFileEntry(URL url) :
-    m_url(url)
-  {}
-  
-  bool operator()(std::shared_ptr<TileGenerationJob> job) const
-  {
-    return job->get_url() == m_url;
-  }
-};
-
 void
 DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& file_entry,
                                int min_scale, int max_scale,
@@ -323,9 +309,12 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
                               const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
                               const std::function<void (Tile)>& callback)
 { 
+
   std::list<std::shared_ptr<TileGenerationJob> >::iterator it = 
     std::find_if(m_tile_generation_jobs.begin(), m_tile_generation_jobs.end(), 
-                 FindByFileEntry(file_entry.get_url()));
+                 [&file_entry](const std::shared_ptr<TileGenerationJob>& job){ 
+                   return job->get_url() == file_entry.get_url(); 
+                 });
 
   if (it != m_tile_generation_jobs.end() && 
       (*it)->request_tile(job_handle, tilescale, pos, callback))

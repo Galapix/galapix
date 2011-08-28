@@ -37,19 +37,6 @@ struct ImageSorter
     return lhs->get_url() < rhs->get_url();
   }
 };
-
-struct ImageRequestFinder
-{
-  std::string str;
-
-  ImageRequestFinder(const std::string& str_) :
-    str(str_)
-  {}
-
-  bool operator()(const ImageRequest& lhs) const {
-    return str == lhs.url.str();
-  }
-};
 
 Workspace::Workspace() :
   m_images(),
@@ -341,29 +328,18 @@ Workspace::isolate_selection()
   m_selection->clear();
 }
 
-struct ImagesMemberOf
-{
-  SelectionPtr selection;
-
-  ImagesMemberOf(const SelectionPtr& selection_)
-    : selection(selection_)
-  {}
-
-  bool operator()(const ImagePtr& image)
-  {
-    for(Selection::iterator i = selection->begin(); i != selection->end(); ++i)
-    {
-      if (*i == image)
-        return true;
-    }
-    return false;
-  }
-};
-
 void
 Workspace::delete_selection()
 {
-  m_images.erase(std::remove_if(m_images.begin(), m_images.end(), ImagesMemberOf(m_selection)),
+  m_images.erase(std::remove_if(m_images.begin(), m_images.end(), 
+                                [&m_selection](const ImagePtr& image)->bool{
+                                  for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
+                                  {
+                                    if (*i == image)
+                                      return true;
+                                  }
+                                  return false;
+                                }),
                  m_images.end());
   m_selection->clear();
 }
