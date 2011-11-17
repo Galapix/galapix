@@ -32,6 +32,7 @@
 #include "plugins/kra.hpp"
 #include "plugins/png.hpp"
 #include "plugins/rsvg.hpp"
+#include "plugins/vidthumb.hpp"
 #include "plugins/xcf.hpp"
 
 #include "util/dds_software_surface_loader.hpp"
@@ -41,6 +42,7 @@
 #include "util/png_software_surface_loader.hpp"
 #include "util/rsvg_software_surface_loader.hpp"
 #include "util/ufraw_software_surface_loader.hpp"
+#include "util/vidthumb_software_surface_loader.hpp"
 #include "util/xcf_software_surface_loader.hpp"
 
 namespace {
@@ -72,6 +74,9 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
 
   if (RSVG::is_available())
     add_loader(new RSVGSoftwareSurfaceLoader);
+
+  if (VidThumb::is_available())
+    add_loader(new VidThumbSoftwareSurfaceLoader);
 
   if (KRA::is_available())
     add_loader(new KRASoftwareSurfaceLoader);
