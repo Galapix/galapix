@@ -19,6 +19,7 @@
 #include "plugins/vidthumb.hpp"
 
 #include <stdexcept>
+#include <sstream>
 
 #include "plugins/png.hpp"
 #include "util/exec.hpp"
@@ -46,14 +47,18 @@ VidThumb::load_from_file(const std::string& filename)
 {
   Exec vidthumb("vidthumb");
 
+  std::ostringstream out;
+  out << "/tmp/vidthumb.tmp." << rand() << ".png";
+
   vidthumb
-    .arg("-o").arg("/tmp/vidthumb.tmp.png")
+    .arg("-o").arg(out.str())
     .arg(filename);
 
   if (vidthumb.exec() == 0)
   {
     BlobPtr blob = Blob::copy(&*vidthumb.get_stdout().begin(), vidthumb.get_stdout().size());
-    SoftwareSurfacePtr surface = PNG::load_from_file("/tmp/vidthumb.tmp.png");
+    SoftwareSurfacePtr surface = PNG::load_from_file(out.str());
+    remove(out.str().c_str());
     return surface;
   }
   else
