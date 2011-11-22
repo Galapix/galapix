@@ -194,13 +194,13 @@ class Project:
 
     def build_tests(self):
         libgalapix_test_env = self.libgalapix_env.Clone()
-        libgalapix_test_env.Append(LIBS=self.libgalapix_util)
+        libgalapix_test_env.Prepend(LIBS=self.libgalapix_util)
         for filename in Glob("test/*_test.cpp", strings=True):
             libgalapix_test_env.Program(filename[:-4], filename)
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()
-        libgalapix_extra_apps_env.Append(LIBS=self.libgalapix_util)
+        libgalapix_extra_apps_env.Prepend(LIBS=self.libgalapix_util)
         for filename in Glob("extra/*.cpp", strings=True):
             libgalapix_extra_apps_env.Program(filename[:-4], filename)
 
