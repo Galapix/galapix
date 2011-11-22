@@ -124,6 +124,7 @@ public:
   int get_original_height() const;
 
   Vector2f get_top_left_pos() const;
+  void set_top_left_pos(const Vector2f&);
 
   // _____________________________________________________
   // Debug stuff

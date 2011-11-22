@@ -84,6 +84,12 @@ Image::get_top_left_pos() const
 }
 
 void
+Image::set_top_left_pos(const Vector2f& p)
+{
+  m_pos = p + Vector2f(get_scaled_width()/2, get_scaled_height()/2);
+}
+
+void
 Image::set_pos(const Vector2f& pos)
 {
   m_pos        = pos;
