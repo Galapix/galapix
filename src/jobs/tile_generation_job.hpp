@@ -80,7 +80,7 @@ private:
   Tiles m_tiles;
 
   boost::signal<void (FileEntry)> m_sig_file_callback;
-  boost::signal<void (FileEntry, Tile)> m_sig_tile_callback;
+  boost::signal<void (const FileId&, const Tile&)> m_sig_tile_callback;
 
 public:
   TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
@@ -98,7 +98,7 @@ public:
   bool is_aborted();
 
   boost::signal<void (FileEntry)>& sig_file_callback() { return m_sig_file_callback; }
-  boost::signal<void (FileEntry, Tile)>& sig_tile_callback() { return m_sig_tile_callback; }
+  boost::signal<void (const FileId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
   void process_tile(const Tile& tile);

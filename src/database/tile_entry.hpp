@@ -34,7 +34,7 @@ public:
   };
 
 private:
-  FileEntry  m_file_entry;
+  FileId     m_fileid;
   int        m_scale;
   Vector2i   m_pos;
   BlobPtr m_blob;
@@ -43,7 +43,7 @@ private:
 
 public:  
   TileEntry() :
-    m_file_entry(),
+    m_fileid(),
     m_scale(),
     m_pos(),
     m_blob(),
@@ -51,8 +51,8 @@ public:
     m_format()
   {}
 
-  TileEntry(const FileEntry& file_entry, int scale, const Vector2i& pos, const SoftwareSurfacePtr& surface) :
-    m_file_entry(file_entry),
+  TileEntry(const FileId& fileid, int scale, const Vector2i& pos, const SoftwareSurfacePtr& surface) :
+    m_fileid(fileid),
     m_scale(scale),
     m_pos(pos),
     m_blob(),
@@ -60,8 +60,8 @@ public:
     m_format(UNKNOWN_FORMAT)
   {}
   
-  TileEntry(const FileEntry& file_entry, int scale, const Vector2i& pos, const BlobPtr& blob, Format format) :
-    m_file_entry(file_entry),
+  TileEntry(const FileId& fileid, int scale, const Vector2i& pos, const BlobPtr& blob, Format format) :
+    m_fileid(fileid),
     m_scale(scale),
     m_pos(pos),
     m_blob(blob),
@@ -71,19 +71,19 @@ public:
 
   SoftwareSurfacePtr get_surface() const { return m_surface; }
   BlobPtr   get_blob()   const { return m_blob; }
-  FileEntry get_file_entry() const { return m_file_entry; }
+  FileId    get_fileid() const { return m_fileid; }
   int       get_scale()  const { return m_scale; }
   Vector2i  get_pos()    const { return m_pos; }
   Format    get_format() const { return m_format; }
 
-  void set_file_entry(const FileEntry& file_entry) { m_file_entry = file_entry; }
+  void set_fileid(const FileId& fileid) { m_fileid = fileid; }
   void set_surface(SoftwareSurfacePtr surface)  { m_surface = surface; }
   void set_blob(const BlobPtr& blob) { m_blob = blob; }
   void set_format(Format format) { m_format = format; }
 
-  operator bool() const
+  explicit operator bool() const
   {
-    return m_file_entry;
+    return static_cast<bool>(m_fileid);
   }
 };
 

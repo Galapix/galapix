@@ -50,9 +50,9 @@ public:
     }
   }
 
-  operator void*() const 
+  explicit operator bool() const
   {
-    return reinterpret_cast<void*>(m_id != 0);
+    return m_id != 0;
   }
 };
 

@@ -33,12 +33,12 @@ public:
   TileDatabaseInterface() {}
   virtual ~TileDatabaseInterface() {}
   
-  virtual bool has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale) =0;
-  virtual bool get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out) =0;
-  virtual void get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles) =0;
-  virtual bool get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out) =0;
+  virtual bool has_tile(const FileId& fileid, const Vector2i& pos, int scale) =0;
+  virtual bool get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) =0;
+  virtual void get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles) =0;
+  virtual bool get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out) =0;
 
-  virtual void store_tile(const FileEntry& file_entry, const Tile& tile) =0;
+  virtual void store_tile(const FileId& fileid, const Tile& tile) =0;
   virtual void store_tiles(const std::vector<TileEntry>& tiles) =0;
 
   virtual void delete_tiles(const FileId& fileid) =0;

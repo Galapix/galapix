@@ -111,7 +111,7 @@ public:
                              const std::function<void (FileEntry)>& callback);
 
   /** Place tile into the database */
-  void      receive_tile(const FileEntry& file_entry, const Tile& tile);
+  void      receive_tile(const FileId& fileid, const Tile& tile);
   void      receive_file(const FileEntry& file_entry);
   void      receive_tiles(const std::vector<TileEntry>& tiles);
 

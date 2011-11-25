@@ -37,16 +37,16 @@ public:
     m_stmt(db, "SELECT * FROM tiles WHERE fileid = ?1;")
   {}
 
-  void operator()(const FileEntry& file_entry, std::vector<TileEntry>& tiles)
+  void operator()(const FileId& fileid, std::vector<TileEntry>& tiles)
   {
-    if (file_entry.get_fileid())
+    if (fileid)
     {
-      m_stmt.bind_int64(1, file_entry.get_fileid().get_id());
+      m_stmt.bind_int64(1, fileid.get_id());
 
       SQLiteReader reader = m_stmt.execute_query();
       while(reader.next())
       {
-        TileEntry tile(file_entry,
+        TileEntry tile(fileid,
                        reader.get_int(1), // scale
                        Vector2i(reader.get_int (2),  // x
                                 reader.get_int (3)), // y

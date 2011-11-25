@@ -39,25 +39,25 @@ CachedTileDatabase::~CachedTileDatabase()
 }
 
 bool
-CachedTileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale)
+CachedTileDatabase::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
 {
   return
-    m_tile_cache->has_tile(file_entry, pos, scale) ||
-    m_tile_database->has_tile(file_entry, pos, scale);
+    m_tile_cache->has_tile(fileid, pos, scale) ||
+    m_tile_database->has_tile(fileid, pos, scale);
 }
 
 bool
-CachedTileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out)
+CachedTileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
-  if (file_entry.get_fileid())
+  if (fileid)
   {
-    if (m_tile_cache->get_tile(file_entry, scale, pos, tile_out))
+    if (m_tile_cache->get_tile(fileid, scale, pos, tile_out))
     {
       return true;
     }
     else
     {
-      return m_tile_database->get_tile(file_entry, scale, pos, tile_out);
+      return m_tile_database->get_tile(fileid, scale, pos, tile_out);
     }
   }
   else
@@ -67,22 +67,22 @@ CachedTileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vecto
 }
 
 void
-CachedTileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles)
+CachedTileDatabase::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles)
 {
-  m_tile_cache->get_tiles(file_entry, tiles);
-  m_tile_database->get_tiles(file_entry, tiles);
+  m_tile_cache->get_tiles(fileid, tiles);
+  m_tile_database->get_tiles(fileid, tiles);
 }
 
 bool
-CachedTileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
+CachedTileDatabase::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out)
 {
-  if (file_entry.get_fileid())
+  if (fileid)
   {
-    if (m_tile_cache->get_min_max_scale(file_entry, min_scale_out, max_scale_out))
+    if (m_tile_cache->get_min_max_scale(fileid, min_scale_out, max_scale_out))
     {
       int min_scale = 0;
       int max_scale = 0;
-      if (m_tile_database->get_min_max_scale(file_entry, min_scale, max_scale))
+      if (m_tile_database->get_min_max_scale(fileid, min_scale, max_scale))
       {
         min_scale_out = std::min(min_scale_out, min_scale);
         max_scale_out = std::max(max_scale_out, max_scale);
@@ -105,15 +105,15 @@ CachedTileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scal
 }
 
 void
-CachedTileDatabase::store_tile(const FileEntry& file_entry, const Tile& tile)
+CachedTileDatabase::store_tile(const FileId& fileid, const Tile& tile)
 {
-  if (!file_entry.get_fileid())
+  if (!fileid)
   {
-    m_tile_cache->store_tile(file_entry, tile);
+    m_tile_cache->store_tile(fileid, tile);
   }
   else
   {
-    m_tile_database->store_tile(file_entry, tile);
+    m_tile_database->store_tile(fileid, tile);
   }
 
   if (m_tile_cache->size() > 256)

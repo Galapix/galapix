@@ -43,30 +43,31 @@ FileTileDatabase::~FileTileDatabase()
 }
 
 bool
-FileTileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale)
+FileTileDatabase::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
 {
-  return Filesystem::exist(get_complete_filename(file_entry, pos, scale));
+  return Filesystem::exist(get_complete_filename(fileid, pos, scale));
 }
 
 bool
-FileTileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out)
+FileTileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
-  std::string filename = get_complete_filename(file_entry, pos, scale);
+  std::string filename = get_complete_filename(fileid, pos, scale);
   if (Filesystem::exist(filename))
   {
     SoftwareSurfacePtr surface;
-    if (file_entry.get_format() == FileEntry::JPEG_FORMAT)
-    {
-      surface = JPEG::load_from_file(filename);
-    }
-    else
+    // FIXME: need another way to find out the format
+    if (PNG::is_png(filename))
     {
       surface = PNG::load_from_file(filename);
     }
+    else
+    {
+      surface = JPEG::load_from_file(filename);
+    }
 
-    tile_out = TileEntry(file_entry, scale, pos, surface);
+    tile_out = TileEntry(fileid, scale, pos, surface);
     //Blob::from_file(filename), 
-    //static_cast<TileEntry::Format>(file_entry.get_format())); // FIXME: should unify format
+    //static_cast<TileEntry::Format>(fileid.get_format())); // FIXME: should unify format
     return true;
   }
   else
@@ -76,9 +77,9 @@ FileTileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2
 }
 
 void
-FileTileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles)
+FileTileDatabase::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles)
 {
-  std::string directory = get_complete_directory(file_entry.get_fileid());
+  std::string directory = get_complete_directory(fileid);
   std::vector<std::string> files = Filesystem::open_directory(directory);
   for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
   {
@@ -93,27 +94,27 @@ FileTileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>&
     else
     {
       SoftwareSurfacePtr surface;
-      if (file_entry.get_format() == FileEntry::JPEG_FORMAT)
-      {
-        surface = JPEG::load_from_file(directory + '/' + *i);
-      }
-      else
+      if (PNG::is_png(directory + '/' + *i))
       {
         surface = PNG::load_from_file(directory + '/' + *i);
       }
+      else
+      {
+        surface = JPEG::load_from_file(directory + '/' + *i);
+      }
 
-      tiles.push_back(TileEntry(file_entry, scale, pos, surface));
+      tiles.push_back(TileEntry(fileid, scale, pos, surface));
     }
   }
 }
 
 bool
-FileTileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
+FileTileDatabase::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out)
 {
   min_scale_out = std::numeric_limits<int>::max();
   max_scale_out = std::numeric_limits<int>::min();
 
-  std::string directory = get_complete_directory(file_entry.get_fileid());
+  std::string directory = get_complete_directory(fileid);
   std::vector<std::string> files = Filesystem::open_directory(directory);
   for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
   {
@@ -144,12 +145,12 @@ FileTileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_
 }
 
 void
-FileTileDatabase::store_tile(const FileEntry& file_entry, const Tile& tile)
+FileTileDatabase::store_tile(const FileId& fileid, const Tile& tile)
 { 
   // Ensure that the directory exists, FIX
-  ensure_directory_exists(file_entry.get_fileid());
+  ensure_directory_exists(fileid);
 
-  std::string filename = get_complete_filename(file_entry, tile.get_pos(), tile.get_scale());
+  std::string filename = get_complete_filename(fileid, tile.get_pos(), tile.get_scale());
 
   std::cout << "Saving to: " << filename << std::endl;
 
@@ -173,7 +174,7 @@ FileTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 {
   for(const auto& tile_entry: tiles)
   {
-    store_tile(tile_entry.get_file_entry(), Tile(tile_entry));
+    store_tile(tile_entry.get_fileid(), Tile(tile_entry));
   }
 }
 
@@ -199,21 +200,16 @@ FileTileDatabase::get_directory(const FileId& file_id_obj)
 }
 
 std::string
-FileTileDatabase::get_filename(const FileEntry& file_entry, const Vector2i& pos, int scale)
+FileTileDatabase::get_filename(const Vector2i& pos, int scale)
 {
-  std::string ext = "jpg";
-
-  if (file_entry.get_format() == FileEntry::PNG_FORMAT)
-    ext = "png";
-
-  return (boost::format("tile-%03d-%03d-%03d.%s") % scale % pos.x % pos.y % ext).str();
+  return (boost::format("tile-%03d-%03d-%03d.dat") % scale % pos.x % pos.y).str();
 }
 
 std::string
-FileTileDatabase::get_complete_filename(const FileEntry& file_entry, const Vector2i& pos, int scale)
+FileTileDatabase::get_complete_filename(const FileId& fileid, const Vector2i& pos, int scale)
 {
   std::ostringstream str(m_prefix);
-  str << m_prefix << '/' << get_directory(file_entry.get_fileid()) << '/' << get_filename(file_entry, pos, scale);
+  str << m_prefix << '/' << get_directory(fileid) << '/' << get_filename(pos, scale);
   return str.str();
 }
 

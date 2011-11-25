@@ -31,9 +31,9 @@ public:
     m_stmt(db, "SELECT MIN(scale),MAX(scale) FROM tiles WHERE fileid = ?1;")
   {}
 
-  bool operator()(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
+  bool operator()(const FileId& fileid, int& min_scale_out, int& max_scale_out)
   {
-    m_stmt.bind_int64(1, file_entry.get_fileid().get_id());
+    m_stmt.bind_int64(1, fileid.get_id());
     SQLiteReader reader = m_stmt.execute_query();
 
     if (reader.next())

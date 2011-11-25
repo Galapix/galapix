@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "database/tile_entry.hpp"
-#include "database/file_entry.hpp"
+#include "database/file_id.hpp"
 #include "database/database.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
@@ -32,9 +32,9 @@ TileDatabase::TileDatabase(SQLiteConnection& db, FileDatabase& files)
     m_files(files),
     m_tiles_table(m_db),
     m_tile_entry_store(m_db),
-    m_tile_entry_get_all_by_file_entry(m_db),
+    m_tile_entry_get_all_by_fileid(m_db),
     m_tile_entry_has(m_db),
-    m_tile_entry_get_by_file_entry(m_db),
+    m_tile_entry_get_by_fileid(m_db),
     m_tile_entry_get_min_max_scale(m_db),
     m_tile_entry_delete(m_db),
     m_cache()
@@ -46,40 +46,40 @@ TileDatabase::~TileDatabase()
 }
 
 bool
-TileDatabase::has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale)
+TileDatabase::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
 {
-  if (m_tile_entry_has(file_entry, pos, scale))
+  if (m_tile_entry_has(fileid, pos, scale))
   {
     return true;
   }
   else
   {
-    return m_cache.has_tile(file_entry, pos, scale);
+    return m_cache.has_tile(fileid, pos, scale);
   }
 }
 
 void
-TileDatabase::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles_out)
+TileDatabase::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles_out)
 {
-  if (file_entry.get_fileid())
+  if (fileid)
   {
-    m_tile_entry_get_all_by_file_entry(file_entry, tiles_out);
+    m_tile_entry_get_all_by_fileid(fileid, tiles_out);
   }
 
-  m_cache.get_tiles(file_entry, tiles_out);
+  m_cache.get_tiles(fileid, tiles_out);
 }
 
 bool
-TileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
+TileDatabase::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out)
 {
-  if (file_entry.get_fileid())
+  if (fileid)
   {
-    if (m_tile_entry_get_min_max_scale(file_entry, min_scale_out, max_scale_out))
+    if (m_tile_entry_get_min_max_scale(fileid, min_scale_out, max_scale_out))
     {
       int min_scale_out_cache = -1;
       int max_scale_out_cache = -1;
 
-      if (m_cache.get_min_max_scale(file_entry, min_scale_out_cache, max_scale_out_cache))
+      if (m_cache.get_min_max_scale(fileid, min_scale_out_cache, max_scale_out_cache))
       {
         min_scale_out = std::min(min_scale_out, min_scale_out_cache);
         max_scale_out = std::max(max_scale_out, max_scale_out_cache);
@@ -89,39 +89,39 @@ TileDatabase::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out,
     }
     else
     {
-      return m_cache.get_min_max_scale(file_entry, min_scale_out, max_scale_out);
+      return m_cache.get_min_max_scale(fileid, min_scale_out, max_scale_out);
     }
   }
   else
   {
-    return m_cache.get_min_max_scale(file_entry, min_scale_out, max_scale_out);
+    return m_cache.get_min_max_scale(fileid, min_scale_out, max_scale_out);
   }
 }
 
 bool
-TileDatabase::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out)
+TileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
-  if (!file_entry.get_fileid())
+  if (!fileid)
   {
-    return m_cache.get_tile(file_entry, scale, pos, tile_out);
+    return m_cache.get_tile(fileid, scale, pos, tile_out);
   }
   else
   {
-    if (m_tile_entry_get_by_file_entry(file_entry, scale, pos, tile_out))
+    if (m_tile_entry_get_by_fileid(fileid, scale, pos, tile_out))
     {
       return true;
     }
     else
     {
-      return m_cache.get_tile(file_entry, scale, pos, tile_out);
+      return m_cache.get_tile(fileid, scale, pos, tile_out);
     }
   }
 }
 
 void
-TileDatabase::store_tile(const FileEntry& file_entry, const Tile& tile)
+TileDatabase::store_tile(const FileId& fileid, const Tile& tile)
 {
-  m_cache.store_tile(file_entry, tile);
+  m_cache.store_tile(fileid, tile);
 
   // A single tile is ~10KB, but only in compressed JPEG form,
   // uncompressed tiles can be much bigger

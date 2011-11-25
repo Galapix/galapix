@@ -61,7 +61,7 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
       if (!job_handle.is_aborted())
       {
         TileEntry tile;
-        if (m_database.get_tiles().get_tile(file_entry, tilescale, pos, tile))
+        if (m_database.get_tiles().get_tile(file_entry.get_fileid(), tilescale, pos, tile))
         {
           // Tile has been found, so return it and finish up
           if (callback)
@@ -144,7 +144,7 @@ DatabaseThread::request_file(const URL& url,
           file_callback(file_entry);
 
           TileEntry tile_entry;
-          if (m_database.get_tiles().get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
+          if (m_database.get_tiles().get_tile(file_entry.get_fileid(), file_entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
           {
             if (tile_callback)
             {
@@ -192,15 +192,15 @@ DatabaseThread::request_files_by_pattern(const std::function<void (FileEntry)>& 
 }
 
 void
-DatabaseThread::receive_tile(const FileEntry& file_entry, const Tile& tile)
+DatabaseThread::receive_tile(const FileId& fileid, const Tile& tile)
 {
-  m_receive_queue.wait_and_push([this, file_entry, tile](){
+  m_receive_queue.wait_and_push([this, fileid, tile](){
       // FIXME: Make some better error checking in case of loading failure
       if (tile)
       {
         // FIXME: Test the performance of this
         //if (!m_database.get_tiles().has_tile(tile.fileid, tile.pos, tile.scale))
-        m_database.get_tiles().store_tile(file_entry, tile);
+        m_database.get_tiles().store_tile(fileid, tile);
       }
       else
       {
@@ -286,14 +286,14 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
   int min_scale_in_db = -1;
   int max_scale_in_db = -1;
 
-  m_database.get_tiles().get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
+  m_database.get_tiles().get_min_max_scale(file_entry.get_fileid(), min_scale_in_db, max_scale_in_db);
 
   std::shared_ptr<MultipleTileGenerationJob> 
     job_ptr(new MultipleTileGenerationJob(job_handle, 
                                           file_entry,
                                           min_scale_in_db, max_scale_in_db,
                                           min_scale, max_scale,
-                                          std::bind(&DatabaseThread::receive_tile, this, file_entry, std::placeholders::_1)));
+                                          std::bind(&DatabaseThread::receive_tile, this, file_entry.get_fileid(), std::placeholders::_1)));
 
   // Not removing the job from the queue
   m_tile_job_manager.request(job_ptr);
@@ -322,7 +322,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     int min_scale_in_db = -1;
     int max_scale_in_db = -1;
 
-    if (m_database.get_tiles().get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db))
+    if (m_database.get_tiles().get_min_max_scale(file_entry.get_fileid(), min_scale_in_db, max_scale_in_db))
     {
       if (tilescale >= min_scale_in_db &&
           tilescale <= max_scale_in_db)
@@ -375,7 +375,9 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
   }
 
   job_ptr->sig_file_callback().connect(std::bind(&DatabaseThread::receive_file, this, std::placeholders::_1));
-  job_ptr->sig_tile_callback().connect(std::bind(&DatabaseThread::receive_tile, this, std::placeholders::_1, std::placeholders::_2));
+  job_ptr->sig_tile_callback().connect([this](const FileEntry& file_entry, const Tile& tile) {
+      receive_tile(file_entry.get_fileid(), tile);
+    });
 
   m_tile_job_manager.request(job_ptr);
   //m_tile_job_manager.request(job_ptr, std::bind(&DatabaseThread::request_job_removal, this, _1, _2));

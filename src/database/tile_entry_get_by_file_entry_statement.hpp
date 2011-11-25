@@ -32,15 +32,15 @@ public:
     m_stmt(db, "SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
-  bool operator()(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile)
+  bool operator()(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile)
   {
-    if (!file_entry.get_fileid())
+    if (!fileid)
     {
       return false;
     }
     else
     {
-      m_stmt.bind_int64(1, file_entry.get_fileid().get_id());
+      m_stmt.bind_int64(1, fileid.get_id());
       m_stmt.bind_int(2, scale);
       m_stmt.bind_int(3, pos.x);
       m_stmt.bind_int(4, pos.y);
@@ -49,7 +49,7 @@ public:
 
       if (reader.next())
       {
-        tile = TileEntry(file_entry,
+        tile = TileEntry(fileid,
                          reader.get_int(1), // scale
                          Vector2i(reader.get_int(2), // pos
                                   reader.get_int(3)),

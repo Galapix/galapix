@@ -125,12 +125,12 @@ Galapix::merge(const std::string& database,
         FileEntry file_entry = out_db.get_files().store_file_entry(*i);
 
         std::vector<TileEntry> tiles;
-        in_db.get_tiles().get_tiles(*i, tiles);
+        in_db.get_tiles().get_tiles(i->get_fileid(), tiles);
         for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
         {
           // Change the fileid
-          j->set_file_entry(file_entry);
-          out_db.get_tiles().store_tile(file_entry, *j);
+          j->set_fileid(file_entry.get_fileid());
+          out_db.get_tiles().store_tile(file_entry.get_fileid(), *j);
         }
       } catch(std::exception& err) {
         std::cout << "Galapix:merge: Error: " << err.what() << std::endl;
@@ -169,7 +169,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
         for(int x = 0; x < (size.width+255)/256; ++x)
         {
           TileEntry tile;
-          if (db.get_tiles().get_tile(entry, scale, Vector2i(x, y), tile))
+          if (db.get_tiles().get_tile(entry.get_fileid(), scale, Vector2i(x, y), tile))
           {
             tile.get_surface()->blit(target, Vector2i(x, y) * 256);
           }
@@ -359,7 +359,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       workspace.add_image(image);
       
       TileEntry tile_entry;
-      if (database.get_tiles().get_tile(*i, i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+      if (database.get_tiles().get_tile(i->get_fileid(), i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
       {
         image->receive_tile(*i, Tile(tile_entry));
       }
@@ -419,7 +419,8 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
         workspace.add_image(image);
 
         TileEntry tile_entry;
-        if (database.get_tiles().get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+        if (database.get_tiles().get_tile(file_entry.get_fileid(), file_entry.get_thumbnail_scale(),
+                                          Vector2i(0,0), tile_entry))
         {
           image->receive_tile(file_entry, Tile(tile_entry));
         }

@@ -28,11 +28,11 @@ TileCache::TileCache() :
 }
 
 bool
-TileCache::has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale)
+TileCache::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    if (i->get_file_entry() == file_entry &&
+    if (i->get_fileid() == fileid &&
         i->get_scale()  == scale  &&
         i->get_pos()    == pos)
     {
@@ -44,11 +44,11 @@ TileCache::has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale)
 }
 
 bool
-TileCache::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos, TileEntry& tile_out)
+TileCache::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    if (i->get_file_entry() == file_entry &&
+    if (i->get_fileid() == fileid &&
         i->get_scale()  == scale  &&
         i->get_pos()    == pos)
     {
@@ -62,11 +62,11 @@ TileCache::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos,
 }
 
 void
-TileCache::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles_out)
+TileCache::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles_out)
 {
   for(const auto& tile_entry : m_cache)
   {
-    if (tile_entry.get_file_entry() == file_entry)
+    if (tile_entry.get_fileid() == fileid)
     {
       tiles_out.push_back(tile_entry);
     }
@@ -74,14 +74,14 @@ TileCache::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles_
 }
 
 bool
-TileCache::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, int& max_scale_out)
+TileCache::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out)
 {
   int min_scale = -1;
   int max_scale = -1;
 
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    if (i->get_file_entry() == file_entry)
+    if (i->get_fileid() == fileid)
     {
       if (min_scale == -1)
       {
@@ -116,9 +116,9 @@ TileCache::get_min_max_scale(const FileEntry& file_entry, int& min_scale_out, in
 }
 
 void
-TileCache::store_tile(const FileEntry& file_entry, const Tile& tile)
+TileCache::store_tile(const FileId& fileid, const Tile& tile)
 {
-  m_cache.push_back(TileEntry(file_entry, tile.get_scale(), tile.get_pos(), tile.get_surface()));
+  m_cache.push_back(TileEntry(fileid, tile.get_scale(), tile.get_pos(), tile.get_surface()));
 }
 
 void
@@ -137,7 +137,7 @@ struct FileIdEqual
 
   bool operator()(const TileEntry& tile_entry) const
   {
-    return tile_entry.get_file_entry().get_fileid() == m_fileid;
+    return tile_entry.get_fileid() == m_fileid;
   }
 };
 

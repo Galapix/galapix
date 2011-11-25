@@ -29,15 +29,15 @@ public:
     m_stmt(db, "SELECT (rowid) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
-  bool operator()(const FileEntry& file_entry, const Vector2i& pos, int scale)
+  bool operator()(const FileId& fileid, const Vector2i& pos, int scale)
   {
-    if (!file_entry.get_fileid())
+    if (!fileid)
     {
       return false;
     }
     else
     {
-      m_stmt.bind_int64(1, file_entry.get_fileid().get_id());
+      m_stmt.bind_int64(1, fileid.get_id());
       m_stmt.bind_int(2, scale);
       m_stmt.bind_int(3, pos.x);
       m_stmt.bind_int(4, pos.y);
