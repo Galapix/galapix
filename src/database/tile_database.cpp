@@ -27,15 +27,16 @@
 #include "plugins/png.hpp"
 #include "util/software_surface_factory.hpp"
 
-TileDatabase::TileDatabase(Database& db)
+TileDatabase::TileDatabase(SQLiteConnection& db, FileDatabase& files)
   : m_db(db),
-    m_tiles_table(m_db.get_db()),
-    m_tile_entry_store(m_db.get_db()),
-    m_tile_entry_get_all_by_file_entry(m_db.get_db()),
-    m_tile_entry_has(m_db.get_db()),
-    m_tile_entry_get_by_file_entry(m_db.get_db()),
-    m_tile_entry_get_min_max_scale(m_db.get_db()),
-    m_tile_entry_delete(m_db.get_db()),
+    m_files(files),
+    m_tiles_table(m_db),
+    m_tile_entry_store(m_db),
+    m_tile_entry_get_all_by_file_entry(m_db),
+    m_tile_entry_has(m_db),
+    m_tile_entry_get_by_file_entry(m_db),
+    m_tile_entry_get_min_max_scale(m_db),
+    m_tile_entry_delete(m_db),
     m_cache()
 {}
 
@@ -131,12 +132,12 @@ TileDatabase::store_tile(const FileEntry& file_entry, const Tile& tile)
 void
 TileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 {
-  m_db.get_db().exec("BEGIN;");
+  m_db.exec("BEGIN;");
   for(std::vector<TileEntry>::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
   {
     m_tile_entry_store(*i);
   }
-  m_db.get_db().exec("END;");
+  m_db.exec("END;");
 }
 
 void
@@ -150,7 +151,7 @@ void
 TileDatabase::flush_cache()
 {
   std::cout << "TileDatabes::flush_cache()" << std::endl;
-  m_db.get_files().flush_cache();
+  m_files.flush_cache();
   m_cache.flush(*this);
 }
 

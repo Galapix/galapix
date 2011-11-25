@@ -30,17 +30,18 @@ class Database
 {
 private:
   std::unique_ptr<SQLiteConnection> m_db;
-  std::unique_ptr<FileDatabase> files;
-  std::unique_ptr<TileDatabaseInterface> tiles;
+  std::unique_ptr<SQLiteConnection> m_tile_db;
+  std::unique_ptr<FileDatabase> m_files;
+  std::unique_ptr<TileDatabaseInterface> m_tiles;
 
 public:
   Database(const std::string& prefix);
   ~Database();
 
-  SQLiteConnection& get_db() { return *m_db; }
+  FileDatabase& get_files() { return *m_files; }
+  TileDatabaseInterface& get_tiles() { return *m_tiles; }
 
-  FileDatabase& get_files() { return *files; }
-  TileDatabaseInterface& get_tiles() { return *tiles; }
+  void delete_file_entry(const FileId& fileid);
 
   void cleanup();
 

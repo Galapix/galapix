@@ -213,12 +213,7 @@ void
 DatabaseThread::delete_file_entry(const FileId& fileid)
 {
   m_request_queue.wait_and_push([this, fileid](){
-      std::cout << "Begin Delete" << std::endl;
-      m_database.get_db().exec("BEGIN;");
-      m_database.get_files().delete_file_entry(fileid);
-      m_database.get_tiles().delete_tiles(fileid);
-      m_database.get_db().exec("END;");
-      std::cout << "End Delete" << std::endl;
+      m_database.delete_file_entry(fileid);
     });
 }
 
