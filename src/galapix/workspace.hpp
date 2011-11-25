@@ -33,29 +33,11 @@
 class Rectf;
 class Layouter;
 
-class ImageRequest
-{
-public:
-  URL      url;
-  Vector2f pos;
-  float    scale;
-
-public:
-  ImageRequest(const URL&      url_,
-               const Vector2f& pos_,
-               float           scale_) :
-    url(url_), pos(pos_), scale(scale_)
-  {}
-};
-
-
-
 /** The Workspace houses all the images, the current selection and
     things like layouting of the image collection */
 class Workspace
 {
 private:
-  typedef std::vector<ImageRequest> ImageRequests;
 
 private:
   ImageCollection m_images;
