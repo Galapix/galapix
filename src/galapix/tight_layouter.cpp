@@ -53,7 +53,7 @@ TightLayouter::layout(const ImageCollection& images, bool animated)
     for(auto& image: row) { row_width += image->get_scaled_width(); }
 
 
-    std::cout << width << " " << row_width << std::endl;
+    //std::cout << width << " " << row_width << std::endl;
     Vector2f offset((width - row_width)/2.0f, 0.0f);
 
     // FIXME: doesn't work because of target pos
