@@ -53,6 +53,7 @@
 #include "util/filesystem.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
+#include "util/string_util.hpp"
 #ifdef GALAPIX_SDL
 #  include "sdl/sdl_viewer.hpp"
 #endif
@@ -558,7 +559,10 @@ Galapix::run(const Options& opts)
       else
         Filesystem::generate_image_file_list(*i, urls);
     }
-    std::sort(urls.begin(), urls.end());
+    std::sort(urls.begin(), urls.end(),
+              [](const URL& lhs, const URL& rhs) {
+                return StringUtil::numeric_less(lhs.str(), rhs.str());
+              });
     std::cout << urls.size() << " files found." << std::endl;
 
     const std::string& command = opts.rest.front();
