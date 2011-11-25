@@ -55,6 +55,12 @@ public:
     return m_queue.size() == m_max_size;
   }
 
+  int size() const
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    return m_queue.size();
+  }
+
   bool empty() const
   {
     std::unique_lock<std::mutex> lock(m_mutex);
