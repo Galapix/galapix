@@ -132,7 +132,8 @@ public:
 
   int get_thumbnail_scale() const { return impl->thumbnail_size; }
 
-  operator void*() const { return impl.get(); }
+  explicit operator bool() const { return impl.get(); }
+
   bool operator==(const FileEntry& rhs) const
   {
     if (impl->fileid && rhs.impl->fileid)
