@@ -31,6 +31,8 @@ public:
   static bool get_size(void* data, int len, Size& size);
   static bool get_size(const std::string& filename, Size& size);
 
+  static bool is_png(const std::string& filename);
+
   static SoftwareSurfacePtr load_from_file(const std::string& filename);
   static SoftwareSurfacePtr load_from_mem(const uint8_t* data, int len);
 

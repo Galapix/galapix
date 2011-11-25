@@ -118,6 +118,33 @@ PNG::get_size(const std::string& filename, Size& size)
   }
 }
 
+bool
+PNG::is_png(const std::string& filename)
+{
+  FILE* in = fopen(filename.c_str(), "rb");
+  if (!in)
+  {
+    return false;
+  }
+  else
+  {
+    unsigned char buf[4];
+    if (fread(buf, 1, sizeof(buf), in) != 4)
+    {
+      return false;
+    }
+    else
+    {
+      static unsigned char magic[4] = { 0x89, 0x50, 0x4e, 0x47 };
+      return
+        buf[0] == magic[0] &&
+        buf[1] == magic[1] &&
+        buf[2] == magic[2] &&
+        buf[3] == magic[3];
+    }
+  }
+}
+
 SoftwareSurfacePtr
 PNG::load_from_file(const std::string& filename)
 {
