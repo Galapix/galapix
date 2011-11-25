@@ -24,7 +24,8 @@
 class Thread
 {
 private:
-  std::unique_ptr<std::thread> m_thread;
+  enum { kRunning, kJoined, kNothing } m_state;
+  std::thread m_thread;
 
   void run_wrap();
 
