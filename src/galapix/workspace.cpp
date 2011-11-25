@@ -29,14 +29,7 @@
 #include "galapix/tight_layouter.hpp"
 #include "util/file_reader.hpp"
 #include "util/log.hpp"
-
-struct ImageSorter
-{
-  bool operator()(const ImagePtr& lhs, const ImagePtr& rhs)
-  {
-    return lhs->get_url() < rhs->get_url();
-  }
-};
+#include "util/string_util.hpp"
 
 Workspace::Workspace() :
   m_images(),
@@ -201,7 +194,10 @@ Workspace::update(float delta)
 void
 Workspace::sort()
 {
-  std::sort(m_images.begin(), m_images.end(), ImageSorter());
+  std::sort(m_images.begin(), m_images.end(), 
+            [](const ImagePtr& lhs, const ImagePtr& rhs) {
+              return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
+            });
   if (m_layouter)
   {
     m_layouter->layout(m_images, true);
@@ -212,7 +208,10 @@ Workspace::sort()
 void
 Workspace::sort_reverse()
 {
-  std::sort(m_images.rbegin(), m_images.rend(), ImageSorter());
+  std::sort(m_images.rbegin(), m_images.rend(), 
+            [](const ImagePtr& lhs, const ImagePtr& rhs) {
+              return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
+            });
   if (m_layouter)
   {
     m_layouter->layout(m_images, true);
