@@ -75,6 +75,8 @@ SDLViewer::~SDLViewer()
   {
     SDL_JoystickClose(joy);
   }
+
+  SDL_Quit();
 }
 
 void
