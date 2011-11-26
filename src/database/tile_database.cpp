@@ -121,12 +121,19 @@ TileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos, Til
 void
 TileDatabase::store_tile(const FileId& fileid, const Tile& tile)
 {
-  m_cache.store_tile(fileid, tile);
+  if (!fileid)
+  {
+    std::cout << "Error: rejecting tile, fileid is not valid" << std::endl;
+  }
+  else
+  {
+    m_cache.store_tile(fileid, tile);
 
-  // A single tile is ~10KB, but only in compressed JPEG form,
-  // uncompressed tiles can be much bigger
-  if (m_cache.size() > 256)
-    flush_cache();
+    // A single tile is ~10KB, but only in compressed JPEG form,
+    // uncompressed tiles can be much bigger
+    if (m_cache.size() > 256)
+      flush_cache();
+  }
 }
 
 void
