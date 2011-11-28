@@ -24,6 +24,7 @@
 
 #include "math/size.hpp"
 #include "math/rgbaf.hpp"
+#include "util/software_surface.hpp"
 
 class SoftwareSurfaceFloat;
 
@@ -36,6 +37,11 @@ private:
 
 public:
   static SoftwareSurfaceFloatPtr create(const Size& size);
+  static SoftwareSurfaceFloatPtr from_software_surface(const SoftwareSurfacePtr& surface);
+
+  SoftwareSurfacePtr to_software_surface() const;
+  
+  void apply_gamma(float gamma);
 
   Size get_size()   const;
   int  get_width()  const;

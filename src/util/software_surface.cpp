@@ -99,27 +99,48 @@ SoftwareSurface::SoftwareSurface(Format format_, const Size& size_) :
 void
 SoftwareSurface::put_pixel(int x, int y, const RGBA& rgba)
 {
-  assert(impl->format == RGBA_FORMAT);
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
 
-  impl->pixels[y * impl->pitch + x*4 + 0] = rgba.r;
-  impl->pixels[y * impl->pitch + x*4 + 1] = rgba.g;
-  impl->pixels[y * impl->pitch + x*4 + 2] = rgba.b;  
-  impl->pixels[y * impl->pitch + x*4 + 3] = rgba.a;
+  switch(impl->format)
+  {
+    case RGBA_FORMAT:
+      impl->pixels[y * impl->pitch + x*4 + 0] = rgba.r;
+      impl->pixels[y * impl->pitch + x*4 + 1] = rgba.g;
+      impl->pixels[y * impl->pitch + x*4 + 2] = rgba.b;  
+      impl->pixels[y * impl->pitch + x*4 + 3] = rgba.a;
+      break;
+
+    case RGB_FORMAT:
+      impl->pixels[y * impl->pitch + x*3 + 0] = rgba.r;
+      impl->pixels[y * impl->pitch + x*3 + 1] = rgba.g;
+      impl->pixels[y * impl->pitch + x*3 + 2] = rgba.b;  
+      break;
+  }
 }
 
 void
 SoftwareSurface::get_pixel(int x, int y, RGBA& rgb) const
 {
-  assert(impl->format == RGBA_FORMAT);
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
-  
-  rgb.r = impl->pixels[y * impl->pitch + x*4 + 0];
-  rgb.g = impl->pixels[y * impl->pitch + x*4 + 1];
-  rgb.b = impl->pixels[y * impl->pitch + x*4 + 2];
-  rgb.a = impl->pixels[y * impl->pitch + x*4 + 3];
+
+  switch(impl->format)
+  {  
+    case RGBA_FORMAT:
+      rgb.r = impl->pixels[y * impl->pitch + x*4 + 0];
+      rgb.g = impl->pixels[y * impl->pitch + x*4 + 1];
+      rgb.b = impl->pixels[y * impl->pitch + x*4 + 2];
+      rgb.a = impl->pixels[y * impl->pitch + x*4 + 3];
+      break;
+
+    case RGB_FORMAT:
+      rgb.r = impl->pixels[y * impl->pitch + x*3 + 0];
+      rgb.g = impl->pixels[y * impl->pitch + x*3 + 1];
+      rgb.b = impl->pixels[y * impl->pitch + x*3 + 2];
+      rgb.a = 255;
+      break;
+  }
 }
 
 void

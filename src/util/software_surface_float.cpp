@@ -18,6 +18,8 @@
 
 #include "util/software_surface_float.hpp"
 
+#include "math/math.hpp"
+
 SoftwareSurfaceFloatPtr 
 SoftwareSurfaceFloat::create(const Size& size)
 {
@@ -28,6 +30,41 @@ SoftwareSurfaceFloat::SoftwareSurfaceFloat(const Size& size) :
   m_size(size),
   m_pixels(size.get_area() * 4)
 {
+}
+
+SoftwareSurfaceFloatPtr 
+SoftwareSurfaceFloat::from_software_surface(const SoftwareSurfacePtr& surface)
+{
+  SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::create(surface->get_size());
+  for(int y = 0; y < surface->get_height(); ++y)
+  {
+    for(int x = 0; x < surface->get_width(); ++x)
+    {
+      RGBA rgba;
+      surface->get_pixel(x, y, rgba);
+
+      RGBAf rgbaf = RGBAf::from_rgba(rgba);
+      surfacef->put_pixel(x, y, rgbaf);
+    }
+  }
+  return surfacef;
+}
+
+void
+SoftwareSurfaceFloat::apply_gamma(float gamma)
+{
+  for(int y = 0; y < m_size.height; ++y)
+  {
+    for(int x = 0; x < m_size.width; ++x)
+    {
+      RGBAf rgba;
+      get_pixel(x, y, rgba);
+      rgba.r = powf(rgba.r, gamma);
+      rgba.g = powf(rgba.g, gamma);
+      rgba.b = powf(rgba.b, gamma);
+      put_pixel(x, y, rgba);
+    }
+  }
 }
 
 Size
@@ -70,6 +107,28 @@ SoftwareSurfaceFloat::get_pixel(int x, int y, RGBAf& rgba) const
   rgba.g = m_pixels[get_pitch() * y + 4*x + 1];
   rgba.b = m_pixels[get_pitch() * y + 4*x + 2];
   rgba.a = m_pixels[get_pitch() * y + 4*x + 3];
+}
+
+SoftwareSurfacePtr
+SoftwareSurfaceFloat::to_software_surface() const
+{
+  SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, m_size);
+  for(int y = 0; y < m_size.height; ++y)
+  {
+    for(int x = 0; x < m_size.width; ++x)
+    {
+      RGBAf rgbaf;
+      get_pixel(x, y, rgbaf);
+
+      RGBA rgba;
+      rgba.r = static_cast<uint8_t>(Math::clamp(0, static_cast<int>(rgbaf.r * 255.0f), 255));
+      rgba.g = static_cast<uint8_t>(Math::clamp(0, static_cast<int>(rgbaf.g * 255.0f), 255));
+      rgba.b = static_cast<uint8_t>(Math::clamp(0, static_cast<int>(rgbaf.b * 255.0f), 255));
+      rgba.a = static_cast<uint8_t>(Math::clamp(0, static_cast<int>(rgbaf.a * 255.0f), 255));
+      surface->put_pixel(x, y, rgba);
+    }
+  }
+  return surface;
 }
 
 /* EOF */
