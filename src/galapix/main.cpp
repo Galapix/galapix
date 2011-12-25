@@ -16,12 +16,21 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <unistd.h>
+#include <iostream>
+
 #include "galapix/galapix.hpp"
 
 int main(int argc, char** argv)
 {
-  Galapix app;
-  return app.main(argc, argv);
+  int ret;
+  {
+    Galapix app;
+    ret = app.main(argc, argv);
+  }
+  std::cout << "Waiting time" << std::endl;
+  //sleep(50000);
+  return ret;
 }
 
 /* EOF */

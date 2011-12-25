@@ -36,7 +36,7 @@ Database::Database(const std::string& prefix) :
 
   m_files.reset(new FileDatabase(*m_db));
 
-  if (false)
+  if (true)
   {
     m_tiles.reset(new TileDatabase(*m_tile_db, *m_files));
   }

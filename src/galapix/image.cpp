@@ -283,9 +283,10 @@ Image::draw(const Rectf& cliprect, float zoom)
     if (!m_file_entry_requested)
     {
       m_file_entry_requested = true;
-      m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
-                                                               weak(std::bind(&Image::receive_file_entry, std::placeholders::_1, std::placeholders::_2), m_self),
-                                                               weak(std::bind(&Image::receive_tile, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), m_self)));
+      m_jobs.push_back(DatabaseThread::current()
+                       ->request_file(m_url,
+                                      weak(std::bind(&Image::receive_file_entry, std::placeholders::_1, std::placeholders::_2), m_self),
+                                      weak(std::bind(&Image::receive_tile, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), m_self)));
     }
   }
   else

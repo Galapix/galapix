@@ -293,7 +293,9 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
                                           file_entry,
                                           min_scale_in_db, max_scale_in_db,
                                           min_scale, max_scale,
-                                          std::bind(&DatabaseThread::receive_tile, this, file_entry.get_fileid(), std::placeholders::_1)));
+                                          [this, file_entry](const Tile& tile){
+                                            receive_tile(file_entry.get_fileid(), tile);
+                                          }));
 
   // Not removing the job from the queue
   m_tile_job_manager.request(job_ptr);
