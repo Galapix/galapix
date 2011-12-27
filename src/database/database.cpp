@@ -31,8 +31,8 @@ Database::Database(const std::string& prefix) :
 {
   Filesystem::mkdir(prefix);
 
-  m_db.reset(new SQLiteConnection(prefix + "/cache3.sqlite3"));
-  m_tile_db.reset(new SQLiteConnection(prefix + "/cache3_tiles.sqlite3"));
+  m_db.reset(new SQLiteConnection(prefix + "/cache4.sqlite3"));
+  m_tile_db.reset(new SQLiteConnection(prefix + "/cache4_tiles.sqlite3"));
 
   m_files.reset(new FileDatabase(*m_db));
 

@@ -19,20 +19,28 @@
 #include "database/file_entry.hpp"
 
 #include <iostream>
+
+#include "sqlite/reader.hpp"
+
+FileEntry::FileEntry(SQLiteReader& reader) :
+  m_fileid(reader.get_int(0)), // fileid
+  m_url(URL::from_string(reader.get_text(1))), // url
+  m_size(reader.get_int(2)),  // size
+  m_mtime(reader.get_int(3)), // mtime
+  m_format(reader.get_int(4)) // format
+{  
+}
+
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
-  if (entry)
-  {
-    return os << "FileEntry(" 
-              << entry.get_fileid() << ", " 
-              << entry.get_url() << ", "
-              << entry.get_image_size() << ")";
-  }
-  else
-  {
-    return os << "FileEntry(NULL)";
-  }
+  return os << "FileEntry(" 
+            << entry.get_fileid() << ", " 
+            << entry.get_url()    << ", "
+            << entry.get_size()   << ", "
+            << entry.get_mtime()
+    //<< entry.get_format();
+  << ")";    
 }
 
 /* EOF */

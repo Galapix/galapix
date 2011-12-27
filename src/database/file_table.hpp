@@ -33,13 +33,10 @@ public:
               "url       TEXT UNIQUE, "
               "size      INTEGER, "
               "mtime     INTEGER, "
-           
-              "width     INTEGER, "
-              "height    INTEGER, "
-              "format    INTEGER"   // format of the data (0: JPEG, 1: PNG)
+              "type      INTEGER"
               ");");
 
-    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( url );");
+    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( url, size, mtime, type );");
   }
 
 private:

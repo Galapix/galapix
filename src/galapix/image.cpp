@@ -58,11 +58,8 @@ Image::Image(const URL& url, TileProviderPtr provider) :
   m_last_scale(1.0f),
   m_target_scale(1.0f),
   m_angle(0.0f),
-  m_file_entry_requested(false),
   m_cache(),
   m_renderer(),
-  m_file_entry_queue(),
-  m_tile_queue(),
   m_tile_provider_queue(),
   m_jobs()
 {
@@ -212,7 +209,6 @@ Image::clear_cache()
     m_cache->clear();
   }
   abort_all_jobs();
-  m_file_entry_requested = false;
 }
 
 void
@@ -233,36 +229,11 @@ Image::cache_cleanup()
     m_cache->cleanup();
   }
   abort_all_jobs();
-  m_file_entry_requested = false;
 }
 
 void
 Image::process_queues()
 {
-  // Check if there was an update of the FileEntry
-  FileEntry file_entry;
-  while(m_file_entry_queue.try_pop(file_entry))
-  {
-    if (file_entry.get_image_size() == Size(0, 0))
-    { // reject images with invalid size
-      std::cout << "Image::Image(): invalid image size: " << file_entry << std::endl;
-    }
-    else
-    {
-      m_file_entry_requested = false;
-      set_provider(DatabaseTileProvider::create(file_entry));
-    }
-  }
-
-  Tile tile;
-  while(m_tile_queue.try_pop(tile))
-  {
-    if (m_cache)
-    {
-      m_cache->receive_tile(tile);
-    }
-  }
-  
   TileProviderPtr tile_provider;
   while(m_tile_provider_queue.try_pop(tile_provider))
   {
@@ -279,15 +250,6 @@ Image::draw(const Rectf& cliprect, float zoom)
   {
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
                            RGB(255,255,0));
-
-    if (!m_file_entry_requested)
-    {
-      m_file_entry_requested = true;
-      m_jobs.push_back(DatabaseThread::current()
-                       ->request_file(m_url,
-                                      weak(std::bind(&Image::receive_file_entry, std::placeholders::_1, std::placeholders::_2), m_self),
-                                      weak(std::bind(&Image::receive_tile, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), m_self)));
-    }
   }
   else
   {
@@ -416,21 +378,6 @@ Image::on_zoom_level_change()
   abort_all_jobs();
 }
 
-void
-Image::receive_file_entry(const FileEntry& file_entry)
-{
-  // std::cout << "Image::receive_file_entry: " << file_entry << std::endl;
-  assert(file_entry);
-  m_file_entry_queue.wait_and_push(file_entry);
-}
-
-void
-
-Image::receive_tile(const FileEntry& file_entry, const Tile& tile)
-{
-  m_tile_queue.wait_and_push(tile);
-}
-
 void
 Image::receive_tile_provider(TileProviderPtr provider)
 {

@@ -27,132 +27,54 @@
 #include "math/size.hpp"
 #include "util/url.hpp"
 
-class FileEntryImpl
-{
-public:
-  /** Unique id by which one can refer to this FileEntry, used in the
-      'tile' table in the database */
-  FileId fileid;
-
-  /** The URL of the image file */
-  URL url;
-
-  /** The size of the image in pixels */
-  Size image_size;
-  int  format;
-
-  int file_size;
-  int file_mtime;
-
-  int thumbnail_size;
-
-  FileEntryImpl() :
-    fileid(),
-    url(),
-    image_size(),
-    format(),
-    file_size(),
-    file_mtime(),
-    thumbnail_size()
-  {}
-};
+class SQLiteReader;
 
 class FileEntry 
 {
-private:
+public:
+  FileEntry() :
+    m_fileid(),
+    m_url(),
+    m_size(),
+    m_mtime(),
+    m_format()
+  {}
+
   FileEntry(const FileId& fileid,
             const URL& url,
             int size,
             int mtime,
-            int width,
-            int height,
             int format) :
-    impl(new FileEntryImpl())
-  {
-    impl->fileid     = fileid;
-    impl->url        = url;
-    impl->image_size = Size(width, height);
-    impl->file_size  = size;
-    impl->format     = format;
-    impl->file_mtime = mtime;
-
-    int s = Math::max(width, height);
-    impl->thumbnail_size = 0;
-    while(s > 8)
-    {
-      s /= 2;
-      impl->thumbnail_size += 1;
-    }
-  }
-
-public:
-  enum Format 
-  {
-    UNKNOWN_FORMAT = -1,
-    JPEG_FORMAT =  0,
-    PNG_FORMAT  =  1
-  };
-
-
-  FileEntry() :
-    impl()
+    m_fileid(fileid),
+    m_url(url),
+    m_size(size),
+    m_mtime(mtime),
+    m_format(format)
   {}
 
-  static FileEntry create_without_fileid(const URL& url,
-                                         int size,
-                                         int mtime,
-                                         int width,
-                                         int height,
-                                         int format)
-  {
-    return FileEntry(FileId(), url, size, mtime, width, height, format);
-  }
+  FileEntry(SQLiteReader& reader);
 
-  static FileEntry create(const FileId& fileid, 
-                          const URL& url,
-                          int size,
-                          int mtime,
-                          int width,
-                          int height,
-                          int format)
-  {
-    return FileEntry(fileid, url, size, mtime, width, height, format);
-  }
-
-  void        set_fileid(const FileId& fileid) { impl->fileid = fileid; }
-  FileId      get_fileid()     const { return impl->fileid; }
-  URL         get_url()        const { return impl->url; }
-  int         get_width()      const { return impl->image_size.width; }
-  int         get_height()     const { return impl->image_size.height; }
-  Size        get_image_size() const { return impl->image_size; }
-  int         get_format()     const { return impl->format; }
-
-  int         get_size()  const { return impl->file_size;  }
-  int         get_mtime() const { return impl->file_mtime; }
-
-  int get_thumbnail_scale() const { return impl->thumbnail_size; }
-
-  explicit operator bool() const { return impl.get(); }
-
-  bool operator==(const FileEntry& rhs) const
-  {
-    if (impl->fileid && rhs.impl->fileid)
-    {
-      return get_fileid() == rhs.get_fileid();
-    }
-    else if (impl == rhs.impl)
-    {
-      return true;
-    }
-    else
-    {
-      // FIXME: Not quite, as width/height might differ
-      return impl->url == rhs.impl->url;
-    }
-  }
+  FileId get_fileid()     const { return m_fileid; }
+  URL    get_url()        const { return m_url; }
+  int    get_size()  const { return m_size;  }
+  int    get_mtime() const { return m_mtime; }
 
 private:
-  std::shared_ptr<FileEntryImpl> impl;
+  /** Unique id by which one can refer to this FileEntry, used in the
+      'tile' table in the database */
+  FileId m_fileid;
+
+  /** The URL of the image file */
+  URL m_url;
+
+  /** Size of the file in bytes */
+  int m_size;
+
+  /** Last modification of the file */
+  int m_mtime;
+
+  /** Format of the file */
+  int m_format;
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);

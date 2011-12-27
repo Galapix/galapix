@@ -19,22 +19,30 @@
 #ifndef HEADER_GALAPIX_GALAPIX_DATABASE_TILE_PROVIDER_HPP
 #define HEADER_GALAPIX_GALAPIX_DATABASE_TILE_PROVIDER_HPP
 
+#include <assert.h>
+
 #include "galapix/tile_provider.hpp"
+#include "database/image_entry.hpp"
 
 class DatabaseTileProvider : public TileProvider
 {
 private:
-  FileEntry m_file_entry;
+  FileEntry  m_file_entry;
+  ImageEntry m_image_entry;
 
 private:
-  DatabaseTileProvider(const FileEntry& file_entry) :
-    m_file_entry(file_entry)
+  DatabaseTileProvider(const FileEntry& file_entry,
+                       const ImageEntry& image_entry) :
+    m_file_entry(file_entry),
+    m_image_entry(image_entry)
   {}
 
 public:
   static std::shared_ptr<DatabaseTileProvider> create(const FileEntry& file_entry)
   {
-    return std::shared_ptr<DatabaseTileProvider>(new DatabaseTileProvider(file_entry));
+    assert(!"broken");
+    ImageEntry image_entry;
+    return std::shared_ptr<DatabaseTileProvider>(new DatabaseTileProvider(file_entry, image_entry));
   }
 
   JobHandle request_tile(int tilescale, const Vector2i& pos, 
@@ -45,7 +53,7 @@ public:
   
   int get_max_scale() const 
   {
-    return m_file_entry.get_thumbnail_scale(); 
+    return m_image_entry.get_max_scale();
   }
 
   int get_tilesize() const 
@@ -60,32 +68,18 @@ public:
 
   Size get_size() const
   {
-    return m_file_entry.get_image_size();
+    return m_image_entry.get_size();
   }
-
-  struct FileEntry2TileProvider
-  {
-    std::function<void (TileProviderPtr)> m_callback;
-
-    FileEntry2TileProvider(const std::function<void (TileProviderPtr)>& callback) :
-      m_callback(callback)
-    {}
-
-    void operator()(const FileEntry& file_entry)
-    {
-      m_callback(DatabaseTileProvider::create(file_entry));
-    }
-  };
 
   void refresh(const std::function<void (TileProviderPtr)>& callback)
   {
-    // FIXME: delete_file_entry() needs to handle database cache properly
-    if (m_file_entry.get_fileid())
-    {
-      DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
-      DatabaseThread::current()->request_file(m_file_entry.get_url(), 
-                                              FileEntry2TileProvider(callback));
-    }
+#if 0
+    DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
+    DatabaseThread::current()->request_file(m_file_entry.get_url(), 
+                                            [=](){
+                                              callback(DatabaseTileProvider::create(file_entry)); 
+                                            });
+#endif
   }
 
 private:

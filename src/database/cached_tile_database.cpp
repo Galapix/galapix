@@ -139,7 +139,9 @@ void
 CachedTileDatabase::flush_cache()
 {
   std::cout << "CachedTileDatabase::flush_cache()" << std::endl;
+#if 0
   m_db.get_files().flush_cache();
+#endif
   m_tile_cache->flush(*m_tile_database);
 }
 

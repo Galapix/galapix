@@ -78,8 +78,8 @@ public:
                      const std::function<void (Tile)>& callback);
 
   void generate_file_entry(const JobHandle& job_handle, const URL& url,
-                           const std::function<void (FileEntry)>& file_callback,
-                           const std::function<void (FileEntry, Tile)>& tile_callback);
+                           const std::function<void (int, int, int)>& file_callback,
+                           const std::function<void (Tile)>& tile_callback);
   void remove_job(std::shared_ptr<Job> job);
 
   /* @{ */ // syncronized functions to be used by other threads
@@ -97,8 +97,8 @@ public:
 
   /** Request the FileEntry for \a filename */
   JobHandle request_file(const URL& url, 
-                         const std::function<void (FileEntry)>& file_callback,
-                         const std::function<void (FileEntry, Tile)>& tile_callback = std::function<void (FileEntry, Tile)>());
+                         const std::function<void (int, int, int)>& file_callback,
+                         const std::function<void (Tile)>& tile_callback = std::function<void (Tile)>());
 
   /** Request FileEntrys by glob pattern from the database */
   void      request_files_by_pattern(const std::function<void (FileEntry)>& callback, const std::string& pattern);
@@ -107,19 +107,20 @@ public:
   void      request_all_files(const std::function<void (FileEntry)>& callback);
 
   void      store_file_entry(const JobHandle& job_handle, 
-                             const URL& url, const Size& size, int format,
+                             const URL& url, int size, int mtime, int format,
                              const std::function<void (FileEntry)>& callback);
-
-  /** Place tile into the database */
-  void      receive_tile(const FileId& fileid, const Tile& tile);
-  void      receive_file(const FileEntry& file_entry);
-  void      receive_tiles(const std::vector<TileEntry>& tiles);
+  void      store_image
 
   /** Delete the given FileEntry along with all TileEntry refering to it */
   void      delete_file_entry(const FileId& fileid);
   /* @} */
 
 private:
+  /** Place tile into the database */
+  void receive_tile(const FileId& fileid, const Tile& tile);
+  void receive_file(const URL& url, int size, int mtime, int format);
+  void receive_tiles(const std::vector<TileEntry>& tiles);
+
   void process_queue(ThreadMessageQueue2<std::function<void()>>& queue);
 
 private:

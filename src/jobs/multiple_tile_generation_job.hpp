@@ -31,7 +31,7 @@
 class MultipleTileGenerationJob : public Job
 {
 private:
-  FileEntry m_file_entry;
+  URL m_url;
   int m_min_scale_in_db;
   int m_max_scale_in_db;
   int m_min_scale; 
@@ -40,12 +40,12 @@ private:
 
 public:
   MultipleTileGenerationJob(const JobHandle& job_handle, 
-                            const FileEntry& file_entry,
+                            const URL& url,
                             int min_scale_in_db, int max_scale_in_db,
                             int min_scale, int max_scale,
                             const std::function<void (Tile)>& callback) :
     Job(job_handle),
-    m_file_entry(file_entry),
+    m_url(url),
     m_min_scale_in_db(min_scale_in_db),
     m_max_scale_in_db(max_scale_in_db),
     m_min_scale(min_scale),
@@ -64,7 +64,7 @@ public:
 
     if (m_min_scale_in_db == -1 || m_min_scale < m_min_scale_in_db) // range is non-empty
     {
-      TileGenerator::generate(m_file_entry.get_url(), 
+      TileGenerator::generate(m_url,
                               m_min_scale, m_max_scale,
                               m_callback);
     }

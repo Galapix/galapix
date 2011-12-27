@@ -57,6 +57,11 @@ Bugs and Issues
 * "libpng error: Not a PNG file" should not leak out of libpng, should
   be handled by proper logging functions
 
+* loading failures need to be communicated to avoid rerequests
+
+* mtime needs to be checked
+
+* images belonging to an archive/directory need to be groupable
 
 Galapix 0.1.3 Release ToDo:
 ===========================

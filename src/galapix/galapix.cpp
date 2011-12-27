@@ -109,6 +109,7 @@ void
 Galapix::merge(const std::string& database,
                const std::vector<std::string>& filenames)
 {
+#if 0
   Database out_db(database);
 
   for(std::vector<std::string>::const_iterator db_it = filenames.begin(); db_it != filenames.end(); ++db_it)
@@ -139,11 +140,13 @@ Galapix::merge(const std::string& database,
     }
     std::cout << std::endl;
   }
+#endif
 }
 
 void
 Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 {
+#if 0
   Database db(database);
   
   int wish_size = 512;
@@ -184,6 +187,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
       image_num += 1;
     }
   }
+#endif
 }
 
 void
@@ -250,6 +254,7 @@ void
 Galapix::filegen(const Options& opts,
                  const std::vector<URL>& url)
 {
+#if 0
   Database database(opts.database);
   JobManager job_manager(opts.threads);
   DatabaseThread database_thread(database, job_manager);
@@ -269,6 +274,7 @@ Galapix::filegen(const Options& opts,
 
   job_manager.join_thread();
   database_thread.join_thread();
+#endif
 }
 
 void
@@ -276,6 +282,7 @@ Galapix::thumbgen(const Options& opts,
                   const std::vector<URL>& urls, 
                   bool generate_all_tiles)
 {
+#if 0
   Database       database(opts.database);
   JobManager     job_manager(opts.threads);
   DatabaseThread database_thread(database, job_manager);
@@ -324,6 +331,7 @@ Galapix::thumbgen(const Options& opts,
 
   job_manager.join_thread();
   database_thread.join_thread();
+#endif
 }
 
 void
@@ -343,7 +351,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       std::cout << "Processing pattern: '" << *i << "'" << std::endl;
 
       if (*i == "*")
-      { 
+      {
         // special case to display everything, might be faster then
         // using the pattern
         database.get_files().get_file_entries(file_entries);
@@ -358,13 +366,13 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     {
       ImagePtr image = Image::create(i->get_url(), DatabaseTileProvider::create(*i));
       workspace.add_image(image);
-      
+#if 0     
       TileEntry tile_entry;
       if (database.get_tiles().get_tile(i->get_fileid(), i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
       {
         image->receive_tile(*i, Tile(tile_entry));
       }
-       
+#endif       
       // print progress
       int n = (i - file_entries.begin())+1;
       int total = file_entries.size();
@@ -408,9 +416,8 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     }
     else
     {
-      //database_thread.request_file(*i, std::bind(&Workspace::receive_file, &workspace, _1));
-      FileEntry file_entry = database.get_files().get_file_entry(*i);
-      if (!file_entry)
+      FileEntry file_entry;
+      if (!database.get_files().get_file_entry(*i, file_entry))
       {
         workspace.add_image(Image::create(*i));
       }
@@ -419,12 +426,14 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
         ImagePtr image = Image::create(file_entry.get_url(), DatabaseTileProvider::create(file_entry));
         workspace.add_image(image);
 
+#if 0
         TileEntry tile_entry;
         if (database.get_tiles().get_tile(file_entry.get_fileid(), file_entry.get_thumbnail_scale(),
                                           Vector2i(0,0), tile_entry))
         {
           image->receive_tile(file_entry, Tile(tile_entry));
         }
+#endif
       }
     }
   }
@@ -510,7 +519,7 @@ Galapix::main(int argc, char** argv)
   {
     Options opts;
     opts.threads  = 2;
-    opts.database = Filesystem::get_home() + "/.galapix/cache3";
+    opts.database = Filesystem::get_home() + "/.galapix/cache4";
     parse_args(argc, argv, opts);
 
     if (curl_global_init(CURL_GLOBAL_ALL) != 0)

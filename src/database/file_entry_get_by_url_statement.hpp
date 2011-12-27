@@ -29,24 +29,19 @@ public:
     m_stmt(db, "SELECT * FROM files WHERE url = ?1;")
   {}
 
-  FileEntry operator()(const URL& url)
+  bool operator()(const URL& url, FileEntry& entry_out)
   {
     m_stmt.bind_text(1, url.str());
     SQLiteReader reader = m_stmt.execute_query();
 
     if (reader.next())
     {
-      return FileEntry::create(FileId(reader.get_int(0)),  // fileid
-                               URL::from_string(reader.get_text(1)),  // url
-                               reader.get_int(2), // file size
-                               reader.get_int(3), // mtime
-                               reader.get_int(4), // width
-                               reader.get_int(5), // height
-                               reader.get_int(6));
+      entry_out = FileEntry(reader);
+      return true;
     }
     else
     {
-      return FileEntry();
+      return false;
     }
   }
 

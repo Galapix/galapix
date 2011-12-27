@@ -35,6 +35,7 @@ FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, cons
 void
 FileEntryGenerationJob::run()
 {
+#if 0
   try 
   {
     SoftwareSurfacePtr surface;
@@ -60,7 +61,7 @@ FileEntryGenerationJob::run()
 
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
       file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                    size.width, size.height, FileEntry::JPEG_FORMAT);
+                                                    size.width, size.height, ImageEntry::JPEG_FORMAT);
 
       // FIXME: here we are just guessing which tiles might be useful,
       // there might be a better way to pick \a min_scale
@@ -86,15 +87,15 @@ FileEntryGenerationJob::run()
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
       surface = SoftwareSurfaceFactory::current().from_url(m_url);
       size = surface->get_size();
-      int format = FileEntry::UNKNOWN_FORMAT;
+      int format = ImageEntry::UNKNOWN_FORMAT;
       switch(surface->get_format())
       {
         case SoftwareSurface::RGB_FORMAT:
-          format = FileEntry::JPEG_FORMAT;
+          format = ImageEntry::JPEG_FORMAT;
           break;
 
         case SoftwareSurface::RGBA_FORMAT:
-          format = FileEntry::PNG_FORMAT;
+          format = ImageEntry::PNG_FORMAT;
           break;
       }
       file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
@@ -103,22 +104,19 @@ FileEntryGenerationJob::run()
       max_scale = file_entry.get_thumbnail_scale();
     }
 
-    m_sig_file_callback(file_entry);
+    m_sig_file_callback(m_url, m_url.get_size(), m_url.get_mtime());
     
     TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale, 
-                                  std::bind(&FileEntryGenerationJob::process_tile, this, file_entry, std::placeholders::_1));
+                                  [this](const Tile& tile){
+                                    m_sig_tile_callback(tile);
+                                  });
   }
   catch(const std::exception& err)
   {
     log_error << "Error while processing " << m_url << std::endl;
     log_error << "  Exception: " << err.what() << std::endl;
   }
-}
-
-void
-FileEntryGenerationJob::process_tile(const FileEntry& file_entry, const Tile& tile)
-{
-  m_sig_tile_callback(file_entry, tile);
+#endif
 }
 
 /* EOF */

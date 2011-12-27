@@ -25,53 +25,43 @@
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
+#include "util/log.hpp"
 
 FileDatabase::FileDatabase(SQLiteConnection& db) :
   m_db(db),
   m_file_table(m_db),
+  m_image_table(m_db),
   m_file_entry_get_all(m_db),
   m_file_entry_get_by_fileid(m_db),
   m_file_entry_get_by_pattern(m_db),
   m_file_entry_get_by_url(m_db),
   m_file_entry_store(m_db),
   m_file_entry_delete(m_db),
-  m_file_entry_cache()
+  m_image_entry_store(m_db)
 {
 }
 
 FileDatabase::~FileDatabase()
 {
-  flush_cache();
-}
-
-FileEntry
-FileDatabase::store_file_entry(const FileEntry& entry)
-{
-  //store_file_entry_without_cache(entry);
-  m_file_entry_cache.push_back(entry);
-  return entry;
 }
  
 FileEntry
-FileDatabase::store_file_entry(const URL& url, const Size& size, int format)
+FileDatabase::store_file_entry(const URL& url, int size, int mtime, int type)
 {
-  FileEntry entry = FileEntry::create_without_fileid(url, url.get_size(), url.get_mtime(), size.width, size.height, format);
-  //store_file_entry(entry);
-  m_file_entry_cache.push_back(entry);
-  return entry;
+  FileId fileid = m_file_entry_store(url, size, mtime, type);
+  return FileEntry(fileid, url, size, mtime, type);
 }
 
-FileEntry
-FileDatabase::store_file_entry_without_cache(const FileEntry& entry)
+void
+FileDatabase::store_image_entry(const ImageEntry& image)
 {
-  m_file_entry_store(entry);
-  return entry;
+  m_image_entry_store(image);
 }
 
-FileEntry
-FileDatabase::get_file_entry(const URL& url)
+bool
+FileDatabase::get_file_entry(const URL& url, FileEntry& entry_out)
 {
-  return m_file_entry_get_by_url(url);
+  return m_file_entry_get_by_url(url, entry_out);
 }
 
 void
@@ -84,12 +74,6 @@ void
 FileDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
 {
   m_file_entry_get_all(entries_out);
-}
-
-void
-FileDatabase::update_file_entry(FileEntry& entry)
-{
-  // UPDATE files SET mtime = ?entry.get_mtime() WHERE fileid = ?entry.fileid
 }
 
 void
@@ -118,7 +102,7 @@ FileDatabase::delete_file_entry(const FileId& fileid)
   // FIXME: Ignoring cache
   m_file_entry_delete(fileid);
 }
-
+#if 0
 void
 FileDatabase::flush_cache()
 {
@@ -134,5 +118,6 @@ FileDatabase::flush_cache()
     m_file_entry_cache.clear();
   }
 }
+#endif
 
 /* EOF */

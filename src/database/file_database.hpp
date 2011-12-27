@@ -23,18 +23,21 @@
 
 #include "sqlite/statement.hpp"
 #include "math/size.hpp"
-#include "database/file_table.hpp"
-#include "database/file_entry_get_all_statement.hpp"
-#include "database/file_entry_get_by_url_statement.hpp"
-#include "database/file_entry_get_by_file_id_statement.hpp"
-#include "database/file_entry_store_statement.hpp"
-#include "database/file_entry_get_by_pattern_statement.hpp"
 #include "database/file_entry_delete_statement.hpp"
+#include "database/file_entry_get_all_statement.hpp"
+#include "database/file_entry_get_by_file_id_statement.hpp"
+#include "database/file_entry_get_by_pattern_statement.hpp"
+#include "database/file_entry_get_by_url_statement.hpp"
+#include "database/file_entry_store_statement.hpp"
+#include "database/image_entry_store_statement.hpp"
+#include "database/file_table.hpp"
+#include "database/image_table.hpp"
 
-class URL;
-class FileEntry;
-class TileEntry;
 class Database;
+class FileEntry;
+class ImageEntry;
+class TileEntry;
+class URL;
 
 /** The FileDatabase keeps a record of all files that have been
     view. It keeps information on the last modification time and
@@ -42,51 +45,48 @@ class Database;
     the mapping from url to fileid, which is used for loookup of
     tiles in the TileDatabase. The FileDatabase also stores the size
     of an image, so that the image file itself doesn't need to be
-    touched.
- */
+    touched. */
 class FileDatabase
 {
 private:
   SQLiteConnection& m_db;
 
-  FileTable m_file_table;
+  FileTable                      m_file_table;
+  ImageTable                     m_image_table;
   FileEntryGetAllStatement       m_file_entry_get_all;
   FileEntryGetByFileIdStatement  m_file_entry_get_by_fileid;
   FileEntryGetByPatternStatement m_file_entry_get_by_pattern;
   FileEntryGetByUrlStatement     m_file_entry_get_by_url;
   FileEntryStoreStatement        m_file_entry_store;
   FileEntryDeleteStatement       m_file_entry_delete;
+  ImageEntryStoreStatement       m_image_entry_store;
 
-  std::vector<FileEntry> m_file_entry_cache;
-
-  void update_file_entry(FileEntry& entry);
- 
 public:
   FileDatabase(SQLiteConnection& db);
   ~FileDatabase();
   
-  /** Lookup a FileEntry by its url. If there is no corresponding
-      url, then the file will be looked up in the filesystem and
-      then stored in the DB and returned. If the file can't be found
-      in either the DB or the filesystem false will be returned, else
-      true
+  /**
+     Lookup a FileEntry by its url. If there is no corresponding
+     url, then the file will be looked up in the filesystem and
+     then stored in the DB and returned. If the file can't be found
+     in either the DB or the filesystem false will be returned, else
+     true
       
-      @param[in] url The absolute path of the file
-      @param[out] entry   Lokation where the file information will be stored 
-      @return true if lookup was successful, false otherwise, in which case entry stays untouched
+     @param[in] url The absolute path of the file
+     @param[out] entry   Lokation where the file information will be stored 
+     @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
-  FileEntry get_file_entry(const URL& url);
+  bool get_file_entry(const URL& url, FileEntry& entry_out);
   void get_file_entries(std::vector<FileEntry>& entries_out);
   void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
 
-  FileEntry store_file_entry(const FileEntry& entry);
-  FileEntry store_file_entry(const URL& url, const Size& size, int format);
-  FileEntry store_file_entry_without_cache(const FileEntry& entry);
+  FileEntry store_file_entry(const URL& url, int size, int mtime, int type);
+  void store_image_entry(const ImageEntry& image);
 
   void delete_file_entry(const FileId& fileid);
 
   void check();
-  void flush_cache();
+  //void flush_cache();
 
 private:
   FileDatabase (const FileDatabase&);

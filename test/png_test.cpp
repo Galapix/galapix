@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,35 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
+#include <iostream>
 
-#include "database/file_id.hpp"
+#include "plugins/png.hpp"
 
-class FileEntryDeleteStatement
+int main(int argc, char** argv)
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
-public:
-  FileEntryDeleteStatement(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "DELETE FROM files WHERE fileid = ?1;")
-  {}
-
-  void operator()(const FileId& fileid)
+  for(int i = 1; i < argc; ++i)
   {
-    assert(fileid);
-    m_stmt.bind_int64(1, fileid.get_id());
-    m_stmt.execute();
+    //PNG::get_size(argv[i]);
+    PNG::load_from_file(argv[i]);
   }
-
-private:
-  FileEntryDeleteStatement(const FileEntryDeleteStatement&);
-  FileEntryDeleteStatement& operator=(const FileEntryDeleteStatement&);
-};
-
-#endif
+  return 0;
+}
 
 /* EOF */

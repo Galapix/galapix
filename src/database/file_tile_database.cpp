@@ -25,12 +25,13 @@
 #include <iostream>
 #include <limits>
 
+#include "database/image_entry.hpp"
+#include "galapix/tile.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "util/blob.hpp"
 #include "util/filesystem.hpp"
 #include "util/software_surface_factory.hpp"
-#include "galapix/tile.hpp"
 
 FileTileDatabase::FileTileDatabase(const std::string& prefix) :
   m_prefix(prefix)
@@ -227,11 +228,11 @@ FileTileDatabase::parse_filename(const std::string& filename, Vector2i* pos_out,
   {
     if (strcmp(format, "jpg"))
     {
-      *format_out = FileEntry::JPEG_FORMAT;
+      *format_out = ImageEntry::JPEG_FORMAT;
     }
     else if (strcmp(format, "png"))
     {
-      *format_out = FileEntry::PNG_FORMAT;
+      *format_out = ImageEntry::PNG_FORMAT;
     }
     else
     {

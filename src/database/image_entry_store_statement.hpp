@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,33 +16,41 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_IMAGE_ENTRY_STORE_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_IMAGE_ENTRY_STORE_STATEMENT_HPP
 
-#include "database/file_id.hpp"
+#include <iostream>
+#include <assert.h>
 
-class FileEntryDeleteStatement
+#include "database/image_entry.hpp"
+
+class ImageEntryStoreStatement
 {
 private:
   SQLiteConnection& m_db;
   SQLiteStatement   m_stmt;
 
 public:
-  FileEntryDeleteStatement(SQLiteConnection& db) :
+  ImageEntryStoreStatement(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "DELETE FROM files WHERE fileid = ?1;")
+    m_stmt(db, "INSERT OR REPLACE INTO images (fileid, width, height, format) VALUES (?1, ?2, ?3, ?4);")
   {}
-
-  void operator()(const FileId& fileid)
+  
+  void operator()(const ImageEntry& image)
   {
-    assert(fileid);
-    m_stmt.bind_int64(1, fileid.get_id());
+    m_stmt.bind_int64(1, image.get_fileid().get_id());
+    m_stmt.bind_int(2, image.get_width());
+    m_stmt.bind_int(3, image.get_height());
+    m_stmt.bind_int(4, image.get_format());
+
     m_stmt.execute();
+    
+    //return sqlite3_last_insert_rowid(m_db.get_db());
   }
 
 private:
-  FileEntryDeleteStatement(const FileEntryDeleteStatement&);
-  FileEntryDeleteStatement& operator=(const FileEntryDeleteStatement&);
+  ImageEntryStoreStatement(const ImageEntryStoreStatement&);
+  ImageEntryStoreStatement& operator=(const ImageEntryStoreStatement&);
 };
 
 #endif

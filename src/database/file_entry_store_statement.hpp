@@ -31,26 +31,19 @@ private:
 public:
   FileEntryStoreStatement(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "INSERT OR REPLACE INTO files (url, size, mtime, width, height) VALUES (?1, ?2, ?3, ?4, ?5);")
+    m_stmt(db, "INSERT OR REPLACE INTO files (url, size, mtime, type) VALUES (?1, ?2, ?3, ?4);")
   {}
 
-  void operator()(FileEntry file_entry)
+  FileId operator()(const URL& url, int size, int mtime, int type)
   {
-    if (file_entry.get_fileid())
-    {
-      std::cout << "FileEntryStoreStatement: Warning file_entry already has fileid: " << file_entry.get_fileid() << std::endl;
-      assert(!"Should never happen");
-    }
-
-    m_stmt.bind_text(1, file_entry.get_url().str());
-    m_stmt.bind_int (2, file_entry.get_size());
-    m_stmt.bind_int (3, file_entry.get_mtime());
-    m_stmt.bind_int (4, file_entry.get_width());
-    m_stmt.bind_int (5, file_entry.get_height());
+    m_stmt.bind_text(1, url.str());
+    m_stmt.bind_int (2, size);
+    m_stmt.bind_int (3, mtime);
+    m_stmt.bind_int (4, type);
 
     m_stmt.execute();
   
-    file_entry.set_fileid(FileId(sqlite3_last_insert_rowid(m_db.get_db())));
+    return FileId(sqlite3_last_insert_rowid(m_db.get_db()));
   }
 
 private:

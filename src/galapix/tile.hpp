@@ -57,7 +57,7 @@ public:
   int      get_scale()  const { return m_scale; }
   Vector2i get_pos()    const { return m_pos; }
 
-  operator bool() const 
+  explicit operator bool() const 
   {
     return m_valid;
   }

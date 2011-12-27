@@ -38,7 +38,6 @@ TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_
   m_tile_requests(),
   m_late_tile_requests(),
   m_tiles(),
-  m_sig_file_callback(),
   m_sig_tile_callback()
 {
 }
@@ -134,6 +133,7 @@ TileGenerationJob::process_tile(const Tile& tile)
 bool
 TileGenerationJob::is_aborted()
 {
+#if 0
   std::unique_lock<std::mutex> lock(m_state_mutex);
 
   if (!m_file_entry)
@@ -159,11 +159,15 @@ TileGenerationJob::is_aborted()
     m_state = kAborted;
     return true;
   }
+#else
+  return false;
+#endif
 }
 
 void
 TileGenerationJob::run()
 {
+#if 0
   { // Calculate min/max_scale
     std::unique_lock<std::mutex> lock(m_state_mutex);
     assert(m_state == kWaiting);
@@ -232,6 +236,7 @@ TileGenerationJob::run()
 
     m_late_tile_requests.clear();
   }
+#endif
 }
 
 /* EOF */
