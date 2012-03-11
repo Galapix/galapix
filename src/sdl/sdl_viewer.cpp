@@ -51,7 +51,7 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
 {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
   {
-    log_error << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
+    log_error("Unable to initialize SDL: " << SDL_GetError());
     exit(1);
   }
   atexit(SDL_Quit); 
@@ -99,7 +99,7 @@ SDLViewer::process_event(const SDL_Event& event)
           case SPNAV_EVENT_MOTION:
             {
               if (0)
-                log_debug << "MotionEvent: " 
+                log_debug("MotionEvent: " 
                           << "("
                           << spnav_ev->motion.x << ", "
                           << spnav_ev->motion.y << ", "
@@ -107,8 +107,7 @@ SDLViewer::process_event(const SDL_Event& event)
                           << ") ("
                           << spnav_ev->motion.rx << ", "
                           << spnav_ev->motion.ry << ", "
-                          << spnav_ev->motion.rz
-                          << std::endl;              
+                          << spnav_ev->motion.rz);
 
               float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
 
@@ -577,7 +576,7 @@ SDLViewer::run()
   space_navigator.stop_thread();
 #endif
 
-  log_info << "done" << std::endl;
+  log_info("done");
 }
 
 /* EOF */

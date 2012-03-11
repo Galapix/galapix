@@ -142,7 +142,7 @@ ArchiveManager::get_filenames(const std::string& zip_filename,
         }
         else
         {
-          log_warning << err.what() << std::endl;
+          log_warn(err.what());
           if (loader_out) { *loader_out = loader; }
           return loader->get_filenames(zip_filename);
         }
@@ -167,7 +167,7 @@ ArchiveManager::get_file(const std::string& zip_filename, const std::string& fil
     }
     catch(const std::exception& err)
     {
-      log_warning << err.what() << std::endl;
+      log_warn(err.what());
 
       loader = find_loader_by_magic(zip_filename);
       if (!loader)

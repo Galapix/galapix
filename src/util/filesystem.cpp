@@ -376,7 +376,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
       } 
       catch(const std::exception& err) 
       {
-        log_warning << "Warning: " << err.what() << std::endl;
+        log_warn(err.what());
       }
     }
 
@@ -389,7 +389,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
       }
       catch(const std::exception& err)
       {
-        log_warning << "Warning: " << err.what() << std::endl;
+        log_warn("Warning: " << err.what());
       }
     }
   }

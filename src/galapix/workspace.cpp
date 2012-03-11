@@ -89,7 +89,6 @@ Workspace::animation_finished()
 void
 Workspace::layout_vertical()
 {
-  log_info << std::endl;
   float spacing = 10.0f;
   Vector2f next_pos(0.0f, 0.0f);
   for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
@@ -105,7 +104,6 @@ Workspace::layout_vertical()
 void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
-  log_info << std::endl;
   m_layouter.reset(new RegularLayouter(aspect_w, aspect_h));
   m_layouter->layout(m_images, true);
   start_animation();
@@ -114,7 +112,6 @@ Workspace::layout_aspect(float aspect_w, float aspect_h)
 void
 Workspace::layout_spiral()
 {
-  log_info << std::endl;
   m_layouter.reset(new SpiralLayouter());
   m_layouter->layout(m_images, true);
   start_animation();
@@ -123,7 +120,6 @@ Workspace::layout_spiral()
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
-  log_info << std::endl;
   m_layouter.reset(new TightLayouter(aspect_w, aspect_h));
   m_layouter->layout(m_images, true);
   start_animation();
@@ -132,7 +128,6 @@ Workspace::layout_tight(float aspect_w, float aspect_h)
 void
 Workspace::layout_random()
 {
-  log_info << std::endl;
   m_layouter.reset(new RandomLayouter());
   m_layouter->layout(m_images, true);
   start_animation();
@@ -331,7 +326,7 @@ void
 Workspace::delete_selection()
 {
   m_images.erase(std::remove_if(m_images.begin(), m_images.end(), 
-                                [&m_selection](const ImagePtr& image)->bool{
+                                [this](const ImagePtr& image)->bool{
                                   for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
                                   {
                                     if (*i == image)

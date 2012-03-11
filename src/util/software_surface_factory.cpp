@@ -218,7 +218,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
       auto new_loader = find_loader_by_magic(magic);           
       if (new_loader && new_loader != loader)
       {
-        log_warning << filename << ": file extension error, file is a " << new_loader->get_name() << std::endl;
+        log_warn(filename << ": file extension error, file is a " << new_loader->get_name());
         return from_file(filename, new_loader);
       }
       else
@@ -232,7 +232,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
 SoftwareSurfacePtr
 SoftwareSurfaceFactory::from_url(const URL& url) const
 {
-  log_debug << url << std::endl;
+  log_debug(url);
 
   if (url.has_stdio_name())
   {

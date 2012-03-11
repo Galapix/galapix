@@ -57,7 +57,7 @@ PNG::get_size(void* data, int len, Size& size)
   {
     // FIXME: get a proper error message from libpng
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-    log_warning << "PNG::get_size: setjmp: Couldn't load from memory" << std::endl;
+    log_warn("PNG::get_size: setjmp: Couldn't load from memory");
     return false;
   }
   else
@@ -97,7 +97,7 @@ PNG::get_size(const std::string& filename, Size& size)
     if (setjmp(png_jmpbuf(png_ptr)))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-      log_warning << "PNG::get_size: setjmp: Couldn't load " << filename << std::endl;
+      log_warn("PNG::get_size: setjmp: Couldn't load " << filename);
       return false;
     }
     else

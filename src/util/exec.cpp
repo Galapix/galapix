@@ -18,6 +18,7 @@
 
 #include "util/exec.hpp"
 
+#include <iostream>
 #include <errno.h>
 #include <sstream>
 #include <stdexcept>
@@ -196,7 +197,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
     }
     else if (retval == 0)
     {
-      log_error << "select() returned without results, this shouldn't happen" << std::endl;
+      log_error("select() returned without results, this shouldn't happen");
     }
     else // retval > 0
     {

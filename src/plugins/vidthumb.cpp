@@ -32,12 +32,12 @@ VidThumb::is_available()
   try 
   {
     std::string exe = Filesystem::find_exe("vidthumb");
-    log_info << "found " << exe << std::endl;
+    log_info("found " << exe);
     return true;
   }
   catch(std::exception& err)
   {
-    log_warning << err.what() << std::endl;
+    log_warn(err.what());
     return false;
   }
 }

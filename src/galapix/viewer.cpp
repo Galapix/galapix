@@ -334,7 +334,7 @@ Viewer::set_grid(const Vector2f& offset, const Sizef& size)
 void
 Viewer::set_pan_tool()
 {
-  log_info << "Pan&Zoom Tools selected" << std::endl;
+  log_info("Pan&Zoom Tools selected");
   left_tool   = zoom_in_tool.get();
   right_tool  = zoom_out_tool.get();
   middle_tool = pan_tool.get();
@@ -343,7 +343,7 @@ Viewer::set_pan_tool()
 void
 Viewer::set_zoom_tool()
 {
-  log_info << "Zoom&Pan Tools selected" << std::endl;
+  log_info("Zoom&Pan Tools selected");
   left_tool   = zoom_rect_tool.get();
   right_tool  = zoom_out_tool.get();
   middle_tool = pan_tool.get();
@@ -352,7 +352,7 @@ Viewer::set_zoom_tool()
 void
 Viewer::set_grid_tool()
 {
-  log_info << "Grid Tool selected" << std::endl;
+  log_info("Grid Tool selected");
   left_tool   = grid_tool.get();
   right_tool  = zoom_out_tool.get();
   middle_tool = pan_tool.get();
@@ -361,7 +361,7 @@ Viewer::set_grid_tool()
 void
 Viewer::set_move_resize_tool()
 {
-  log_info << "Move&Resize Tools selected" << std::endl;
+  log_info("Move&Resize Tools selected");
   left_tool   = move_tool.get();
   right_tool  = resize_tool.get();              
   middle_tool = pan_tool.get();
@@ -370,7 +370,7 @@ Viewer::set_move_resize_tool()
 void
 Viewer::set_move_rotate_tool()
 {
-  log_info << "Move&Rotate Tools selected" << std::endl;
+  log_info("Move&Rotate Tools selected");
   left_tool   = move_tool.get();
   right_tool  = rotate_tool.get();
   middle_tool = pan_tool.get();
@@ -381,7 +381,7 @@ Viewer::increase_contrast()
 {
   //contrast += 0.1f;
   m_contrast *= 1.1f;
-  log_info << "Contrast: " << m_contrast << std::endl;
+  log_info("Contrast: " << m_contrast);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -390,7 +390,7 @@ Viewer::decrease_contrast()
 {
   //contrast -= 0.1f;
   m_contrast /= 1.1f;
-  log_info << "Contrast: " << m_contrast << std::endl;
+  log_info("Contrast: " << m_contrast);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -398,7 +398,7 @@ void
 Viewer::increase_brightness()
 {
   m_brightness += 0.03f;
-  log_info << "Brightness: " << m_brightness << std::endl;
+  log_info("Brightness: " << m_brightness);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -406,7 +406,7 @@ void
 Viewer::decrease_brightness()
 {
   m_brightness -= 0.03f;
-  log_info << "Brightness: " << m_brightness << std::endl;
+  log_info("Brightness: " << m_brightness);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -414,7 +414,7 @@ void
 Viewer::increase_gamma()
 {
   m_gamma *= 1.1f;
-  log_info << "Gamma: " << m_gamma << std::endl;
+  log_info("Gamma: " << m_gamma);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -422,7 +422,7 @@ void
 Viewer::decrease_gamma()
 {
   m_gamma /= 1.1f;
-  log_info << "Gamma: " << m_gamma << std::endl;
+  log_info("Gamma: " << m_gamma);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -439,7 +439,7 @@ void
 Viewer::toggle_grid()
 {
   m_draw_grid = !m_draw_grid;
-  log_info << "Draw Grid: " << m_draw_grid << std::endl;
+  log_info("Draw Grid: " << m_draw_grid);
 }
 
 void
@@ -490,7 +490,7 @@ void
 Viewer::toggle_pinned_grid()
 {
   m_pin_grid = !m_pin_grid;
-  log_info << "Pin Grid: " << m_pin_grid << std::endl;
+  log_info("Pin Grid: " << m_pin_grid);
   if (!m_pin_grid)
   {
     m_grid_offset = m_grid_offset * m_state.get_scale() + m_state.get_offset();
@@ -574,13 +574,13 @@ Viewer::toggle_trackball_mode()
 
   if (pan_tool->get_trackball_mode())
   {
-    log_info << "Trackball mode active, press 't' to leave" << std::endl;
+    log_info("Trackball mode active, press 't' to leave");
     SDL_ShowCursor(SDL_DISABLE);
     SDL_WM_GrabInput(SDL_GRAB_ON);
   }
   else
   {
-    log_info << "Trackball mode deactivated" << std::endl;
+    log_info("Trackball mode deactivated");
     SDL_ShowCursor(SDL_ENABLE);
     SDL_WM_GrabInput(SDL_GRAB_OFF);
   }
@@ -610,7 +610,7 @@ void
 Viewer::refresh_selection()
 {
   // FIXME: Make force on Shift-F5 and normal F5 only refresh if the file changed
-  log_info << "Viewer::refresh_selection()" << std::endl;
+  log_info("Viewer::refresh_selection()");
   SelectionPtr selection = m_workspace->get_selection();
   bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
   for(Selection::iterator i = selection->begin(); i != selection->end(); ++i)
@@ -622,35 +622,35 @@ Viewer::refresh_selection()
 void
 Viewer::clear_cache()
 {
-  log_info << "Workspace: Clearing cache" << std::endl;
+  log_info("Workspace: Clearing cache");
   m_workspace->clear_cache();
 }
 
 void
 Viewer::cleanup_cache()
 {
-  log_info << "Workspace: Cache Cleanup" << std::endl;
+  log_info("Workspace: Cache Cleanup");
   m_workspace->cache_cleanup();
 }
 
 void
 Viewer::sort_reverse_image_list()
 {
-  log_info << "Workspace: Reverse Sorting" << std::endl;
+  log_info("Workspace: Reverse Sorting");
   m_workspace->sort_reverse();
 }
 
 void
 Viewer::sort_image_list()
 {
-  log_info << "Workspace: Sorting" << std::endl;
+  log_info("Workspace: Sorting");
   m_workspace->sort();
 }
 
 void
 Viewer::shuffle_image_list()
 {
-  log_info << "Workspace: Random Shuffle" << std::endl;
+  log_info("Workspace: Random Shuffle");
   m_workspace->random_shuffle();
 }
 
@@ -677,7 +677,7 @@ Viewer::print_info()
 void
 Viewer::print_state()
 {
-  log_info << m_state.get_offset() << " " << m_state.get_scale() << std::endl;
+  log_info(m_state.get_offset() << " " << m_state.get_scale());
 }
 
 /* EOF */

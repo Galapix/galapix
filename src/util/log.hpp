@@ -1,6 +1,6 @@
 /*
-**  Galapix - an image viewer for large image collections
-**  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
+**  Xbox360 USB Gamepad Userspace Driver
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,28 +16,107 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_UTIL_LOG_HPP
-#define HEADER_GALAPIX_UTIL_LOG_HPP
+#ifndef HEADER_XBOXDRV_LOG_HPP
+#define HEADER_XBOXDRV_LOG_HPP
 
-#include <iostream>
+#include <string>
+#include <sstream>
 
 /** Takes __PRETTY_FUNCTION__ and tries to shorten it to the form:
     Classname::function() */
 std::string log_pretty_print(const std::string& str);
 
-/** informal status messages that don't indicate a fault in the
-    program */
-#define log_info  (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
+class Logger
+{
+public:
+  enum LogLevel {
+    /** things that shouldn't happen (i.e. a catched exceptions) */
+    kError,
 
-/** messages that indicate an recoverable error (i.e. a catched
-    exceptions) */
-#define log_warning (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
+    /** messages that indicate an recoverable error (i.e. a catched
+        exceptions) */
+    kWarning,
 
-/** things that shouldn't happen (i.e. a catched exceptions) */
-#define log_error (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
+    /** informal status messages that don't indicate a fault in the
+        program */
+    kInfo,
 
-/** extra verbose debugging messages */
-#define log_debug (std::cout << log_pretty_print(__PRETTY_FUNCTION__) << ": ")
+    /** extra verbose debugging messages */
+    kDebug,
+
+    /** temporary extra verbose debugging messages */
+    kTemp
+  };
+
+private:
+  LogLevel m_log_level;
+
+public:
+  Logger();
+  void incr_log_level(LogLevel level);
+  void set_log_level(LogLevel level);
+  LogLevel get_log_level() const;
+  void append(LogLevel level, const std::string& str);
+  void append_unchecked(LogLevel level, const std::string& str);
+
+};
+
+#define log_debug(text) do { \
+  if (g_logger.get_log_level() >= Logger::kDebug) \
+  { \
+    std::ostringstream x6ac1c382;             \
+    x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << text; \
+    g_logger.append_unchecked(Logger::kDebug, x6ac1c382.str()); \
+  } \
+} while(false)
+
+#define log_info(text) do { \
+  if (g_logger.get_log_level() >= Logger::kInfo) \
+  { \
+    std::ostringstream x6ac1c382;             \
+    x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << text; \
+    g_logger.append_unchecked(Logger::kInfo, x6ac1c382.str()); \
+  } \
+} while(false)
+
+#define log_warn(text) do { \
+  if (g_logger.get_log_level() >= Logger::kWarning) \
+  { \
+    std::ostringstream x6ac1c382;             \
+    x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << text; \
+    g_logger.append_unchecked(Logger::kWarning, x6ac1c382.str()); \
+  } \
+} while(false)
+
+#define log_error(text) do { \
+  if (g_logger.get_log_level() >= Logger::kError) \
+  { \
+    std::ostringstream x6ac1c382;             \
+    x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << text; \
+    g_logger.append_unchecked(Logger::kError, x6ac1c382.str()); \
+  } \
+} while(false)
+
+/** Write an empty debug message, thus only class and function
+    name are visible, log level is ignored, messages are always
+    printed. Use for temporary messages in development that should not
+    be part of final release. */
+#define log_tmp_trace() do { \
+    std::ostringstream x6ac1c382; \
+    x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__); \
+    g_logger.append_unchecked(Logger::kTemp, x6ac1c382.str()); \
+} while(false)
+
+/** Write an debug message, while ignoring the log level. Use for
+    temporary messages in development that should not be part of final
+    release. */
+#define log_tmp(text) do { \
+    std::ostringstream x6ac1c382; \
+    x6ac1c382 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << text; \
+    g_logger.append_unchecked(Logger::kTemp, x6ac1c382.str()); \
+} while(false)
+
+extern Logger g_logger;
 
 #endif
 

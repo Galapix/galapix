@@ -1,6 +1,6 @@
 /*
-**  Galapix - an image viewer for large image collections
-**  Copyright (C) 2009 Ingo Ruhnke <grumbel@gmx.de>
+**  Xbox360 USB Gamepad Userspace Driver
+**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,9 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "util/log.hpp"
+#include "log.hpp"
 
-#include <sstream>
+#include <iostream>
+
+Logger g_logger;
 
 std::string log_pretty_print(const std::string& str)
 {
@@ -37,6 +39,55 @@ std::string log_pretty_print(const std::string& str)
   }
 
   return str.substr(function_start);
+}
+
+Logger::Logger() :
+  m_log_level(kWarning)
+{}
+
+void
+Logger::incr_log_level(LogLevel level)
+{
+  if (get_log_level() < level)
+  {
+    set_log_level(level);    
+  }
+}
+
+void
+Logger::set_log_level(LogLevel level)
+{
+  m_log_level = level;
+}
+
+Logger::LogLevel
+Logger::get_log_level() const
+{
+  return m_log_level;
+}
+
+void
+Logger::append_unchecked(LogLevel level, const std::string& str)
+{
+  switch(level)
+  {
+    case kError:   std::cout << "[ERROR] "; break;
+    case kWarning: std::cout << "[WARN]  "; break;
+    case kInfo:    std::cout << "[INFO]  "; break;
+    case kDebug:   std::cout << "[DEBUG] "; break;
+    case kTemp:    std::cout << "[TEMP]  "; break;
+  }
+    
+  std::cout << str << std::endl;
+}
+
+void
+Logger::append(LogLevel level, const std::string& str) 
+{
+  if (m_log_level >= level)
+  {
+    append_unchecked(level, str);
+  }
 }
 
 /* EOF */

@@ -48,15 +48,15 @@ TileGenerator::generate_old(const URL& url,
     }
     out << " generating ["
         << min_scale << ".." << max_scale << "]: " << url << std::endl;
-    log_warning << out.str();
+    log_warn(out.str());
   }
 
   generate(url, min_scale, max_scale, callback);
 
   if (0)
   {
-    log_info << "TileGeneratorThread: processing scales "
-             << min_scale << "-" << max_scale << ": " << url << ": done" << std::endl;
+    log_info("TileGeneratorThread: processing scales "
+             << min_scale << "-" << max_scale << ": " << url << ": done");
   }
 }
 
@@ -119,13 +119,13 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
     if (0 <= x_miss && x_miss <= 1 &&
         0 <= y_miss && y_miss <= 1)
     {
-      log_debug << "image doesn't match target size, ignoring as it is close enough: target=" 
-                << target_size << " vs surface=" << surface->get_size() << std::endl;      
+      log_debug("image doesn't match target size, ignoring as it is close enough: target=" 
+                << target_size << " vs surface=" << surface->get_size());
     }
     else
     {
-      log_debug << "image doesn't match target size, doing scaling: target=" 
-                << target_size << " vs surface=" << surface->get_size() << std::endl;
+      log_debug("image doesn't match target size, doing scaling: target=" 
+                << target_size << " vs surface=" << surface->get_size());
       surface = surface->scale(target_size);
     }
   }

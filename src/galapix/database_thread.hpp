@@ -109,7 +109,6 @@ public:
   void      store_file_entry(const JobHandle& job_handle, 
                              const URL& url, int size, int mtime, int format,
                              const std::function<void (FileEntry)>& callback);
-  void      store_image
 
   /** Delete the given FileEntry along with all TileEntry refering to it */
   void      delete_file_entry(const FileId& fileid);

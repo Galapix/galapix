@@ -58,7 +58,7 @@ public:
     }
     else
     {
-      log_debug << "WeakFunctor(): object deleted, not calling callback" << std::endl;
+      log_debug("WeakFunctor(): object deleted, not calling callback");
     }
   }
 
@@ -72,7 +72,7 @@ public:
     }
     else
     {
-      log_debug << "WeakFunctor(): object deleted, not calling callback" << std::endl;
+      log_debug("WeakFunctor(): object deleted, not calling callback");
     }
   }
 
@@ -86,7 +86,7 @@ public:
     }
     else
     {
-      log_debug << "WeakFunctor(): object deleted, not calling callback" << std::endl;
+      log_debug("WeakFunctor(): object deleted, not calling callback");
     }
   }
 };
