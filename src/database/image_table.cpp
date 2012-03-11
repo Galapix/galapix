@@ -28,7 +28,7 @@ ImageTable::ImageTable(SQLiteConnection& db) :
             "format    INTEGER" // format of the data (0: JPEG, 1: PNG)
             ");");
 
-  m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS images_index ON files ( fileid, width, height, format );");
+  m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS images_index ON images ( fileid, width, height, format );");
 }
 
 /* EOF */

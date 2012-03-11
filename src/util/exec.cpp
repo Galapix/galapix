@@ -30,6 +30,7 @@
 #include <unistd.h>
 
 #include "util/log.hpp"
+#include "util/raise_exception.hpp"
 
 Exec::Exec(const std::string& program, bool absolute_path) :
   m_program(program),
@@ -62,7 +63,7 @@ Exec::exec()
 
   // FIXME: Bad, we potentially leak file descriptors
   if (pipe(stdout_fd) < 0 || pipe(stderr_fd) < 0 || pipe(stdin_fd) < 0)
-    throw std::runtime_error("Exec:exec(): pipe failed");
+    raise_runtime_error("Exec:exec(): pipe failed");
 
   pid_t pid = fork();
   if (pid < 0)
@@ -75,7 +76,7 @@ Exec::exec()
     close(stdin_fd[0]);
     close(stdin_fd[1]);
 
-    throw std::runtime_error("Exec::exec(): fork failed");
+    raise_runtime_error("Exec::exec(): fork failed");
   }
   else if (pid == 0) 
   { // child
@@ -157,7 +158,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
       std::ostringstream out;
       out << "Exec::process_io(): stdin write failure: " << str() << ": " << strerror(errno);
-      throw std::runtime_error(out.str());
+      raise_runtime_error(out.str());
     }
   }
   close(stdin_fd);
@@ -193,7 +194,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
       std::ostringstream out;
       out << "Exec::process_io(): select() failure: " << str() << ": " << strerror(errno);
-      throw std::runtime_error(out.str());
+      raise_runtime_error(out.str());
     }
     else if (retval == 0)
     {
@@ -212,7 +213,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
           std::ostringstream out;
           out << "Exec::process_io(): stdout read failure: " << str() << ": " << strerror(errno);
-          throw std::runtime_error(out.str());
+          raise_runtime_error(out.str());
         }
         else if (len > 0) // ok
         {
@@ -236,7 +237,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 
           std::ostringstream out;
           out << "Exec::process_io(): stderr read failure: " << str() << ": " << strerror(errno);
-          throw std::runtime_error(out.str());
+          raise_runtime_error(out.str());
         }
         else if (len > 0) // ok
         {

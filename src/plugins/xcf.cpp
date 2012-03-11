@@ -29,6 +29,7 @@
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
 #include "util/url.hpp"
+#include "util/raise_exception.hpp"
 
 // Example xcfinfo output:
 // Version 0, 800x800 RGB color, 6 layers, compressed RLE
@@ -67,7 +68,7 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
                &visible, &width, &height, &x_sign, &x, &y_sign, &y,
                color, mode, layer_name) != 10)
     {
-      throw std::runtime_error("XCF::get_layer(): Couldn't parse output line:\n" + line);
+      raise_runtime_error("XCF::get_layer(): Couldn't parse output line:\n" + line);
     }
 
     layer_names.push_back(layer_name);
@@ -109,7 +110,7 @@ XCF::get_layers(const URL& url)
     std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
     if (line_end == stdout_lst.end())
     {
-      throw std::runtime_error("XCF::get_layers(): Couldn't parse output");
+      raise_runtime_error("XCF::get_layers(): Couldn't parse output");
       return std::vector<std::string>();
     }
     else
@@ -119,7 +120,7 @@ XCF::get_layers(const URL& url)
   }
   else
   {
-    throw std::runtime_error("XCF::get_layers(): " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
+    raise_runtime_error("XCF::get_layers(): " + std::string(xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().end()));
     return std::vector<std::string>();
   }
 }
@@ -169,7 +170,7 @@ XCF::load_from_file(const std::string& filename)
   xcf2png.arg(filename);
   if (xcf2png.exec() != 0)
   {
-    throw std::runtime_error("XCF::load_from_file(): " + std::string(xcf2png.get_stderr().begin(), xcf2png.get_stderr().end()));
+    raise_runtime_error("XCF::load_from_file(): " + std::string(xcf2png.get_stderr().begin(), xcf2png.get_stderr().end()));
   }
   else
   {
@@ -186,7 +187,7 @@ XCF::load_from_mem(void* data, int len)
   xcf2png.set_stdin(Blob::copy(data, len));
   if (xcf2png.exec() != 0)
   {
-    throw std::runtime_error("XCF::load_from_mem(): " + std::string(xcf2png.get_stderr().begin(), xcf2png.get_stderr().end()));
+    raise_runtime_error("XCF::load_from_mem(): " + std::string(xcf2png.get_stderr().begin(), xcf2png.get_stderr().end()));
   }
   else
   {

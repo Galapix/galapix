@@ -25,6 +25,7 @@
 #include "util/exec.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
+#include "util/raise_exception.hpp"
 
 bool
 VidThumb::is_available()
@@ -63,7 +64,7 @@ VidThumb::load_from_file(const std::string& filename)
   }
   else
   {
-    throw std::runtime_error("VidThumb::load_from_file(): " + std::string(vidthumb.get_stderr().begin(), 
+    raise_runtime_error("VidThumb::load_from_file(): " + std::string(vidthumb.get_stderr().begin(), 
                                                                           vidthumb.get_stderr().end()));
   }  
 }

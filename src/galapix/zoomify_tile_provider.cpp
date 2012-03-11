@@ -27,6 +27,7 @@
 #include "math/math.hpp"
 #include "plugins/curl.hpp"
 #include "plugins/jpeg.hpp"
+#include "util/raise_exception.hpp"
 
 namespace {
 
@@ -91,7 +92,7 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
                    &size.width, &size.height, &num_tiles, &tilesize);
   if (ret != 4)
   {
-    throw std::runtime_error("ZoomifyTileProvider::create(): Couldn't parse ImageProperties.xml");
+    raise_runtime_error("ZoomifyTileProvider::create(): Couldn't parse ImageProperties.xml");
   }
   else
   {

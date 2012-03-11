@@ -32,7 +32,7 @@ MD5::md5_string(const std::string& str)
   MHASH td = mhash_init(MHASH_MD5);
   if (td == MHASH_FAILED)
   {
-    throw std::runtime_error("MD5::md5_string(): Failed to init MHash");
+    raise_runtime_error("MD5::md5_string(): Failed to init MHash");
   }
   else
   {  
@@ -56,7 +56,7 @@ MD5::md5_file(const std::string& filename)
   MHASH td = mhash_init(MHASH_MD5);
   if (td == MHASH_FAILED) 
   {
-    throw std::runtime_error("Failed to init MHash");
+    raise_runtime_error("Failed to init MHash");
   }
   else
   {  
@@ -65,7 +65,7 @@ MD5::md5_file(const std::string& filename)
     std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary); 
     if (!in)
     {
-      throw std::runtime_error("MD5::md5_file(): Couldn't open file " + filename);
+      raise_runtime_error("MD5::md5_file(): Couldn't open file " + filename);
     }
     else
     {

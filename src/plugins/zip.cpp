@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include "util/exec.hpp"
+#include "util/raise_exception.hpp"
 
 std::string zip_error_to_string(int err)
 {
@@ -168,7 +169,7 @@ Zip::get_filenames(const std::string& zip_filename)
     out << "Zip::get_filenames(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
-    throw std::runtime_error(out.str());
+    raise_runtime_error(out.str());
   }
 }
 
@@ -210,7 +211,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
     out << "Zip::get_file(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
-    throw std::runtime_error(out.str());
+    raise_runtime_error(out.str());
   }
 }
 

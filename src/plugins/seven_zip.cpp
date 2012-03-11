@@ -21,6 +21,7 @@
 #include <stdexcept>
 
 #include "util/exec.hpp"
+#include "util/raise_exception.hpp"
 
 namespace {
 bool has_prefix(const std::string& lhs, const std::string rhs)
@@ -43,7 +44,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
 
   if (zip.exec() != 0)
   {
-    throw std::runtime_error("SevenZip::get_filenames(): " + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
+    raise_runtime_error("SevenZip::get_filenames(): " + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
     return std::vector<std::string>();    
   }
   else
@@ -94,7 +95,7 @@ SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
   }
   else
   {
-    throw std::runtime_error("SevenZip::get_file(): " + zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
+    raise_runtime_error("SevenZip::get_file(): " + zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
     return BlobPtr();
   }
 }

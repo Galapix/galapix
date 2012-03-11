@@ -22,6 +22,8 @@
 #include <stdexcept>
 #include <fstream>
 #include <string.h>
+
+#include "util/raise_exception.hpp"
 
 Blob::Blob(const std::vector<uint8_t>& data) :
   m_data(new uint8_t[data.size()]),
@@ -81,7 +83,7 @@ Blob::from_file(const std::string& filename)
   std::ifstream in(filename.c_str(), std::ios::binary);
   if (!in)
   {
-    throw std::runtime_error("Blob::from_file(): Couldn't read " + filename);
+    raise_runtime_error("Blob::from_file(): Couldn't read " + filename);
   }
   else
   {

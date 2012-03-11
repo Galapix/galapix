@@ -21,6 +21,7 @@
 #include <stdexcept>
 
 #include "util/exec.hpp"
+#include "util/raise_exception.hpp"
 
 std::vector<std::string>
 Rar::get_filenames(const std::string& rar_filename)
@@ -44,7 +45,7 @@ Rar::get_filenames(const std::string& rar_filename)
   }
   else
   {
-    throw std::runtime_error("Rar::get_filenames(): " + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    raise_runtime_error("Rar::get_filenames(): " + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
     return std::vector<std::string>();
   }
 }
@@ -61,7 +62,7 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
   }
   else
   {
-    throw std::runtime_error("Rar::get_file(): " + rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    raise_runtime_error("Rar::get_file(): " + rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
     return BlobPtr();
   }
 }

@@ -51,6 +51,7 @@
 #include "plugins/xcf.hpp"
 #include "util/archive_manager.hpp"
 #include "util/filesystem.hpp"
+#include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/string_util.hpp"
@@ -513,7 +514,7 @@ Galapix::main(int argc, char** argv)
 {
   // FIXME: Function doesn't seem to be available in 3.4.2
   // if (!sqlite3_threadsafe())
-  //  throw std::runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
+  //  raise_runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
   try 
   {
@@ -659,7 +660,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
         }
         else
         {
-          throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+          raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
         }
       }
       else if (strcmp(argv[i], "-t") == 0 ||
@@ -672,7 +673,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
         }
         else
         {
-          throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+          raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
         }              
       }
       else if (strcmp(argv[i], "-F") == 0 ||
@@ -685,7 +686,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
           std::ifstream in(argv[i]);
           if (!in)
           {
-            throw std::runtime_error("Couldn't open " + std::string(argv[i]));
+            raise_runtime_error("Couldn't open " + std::string(argv[i]));
           }
           else
           {
@@ -697,7 +698,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
         }
         else
         {
-          throw std::runtime_error(std::string(argv[i-1]) + " requires an argument");
+          raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
         }
       }
       else if (strcmp(argv[i], "--pattern") == 0 ||
@@ -707,7 +708,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
         if (i < argc)
           opts.patterns.push_back(argv[i]);
         else
-          throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
       }
       else if (strcmp(argv[i], "--anti-aliasing") == 0 ||
                strcmp(argv[i], "-a") == 0)
@@ -716,7 +717,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
         if (i < argc)
           anti_aliasing = atoi(argv[i]);
         else
-          throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");                  
+          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");                  
       }
       else if (strcmp(argv[i], "--geometry") == 0 ||
                strcmp(argv[i], "-g") == 0)
@@ -725,7 +726,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
         if (i < argc)
           sscanf(argv[i], "%dx%d", &geometry.width, &geometry.height);
         else
-          throw std::runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
       }
       else if (strcmp(argv[i], "--fullscreen") == 0 ||
                strcmp(argv[i], "-f") == 0)
@@ -734,7 +735,7 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
       }
       else
       {
-        throw std::runtime_error("Unknown option " + std::string(argv[i]));
+        raise_runtime_error("Unknown option " + std::string(argv[i]));
       }
     }
     else

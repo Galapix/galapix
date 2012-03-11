@@ -23,6 +23,7 @@
 
 #include "plugins/pnm_mem_reader.hpp"
 #include "math/size.hpp"
+#include "util/raise_exception.hpp"
 
 SoftwareSurfacePtr
 PNM::load_from_mem(const char* data, int len)
@@ -41,7 +42,7 @@ PNM::load_from_mem(const char* data, int len)
   {
     if (surface->get_width() * surface->get_height() * 3 > pixel_data_len)
     {
-      throw std::runtime_error("PNM::load_from_mem(): premature end of pixel data");
+      raise_runtime_error("PNM::load_from_mem(): premature end of pixel data");
     }
 
     for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
@@ -55,7 +56,7 @@ PNM::load_from_mem(const char* data, int len)
   {
     if (surface->get_width() * surface->get_height()  > pixel_data_len)
     {
-      throw std::runtime_error("PNM::load_from_mem(): premature end of pixel data");
+      raise_runtime_error("PNM::load_from_mem(): premature end of pixel data");
     }
 
     for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
@@ -67,7 +68,7 @@ PNM::load_from_mem(const char* data, int len)
   }
   else
   {
-    throw std::runtime_error("PNM::load_from_mem(): Unhandled PNM format: '" + pnm.get_magic() + "'");
+    raise_runtime_error("PNM::load_from_mem(): Unhandled PNM format: '" + pnm.get_magic() + "'");
   }
 
   return surface;

@@ -23,6 +23,8 @@
 #include <errno.h>
 #include <sstream>
 
+#include "util/raise_exception.hpp"
+
 FileJPEGCompressor::FileJPEGCompressor(const std::string& filename) :
   m_out(fopen(filename.c_str(), "wb"))
 {  
@@ -30,7 +32,7 @@ FileJPEGCompressor::FileJPEGCompressor(const std::string& filename) :
   {
     std::ostringstream out;
     out << "FileJPEGCompressor(): Error: " << filename << ": " << strerror(errno);
-    throw std::runtime_error(out.str());
+    raise_runtime_error(out.str());
   }
   else
   {

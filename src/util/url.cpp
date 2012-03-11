@@ -28,6 +28,7 @@
 #include "plugins/tar.hpp"
 #include "plugins/curl.hpp"
 #include "util/filesystem.hpp"
+#include "util/raise_exception.hpp"
 
 URL::URL() :
   m_protocol(),
@@ -145,7 +146,7 @@ URL::get_blob(std::string* mime_type) const
     }
     else
     {
-      throw std::runtime_error("URL::get_blob(): Unhandled plugin: " + m_plugin);
+      raise_runtime_error("URL::get_blob(): Unhandled plugin: " + m_plugin);
     }
   }
   else if (m_protocol == "http" || m_protocol == "https" || m_protocol == "ftp")
@@ -154,7 +155,7 @@ URL::get_blob(std::string* mime_type) const
   }
   else
   {
-    throw std::runtime_error("URL::get_blob(): Unhandled protocol: " + m_protocol);
+    raise_runtime_error("URL::get_blob(): Unhandled protocol: " + m_protocol);
     return BlobPtr();
   }
 }

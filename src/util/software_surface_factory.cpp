@@ -203,7 +203,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
   {
     std::ostringstream out;
     out << "SoftwareSurfaceFactory::from_file(): " << filename << ": unknown file type";
-    throw std::runtime_error(out.str());
+    raise_runtime_error(out.str());
   }
   else
   {
@@ -271,7 +271,7 @@ SoftwareSurfaceFactory::from_url(const URL& url) const
     {
       std::ostringstream out;
       out << "SoftwareSurfaceFactory::from_url(): " << url.str() << ": unknown file type";
-      throw std::runtime_error(out.str());      
+      raise_runtime_error(out.str());      
     }
     else
     {
@@ -283,7 +283,7 @@ SoftwareSurfaceFactory::from_url(const URL& url) const
       {
         std::ostringstream out;
         out << "SoftwareSurfaceFactory::from_url(): " << url.str() << ": loader doesn't support from_mem(), workaround not implemented";
-        throw std::runtime_error(out.str());        
+        raise_runtime_error(out.str());        
       }
     }
   }

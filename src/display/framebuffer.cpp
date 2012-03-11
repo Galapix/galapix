@@ -27,6 +27,7 @@
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
 #include "sdl/sdl_framebuffer.hpp"
+#include "util/raise_exception.hpp"
 
 Size Framebuffer::size;
 
@@ -38,7 +39,7 @@ void assert_gl(const char* message)
     std::ostringstream msg;
     msg << "assert_gl(): OpenGLError while '" << message << "': "
         << gluErrorString(error);
-    throw std::runtime_error(msg.str());
+    raise_runtime_error(msg.str());
   }
 }
 #endif
@@ -52,12 +53,12 @@ Framebuffer::init()
   {
     std::ostringstream str;
     str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
-    throw std::runtime_error(str.str());
+    raise_runtime_error(str.str());
   }
   
   if (!GLEW_ARB_texture_rectangle)
   {
-    throw std::runtime_error("Framebuffer::init(): OpenGL ARB_texture_rectangle extension not found, but required");
+    raise_runtime_error("Framebuffer::init(): OpenGL ARB_texture_rectangle extension not found, but required");
   }
 }
 

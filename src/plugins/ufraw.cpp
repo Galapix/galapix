@@ -25,6 +25,7 @@
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
 #include "util/url.hpp"
+#include "util/raise_exception.hpp"
 
 bool
 UFRaw::is_available()
@@ -54,7 +55,7 @@ UFRaw::load_from_file(const std::string& filename)
      
   if (ufraw.exec())
   {
-    throw std::runtime_error("UFRaw::load_from_file(): " + std::string(ufraw.get_stderr().begin(), ufraw.get_stderr().end()));
+    raise_runtime_error("UFRaw::load_from_file(): " + std::string(ufraw.get_stderr().begin(), ufraw.get_stderr().end()));
   }
   else
   {

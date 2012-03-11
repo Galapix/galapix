@@ -28,6 +28,7 @@
 #include <sstream>
 
 #include "plugins/dds_surface.hpp"
+#include "util/raise_exception.hpp"
 
 bool
 DDS::get_size(const std::string& filename, Size& size)
@@ -35,7 +36,7 @@ DDS::get_size(const std::string& filename, Size& size)
   std::ifstream in(filename.c_str(), std::ios::binary);
   if (!in)
   {
-    // throw std::runtime_error(strerror(errno));
+    // raise_runtime_error(strerror(errno));
     return false;
   }
   else
@@ -54,7 +55,7 @@ DDS::load_from_file(const std::string& filename)
   std::ifstream in(filename.c_str(), std::ios::binary);
   if (!in)
   {
-    // throw std::runtime_error(strerror(errno));
+    // raise_runtime_error(strerror(errno));
     return SoftwareSurfacePtr();
   }
   else
@@ -69,7 +70,7 @@ DDS::load_from_file(const std::string& filename)
       std::ostringstream out;
       out << "DDS::load_from_file(): length missmatch " << dds.get_length() 
           << " - " << surface->get_width() << "x" << surface->get_height();
-      throw std::runtime_error(out.str());
+      raise_runtime_error(out.str());
     }
 
     memcpy(surface->get_data(), dds.get_data(), dds.get_length());
