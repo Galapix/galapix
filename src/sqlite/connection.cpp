@@ -61,7 +61,8 @@ SQLiteConnection::exec(const std::string& sqlstmt)
   {
     std::ostringstream out;
 
-    out << "SQLiteConnection::exec(): " << errmsg << std::endl;
+    out << "SQLiteConnection::exec(): " << errmsg << "\n"
+        << "  " << sqlstmt << std::endl;
 
     sqlite3_free(errmsg);
     errmsg = 0;
