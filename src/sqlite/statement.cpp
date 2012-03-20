@@ -17,8 +17,11 @@
 */
 
 #include <sstream>
+#include <assert.h>
 
 #include "sqlite/error.hpp"
+#include "util/raise_exception.hpp"
+
 #include "sqlite/statement.hpp"
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection& db) :
@@ -38,53 +41,47 @@ SQLiteStatement::SQLiteStatement(SQLiteConnection& db, const std::string& sqlstm
 
 SQLiteStatement::~SQLiteStatement()
 {
-retry: 
+  int ret;
+  do {
+    ret = sqlite3_finalize(m_stmt);
+  } while(ret == SQLITE_LOCKED ||
+          ret == SQLITE_BUSY);
 
-  switch (sqlite3_finalize(m_stmt))
+  if (ret != SQLITE_OK)
   {
-    case SQLITE_OK:
-      break;
-
-    case SQLITE_LOCKED:
-      goto retry;
-
-    case SQLITE_BUSY:
-      goto retry;
-
-    default:
-    {
-      std::ostringstream out;
-      out << "~SQLiteStatement(): " << m_db.get_error_msg();
-      throw SQLiteError(out.str());
-    }
-
+    log_error(m_db.get_error_msg());
   }
 }
 
 SQLiteStatement&
 SQLiteStatement::prepare(const std::string& sqlstmt)
 {
+  assert(m_stmt == nullptr);
+
   m_stmt_str = sqlstmt;
 
   if (sqlite3_prepare_v2(m_db.get_db(), sqlstmt.c_str(), -1, &m_stmt,  0) != SQLITE_OK)
   {
-    std::ostringstream out;
-    out << "SQLiteStatement::prepare(): " << m_db.get_error_msg() << ":\n" << sqlstmt;
-    throw SQLiteError(out.str());
+    raise_exception(SQLiteError, m_db.get_error_msg());
   }
 
   return *this;
 }
+
+void
+SQLiteStatement::clear_bindings()
+{
+  sqlite3_clear_bindings(m_stmt);
+}
+
+
 
 SQLiteStatement&
 SQLiteStatement::bind_int(int n, int i)
 {
   if (sqlite3_bind_int(m_stmt, n, i) != SQLITE_OK)
   {
-    std::ostringstream out;
-    out << "SQLiteStatement::bind_int(): " << m_db.get_error_msg();
-    out << "\n" << m_stmt_str;
-    throw SQLiteError(out.str());
+    raise_exception(SQLiteError, m_db.get_error_msg());
   }
 
   return *this;
@@ -96,10 +93,7 @@ SQLiteStatement::bind_int64(int n, int64_t i)
 {
   if (sqlite3_bind_int64(m_stmt, n, i) != SQLITE_OK)
   {
-    std::ostringstream out;
-    out << "SQLiteStatement::bind_int64(): " << m_db.get_error_msg();
-    out << "\n" << m_stmt_str;
-    throw SQLiteError(out.str());
+    raise_exception(SQLiteError, m_db.get_error_msg());
   }
 
   return *this;
@@ -110,9 +104,7 @@ SQLiteStatement::bind_text(int n, const std::string& text)
 {
   if (sqlite3_bind_text(m_stmt, n, text.c_str(), text.size(), SQLITE_TRANSIENT) != SQLITE_OK)
   {
-    std::ostringstream out;
-    out << "SQLiteStatement::bind_text(): " << m_db.get_error_msg();
-    throw SQLiteError(out.str());      
+    raise_exception(SQLiteError, m_db.get_error_msg());
   }
 
   return *this;
@@ -123,9 +115,7 @@ SQLiteStatement::bind_null(int n)
 {
   if (sqlite3_bind_null(m_stmt, n) != SQLITE_OK)
   {
-    std::ostringstream out;
-    out << "SQLiteStatement::bind_null(): " << m_db.get_error_msg();
-    throw SQLiteError(out.str());      
+    raise_exception(SQLiteError, m_db.get_error_msg());
   }  
 
   return *this;
@@ -136,9 +126,7 @@ SQLiteStatement::bind_blob(int n, const BlobPtr& blob)
 {
   if (sqlite3_bind_blob(m_stmt, n, blob->get_data(), blob->size(), SQLITE_TRANSIENT) != SQLITE_OK)
   {
-    std::ostringstream out;
-    out << "SQLiteStatement::bind_blob(): " << m_db.get_error_msg();
-    throw SQLiteError(out.str());
+    raise_exception(SQLiteError, m_db.get_error_msg());
   }
   return *this;
 }
@@ -146,13 +134,9 @@ SQLiteStatement::bind_blob(int n, const BlobPtr& blob)
 void
 SQLiteStatement::reset()
 {
-  sqlite3_clear_bindings(m_stmt);  
-
   if (sqlite3_reset(m_stmt) != SQLITE_OK)
   {
-    std::ostringstream out;
-    out << "SQLiteStatement::reset(): " << m_db.get_error_msg();
-    throw SQLiteError(out.str());
+    raise_exception(SQLiteError, m_db.get_error_msg());
   }
 }
 
@@ -166,17 +150,21 @@ SQLiteStatement::execute()
     out << m_stmt_str << std::endl;
 
     reset();
+    clear_bindings();
 
-    throw SQLiteError(out.str());      
+    throw SQLiteError(out.str());
   }
-
-  reset();
+  else
+  {
+    reset();
+    clear_bindings();
+  }
 }
 
 SQLiteReader
 SQLiteStatement::execute_query()
 {
-  return SQLiteReader(m_db, m_stmt);
+  return SQLiteReader(m_db, *this);
 }
 
 /* EOF */

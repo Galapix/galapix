@@ -28,11 +28,11 @@ class SQLiteReader
 {
 private:
   SQLiteConnection& m_db;
-  sqlite3_stmt*  m_stmt;
+  SQLiteStatement&  m_stmt;
 
 private:
   friend class SQLiteStatement;
-  SQLiteReader(SQLiteConnection& db, sqlite3_stmt* stmt);
+  SQLiteReader(SQLiteConnection& db, SQLiteStatement& stmt);
 
 public:
   ~SQLiteReader();
@@ -41,12 +41,15 @@ public:
 
   bool        is_null(int column);
   int         get_type(int column);
+  float       get_float(int column);
+  double      get_double(int column);
   int         get_int(int column);
   int64_t     get_int64(int column);
   std::string get_text(int column);
-  BlobPtr  get_blob(int column);
+  BlobPtr     get_blob(int column);
 
   std::string get_column_name(int column);
+  int get_column_count();
 
 public:
   SQLiteReader(const SQLiteReader&);

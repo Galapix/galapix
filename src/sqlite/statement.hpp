@@ -28,8 +28,6 @@ private:
   sqlite3_stmt*  m_stmt;
   std::string    m_stmt_str;
 
-  void reset();
-  
 public:
   SQLiteStatement(SQLiteConnection& db);
   SQLiteStatement(SQLiteConnection& db, const std::string& sqlstmt);
@@ -37,6 +35,9 @@ public:
 
   SQLiteStatement& prepare(const std::string& sqlstmt);
 
+  void clear_bindings();
+  void reset();
+  
   SQLiteStatement& bind_null(int n);
   SQLiteStatement& bind_int(int n, int i);
   SQLiteStatement& bind_int64(int n, int64_t i);

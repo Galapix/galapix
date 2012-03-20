@@ -30,8 +30,8 @@ static int busy_callback(void* , int)
   return 1;
 }
 
-SQLiteConnection::SQLiteConnection(const std::string& filename)
-  : db(0)
+SQLiteConnection::SQLiteConnection(const std::string& filename) :
+  db(nullptr)
 {
   if (sqlite3_open(filename.c_str(), &db) != SQLITE_OK)
   {
