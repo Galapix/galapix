@@ -41,42 +41,15 @@
 
 SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
-  m_geometry(geometry),
-  m_fullscreen(fullscreen),
-  m_anti_aliasing(anti_aliasing),
-  m_quit(false),
-  m_spnav_allow_rotate(false),
+  SDLWindow(geometry, fullscreen, anti_aliasing),
   m_viewer(viewer),
-  m_joysticks()
+  m_quit(false),
+  m_spnav_allow_rotate(false)
 {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
-  {
-    log_error("Unable to initialize SDL: " << SDL_GetError());
-    exit(1);
-  }
-  atexit(SDL_Quit); 
-
-  int num_joysticks = SDL_NumJoysticks();
-  for(int i = 0; i < num_joysticks; ++i)
-  {
-    SDL_Joystick* joy = SDL_JoystickOpen(i);
-    if (joy)
-    {
-      m_joysticks.push_back(joy);
-    }
-  }
-
-  SDLFramebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
 }
 
 SDLViewer::~SDLViewer()
 {
-  for(auto joy: m_joysticks)
-  {
-    SDL_JoystickClose(joy);
-  }
-
-  SDL_Quit();
 }
 
 void

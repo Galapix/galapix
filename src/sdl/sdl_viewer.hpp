@@ -23,28 +23,21 @@
 #include <memory>
 
 #include "math/size.hpp"
-
 #include "galapix/image.hpp"
+#include "sdl/sdl_window.hpp"
 
 class Viewer;
 class FileEntry;
 class Image;
 class Workspace;
 
-class SDLViewer
+class SDLViewer : public SDLWindow
 {
 private:
-  Size m_geometry;
-  bool m_fullscreen;
-  int  m_anti_aliasing;
-
+  Viewer& m_viewer;
   bool m_quit;
   bool m_spnav_allow_rotate;
 
-  Viewer& m_viewer;
-
-  std::vector<SDL_Joystick*> m_joysticks;
-  
 public:
   SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
             Viewer& viewer);
