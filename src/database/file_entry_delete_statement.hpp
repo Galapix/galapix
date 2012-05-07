@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
 
-#include "database/file_id.hpp"
+#include "database/row_id.hpp"
 
 class FileEntryDeleteStatement
 {
@@ -33,7 +33,7 @@ public:
     m_stmt(db, "DELETE FROM files WHERE fileid = ?1;")
   {}
 
-  void operator()(const FileId& fileid)
+  void operator()(const RowId& fileid)
   {
     assert(fileid);
     m_stmt.bind_int64(1, fileid.get_id());

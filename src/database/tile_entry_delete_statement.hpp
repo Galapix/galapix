@@ -31,7 +31,7 @@ public:
     m_stmt(db, "DELETE FROM tiles WHERE fileid = ?1;")
   {}
 
-  void operator()(const FileId& fileid)
+  void operator()(const RowId& fileid)
   {
     assert(fileid);
     m_stmt.bind_int64(1, fileid.get_id());

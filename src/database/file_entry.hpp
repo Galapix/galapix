@@ -22,7 +22,7 @@
 #include <memory>
 #include <assert.h>
 
-#include "database/file_id.hpp"
+#include "database/row_id.hpp"
 #include "math/math.hpp"
 #include "math/size.hpp"
 #include "util/url.hpp"
@@ -40,7 +40,7 @@ public:
     m_format()
   {}
 
-  FileEntry(const FileId& fileid,
+  FileEntry(const RowId& fileid,
             const URL& url,
             int size,
             int mtime,
@@ -54,15 +54,15 @@ public:
 
   FileEntry(SQLiteReader& reader);
 
-  FileId get_fileid()     const { return m_fileid; }
-  URL    get_url()        const { return m_url; }
-  int    get_size()  const { return m_size;  }
-  int    get_mtime() const { return m_mtime; }
+  RowId get_fileid() const { return m_fileid; }
+  URL    get_url()    const { return m_url; }
+  int    get_size()   const { return m_size;  }
+  int    get_mtime()  const { return m_mtime; }
 
 private:
   /** Unique id by which one can refer to this FileEntry, used in the
       'tile' table in the database */
-  FileId m_fileid;
+  RowId m_fileid;
 
   /** The URL of the image file */
   URL m_url;

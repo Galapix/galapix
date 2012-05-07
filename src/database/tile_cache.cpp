@@ -28,7 +28,7 @@ TileCache::TileCache() :
 }
 
 bool
-TileCache::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
+TileCache::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
@@ -44,7 +44,7 @@ TileCache::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
 }
 
 bool
-TileCache::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
+TileCache::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
@@ -62,7 +62,7 @@ TileCache::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEn
 }
 
 void
-TileCache::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles_out)
+TileCache::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles_out)
 {
   for(const auto& tile_entry : m_cache)
   {
@@ -74,7 +74,7 @@ TileCache::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles_out)
 }
 
 bool
-TileCache::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out)
+TileCache::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
 {
   int min_scale = -1;
   int max_scale = -1;
@@ -116,7 +116,7 @@ TileCache::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_
 }
 
 void
-TileCache::store_tile(const FileId& fileid, const Tile& tile)
+TileCache::store_tile(const RowId& fileid, const Tile& tile)
 {
   m_cache.push_back(TileEntry(fileid, tile.get_scale(), tile.get_pos(), tile.get_surface()));
 }
@@ -127,24 +127,14 @@ TileCache::store_tiles(const std::vector<TileEntry>& tiles)
   m_cache.insert(m_cache.end(), tiles.begin(), tiles.end());
 }
 
-struct FileIdEqual
-{
-  FileId m_fileid;
-
-  FileIdEqual(const FileId& fileid)
-    : m_fileid(fileid)
-  {}
-
-  bool operator()(const TileEntry& tile_entry) const
-  {
-    return tile_entry.get_fileid() == m_fileid;
-  }
-};
-
 void
-TileCache::delete_tiles(const FileId& fileid)
+TileCache::delete_tiles(const RowId& fileid)
 {
-  m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(), FileIdEqual(fileid)), m_cache.end());
+  m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(), 
+                               [&](const TileEntry& tile_entry) {
+                                 return tile_entry.get_fileid() == fileid;
+                               }), 
+                m_cache.end());
 }
 
 void

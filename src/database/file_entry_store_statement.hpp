@@ -34,7 +34,7 @@ public:
     m_stmt(db, "INSERT OR REPLACE INTO files (url, size, mtime, type) VALUES (?1, ?2, ?3, ?4);")
   {}
 
-  FileId operator()(const URL& url, int size, int mtime, int type)
+  RowId operator()(const URL& url, int size, int mtime, int type)
   {
     m_stmt.bind_text(1, url.str());
     m_stmt.bind_int (2, size);
@@ -43,7 +43,7 @@ public:
 
     m_stmt.execute();
   
-    return FileId(sqlite3_last_insert_rowid(m_db.get_db()));
+    return RowId(sqlite3_last_insert_rowid(m_db.get_db()));
   }
 
 private:

@@ -79,7 +79,7 @@ private:
   typedef std::vector<Tile> Tiles;
   Tiles m_tiles;
 
-  boost::signal<void (const FileId&, const Tile&)> m_sig_tile_callback;
+  boost::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
 
 public:
   TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
@@ -96,7 +96,7 @@ public:
 
   bool is_aborted();
 
-  boost::signal<void (const FileId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
+  boost::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
   void process_tile(const Tile& tile);

@@ -111,12 +111,12 @@ public:
                              const std::function<void (FileEntry)>& callback);
 
   /** Delete the given FileEntry along with all TileEntry refering to it */
-  void      delete_file_entry(const FileId& fileid);
+  void      delete_file_entry(const RowId& fileid);
   /* @} */
 
 private:
   /** Place tile into the database */
-  void receive_tile(const FileId& fileid, const Tile& tile);
+  void receive_tile(const RowId& fileid, const Tile& tile);
   void receive_file(const URL& url, int size, int mtime, int format);
   void receive_tiles(const std::vector<TileEntry>& tiles);
 

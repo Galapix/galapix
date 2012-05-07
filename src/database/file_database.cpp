@@ -29,8 +29,12 @@
 
 FileDatabase::FileDatabase(SQLiteConnection& db) :
   m_db(db),
+
   m_file_table(m_db),
   m_image_table(m_db),
+  m_archive_table(m_db),
+  m_video_table(m_db),
+
   m_file_entry_get_all(m_db),
   m_file_entry_get_by_fileid(m_db),
   m_file_entry_get_by_pattern(m_db),
@@ -48,7 +52,7 @@ FileDatabase::~FileDatabase()
 FileEntry
 FileDatabase::store_file_entry(const URL& url, int size, int mtime, int type)
 {
-  FileId fileid = m_file_entry_store(url, size, mtime, type);
+  RowId fileid = m_file_entry_store(url, size, mtime, type);
   return FileEntry(fileid, url, size, mtime, type);
 }
 
@@ -97,7 +101,7 @@ FileDatabase::check()
 }
 
 void
-FileDatabase::delete_file_entry(const FileId& fileid)
+FileDatabase::delete_file_entry(const RowId& fileid)
 {
   // FIXME: Ignoring cache
   m_file_entry_delete(fileid);

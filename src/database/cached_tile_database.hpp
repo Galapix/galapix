@@ -37,15 +37,15 @@ public:
   CachedTileDatabase(Database& db, TileDatabaseInterface* tile_database);
   ~CachedTileDatabase();
   
-  bool has_tile(const FileId& fileid, const Vector2i& pos, int scale);
-  bool get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out);
-  void get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles);
-  bool get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out);
+  bool has_tile(const RowId& fileid, const Vector2i& pos, int scale);
+  bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out);
+  void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles);
+  bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out);
 
-  void store_tile(const FileId& fileid, const Tile& tile);
+  void store_tile(const RowId& fileid, const Tile& tile);
   void store_tiles(const std::vector<TileEntry>& tiles);
 
-  void delete_tiles(const FileId& fileid);
+  void delete_tiles(const RowId& fileid);
   void flush_cache();
 
 private:

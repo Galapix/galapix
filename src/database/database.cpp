@@ -51,7 +51,7 @@ Database::~Database()
 }
 
 void
-Database::delete_file_entry(const FileId& fileid)
+Database::delete_file_entry(const RowId& fileid)
 {
   std::cout << "Begin Delete" << std::endl;
   m_db->exec("BEGIN;");

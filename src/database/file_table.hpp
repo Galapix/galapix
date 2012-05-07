@@ -28,15 +28,14 @@ public:
   FileTable(SQLiteConnection& db) :
     m_db(db)
   {
-    m_db.exec("CREATE TABLE IF NOT EXISTS files ("
-              "fileid    INTEGER PRIMARY KEY AUTOINCREMENT,"
-              "url       TEXT UNIQUE, "
-              "size      INTEGER, "
-              "mtime     INTEGER, "
-              "type      INTEGER"
+    m_db.exec("CREATE TABLE IF NOT EXISTS file (\n"
+              "  url       TEXT UNIQUE,\n"
+              "  size      INTEGER,\n"
+              "  mtime     INTEGER,\n"
+              "  type      INTEGER\n"
               ");");
 
-    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS files_index ON files ( url, size, mtime, type );");
+    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS file_index ON file ( url, size, mtime, type );");
   }
 
 private:

@@ -34,10 +34,10 @@ private:
 
 public:
   TileEntryGetAllByFileEntryStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM tiles WHERE fileid = ?1;")
+    m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1;")
   {}
 
-  void operator()(const FileId& fileid, std::vector<TileEntry>& tiles)
+  void operator()(const RowId& fileid, std::vector<TileEntry>& tiles)
   {
     if (fileid)
     {

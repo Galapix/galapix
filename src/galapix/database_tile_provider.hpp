@@ -23,6 +23,7 @@
 
 #include "galapix/tile_provider.hpp"
 #include "database/image_entry.hpp"
+#include "util/log.hpp"
 
 class DatabaseTileProvider : public TileProvider
 {
@@ -79,6 +80,8 @@ public:
                                             [=](){
                                               callback(DatabaseTileProvider::create(file_entry)); 
                                             });
+#else
+    log_error("not implemented");
 #endif
   }
 

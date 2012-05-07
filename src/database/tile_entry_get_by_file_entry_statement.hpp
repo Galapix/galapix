@@ -32,7 +32,7 @@ public:
     m_stmt(db, "SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
-  bool operator()(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile)
+  bool operator()(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile)
   {
     if (!fileid)
     {

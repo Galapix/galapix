@@ -25,7 +25,7 @@ class Vector2i;
 class FileEntry;
 class TileEntry;
 class Tile;
-class FileId;
+class RowId;
 
 class TileDatabaseInterface
 {
@@ -33,15 +33,15 @@ public:
   TileDatabaseInterface() {}
   virtual ~TileDatabaseInterface() {}
   
-  virtual bool has_tile(const FileId& fileid, const Vector2i& pos, int scale) =0;
-  virtual bool get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) =0;
-  virtual void get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles) =0;
-  virtual bool get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out) =0;
+  virtual bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) =0;
+  virtual bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) =0;
+  virtual void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles) =0;
+  virtual bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out) =0;
 
-  virtual void store_tile(const FileId& fileid, const Tile& tile) =0;
+  virtual void store_tile(const RowId& fileid, const Tile& tile) =0;
   virtual void store_tiles(const std::vector<TileEntry>& tiles) =0;
 
-  virtual void delete_tiles(const FileId& fileid) =0;
+  virtual void delete_tiles(const RowId& fileid) =0;
 
   virtual void flush_cache() =0;
 

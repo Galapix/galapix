@@ -21,7 +21,7 @@
 
 #include "math/math.hpp"
 #include "math/size.hpp"
-#include "database/file_id.hpp"
+#include "database/row_id.hpp"
 
 class ImageEntry
 {
@@ -34,7 +34,7 @@ public:
   };
 
 private:
-  FileId m_fileid;
+  RowId m_fileid;
 
   /** The size of the image in pixels */
   Size m_size;
@@ -52,7 +52,7 @@ public:
     m_max_scale()
   {}
 
-  ImageEntry(FileId fileid, int width, int height, int format) :
+  ImageEntry(RowId fileid, int width, int height, int format) :
     m_fileid(fileid),
     m_size(width, height),
     m_format(format),
@@ -67,7 +67,7 @@ public:
     }
   }
 
-  FileId get_fileid() const { return m_fileid; }
+  RowId  get_fileid() const { return m_fileid; }
   int    get_width()   const { return m_size.width; }
   int    get_height()  const { return m_size.height; }
   Size   get_size()    const { return m_size; }

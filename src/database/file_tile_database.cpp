@@ -44,13 +44,13 @@ FileTileDatabase::~FileTileDatabase()
 }
 
 bool
-FileTileDatabase::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
+FileTileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
 {
   return Filesystem::exist(get_complete_filename(fileid, pos, scale));
 }
 
 bool
-FileTileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
+FileTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
   std::string filename = get_complete_filename(fileid, pos, scale);
   if (Filesystem::exist(filename))
@@ -78,7 +78,7 @@ FileTileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos,
 }
 
 void
-FileTileDatabase::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles)
+FileTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles)
 {
   std::string directory = get_complete_directory(fileid);
   std::vector<std::string> files = Filesystem::open_directory(directory);
@@ -110,7 +110,7 @@ FileTileDatabase::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles)
 }
 
 bool
-FileTileDatabase::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out)
+FileTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
 {
   min_scale_out = std::numeric_limits<int>::max();
   max_scale_out = std::numeric_limits<int>::min();
@@ -146,7 +146,7 @@ FileTileDatabase::get_min_max_scale(const FileId& fileid, int& min_scale_out, in
 }
 
 void
-FileTileDatabase::store_tile(const FileId& fileid, const Tile& tile)
+FileTileDatabase::store_tile(const RowId& fileid, const Tile& tile)
 { 
   // Ensure that the directory exists, FIX
   ensure_directory_exists(fileid);
@@ -180,7 +180,7 @@ FileTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 }
 
 void
-FileTileDatabase::delete_tiles(const FileId& fileid)
+FileTileDatabase::delete_tiles(const RowId& fileid)
 {
   // Filesystem::remove()
   // get_complete_filename()
@@ -188,7 +188,7 @@ FileTileDatabase::delete_tiles(const FileId& fileid)
 }
 
 std::string
-FileTileDatabase::get_directory(const FileId& file_id_obj)
+FileTileDatabase::get_directory(const RowId& file_id_obj)
 {
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
   
@@ -207,7 +207,7 @@ FileTileDatabase::get_filename(const Vector2i& pos, int scale)
 }
 
 std::string
-FileTileDatabase::get_complete_filename(const FileId& fileid, const Vector2i& pos, int scale)
+FileTileDatabase::get_complete_filename(const RowId& fileid, const Vector2i& pos, int scale)
 {
   std::ostringstream str(m_prefix);
   str << m_prefix << '/' << get_directory(fileid) << '/' << get_filename(pos, scale);
@@ -215,7 +215,7 @@ FileTileDatabase::get_complete_filename(const FileId& fileid, const Vector2i& po
 }
 
 std::string
-FileTileDatabase::get_complete_directory(const FileId& file_id)
+FileTileDatabase::get_complete_directory(const RowId& file_id)
 {
   return m_prefix + "/" + get_directory(file_id);
 }
@@ -248,7 +248,7 @@ FileTileDatabase::parse_filename(const std::string& filename, Vector2i* pos_out,
 }
 
 void
-FileTileDatabase::ensure_directory_exists(const FileId& file_id_obj)
+FileTileDatabase::ensure_directory_exists(const RowId& file_id_obj)
 {
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
   

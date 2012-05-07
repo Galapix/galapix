@@ -30,8 +30,10 @@
 #include "database/file_entry_get_by_url_statement.hpp"
 #include "database/file_entry_store_statement.hpp"
 #include "database/image_entry_store_statement.hpp"
+#include "database/archive_table.hpp"
 #include "database/file_table.hpp"
 #include "database/image_table.hpp"
+#include "database/video_table.hpp"
 
 class Database;
 class FileEntry;
@@ -53,6 +55,9 @@ private:
 
   FileTable                      m_file_table;
   ImageTable                     m_image_table;
+  ArchiveTable                   m_archive_table;
+  VideoTable                     m_video_table;
+
   FileEntryGetAllStatement       m_file_entry_get_all;
   FileEntryGetByFileIdStatement  m_file_entry_get_by_fileid;
   FileEntryGetByPatternStatement m_file_entry_get_by_pattern;
@@ -83,7 +88,7 @@ public:
   FileEntry store_file_entry(const URL& url, int size, int mtime, int type);
   void store_image_entry(const ImageEntry& image);
 
-  void delete_file_entry(const FileId& fileid);
+  void delete_file_entry(const RowId& fileid);
 
   void check();
   //void flush_cache();

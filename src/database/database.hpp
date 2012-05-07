@@ -41,7 +41,7 @@ public:
   FileDatabase& get_files() { return *m_files; }
   TileDatabaseInterface& get_tiles() { return *m_tiles; }
 
-  void delete_file_entry(const FileId& fileid);
+  void delete_file_entry(const RowId& fileid);
 
   void cleanup();
 

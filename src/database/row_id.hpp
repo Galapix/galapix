@@ -16,21 +16,21 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ID_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ID_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ROW_ID_HPP
+#define HEADER_GALAPIX_DATABASE_ROW_ID_HPP
 
 #include <stdint.h>
 #include <assert.h>
 #include <iosfwd>
 
-class FileId
+class RowId
 {
 private:
   int64_t m_id;
 
 public:
-  explicit FileId() : m_id(0) {}
-  explicit FileId(int64_t id) : m_id(id) {}
+  explicit RowId() : m_id(0) {}
+  explicit RowId(int64_t id) : m_id(id) {}
 
   int64_t get_id() const 
   { 
@@ -38,7 +38,7 @@ public:
     return m_id; 
   }
 
-  bool operator==(const FileId& rhs) const
+  bool operator==(const RowId& rhs) const
   {
     if (m_id == 0 || rhs.m_id == 0)
     {
@@ -56,7 +56,7 @@ public:
   }
 };
 
-std::ostream& operator<<(std::ostream& s, const FileId& id);
+std::ostream& operator<<(std::ostream& s, const RowId& id);
 
 #endif
 

@@ -24,7 +24,7 @@
 
 #include "galapix/tile.hpp"
 #include "database/file_tile_database.hpp"
-#include "database/tiles_table.hpp"
+#include "database/tile_table.hpp"
 #include "database/tile_entry_get_all_by_file_entry_statement.hpp"
 #include "database/tile_entry_has_statement.hpp"
 #include "database/tile_entry_get_all_statement.hpp"
@@ -45,7 +45,7 @@ private:
   SQLiteConnection& m_db;
   FileDatabase& m_files;
 
-  TilesTable m_tiles_table;
+  TileTable m_tile_table;
   TileEntryStoreStatement             m_tile_entry_store;
   TileEntryGetAllByFileEntryStatement m_tile_entry_get_all_by_fileid;
   TileEntryHasStatement               m_tile_entry_has;
@@ -59,15 +59,15 @@ public:
   TileDatabase(SQLiteConnection& db, FileDatabase& files);
   ~TileDatabase();
   
-  bool has_tile(const FileId& fileid, const Vector2i& pos, int scale);
-  bool get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out);
-  void get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles);
-  bool get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out);
+  bool has_tile(const RowId& fileid, const Vector2i& pos, int scale);
+  bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out);
+  void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles);
+  bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out);
 
-  void store_tile(const FileId& fileid, const Tile& tile);
+  void store_tile(const RowId& fileid, const Tile& tile);
   void store_tiles(const std::vector<TileEntry>& tiles);
 
-  void delete_tiles(const FileId& fileid);
+  void delete_tiles(const RowId& fileid);
 
   void flush_cache();
 

@@ -550,8 +550,6 @@ Galapix::run(const Options& opts)
 {
   std::cout << "Using database: " << (opts.database.empty() ? "memory" : opts.database) << std::endl;
 
-  std::vector<URL> urls;
-
   if (opts.rest.empty())
   {
 #ifdef GALAPIX_SDL
@@ -562,6 +560,8 @@ Galapix::run(const Options& opts)
   }
   else
   {
+    std::vector<URL> urls;
+
     std::cout << "Scanning directories... " << std::flush;
     for(std::vector<std::string>::const_iterator i = opts.rest.begin()+1; i != opts.rest.end(); ++i)
     {

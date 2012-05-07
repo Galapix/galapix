@@ -21,14 +21,15 @@
 ImageTable::ImageTable(SQLiteConnection& db) :
   m_db(db)
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS images ("
-            "fileid    INTEGER UNIQUE,"
-            "width     INTEGER, "
-            "height    INTEGER, "
-            "format    INTEGER" // format of the data (0: JPEG, 1: PNG)
+  m_db.exec("CREATE TABLE IF NOT EXISTS image (\n"
+            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+            "  file_id   INTEGER UNIQUE,\n"
+            "  width     INTEGER,\n"
+            "  height    INTEGER,\n"
+            "  format    INTEGER\n" // format of the data (0: JPEG, 1: PNG)
             ");");
 
-  m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS images_index ON images ( fileid, width, height, format );");
+  m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS image_index ON image ( id, file_id, width, height, format );");
 }
 
 /* EOF */

@@ -28,7 +28,7 @@ private:
 
 public:
   FileEntryGetAllStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM files")
+    m_stmt(db, "SELECT * FROM file;")
   {}
 
   void operator()(std::vector<FileEntry>& entries_out)

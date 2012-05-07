@@ -21,23 +21,23 @@
 #include <iostream>
 
 #include "database/tile_entry.hpp"
-#include "database/file_id.hpp"
+#include "database/row_id.hpp"
 #include "database/database.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "util/software_surface_factory.hpp"
 
-TileDatabase::TileDatabase(SQLiteConnection& db, FileDatabase& files)
-  : m_db(db),
-    m_files(files),
-    m_tiles_table(m_db),
-    m_tile_entry_store(m_db),
-    m_tile_entry_get_all_by_fileid(m_db),
-    m_tile_entry_has(m_db),
-    m_tile_entry_get_by_fileid(m_db),
-    m_tile_entry_get_min_max_scale(m_db),
-    m_tile_entry_delete(m_db),
-    m_cache()
+TileDatabase::TileDatabase(SQLiteConnection& db, FileDatabase& files) :
+  m_db(db),
+  m_files(files),
+  m_tile_table(m_db),
+  m_tile_entry_store(m_db),
+  m_tile_entry_get_all_by_fileid(m_db),
+  m_tile_entry_has(m_db),
+  m_tile_entry_get_by_fileid(m_db),
+  m_tile_entry_get_min_max_scale(m_db),
+  m_tile_entry_delete(m_db),
+  m_cache()
 {}
 
 TileDatabase::~TileDatabase()
@@ -46,7 +46,7 @@ TileDatabase::~TileDatabase()
 }
 
 bool
-TileDatabase::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
+TileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
 {
   if (m_tile_entry_has(fileid, pos, scale))
   {
@@ -59,7 +59,7 @@ TileDatabase::has_tile(const FileId& fileid, const Vector2i& pos, int scale)
 }
 
 void
-TileDatabase::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles_out)
+TileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles_out)
 {
   if (fileid)
   {
@@ -70,7 +70,7 @@ TileDatabase::get_tiles(const FileId& fileid, std::vector<TileEntry>& tiles_out)
 }
 
 bool
-TileDatabase::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& max_scale_out)
+TileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
 {
   if (fileid)
   {
@@ -99,7 +99,7 @@ TileDatabase::get_min_max_scale(const FileId& fileid, int& min_scale_out, int& m
 }
 
 bool
-TileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
+TileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
   if (!fileid)
   {
@@ -119,7 +119,7 @@ TileDatabase::get_tile(const FileId& fileid, int scale, const Vector2i& pos, Til
 }
 
 void
-TileDatabase::store_tile(const FileId& fileid, const Tile& tile)
+TileDatabase::store_tile(const RowId& fileid, const Tile& tile)
 {
   if (!fileid)
   {
@@ -148,7 +148,7 @@ TileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 }
 
 void
-TileDatabase::delete_tiles(const FileId& fileid)
+TileDatabase::delete_tiles(const RowId& fileid)
 {
   // FIXME: Ignoring cache
   m_tile_entry_delete(fileid);

@@ -198,7 +198,7 @@ DatabaseThread::request_files_by_pattern(const std::function<void (FileEntry)>& 
 }
 
 void
-DatabaseThread::receive_tile(const FileId& fileid, const Tile& tile)
+DatabaseThread::receive_tile(const RowId& fileid, const Tile& tile)
 {
   m_receive_queue.wait_and_push([this, fileid, tile](){
       // FIXME: Make some better error checking in case of loading failure
@@ -216,7 +216,7 @@ DatabaseThread::receive_tile(const FileId& fileid, const Tile& tile)
 }
 
 void
-DatabaseThread::delete_file_entry(const FileId& fileid)
+DatabaseThread::delete_file_entry(const RowId& fileid)
 {
   m_request_queue.wait_and_push([this, fileid](){
       m_database.delete_file_entry(fileid);
