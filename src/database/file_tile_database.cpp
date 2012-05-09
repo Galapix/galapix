@@ -228,11 +228,11 @@ FileTileDatabase::parse_filename(const std::string& filename, Vector2i* pos_out,
   {
     if (strcmp(format, "jpg"))
     {
-      *format_out = ImageEntry::JPEG_FORMAT;
+      *format_out = ImageEntry::kJPEGHandler;
     }
     else if (strcmp(format, "png"))
     {
-      *format_out = ImageEntry::PNG_FORMAT;
+      *format_out = ImageEntry::kPNGHandler;
     }
     else
     {

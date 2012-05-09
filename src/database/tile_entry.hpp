@@ -71,7 +71,7 @@ public:
 
   SoftwareSurfacePtr get_surface() const { return m_surface; }
   BlobPtr   get_blob()   const { return m_blob; }
-  RowId    get_fileid() const { return m_fileid; }
+  RowId     get_fileid() const { return m_fileid; }
   int       get_scale()  const { return m_scale; }
   Vector2i  get_pos()    const { return m_pos; }
   Format    get_format() const { return m_format; }

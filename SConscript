@@ -49,6 +49,10 @@ class Project:
             'src/galapix/viewer.cpp',
             ]
 
+        self.sdl_sources = ['src/sdl/sdl_framebuffer.cpp',
+                            'src/sdl/sdl_window.cpp',
+                            'src/sdl/sdl_viewer.cpp']
+
     def configure(self):       
         if 'BUILD' in self.env:
             print "Build type: %s" % self.env['BUILD']
@@ -162,15 +166,14 @@ class Project:
         sdl_env = self.env.Clone()
         sdl_env.Append(CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'mhash', 'boost_signals'] + self.optional_libs,
                        OBJPREFIX="sdl.")
         sdl_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         sdl_env.Program('galapix.sdl', 
-                        ['src/sdl/sdl_framebuffer.cpp',
-                         'src/sdl/sdl_viewer.cpp'] + \
+                        self.sdl_sources + \
                         self.galapix_sources + \
                         self.optional_sources)
 
@@ -179,7 +182,7 @@ class Project:
         gtk_env = self.env.Clone()
         gtk_env.Append(CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'mhash', 'boost_signals'] + self.optional_libs,
                        OBJPREFIX="gtk.")
         gtk_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
@@ -194,9 +197,10 @@ class Project:
 
     def build_tests(self):
         libgalapix_test_env = self.libgalapix_env.Clone()
-        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util])
+        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash'])
         for filename in Glob("test/*_test.cpp", strings=True):
-            libgalapix_test_env.Program(filename[:-4], filename)
+            libgalapix_test_env.Program(filename[:-4],
+                                        [filename] + self.sdl_sources)
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()

@@ -23,14 +23,20 @@
 #include "math/size.hpp"
 #include "database/row_id.hpp"
 
-class ImageEntry
+class ImageEntry final
 {
 public:
-  enum Format 
+  enum Handler 
   {
-    UNKNOWN_FORMAT = -1,
-    JPEG_FORMAT =  0,
-    PNG_FORMAT  =  1
+    kUnknownHandler,
+    kJPEGHandler,
+    kPNGHandler,
+    kRSVGHandler,
+    kKRAHandler,
+    kUFRawHandler,
+    kVidThumbHandler,
+    kDDSHandler,
+    kImagemagickHandler
   };
 
 private:
@@ -39,8 +45,8 @@ private:
   /** The size of the image in pixels */
   Size m_size;
 
-  /** The format of the image (RGB, RGBA) */
-  int  m_format;
+  /** The handler of the image (RGB, RGBA) */
+  int  m_handler;
 
   int m_max_scale;
 
@@ -48,14 +54,14 @@ public:
   ImageEntry() :
     m_fileid(),
     m_size(),
-    m_format(),
+    m_handler(),
     m_max_scale()
   {}
 
-  ImageEntry(RowId fileid, int width, int height, int format) :
+  ImageEntry(RowId fileid, int width, int height, int handler) :
     m_fileid(fileid),
     m_size(width, height),
-    m_format(format),
+    m_handler(handler),
     m_max_scale()
   {
     int s = Math::max(width, height);
@@ -71,7 +77,7 @@ public:
   int    get_width()   const { return m_size.width; }
   int    get_height()  const { return m_size.height; }
   Size   get_size()    const { return m_size; }
-  int    get_format()  const { return m_format; }
+  int    get_handler()  const { return m_handler; }
   int    get_max_scale() const { return m_max_scale; }
 };
 

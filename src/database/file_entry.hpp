@@ -26,39 +26,66 @@
 #include "math/math.hpp"
 #include "math/size.hpp"
 #include "util/url.hpp"
+#include "util/sha1.hpp"
 
 class SQLiteReader;
 
-class FileEntry 
+class FileEntry final
 {
 public:
+  enum Handler { 
+    kUnknownHandler,
+    kUnhandledHandler,
+    kImageHandler,
+    kArchiveHandler
+  };
+
+public:
+  static FileEntry from_reader(SQLiteReader& reader);
+
   FileEntry() :
     m_fileid(),
     m_url(),
+    m_sha1(),
     m_size(),
     m_mtime(),
-    m_format()
+    m_handler()
   {}
 
   FileEntry(const RowId& fileid,
             const URL& url,
             int size,
             int mtime,
-            int format) :
+            Handler handler) :
     m_fileid(fileid),
     m_url(url),
+    m_sha1(),
     m_size(size),
     m_mtime(mtime),
-    m_format(format)
+    m_handler(handler)
   {}
 
-  FileEntry(SQLiteReader& reader);
+  FileEntry(const RowId& fileid,
+            const URL& url,
+            const SHA1& sha1,
+            int size,
+            int mtime,
+            Handler handler) :
+    m_fileid(fileid),
+    m_url(url),
+    m_sha1(sha1),
+    m_size(size),
+    m_mtime(mtime),
+    m_handler(handler)
+  {}
 
-  RowId get_fileid() const { return m_fileid; }
-  URL    get_url()    const { return m_url; }
-  int    get_size()   const { return m_size;  }
-  int    get_mtime()  const { return m_mtime; }
-
+  RowId   get_fileid()  const { return m_fileid; }
+  URL     get_url()     const { return m_url;    }
+  const SHA1& get_sha1() const { return m_sha1;   }
+  int     get_size()    const { return m_size;   }
+  int     get_mtime()   const { return m_mtime;  }
+  Handler get_handler() const { return m_handler; }
+  
 private:
   /** Unique id by which one can refer to this FileEntry, used in the
       'tile' table in the database */
@@ -67,14 +94,16 @@ private:
   /** The URL of the image file */
   URL m_url;
 
+  SHA1 m_sha1;
+
   /** Size of the file in bytes */
   int m_size;
 
   /** Last modification of the file */
   int m_mtime;
 
-  /** Format of the file */
-  int m_format;
+  /** Handler of the file */
+  Handler m_handler;
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);

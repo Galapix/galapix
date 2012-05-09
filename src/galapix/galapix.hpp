@@ -47,7 +47,6 @@ public:
   void test(const Options& opts, const std::vector<URL>& urls);
   void downscale(const std::vector<URL>& urls);
   void cleanup(const std::string& database);
-  void check(const std::string& database);
   void list(const Options& opts);
   void thumbgen(const Options& opts,
                 const std::vector<URL>& urls, 

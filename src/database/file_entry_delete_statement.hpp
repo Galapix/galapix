@@ -30,7 +30,7 @@ private:
 public:
   FileEntryDeleteStatement(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "DELETE FROM files WHERE fileid = ?1;")
+    m_stmt(db, "DELETE FROM file WHERE id = ?1;")
   {}
 
   void operator()(const RowId& fileid)

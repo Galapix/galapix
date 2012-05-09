@@ -244,14 +244,6 @@ Galapix::list(const Options& opts)
 }
 
 void
-Galapix::check(const std::string& database)
-{
-  Database db(database);
-  db.get_files().check();
-  //db.get_tiles().check();
-}
-
-void
 Galapix::filegen(const Options& opts,
                  const std::vector<URL>& url)
 {
@@ -476,7 +468,6 @@ Galapix::print_usage()
             << "       galapix prepare  [OPTIONS]... [FILES]...\n"
             << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
             << "       galapix filegen  [OPTIONS]... [FILES]...\n"
-            << "       galapix check    [OPTIONS]...\n"
             << "       galapix list     [OPTIONS]...\n"
             << "       galapix cleanup  [OPTIONS]...\n"
             << "       galapix merge    [OPTIONS]... [FILES]...\n"
@@ -487,7 +478,6 @@ Galapix::print_usage()
             << "  thumbgen  Generate only small thumbnails for all given images\n"
             << "  filegen   Generate only small the file entries in the database\n"
             << "  list      Lists all files in the database\n"
-            << "  check     Checks the database for consistency\n"
             << "  cleanup   Runs garbage collection on the database\n"
             << "  merge     Merges the given databases into the database given by -d FILE\n"
             << "\n"
@@ -588,10 +578,6 @@ Galapix::run(const Options& opts)
       {
         view(opts, urls);
       }
-    }
-    else if (command == "check")
-    {
-      check(opts.database);
     }
     else if (command == "list")
     {

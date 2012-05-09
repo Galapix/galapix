@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,31 +16,31 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ARCHIVE_TABLE_HPP
+#define HEADER_GALAPIX_DATABASE_ARCHIVE_TABLE_HPP
 
-class TileEntryDeleteStatement
+#include "sqlite/connection.hpp"
+
+class ArchiveTable
 {
 private:
   SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
 
 public:
-  TileEntryDeleteStatement(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "DELETE FROM tile WHERE image_id = ?1;")
-  {}
-
-  void operator()(const RowId& image_id)
+  ArchiveTable(SQLiteConnection& db) :
+    m_db(db)
   {
-    assert(image_id);
-    m_stmt.bind_int64(1, image_id.get_id());
-    m_stmt.execute();
+    m_db.exec("CREATE TABLE IF NOT EXISTS archive (\n"
+              "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+              "  file_id   INTEGER"
+              ");");
+
+    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS archive_index ON archive ( id, file_id );");
   }
 
 private:
-  TileEntryDeleteStatement(const TileEntryDeleteStatement&);
-  TileEntryDeleteStatement& operator=(const TileEntryDeleteStatement&);
+  ArchiveTable(const ArchiveTable&);
+  ArchiveTable& operator=(const ArchiveTable&);
 };
 
 #endif

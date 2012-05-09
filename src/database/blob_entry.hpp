@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,31 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_BLOB_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_BLOB_ENTRY_HPP
 
-class TileEntryDeleteStatement
+#include "database/row_id.hpp"
+
+class BlobEntry
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
-  TileEntryDeleteStatement(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "DELETE FROM tile WHERE image_id = ?1;")
+  BlobEntry(const RowId& id, const SHA1& sha1, int size) :
+    m_id(id),
+    m_sha1(sha1),
+    m_size(size)
   {}
 
-  void operator()(const RowId& image_id)
-  {
-    assert(image_id);
-    m_stmt.bind_int64(1, image_id.get_id());
-    m_stmt.execute();
-  }
+  RowId get_id() const   { return m_id;   }
+  int   get_size() const { return m_size; }
+  const SHA1& get_sha1() const { return m_sha1; }
 
 private:
-  TileEntryDeleteStatement(const TileEntryDeleteStatement&);
-  TileEntryDeleteStatement& operator=(const TileEntryDeleteStatement&);
+  RowId m_id;
+  SHA1  m_sha1;
+  int   m_size;
 };
 
 #endif

@@ -24,8 +24,8 @@
 class MD5
 {
 public:
-  static std::string md5_string(const std::string& str);
-  static std::string md5_file(const std::string& filename);
+  static std::string from_string(const std::string& str);
+  static std::string from_file(const std::string& filename);
 };
 
 #endif

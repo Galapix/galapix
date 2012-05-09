@@ -28,7 +28,7 @@ private:
 
 public:
   TileEntryGetMinMaxScaleStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT MIN(scale),MAX(scale) FROM tiles WHERE fileid = ?1;")
+    m_stmt(db, "SELECT MIN(scale),MAX(scale) FROM tile WHERE image_id = ?1;")
   {}
 
   bool operator()(const RowId& fileid, int& min_scale_out, int& max_scale_out)

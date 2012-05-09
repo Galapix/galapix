@@ -26,7 +26,7 @@ private:
 
 public:
   TileEntryGetAllStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM tiles ORDER BY fileid;")
+    m_stmt(db, "SELECT * FROM tiles ORDER BY image_id;")
   {}
 
   void operator()(std::vector<TileEntry>& tiles_out)

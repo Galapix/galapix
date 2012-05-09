@@ -26,7 +26,17 @@ private:
 
 public:
   FileEntryGetByUrlStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM files WHERE url = ?1;")
+    m_stmt(db, 
+           "SELECT\n"
+           "  file.id, file.url, blob.sha1, blob.size, file.mtime\n"
+           "FROM\n"
+           "  file\n"
+           "LEFT OUTER JOIN\n"
+           "  blob\n"
+           "ON\n"
+           "  file.blob_id = blob.rowid\n"
+           "WHERE\n"
+           "  file.url = ?1;")
   {}
 
   bool operator()(const URL& url, FileEntry& entry_out)
@@ -36,7 +46,7 @@ public:
 
     if (reader.next())
     {
-      entry_out = FileEntry(reader);
+      entry_out = FileEntry::from_reader(reader);
       return true;
     }
     else

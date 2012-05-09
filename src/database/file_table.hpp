@@ -29,13 +29,14 @@ public:
     m_db(db)
   {
     m_db.exec("CREATE TABLE IF NOT EXISTS file (\n"
+              "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
               "  url       TEXT UNIQUE,\n"
-              "  size      INTEGER,\n"
               "  mtime     INTEGER,\n"
-              "  type      INTEGER\n"
+              "  handler   INTEGER,\n"
+              "  blob_id   INTEGER\n"
               ");");
 
-    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS file_index ON file ( url, size, mtime, type );");
+    m_db.exec("CREATE INDEX IF NOT EXISTS file_index ON file ( url, mtime, handler, blob_id );");
   }
 
 private:

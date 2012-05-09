@@ -31,6 +31,7 @@
 #include "database/file_entry_store_statement.hpp"
 #include "database/image_entry_store_statement.hpp"
 #include "database/archive_table.hpp"
+#include "database/blob_table.hpp"
 #include "database/file_table.hpp"
 #include "database/image_table.hpp"
 #include "database/video_table.hpp"
@@ -40,6 +41,7 @@ class FileEntry;
 class ImageEntry;
 class TileEntry;
 class URL;
+class SHA1;
 
 /** The FileDatabase keeps a record of all files that have been
     view. It keeps information on the last modification time and
@@ -53,6 +55,7 @@ class FileDatabase
 private:
   SQLiteConnection& m_db;
 
+  BlobTable                      m_blob_table;
   FileTable                      m_file_table;
   ImageTable                     m_image_table;
   ArchiveTable                   m_archive_table;
@@ -85,13 +88,11 @@ public:
   void get_file_entries(std::vector<FileEntry>& entries_out);
   void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
 
-  FileEntry store_file_entry(const URL& url, int size, int mtime, int type);
+  FileEntry store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler);
+  FileEntry store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler);
   void store_image_entry(const ImageEntry& image);
 
   void delete_file_entry(const RowId& fileid);
-
-  void check();
-  //void flush_cache();
 
 private:
   FileDatabase (const FileDatabase&);

@@ -62,7 +62,7 @@ SQLiteStatement::prepare(const std::string& sqlstmt)
 
   if (sqlite3_prepare_v2(m_db.get_db(), sqlstmt.c_str(), -1, &m_stmt,  0) != SQLITE_OK)
   {
-    raise_exception(SQLiteError, m_db.get_error_msg());
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
 
   return *this;
@@ -81,7 +81,7 @@ SQLiteStatement::bind_int(int n, int i)
 {
   if (sqlite3_bind_int(m_stmt, n, i) != SQLITE_OK)
   {
-    raise_exception(SQLiteError, m_db.get_error_msg());
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
 
   return *this;
@@ -93,7 +93,7 @@ SQLiteStatement::bind_int64(int n, int64_t i)
 {
   if (sqlite3_bind_int64(m_stmt, n, i) != SQLITE_OK)
   {
-    raise_exception(SQLiteError, m_db.get_error_msg());
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
 
   return *this;
@@ -104,7 +104,7 @@ SQLiteStatement::bind_text(int n, const std::string& text)
 {
   if (sqlite3_bind_text(m_stmt, n, text.c_str(), text.size(), SQLITE_TRANSIENT) != SQLITE_OK)
   {
-    raise_exception(SQLiteError, m_db.get_error_msg());
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
 
   return *this;
@@ -115,7 +115,7 @@ SQLiteStatement::bind_null(int n)
 {
   if (sqlite3_bind_null(m_stmt, n) != SQLITE_OK)
   {
-    raise_exception(SQLiteError, m_db.get_error_msg());
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }  
 
   return *this;
@@ -126,7 +126,17 @@ SQLiteStatement::bind_blob(int n, const BlobPtr& blob)
 {
   if (sqlite3_bind_blob(m_stmt, n, blob->get_data(), blob->size(), SQLITE_TRANSIENT) != SQLITE_OK)
   {
-    raise_exception(SQLiteError, m_db.get_error_msg());
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
+  }
+  return *this;
+}
+
+SQLiteStatement&
+SQLiteStatement::bind_blob(int n, const uint8_t* data, size_t len)
+{
+  if (sqlite3_bind_blob(m_stmt, n, data, len, SQLITE_TRANSIENT) != SQLITE_OK)
+  {
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
   return *this;
 }
@@ -136,7 +146,7 @@ SQLiteStatement::reset()
 {
   if (sqlite3_reset(m_stmt) != SQLITE_OK)
   {
-    raise_exception(SQLiteError, m_db.get_error_msg());
+    raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
 }
 

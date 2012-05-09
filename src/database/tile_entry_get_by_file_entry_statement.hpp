@@ -29,18 +29,18 @@ private:
 
 public:
   TileEntryGetByFileEntryStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
+    m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
-  bool operator()(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile)
+  bool operator()(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile)
   {
-    if (!fileid)
+    if (!image_id)
     {
       return false;
     }
     else
     {
-      m_stmt.bind_int64(1, fileid.get_id());
+      m_stmt.bind_int64(1, image_id.get_id());
       m_stmt.bind_int(2, scale);
       m_stmt.bind_int(3, pos.x);
       m_stmt.bind_int(4, pos.y);
@@ -49,7 +49,7 @@ public:
 
       if (reader.next())
       {
-        tile = TileEntry(fileid,
+        tile = TileEntry(image_id,
                          reader.get_int(1), // scale
                          Vector2i(reader.get_int(2), // pos
                                   reader.get_int(3)),

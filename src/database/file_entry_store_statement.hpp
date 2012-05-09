@@ -22,28 +22,59 @@
 #include <iostream>
 #include <assert.h>
 
+#include "util/sha1.hpp"
+
 class FileEntryStoreStatement
 {
 private:
   SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLiteStatement   m_blob_select_stmt;
+  SQLiteStatement   m_blob_stmt;
+  SQLiteStatement   m_file_stmt;
 
 public:
   FileEntryStoreStatement(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "INSERT OR REPLACE INTO files (url, size, mtime, type) VALUES (?1, ?2, ?3, ?4);")
+    m_blob_select_stmt(db, "SELECT id FROM blob WHERE sha1 = ?1;\n"),
+    m_blob_stmt(db, "INSERT OR REPLACE INTO blob (sha1, size) VALUES (?1, ?2);\n"),
+    m_file_stmt(db, "INSERT OR REPLACE INTO file (url, mtime, handler, blob_id) VALUES (?1, ?2, ?3, ?4);")
   {}
 
-  RowId operator()(const URL& url, int size, int mtime, int type)
+  RowId operator()(const URL& url, const SHA1& sha1, int size, int mtime, int handler)
   {
-    m_stmt.bind_text(1, url.str());
-    m_stmt.bind_int (2, size);
-    m_stmt.bind_int (3, mtime);
-    m_stmt.bind_int (4, type);
-
-    m_stmt.execute();
+    int64_t blob_id;
   
-    return RowId(sqlite3_last_insert_rowid(m_db.get_db()));
+    if (!sha1)
+    {
+      m_blob_stmt.bind_null(1);
+      m_blob_stmt.bind_int64(2, size);
+      m_blob_stmt.execute();
+      blob_id = sqlite3_last_insert_rowid(m_db.get_db());
+    }
+    else
+    {
+      m_blob_select_stmt.bind_blob(1, sha1.data(), sha1.size());
+      SQLiteReader reader = m_blob_select_stmt.execute_query();
+      if (reader.next())
+      {
+        blob_id = reader.get_int64(0);
+      }
+      else
+      {
+        m_blob_stmt.bind_blob(1, sha1.data(), sha1.size());
+        m_blob_stmt.bind_int64(2, size);
+        m_blob_stmt.execute();
+        blob_id = sqlite3_last_insert_rowid(m_db.get_db());
+      }
+    }
+
+    m_file_stmt.bind_text (1, url.str());
+    m_file_stmt.bind_int  (2, mtime);
+    m_file_stmt.bind_int  (3, handler);
+    m_file_stmt.bind_int64(4, blob_id);
+    m_file_stmt.execute();
+  
+    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
 
 private:

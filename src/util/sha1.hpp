@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,32 +16,37 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_UTIL_SHA1_HPP
+#define HEADER_GALAPIX_UTIL_SHA1_HPP
 
-class TileEntryDeleteStatement
+#include <array>
+#include <string>
+
+#include "util/blob.hpp"
+
+class SHA1
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+public:
+  static SHA1 from_data(const uint8_t* data, size_t len);
+  static SHA1 from_string(const std::string& str);
+  static SHA1 from_file(const std::string& filename);
 
 public:
-  TileEntryDeleteStatement(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "DELETE FROM tile WHERE image_id = ?1;")
-  {}
+  SHA1();
+  SHA1(const uint8_t data[20]);
+  SHA1(const BlobPtr& blob);
 
-  void operator()(const RowId& image_id)
-  {
-    assert(image_id);
-    m_stmt.bind_int64(1, image_id.get_id());
-    m_stmt.execute();
-  }
+  std::string str() const;
+  const uint8_t* data() const { return m_data.data(); }
+  size_t size() const { return m_data.size(); }
+
+  explicit operator bool() const;
 
 private:
-  TileEntryDeleteStatement(const TileEntryDeleteStatement&);
-  TileEntryDeleteStatement& operator=(const TileEntryDeleteStatement&);
+  std::array<uint8_t, 20> m_data;
 };
+
+std::ostream& operator<<(std::ostream& os, const SHA1& sha1);
 
 #endif
 

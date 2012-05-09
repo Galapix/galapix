@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,31 +16,34 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_VIDEO_TABLE_HPP
+#define HEADER_GALAPIX_DATABASE_VIDEO_TABLE_HPP
 
-class TileEntryDeleteStatement
+#include "sqlite/connection.hpp"
+
+class VideoTable
 {
 private:
   SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
 
 public:
-  TileEntryDeleteStatement(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "DELETE FROM tile WHERE image_id = ?1;")
-  {}
-
-  void operator()(const RowId& image_id)
+  VideoTable(SQLiteConnection& db) :
+    m_db(db)
   {
-    assert(image_id);
-    m_stmt.bind_int64(1, image_id.get_id());
-    m_stmt.execute();
+    m_db.exec("CREATE TABLE IF NOT EXISTS video (\n"
+              "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+              "  file_id   INTEGER,\n"
+              "  width     INTEGER,\n"
+              "  height    INTEGER,\n"
+              "  duration  INTEGER\n"
+              ");");
+
+    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS video_index ON video ( id, file_id, width, height, duration );");
   }
 
 private:
-  TileEntryDeleteStatement(const TileEntryDeleteStatement&);
-  TileEntryDeleteStatement& operator=(const TileEntryDeleteStatement&);
+  VideoTable(const VideoTable&);
+  VideoTable& operator=(const VideoTable&);
 };
 
 #endif

@@ -30,6 +30,7 @@
 FileDatabase::FileDatabase(SQLiteConnection& db) :
   m_db(db),
 
+  m_blob_table(m_db),
   m_file_table(m_db),
   m_image_table(m_db),
   m_archive_table(m_db),
@@ -50,10 +51,17 @@ FileDatabase::~FileDatabase()
 }
  
 FileEntry
-FileDatabase::store_file_entry(const URL& url, int size, int mtime, int type)
+FileDatabase::store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler)
 {
-  RowId fileid = m_file_entry_store(url, size, mtime, type);
-  return FileEntry(fileid, url, size, mtime, type);
+  RowId file_id = m_file_entry_store(url, SHA1(), size, mtime, handler);
+  return FileEntry(file_id, url, size, mtime, handler);
+}
+
+FileEntry
+FileDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler)
+{
+  RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
+  return FileEntry(file_id, url, size, mtime, handler);
 }
 
 void
@@ -81,47 +89,9 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
 }
 
 void
-FileDatabase::check()
+FileDatabase::delete_file_entry(const RowId& file_id)
 {
-  std::vector<FileEntry> entries;
-  get_file_entries(entries);
-
-  std::cout << "Checking File Existance:" << std::endl;
-  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
-  {
-    if (!Filesystem::exist(i->get_url().get_stdio_name()))
-    {
-      std::cout << i->get_url() << ": does not exist" << std::endl;
-    }
-    else
-    {
-      std::cout << i->get_url() << ": ok" << std::endl;
-    }
-  }
+  m_file_entry_delete(file_id);
 }
-
-void
-FileDatabase::delete_file_entry(const RowId& fileid)
-{
-  // FIXME: Ignoring cache
-  m_file_entry_delete(fileid);
-}
-#if 0
-void
-FileDatabase::flush_cache()
-{
-  if (!m_file_entry_cache.empty())
-  {
-    std::cout << "FileDatabes::flush_cache()" << std::endl;
-    m_db.exec("BEGIN;");
-    for(std::vector<FileEntry>::iterator i = m_file_entry_cache.begin(); i != m_file_entry_cache.end(); ++i)
-    {
-      store_file_entry_without_cache(*i);
-    }
-    m_db.exec("END;");
-    m_file_entry_cache.clear();
-  }
-}
-#endif
 
 /* EOF */

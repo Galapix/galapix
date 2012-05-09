@@ -22,21 +22,23 @@
 
 #include "sqlite/reader.hpp"
 
-FileEntry::FileEntry(SQLiteReader& reader) :
-  m_fileid(reader.get_int(0)), // fileid
-  m_url(URL::from_string(reader.get_text(1))), // url
-  m_size(reader.get_int(2)),  // size
-  m_mtime(reader.get_int(3)), // mtime
-  m_format(reader.get_int(4)) // format
-{  
+FileEntry 
+FileEntry::from_reader(SQLiteReader& reader)
+{
+  return FileEntry(RowId(reader.get_int(0)),  // fileid
+                   URL::from_string(reader.get_text(1)), // url
+                   SHA1(reader.get_blob(2)),
+                   reader.get_int(3),  // size
+                   reader.get_int(4),  // mtime
+                   static_cast<FileEntry::Handler>(reader.get_int(4))); // format
 }
-
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
   return os << "FileEntry(" 
             << entry.get_fileid() << ", " 
             << entry.get_url()    << ", "
+            << entry.get_sha1()   << ", "
             << entry.get_size()   << ", "
             << entry.get_mtime()
     //<< entry.get_format();

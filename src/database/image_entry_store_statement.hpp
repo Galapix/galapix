@@ -33,7 +33,7 @@ private:
 public:
   ImageEntryStoreStatement(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "INSERT OR REPLACE INTO images (fileid, width, height, format) VALUES (?1, ?2, ?3, ?4);")
+    m_stmt(db, "INSERT OR REPLACE INTO image (file_id, width, height, handler) VALUES (?1, ?2, ?3, ?4);")
   {}
   
   void operator()(const ImageEntry& image)
@@ -41,7 +41,7 @@ public:
     m_stmt.bind_int64(1, image.get_fileid().get_id());
     m_stmt.bind_int(2, image.get_width());
     m_stmt.bind_int(3, image.get_height());
-    m_stmt.bind_int(4, image.get_format());
+    m_stmt.bind_int(4, image.get_handler());
 
     m_stmt.execute();
     

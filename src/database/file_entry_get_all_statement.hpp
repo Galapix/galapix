@@ -28,7 +28,15 @@ private:
 
 public:
   FileEntryGetAllStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM file;")
+    m_stmt(db, 
+           "SELECT\n"
+           "  file.id, file.url, blob.sha1, blob.size, file.mtime\n"
+           "FROM\n"
+           "  file\n"
+           "LEFT OUTER JOIN\n"
+           "  blob\n"
+           "ON\n"
+           "  file.blob_id = blob.id;")
   {}
 
   void operator()(std::vector<FileEntry>& entries_out)
@@ -37,7 +45,7 @@ public:
 
     while (reader.next())  
     {
-      entries_out.push_back(FileEntry(reader));
+      entries_out.push_back(FileEntry::from_reader(reader));
     }
   }
 

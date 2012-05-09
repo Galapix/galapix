@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,20 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/image_table.hpp"
+#include <iostream>
 
-ImageTable::ImageTable(SQLiteConnection& db) :
-  m_db(db)
+#include "util/sha1.hpp"
+
+int main(int argc, char** argv)
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS image (\n"
-            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  file_id   INTEGER UNIQUE,\n"
-            "  width     INTEGER,\n"
-            "  height    INTEGER,\n"
-            "  format    INTEGER\n" // format of the data (0: JPEG, 1: PNG)
-            ");");
+  for(int i = 1; i < argc; ++i)
+  {
+    std::cout << SHA1::from_file(argv[i]).str() << "  " << argv[i] << std::endl;
+  }
 
-  m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS image_index ON image ( id, file_id, width, height, format );");
+  return 0;
 }
 
 /* EOF */

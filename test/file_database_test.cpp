@@ -21,6 +21,7 @@
 #include "sqlite/connection.hpp"
 #include "database/file_database.hpp"
 #include "util/filesystem.hpp"
+#include "util/sha1.hpp"
 
 int main(int argc, char** argv)
 {
@@ -29,26 +30,31 @@ int main(int argc, char** argv)
 
   for(int i = 1; i < argc; ++i)
   {
-    URL url = URL::from_filename(argv[i]);
+    URL url   = URL::from_filename(argv[i]);
+    int size  = url.get_size();
+    int mtime = url.get_mtime();
 
     FileEntry file_entry;
-    int size  = Filesystem::get_size(argv[i]);
-    int mtime = Filesystem::get_mtime(argv[i]);
-
     if (!filedb.get_file_entry(url, file_entry))
     { 
-      file_entry = filedb.store_file_entry(url, size, mtime, 0 /* type */);
+      SHA1 sha1 = SHA1::from_file(url.get_stdio_name());
+      file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler);
       std::cout << "stored: " << file_entry << std::endl;
     }
-    else if (size  != file_entry.get_size() ||
-             mtime != file_entry.get_mtime())
-    { 
-      file_entry = filedb.store_file_entry(url, size, mtime, 0 /* type */);
-      std::cout << "replaced: " << file_entry << std::endl;
-    }
     else
-    { // file already in the database
-      std::cout << "ignored: " << file_entry << std::endl;
+    {
+      SHA1 sha1 = SHA1::from_file(url.get_stdio_name());
+      if (size  != file_entry.get_size() ||
+          mtime != file_entry.get_mtime())
+      { 
+        file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler);
+        std::cout << "replaced: " << file_entry << std::endl;
+      }
+      else
+      {
+        // file already in the database
+        std::cout << "ignored: " << file_entry << std::endl;
+      }
     }
   }
 

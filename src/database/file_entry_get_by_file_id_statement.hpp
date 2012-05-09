@@ -26,7 +26,7 @@ private:
 
 public:
   FileEntryGetByFileIdStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM files WHERE fileid = ?1;")
+    m_stmt(db, "SELECT * FROM file WHERE id = ?1;")
   {}
 
 private:

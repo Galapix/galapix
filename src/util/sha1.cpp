@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,45 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "util/md5.hpp"
+#include "util/sha1.hpp"
 
+#include <algorithm>
 #include <mhash.h>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
+#include "util/blob.hpp"
 #include "util/raise_exception.hpp"
 
-std::string
-MD5::from_string(const std::string& str)
+SHA1
+SHA1::from_data(const uint8_t* data, size_t len)
 {
-  unsigned char hash[16]; /* enough size for MD5 */
-  MHASH td = mhash_init(MHASH_MD5);
+  MHASH td = mhash_init(MHASH_SHA1);
   if (td == MHASH_FAILED)
   {
     raise_runtime_error("Failed to init MHash");
   }
   else
   {  
-    mhash(td, str.c_str(), str.length());
+    mhash(td, data, len);
   
-    mhash_deinit(td, hash);
-
-    // Convert to string representation
-    std::ostringstream out;
-    for (int i = 0; i < 16; i++) 
-      out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
-
-    return out.str();
+    SHA1 sha1;
+    mhash_deinit(td, sha1.m_data.data());
+    return sha1;
   }
 }
 
-std::string
-MD5::from_file(const std::string& filename)
+SHA1
+SHA1::from_string(const std::string& str)
 {
-  unsigned char hash[16]; /* enough size for MD5 */
-  MHASH td = mhash_init(MHASH_MD5);
+  return from_data(reinterpret_cast<const uint8_t*>(str.data()), str.size());
+}
+
+SHA1
+SHA1::from_file(const std::string& filename)
+{
+  MHASH td = mhash_init(MHASH_SHA1);
   if (td == MHASH_FAILED) 
   {
     raise_runtime_error("Failed to init MHash");
@@ -79,16 +80,55 @@ MD5::from_file(const std::string& filename)
 
       in.close();
     
-      mhash_deinit(td, hash);
-
-      // Convert to string representation
-      std::ostringstream out;
-      for (int i = 0; i < 16; i++)
-        out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
-
-      return out.str();  
+      SHA1 sha1;
+      mhash_deinit(td, sha1.m_data.data());
+      return sha1;
     }
   }
+}
+
+SHA1::SHA1() :
+  m_data()
+{
+}
+
+SHA1::SHA1(const BlobPtr& blob) :
+  m_data()
+{
+  std::copy_n(blob->get_data(), blob->size(), m_data.begin());
+}
+
+SHA1::SHA1(const uint8_t sha1[20]) :
+  m_data()
+{
+  std::copy_n(sha1, 20, m_data.begin());
+}
+
+SHA1::operator bool() const
+{
+  // a SHA1 that is all zeros is considered invalid
+  for(auto v: m_data)
+  {
+    if (v != 0)
+    {
+      return true;
+    }
+  }  
+  return false;
+}
+
+std::string
+SHA1::str() const
+{
+  std::ostringstream out;
+  for (mutils_word32 i = 0; i < m_data.size(); ++i)
+    out << std::setfill('0') << std::setw(2) << std::hex << int(m_data[i]);
+  return out.str();
+}
+
+std::ostream& operator<<(std::ostream& os, const SHA1& sha1)
+{
+  return os << sha1.str();
 }
 
 /* EOF */

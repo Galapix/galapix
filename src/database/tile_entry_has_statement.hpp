@@ -26,7 +26,7 @@ private:
 
 public:
   TileEntryHasStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT (rowid) FROM tiles WHERE fileid = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
+    m_stmt(db, "SELECT (rowid) FROM tile WHERE image_id = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
   bool operator()(const RowId& fileid, const Vector2i& pos, int scale)

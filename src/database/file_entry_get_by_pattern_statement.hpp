@@ -26,7 +26,14 @@ private:
 
 public:
   FileEntryGetByPatternStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM files WHERE url GLOB ?1;")
+    m_stmt(db, 
+           "SELECT\n"
+           "  file.id, file.url, blob.sha1, blob.size, file.mtime\n"
+           "FROM\n"
+           "  file, blob\n"
+           "WHERE\n"
+           "  file.blob_id = blob.rowid AND\n"
+           "  file.url GLOB ?1;")
   {}
 
   void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
@@ -36,7 +43,7 @@ public:
 
     while (reader.next())  
     {
-      entries_out.push_back(FileEntry(reader));
+      entries_out.push_back(FileEntry::from_reader(reader));
     }
   }
 

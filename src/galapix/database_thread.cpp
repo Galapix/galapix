@@ -382,8 +382,8 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
     job_ptr->sig_tile_callback().connect(tile_callback);
   }
 
-  job_ptr->sig_file_callback().connect([this, url](int size, int mtime, int format) {
-      receive_file(url, size, mtime, format);
+  job_ptr->sig_file_callback().connect([this, url](int size, int mtime, FileEntry::Handler handler) {
+      receive_file(url, size, mtime, handler);
     });
     
 #if 0
@@ -399,12 +399,12 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
 
 void
 DatabaseThread::store_file_entry(const JobHandle& job_handle_in, 
-                                 const URL& url, int size, int mtime, int format,
+                                 const URL& url, int size, int mtime, FileEntry::Handler handler,
                                  const std::function<void (FileEntry)>& callback)
 {
-  m_receive_queue.wait_and_push([this, job_handle_in, url, size, mtime, format, callback](){
+  m_receive_queue.wait_and_push([this, job_handle_in, url, size, mtime, handler, callback](){
       JobHandle job_handle = job_handle_in;
-      FileEntry file_entry = m_database.get_files().store_file_entry(url, size, mtime, format);
+      FileEntry file_entry = m_database.get_files().store_file_entry(url, size, mtime, handler);
       if (callback)
       {
         callback(file_entry);
@@ -414,10 +414,10 @@ DatabaseThread::store_file_entry(const JobHandle& job_handle_in,
 }
 
 void
-DatabaseThread::receive_file(const URL& url, int size, int mtime, int format)
+DatabaseThread::receive_file(const URL& url, int size, int mtime, FileEntry::Handler handler)
 {
-  m_receive_queue.wait_and_push([this, url, size, mtime, format]() {
-      m_database.get_files().store_file_entry(url, size, mtime, format);
+  m_receive_queue.wait_and_push([this, url, size, mtime, handler]() {
+      m_database.get_files().store_file_entry(url, size, mtime, handler);
     });
 }
 
