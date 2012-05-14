@@ -105,7 +105,7 @@ void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
   m_layouter.reset(new RegularLayouter(aspect_w, aspect_h));
-  m_layouter->layout(m_images, true);
+  m_layouter->layout(m_images);
   start_animation();
 }
 
@@ -113,7 +113,7 @@ void
 Workspace::layout_spiral()
 {
   m_layouter.reset(new SpiralLayouter());
-  m_layouter->layout(m_images, true);
+  m_layouter->layout(m_images);
   start_animation();
 }
 
@@ -121,15 +121,15 @@ void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
   m_layouter.reset(new TightLayouter(aspect_w, aspect_h));
-  m_layouter->layout(m_images, true);
+  m_layouter->layout(m_images);
   start_animation();
 }
 
 void
 Workspace::layout_random()
 {
-  m_layouter.reset(new RandomLayouter());
-  m_layouter->layout(m_images, true);
+  m_layouter.reset(new RandomLayouter);
+  m_layouter->layout(m_images);
   start_animation();
 }
 
@@ -195,7 +195,7 @@ Workspace::sort()
             });
   if (m_layouter)
   {
-    m_layouter->layout(m_images, true);
+    m_layouter->layout(m_images);
     start_animation();
   }
 }
@@ -209,7 +209,7 @@ Workspace::sort_reverse()
             });
   if (m_layouter)
   {
-    m_layouter->layout(m_images, true);
+    m_layouter->layout(m_images);
     start_animation();
   } 
 }
@@ -220,7 +220,7 @@ Workspace::random_shuffle()
   std::random_shuffle(m_images.begin(), m_images.end());
   if (m_layouter)
   {
-    m_layouter->layout(m_images, true);
+    m_layouter->layout(m_images);
     start_animation();
   }
 }
@@ -228,18 +228,18 @@ Workspace::random_shuffle()
 void
 Workspace::clear_cache()
 {
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(auto& i: m_images)
   {
-    (*i)->clear_cache();
+    i->clear_cache();
   }  
 }
 
 void
 Workspace::cache_cleanup()
 {
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(auto& i: m_images)
   {
-    (*i)->cache_cleanup();
+    i->cache_cleanup();
   }   
 }
 
@@ -248,11 +248,11 @@ Workspace::print_info(const Rectf& rect)
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(auto& i: m_images)
   {
-    if ((*i)->overlaps(rect))
+    if (i->overlaps(rect))
     {
-      (*i)->print_info();
+      i->print_info();
     }
   }
   std::cout << "  Number of Images: " << m_images.size() << std::endl;
@@ -263,12 +263,12 @@ void
 Workspace::print_images(const Rectf& rect)
 {
   std::cout << "-- Visible images --------------------------------------" << std::endl;
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(auto& i: m_images)
   {
-    if ((*i)->overlaps(rect))
+    if (i->overlaps(rect))
     {
-      std::cout << (*i)->get_url() << " "
-                << (*i)->get_original_width() << "x" << (*i)->get_original_height()
+      std::cout << i->get_url() << " "
+                << i->get_original_width() << "x" << i->get_original_height()
                 << std::endl;
     }
   }
@@ -285,9 +285,9 @@ Workspace::select_images(const ImageCollection& lst)
 bool
 Workspace::selection_clicked(const Vector2f& pos) const
 {
-  for(Selection::const_iterator i = m_selection->begin(); i != m_selection->end(); ++i)
+  for(auto& i: *m_selection)
   {
-    if ((*i)->overlaps(pos))
+    if (i->overlaps(pos))
       return true;
   }
   return false;
@@ -327,9 +327,9 @@ Workspace::delete_selection()
 {
   m_images.erase(std::remove_if(m_images.begin(), m_images.end(), 
                                 [this](const WorkspaceItemPtr& image)->bool{
-                                  for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
+                                  for(auto& i: *m_selection)
                                   {
-                                    if (*i == image)
+                                    if (i == image)
                                       return true;
                                   }
                                   return false;
@@ -387,14 +387,14 @@ Workspace::save(std::ostream& out)
   out << "(galapix-workspace\n"
       << "  (images\n";
   
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(const auto& i: m_images)
   {
     // FIXME: Must escape the filename!
-    out  << "    (image (url   \"" << (*i)->get_url() << "\")\n"
-         << "           (pos   " << (*i)->get_pos().x << " " << (*i)->get_pos().y << ")\n"
-         << "           (scale " << (*i)->get_scale() << ")"
-      // << "           (angle " << (*i)->get_angle() << ")"
-      // << "           (alpha " << (*i)->get_alpha() << ")"
+    out  << "    (image (url   \"" << i->get_url() << "\")\n"
+         << "           (pos   " << i->get_pos().x << " " << i->get_pos().y << ")\n"
+         << "           (scale " << i->get_scale() << ")"
+      // << "           (angle " << i->get_angle() << ")"
+      // << "           (alpha " << i->get_alpha() << ")"
          << ")\n";
   }
 
@@ -407,9 +407,9 @@ Workspace::finish_animation()
 {
   m_progress = 1.0f;
 
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(auto& i: m_images)
   {
-    (*i)->update_pos(m_progress);
+    i->update_pos(m_progress);
   }
 }
 
@@ -428,17 +428,17 @@ Workspace::load(const std::string& filename)
 
     std::vector<FileReader> image_sections = reader.read_section("images").get_sections();
 
-    for(std::vector<FileReader>::iterator i = image_sections.begin(); i != image_sections.end(); ++i)
+    for(auto& i: image_sections)
     {
-      if (i->get_name() == "image")
+      if (i.get_name() == "image")
       {
         URL      url;
         Vector2f pos;
         float    scale = 0.5f;
 
-        i->read_url("url", url);
-        i->read_vector2f("pos", pos);
-        i->read_float("scale", scale);
+        i.read_url("url", url);
+        i.read_vector2f("pos", pos);
+        i.read_float("scale", scale);
 
         std::cout << url << " " << pos << " " << scale << std::endl;
 
