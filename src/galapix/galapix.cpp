@@ -76,75 +76,6 @@ Galapix::~Galapix()
 }
 
 void
-Galapix::test(const Options& opts,
-              const std::vector<URL>& url)
-{
-  std::cout << "Running test case" << std::endl;
-
-  Database database(opts.database);
-  JobManager job_manager(opts.threads);
-  DatabaseThread database_thread(database, job_manager);
-
-  database_thread.start_thread();
-  job_manager.start_thread();
-
-  std::cout << "<<<--- launching jobs" << std::endl;
-  JobHandle handle1 = job_manager.request(std::shared_ptr<Job>(new TestJob()));
-  JobHandle handle2 = job_manager.request(std::shared_ptr<Job>(new TestJob()));
-  std::cout << "--->>> waiting for jobs" << std::endl;
-  handle1.wait();
-  std::cout << "handle1 finished" << std::endl;
-  handle2.wait();
-  std::cout << "handle2 finished" << std::endl;
-  std::cout << "--->>> waiting for jobs DONE" << std::endl;
-
-  database_thread.stop_thread();
-  job_manager.stop_thread();
-
-  database_thread.join_thread();
-  job_manager.join_thread();
-}
-
-/** Merge content of the databases given by filenames into database */
-void
-Galapix::merge(const std::string& database,
-               const std::vector<std::string>& filenames)
-{
-#if 0
-  Database out_db(database);
-
-  for(std::vector<std::string>::const_iterator db_it = filenames.begin(); db_it != filenames.end(); ++db_it)
-  {
-    Database in_db(*db_it);
-          
-    std::vector<FileEntry> entries;
-    in_db.get_files().get_file_entries(entries);
-    for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
-    {
-      try {
-        std::cout << "Processing: " << i - entries.begin() << "/" << entries.size() << '\r' << std::flush;
-
-        // FIXME: Must catch URL collisions here (or maybe not?)
-        FileEntry file_entry = out_db.get_files().store_file_entry(*i);
-
-        std::vector<TileEntry> tiles;
-        in_db.get_tiles().get_tiles(i->get_fileid(), tiles);
-        for(std::vector<TileEntry>::iterator j = tiles.begin(); j != tiles.end(); ++j)
-        {
-          // Change the fileid
-          j->set_fileid(file_entry.get_fileid());
-          out_db.get_tiles().store_tile(file_entry.get_fileid(), *j);
-        }
-      } catch(std::exception& err) {
-        std::cout << "Galapix:merge: Error: " << err.what() << std::endl;
-      }
-    }
-    std::cout << std::endl;
-  }
-#endif
-}
-
-void
 Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 {
 #if 0
@@ -192,24 +123,6 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 }
 
 void
-Galapix::downscale(const std::vector<URL>& url)
-{
-  int num = 0;
-  for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i, ++num)
-  {
-    std::cout << *i << std::endl;
-    SoftwareSurfacePtr surface = JPEG::load_from_file(i->get_stdio_name(), 8);
-
-    std::ostringstream out;
-    out << "/tmp/out-" << num << ".jpg";
-    BlobPtr blob = JPEG::save(surface, 75);
-    blob->write_to_file(out.str());
-
-    std::cout << "Wrote: " << out.str() << std::endl;
-  }  
-}
-
-void
 Galapix::cleanup(const std::string& database)
 {
   Database db(database); 
@@ -244,38 +157,10 @@ Galapix::list(const Options& opts)
 }
 
 void
-Galapix::filegen(const Options& opts,
-                 const std::vector<URL>& url)
-{
-#if 0
-  Database database(opts.database);
-  JobManager job_manager(opts.threads);
-  DatabaseThread database_thread(database, job_manager);
-
-  job_manager.start_thread();
-  database_thread.start_thread();
-  
-  for(std::vector<URL>::size_type i = 0; i < url.size(); ++i)
-  {
-    database_thread.request_file(url[i], 
-                                 std::function<void (FileEntry)>(), 
-                                 std::function<void (FileEntry, Tile)>());
-  }
-
-  job_manager.stop_thread();
-  database_thread.stop_thread();
-
-  job_manager.join_thread();
-  database_thread.join_thread();
-#endif
-}
-
-void
 Galapix::thumbgen(const Options& opts,
                   const std::vector<URL>& urls, 
                   bool generate_all_tiles)
 {
-#if 0
   Database       database(opts.database);
   JobManager     job_manager(opts.threads);
   DatabaseThread database_thread(database, job_manager);
@@ -293,8 +178,7 @@ Galapix::thumbgen(const Options& opts,
     job_handle_group.add(database_thread.request_file(*i, 
                                                       [&file_entries](const FileEntry& entry) { 
                                                         file_entries.push_back(entry); 
-                                                      },
-                                                      std::function<void (FileEntry, Tile)>())); 
+                                                      }));
   }
   job_handle_group.wait();
   job_handle_group.clear();
@@ -305,7 +189,7 @@ Galapix::thumbgen(const Options& opts,
   for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
   {
     int min_scale = 0;
-    int max_scale = i->get_thumbnail_scale();
+    int max_scale = 1; // FIXME: i->get_thumbnail_scale();
 
     if (!generate_all_tiles)
     {
@@ -324,7 +208,6 @@ Galapix::thumbgen(const Options& opts,
 
   job_manager.join_thread();
   database_thread.join_thread();
-#endif
 }
 
 void
@@ -332,7 +215,6 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
 {
   Database       database(opts.database);
   JobManager     job_manager(opts.threads);
-  DatabaseThread database_thread(database, job_manager);
 
   Workspace workspace;
 
@@ -357,21 +239,23 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
 
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
-      ImagePtr image = Image::create(i->get_url(), DatabaseTileProvider::create(*i));
-      workspace.add_image(image);
-#if 0     
-      TileEntry tile_entry;
-      if (database.get_tiles().get_tile(i->get_fileid(), i->get_thumbnail_scale(), Vector2i(0,0), tile_entry))
+      ImageEntry image_entry;
+      if (!database.get_files().get_image_entry(*i, image_entry))
       {
-        image->receive_tile(*i, Tile(tile_entry));
+        log_warn("no ImageEntry for " << i->get_url());
       }
-#endif       
-      // print progress
-      int n = (i - file_entries.begin())+1;
-      int total = file_entries.size();
-      std::cout << "Getting tiles: " << n << "/" << total << " - "
-                << (100 * n / total) << '%'
-                << '\r' << std::flush;
+      else
+      {
+        ImagePtr image = Image::create(i->get_url(), DatabaseTileProvider::create(*i, image_entry));
+        workspace.add_image(image);
+
+        // print progress
+        int n = (i - file_entries.begin())+1;
+        int total = file_entries.size();
+        std::cout << "Getting tiles: " << n << "/" << total << " - "
+                  << (100 * n / total) << '%'
+                  << '\r' << std::flush;
+      }
     }
 
     if (!file_entries.empty())
@@ -416,17 +300,16 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
       else
       {
-        ImagePtr image = Image::create(file_entry.get_url(), DatabaseTileProvider::create(file_entry));
-        workspace.add_image(image);
-
-#if 0
-        TileEntry tile_entry;
-        if (database.get_tiles().get_tile(file_entry.get_fileid(), file_entry.get_thumbnail_scale(),
-                                          Vector2i(0,0), tile_entry))
+        ImageEntry image_entry;
+        if (!database.get_files().get_image_entry(file_entry, image_entry))
         {
-          image->receive_tile(file_entry, Tile(tile_entry));
+          log_warn("no ImageEntry for " << *i);
         }
-#endif
+        else
+        {
+          ImagePtr image = Image::create(file_entry.get_url(), DatabaseTileProvider::create(file_entry, image_entry));
+          workspace.add_image(image);
+        }
       }
     }
   }
@@ -436,6 +319,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     std::cout << std::endl;
   }
 
+  DatabaseThread database_thread(database, job_manager);
   job_manager.start_thread();  
   database_thread.start_thread();
 
@@ -465,21 +349,15 @@ void
 Galapix::print_usage()
 {
   std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
-            << "       galapix prepare  [OPTIONS]... [FILES]...\n"
             << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
-            << "       galapix filegen  [OPTIONS]... [FILES]...\n"
             << "       galapix list     [OPTIONS]...\n"
             << "       galapix cleanup  [OPTIONS]...\n"
-            << "       galapix merge    [OPTIONS]... [FILES]...\n"
             << "\n"
             << "Commands:\n"
             << "  view      Display the given files\n"
-            << "  prepare   Generate all thumbnail for all given images\n"
             << "  thumbgen  Generate only small thumbnails for all given images\n"
-            << "  filegen   Generate only small the file entries in the database\n"
             << "  list      Lists all files in the database\n"
             << "  cleanup   Runs garbage collection on the database\n"
-            << "  merge     Merges the given databases into the database given by -d FILE\n"
             << "\n"
             << "Options:\n"
             << "  -d, --database FILE    Use FILE has database (default: none)\n"
@@ -591,29 +469,9 @@ Galapix::run(const Options& opts)
     {
       export_images(opts.database, urls);
     }
-    else if (command == "merge")
-    {
-      merge(opts.database, std::vector<std::string>(opts.rest.begin()+1, opts.rest.end()));
-    }
-    else if (command == "test")
-    {
-      test(opts, urls);
-    }
-    else if (command == "downscale")
-    {
-      downscale(urls);
-    }
-    else if (command == "prepare")
-    {
-      thumbgen(opts, urls, true);
-    }
     else if (command == "thumbgen")
     {
       thumbgen(opts, urls, false);
-    }
-    else if (command == "filegen")
-    {
-      filegen(opts, urls);
     }
     else
     {
@@ -648,6 +506,16 @@ Galapix::parse_args(int argc, char** argv, Options& opts)
         {
           raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
         }
+      }
+      else if (strcmp(argv[i], "-D") == 0 ||
+               strcmp(argv[i], "--debug") == 0)
+      {
+        g_logger.set_log_level(Logger::kDebug);
+      }
+      else if (strcmp(argv[i], "-v") == 0 ||
+               strcmp(argv[i], "--verbose") == 0)
+      {
+        g_logger.set_log_level(Logger::kInfo);
       }
       else if (strcmp(argv[i], "-t") == 0 ||
                strcmp(argv[i], "--threads") == 0)

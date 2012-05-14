@@ -43,16 +43,11 @@ public:
   void run(const Options& opts);
   int  main(int argc, char** argv);
 
-  void merge(const std::string& database, const std::vector<std::string>& filenames);
-  void test(const Options& opts, const std::vector<URL>& urls);
-  void downscale(const std::vector<URL>& urls);
   void cleanup(const std::string& database);
   void list(const Options& opts);
   void thumbgen(const Options& opts,
                 const std::vector<URL>& urls, 
                 bool generate_all_tiles);
-  void filegen(const Options& opts,
-               const std::vector<URL>& urls);
   void export_images(const std::string& database, const std::vector<URL>& urls);
   void view(const Options& opts, const std::vector<URL>& urls);
 };

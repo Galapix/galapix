@@ -39,10 +39,9 @@ private:
   {}
 
 public:
-  static std::shared_ptr<DatabaseTileProvider> create(const FileEntry& file_entry)
+  static std::shared_ptr<DatabaseTileProvider> create(const FileEntry& file_entry, 
+                                                      const ImageEntry& image_entry)
   {
-    assert(!"broken");
-    ImageEntry image_entry;
     return std::shared_ptr<DatabaseTileProvider>(new DatabaseTileProvider(file_entry, image_entry));
   }
 
@@ -62,11 +61,6 @@ public:
     return 256;
   }
   
-  int get_overlap() const 
-  {
-    return 0;
-  }
-
   Size get_size() const
   {
     return m_image_entry.get_size();
@@ -86,8 +80,8 @@ public:
   }
 
 private:
-  DatabaseTileProvider(const DatabaseTileProvider&);
-  DatabaseTileProvider& operator=(const DatabaseTileProvider&);
+  DatabaseTileProvider(const DatabaseTileProvider&) = delete;
+  DatabaseTileProvider& operator=(const DatabaseTileProvider&) = delete;
 };
 
 #endif

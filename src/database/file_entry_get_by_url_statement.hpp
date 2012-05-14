@@ -28,7 +28,7 @@ public:
   FileEntryGetByUrlStatement(SQLiteConnection& db) :
     m_stmt(db, 
            "SELECT\n"
-           "  file.id, file.url, blob.sha1, blob.size, file.mtime\n"
+           "  file.id, file.url, file.mtime, file.handler, file.parent_file_id, blob.id, blob.sha1, blob.size\n"
            "FROM\n"
            "  file\n"
            "LEFT OUTER JOIN\n"

@@ -29,7 +29,7 @@
 #include "util/raise_exception.hpp"
 
 SHA1
-SHA1::from_data(const uint8_t* data, size_t len)
+SHA1::from_mem(const uint8_t* data, size_t len)
 {
   MHASH td = mhash_init(MHASH_SHA1);
   if (td == MHASH_FAILED)
@@ -49,7 +49,7 @@ SHA1::from_data(const uint8_t* data, size_t len)
 SHA1
 SHA1::from_string(const std::string& str)
 {
-  return from_data(reinterpret_cast<const uint8_t*>(str.data()), str.size());
+  return from_mem(reinterpret_cast<const uint8_t*>(str.data()), str.size());
 }
 
 SHA1

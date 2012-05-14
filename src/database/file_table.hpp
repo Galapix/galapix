@@ -19,25 +19,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_FILE_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_FILE_TABLE_HPP
 
+class SQLiteConnection;
+
 class FileTable
 {
 private:
   SQLiteConnection& m_db;
 
 public:
-  FileTable(SQLiteConnection& db) :
-    m_db(db)
-  {
-    m_db.exec("CREATE TABLE IF NOT EXISTS file (\n"
-              "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-              "  url       TEXT UNIQUE,\n"
-              "  mtime     INTEGER,\n"
-              "  handler   INTEGER,\n"
-              "  blob_id   INTEGER\n"
-              ");");
-
-    m_db.exec("CREATE INDEX IF NOT EXISTS file_index ON file ( url, mtime, handler, blob_id );");
-  }
+  FileTable(SQLiteConnection& db);
 
 private:
   FileTable(const FileTable&);

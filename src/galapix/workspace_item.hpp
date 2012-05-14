@@ -16,22 +16,40 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_VIDEO_TABLE_HPP
-#define HEADER_GALAPIX_DATABASE_VIDEO_TABLE_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_WORKSPACE_ITEM_HPP
+#define HEADER_GALAPIX_GALAPIX_WORKSPACE_ITEM_HPP
 
-#include "sqlite/connection.hpp"
+#include <memory>
+#include <vector>
 
-class VideoTable
+class WorkspaceItem;
+
+typedef std::weak_ptr<WorkspaceItem> WorkspaceItemWPtr;
+
+class WorkspaceItem
 {
 private:
-  SQLiteConnection& m_db;
+  WorkspaceItemWPtr m_parent;
+  std::vector<WorkspaceItemPtr> m_children;
 
 public:
-  VideoTable(SQLiteConnection& db);
+  WorkspaceItem() :
+    m_parent(),
+    m_children()
+  {}
+
+  WorkspaceItemWPtr get_parent() const { return m_parent; }
+  std::vector<WorkspaceItemPtr> get_children() const { return m_children; }
+
+  void     set_pos(const Vector2f& pos);
+  Vector2f get_pos() const;
+
+  float get_width() const;
+  float get_height() const;
 
 private:
-  VideoTable(const VideoTable&);
-  VideoTable& operator=(const VideoTable&);
+  WorkspaceItem(const WorkspaceItem&);
+  WorkspaceItem& operator=(const WorkspaceItem&);
 };
 
 #endif

@@ -22,11 +22,11 @@
 #include <memory>
 #include <assert.h>
 
+#include "database/blob_entry.hpp"
 #include "database/row_id.hpp"
 #include "math/math.hpp"
 #include "math/size.hpp"
 #include "util/url.hpp"
-#include "util/sha1.hpp"
 
 class SQLiteReader;
 
@@ -44,66 +44,65 @@ public:
   static FileEntry from_reader(SQLiteReader& reader);
 
   FileEntry() :
-    m_fileid(),
+    m_id(),
     m_url(),
-    m_sha1(),
-    m_size(),
     m_mtime(),
-    m_handler()
+    m_handler(),
+    m_blob_entry(),
+    m_parent()
   {}
 
-  FileEntry(const RowId& fileid,
+  FileEntry(const RowId& id,
             const URL& url,
             int size,
             int mtime,
             Handler handler) :
-    m_fileid(fileid),
+    m_id(id),
     m_url(url),
-    m_sha1(),
-    m_size(size),
     m_mtime(mtime),
-    m_handler(handler)
+    m_handler(handler),
+    m_blob_entry(),
+    m_parent()
   {}
 
-  FileEntry(const RowId& fileid,
+  FileEntry(const RowId& id,
             const URL& url,
-            const SHA1& sha1,
-            int size,
             int mtime,
-            Handler handler) :
-    m_fileid(fileid),
+            Handler handler, 
+            const RowId& parent,
+            const BlobEntry& blob_entry) :
+    m_id(id),
     m_url(url),
-    m_sha1(sha1),
-    m_size(size),
     m_mtime(mtime),
-    m_handler(handler)
+    m_handler(handler),
+    m_blob_entry(blob_entry),
+    m_parent(parent)
   {}
 
-  RowId   get_fileid()  const { return m_fileid; }
+  RowId   get_id()  const { return m_id; }
   URL     get_url()     const { return m_url;    }
-  const SHA1& get_sha1() const { return m_sha1;   }
-  int     get_size()    const { return m_size;   }
   int     get_mtime()   const { return m_mtime;  }
   Handler get_handler() const { return m_handler; }
+  const BlobEntry& get_blob_entry() const { return m_blob_entry; }
+  RowId   get_parent() const { return m_parent; }
   
 private:
   /** Unique id by which one can refer to this FileEntry, used in the
       'tile' table in the database */
-  RowId m_fileid;
+  RowId m_id;
 
   /** The URL of the image file */
   URL m_url;
-
-  SHA1 m_sha1;
-
-  /** Size of the file in bytes */
-  int m_size;
 
   /** Last modification of the file */
   int m_mtime;
 
   /** Handler of the file */
   Handler m_handler;
+
+  BlobEntry m_blob_entry;
+
+  RowId m_parent;
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);

@@ -67,21 +67,6 @@ public:
   void stop_thread();
   void abort_thread();
 
-  /** Generates the requested tile from its original image */
-  void generate_tiles(const JobHandle& job_handle, const FileEntry&,
-                      int min_scale, int max_scale,
-                      const std::function<void (Tile)>& callback);
-
-  /** Generates the requested tile from its original image */
-  void generate_tile(const JobHandle& job_handle,
-                     const FileEntry&, int tilescale, const Vector2i& pos, 
-                     const std::function<void (Tile)>& callback);
-
-  void generate_file_entry(const JobHandle& job_handle, const URL& url,
-                           const std::function<void (int, int, int)>& file_callback,
-                           const std::function<void (Tile)>& tile_callback);
-  void remove_job(std::shared_ptr<Job> job);
-
   /* @{ */ // syncronized functions to be used by other threads
   /**
    *  Request the tile from the database, if not in the database the
@@ -97,8 +82,7 @@ public:
 
   /** Request the FileEntry for \a filename */
   JobHandle request_file(const URL& url, 
-                         const std::function<void (int, int, int)>& file_callback,
-                         const std::function<void (Tile)>& tile_callback = std::function<void (Tile)>());
+                         const std::function<void (FileEntry)>& file_callback);
 
   /** Request FileEntrys by glob pattern from the database */
   void      request_files_by_pattern(const std::function<void (FileEntry)>& callback, const std::string& pattern);
@@ -115,9 +99,24 @@ public:
   /* @} */
 
 private:
+  void remove_job(std::shared_ptr<Job> job);
+
+  /** Generates the requested tile from its original image */
+  void generate_tiles(const JobHandle& job_handle, const FileEntry&,
+                      int min_scale, int max_scale,
+                      const std::function<void (Tile)>& callback);
+
+  /** Generates the requested tile from its original image */
+  void generate_tile(const JobHandle& job_handle,
+                     const FileEntry&, int tilescale, const Vector2i& pos, 
+                     const std::function<void (Tile)>& callback);
+
+  void generate_file_entry(const JobHandle& job_handle, const URL& url,
+                           const std::function<void (FileEntry)>& file_callback);
+
   /** Place tile into the database */
   void receive_tile(const RowId& fileid, const Tile& tile);
-  void receive_file(const URL& url, int size, int mtime, FileEntry::Handler handler);
+  void receive_file(const FileEntry& file_entry);
   void receive_tiles(const std::vector<TileEntry>& tiles);
 
   void process_queue(ThreadMessageQueue2<std::function<void()>>& queue);

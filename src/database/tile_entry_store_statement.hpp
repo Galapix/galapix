@@ -28,7 +28,7 @@ private:
 
 public:
   TileEntryStoreStatement(SQLiteConnection& db) :
-    m_stmt(db, "INSERT into tiles (fileid, scale, x, y, data, quality, format) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);")
+    m_stmt(db, "INSERT into tile (image_id, scale, x, y, data, quality, format) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);")
     // FIXME: This is brute force and doesn't handle collisions
   {}
 

@@ -42,7 +42,8 @@ FileDatabase::FileDatabase(SQLiteConnection& db) :
   m_file_entry_get_by_url(m_db),
   m_file_entry_store(m_db),
   m_file_entry_delete(m_db),
-  m_image_entry_store(m_db)
+  m_image_entry_store(m_db),
+  m_image_entry_get(m_db)
 {
 }
 
@@ -58,16 +59,23 @@ FileDatabase::store_file_entry(const URL& url, int size, int mtime, FileEntry::H
 }
 
 FileEntry
-FileDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler)
+FileDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler, const RowId& archive_id)
 {
   RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
   return FileEntry(file_id, url, size, mtime, handler);
 }
 
-void
+ImageEntry
 FileDatabase::store_image_entry(const ImageEntry& image)
 {
   m_image_entry_store(image);
+  return image;
+}
+
+bool
+FileDatabase::get_image_entry(const FileEntry& entry, ImageEntry& image_out)
+{
+  return m_image_entry_get(entry.get_blob_entry().get_id(), image_out);
 }
 
 bool

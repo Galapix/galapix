@@ -27,22 +27,20 @@
 FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url) :
   Job(job_handle),
   m_url(url),
-  m_sig_file_callback(),
-  m_sig_tile_callback()
+  m_sig_file_callback()
 {
 }
 
 void
 FileEntryGenerationJob::run()
 {
-#if 0
   try 
   {
+#if 0
     SoftwareSurfacePtr surface;
     Size size;
     int min_scale;
     int max_scale;
-    FileEntry file_entry;
     
     // FIXME: JPEG::filename_is_jpeg() is ugly
     if (!m_url.is_remote() && JPEG::filename_is_jpeg(m_url.str()))
@@ -60,13 +58,7 @@ FileEntryGenerationJob::run()
       }
 
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
-      file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                    size.width, size.height, ImageEntry::JPEG_FORMAT);
-
-      // FIXME: here we are just guessing which tiles might be useful,
-      // there might be a better way to pick \a min_scale
-      min_scale = std::max(0, file_entry.get_thumbnail_scale() - 3);
-      max_scale = file_entry.get_thumbnail_scale();
+      file_entry = FileEntry(RowId(), m_url, m_url.get_size(), m_url.get_mtime(), FileEntry::kUnknownHandler);
 
       // 2^3 is the highest scale JPEG supports, so we limit the
       // min_scale to that
@@ -87,36 +79,24 @@ FileEntryGenerationJob::run()
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
       surface = SoftwareSurfaceFactory::current().from_url(m_url);
       size = surface->get_size();
-      int format = ImageEntry::UNKNOWN_FORMAT;
-      switch(surface->get_format())
-      {
-        case SoftwareSurface::RGB_FORMAT:
-          format = ImageEntry::JPEG_FORMAT;
-          break;
-
-        case SoftwareSurface::RGBA_FORMAT:
-          format = ImageEntry::PNG_FORMAT;
-          break;
-      }
-      file_entry = FileEntry::create_without_fileid(m_url, m_url.get_size(), m_url.get_mtime(), 
-                                                    size.width, size.height, format);
+      file_entry = FileEntry(RowId(), m_url, m_url.get_size(), m_url.get_mtime(), FileEntry::kImageHandler);
       min_scale = 0;
       max_scale = file_entry.get_thumbnail_scale();
     }
 
-    m_sig_file_callback(m_url, m_url.get_size(), m_url.get_mtime());
+    m_sig_file_callback(file_entry);
     
     TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale, 
                                   [this](const Tile& tile){
                                     m_sig_tile_callback(tile);
                                   });
+#endif
   }
   catch(const std::exception& err)
   {
-    log_error << "Error while processing " << m_url << std::endl;
-    log_error << "  Exception: " << err.what() << std::endl;
+    log_error("Error while processing " << m_url);
+    log_error("  Exception: " << err.what());
   }
-#endif
 }
 
 /* EOF */

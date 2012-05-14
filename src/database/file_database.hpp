@@ -30,6 +30,7 @@
 #include "database/file_entry_get_by_url_statement.hpp"
 #include "database/file_entry_store_statement.hpp"
 #include "database/image_entry_store_statement.hpp"
+#include "database/image_entry_get_statement.hpp"
 #include "database/archive_table.hpp"
 #include "database/blob_table.hpp"
 #include "database/file_table.hpp"
@@ -68,6 +69,7 @@ private:
   FileEntryStoreStatement        m_file_entry_store;
   FileEntryDeleteStatement       m_file_entry_delete;
   ImageEntryStoreStatement       m_image_entry_store;
+  ImageEntryGetStatement         m_image_entry_get;
 
 public:
   FileDatabase(SQLiteConnection& db);
@@ -88,11 +90,13 @@ public:
   void get_file_entries(std::vector<FileEntry>& entries_out);
   void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
 
-  FileEntry store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler);
-  FileEntry store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler);
-  void store_image_entry(const ImageEntry& image);
+  bool get_image_entry(const FileEntry& entry, ImageEntry& image_out);
 
-  void delete_file_entry(const RowId& fileid);
+  FileEntry  store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler);
+  FileEntry  store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler, const RowId& archive_id);
+  ImageEntry store_image_entry(const ImageEntry& image);
+
+  void delete_file_entry(const RowId& file_id);
 
 private:
   FileDatabase (const FileDatabase&);

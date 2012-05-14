@@ -29,8 +29,8 @@ private:
   int64_t m_id;
 
 public:
-  explicit RowId() : m_id(0) {}
-  explicit RowId(int64_t id) : m_id(id) {}
+  RowId() : m_id(0) {}
+  RowId(int64_t id) : m_id(id) {}
 
   int64_t get_id() const 
   { 

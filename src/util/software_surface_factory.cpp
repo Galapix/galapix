@@ -46,7 +46,7 @@
 #include "util/xcf_software_surface_loader.hpp"
 
 namespace {
-bool has_prefix(const std::string& lhs, const std::string rhs)
+bool has_prefix(const std::string& lhs, const std::string& rhs)
 {
   if (lhs.length() < rhs.length())
     return false;

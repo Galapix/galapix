@@ -58,22 +58,22 @@ private:
 
 private:
   ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, JobManager& job_manager);
+  ZoomifyTileProvider(const ZoomifyTileProvider&) = delete;
+
+  ZoomifyTileProvider& operator=(const ZoomifyTileProvider&) = delete;
 
 public:
   static std::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
 
-  int get_tile_group(int scale, const Vector2i& pos);
   JobHandle request_tile(int scale, const Vector2i& pos, 
                          const std::function<void (Tile)>& callback);
 
   int  get_max_scale() const { return m_max_scale; }
   int  get_tilesize()  const { return m_tilesize; }
-  int  get_overlap()   const { return 0; }
   Size get_size()      const { return m_size; }
-  
+
 private:
-  ZoomifyTileProvider(const ZoomifyTileProvider&);
-  ZoomifyTileProvider& operator=(const ZoomifyTileProvider&);
+  int get_tile_group(int scale, const Vector2i& pos);
 };
 
 #endif

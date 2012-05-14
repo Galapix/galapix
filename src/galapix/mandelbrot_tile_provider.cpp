@@ -62,12 +62,6 @@ MandelbrotTileProvider::get_tilesize() const
   return 256;
 }
 
-int
-MandelbrotTileProvider::get_overlap() const
-{
-  return 0; 
-}
-
 Size
 MandelbrotTileProvider::get_size() const
 {

@@ -16,24 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_VIDEO_TABLE_HPP
-#define HEADER_GALAPIX_DATABASE_VIDEO_TABLE_HPP
+#include "database/blob_table.hpp"
 
 #include "sqlite/connection.hpp"
 
-class VideoTable
+BlobTable::BlobTable(SQLiteConnection& db) :
+  m_db(db)
 {
-private:
-  SQLiteConnection& m_db;
+  m_db.exec("CREATE TABLE IF NOT EXISTS blob (\n"
+            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+            "  sha1      BLOB UNIQUE,\n"
+            "  size      INTEGER\n"
+            ");");
 
-public:
-  VideoTable(SQLiteConnection& db);
-
-private:
-  VideoTable(const VideoTable&);
-  VideoTable& operator=(const VideoTable&);
-};
-
-#endif
+  //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
+}
 
 /* EOF */

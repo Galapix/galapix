@@ -19,23 +19,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_BLOB_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_BLOB_TABLE_HPP
 
+class SQLiteConnection;
+
 class BlobTable final
 {
 private:
   SQLiteConnection& m_db;
 
 public:
-  BlobTable(SQLiteConnection& db) :
-    m_db(db)
-  {
-    m_db.exec("CREATE TABLE IF NOT EXISTS blob (\n"
-              "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-              "  sha1      BLOB UNIQUE,\n"
-              "  size      INTEGER\n"
-              ");");
-
-    m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
-  }
+  BlobTable(SQLiteConnection& db);
 
 private:
   BlobTable(const BlobTable&) = delete;

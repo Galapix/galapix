@@ -44,7 +44,6 @@ public:
 
   int  get_max_scale() const;
   int  get_tilesize() const;
-  int  get_overlap() const;
   Size get_size() const;
 
 private:

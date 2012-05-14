@@ -38,16 +38,16 @@ int main(int argc, char** argv)
     if (!filedb.get_file_entry(url, file_entry))
     { 
       SHA1 sha1 = SHA1::from_file(url.get_stdio_name());
-      file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler);
+      file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler, RowId());
       std::cout << "stored: " << file_entry << std::endl;
     }
     else
     {
       SHA1 sha1 = SHA1::from_file(url.get_stdio_name());
-      if (size  != file_entry.get_size() ||
+      if (size  != file_entry.get_blob_entry().get_size() ||
           mtime != file_entry.get_mtime())
       { 
-        file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler);
+        file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler, RowId());
         std::cout << "replaced: " << file_entry << std::endl;
       }
       else

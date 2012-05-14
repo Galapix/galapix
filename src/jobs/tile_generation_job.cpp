@@ -117,7 +117,7 @@ TileGenerationJob::process_tile(const Tile& tile)
 {
   m_tiles.push_back(tile);
 
-  m_sig_tile_callback(m_file_entry.get_fileid(), tile);
+  m_sig_tile_callback(m_file_entry.get_id(), tile);
 
   for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
   {

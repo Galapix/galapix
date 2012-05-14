@@ -27,22 +27,26 @@ FileEntry::from_reader(SQLiteReader& reader)
 {
   return FileEntry(RowId(reader.get_int(0)),  // fileid
                    URL::from_string(reader.get_text(1)), // url
-                   SHA1(reader.get_blob(2)),
-                   reader.get_int(3),  // size
-                   reader.get_int(4),  // mtime
-                   static_cast<FileEntry::Handler>(reader.get_int(4))); // format
+                   reader.get_int(2),  // mtime
+                   static_cast<FileEntry::Handler>(reader.get_int(3)), // handler
+                   RowId(reader.get_int64(4)),
+                   BlobEntry(reader.get_int64(5),
+                             SHA1(reader.get_blob(6)),
+                             reader.get_int(7)));
 }
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
 {
-  return os << "FileEntry(" 
-            << entry.get_fileid() << ", " 
-            << entry.get_url()    << ", "
-            << entry.get_sha1()   << ", "
-            << entry.get_size()   << ", "
-            << entry.get_mtime()
-    //<< entry.get_format();
-  << ")";    
+  return os << "FileEntry(\n" 
+            << "         id: " << entry.get_id() << '\n'
+            << "        url: " << entry.get_url() << '\n'
+            << "      mtime: " << entry.get_mtime() << '\n'
+            << "    handler: " << entry.get_handler() << '\n'
+            << "     parent: " << entry.get_parent() << '\n'
+            << "    blob_id: " << entry.get_blob_entry().get_id() << '\n'
+            << "  blob_sha1: " << entry.get_blob_entry().get_sha1() << '\n'
+            << "  blob_size: " << entry.get_blob_entry().get_size() << '\n'
+            << ")";
 }
 
 /* EOF */

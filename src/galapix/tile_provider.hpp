@@ -42,7 +42,6 @@ public:
 
   virtual int  get_max_scale() const =0;
   virtual int  get_tilesize() const =0;
-  virtual int  get_overlap() const =0;
   virtual Size get_size() const =0;
 
   virtual void refresh(const std::function<void (TileProviderPtr)>& callback) {}

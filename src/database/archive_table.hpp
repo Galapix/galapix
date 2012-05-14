@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_ARCHIVE_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_ARCHIVE_TABLE_HPP
 
-#include "sqlite/connection.hpp"
+class SQLiteConnection;
 
 class ArchiveTable
 {
@@ -27,16 +27,7 @@ private:
   SQLiteConnection& m_db;
 
 public:
-  ArchiveTable(SQLiteConnection& db) :
-    m_db(db)
-  {
-    m_db.exec("CREATE TABLE IF NOT EXISTS archive (\n"
-              "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-              "  file_id   INTEGER"
-              ");");
-
-    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS archive_index ON archive ( id, file_id );");
-  }
+  ArchiveTable(SQLiteConnection& db);
 
 private:
   ArchiveTable(const ArchiveTable&);

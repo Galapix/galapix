@@ -20,10 +20,23 @@
 #define HEADER_GALAPIX_DATABASE_BLOB_ENTRY_HPP
 
 #include "database/row_id.hpp"
+#include "util/sha1.hpp"
 
 class BlobEntry
 {
 public:
+  BlobEntry() :
+    m_id(),
+    m_sha1(),
+    m_size()
+  {}
+
+  BlobEntry(const SHA1& sha1, int size) :
+    m_id(),
+    m_sha1(sha1),
+    m_size(size)
+  {}
+
   BlobEntry(const RowId& id, const SHA1& sha1, int size) :
     m_id(id),
     m_sha1(sha1),

@@ -19,27 +19,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TILE_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TILE_TABLE_HPP
 
+class SQLiteConnection;
+
 class TileTable
 {
 private:
   SQLiteConnection& m_db;
 
 public:
-  TileTable(SQLiteConnection& db) :
-    m_db(db)
-  {
-    m_db.exec("CREATE TABLE IF NOT EXISTS tile (\n"
-              "  image_id INTEGER,\n" // refers to images.imageid
-              "  scale    INTEGER,\n" // zoom level
-              "  x        INTEGER,\n" // X position in tiles
-              "  y        INTEGER,\n" // Y position in tiles
-              "  data     BLOB,\n"    // the image data, JPEG
-              "  quality  INTEGER,\n" // the quality of the tile (default: 0) FIXME: not used
-              "  format   INTEGER);"  // format of the data (0: JPEG, 1: PNG)
-      );
-
-    m_db.exec("CREATE INDEX IF NOT EXISTS tile_index ON tile ( image_id, scale, x, y );");
-  }
+  TileTable(SQLiteConnection& db);
 
 private:
   TileTable(const TileTable&);

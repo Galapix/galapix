@@ -32,16 +32,14 @@ class FileEntryGenerationJob : public Job
 private:
   URL m_url;
 
-  boost::signal<void (int, int, FileEntry::Handler)> m_sig_file_callback;
-  boost::signal<void (Tile)>      m_sig_tile_callback;
+  boost::signal<void (FileEntry)> m_sig_file_callback;
 
 public:
   FileEntryGenerationJob(const JobHandle& job_handle, const URL& url);
 
   void run();
 
-  boost::signal<void (int, int, FileEntry::Handler)>& sig_file_callback() { return m_sig_file_callback; }
-  boost::signal<void (Tile)>&      sig_tile_callback() { return m_sig_tile_callback; }
+  boost::signal<void (FileEntry)>& sig_file_callback() { return m_sig_file_callback; }
 
 private:
   FileEntryGenerationJob(const FileEntryGenerationJob&);

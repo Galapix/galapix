@@ -132,10 +132,12 @@ PNG::is_png(const std::string& filename)
     unsigned char buf[4];
     if (fread(buf, 1, sizeof(buf), in) != 4)
     {
+      fclose(in);
       return false;
     }
     else
     {
+      fclose(in);
       static unsigned char magic[4] = { 0x89, 0x50, 0x4e, 0x47 };
       return
         buf[0] == magic[0] &&

@@ -91,7 +91,7 @@ SExprFileWriter::write_string(const char* name, const std::string& value)
   replacements["\\"] = "\\\\";
 
   for (std::map<std::string, std::string>::iterator i = replacements.begin();
-       i != replacements.end(); i++)
+       i != replacements.end(); ++i)
   {
     for (pos = new_value.find(i->first); pos != std::string::npos; pos = new_value.find(i->first))
     {

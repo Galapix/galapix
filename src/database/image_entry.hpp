@@ -40,7 +40,9 @@ public:
   };
 
 private:
-  RowId m_fileid;
+  RowId m_id;
+
+  RowId m_blob_id;
 
   /** The size of the image in pixels */
   Size m_size;
@@ -52,14 +54,16 @@ private:
 
 public:
   ImageEntry() :
-    m_fileid(),
+    m_id(),
+    m_blob_id(),
     m_size(),
-    m_handler(),
+    m_handler(kUnknownHandler),
     m_max_scale()
   {}
 
-  ImageEntry(RowId fileid, int width, int height, int handler) :
-    m_fileid(fileid),
+  ImageEntry(const RowId& id, const RowId& blob_id, int width, int height, int handler) :
+    m_id(id),
+    m_blob_id(blob_id),
     m_size(width, height),
     m_handler(handler),
     m_max_scale()
@@ -73,7 +77,7 @@ public:
     }
   }
 
-  RowId  get_fileid() const { return m_fileid; }
+  RowId  get_blob_id() const { return m_blob_id; }
   int    get_width()   const { return m_size.width; }
   int    get_height()  const { return m_size.height; }
   Size   get_size()    const { return m_size; }

@@ -59,7 +59,7 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
       if (!job_handle.is_aborted())
       {
         TileEntry tile;
-        if (m_database.get_tiles().get_tile(file_entry.get_fileid(), tilescale, pos, tile))
+        if (m_database.get_tiles().get_tile(file_entry.get_id(), tilescale, pos, tile))
         {
           // Tile has been found, so return it and finish up
           if (callback)
@@ -73,7 +73,7 @@ DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const V
           // Tile hasn't been found, so we need to generate it
           if (0)
             std::cout << "Error: Couldn't get tile: " 
-                      << file_entry.get_fileid() << " "
+                      << file_entry.get_id() << " "
                       << pos.x << " "
                       << pos.y << " "
                       << tilescale
@@ -118,15 +118,11 @@ DatabaseThread::request_job_removal(std::shared_ptr<Job> job, bool)
 
 JobHandle
 DatabaseThread::request_file(const URL& url, 
-                             const std::function<void (int, int, int)>& file_callback_,
-                             const std::function<void (Tile)>& tile_callback_)
+                             const std::function<void (FileEntry)>& file_callback)
 {
   JobHandle job_handle_ = JobHandle::create();
 
-  std::function<void (int, int, int)> file_callback = file_callback_;
-  std::function<void (Tile)> tile_callback = tile_callback_;
-
-  m_request_queue.wait_and_push([this, job_handle_, url, file_callback, tile_callback](){
+  m_request_queue.wait_and_push([this, job_handle_, url, file_callback](){
       JobHandle job_handle = job_handle_;
       if (!job_handle.is_aborted())
       {
@@ -135,33 +131,11 @@ DatabaseThread::request_file(const URL& url,
         {
           // file entry is not in the database, so try to generate it
           DatabaseThread::current()->generate_file_entry(job_handle, url, 
-                                                         file_callback, tile_callback);
+                                                         file_callback);
         }
         else
         {
-#if 0
           file_callback(file_entry);
-
-          if (tile_callback)
-          {
-            TileEntry tile_entry;
-            if (m_database.get_tiles().get_tile(file_entry.get_fileid(), 
-                                                file_entry.get_thumbnail_scale(),
-                                                Vector2i(0, 0), 
-                                                tile_entry))
-            {
-              tile_callback(file_entry, tile_entry);
-            }
-            else
-            {
-              std::cout << "RequestFileDatabaseMessage: " 
-                        << file_entry << " " 
-                        << Vector2i(0,0) << " "
-                        << file_entry.get_thumbnail_scale() << std::endl;
-            }
-          }
-#endif
-
           job_handle.set_finished();
         }
       }
@@ -292,7 +266,7 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
   int min_scale_in_db = -1;
   int max_scale_in_db = -1;
 
-  m_database.get_tiles().get_min_max_scale(file_entry.get_fileid(), min_scale_in_db, max_scale_in_db);
+  m_database.get_tiles().get_min_max_scale(file_entry.get_id(), min_scale_in_db, max_scale_in_db);
 
   std::shared_ptr<MultipleTileGenerationJob> 
     job_ptr(new MultipleTileGenerationJob(job_handle, 
@@ -300,7 +274,7 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
                                           min_scale_in_db, max_scale_in_db,
                                           min_scale, max_scale,
                                           [this, file_entry](const Tile& tile){
-                                            receive_tile(file_entry.get_fileid(), tile);
+                                            receive_tile(file_entry.get_id(), tile);
                                           }));
 
   // Not removing the job from the queue
@@ -330,7 +304,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
     int min_scale_in_db = -1;
     int max_scale_in_db = -1;
 
-    if (m_database.get_tiles().get_min_max_scale(file_entry.get_fileid(), min_scale_in_db, max_scale_in_db))
+    if (m_database.get_tiles().get_min_max_scale(file_entry.get_id(), min_scale_in_db, max_scale_in_db))
     {
       if (tilescale >= min_scale_in_db &&
           tilescale <= max_scale_in_db)
@@ -366,8 +340,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
 
 void
 DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
-                                    const std::function<void (int, int, int)>& file_callback,
-                                    const std::function<void (Tile)>& tile_callback)
+                                    const std::function<void (FileEntry)>& file_callback)
 {
   //log_info << " << url << " " << job_handle << std::endl;
   std::shared_ptr<FileEntryGenerationJob> job_ptr(new FileEntryGenerationJob(job_handle, url));
@@ -377,20 +350,9 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
     job_ptr->sig_file_callback().connect(file_callback);
   }
 
-  if (tile_callback)
-  {
-    job_ptr->sig_tile_callback().connect(tile_callback);
-  }
-
-  job_ptr->sig_file_callback().connect([this, url](int size, int mtime, FileEntry::Handler handler) {
-      receive_file(url, size, mtime, handler);
-    });
-    
-#if 0
-  job_ptr->sig_tile_callback().connect([this](const FileEntry& file_entry, const Tile& tile) {
-      receive_tile(file_entry.get_fileid(), tile);
-    });
-#endif
+  job_ptr->sig_file_callback().connect([this, url](const FileEntry& file_entry) {
+      receive_file(file_entry);
+    });   
   
   m_tile_job_manager.request(job_ptr);
   //m_tile_job_manager.request(job_ptr, std::bind(&DatabaseThread::request_job_removal, this, _1, _2));
@@ -414,10 +376,13 @@ DatabaseThread::store_file_entry(const JobHandle& job_handle_in,
 }
 
 void
-DatabaseThread::receive_file(const URL& url, int size, int mtime, FileEntry::Handler handler)
+DatabaseThread::receive_file(const FileEntry& file_entry)
 {
-  m_receive_queue.wait_and_push([this, url, size, mtime, handler]() {
-      m_database.get_files().store_file_entry(url, size, mtime, handler);
+  m_receive_queue.wait_and_push([this, file_entry]() {
+      m_database.get_files().store_file_entry(file_entry.get_url(), 
+                                              file_entry.get_blob_entry().get_size(), 
+                                              file_entry.get_mtime(),
+                                              file_entry.get_handler());
     });
 }
 

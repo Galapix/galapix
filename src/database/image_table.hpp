@@ -27,19 +27,7 @@ private:
   SQLiteConnection& m_db;
 
 public:
-  ImageTable(SQLiteConnection& db) :
-    m_db(db)
-  {
-    m_db.exec("CREATE TABLE IF NOT EXISTS image (\n"
-              "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-              "  file_id   INTEGER UNIQUE,\n"
-              "  width     INTEGER,\n"
-              "  height    INTEGER,\n"
-              "  handler   INTEGER\n"
-              ");");
-
-    m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS image_index ON image ( id, file_id, width, height, handler );");
-  }
+  ImageTable(SQLiteConnection& db);
 
 private:
   ImageTable(const ImageTable&) = delete;
