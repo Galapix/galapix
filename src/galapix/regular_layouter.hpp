@@ -30,7 +30,7 @@ private:
 public:
   RegularLayouter(float aspect_w, float aspect_h);
 
-  void layout(const ImageCollection& images, bool animated);
+  void layout(const ImageCollection& images);
 
 private:
   RegularLayouter(const RegularLayouter&);

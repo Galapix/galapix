@@ -26,7 +26,7 @@ RandomLayouter::RandomLayouter()
 }
 
 void
-RandomLayouter::layout(const ImageCollection& images, bool animated)
+RandomLayouter::layout(const ImageCollection& images)
 {
   const int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
 

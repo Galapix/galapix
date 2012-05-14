@@ -97,35 +97,26 @@ SpiralLayouter::advance()
 }
 
 void
-SpiralLayouter::layout(WorkspaceItem& item, bool animated)
+SpiralLayouter::layout(WorkspaceItem& item)
 {
   // normalize the image size to 1000x1000
   float target_scale = Math::min(1000.0f / static_cast<float>(item.get_original_width()),
                                  1000.0f / static_cast<float>(item.get_original_height()));
 
-  if (animated)
-  {
-    item.set_target_scale(target_scale);
-    item.set_target_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
-                                  static_cast<float>(m_pos.y) * 1024.0f));
-  }
-  else
-  {
-    item.set_scale(target_scale);
-    item.set_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
-                           static_cast<float>(m_pos.y) * 1024.0f));
-  }
+  item.set_target_scale(target_scale);
+  item.set_target_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
+                               static_cast<float>(m_pos.y) * 1024.0f));
 
   advance();
 }
 
 void
-SpiralLayouter::layout(const ImageCollection& images, bool animated)
+SpiralLayouter::layout(const ImageCollection& images)
 {
   reset();
-  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
+  for(const auto& i: images)
   {
-    layout(**i, animated);
+    layout(*i);
   }
 }
 

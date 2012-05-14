@@ -29,7 +29,7 @@ RegularLayouter::RegularLayouter(float aspect_w, float aspect_h) :
 }
 
 void
-RegularLayouter::layout(const ImageCollection& images, bool animated)
+RegularLayouter::layout(const ImageCollection& images)
 {
   if (!images.empty())
   {

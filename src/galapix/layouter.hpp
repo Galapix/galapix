@@ -31,7 +31,7 @@ public:
   Layouter() {}
   virtual ~Layouter() {}
 
-  virtual void layout(const ImageCollection& images, bool animated) =0;
+  virtual void layout(const ImageCollection& images) =0;
 
 private:
   Layouter(const Layouter&);

@@ -43,9 +43,9 @@ private:
 public:
   SpiralLayouter();
 
-  void layout(const ImageCollection& images, bool animated);
+  void layout(const ImageCollection& images);
   void reset();
-  void layout(WorkspaceItem& item, bool animated);
+  void layout(WorkspaceItem& item);
 
 private:
   void advance();

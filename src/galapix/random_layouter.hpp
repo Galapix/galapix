@@ -32,7 +32,7 @@ private:
 public:
   RandomLayouter();
 
-  void layout(const ImageCollection& images, bool animated);
+  void layout(const ImageCollection& images);
 
 private:
   RandomLayouter(const RandomLayouter&);
