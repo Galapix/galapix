@@ -26,6 +26,7 @@
 #include "galapix/layouter.hpp"
 #include "galapix/selection.hpp"
 #include "galapix/spiral_layouter.hpp"
+#include "galapix/workspace_item.hpp"
 #include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
 #include "util/url.hpp"
@@ -77,10 +78,10 @@ public:
   // Image Query Functions (dangerous: need to now when Image position
   // changes) -> Return "const Image"? -> can't do breaks due to impl
   ImageCollection get_images(const Rectf& rect) const;
-  ImagePtr get_image(const Vector2f& pos) const;
+  WorkspaceItemPtr get_image(const Vector2f& pos) const;
 
   // ---------------------------------------------
-  void add_image(const ImagePtr& image);
+  void add_image(const WorkspaceItemPtr& image);
 
   // Selection Commands
   SelectionPtr get_selection() const { return m_selection; }

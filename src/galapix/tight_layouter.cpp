@@ -48,7 +48,7 @@ TightLayouter::layout(const ImageCollection& images, bool animated)
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
   
-  auto relayout_row = [width, spacing](std::vector<ImagePtr>& row) {
+  auto relayout_row = [width, spacing](std::vector<WorkspaceItemPtr>& row) {
     float row_width = spacing * static_cast<float>(row.size()-1);
     for(auto& image: row) { row_width += image->get_scaled_width(); }
 
@@ -65,7 +65,7 @@ TightLayouter::layout(const ImageCollection& images, bool animated)
     row.clear();
   };
 
-  std::vector<ImagePtr> row;
+  std::vector<WorkspaceItemPtr> row;
   for(const auto& image: images)
   {
     row.push_back(image);

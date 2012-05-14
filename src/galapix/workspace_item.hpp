@@ -22,9 +22,14 @@
 #include <memory>
 #include <vector>
 
+#include "math/rect.hpp"
+#include "util/url.hpp"
+
+class Vector2f;
 class WorkspaceItem;
 
-typedef std::weak_ptr<WorkspaceItem> WorkspaceItemWPtr;
+typedef std::weak_ptr<WorkspaceItem>   WorkspaceItemWPtr;
+typedef std::shared_ptr<WorkspaceItem> WorkspaceItemPtr;
 
 class WorkspaceItem
 {
@@ -38,18 +43,57 @@ public:
     m_children()
   {}
 
+  virtual ~WorkspaceItem()
+  {}
+
   WorkspaceItemWPtr get_parent() const { return m_parent; }
   std::vector<WorkspaceItemPtr> get_children() const { return m_children; }
 
-  void     set_pos(const Vector2f& pos);
-  Vector2f get_pos() const;
+  virtual void     set_pos(const Vector2f& pos) = 0;
+  virtual Vector2f get_pos() const = 0;
 
-  float get_width() const;
-  float get_height() const;
+  virtual float get_scaled_width()  const = 0;
+  virtual float get_scaled_height() const = 0;
+
+  virtual void refresh(bool force) = 0;
+
+  // used by layouter
+  virtual void set_target_pos(const Vector2f& target_pos) = 0;
+  virtual void set_target_scale(float target_scale) = 0;
+
+  virtual void  set_scale(float f) = 0;
+  virtual float get_scale() const = 0;
+
+  virtual void  set_angle(float a) = 0;
+  virtual float get_angle() const = 0;
+
+  virtual int get_original_width() const = 0;
+  virtual int get_original_height() const = 0;
+
+  virtual Rectf get_image_rect() const = 0;
+
+  virtual bool overlaps(const Rectf& cliprect) const = 0;
+  virtual bool overlaps(const Vector2f& pos) const = 0;
+  
+  virtual bool is_visible() const = 0;
+
+
+  virtual void on_enter_screen() = 0;
+  virtual void on_leave_screen() = 0;
+
+  virtual void draw(const Rectf& cliprect, float zoom) = 0;
+  virtual void draw_mark() = 0;
+
+  virtual URL get_url() const = 0;
+
+  virtual void clear_cache() = 0;
+  virtual void cache_cleanup() = 0;
+  virtual void print_info() const = 0;
+  virtual void update_pos(float progress) = 0;
 
 private:
-  WorkspaceItem(const WorkspaceItem&);
-  WorkspaceItem& operator=(const WorkspaceItem&);
+  WorkspaceItem(const WorkspaceItem&) = delete;
+  WorkspaceItem& operator=(const WorkspaceItem&) = delete;
 };
 
 #endif

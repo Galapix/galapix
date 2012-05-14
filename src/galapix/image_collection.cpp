@@ -18,8 +18,8 @@
 
 #include "galapix/image_collection.hpp"
 
-ImageCollection::ImageCollection()
-  : m_images()
+ImageCollection::ImageCollection() :
+  m_images()
 {
 }
 
@@ -28,7 +28,7 @@ ImageCollection::~ImageCollection()
 }
 
 void
-ImageCollection::add(ImagePtr image)
+ImageCollection::add(WorkspaceItemPtr image)
 {
   m_images.push_back(image);
 }

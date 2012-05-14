@@ -97,22 +97,22 @@ SpiralLayouter::advance()
 }
 
 void
-SpiralLayouter::layout(Image& image, bool animated)
+SpiralLayouter::layout(WorkspaceItem& item, bool animated)
 {
   // normalize the image size to 1000x1000
-  float target_scale = Math::min(1000.0f / static_cast<float>(image.get_original_width()),
-                                 1000.0f / static_cast<float>(image.get_original_height()));
+  float target_scale = Math::min(1000.0f / static_cast<float>(item.get_original_width()),
+                                 1000.0f / static_cast<float>(item.get_original_height()));
 
   if (animated)
   {
-    image.set_target_scale(target_scale);
-    image.set_target_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
+    item.set_target_scale(target_scale);
+    item.set_target_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
                                   static_cast<float>(m_pos.y) * 1024.0f));
   }
   else
   {
-    image.set_scale(target_scale);
-    image.set_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
+    item.set_scale(target_scale);
+    item.set_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
                            static_cast<float>(m_pos.y) * 1024.0f));
   }
 

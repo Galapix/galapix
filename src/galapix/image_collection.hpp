@@ -22,12 +22,13 @@
 #include <vector>
 
 #include "galapix/image_handle.hpp"
+#include "galapix/workspace_item.hpp"
 
 /** A wrapper around a std::vector<> */
 class ImageCollection
 {
 public:
-  typedef std::vector<ImagePtr> Images;
+  typedef std::vector<WorkspaceItemPtr> Images;
   typedef Images::iterator iterator;
   typedef Images::const_iterator const_iterator;
   typedef Images::reverse_iterator reverse_iterator;
@@ -41,7 +42,7 @@ public:
   ImageCollection();
   ~ImageCollection();
 
-  void add(ImagePtr image);
+  void add(WorkspaceItemPtr image);
 
   void clear() { m_images.clear(); }
 
@@ -57,19 +58,19 @@ public:
   const_reverse_iterator rbegin() const;
   const_reverse_iterator rend() const;
 
-  ImagePtr& front() { return m_images.front(); }
-  const ImagePtr& front() const { return m_images.front(); }
+  WorkspaceItemPtr& front() { return m_images.front(); }
+  const WorkspaceItemPtr& front() const { return m_images.front(); }
 
-  ImagePtr& back() { return m_images.back(); }
-  const ImagePtr& back() const { return m_images.back(); }
+  WorkspaceItemPtr& back() { return m_images.back(); }
+  const WorkspaceItemPtr& back() const { return m_images.back(); }
 
   size_type size() const;
   bool empty() const;
 
   void erase(iterator first, iterator last) { m_images.erase(first, last); }
 
-  ImagePtr& operator[](size_type i) { return m_images[i]; }
-  const ImagePtr& operator[](size_type i) const { return m_images[i]; }
+  WorkspaceItemPtr& operator[](size_type i) { return m_images[i]; }
+  const WorkspaceItemPtr& operator[](size_type i) const { return m_images[i]; }
 };
 
 #endif

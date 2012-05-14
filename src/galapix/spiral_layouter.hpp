@@ -23,7 +23,7 @@
 
 #include "math/vector2i.hpp"
 
-class Image;
+class WorkspaceItem;
 
 class SpiralLayouter : public Layouter
 {
@@ -45,7 +45,7 @@ public:
 
   void layout(const ImageCollection& images, bool animated);
   void reset();
-  void layout(Image& image, bool animated);
+  void layout(WorkspaceItem& item, bool animated);
 
 private:
   void advance();

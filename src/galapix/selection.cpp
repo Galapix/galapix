@@ -25,7 +25,7 @@ Selection::Selection() :
 }
 
 void
-Selection::add_image(const ImagePtr& image)
+Selection::add_image(const WorkspaceItemPtr& image)
 {
   m_images.add(image);
 }
@@ -38,7 +38,7 @@ Selection::add_images(const ImageCollection& images)
 }
 
 void
-Selection::remove_image(const ImagePtr& image)
+Selection::remove_image(const WorkspaceItemPtr& image)
 {
   m_images.add(image);
 }
@@ -56,7 +56,7 @@ Selection::scale(float factor)
 }
 
 bool
-Selection::has(const ImagePtr& image) const
+Selection::has(const WorkspaceItemPtr& image) const
 {
   for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
   {

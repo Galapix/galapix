@@ -54,7 +54,7 @@ Workspace::get_images(const Rectf& rect) const
   return result;
 }
 
-ImagePtr
+WorkspaceItemPtr
 Workspace::get_image(const Vector2f& pos) const
 {
   for(ImageCollection::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
@@ -64,11 +64,11 @@ Workspace::get_image(const Vector2f& pos) const
       return *i;
     }
   }
-  return ImagePtr();
+  return WorkspaceItemPtr();
 }
 
 void
-Workspace::add_image(const ImagePtr& image)
+Workspace::add_image(const WorkspaceItemPtr& image)
 {
   m_images.add(image);  
 }
@@ -190,7 +190,7 @@ void
 Workspace::sort()
 {
   std::sort(m_images.begin(), m_images.end(), 
-            [](const ImagePtr& lhs, const ImagePtr& rhs) {
+            [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
               return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
   if (m_layouter)
@@ -204,7 +204,7 @@ void
 Workspace::sort_reverse()
 {
   std::sort(m_images.rbegin(), m_images.rend(), 
-            [](const ImagePtr& lhs, const ImagePtr& rhs) {
+            [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
               return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
   if (m_layouter)
@@ -326,7 +326,7 @@ void
 Workspace::delete_selection()
 {
   m_images.erase(std::remove_if(m_images.begin(), m_images.end(), 
-                                [this](const ImagePtr& image)->bool{
+                                [this](const WorkspaceItemPtr& image)->bool{
                                   for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
                                   {
                                     if (*i == image)
@@ -349,9 +349,9 @@ Workspace::solve_overlaps()
   {
     num_overlappings = 0;
     // Use QuadTree to make this fast
-    for(std::vector<ImagePtr>::iterator i = m_images.begin(); i != m_images.end(); ++i)
+    for(auto i = m_images.begin(); i != m_images.end(); ++i)
     {
-      for(std::vector<ImagePtr>::iterator j = i+1; j != m_images.end(); ++j)
+      for(auto j = i+1; j != m_images.end(); ++j)
       {
         Rectf irect = (*i)->get_image_rect();
         Rectf jrect = (*j)->get_image_rect();

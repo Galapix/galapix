@@ -31,6 +31,7 @@
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
+#include "galapix/workspace_item.hpp"
 
 class ImageTileCache;
 class ImageRenderer;
@@ -38,8 +39,7 @@ class TileEntry;
 class Image;
 class Rectf;
 
-
-class Image
+class Image : public WorkspaceItem
 {
 private:
   std::weak_ptr<Image> m_self;

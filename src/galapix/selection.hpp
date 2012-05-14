@@ -43,13 +43,13 @@ private:
 public:
   static SelectionPtr create() { return SelectionPtr(new Selection); }
 
-  void   add_image(const ImagePtr& image);
+  void   add_image(const WorkspaceItemPtr& image);
   void   add_images(const ImageCollection& images);
-  void   remove_image(const ImagePtr& image);
+  void   remove_image(const WorkspaceItemPtr& image);
   void   clear();
   ImageCollection get_images() const;
   bool   empty() const;
-  bool   has(const ImagePtr& image) const;
+  bool   has(const WorkspaceItemPtr& image) const;
 
   void scale(float factor);
 
