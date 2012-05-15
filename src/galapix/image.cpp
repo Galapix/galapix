@@ -31,22 +31,7 @@
 #include "math/rgb.hpp"
 #include "util/weak_functor.hpp"
 
-ImagePtr
-Image::create(const URL& url, TileProviderPtr provider)
-{
-  ImagePtr image(new Image(url, provider));
-  image->set_weak_ptr(image);
-  return image;
-}
-
-void
-Image::set_weak_ptr(ImagePtr self)
-{
-  m_self = self;
-}
-
 Image::Image(const URL& url, TileProviderPtr provider) :
-  m_self(),
   m_url(url),
   m_provider(provider),
   m_visible(false),
@@ -181,20 +166,16 @@ Image::set_provider(TileProviderPtr provider)
 }
 
 void
-Image::clear_provider()
-{
-  set_provider(TileProviderPtr());
-}
-
-void
 Image::refresh(bool force)
 {
   if (force)
   {
     if (m_provider)
     {
-      m_provider->refresh(weak(std::bind(&Image::receive_tile_provider, std::placeholders::_1, std::placeholders::_2), m_self));
-      clear_provider();
+      m_provider->refresh(weak(std::bind(&Image::receive_tile_provider, 
+                                         std::placeholders::_1, std::placeholders::_2), 
+                               shared_from_this()));
+      set_provider(TileProviderPtr());
     }
   }
 }

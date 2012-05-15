@@ -33,24 +33,24 @@
 #include "util/url.hpp"
 #include "galapix/workspace_item.hpp"
 
+// error: base class 'class std::enable_shared_from_this<Image>' has a non-virtual destructor
+#pragma GCC diagnostic ignored "-Weffc++"
+
 class ImageTileCache;
 class ImageRenderer;
 class TileEntry;
 class Image;
 class Rectf;
 
-class Image final : public WorkspaceItem
+class Image final : public WorkspaceItem,
+                    public std::enable_shared_from_this<Image>
 {
 public:
-  static ImagePtr create(const URL& url, TileProviderPtr provider = TileProviderPtr());
-
-  ~Image();
+  Image(const URL& url, TileProviderPtr provider = TileProviderPtr());
+  virtual ~Image();
 
   void draw(const Rectf& cliprect, float zoom) override;
   void draw_mark() override;
-
-  void set_provider(TileProviderPtr provider);
-  void clear_provider();
 
   // Used for sorting and debugging
   URL get_url() const override;
@@ -78,8 +78,7 @@ public:
   void receive_tile_provider(TileProviderPtr provider);
 
 private:
-  Image(const URL& url, TileProviderPtr provider);
-
+  void set_provider(TileProviderPtr provider);
   void set_weak_ptr(ImagePtr self);
   void process_queues();
 

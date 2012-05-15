@@ -246,7 +246,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
       else
       {
-        ImagePtr image = Image::create(i->get_url(), DatabaseTileProvider::create(*i, image_entry));
+        ImagePtr image(new Image(i->get_url(), DatabaseTileProvider::create(*i, image_entry)));
         workspace.add_image(image);
 
         // print progress
@@ -280,7 +280,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     {
       if (i->get_payload() == "mandelbrot")
       {
-        workspace.add_image(Image::create(*i, TileProviderPtr(new MandelbrotTileProvider(job_manager))));
+        workspace.add_image(WorkspaceItemPtr(new Image(*i, TileProviderPtr(new MandelbrotTileProvider(job_manager)))));
       }
       else
       {
@@ -289,14 +289,14 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     }
     else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
     {
-      workspace.add_image(Image::create(*i, ZoomifyTileProvider::create(*i, job_manager)));
+      workspace.add_image(WorkspaceItemPtr(new Image(*i, ZoomifyTileProvider::create(*i, job_manager))));
     }
     else
     {
       FileEntry file_entry;
       if (!database.get_files().get_file_entry(*i, file_entry))
       {
-        workspace.add_image(Image::create(*i));
+        workspace.add_image(WorkspaceItemPtr(new Image(*i)));
       }
       else
       {
@@ -307,7 +307,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
         }
         else
         {
-          ImagePtr image = Image::create(file_entry.get_url(), DatabaseTileProvider::create(file_entry, image_entry));
+          ImagePtr image(new Image(file_entry.get_url(), DatabaseTileProvider::create(file_entry, image_entry)));
           workspace.add_image(image);
         }
       }
