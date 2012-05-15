@@ -33,50 +33,36 @@ typedef std::shared_ptr<WorkspaceItem> WorkspaceItemPtr;
 
 class WorkspaceItem
 {
-private:
-  WorkspaceItemWPtr m_parent;
-  std::vector<WorkspaceItemPtr> m_children;
-
 public:
-  WorkspaceItem() :
-    m_parent(),
-    m_children()
-  {}
-
-  virtual ~WorkspaceItem()
-  {}
+  WorkspaceItem();
+  virtual ~WorkspaceItem();
 
   WorkspaceItemWPtr get_parent() const { return m_parent; }
   std::vector<WorkspaceItemPtr> get_children() const { return m_children; }
 
-  virtual void     set_pos(const Vector2f& pos) = 0;
-  virtual Vector2f get_pos() const = 0;
+  virtual void     set_pos(const Vector2f& pos);
+  virtual Vector2f get_pos() const;
 
-  virtual float get_scaled_width()  const = 0;
-  virtual float get_scaled_height() const = 0;
+  virtual Vector2f get_top_left_pos() const;
+  virtual void set_top_left_pos(const Vector2f&);
+
+  virtual void  set_scale(float f);
+  virtual float get_scale() const;
+
+  virtual void  set_angle(float a);
+  virtual float get_angle() const;
+
+  virtual float get_scaled_width()  const;
+  virtual float get_scaled_height() const;
 
   virtual void refresh(bool force) = 0;
-
-  // used by layouter
-  virtual void set_target_pos(const Vector2f& target_pos) = 0;
-  virtual void set_target_scale(float target_scale) = 0;
-
-  virtual void  set_scale(float f) = 0;
-  virtual float get_scale() const = 0;
-
-  virtual void  set_angle(float a) = 0;
-  virtual float get_angle() const = 0;
 
   virtual int get_original_width() const = 0;
   virtual int get_original_height() const = 0;
 
-  virtual Rectf get_image_rect() const = 0;
-
-  virtual bool overlaps(const Rectf& cliprect) const = 0;
-  virtual bool overlaps(const Vector2f& pos) const = 0;
+  virtual Rectf get_image_rect() const;
   
   virtual bool is_visible() const = 0;
-
 
   virtual void on_enter_screen() = 0;
   virtual void on_leave_screen() = 0;
@@ -89,7 +75,19 @@ public:
   virtual void clear_cache() = 0;
   virtual void cache_cleanup() = 0;
   virtual void print_info() const = 0;
-  virtual void update_pos(float progress) = 0;
+
+private:
+  /** Position refers to the center of the image */
+  Vector2f m_pos;
+
+  /** Scale of the image */
+  float m_scale;
+
+  /** Rotation angle */
+  float m_angle;
+
+  WorkspaceItemWPtr m_parent;
+  std::vector<WorkspaceItemPtr> m_children;
 
 private:
   WorkspaceItem(const WorkspaceItem&) = delete;

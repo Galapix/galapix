@@ -145,7 +145,6 @@ public:
   void layout_tight();
   void layout_spiral();
   void layout_vertical();
-  void finish_layout();
 
   void delete_selection();
   void toggle_trackball_mode();

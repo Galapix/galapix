@@ -23,10 +23,10 @@
 
 #include "database/file_entry.hpp"
 #include "galapix/database_thread.hpp"
-#include "galapix/random_layouter.hpp"
-#include "galapix/regular_layouter.hpp"
-#include "galapix/spiral_layouter.hpp"
-#include "galapix/tight_layouter.hpp"
+#include "galapix/layouter/random_layouter.hpp"
+#include "galapix/layouter/regular_layouter.hpp"
+#include "galapix/layouter/spiral_layouter.hpp"
+#include "galapix/layouter/tight_layouter.hpp"
 #include "util/file_reader.hpp"
 #include "util/log.hpp"
 #include "util/string_util.hpp"
@@ -34,8 +34,6 @@
 Workspace::Workspace() :
   m_images(),
   m_selection(Selection::create()),
-  m_progress(0.0f),
-  m_file_queue(),
   m_layouter()
 {
 }
@@ -44,11 +42,11 @@ ImageCollection
 Workspace::get_images(const Rectf& rect) const
 {
   ImageCollection result;
-  for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(const auto& i: m_images)
   {
-    if (rect.contains((*i)->get_image_rect()))
+    if (rect.contains(i->get_image_rect()))
     {
-      result.add(*i);
+      result.add(i);
     }
   }
   return result;
@@ -59,7 +57,8 @@ Workspace::get_image(const Vector2f& pos) const
 {
   for(ImageCollection::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
   {
-    if ((*i)->overlaps(pos))
+
+    if ((*i)->get_image_rect().contains(pos))
     {
       return *i;
     }
@@ -74,116 +73,88 @@ Workspace::add_image(const WorkspaceItemPtr& image)
 }
 
 void
-Workspace::start_animation()
-{
-  //log_info << "Start Animation" << std::endl;
-  m_progress = 0.0f;  
-}
-
-void
-Workspace::animation_finished()
-{
-  //log_info << "Animation Finished" << std::endl;
-}
-
-void
 Workspace::layout_vertical()
 {
+  // FIXME: Move this into it's own Layouter class
   float spacing = 10.0f;
   Vector2f next_pos(0.0f, 0.0f);
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(auto& i: m_images)
   {
-    (*i)->set_target_scale(1.0f);
-    (*i)->set_target_pos(next_pos);
-    next_pos.y += static_cast<float>((*i)->get_original_height()) + spacing;
+    i->set_scale(1.0f);
+    i->set_pos(next_pos);
+    next_pos.y += static_cast<float>(i->get_original_height()) + spacing;
   }
-  
-  start_animation();
 }
 
 void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
   m_layouter.reset(new RegularLayouter(aspect_w, aspect_h));
-  m_layouter->layout(m_images);
-  start_animation();
+  relayout();
 }
 
 void
 Workspace::layout_spiral()
 {
   m_layouter.reset(new SpiralLayouter());
-  m_layouter->layout(m_images);
-  start_animation();
+  relayout();
 }
 
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
   m_layouter.reset(new TightLayouter(aspect_w, aspect_h));
-  m_layouter->layout(m_images);
-  start_animation();
+  relayout();
 }
 
 void
 Workspace::layout_random()
 {
   m_layouter.reset(new RandomLayouter);
-  m_layouter->layout(m_images);
-  start_animation();
+  relayout();
 }
 
 void
 Workspace::draw(const Rectf& cliprect, float zoom)
 {
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  for(auto& i: m_images)
   {
-    if ((*i)->overlaps(cliprect))
+    if (i->get_image_rect().is_overlapped(cliprect))
     {  
-      if (!(*i)->is_visible())
+      if (!i->is_visible())
       {
-        (*i)->on_enter_screen();
+        i->on_enter_screen();
       }
 
-      (*i)->draw(cliprect, zoom);
+      i->draw(cliprect, zoom);
     }
     else
     {
-      if ((*i)->is_visible())
+      if (i->is_visible())
       {
-        (*i)->on_leave_screen();
+        i->on_leave_screen();
       }
     }
   }
 
-  for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
+  for(auto& i: *m_selection)
   {
-    (*i)->draw_mark();
+    i->draw_mark();
   }
 }
 
 void
 Workspace::update(float delta)
 {
-  if (m_progress != 1.0f)
+}
+
+void
+Workspace::relayout()
+{
+  if (m_layouter)
   {
-    m_progress += delta * 2.0f;
-
-    if (m_progress > 1.0f)
-    {
-      m_progress = 1.0f;
-    }
-
-    for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
-    {
-      (*i)->update_pos(m_progress);
-    }
-
-    if (m_progress == 1.0f)
-    {
-      animation_finished();
-    }
-  }
+    m_layouter->layout(m_images);
+  } 
 }
 
 void
@@ -193,11 +164,6 @@ Workspace::sort()
             [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
               return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
-  if (m_layouter)
-  {
-    m_layouter->layout(m_images);
-    start_animation();
-  }
 }
 
 void
@@ -207,22 +173,14 @@ Workspace::sort_reverse()
             [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
               return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
-  if (m_layouter)
-  {
-    m_layouter->layout(m_images);
-    start_animation();
-  } 
+  relayout();
 }
 
 void
 Workspace::random_shuffle()
 {
   std::random_shuffle(m_images.begin(), m_images.end());
-  if (m_layouter)
-  {
-    m_layouter->layout(m_images);
-    start_animation();
-  }
+  relayout();
 }
 
 void
@@ -248,12 +206,9 @@ Workspace::print_info(const Rectf& rect)
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
-  for(auto& i: m_images)
+  for(auto& img: get_images(rect))
   {
-    if (i->overlaps(rect))
-    {
-      i->print_info();
-    }
+    img->print_info();
   }
   std::cout << "  Number of Images: " << m_images.size() << std::endl;
   std::cout << "-------------------------------------------------------" << std::endl;
@@ -263,14 +218,11 @@ void
 Workspace::print_images(const Rectf& rect)
 {
   std::cout << "-- Visible images --------------------------------------" << std::endl;
-  for(auto& i: m_images)
+  for(auto& img: get_images(rect))
   {
-    if (i->overlaps(rect))
-    {
-      std::cout << i->get_url() << " "
-                << i->get_original_width() << "x" << i->get_original_height()
-                << std::endl;
-    }
+    std::cout << img->get_url() << " "
+              << img->get_original_width() << "x" << img->get_original_height()
+              << std::endl;
   }
   std::cout << "--------------------------------------------------------" << std::endl;
 }
@@ -287,7 +239,7 @@ Workspace::selection_clicked(const Vector2f& pos) const
 {
   for(auto& i: *m_selection)
   {
-    if (i->overlaps(pos))
+    if (i->get_image_rect().contains(pos))
       return true;
   }
   return false;
@@ -309,9 +261,9 @@ Workspace::clear()
 void
 Workspace::move_selection(const Vector2f& rel)
 {
-  for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
+  for(auto& i: *m_selection)
   {
-    (*i)->set_pos((*i)->get_pos() + rel);
+    i->set_pos(i->get_pos() + rel);
   }
 }
 
@@ -403,17 +355,6 @@ Workspace::save(std::ostream& out)
 }
 
 void
-Workspace::finish_animation()
-{
-  m_progress = 1.0f;
-
-  for(auto& i: m_images)
-  {
-    i->update_pos(m_progress);
-  }
-}
-
-void
 Workspace::load(const std::string& filename)
 {
   FileReader reader = FileReader::parse(filename);
@@ -485,12 +426,6 @@ Workspace::get_bounding_rect() const
   
     return rect;
   }
-}
-
-bool
-Workspace::is_animated() const
-{
-  return m_progress != 1.0f;
 }
 
 /* EOF */

@@ -23,9 +23,9 @@
 
 #include "galapix/image.hpp"
 #include "galapix/image_collection.hpp"
-#include "galapix/layouter.hpp"
+#include "galapix/layouter/layouter.hpp"
+#include "galapix/layouter/spiral_layouter.hpp"
 #include "galapix/selection.hpp"
-#include "galapix/spiral_layouter.hpp"
 #include "galapix/workspace_item.hpp"
 #include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
@@ -36,26 +36,15 @@ class Layouter;
 
 /** The Workspace houses all the images, the current selection and
     things like layouting of the image collection */
-class Workspace
+class Workspace final
 {
 private:
-
-private:
   ImageCollection m_images;
-
   SelectionPtr m_selection;
-
-  /** Progress of the animation when relayouting, must be set to 0 to
-      start animation */
-  float     m_progress;
-
-  ThreadMessageQueue2<FileEntry> m_file_queue;
-
   LayouterPtr m_layouter;
 
 public:
   Workspace();
-  // ---------------------------------------------
 
   // Layout hints
   void set_row_width(int w);
@@ -71,7 +60,6 @@ public:
   void layout_vertical();
   void layout_random();
   void solve_overlaps();
-  void finish_animation();
 
   // ---------------------------------------------
 
@@ -116,15 +104,12 @@ public:
 
   Rectf get_bounding_rect() const;
 
-  bool is_animated() const;
+private:
+  void relayout();
 
 private:
-  void start_animation();
-  void animation_finished();
-
-private:
-  Workspace (const Workspace&);
-  Workspace& operator= (const Workspace&);
+  Workspace (const Workspace&) = delete;
+  Workspace& operator= (const Workspace&) = delete;
 };
 
 #endif

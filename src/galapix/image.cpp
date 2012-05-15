@@ -50,14 +50,6 @@ Image::Image(const URL& url, TileProviderPtr provider) :
   m_url(url),
   m_provider(provider),
   m_visible(false),
-  m_image_rect(),
-  m_pos(),
-  m_last_pos(),
-  m_target_pos(),
-  m_scale(1.0f),
-  m_last_scale(1.0f),
-  m_target_scale(1.0f),
-  m_angle(0.0f),
   m_cache(),
   m_renderer(),
   m_tile_provider_queue(),
@@ -72,107 +64,6 @@ Image::~Image()
   {
     job.set_aborted();
   }
-}
-
-Vector2f
-Image::get_top_left_pos() const
-{
-  return m_pos - Vector2f(get_scaled_width()/2, get_scaled_height()/2);
-}
-
-void
-Image::set_top_left_pos(const Vector2f& p)
-{
-  m_pos = p + Vector2f(get_scaled_width()/2, get_scaled_height()/2);
-}
-
-void
-Image::set_pos(const Vector2f& pos)
-{
-  m_pos        = pos;
-  m_last_pos   = pos;
-  m_target_pos = pos;
-
-  m_image_rect = calc_image_rect();
-}
-
-Vector2f
-Image::get_pos() const
-{
-  return m_pos;
-}
-
-void
-Image::set_target_pos(const Vector2f& target_pos)
-{
-  m_last_pos   = m_pos;
-  m_target_pos = target_pos;
-}
-
-void
-Image::set_target_scale(float target_scale)
-{
-  m_last_scale   = m_scale;
-  m_target_scale = target_scale;  
-}
-
-void
-Image::update_pos(float progress)
-{
-  assert(progress >= 0.0f &&
-         progress <= 1.0f);
-
-  if (progress == 1.0f)
-  {
-    set_pos(m_target_pos);
-    set_scale(m_target_scale);
-  }
-  else
-  {
-    m_pos   = (m_last_pos   * (1.0f - progress)) + (m_target_pos   * progress);
-    m_scale = (m_last_scale * (1.0f - progress)) + (m_target_scale * progress);
-    m_image_rect = calc_image_rect();
-  }
-}
-
-void
-Image::set_angle(float a)
-{
-  m_angle = a;
-}
-
-float
-Image::get_angle() const
-{
-  return m_angle;
-}
-
-void
-Image::set_scale(float f)
-{
-  m_scale        = f;
-  m_last_scale   = f;
-  m_target_scale = f;
-
-  m_image_rect = calc_image_rect();
-}
-
-float
-Image::get_scale() const
-{
-  return m_scale;
-}
-
-float
-Image::get_scaled_width() const
-{
-  return static_cast<float>(get_original_width()) * m_scale;
-}
-
-float
-Image::get_scaled_height() const
-{
-  return static_cast<float>(get_original_height()) * m_scale;
 }
 
 int
@@ -214,9 +105,9 @@ Image::clear_cache()
 void
 Image::abort_all_jobs()
 {
-  for(Jobs::iterator i = m_jobs.begin(); i != m_jobs.end(); ++i)
+  for(auto& job: m_jobs)
   {
-    i->set_aborted();
+    job.set_aborted();
   }
   m_jobs.clear();  
 }
@@ -286,10 +177,7 @@ Image::set_provider(TileProviderPtr provider)
   // works with regular layouts)
   float new_size = static_cast<float>(std::max(get_original_width(),
                                                get_original_height()));
-  m_scale *= old_size / new_size;
-  m_target_scale = m_scale;
-
-  m_image_rect = calc_image_rect();
+  set_scale(get_scale() * old_size / new_size);
 }
 
 void
@@ -319,18 +207,6 @@ Image::print_info() const
   //std::cout << "    Job Size:   " << m_jobs.size() << std::endl;
 }
 
-bool
-Image::overlaps(const Vector2f& pos) const
-{
-  return m_image_rect.contains(pos);
-}
-
-bool
-Image::overlaps(const Rectf& cliprect) const
-{
-  return m_image_rect.is_overlapped(cliprect);
-}
-
 URL
 Image::get_url() const
 {
@@ -340,21 +216,7 @@ Image::get_url() const
 void
 Image::draw_mark()
 {
-  Framebuffer::draw_rect(m_image_rect, RGB(255, 255, 255));
-}
-
-Rectf
-Image::get_image_rect() const
-{
-  return m_image_rect;
-}
-
-Rectf
-Image::calc_image_rect() const
-{
-  return Rectf(get_top_left_pos(),
-               Sizef(get_scaled_width(), 
-                     get_scaled_height()));
+  Framebuffer::draw_rect(get_image_rect(), RGB(255, 255, 255));
 }
 
 void

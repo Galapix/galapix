@@ -309,7 +309,6 @@ bool
 Viewer::is_active() const
 {
   return
-    m_workspace->is_animated()   ||
     zoom_in_tool ->is_active() ||
     zoom_out_tool->is_active() ||
     keyboard_zoom_in_tool ->is_active() ||
@@ -478,12 +477,6 @@ void
 Viewer::layout_vertical()
 {
   m_workspace->layout_vertical();
-}
-
-void
-Viewer::finish_layout()
-{
-  m_workspace->finish_animation();
 }
 
 void
