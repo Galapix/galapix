@@ -21,7 +21,6 @@
 
 #include <vector>
 
-#include "galapix/image_handle.hpp"
 #include "galapix/workspace_item.hpp"
 
 /** A wrapper around a std::vector<> */

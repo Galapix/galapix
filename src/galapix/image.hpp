@@ -23,7 +23,6 @@
 #include <map>
 #include <string>
 
-#include "galapix/image_handle.hpp"
 #include "galapix/tile_provider.hpp"
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
@@ -79,12 +78,9 @@ public:
 
 private:
   void set_provider(TileProviderPtr provider);
-  void set_weak_ptr(ImagePtr self);
   void process_queues();
 
 private:
-  std::weak_ptr<Image> m_self;
-
   URL       m_url;
   TileProviderPtr m_provider;
 

@@ -383,7 +383,7 @@ Workspace::load(const std::string& filename)
 
         std::cout << url << " " << pos << " " << scale << std::endl;
 
-        ImagePtr image(new Image(url));
+        WorkspaceItemPtr image(new Image(url));
         image->set_pos(pos);
         image->set_scale(scale);
         add_image(WorkspaceItemPtr(new Image(url)));

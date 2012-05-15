@@ -246,7 +246,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
       else
       {
-        ImagePtr image(new Image(i->get_url(), DatabaseTileProvider::create(*i, image_entry)));
+        WorkspaceItemPtr image(new Image(i->get_url(), DatabaseTileProvider::create(*i, image_entry)));
         workspace.add_image(image);
 
         // print progress
@@ -307,7 +307,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
         }
         else
         {
-          ImagePtr image(new Image(file_entry.get_url(), DatabaseTileProvider::create(file_entry, image_entry)));
+          WorkspaceItemPtr image(new Image(file_entry.get_url(), DatabaseTileProvider::create(file_entry, image_entry)));
           workspace.add_image(image);
         }
       }
