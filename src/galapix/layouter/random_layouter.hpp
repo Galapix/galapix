@@ -16,46 +16,29 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_SPIRAL_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_SPIRAL_LAYOUTER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_RANDOM_LAYOUTER_HPP
+#define HEADER_GALAPIX_GALAPIX_RANDOM_LAYOUTER_HPP
 
-#include "galapix/layouter.hpp"
+#include "galapix/layouter/layouter.hpp"
 
-#include "math/vector2i.hpp"
+#include "math/rect.hpp"
 
-class WorkspaceItem;
+class Image;
 
-class SpiralLayouter : public Layouter
+class RandomLayouter : public Layouter
 {
 private:
-  enum Direction {
-    kRight,
-    kDown,
-    kLeft,
-    kUp
-  };
 
-private:
-  Vector2i m_pos;
-  int m_ring;
-  Direction m_direction;
-  
 public:
-  SpiralLayouter();
+  RandomLayouter();
 
   void layout(const ImageCollection& images);
-  void reset();
-  void layout(WorkspaceItem& item);
 
 private:
-  void advance();
-
-private:
-  SpiralLayouter(const SpiralLayouter&);
-  SpiralLayouter& operator=(const SpiralLayouter&);
+  RandomLayouter(const RandomLayouter&);
+  RandomLayouter& operator=(const RandomLayouter&);
 };
 
 #endif
 
 /* EOF */
-

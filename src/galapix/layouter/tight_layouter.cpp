@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "galapix/tight_layouter.hpp"
+#include "galapix/layouter/tight_layouter.hpp"
 
 #include <iostream>
 
@@ -52,14 +52,13 @@ TightLayouter::layout(const ImageCollection& images)
     float row_width = spacing * static_cast<float>(row.size()-1);
     for(auto& image: row) { row_width += image->get_scaled_width(); }
 
-
     //std::cout << width << " " << row_width << std::endl;
     Vector2f offset((width - row_width)/2.0f, 0.0f);
 
     // FIXME: doesn't work because of target pos
     // center the row
     //for(auto& image: row) {
-    //image->set_target_pos(image->get_target_pos() - offset);
+    //image->set_pos(image->get_target_pos() - offset);
     //}
 
     row.clear();
@@ -71,11 +70,11 @@ TightLayouter::layout(const ImageCollection& images)
     row.push_back(image);
 
     const float scale = 1000.0f / static_cast<float>(image->get_original_height());
-    image->set_target_scale(scale);
+    image->set_scale(scale);
 
-    auto set_target_pos = [&](const Vector2f& p){
+    auto set_pos = [&](const Vector2f& p){
       last_pos = p;
-      image->set_target_pos(p + Vector2f(static_cast<float>(image->get_original_width()),
+      image->set_pos(p + Vector2f(static_cast<float>(image->get_original_width()),
                                          static_cast<float>(image->get_original_height())) * scale / 2.0f);
     };
 
@@ -89,12 +88,12 @@ TightLayouter::layout(const ImageCollection& images)
               
         go_right = false;
 
-        set_target_pos(pos);
+        set_pos(pos);
         relayout_row(row);
       }
       else
       {
-        set_target_pos(pos);
+        set_pos(pos);
         pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
       }
     }
@@ -106,7 +105,7 @@ TightLayouter::layout(const ImageCollection& images)
         pos.y += 1000.0f + spacing;   
         go_right = true;
 
-        set_target_pos(pos);
+        set_pos(pos);
         pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
 
         relayout_row(row);
@@ -114,7 +113,7 @@ TightLayouter::layout(const ImageCollection& images)
       else
       {
         pos.x -= static_cast<float>(image->get_original_width()) * scale + spacing;
-        set_target_pos(pos);
+        set_pos(pos);
       }
     }
   }
@@ -143,11 +142,11 @@ TightLayouter::layout_zigzag(const ImageCollection& images)
   for(const auto& image: images)
   {
     const float scale = 1000.0f / static_cast<float>(image->get_original_height());
-    image->set_target_scale(scale);
+    image->set_scale(scale);
 
-    auto set_target_pos = [&](const Vector2f& p){
+    auto set_pos = [&](const Vector2f& p){
         last_pos = p;
-        image->set_target_pos(p + Vector2f(static_cast<float>(image->get_original_width()),
+        image->set_pos(p + Vector2f(static_cast<float>(image->get_original_width()),
                                            static_cast<float>(image->get_original_height())) * scale / 2.0f);
       };
 
@@ -161,11 +160,11 @@ TightLayouter::layout_zigzag(const ImageCollection& images)
               
         go_right = false;
 
-        set_target_pos(pos);
+        set_pos(pos);
       }
       else
       {
-        set_target_pos(pos);
+        set_pos(pos);
         pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
       }
     }
@@ -177,13 +176,13 @@ TightLayouter::layout_zigzag(const ImageCollection& images)
         pos.y += 1000.0f + spacing;   
         go_right = true;
 
-        set_target_pos(pos);
+        set_pos(pos);
         pos.x += static_cast<float>(image->get_original_width()) * scale + spacing;
       }
       else
       {
         pos.x -= static_cast<float>(image->get_original_width()) * scale + spacing;
-        set_target_pos(pos);
+        set_pos(pos);
       }
     }
   }

@@ -157,6 +157,7 @@ class Project:
                                                             Glob("src/database/*.cpp") + \
                                                             Glob("src/display/*.cpp") + \
                                                             Glob("src/galapix/*.cpp") + \
+                                                            Glob("src/galapix/layouter/*.cpp") + \
                                                             Glob("src/job/*.cpp") + \
                                                             Glob("src/jobs/*.cpp") + \
                                                             Glob("src/sqlite/*.cpp") + \

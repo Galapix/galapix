@@ -16,29 +16,25 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_TIGHT_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_TIGHT_LAYOUTER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_REGULAR_LAYOUTER_HPP
+#define HEADER_GALAPIX_GALAPIX_REGULAR_LAYOUTER_HPP
 
-#include "galapix/layouter.hpp"
-#include "math/vector2f.hpp"
+#include "galapix/layouter/layouter.hpp"
 
-class Image;
-
-class TightLayouter : public Layouter
+class RegularLayouter : public Layouter
 {
 private:
   float m_aspect_w;
   float m_aspect_h;
-  
-public:
-  TightLayouter(float w, float h);
 
-  void layout_zigzag(const ImageCollection& images);
+public:
+  RegularLayouter(float aspect_w, float aspect_h);
+
   void layout(const ImageCollection& images);
 
 private:
-  TightLayouter(const TightLayouter&);
-  TightLayouter& operator=(const TightLayouter&);
+  RegularLayouter(const RegularLayouter&);
+  RegularLayouter& operator=(const RegularLayouter&);
 };
 
 #endif

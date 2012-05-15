@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "galapix/regular_layouter.hpp"
+#include "galapix/layouter/regular_layouter.hpp"
 
 #include "galapix/image_collection.hpp"
 #include "galapix/image.hpp"
@@ -40,16 +40,16 @@ RegularLayouter::layout(const ImageCollection& images)
       float target_scale = Math::min(1000.0f / static_cast<float>(images[i]->get_original_width()),
                                      1000.0f / static_cast<float>(images[i]->get_original_height()));
 
-      images[i]->set_target_scale(target_scale);
+      images[i]->set_scale(target_scale);
 
       if ((i/w) % 2 == 0)
       {
-        images[i]->set_target_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
+        images[i]->set_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
                                            static_cast<float>(i / w) * 1024.0f));
       }
       else
       {
-        images[i]->set_target_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
+        images[i]->set_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
                                            static_cast<float>(i / w)         * 1024.0f));
       }
     }

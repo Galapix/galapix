@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "galapix/spiral_layouter.hpp"
+#include "galapix/layouter/spiral_layouter.hpp"
 
 #include "galapix/image.hpp"
 #include "galapix/image_collection.hpp"
@@ -103,8 +103,8 @@ SpiralLayouter::layout(WorkspaceItem& item)
   float target_scale = Math::min(1000.0f / static_cast<float>(item.get_original_width()),
                                  1000.0f / static_cast<float>(item.get_original_height()));
 
-  item.set_target_scale(target_scale);
-  item.set_target_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
+  item.set_scale(target_scale);
+  item.set_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
                                static_cast<float>(m_pos.y) * 1024.0f));
 
   advance();

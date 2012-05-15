@@ -16,28 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "galapix/random_layouter.hpp"
+#ifndef HEADER_GALAPIX_GALAPIX_SPIRAL_LAYOUTER_HPP
+#define HEADER_GALAPIX_GALAPIX_SPIRAL_LAYOUTER_HPP
 
-#include "galapix/image.hpp"
-#include "galapix/image_collection.hpp"
+#include "galapix/layouter/layouter.hpp"
 
-RandomLayouter::RandomLayouter()
+#include "math/vector2i.hpp"
+
+class WorkspaceItem;
+
+class SpiralLayouter : public Layouter
 {
-}
+private:
+  enum Direction {
+    kRight,
+    kDown,
+    kLeft,
+    kUp
+  };
 
-void
-RandomLayouter::layout(const ImageCollection& images)
-{
-  const int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
+private:
+  Vector2i m_pos;
+  int m_ring;
+  Direction m_direction;
+  
+public:
+  SpiralLayouter();
 
-  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
-  {
-    (*i)->set_target_pos(Vector2f(static_cast<float>(rand() % width), 
-                                  static_cast<float>(rand() % width)));
+  void layout(const ImageCollection& images);
+  void reset();
+  void layout(WorkspaceItem& item);
 
-    // FIXME: Make this relative to image size
-    (*i)->set_target_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); 
-  }
-}
+private:
+  void advance();
+
+private:
+  SpiralLayouter(const SpiralLayouter&);
+  SpiralLayouter& operator=(const SpiralLayouter&);
+};
+
+#endif
 
 /* EOF */
+
