@@ -20,7 +20,8 @@
 
 #include <algorithm>
 
-#include "database/tile_database.hpp"
+#include "database/tile_database_interface.hpp"
+#include "galapix/tile.hpp"
 
 TileCache::TileCache() :
   m_cache()

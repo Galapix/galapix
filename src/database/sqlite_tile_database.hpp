@@ -39,7 +39,7 @@ class FileDatabase;
 class FileEntry;
 class TileEntry;
 
-class TileDatabase : public TileDatabaseInterface
+class SQLiteTileDatabase : public TileDatabaseInterface
 {
 private:
   SQLiteConnection& m_db;
@@ -56,24 +56,24 @@ private:
   TileCache m_cache;
 
 public:
-  TileDatabase(SQLiteConnection& db, FileDatabase& files);
-  ~TileDatabase();
+  SQLiteTileDatabase(SQLiteConnection& db, FileDatabase& files);
+  ~SQLiteTileDatabase();
   
-  bool has_tile(const RowId& fileid, const Vector2i& pos, int scale);
-  bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out);
-  void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles);
-  bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out);
+  bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) override;
+  bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) override;
+  void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles) override;
+  bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out) override;
 
-  void store_tile(const RowId& fileid, const Tile& tile);
-  void store_tiles(const std::vector<TileEntry>& tiles);
+  void store_tile(const RowId& fileid, const Tile& tile) override;
+  void store_tiles(const std::vector<TileEntry>& tiles) override;
 
-  void delete_tiles(const RowId& fileid);
+  void delete_tiles(const RowId& fileid) override;
 
-  void flush_cache();
+  void flush_cache() override;
 
 private:
-  TileDatabase (const TileDatabase&);
-  TileDatabase& operator= (const TileDatabase&);
+  SQLiteTileDatabase (const SQLiteTileDatabase&) = delete;
+  SQLiteTileDatabase& operator= (const SQLiteTileDatabase&) = delete;
 };
 
 #endif

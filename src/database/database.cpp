@@ -19,7 +19,7 @@
 #include "database/database.hpp"
 
 #include "database/file_tile_database.hpp"
-#include "database/tile_database.hpp"
+#include "database/sqlite_tile_database.hpp"
 #include "database/cached_tile_database.hpp"
 #include "util/filesystem.hpp"
 
@@ -38,7 +38,7 @@ Database::Database(const std::string& prefix) :
 
   if (true)
   {
-    m_tiles.reset(new TileDatabase(*m_tile_db, *m_files));
+    m_tiles.reset(new SQLiteTileDatabase(*m_tile_db, *m_files));
   }
   else
   {
