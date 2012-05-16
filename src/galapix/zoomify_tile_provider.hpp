@@ -58,9 +58,6 @@ private:
 
 private:
   ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, JobManager& job_manager);
-  ZoomifyTileProvider(const ZoomifyTileProvider&) = delete;
-
-  ZoomifyTileProvider& operator=(const ZoomifyTileProvider&) = delete;
 
 public:
   static std::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
@@ -74,6 +71,10 @@ public:
 
 private:
   int get_tile_group(int scale, const Vector2i& pos);
+
+private:
+  ZoomifyTileProvider(const ZoomifyTileProvider&) = delete;
+  ZoomifyTileProvider& operator=(const ZoomifyTileProvider&) = delete;
 };
 
 #endif

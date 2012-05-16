@@ -47,7 +47,8 @@ int get_max_scale(const Size& size, int tilesize)
 
 } // namespace
 
-ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, JobManager& job_manager) :
+ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, 
+                                         JobManager& job_manager) :
   m_size(size),
   m_tilesize(tilesize),
   m_basedir(basedir),
@@ -120,7 +121,7 @@ ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
       << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
 
   JobHandle job_handle = JobHandle::create();
-  m_job_manager.request(std::shared_ptr<Job>(new ZoomifyTileJob(job_handle, URL::from_string(out.str()), scale, pos, callback)));
+  m_job_manager.request(std::make_shared<ZoomifyTileJob>(job_handle, URL::from_string(out.str()), scale, pos, callback));
   return job_handle;
 }
   

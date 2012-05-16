@@ -31,19 +31,12 @@ private:
   FileEntry  m_file_entry;
   ImageEntry m_image_entry;
 
-private:
+public:
   DatabaseTileProvider(const FileEntry& file_entry,
                        const ImageEntry& image_entry) :
     m_file_entry(file_entry),
     m_image_entry(image_entry)
   {}
-
-public:
-  static std::shared_ptr<DatabaseTileProvider> create(const FileEntry& file_entry, 
-                                                      const ImageEntry& image_entry)
-  {
-    return std::shared_ptr<DatabaseTileProvider>(new DatabaseTileProvider(file_entry, image_entry));
-  }
 
   JobHandle request_tile(int tilescale, const Vector2i& pos, 
                          const std::function<void (Tile)>& callback)

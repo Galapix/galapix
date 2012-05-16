@@ -73,20 +73,20 @@ Viewer::Viewer(Workspace* workspace_) :
 {
   current_ = this;
 
-  pan_tool       = std::shared_ptr<PanTool>(new PanTool(this));
-  move_tool      = std::shared_ptr<MoveTool>(new MoveTool(this));
-  zoom_rect_tool = std::shared_ptr<ZoomRectTool>(new ZoomRectTool(this));
-  resize_tool    = std::shared_ptr<ResizeTool>(new ResizeTool(this));
-  rotate_tool    = std::shared_ptr<RotateTool>(new RotateTool(this));
-  grid_tool      = std::shared_ptr<GridTool>(new GridTool(this));
+  pan_tool       = std::make_shared<PanTool>(this);
+  move_tool      = std::make_shared<MoveTool>(this);
+  zoom_rect_tool = std::make_shared<ZoomRectTool>(this);
+  resize_tool    = std::make_shared<ResizeTool>(this);
+  rotate_tool    = std::make_shared<RotateTool>(this);
+  grid_tool      = std::make_shared<GridTool>(this);
 
-  zoom_in_tool  = std::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
-  zoom_out_tool = std::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
+  zoom_in_tool  = std::make_shared<ZoomTool>(this, -4.0f);
+  zoom_out_tool = std::make_shared<ZoomTool>(this,  4.0f);
 
-  keyboard_zoom_in_tool  = std::shared_ptr<ZoomTool>(new ZoomTool(this, -4.0f));
-  keyboard_zoom_out_tool = std::shared_ptr<ZoomTool>(new ZoomTool(this,  4.0f));
+  keyboard_zoom_in_tool  = std::make_shared<ZoomTool>(this, -4.0f);
+  keyboard_zoom_out_tool = std::make_shared<ZoomTool>(this,  4.0f);
 
-  keyboard_view_rotate_tool = std::shared_ptr<ViewRotateTool>(new ViewRotateTool(this));
+  keyboard_view_rotate_tool = std::make_shared<ViewRotateTool>(this);
 
   left_tool   = zoom_in_tool.get();
   middle_tool = pan_tool.get();

@@ -38,7 +38,7 @@ public:
   
     if (0)
       std::cout << "store_tile("
-                << "fileid: " << tile.get_fileid()
+                << "image_id: " << tile.get_image_id()
                 << ", scale: " << tile.get_scale() 
                 << ", pos: " << tile.get_pos() << ")" << std::endl;
 
@@ -66,7 +66,7 @@ public:
 
     // FIXME: We need to update a already existing record, instead of
     // just storing a duplicate
-    m_stmt.bind_int64(1, tile.get_fileid().get_id());
+    m_stmt.bind_int64(1, tile.get_image_id().get_id());
     m_stmt.bind_int (2, tile.get_scale());
     m_stmt.bind_int (3, tile.get_pos().x);
     m_stmt.bind_int (4, tile.get_pos().y);
