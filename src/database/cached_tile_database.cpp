@@ -26,10 +26,9 @@
 std::unique_ptr<TileCache> m_tile_cache;
 std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
-CachedTileDatabase::CachedTileDatabase(Database& db, TileDatabaseInterface* tile_database) :
-  m_db(db),
+CachedTileDatabase::CachedTileDatabase(std::unique_ptr<TileDatabaseInterface> tile_database) :
   m_tile_cache(new TileCache),
-  m_tile_database(tile_database)
+  m_tile_database(std::move(tile_database))
 {
 }
 
@@ -139,9 +138,6 @@ void
 CachedTileDatabase::flush_cache()
 {
   std::cout << "CachedTileDatabase::flush_cache()" << std::endl;
-#if 0
-  m_db.get_files().flush_cache();
-#endif
   m_tile_cache->flush(*m_tile_database);
 }
 

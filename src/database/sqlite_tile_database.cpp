@@ -36,8 +36,7 @@ SQLiteTileDatabase::SQLiteTileDatabase(SQLiteConnection& db, FileDatabase& files
   m_tile_entry_has(m_db),
   m_tile_entry_get_by_fileid(m_db),
   m_tile_entry_get_min_max_scale(m_db),
-  m_tile_entry_delete(m_db),
-  m_cache()
+  m_tile_entry_delete(m_db)
 {}
 
 SQLiteTileDatabase::~SQLiteTileDatabase()
@@ -48,14 +47,7 @@ SQLiteTileDatabase::~SQLiteTileDatabase()
 bool
 SQLiteTileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
 {
-  if (m_tile_entry_has(fileid, pos, scale))
-  {
-    return true;
-  }
-  else
-  {
-    return m_cache.has_tile(fileid, pos, scale);
-  }
+  return m_tile_entry_has(fileid, pos, scale);
 }
 
 void
@@ -65,74 +57,30 @@ SQLiteTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles
   {
     m_tile_entry_get_all_by_fileid(fileid, tiles_out);
   }
-
-  m_cache.get_tiles(fileid, tiles_out);
 }
 
 bool
 SQLiteTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
 {
-  if (fileid)
-  {
-    if (m_tile_entry_get_min_max_scale(fileid, min_scale_out, max_scale_out))
-    {
-      int min_scale_out_cache = -1;
-      int max_scale_out_cache = -1;
-
-      if (m_cache.get_min_max_scale(fileid, min_scale_out_cache, max_scale_out_cache))
-      {
-        min_scale_out = std::min(min_scale_out, min_scale_out_cache);
-        max_scale_out = std::max(max_scale_out, max_scale_out_cache);
-      }
-
-      return true;
-    }
-    else
-    {
-      return m_cache.get_min_max_scale(fileid, min_scale_out, max_scale_out);
-    }
-  }
-  else
-  {
-    return m_cache.get_min_max_scale(fileid, min_scale_out, max_scale_out);
-  }
+  return m_tile_entry_get_min_max_scale(fileid, min_scale_out, max_scale_out);
 }
 
 bool
 SQLiteTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
-  if (!fileid)
-  {
-    return m_cache.get_tile(fileid, scale, pos, tile_out);
-  }
-  else
-  {
-    if (m_tile_entry_get_by_fileid(fileid, scale, pos, tile_out))
-    {
-      return true;
-    }
-    else
-    {
-      return m_cache.get_tile(fileid, scale, pos, tile_out);
-    }
-  }
+  return m_tile_entry_get_by_fileid(fileid, scale, pos, tile_out);
 }
 
 void
-SQLiteTileDatabase::store_tile(const RowId& fileid, const Tile& tile)
+SQLiteTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 {
-  if (!fileid)
+  if (!image_id)
   {
-    std::cout << "Error: rejecting tile, fileid is not valid" << std::endl;
+    std::cout << "Error: rejecting tile, image_id is not valid" << std::endl;
   }
   else
   {
-    m_cache.store_tile(fileid, tile);
-
-    // A single tile is ~10KB, but only in compressed JPEG form,
-    // uncompressed tiles can be much bigger
-    if (m_cache.size() > 256)
-      flush_cache();
+    m_tile_entry_store(TileEntry{image_id, tile.get_scale(), tile.get_pos(), tile.get_surface()});
   }
 }
 
@@ -148,20 +96,14 @@ SQLiteTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 }
 
 void
-SQLiteTileDatabase::delete_tiles(const RowId& fileid)
+SQLiteTileDatabase::delete_tiles(const RowId& image_id)
 {
-  // FIXME: Ignoring cache
-  m_tile_entry_delete(fileid);
+  m_tile_entry_delete(image_id);
 }
 
 void
 SQLiteTileDatabase::flush_cache()
 {
-  std::cout << "TileDatabes::flush_cache()" << std::endl;
-#if 0
-  m_files.flush_cache();
-#endif
-  m_cache.flush(*this);
 }
 
 /* EOF */

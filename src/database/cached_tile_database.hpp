@@ -29,12 +29,11 @@ class Database;
 class CachedTileDatabase : public TileDatabaseInterface
 {
 private:
-  Database& m_db;
   std::unique_ptr<TileCache> m_tile_cache;
   std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
 public:
-  CachedTileDatabase(Database& db, TileDatabaseInterface* tile_database);
+  CachedTileDatabase(std::unique_ptr<TileDatabaseInterface> tile_database);
   ~CachedTileDatabase();
   
   bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) override;
@@ -49,8 +48,8 @@ public:
   void flush_cache() override;
 
 private:
-  CachedTileDatabase(const CachedTileDatabase&);
-  CachedTileDatabase& operator=(const CachedTileDatabase&);
+  CachedTileDatabase(const CachedTileDatabase&) = delete;
+  CachedTileDatabase& operator=(const CachedTileDatabase&) = delete;
 };
 
 #endif

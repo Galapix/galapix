@@ -38,11 +38,13 @@ Database::Database(const std::string& prefix) :
 
   if (true)
   {
-    m_tiles.reset(new SQLiteTileDatabase(*m_tile_db, *m_files));
+    m_tiles.reset(new CachedTileDatabase(std::unique_ptr<TileDatabaseInterface>(
+                                           new SQLiteTileDatabase(*m_tile_db, *m_files))));
   }
   else
   {
-    m_tiles.reset(new CachedTileDatabase(*this, new FileTileDatabase(prefix + "/tiles")));
+    m_tiles.reset(new CachedTileDatabase(std::unique_ptr<TileDatabaseInterface>(
+                                           new FileTileDatabase(prefix + "/tiles"))));
   }
 }
 

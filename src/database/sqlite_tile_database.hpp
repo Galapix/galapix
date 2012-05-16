@@ -52,8 +52,6 @@ private:
   TileEntryGetByFileEntryStatement    m_tile_entry_get_by_fileid;
   TileEntryGetMinMaxScaleStatement    m_tile_entry_get_min_max_scale;
   TileEntryDeleteStatement            m_tile_entry_delete;
-  
-  TileCache m_cache;
 
 public:
   SQLiteTileDatabase(SQLiteConnection& db, FileDatabase& files);
