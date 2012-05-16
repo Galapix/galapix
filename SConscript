@@ -6,10 +6,10 @@ import os
 # CacheDir('cache')
 
 preset_cxxflags = {
-    'release':     [ "-O3", "-s"  ],
-    'profile':     [ "-O2", "-g3", "-pg" ],
-    'debug':       [ "-O0", "-g3" ],
-    'development': [ "-O0", "-g3",
+    'release':     [ "-std=c++11", "-O3", "-s" ],
+    'profile':     [ "-std=c++11", "-O2", "-g3", "-pg" ],
+    'debug':       [ "-std=c++11", "-O0", "-g3" ],
+    'development': [ "-std=c++11", "-O0", "-g3",
                      # "-ansi",
                      "-pedantic",
                      "-Wall",
