@@ -30,7 +30,7 @@ PNM::load_from_mem(const char* data, int len)
   PNMMemReader pnm(data, len);
 
   SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, pnm.get_size());
-  const uint8_t* src_pixels = (uint8_t*)pnm.get_pixel_data();
+  const uint8_t* src_pixels = reinterpret_cast<const uint8_t*>(pnm.get_pixel_data());
   uint8_t* dst_pixels = surface->get_data();
   //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;
   assert(pnm.get_maxval() == 255);
