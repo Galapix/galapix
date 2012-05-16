@@ -331,7 +331,7 @@ void
 Workspace::delete_selection()
 {
   m_images.erase(std::remove_if(m_images.begin(), m_images.end(), 
-                                [&m_selection](const ImagePtr& image)->bool{
+                                [this](const ImagePtr& image)->bool{
                                   for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
                                   {
                                     if (*i == image)
