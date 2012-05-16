@@ -69,6 +69,8 @@ Galapix 0.1.3 Release ToDo:
 User Interface:
 ---------------
 
+* add view-limiter that limits scrolling to the images on the screen
+
 * refresh fails at high zoom levels (displays wrong tiles)
 
 * rewrite overlap solving to be fast or disable it, as it currently
