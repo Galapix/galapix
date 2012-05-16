@@ -32,17 +32,13 @@
 #include "util/url.hpp"
 #include "galapix/workspace_item.hpp"
 
-// error: base class 'class std::enable_shared_from_this<Image>' has a non-virtual destructor
-#pragma GCC diagnostic ignored "-Weffc++"
-
 class ImageTileCache;
 class ImageRenderer;
 class TileEntry;
 class Image;
 class Rectf;
 
-class Image final : public WorkspaceItem,
-                    public std::enable_shared_from_this<Image>
+class Image final : public WorkspaceItem
 {
 public:
   Image(const URL& url, TileProviderPtr provider = TileProviderPtr());
@@ -59,38 +55,21 @@ public:
 
   // _____________________________________________________
   // Debug stuff
-  void clear_cache();
-  void refresh(bool force);
-  void cache_cleanup();
-  void print_info() const;
+  void clear_cache() override;
+  void cache_cleanup() override;
+  void print_info() const override;
 
-  bool is_visible() const { return m_visible; }
-
-  void on_enter_screen();
-  void on_leave_screen();
-
-  void on_zoom_level_change();
-
-  void abort_all_jobs();
-
-  /** Syncronized function to acquire data from other threads */
-  void receive_tile_provider(TileProviderPtr provider);
+  void on_leave_screen() override;
 
 private:
   void set_provider(TileProviderPtr provider);
-  void process_queues();
 
 private:
   URL       m_url;
   TileProviderPtr m_provider;
-
-  bool m_visible;
   
   std::shared_ptr<ImageTileCache> m_cache;
   std::unique_ptr<ImageRenderer>  m_renderer;
-
-  ThreadMessageQueue2<TileProviderPtr> m_tile_provider_queue;
-  std::vector<JobHandle> m_jobs;
 };
 
 #endif

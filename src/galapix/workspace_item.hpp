@@ -55,18 +55,17 @@ public:
   virtual float get_scaled_width()  const;
   virtual float get_scaled_height() const;
 
-  virtual void refresh(bool force) = 0;
+  virtual bool is_visible() const { return m_visible; }
+  virtual void on_enter_screen() { m_visible = true; }
+  virtual void on_leave_screen() { m_visible = false; }
+
+  virtual void refresh(bool force) {}
 
   virtual int get_original_width() const = 0;
   virtual int get_original_height() const = 0;
 
   virtual Rectf get_image_rect() const;
   
-  virtual bool is_visible() const = 0;
-
-  virtual void on_enter_screen() = 0;
-  virtual void on_leave_screen() = 0;
-
   virtual void draw(const Rectf& cliprect, float zoom) = 0;
   virtual void draw_mark() = 0;
 
@@ -85,6 +84,8 @@ private:
 
   /** Rotation angle */
   float m_angle;
+
+  bool m_visible;
 
   WorkspaceItemWPtr m_parent;
   std::vector<WorkspaceItemPtr> m_children;

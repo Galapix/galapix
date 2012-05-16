@@ -46,9 +46,6 @@ private:
 public:
   Workspace();
 
-  // Layout hints
-  void set_row_width(int w);
-
   // Image order function
   void sort();
   void sort_reverse();

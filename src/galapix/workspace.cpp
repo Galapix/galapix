@@ -198,7 +198,7 @@ Workspace::cache_cleanup()
   for(auto& i: m_images)
   {
     i->cache_cleanup();
-  }   
+  }
 }
 
 void

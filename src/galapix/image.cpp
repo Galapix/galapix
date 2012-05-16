@@ -34,21 +34,14 @@
 Image::Image(const URL& url, TileProviderPtr provider) :
   m_url(url),
   m_provider(provider),
-  m_visible(false),
   m_cache(),
-  m_renderer(),
-  m_tile_provider_queue(),
-  m_jobs()
+  m_renderer()
 {
   set_provider(m_provider);
 }
 
 Image::~Image()
 {
-  for(auto& job: m_jobs)
-  {
-    job.set_aborted();
-  }
 }
 
 int
@@ -84,17 +77,6 @@ Image::clear_cache()
   {
     m_cache->clear();
   }
-  abort_all_jobs();
-}
-
-void
-Image::abort_all_jobs()
-{
-  for(auto& job: m_jobs)
-  {
-    job.set_aborted();
-  }
-  m_jobs.clear();  
 }
 
 void
@@ -104,24 +86,11 @@ Image::cache_cleanup()
   {
     m_cache->cleanup();
   }
-  abort_all_jobs();
-}
-
-void
-Image::process_queues()
-{
-  TileProviderPtr tile_provider;
-  while(m_tile_provider_queue.try_pop(tile_provider))
-  {
-    set_provider(tile_provider);
-  }
 }
 
 void
 Image::draw(const Rectf& cliprect, float zoom)
 {
-  process_queues();
-
   if (!m_provider)
   {
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
@@ -143,8 +112,6 @@ Image::set_provider(TileProviderPtr provider)
   // cleanup the old provider if present
   if (m_provider)        
   {
-    abort_all_jobs();
-
     m_cache.reset();
     m_renderer.reset();
     m_provider.reset();
@@ -163,21 +130,6 @@ Image::set_provider(TileProviderPtr provider)
   float new_size = static_cast<float>(std::max(get_original_width(),
                                                get_original_height()));
   set_scale(get_scale() * old_size / new_size);
-}
-
-void
-Image::refresh(bool force)
-{
-  if (force)
-  {
-    if (m_provider)
-    {
-      m_provider->refresh(weak(std::bind(&Image::receive_tile_provider, 
-                                         std::placeholders::_1, std::placeholders::_2), 
-                               shared_from_this()));
-      set_provider(TileProviderPtr());
-    }
-  }
 }
 
 void
@@ -201,30 +153,10 @@ Image::draw_mark()
 }
 
 void
-Image::on_enter_screen()
-{
-  m_visible = true;
-  //std::cout << "Image::on_enter_screen(): " << this << std::endl;
-}
-
-void
 Image::on_leave_screen()
 {
-  m_visible = false;
-  //std::cout << "Image::on_leave_screen(): " << this << std::endl;
+  WorkspaceItem::on_leave_screen();
   cache_cleanup();
-}
-
-void
-Image::on_zoom_level_change()
-{
-  abort_all_jobs();
-}
-
-void
-Image::receive_tile_provider(TileProviderPtr provider)
-{
-  m_tile_provider_queue.wait_and_push(provider);
 }
 
 /* EOF */

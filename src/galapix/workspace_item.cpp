@@ -22,6 +22,7 @@ WorkspaceItem::WorkspaceItem() :
   m_pos(),
   m_scale(),
   m_angle(),
+  m_visible(false),
   m_parent(),
   m_children()
 {
