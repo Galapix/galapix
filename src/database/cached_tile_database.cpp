@@ -20,14 +20,14 @@
 
 #include <iostream>
 
-#include "database/tile_cache.hpp"
+#include "database/memory_tile_database.hpp"
 #include "database/database.hpp"
 
-std::unique_ptr<TileCache> m_tile_cache;
+std::unique_ptr<MemoryTileDatabase> m_tile_cache;
 std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
 CachedTileDatabase::CachedTileDatabase(std::unique_ptr<TileDatabaseInterface> tile_database) :
-  m_tile_cache(new TileCache),
+  m_tile_cache(new MemoryTileDatabase),
   m_tile_database(std::move(tile_database))
 {
 }
@@ -137,7 +137,7 @@ CachedTileDatabase::delete_tiles(const RowId& fileid)
 void
 CachedTileDatabase::flush_cache()
 {
-  std::cout << "CachedTileDatabase::flush_cache()" << std::endl;
+  log_debug("CachedTileDatabase::flush_cache(): " << m_tile_cache->size());
   m_tile_cache->flush(*m_tile_database);
 }
 

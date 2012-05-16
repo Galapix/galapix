@@ -23,13 +23,13 @@
 
 #include "database/tile_database_interface.hpp"
 
-class TileCache;
+class MemoryTileDatabase;
 class Database;
 
 class CachedTileDatabase : public TileDatabaseInterface
 {
 private:
-  std::unique_ptr<TileCache> m_tile_cache;
+  std::unique_ptr<MemoryTileDatabase> m_tile_cache;
   std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
 public:

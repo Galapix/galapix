@@ -16,20 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/tile_cache.hpp"
+#include "database/memory_tile_database.hpp"
 
 #include <algorithm>
 
 #include "database/tile_database_interface.hpp"
 #include "galapix/tile.hpp"
 
-TileCache::TileCache() :
+MemoryTileDatabase::MemoryTileDatabase() :
   m_cache()
 {
 }
 
 bool
-TileCache::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
+MemoryTileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
@@ -45,7 +45,7 @@ TileCache::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
 }
 
 bool
-TileCache::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
+MemoryTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
@@ -63,7 +63,7 @@ TileCache::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEnt
 }
 
 void
-TileCache::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles_out)
+MemoryTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles_out)
 {
   for(const auto& tile_entry : m_cache)
   {
@@ -75,7 +75,7 @@ TileCache::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles_out)
 }
 
 bool
-TileCache::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
+MemoryTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
 {
   int min_scale = -1;
   int max_scale = -1;
@@ -117,19 +117,19 @@ TileCache::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_s
 }
 
 void
-TileCache::store_tile(const RowId& fileid, const Tile& tile)
+MemoryTileDatabase::store_tile(const RowId& fileid, const Tile& tile)
 {
   m_cache.push_back(TileEntry(fileid, tile.get_scale(), tile.get_pos(), tile.get_surface()));
 }
 
 void
-TileCache::store_tiles(const std::vector<TileEntry>& tiles)
+MemoryTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 {
   m_cache.insert(m_cache.end(), tiles.begin(), tiles.end());
 }
 
 void
-TileCache::delete_tiles(const RowId& fileid)
+MemoryTileDatabase::delete_tiles(const RowId& fileid)
 {
   m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(), 
                                [&](const TileEntry& tile_entry) {
@@ -139,7 +139,7 @@ TileCache::delete_tiles(const RowId& fileid)
 }
 
 void
-TileCache::flush(TileDatabaseInterface& tile_database)
+MemoryTileDatabase::flush(TileDatabaseInterface& tile_database)
 {
   if (!m_cache.empty())
   {
@@ -149,7 +149,7 @@ TileCache::flush(TileDatabaseInterface& tile_database)
 }
 
 void
-TileCache::flush_cache()
+MemoryTileDatabase::flush_cache()
 {
 }
 

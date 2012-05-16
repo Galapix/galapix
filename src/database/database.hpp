@@ -23,7 +23,7 @@
 
 #include "database/tile_database_interface.hpp"
 #include "database/file_database.hpp"
-#include "database/tile_cache.hpp"
+#include "database/memory_tile_database.hpp"
 
 /** */
 class Database

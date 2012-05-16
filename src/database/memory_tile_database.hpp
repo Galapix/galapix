@@ -24,13 +24,13 @@
 #include "database/tile_entry.hpp"
 #include "database/tile_database_interface.hpp"
 
-class TileCache : public TileDatabaseInterface
+class MemoryTileDatabase : public TileDatabaseInterface
 {
 private:
   std::vector<TileEntry> m_cache;
 
 public:
-  TileCache();
+  MemoryTileDatabase();
 
   bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) override;
   bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) override;
@@ -47,8 +47,8 @@ public:
   void flush_cache() override;
 
 private:
-  TileCache(const TileCache&) = delete;
-  TileCache& operator=(const TileCache&) = delete;
+  MemoryTileDatabase(const MemoryTileDatabase&) = delete;
+  MemoryTileDatabase& operator=(const MemoryTileDatabase&) = delete;
 };
 
 #endif
