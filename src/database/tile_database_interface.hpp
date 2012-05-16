@@ -43,8 +43,6 @@ public:
 
   virtual void delete_tiles(const RowId& fileid) =0;
 
-  virtual void flush_cache() =0;
-
 private:
   TileDatabaseInterface(const TileDatabaseInterface&);
   TileDatabaseInterface& operator=(const TileDatabaseInterface&);

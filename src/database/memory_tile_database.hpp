@@ -44,7 +44,6 @@ public:
 
   int  size() const { return static_cast<int>(m_cache.size()); }
   void flush(TileDatabaseInterface& tile_database);
-  void flush_cache() override;
 
 private:
   MemoryTileDatabase(const MemoryTileDatabase&) = delete;

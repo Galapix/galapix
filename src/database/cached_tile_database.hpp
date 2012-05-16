@@ -45,7 +45,7 @@ public:
   void store_tiles(const std::vector<TileEntry>& tiles) override;
 
   void delete_tiles(const RowId& fileid) override;
-  void flush_cache() override;
+  void flush_cache();
 
 private:
   CachedTileDatabase(const CachedTileDatabase&) = delete;

@@ -41,7 +41,6 @@ SQLiteTileDatabase::SQLiteTileDatabase(SQLiteConnection& db, FileDatabase& files
 
 SQLiteTileDatabase::~SQLiteTileDatabase()
 {
-  flush_cache();
 }
 
 bool
@@ -99,11 +98,6 @@ void
 SQLiteTileDatabase::delete_tiles(const RowId& image_id)
 {
   m_tile_entry_delete(image_id);
-}
-
-void
-SQLiteTileDatabase::flush_cache()
-{
 }
 
 /* EOF */

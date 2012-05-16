@@ -67,8 +67,6 @@ public:
 
   void delete_tiles(const RowId& fileid) override;
 
-  void flush_cache() override;
-
 private:
   SQLiteTileDatabase (const SQLiteTileDatabase&) = delete;
   SQLiteTileDatabase& operator= (const SQLiteTileDatabase&) = delete;

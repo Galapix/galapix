@@ -148,9 +148,4 @@ MemoryTileDatabase::flush(TileDatabaseInterface& tile_database)
   }
 }
 
-void
-MemoryTileDatabase::flush_cache()
-{
-}
-
 /* EOF */
