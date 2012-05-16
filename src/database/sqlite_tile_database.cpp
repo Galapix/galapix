@@ -44,30 +44,30 @@ SQLiteTileDatabase::~SQLiteTileDatabase()
 }
 
 bool
-SQLiteTileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
+SQLiteTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int scale)
 {
-  return m_tile_entry_has(fileid, pos, scale);
+  return m_tile_entry_has(image_id, pos, scale);
 }
 
 void
-SQLiteTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles_out)
+SQLiteTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles_out)
 {
-  if (fileid)
+  if (image_id)
   {
-    m_tile_entry_get_all_by_fileid(fileid, tiles_out);
+    m_tile_entry_get_all_by_fileid(image_id, tiles_out);
   }
 }
 
 bool
-SQLiteTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
+SQLiteTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out)
 {
-  return m_tile_entry_get_min_max_scale(fileid, min_scale_out, max_scale_out);
+  return m_tile_entry_get_min_max_scale(image_id, min_scale_out, max_scale_out);
 }
 
 bool
-SQLiteTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
+SQLiteTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
-  return m_tile_entry_get_by_fileid(fileid, scale, pos, tile_out);
+  return m_tile_entry_get_by_fileid(image_id, scale, pos, tile_out);
 }
 
 void

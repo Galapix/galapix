@@ -44,15 +44,15 @@ FileTileDatabase::~FileTileDatabase()
 }
 
 bool
-FileTileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
+FileTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int scale)
 {
-  return Filesystem::exist(get_complete_filename(fileid, pos, scale));
+  return Filesystem::exist(get_complete_filename(image_id, pos, scale));
 }
 
 bool
-FileTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
+FileTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
-  std::string filename = get_complete_filename(fileid, pos, scale);
+  std::string filename = get_complete_filename(image_id, pos, scale);
   if (Filesystem::exist(filename))
   {
     SoftwareSurfacePtr surface;
@@ -66,9 +66,9 @@ FileTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, 
       surface = JPEG::load_from_file(filename);
     }
 
-    tile_out = TileEntry(fileid, scale, pos, surface);
+    tile_out = TileEntry(image_id, scale, pos, surface);
     //Blob::from_file(filename), 
-    //static_cast<TileEntry::Format>(fileid.get_format())); // FIXME: should unify format
+    //static_cast<TileEntry::Format>(image_id.get_format())); // FIXME: should unify format
     return true;
   }
   else
@@ -78,9 +78,9 @@ FileTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, 
 }
 
 void
-FileTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles)
+FileTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles)
 {
-  std::string directory = get_complete_directory(fileid);
+  std::string directory = get_complete_directory(image_id);
   std::vector<std::string> files = Filesystem::open_directory(directory);
   for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
   {
@@ -104,18 +104,18 @@ FileTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles)
         surface = JPEG::load_from_file(directory + '/' + *i);
       }
 
-      tiles.push_back(TileEntry(fileid, scale, pos, surface));
+      tiles.push_back(TileEntry(image_id, scale, pos, surface));
     }
   }
 }
 
 bool
-FileTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
+FileTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out)
 {
   min_scale_out = std::numeric_limits<int>::max();
   max_scale_out = std::numeric_limits<int>::min();
 
-  std::string directory = get_complete_directory(fileid);
+  std::string directory = get_complete_directory(image_id);
   std::vector<std::string> files = Filesystem::open_directory(directory);
   for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
   {
@@ -146,12 +146,12 @@ FileTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int
 }
 
 void
-FileTileDatabase::store_tile(const RowId& fileid, const Tile& tile)
+FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 { 
   // Ensure that the directory exists, FIX
-  ensure_directory_exists(fileid);
+  ensure_directory_exists(image_id);
 
-  std::string filename = get_complete_filename(fileid, tile.get_pos(), tile.get_scale());
+  std::string filename = get_complete_filename(image_id, tile.get_pos(), tile.get_scale());
 
   std::cout << "Saving to: " << filename << std::endl;
 
@@ -175,12 +175,12 @@ FileTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 {
   for(const auto& tile_entry: tiles)
   {
-    store_tile(tile_entry.get_fileid(), Tile(tile_entry));
+    store_tile(tile_entry.get_image_id(), Tile(tile_entry));
   }
 }
 
 void
-FileTileDatabase::delete_tiles(const RowId& fileid)
+FileTileDatabase::delete_tiles(const RowId& image_id)
 {
   // Filesystem::remove()
   // get_complete_filename()
@@ -207,10 +207,10 @@ FileTileDatabase::get_filename(const Vector2i& pos, int scale)
 }
 
 std::string
-FileTileDatabase::get_complete_filename(const RowId& fileid, const Vector2i& pos, int scale)
+FileTileDatabase::get_complete_filename(const RowId& image_id, const Vector2i& pos, int scale)
 {
   std::ostringstream str(m_prefix);
-  str << m_prefix << '/' << get_directory(fileid) << '/' << get_filename(pos, scale);
+  str << m_prefix << '/' << get_directory(image_id) << '/' << get_filename(pos, scale);
   return str.str();
 }
 

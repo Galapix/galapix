@@ -29,11 +29,11 @@ MemoryTileDatabase::MemoryTileDatabase() :
 }
 
 bool
-MemoryTileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale)
+MemoryTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int scale)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    if (i->get_fileid() == fileid &&
+    if (i->get_image_id() == image_id &&
         i->get_scale()  == scale  &&
         i->get_pos()    == pos)
     {
@@ -45,11 +45,11 @@ MemoryTileDatabase::has_tile(const RowId& fileid, const Vector2i& pos, int scale
 }
 
 bool
-MemoryTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out)
+MemoryTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    if (i->get_fileid() == fileid &&
+    if (i->get_image_id() == image_id &&
         i->get_scale()  == scale  &&
         i->get_pos()    == pos)
     {
@@ -63,11 +63,11 @@ MemoryTileDatabase::get_tile(const RowId& fileid, int scale, const Vector2i& pos
 }
 
 void
-MemoryTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles_out)
+MemoryTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles_out)
 {
   for(const auto& tile_entry : m_cache)
   {
-    if (tile_entry.get_fileid() == fileid)
+    if (tile_entry.get_image_id() == image_id)
     {
       tiles_out.push_back(tile_entry);
     }
@@ -75,14 +75,14 @@ MemoryTileDatabase::get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles
 }
 
 bool
-MemoryTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out)
+MemoryTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out)
 {
   int min_scale = -1;
   int max_scale = -1;
 
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
-    if (i->get_fileid() == fileid)
+    if (i->get_image_id() == image_id)
     {
       if (min_scale == -1)
       {
@@ -117,9 +117,9 @@ MemoryTileDatabase::get_min_max_scale(const RowId& fileid, int& min_scale_out, i
 }
 
 void
-MemoryTileDatabase::store_tile(const RowId& fileid, const Tile& tile)
+MemoryTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 {
-  m_cache.push_back(TileEntry(fileid, tile.get_scale(), tile.get_pos(), tile.get_surface()));
+  m_cache.push_back(TileEntry(image_id, tile.get_scale(), tile.get_pos(), tile.get_surface()));
 }
 
 void
@@ -129,11 +129,11 @@ MemoryTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 }
 
 void
-MemoryTileDatabase::delete_tiles(const RowId& fileid)
+MemoryTileDatabase::delete_tiles(const RowId& image_id)
 {
   m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(), 
                                [&](const TileEntry& tile_entry) {
-                                 return tile_entry.get_fileid() == fileid;
+                                 return tile_entry.get_image_id() == image_id;
                                }), 
                 m_cache.end());
 }

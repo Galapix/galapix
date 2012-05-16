@@ -57,15 +57,15 @@ public:
   SQLiteTileDatabase(SQLiteConnection& db, FileDatabase& files);
   ~SQLiteTileDatabase();
   
-  bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) override;
-  bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) override;
-  void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles) override;
-  bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out) override;
+  bool has_tile(const RowId& image_id, const Vector2i& pos, int scale) override;
+  bool get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out) override;
+  void get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles) override;
+  bool get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out) override;
 
-  void store_tile(const RowId& fileid, const Tile& tile) override;
+  void store_tile(const RowId& image_id, const Tile& tile) override;
   void store_tiles(const std::vector<TileEntry>& tiles) override;
 
-  void delete_tiles(const RowId& fileid) override;
+  void delete_tiles(const RowId& image_id) override;
 
 private:
   SQLiteTileDatabase (const SQLiteTileDatabase&) = delete;

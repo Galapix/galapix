@@ -32,15 +32,15 @@ public:
   FileTileDatabase(const std::string& prefix);
   ~FileTileDatabase();
 
-  bool has_tile(const RowId& fileid, const Vector2i& pos, int scale);
-  bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out);
-  void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles);
-  bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out);
+  bool has_tile(const RowId& image_id, const Vector2i& pos, int scale);
+  bool get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out);
+  void get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles);
+  bool get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out);
 
-  void store_tile(const RowId& fileid, const Tile& tile);
+  void store_tile(const RowId& image_id, const Tile& tile);
   void store_tiles(const std::vector<TileEntry>& tiles);
 
-  void delete_tiles(const RowId& fileid);
+  void delete_tiles(const RowId& image_id);
 
   void check() {}
 
@@ -50,7 +50,7 @@ private:
   std::string get_directory(const RowId& file_id);
   std::string get_filename(const Vector2i& pos, int scale);
 
-  std::string get_complete_filename(const RowId& fileid, const Vector2i& pos, int scale);
+  std::string get_complete_filename(const RowId& image_id, const Vector2i& pos, int scale);
   std::string get_complete_directory(const RowId& file_id);
 
   bool parse_filename(const std::string& filename, Vector2i* pos_out, int* scale_out, int* format);
