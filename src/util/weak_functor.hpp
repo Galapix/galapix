@@ -35,8 +35,7 @@
  *   weak(std::bind(&Foobar::callme, _1), object);
  *
  */
-
-template<class F, class C>
+template<typename F, typename C>
 class WeakFunctor
 {
 private:
@@ -44,45 +43,18 @@ private:
   std::weak_ptr<typename C::element_type> m_obj;
 
 public: 
-  WeakFunctor(F func, C obj) :
+  WeakFunctor(const F& func, const C& obj) :
     m_func(func),
     m_obj(obj)
   {}
 
-  void operator()()
+  template<typename... Args>
+  void operator()(Args&&... args)
   {
     std::shared_ptr<typename C::element_type> obj = m_obj.lock();
     if (obj)
     {
-      m_func(obj);
-    }
-    else
-    {
-      log_debug("WeakFunctor(): object deleted, not calling callback");
-    }
-  }
-
-  template<class A1>
-  void operator()(A1 a)
-  {
-    std::shared_ptr<typename C::element_type> obj = m_obj.lock();
-    if (obj)
-    {
-      m_func(obj, a);
-    }
-    else
-    {
-      log_debug("WeakFunctor(): object deleted, not calling callback");
-    }
-  }
-
-  template<class A1, class A2>
-  void operator()(A1 a1, A2 a2)
-  {
-    std::shared_ptr<typename C::element_type> obj = m_obj.lock();
-    if (obj)
-    {
-      m_func(obj, a1, a2);
+      m_func(obj, std::forward<Args>(args)...);
     }
     else
     {
@@ -91,7 +63,7 @@ public:
   }
 };
 
-template<class F, class C>
+template<typename F, typename C>
 WeakFunctor<F, C> weak(F func, C obj)
 {
   return WeakFunctor<F, C>(func, obj);
