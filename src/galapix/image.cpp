@@ -121,7 +121,7 @@ Image::set_provider(TileProviderPtr provider)
   if (provider)
   {
     m_provider = provider;
-    m_cache    = ImageTileCache::create(m_provider);
+    m_cache    = std::make_shared<ImageTileCache>(m_provider);
     m_renderer.reset(new ImageRenderer(*this, m_cache));
   }
 

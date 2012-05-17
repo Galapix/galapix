@@ -25,22 +25,7 @@
 #include "galapix/viewer.hpp"
 #include "galapix/database_thread.hpp"
 
-ImageTileCachePtr
-ImageTileCache::create(TileProviderPtr tile_provider)
-{
-  ImageTileCachePtr tile_cache(new ImageTileCache(tile_provider));
-  tile_cache->set_weak_ptr(tile_cache);
-  return tile_cache;
-}
-
-void
-ImageTileCache::set_weak_ptr(ImageTileCachePtr self)
-{
-  m_self = self;
-}
-
 ImageTileCache::ImageTileCache(TileProviderPtr tile_provider) :
-  m_self(),
   m_cache(),
   m_tile_queue(),
   m_tile_provider(tile_provider),
@@ -81,8 +66,9 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
   if (i == m_cache.end())
   {
-    JobHandle job_handle = m_tile_provider->request_tile(scale, Vector2i(x, y), 
-                                                         weak(std::bind(&ImageTileCache::receive_tile, std::placeholders::_1, std::placeholders::_2), m_self));
+    JobHandle job_handle = m_tile_provider->request_tile(
+      scale, Vector2i(x, y), 
+      weak(std::bind(&ImageTileCache::receive_tile, std::placeholders::_1, std::placeholders::_2), shared_from_this()));
 
     // FIXME: Something to try: Request the next smaller tile too,
     // so we get a lower quality image fast and a higher quality one

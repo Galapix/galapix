@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_GALAPIX_IMAGE_TILE_CACHE_HPP
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "display/surface.hpp"
@@ -29,11 +30,14 @@
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue2.hpp"
 
+// error: base class 'class std::enable_shared_from_this<>' has a non-virtual destructor
+#pragma GCC diagnostic ignored "-Weffc++"
+
 class ImageTileCache;
 
 typedef std::shared_ptr<ImageTileCache> ImageTileCachePtr;
 
-class ImageTileCache
+class ImageTileCache : public std::enable_shared_from_this<ImageTileCache>
 {
 public:
   struct SurfaceStruct 
@@ -67,7 +71,6 @@ private:
   typedef std::map<TileCacheId, SurfaceStruct> Cache; 
 
 public:
-  std::weak_ptr<ImageTileCache> m_self;
   Cache m_cache;
 
   ThreadMessageQueue2<Tile> m_tile_queue;
@@ -80,13 +83,8 @@ public:
   /** The smallest scale that is stored permanently */
   int m_min_keep_scale; 
 
-private:
-  ImageTileCache(TileProviderPtr tile_provider);
-
-  void set_weak_ptr(ImageTileCachePtr self);
-
 public:
-  static ImageTileCachePtr create(TileProviderPtr tile_provider);
+  ImageTileCache(TileProviderPtr tile_provider);
 
   SurfaceStruct request_tile(int x, int y, int scale);
   SurfacePtr get_tile(int x, int y, int scale);
