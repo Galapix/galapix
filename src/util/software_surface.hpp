@@ -22,9 +22,9 @@
 #include <stdint.h>
 #include <memory>
 
+#include "math/vector2i.hpp"
 #include "util/blob.hpp"
 
-class Vector2i;
 class RGB;
 class RGBA;
 class Rect;

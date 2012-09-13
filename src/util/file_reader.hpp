@@ -22,10 +22,11 @@
 #include <vector>
 #include <memory>
 
+#include "math/vector2i.hpp"
+
 class RGBA;
 class Size;
 class Vector3f;
-class Vector2i;
 class Vector2f;
 class Rect;
 

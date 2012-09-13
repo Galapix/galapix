@@ -18,9 +18,14 @@
 #define HEADER_GALAPIX_MATH_VECTOR2I_HPP
 
 #include <iosfwd>
+#include <glm/glm.hpp>
 
 class Vector2f;
 
+typedef glm::ivec2 Vector2i;
+
+#if 0
+
 /** */
 class Vector2i
 {
@@ -83,6 +88,8 @@ public:
     return (other.x == x && other.y == y);
   }
 };
+
+#endif
 
 std::ostream& operator<<(std::ostream& s, const Vector2i& v);
 

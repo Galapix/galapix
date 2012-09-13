@@ -19,11 +19,15 @@
 #include <iostream>
 
 #include "math/vector2f.hpp"
+
+#if 0
 
 Vector2i::Vector2i(const Vector2f& v)
   : x(int(v.x)), y(int(v.y))
 {}
 
+#endif 
+
 std::ostream& operator<<(std::ostream& s, const Vector2i& v)
 {
   s << "Vector2i(" << v.x << ", " << v.y << ")";

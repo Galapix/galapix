@@ -21,7 +21,8 @@
 
 #include <vector>
 
-class Vector2i;
+#include "math/vector2i.hpp"
+
 class FileEntry;
 class TileEntry;
 class Tile;
