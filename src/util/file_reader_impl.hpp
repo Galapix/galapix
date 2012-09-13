@@ -26,7 +26,6 @@
 
 class Size;
 class RGBA;
-class Vector3f;
 
 class FileReader;
 
@@ -41,7 +40,6 @@ public:
   virtual bool read_float (const char* name, float&)       const =0;
   virtual bool read_bool  (const char* name, bool&)        const =0;
   virtual bool read_string(const char* name, std::string&) const =0;
-  virtual bool read_vector(const char* name, Vector3f&)    const =0;
   virtual bool read_size  (const char* name, Size&)        const =0;
   virtual bool read_vector2i(const char* name, Vector2i&)  const =0;
   virtual bool read_vector2f(const char* name, Vector2f&)  const =0;
