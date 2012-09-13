@@ -56,8 +56,8 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
 
     if (0) 
     { // draw debug rectangle that shows tiles
-      Framebuffer::draw_rect(Rectf(get_vertex(x,   y,   zoom) + Vector2f(zoom, zoom)*8,
-                                   get_vertex(x+1, y+1, zoom) - Vector2f(zoom, zoom)*8),
+      Framebuffer::draw_rect(Rectf(get_vertex(x,   y,   zoom) + Vector2f(zoom, zoom)*8.0f,
+                                   get_vertex(x+1, y+1, zoom) - Vector2f(zoom, zoom)*8.0f),
                              RGB(255, 0, 255));
     }
   }

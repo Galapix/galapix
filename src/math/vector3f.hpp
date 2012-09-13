@@ -20,8 +20,7 @@
 #include <iosfwd>
 
 #include "math/vector2i.hpp"
-
-class Vector2f;
+#include "math/vector2f.hpp"
 
 class Vector3f
 {

@@ -19,6 +19,8 @@
 #include <iostream>
 
 #include "math/math.hpp"
+
+#if 0
 
 void
 Vector2f::normalize()
@@ -46,6 +48,8 @@ Vector2f::rotate(float angle) const
                   x * Math::sin(angle) + y * Math::cos(angle));
 }
 
+#endif
+
 std::ostream& operator<<(std::ostream& s, const Vector2f& v)
 {
   s << "Vector2f(" << v.x << ", " << v.y << ")";

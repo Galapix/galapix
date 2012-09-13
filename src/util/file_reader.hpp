@@ -23,11 +23,11 @@
 #include <memory>
 
 #include "math/vector2i.hpp"
+#include "math/vector2f.hpp"
 
 class RGBA;
 class Size;
 class Vector3f;
-class Vector2f;
 class Rect;
 
 class FileReaderImpl;

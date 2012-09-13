@@ -20,7 +20,7 @@
 #include <iosfwd>
 #include <glm/glm.hpp>
 
-class Vector2f;
+#include "math/vector2f.hpp"
 
 typedef glm::ivec2 Vector2i;
 

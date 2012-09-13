@@ -37,8 +37,8 @@ ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
   {
     Vector2f p = viewer->get_state().screen2world(pos);
 
-    float a = (selection_center - p).length();
-    float b = (selection_center - resize_center).length();
+    float a = glm::length(selection_center - p);
+    float b = glm::length(selection_center - resize_center);
 
     if (b != 0.0f)
     {

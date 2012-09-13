@@ -22,11 +22,11 @@
 #include <memory>
 
 #include "display/texture.hpp"
+#include "math/vector2f.hpp"
 
 class SurfaceImpl;
 class Rect;
 class Rectf;
-class Vector2f;
 class Surface;
 
 typedef std::shared_ptr<Surface> SurfacePtr;

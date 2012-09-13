@@ -18,6 +18,8 @@
 
 #include "galapix/viewer_state.hpp"
 
+#include <glm/ext.hpp>
+
 #include "display/framebuffer.hpp"
 
 ViewerState::ViewerState() :
@@ -37,7 +39,7 @@ ViewerState::zoom(float factor, const Vector2i& pos)
 
   Vector2f rotated_pos{pos};
   rotated_pos -= center;
-  rotated_pos = rotated_pos.rotate(-angle/360.0f*Math::tau);
+  rotated_pos = glm::rotate(rotated_pos, glm::radians(-angle));
   rotated_pos += center;
 
   offset = rotated_pos - ((rotated_pos - offset) * factor);

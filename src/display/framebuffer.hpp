@@ -24,13 +24,13 @@
 #include <GL/glu.h>
 
 #include "math/size.hpp"
+#include "math/vector2f.hpp"
 #include "util/software_surface.hpp"
 
 class RGB;
 class RGBA;
 class Size;
 class Sizef;
-class Vector2f;
 class Rectf;
 
 #ifdef NDEBUG

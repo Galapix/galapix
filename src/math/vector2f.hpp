@@ -20,7 +20,13 @@
 
 #include <iosfwd>
 
+#include <glm/glm.hpp>
+
 #include "math/vector2i.hpp"
+
+typedef glm::vec2 Vector2f;
+
+#if 0
 
 /** Simple two dimensional vector. */
 class Vector2f
@@ -131,7 +137,8 @@ public:
   float x, y; // leave this public, get/set methods just give me headaches
   // for such simple stuff :)
 };
-
+#endif
+
 std::ostream& operator<<(std::ostream& s, const Vector2f& v);
 
 #endif

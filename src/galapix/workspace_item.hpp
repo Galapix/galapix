@@ -23,9 +23,9 @@
 #include <vector>
 
 #include "math/rect.hpp"
+#include "math/vector2f.hpp"
 #include "util/url.hpp"
 
-class Vector2f;
 class WorkspaceItem;
 
 typedef std::weak_ptr<WorkspaceItem>   WorkspaceItemWPtr;

@@ -21,11 +21,12 @@
 
 #include <memory>
 
+#include "math/vector2f.hpp"
+
 class Image;
 class ImageTileCache;
 class Rect;
 class Rectf;
-class Vector2f;
 
 class ImageRenderer
 {
