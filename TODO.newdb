@@ -1,0 +1,112 @@
+Database
+========
+
+---
+resource:
+  blob_id: rowid
+  type: { archive, image, directory }
+  handler: { pdf, jpeg, png, rar, 7z, zip, ... }
+  arguments: string
+
+blob:
+  checksum: string # could also be blob
+  size: integer
+
+file:
+  path: string
+  blob_id: rowid 
+  mtime: integer
+
+url:
+  host: string (e.g. http://www.google.com)
+  path: string (e.g. /index.html)
+  blob_id: rowid
+  mtime: string (e.g. "Wed, 14 Nov 2012 21:35:42 GMT")
+  content_type: string (e.g. "text/html")
+  header: string (i.e. full dump of header from last access)
+
+archive:
+  resource_id: rowid
+  password: NULL | string
+  password_protected: bool
+
+archive_file:
+  archive_id: rowid
+  path: string
+  blob_id: rowid
+
+video:
+  resource_id: rowid
+  duration: real [seconds]
+  width:  integer
+  height: integer
+  aspect_ratio: real
+
+image:
+  resource_id: rowid
+  width:  integer
+  weight: integer
+
+image_transform:
+  image_id: rowid
+  transform: { rot0, rot90, rot180, rot270, rot0flip, rot90flip, rot180flip, rot270flip }
+
+tile:
+  image_id: rowid
+  x: integer
+  y: integer
+  scale: integer
+  format: { rgb, rgba }
+  data: blob
+
+pdf:
+  password_user: string | NULL
+  password_owner: string | NULL
+
+tag:
+  name: string
+
+resource_tag
+  resource_id: rowid
+  tag_id: rowid
+
+...
+
+Examples:
+=========
+
+Simple ResourceName:
+  sha1:118011f6ac3f8f017542bd90506725a9d78c88c3//image-jpeg
+  sha1:d0b2bf5e1feaaa8d7247dfd6fe5d7a86dcec9c4d//image-png
+  sha1:fab9582fca66b22c88cc7816acce0d727aed0707//video-wmv
+  sha1:39c44100942ee19cd8b7440bc231aa6a34c0e735//archive-rar
+
+Complex ResourceName:
+  sha1:fab9582fca66b22c88cc7816acce0d727aed0707//image-wmv:34.0  # image of the video at second 34
+  sha1:fab9582fca66b22c88cc7816acce0d727aed0707//image-pdf:23    # page 23 of a PDF as image
+  sha1:fab9582fca66b22c88cc7816acce0d727aed0707//image-pdf:10 
+
+Incorrect ResourceName:
+  sha1:16273c96b3343af5972202654c1aff90566b12e8//archive-rar:subdir/subdir/example.txt
+    -> files in archives are accessed by their checksum, not by their
+       path in the archive, see archive_file table
+
+ResourceLocator:
+  -> not saved in the database for now, maybe later to allow
+     determine resource-type by location instead of by content
+  -> either give a blob or child ResourceLocators when it's an archive
+
+Untyped ResourceLocator:
+   file:///home/juser/image/photo/test.jpg
+     -> lookup blob_id, use blob_id to lookup resource_id which has type
+
+Typed ResourceLocator:
+   file:///home/juser/image/photo/test.jpg//image-jpeg
+     -> not supported, maybe later to override automatic type detection
+
+Untyped Archive ResourceLocator:
+   file:///home/juser/image/photo.rar//archive-rar:photos/img001.jpg
+     -> give a blob
+
+
+# EOF #
