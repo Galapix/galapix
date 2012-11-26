@@ -16,29 +16,34 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_UTIL_SEVEN_ZIP_ARCHIVE_LOADER_HPP
-#define HEADER_GALAPIX_UTIL_SEVEN_ZIP_ARCHIVE_LOADER_HPP
+#include "archive/rar_archive_loader.hpp"
 
-#include "util/archive_loader.hpp"
+#include "archive/archive_manager.hpp"
+#include "archive/rar.hpp"
 
-class SevenZipArchiveLoader : public ArchiveLoader
+RarArchiveLoader::RarArchiveLoader()
 {
-private:
-public:
-  SevenZipArchiveLoader();
+}
 
-  void register_loader(ArchiveManager& manager);
+void
+RarArchiveLoader::register_loader(ArchiveManager& manager)
+{
+  manager.register_by_extension(this, "rar");
+  manager.register_by_extension(this, "cbr");
 
-  std::vector<std::string> get_filenames(const std::string& zip_filename) const;
-  BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
+  manager.register_by_magic(this, std::string("Rar!\x1A\a\0", 7));
+}
 
-  std::string str() const { return "7z"; }
+std::vector<std::string>
+RarArchiveLoader::get_filenames(const std::string& zip_filename) const
+{
+  return Rar::get_filenames(zip_filename);
+}
 
-private:
-  SevenZipArchiveLoader(const SevenZipArchiveLoader&);
-  SevenZipArchiveLoader& operator=(const SevenZipArchiveLoader&);
-};
-
-#endif
+BlobPtr
+RarArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
+{
+  return Rar::get_file(zip_filename, filename);
+}
 
 /* EOF */

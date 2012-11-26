@@ -22,10 +22,10 @@
 #include <stdexcept>
 #include <ostream>
 
-#include "plugins/rar.hpp"
-#include "plugins/zip.hpp"
-#include "plugins/seven_zip.hpp"
-#include "plugins/tar.hpp"
+#include "archive/rar.hpp"
+#include "archive/zip.hpp"
+#include "archive/seven_zip.hpp"
+#include "archive/tar.hpp"
 #include "plugins/curl.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"

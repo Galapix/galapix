@@ -30,12 +30,12 @@
 #include <sstream>
 #include <algorithm>
 
-#include "plugins/rar.hpp"
-#include "plugins/seven_zip.hpp"
-#include "plugins/tar.hpp"
-#include "plugins/zip.hpp"
-#include "util/archive_manager.hpp"
-#include "util/archive_loader.hpp"
+#include "archive/rar.hpp"
+#include "archive/seven_zip.hpp"
+#include "archive/tar.hpp"
+#include "archive/zip.hpp"
+#include "archive/archive_manager.hpp"
+#include "archive/archive_loader.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
 #include "util/raise_exception.hpp"

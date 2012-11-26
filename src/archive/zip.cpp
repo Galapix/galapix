@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/zip.hpp"
+#include "archive/zip.hpp"
 
 #include <stdexcept>
 #include <sstream>

@@ -16,22 +16,22 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/tar.hpp"
+#include "archive/rar.hpp"
 
 #include <stdexcept>
 
 #include "util/exec.hpp"
 #include "util/raise_exception.hpp"
-
+
 std::vector<std::string>
-Tar::get_filenames(const std::string& tar_filename)
+Rar::get_filenames(const std::string& rar_filename)
 {
-  Exec tar("tar");
-  tar.arg("--list").arg("--file").arg(tar_filename);
-  if (tar.exec() == 0)
+  Exec rar("rar");
+  rar.arg("vb").arg("-p-").arg(rar_filename);
+  if (rar.exec() == 0)
   {
     std::vector<std::string> lst;
-    const std::vector<char>& stdout_lst = tar.get_stdout();
+    const std::vector<char>& stdout_lst = rar.get_stdout();
     std::vector<char>::const_iterator start = stdout_lst.begin();
     for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
     {
@@ -45,26 +45,26 @@ Tar::get_filenames(const std::string& tar_filename)
   }
   else
   {
-    raise_runtime_error("Tar::get_filenames(): " + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
+    raise_runtime_error("Rar::get_filenames(): " + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
     return std::vector<std::string>();
   }
 }
 
 BlobPtr
-Tar::get_file(const std::string& tar_filename, const std::string& filename)
+Rar::get_file(const std::string& rar_filename, const std::string& filename)
 {
-  Exec tar("tar");
-  tar.arg("--extract").arg("--to-stdout").arg("--file").arg(tar_filename).arg(filename);
-  if (tar.exec() == 0)
+  Exec rar("rar");
+  rar.arg("p").arg("-inul").arg("-p-").arg(rar_filename).arg(filename);
+  if (rar.exec() == 0)
   {
     // FIXME: Unneeded copy of data
-    return Blob::copy(&*tar.get_stdout().begin(), tar.get_stdout().size());
+    return Blob::copy(&*rar.get_stdout().begin(), rar.get_stdout().size());
   }
   else
   {
-    raise_runtime_error("Tar::get_file(): " + tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
+    raise_runtime_error("Rar::get_file(): " + rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    return BlobPtr();
   }
-
 }
-
+
 /* EOF */

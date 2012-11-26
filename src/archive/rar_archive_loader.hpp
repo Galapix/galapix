@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_UTIL_RAR_ARCHIVE_LOADER_HPP
 #define HEADER_GALAPIX_UTIL_RAR_ARCHIVE_LOADER_HPP
 
-#include "util/archive_loader.hpp"
+#include "archive/archive_loader.hpp"
 
 class RarArchiveLoader : public ArchiveLoader
 {

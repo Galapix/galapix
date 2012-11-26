@@ -16,33 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "seven_zip_archive_loader.hpp"
+#include "zip_archive_loader.hpp"
 
-#include "plugins/seven_zip.hpp"
-#include "util/archive_manager.hpp"
+#include "archive/archive_manager.hpp"
+#include "archive/zip.hpp"
 
-SevenZipArchiveLoader::SevenZipArchiveLoader()
+ZipArchiveLoader::ZipArchiveLoader()
 {
 }
 
 void
-SevenZipArchiveLoader::register_loader(ArchiveManager& manager)
+ZipArchiveLoader::register_loader(ArchiveManager& manager)
 {
-  manager.register_by_extension(this, "7z");
+  manager.register_by_extension(this, "zip");
+  manager.register_by_extension(this, "cbz");
 
-  manager.register_by_magic(this, "7z\xBC\xAF\x27\x1C");
+  manager.register_by_magic(this, "PK\003\004"); // regular archive
+  manager.register_by_magic(this, "PK\005\006"); // empty archive
+  manager.register_by_magic(this, "PK\007\008"); // spanned archive
 }
 
 std::vector<std::string>
-SevenZipArchiveLoader::get_filenames(const std::string& zip_filename) const
+ZipArchiveLoader::get_filenames(const std::string& zip_filename) const
 {
-  return SevenZip::get_filenames(zip_filename);
+  return Zip::get_filenames(zip_filename);
 }
 
 BlobPtr
-SevenZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
+ZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
-  return SevenZip::get_file(zip_filename, filename);
+  return Zip::get_file(zip_filename, filename);
 }
 
 /* EOF */

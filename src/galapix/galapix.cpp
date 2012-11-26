@@ -49,7 +49,7 @@
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "plugins/xcf.hpp"
-#include "util/archive_manager.hpp"
+#include "archive/archive_manager.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"

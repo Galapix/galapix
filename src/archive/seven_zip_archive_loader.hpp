@@ -16,27 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_UTIL_ZIP_ARCHIVE_LOADER_HPP
-#define HEADER_GALAPIX_UTIL_ZIP_ARCHIVE_LOADER_HPP
+#ifndef HEADER_GALAPIX_UTIL_SEVEN_ZIP_ARCHIVE_LOADER_HPP
+#define HEADER_GALAPIX_UTIL_SEVEN_ZIP_ARCHIVE_LOADER_HPP
 
-#include "util/archive_loader.hpp"
+#include "archive/archive_loader.hpp"
 
-class ZipArchiveLoader : public ArchiveLoader
+class SevenZipArchiveLoader : public ArchiveLoader
 {
 private:
 public:
-  ZipArchiveLoader();
+  SevenZipArchiveLoader();
 
   void register_loader(ArchiveManager& manager);
 
   std::vector<std::string> get_filenames(const std::string& zip_filename) const;
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
 
-  std::string str() const { return "zip"; }
+  std::string str() const { return "7z"; }
 
 private:
-  ZipArchiveLoader(const ZipArchiveLoader&);
-  ZipArchiveLoader& operator=(const ZipArchiveLoader&);
+  SevenZipArchiveLoader(const SevenZipArchiveLoader&);
+  SevenZipArchiveLoader& operator=(const SevenZipArchiveLoader&);
 };
 
 #endif

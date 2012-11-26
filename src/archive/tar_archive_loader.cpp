@@ -16,11 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "util/tar_archive_loader.hpp"
+#include "archive/tar_archive_loader.hpp"
 
-#include "util/archive_manager.hpp"
+#include "archive/archive_manager.hpp"
 
-#include "plugins/tar.hpp"
+#include "archive/tar.hpp"
 
 TarArchiveLoader::TarArchiveLoader()
 {

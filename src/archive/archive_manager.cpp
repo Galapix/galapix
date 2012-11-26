@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "util/archive_manager.hpp"
+#include "archive/archive_manager.hpp"
 
 #include <string.h>
 #include <stdexcept>
@@ -24,10 +24,10 @@
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 
-#include "util/rar_archive_loader.hpp"
-#include "util/seven_zip_archive_loader.hpp"
-#include "util/tar_archive_loader.hpp"
-#include "util/zip_archive_loader.hpp"
+#include "archive/rar_archive_loader.hpp"
+#include "archive/seven_zip_archive_loader.hpp"
+#include "archive/tar_archive_loader.hpp"
+#include "archive/zip_archive_loader.hpp"
 #include "util/filesystem.hpp"
 
 namespace {

@@ -39,6 +39,7 @@ public:
 
   WorkspaceItemWPtr get_parent() const { return m_parent; }
   std::vector<WorkspaceItemPtr> get_children() const { return m_children; }
+  void add_child(WorkspaceItemPtr child) { m_children.push_back(child); }
 
   virtual void     set_pos(const Vector2f& pos);
   virtual Vector2f get_pos() const;
@@ -71,9 +72,9 @@ public:
 
   virtual URL get_url() const = 0;
 
-  virtual void clear_cache() = 0;
-  virtual void cache_cleanup() = 0;
-  virtual void print_info() const = 0;
+  virtual void clear_cache() {}
+  virtual void cache_cleanup() {}
+  virtual void print_info() const {}
 
 private:
   /** Position refers to the center of the image */
