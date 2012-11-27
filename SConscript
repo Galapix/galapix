@@ -76,13 +76,13 @@ class Project:
             self.optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
             self.optional_libs    += ['spnav']
 
-        # if not conf.CheckLibWithHeader("boost_thread", "boost/thread.hpp", "c++", autoadd=0):
-        #     print "Error: boost_thread is missing"
-        #     Exit(1)
+        #if not conf.CheckLibWithHeader("boost_filesystem", "boost/filesystem.hpp", "c++", autoadd=0):
+        #    print "Error: boost_filesystem is missing"
+        #    Exit(1)
             
-        if not conf.CheckLibWithHeader("boost_signals", "boost/signals.hpp", "c++", autoadd=0):
-            print "Error: boost_signals is missing"
-            Exit(1)
+        #if not conf.CheckLibWithHeader("boost_signals", "boost/signals.hpp", "c++", autoadd=0):
+        #    print "Error: boost_signals is missing"
+        #    Exit(1)
 
         if not conf.CheckLibWithHeader("exif", "libexif/exif-data.h", "c++", autoadd=0):
             print "Error: libexif is missing"
@@ -141,13 +141,14 @@ class Project:
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
         self.libgalapix_env.Append(CPPDEFINES = self.optional_defines,
-                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals'] + self.optional_libs)
+                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals', 'boost_system', 'boost_filesystem'] + self.optional_libs)
         self.libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         
         self.libgalapix_util = self.libgalapix_env.StaticLibrary('galapix_util',
+                                                                 Glob("src/archive/*.cpp") + \
                                                                  Glob("src/util/*.cpp") + \
                                                                  Glob("src/plugins/*.cpp") + \
                                                                  Glob("src/lisp/*.cpp") + \
@@ -167,7 +168,7 @@ class Project:
         sdl_env = self.env.Clone()
         sdl_env.Append(CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'mhash', 'boost_signals'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'mhash', 'boost_signals', 'boost_system', 'boost_filesystem'] + self.optional_libs,
                        OBJPREFIX="sdl.")
         sdl_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
@@ -183,7 +184,7 @@ class Project:
         gtk_env = self.env.Clone()
         gtk_env.Append(CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'mhash', 'boost_signals'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'mhash', 'boost_signals', 'boost_system', 'boost_filesystem'] + self.optional_libs,
                        OBJPREFIX="gtk.")
         gtk_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')

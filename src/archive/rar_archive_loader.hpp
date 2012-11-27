@@ -31,6 +31,7 @@ public:
 
   std::vector<std::string> get_filenames(const std::string& zip_filename) const;
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
+  std::shared_ptr<Extraction> get_extraction(const std::string& filename) const;
 
   std::string str() const { return "rar"; }
 

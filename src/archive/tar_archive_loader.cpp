@@ -19,7 +19,7 @@
 #include "archive/tar_archive_loader.hpp"
 
 #include "archive/archive_manager.hpp"
-
+#include "archive/incremental_extraction.hpp"
 #include "archive/tar.hpp"
 
 TarArchiveLoader::TarArchiveLoader()
@@ -57,6 +57,12 @@ BlobPtr
 TarArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return Tar::get_file(zip_filename, filename);
+}
+
+std::shared_ptr<Extraction>
+TarArchiveLoader::get_extraction(const std::string& filename) const
+{
+  return std::make_shared<IncrementalExtraction<Tar> >(filename);
 }
 
 /* EOF */

@@ -18,8 +18,9 @@
 
 #include "seven_zip_archive_loader.hpp"
 
-#include "archive/seven_zip.hpp"
 #include "archive/archive_manager.hpp"
+#include "archive/incremental_extraction.hpp"
+#include "archive/seven_zip.hpp"
 
 SevenZipArchiveLoader::SevenZipArchiveLoader()
 {
@@ -43,6 +44,12 @@ BlobPtr
 SevenZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return SevenZip::get_file(zip_filename, filename);
+}
+
+std::shared_ptr<Extraction>
+SevenZipArchiveLoader::get_extraction(const std::string& filename) const
+{
+  return std::make_shared<IncrementalExtraction<SevenZip> >(filename);
 }
 
 /* EOF */

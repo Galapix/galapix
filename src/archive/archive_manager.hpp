@@ -28,6 +28,7 @@
 #include "util/currenton.hpp"
 
 class ArchiveLoader;
+class Extraction;
 
 class ArchiveManager : public Currenton<ArchiveManager>
 {
@@ -54,6 +55,12 @@ public:
   std::vector<std::string> get_filenames(const std::string& zip_filename, 
                                          const ArchiveLoader** loader_out = nullptr) const;
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
+
+  /** Returns an Extraction object that allows fast access to files
+      inside the archive. For archives that don't allow seeking this
+      means the file are extracted to a temporary directiory, seekable
+      archives are accessed directly. */
+  std::shared_ptr<Extraction> get_extraction(const std::string& filename) const;
 
 private:
   ArchiveManager(const ArchiveManager&);

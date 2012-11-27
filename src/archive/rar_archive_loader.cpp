@@ -19,6 +19,7 @@
 #include "archive/rar_archive_loader.hpp"
 
 #include "archive/archive_manager.hpp"
+#include "archive/incremental_extraction.hpp"
 #include "archive/rar.hpp"
 
 RarArchiveLoader::RarArchiveLoader()
@@ -44,6 +45,12 @@ BlobPtr
 RarArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return Rar::get_file(zip_filename, filename);
+}
+
+std::shared_ptr<Extraction>
+RarArchiveLoader::get_extraction(const std::string& filename) const
+{
+  return std::make_shared<IncrementalExtraction<Rar> >(filename);
 }
 
 /* EOF */

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "util/archive_manager.hpp"
+#include "archive/archive_manager.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/url.hpp"
 #include "plugins/jpeg.hpp"

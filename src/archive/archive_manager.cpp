@@ -182,4 +182,18 @@ ArchiveManager::get_file(const std::string& zip_filename, const std::string& fil
   }
 }
 
+std::shared_ptr<Extraction>
+ArchiveManager::get_extraction(const std::string& filename) const
+{
+  auto loader = find_loader_by_magic(filename);
+  if (!loader)
+  {
+    raise_exception(std::runtime_error, "failed to find loader for archive file: " << filename);
+  }
+  else
+  {
+    return loader->get_extraction(filename);
+  }
+}
+
 /* EOF */

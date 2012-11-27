@@ -21,10 +21,12 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "util/blob.hpp"
 
 class ArchiveManager;
+class Extraction;
 
 class ArchiveLoader
 {
@@ -35,6 +37,8 @@ public:
 
   virtual std::vector<std::string> get_filenames(const std::string& zip_filename) const = 0;
   virtual BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const = 0;
+
+  virtual std::shared_ptr<Extraction> get_extraction(const std::string& filename) const = 0;
 
   virtual std::string str() const = 0;
 };

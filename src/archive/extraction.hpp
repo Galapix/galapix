@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,28 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_UTIL_ZIP_ARCHIVE_LOADER_HPP
-#define HEADER_GALAPIX_UTIL_ZIP_ARCHIVE_LOADER_HPP
+#ifndef HEADER_GALAPIX_ARCHIVE_EXTRACTION_HANDLE_HPP
+#define HEADER_GALAPIX_ARCHIVE_EXTRACTION_HANDLE_HPP
 
-#include "archive/archive_loader.hpp"
+#include <memory>
+#include <vector>
 
-class ZipArchiveLoader : public ArchiveLoader
+#include "util/blob.hpp"
+
+class Extraction
 {
 private:
 public:
-  ZipArchiveLoader();
+  Extraction();
+  virtual ~Extraction();
 
-  void register_loader(ArchiveManager& manager);
-
-  std::vector<std::string> get_filenames(const std::string& zip_filename) const;
-  BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
-  std::shared_ptr<Extraction> get_extraction(const std::string& filename) const;
-
-  std::string str() const { return "zip"; }
+  virtual std::vector<std::string> get_filenames() const = 0;
+  virtual BlobPtr get_file(const std::string& filename) const = 0;
+  virtual std::string get_file_as_path(const std::string& filename) const = 0;
 
 private:
-  ZipArchiveLoader(const ZipArchiveLoader&);
-  ZipArchiveLoader& operator=(const ZipArchiveLoader&);
+  Extraction(const Extraction&) = delete;
+  Extraction& operator=(const Extraction&) = delete;
 };
 
 #endif
