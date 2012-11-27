@@ -21,6 +21,7 @@
 
 #include <vector>
 #include <string>
+#include <boost/optional.hpp>
 
 #include "util/blob.hpp"
 
@@ -32,6 +33,7 @@ private:
   std::string m_program;
   bool m_absolute_path;
   std::vector<std::string> m_arguments;
+  boost::optional<std::string> m_working_directory;
 
   std::vector<char> m_stdout_vec;
   std::vector<char> m_stderr_vec;
@@ -57,6 +59,9 @@ public:
       special characters are allow, shell escaping is not needed
    */
   Exec& arg(const std::string& argument);
+
+  /** Set the working directory for executing the process */
+  void set_working_directory(const std::string& path);
 
   /** Set what will be passed to the process on stdin 
 

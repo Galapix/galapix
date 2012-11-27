@@ -36,6 +36,7 @@ Exec::Exec(const std::string& program, bool absolute_path) :
   m_program(program),
   m_absolute_path(absolute_path),
   m_arguments(),
+  m_working_directory(),
   m_stdout_vec(),
   m_stderr_vec(),
   m_stdin_data()
@@ -46,6 +47,12 @@ Exec::arg(const std::string& argument)
 {
   m_arguments.push_back(argument);
   return *this;
+}
+
+void
+Exec::set_working_directory(const std::string& path)
+{
+  m_working_directory.reset(path);
 }
 
 void
@@ -99,7 +106,17 @@ Exec::exec()
     for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
       c_arguments[i+1] = strdup(m_arguments[i].c_str());
     c_arguments[m_arguments.size()+1] = NULL;
-      
+     
+    if (m_working_directory)
+    {
+      if (chdir(m_working_directory->c_str()) != 0)
+      {
+        int errnum = errno;
+        log_error(*m_working_directory << ": failed change to directory: " << strerror(errnum));
+        _exit(EXIT_FAILURE);
+      }
+    }
+ 
     // Execute the program
     if (m_absolute_path)
     {
@@ -115,7 +132,7 @@ Exec::exec()
     // FIXME: this ain't proper, need to exit(1) on failure and signal error to parent somehow
 
     // execvp() only returns on failure 
-    std::cout << "Exec::exec(): " << m_program << ": " << strerror(error_code) << std::endl;
+    log_error(m_program << ": " << strerror(error_code));
     _exit(EXIT_FAILURE);
   }
   else // if (pid > 0)

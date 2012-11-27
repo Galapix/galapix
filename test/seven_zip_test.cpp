@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/seven_zip.hpp"
+#include "archive/seven_zip.hpp"
 
 #include <iostream>
 
