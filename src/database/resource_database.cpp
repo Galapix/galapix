@@ -43,7 +43,8 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_file_entry_store(m_db),
   m_file_entry_delete(m_db),
   m_image_entry_store(m_db),
-  m_image_entry_get(m_db)
+  m_image_entry_get(m_db),
+  m_resource_entry_get_by_blob_id(m_db)
 {
 }
 

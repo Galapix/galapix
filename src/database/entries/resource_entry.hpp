@@ -19,12 +19,27 @@
 #ifndef HEADER_GALAPIX_DATABASE_RESOURCE_ENTRY_HPP
 #define HEADER_GALAPIX_DATABASE_RESOURCE_ENTRY_HPP
 
+#include "database/row_id.hpp"
+
 class ResourceEntry
 {
+public:
+  enum Type {};
+  enum Handler {};
+
 private:
+  Type m_type;
+  Handler m_handler;
+  RowId m_blob_id;
+  std::string m_arguments;
+
 public:
   ResourceEntry();
-
+  
+  Type    get_type() const { return m_type; }
+  Handler get_handler() const { return m_handler; }
+  RowId   get_blob_id() const { return m_blob_id; }
+  std::string get_arguments() const { return m_arguments; }
 };
 
 #endif

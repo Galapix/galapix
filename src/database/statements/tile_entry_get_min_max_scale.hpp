@@ -21,13 +21,13 @@
 
 #include <assert.h>
 
-class TileEntryGetMinMaxScaleStatement
+class TileEntryGetMinMaxScale final
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  TileEntryGetMinMaxScaleStatement(SQLiteConnection& db) :
+  TileEntryGetMinMaxScale(SQLiteConnection& db) :
     m_stmt(db, "SELECT MIN(scale),MAX(scale) FROM tile WHERE image_id = ?1;")
   {}
 
@@ -52,14 +52,14 @@ public:
     }
     else
     {
-      assert(!"TileEntryGetMinMaxScaleStatement: never reached");
+      assert(!"TileEntryGetMinMaxScale: never reached");
       return false;
     }
   }
 
 private:
-  TileEntryGetMinMaxScaleStatement(const TileEntryGetMinMaxScaleStatement&);
-  TileEntryGetMinMaxScaleStatement& operator=(const TileEntryGetMinMaxScaleStatement&);
+  TileEntryGetMinMaxScale(const TileEntryGetMinMaxScale&);
+  TileEntryGetMinMaxScale& operator=(const TileEntryGetMinMaxScale&);
 };
 
 #endif

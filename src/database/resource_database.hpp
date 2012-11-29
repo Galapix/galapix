@@ -23,14 +23,15 @@
 #include <boost/optional.hpp>
 
 #include "database/entries/resource_entry.hpp"
-#include "database/statements/file_entry_delete_statement.hpp"
-#include "database/statements/file_entry_get_all_statement.hpp"
-#include "database/statements/file_entry_get_by_file_id_statement.hpp"
-#include "database/statements/file_entry_get_by_pattern_statement.hpp"
-#include "database/statements/file_entry_get_by_url_statement.hpp"
-#include "database/statements/file_entry_store_statement.hpp"
-#include "database/statements/image_entry_get_statement.hpp"
-#include "database/statements/image_entry_store_statement.hpp"
+#include "database/statements/file_entry_delete.hpp"
+#include "database/statements/file_entry_get_all.hpp"
+#include "database/statements/file_entry_get_by_file_id.hpp"
+#include "database/statements/file_entry_get_by_pattern.hpp"
+#include "database/statements/file_entry_get_by_url.hpp"
+#include "database/statements/file_entry_store.hpp"
+#include "database/statements/image_entry_get.hpp"
+#include "database/statements/image_entry_store.hpp"
+#include "database/statements/resource_entry_get_by_blob_id.hpp"
 #include "database/tables/archive_table.hpp"
 #include "database/tables/blob_table.hpp"
 #include "database/tables/file_table.hpp"
@@ -64,14 +65,15 @@ private:
   ArchiveTable                   m_archive_table;
   VideoTable                     m_video_table;
 
-  FileEntryGetAllStatement       m_file_entry_get_all;
-  FileEntryGetByFileIdStatement  m_file_entry_get_by_fileid;
-  FileEntryGetByPatternStatement m_file_entry_get_by_pattern;
-  FileEntryGetByUrlStatement     m_file_entry_get_by_url;
-  FileEntryStoreStatement        m_file_entry_store;
-  FileEntryDeleteStatement       m_file_entry_delete;
-  ImageEntryStoreStatement       m_image_entry_store;
-  ImageEntryGetStatement         m_image_entry_get;
+  FileEntryGetAll          m_file_entry_get_all;
+  FileEntryGetByFileId     m_file_entry_get_by_fileid;
+  FileEntryGetByPattern    m_file_entry_get_by_pattern;
+  FileEntryGetByUrl        m_file_entry_get_by_url;
+  FileEntryStore           m_file_entry_store;
+  FileEntryDelete          m_file_entry_delete;
+  ImageEntryStore          m_image_entry_store;
+  ImageEntryGet            m_image_entry_get;
+  ResourceEntryGetByBlobId m_resource_entry_get_by_blob_id;
 
 public:
   ResourceDatabase(SQLiteConnection& db);

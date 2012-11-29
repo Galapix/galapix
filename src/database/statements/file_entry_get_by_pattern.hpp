@@ -16,31 +16,29 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATTERN_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATTERN_STATEMENT_HPP
 
-#include "database/entries/file_entry.hpp"
-
-class FileEntryGetAllStatement
+class FileEntryGetByPattern
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  FileEntryGetAllStatement(SQLiteConnection& db) :
+  FileEntryGetByPattern(SQLiteConnection& db) :
     m_stmt(db, 
            "SELECT\n"
            "  file.id, file.url, file.mtime, file.handler, file.parent_file_id, blob.id, blob.sha1, blob.size\n"
            "FROM\n"
-           "  file\n"
-           "LEFT OUTER JOIN\n"
-           "  blob\n"
-           "ON\n"
-           "  file.blob_id = blob.id;")
+           "  file, blob\n"
+           "WHERE\n"
+           "  file.blob_id = blob.rowid AND\n"
+           "  file.url GLOB ?1;")
   {}
 
-  void operator()(std::vector<FileEntry>& entries_out)
+  void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
   {
+    m_stmt.bind_text(1, pattern);
     SQLiteReader reader = m_stmt.execute_query();
 
     while (reader.next())  
@@ -50,8 +48,8 @@ public:
   }
 
 private:
-  FileEntryGetAllStatement(const FileEntryGetAllStatement&);
-  FileEntryGetAllStatement& operator=(const FileEntryGetAllStatement&);
+  FileEntryGetByPattern(const FileEntryGetByPattern&);
+  FileEntryGetByPattern& operator=(const FileEntryGetByPattern&);
 };
 
 #endif

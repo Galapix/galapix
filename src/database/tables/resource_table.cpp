@@ -16,21 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/tables/video_table.hpp"
+#include "resource_table.hpp"
 
-VideoTable::VideoTable(SQLiteConnection& db) :
+ResourceTable::ResourceTable(SQLiteConnection& db) :
   m_db(db)
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS video (\n"
-            "  id           INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  resource_id  INTEGER,\n"
-            "  width        INTEGER,\n"
-            "  height       INTEGER,\n"
-            "  duration     INTEGER,\n"
-            "  aspect_ratio REAL\n"
+  m_db.exec("CREATE TABLE IF NOT EXISTS resource (\n"
+            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+            "  blob_id   INTEGER,\n"
+            "  type      INTEGER,\n"
+            "  handler   INTEGER,\n"
+            "  arguments TEXT,\n"
             ");");
 
-  //m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS video_index ON video ( id, file_id, width, height, duration );");
+  //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
 }
 
 /* EOF */

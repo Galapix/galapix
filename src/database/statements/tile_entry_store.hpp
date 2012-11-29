@@ -21,13 +21,13 @@
 
 #include <iostream>
 
-class TileEntryStoreStatement
+class TileEntryStore
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  TileEntryStoreStatement(SQLiteConnection& db) :
+  TileEntryStore(SQLiteConnection& db) :
     m_stmt(db, "INSERT into tile (image_id, scale, x, y, data, quality, format) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);")
     // FIXME: This is brute force and doesn't handle collisions
   {}
@@ -78,8 +78,8 @@ public:
   }
 
 private:
-  TileEntryStoreStatement(const TileEntryStoreStatement&);
-  TileEntryStoreStatement& operator=(const TileEntryStoreStatement&);
+  TileEntryStore(const TileEntryStore&);
+  TileEntryStore& operator=(const TileEntryStore&);
 };
 
 #endif

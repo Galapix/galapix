@@ -24,7 +24,7 @@
 
 #include "util/sha1.hpp"
 
-class FileEntryStoreStatement
+class FileEntryStore
 {
 private:
   SQLiteConnection& m_db;
@@ -33,7 +33,7 @@ private:
   SQLiteStatement   m_file_stmt;
 
 public:
-  FileEntryStoreStatement(SQLiteConnection& db) :
+  FileEntryStore(SQLiteConnection& db) :
     m_db(db),
     m_blob_select_stmt(db, "SELECT id FROM blob WHERE sha1 = ?1;\n"),
     m_blob_stmt(db, "INSERT OR REPLACE INTO blob (sha1, size) VALUES (?1, ?2);\n"),
@@ -78,8 +78,8 @@ public:
   }
 
 private:
-  FileEntryStoreStatement(const FileEntryStoreStatement&);
-  FileEntryStoreStatement& operator=(const FileEntryStoreStatement&);
+  FileEntryStore(const FileEntryStore&);
+  FileEntryStore& operator=(const FileEntryStore&);
 };
 
 #endif

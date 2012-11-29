@@ -22,11 +22,10 @@ ImageTable::ImageTable(SQLiteConnection& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS image (\n"
-            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  blob_id   INTEGER,\n"
-            "  width     INTEGER,\n"
-            "  height    INTEGER,\n"
-            "  handler   INTEGER\n"
+            "  id          INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+            "  resource_id INTEGER,\n"
+            "  width       INTEGER,\n"
+            "  height      INTEGER\n"
             ");");
 
   //m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS image_index ON image ( id, blob_id, width, height, handler );");

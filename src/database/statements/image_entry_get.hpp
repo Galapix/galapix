@@ -22,14 +22,14 @@
 #include "database/entries/image_entry.hpp"
 #include "util/log.hpp"
 
-class ImageEntryGetStatement final
+class ImageEntryGet final
 {
 private:
   SQLiteConnection& m_db;
   SQLiteStatement   m_stmt;
 
 public:
-  ImageEntryGetStatement(SQLiteConnection& db) :
+  ImageEntryGet(SQLiteConnection& db) :
     m_db(db),
     m_stmt(db, "SELECT id, blob_id, width, height, handler FROM image WHERE id = ?1;")
   {}
@@ -56,8 +56,8 @@ public:
   }
 
 private:
-  ImageEntryGetStatement(const ImageEntryGetStatement&);
-  ImageEntryGetStatement& operator=(const ImageEntryGetStatement&);
+  ImageEntryGet(const ImageEntryGet&);
+  ImageEntryGet& operator=(const ImageEntryGet&);
 };
 
 #endif

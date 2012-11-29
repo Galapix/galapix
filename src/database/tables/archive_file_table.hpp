@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,34 +16,22 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_TABLES_ARCHIVE_FILE_TABLE_HPP
+#define HEADER_GALAPIX_DATABASE_TABLES_ARCHIVE_FILE_TABLE_HPP
 
-#include "database/row_id.hpp"
-#include "sqlite/statement.hpp"
+#include "sqlite/connection.hpp"
 
-class FileEntryDeleteStatement
+class ArchiveFileTable
 {
 private:
   SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
 
 public:
-  FileEntryDeleteStatement(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "DELETE FROM file WHERE id = ?1;")
-  {}
-
-  void operator()(const RowId& fileid)
-  {
-    assert(fileid);
-    m_stmt.bind_int64(1, fileid.get_id());
-    m_stmt.execute();
-  }
+  ArchiveFileTable(SQLiteConnection& db);
 
 private:
-  FileEntryDeleteStatement(const FileEntryDeleteStatement&);
-  FileEntryDeleteStatement& operator=(const FileEntryDeleteStatement&);
+  ArchiveFileTable(const ArchiveFileTable&);
+  ArchiveFileTable& operator=(const ArchiveFileTable&);
 };
 
 #endif

@@ -16,40 +16,48 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATTERN_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATTERN_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_URL_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_URL_STATEMENT_HPP
 
-class FileEntryGetByPatternStatement
+class FileEntryGetByUrl
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  FileEntryGetByPatternStatement(SQLiteConnection& db) :
+  FileEntryGetByUrl(SQLiteConnection& db) :
     m_stmt(db, 
            "SELECT\n"
            "  file.id, file.url, file.mtime, file.handler, file.parent_file_id, blob.id, blob.sha1, blob.size\n"
            "FROM\n"
-           "  file, blob\n"
+           "  file\n"
+           "LEFT OUTER JOIN\n"
+           "  blob\n"
+           "ON\n"
+           "  file.blob_id = blob.rowid\n"
            "WHERE\n"
-           "  file.blob_id = blob.rowid AND\n"
-           "  file.url GLOB ?1;")
+           "  file.url = ?1;")
   {}
 
-  void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
+  bool operator()(const URL& url, FileEntry& entry_out)
   {
-    m_stmt.bind_text(1, pattern);
+    m_stmt.bind_text(1, url.str());
     SQLiteReader reader = m_stmt.execute_query();
 
-    while (reader.next())  
+    if (reader.next())
     {
-      entries_out.push_back(FileEntry::from_reader(reader));
+      entry_out = FileEntry::from_reader(reader);
+      return true;
+    }
+    else
+    {
+      return false;
     }
   }
 
 private:
-  FileEntryGetByPatternStatement(const FileEntryGetByPatternStatement&);
-  FileEntryGetByPatternStatement& operator=(const FileEntryGetByPatternStatement&);
+  FileEntryGetByUrl(const FileEntryGetByUrl&);
+  FileEntryGetByUrl& operator=(const FileEntryGetByUrl&);
 };
 
 #endif

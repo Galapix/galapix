@@ -16,22 +16,26 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_FILE_ID_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_FILE_ID_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_ALL_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_ALL_STATEMENT_HPP
 
-class FileEntryGetByFileIdStatement
+class TileEntryGetAll final
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  FileEntryGetByFileIdStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM file WHERE id = ?1;")
+  TileEntryGetAll(SQLiteConnection& db) :
+    m_stmt(db, "SELECT * FROM tiles ORDER BY image_id;")
   {}
 
+  void operator()(std::vector<TileEntry>& tiles_out)
+  {
+  }
+
 private:
-  FileEntryGetByFileIdStatement(const FileEntryGetByFileIdStatement&);
-  FileEntryGetByFileIdStatement& operator=(const FileEntryGetByFileIdStatement&);
+  TileEntryGetAll(const TileEntryGetAll&);
+  TileEntryGetAll& operator=(const TileEntryGetAll&);
 };
 
 #endif

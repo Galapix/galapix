@@ -16,48 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_HAS_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_HAS_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
 
-class TileEntryHasStatement
+#include "database/entries/file_entry.hpp"
+
+class FileEntryGetAll
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  TileEntryHasStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT (rowid) FROM tile WHERE image_id = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
+  FileEntryGetAll(SQLiteConnection& db) :
+    m_stmt(db, 
+           "SELECT\n"
+           "  file.id, file.url, file.mtime, file.handler, file.parent_file_id, blob.id, blob.sha1, blob.size\n"
+           "FROM\n"
+           "  file\n"
+           "LEFT OUTER JOIN\n"
+           "  blob\n"
+           "ON\n"
+           "  file.blob_id = blob.id;")
   {}
 
-  bool operator()(const RowId& fileid, const Vector2i& pos, int scale)
+  void operator()(std::vector<FileEntry>& entries_out)
   {
-    if (!fileid)
-    {
-      return false;
-    }
-    else
-    {
-      m_stmt.bind_int64(1, fileid.get_id());
-      m_stmt.bind_int(2, scale);
-      m_stmt.bind_int(3, pos.x);
-      m_stmt.bind_int(4, pos.y);
+    SQLiteReader reader = m_stmt.execute_query();
 
-      SQLiteReader reader = m_stmt.execute_query();
-
-      if (reader.next())
-      {
-        return true;
-      }  
-      else
-      {
-        return false;
-      }
+    while (reader.next())  
+    {
+      entries_out.push_back(FileEntry::from_reader(reader));
     }
   }
 
 private:
-  TileEntryHasStatement(const TileEntryHasStatement&);
-  TileEntryHasStatement& operator=(const TileEntryHasStatement&);
+  FileEntryGetAll(const FileEntryGetAll&);
+  FileEntryGetAll& operator=(const FileEntryGetAll&);
 };
 
 #endif

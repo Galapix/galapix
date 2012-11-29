@@ -24,14 +24,14 @@
 
 #include "database/entries/image_entry.hpp"
 
-class ImageEntryStoreStatement
+class ImageEntryStore final
 {
 private:
   SQLiteConnection& m_db;
   SQLiteStatement   m_stmt;
 
 public:
-  ImageEntryStoreStatement(SQLiteConnection& db) :
+  ImageEntryStore(SQLiteConnection& db) :
     m_db(db),
     m_stmt(db, "INSERT OR REPLACE INTO image (blob_id, width, height, handler) VALUES (?1, ?2, ?3, ?4);")
   {}
@@ -49,8 +49,8 @@ public:
   }
 
 private:
-  ImageEntryStoreStatement(const ImageEntryStoreStatement&);
-  ImageEntryStoreStatement& operator=(const ImageEntryStoreStatement&);
+  ImageEntryStore(const ImageEntryStore&);
+  ImageEntryStore& operator=(const ImageEntryStore&);
 };
 
 #endif

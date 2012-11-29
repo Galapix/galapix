@@ -16,31 +16,34 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_DELETE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
 
-class TileEntryDeleteStatement
+#include "database/row_id.hpp"
+#include "sqlite/statement.hpp"
+
+class FileEntryDelete
 {
 private:
   SQLiteConnection& m_db;
   SQLiteStatement   m_stmt;
 
 public:
-  TileEntryDeleteStatement(SQLiteConnection& db) :
+  FileEntryDelete(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "DELETE FROM tile WHERE image_id = ?1;")
+    m_stmt(db, "DELETE FROM file WHERE id = ?1;")
   {}
 
-  void operator()(const RowId& image_id)
+  void operator()(const RowId& fileid)
   {
-    assert(image_id);
-    m_stmt.bind_int64(1, image_id.get_id());
+    assert(fileid);
+    m_stmt.bind_int64(1, fileid.get_id());
     m_stmt.execute();
   }
 
 private:
-  TileEntryDeleteStatement(const TileEntryDeleteStatement&);
-  TileEntryDeleteStatement& operator=(const TileEntryDeleteStatement&);
+  FileEntryDelete(const FileEntryDelete&);
+  FileEntryDelete& operator=(const FileEntryDelete&);
 };
 
 #endif

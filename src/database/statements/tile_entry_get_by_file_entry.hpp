@@ -16,46 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_ALL_BY_FILE_ENTRY_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_ALL_BY_FILE_ENTRY_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_BY_FILE_ENTRY_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_GET_BY_FILE_ENTRY_STATEMENT_HPP
 
-#include <assert.h>
-
-#include "database/entries/file_entry.hpp"
-#include "database/entries/tile_entry.hpp"
-#include "util/software_surface_factory.hpp"
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
 
-class TileEntryGetAllByFileEntryStatement
+class TileEntryGetByFileEntry final
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  TileEntryGetAllByFileEntryStatement(SQLiteConnection& db) :
-    m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1;")
+  TileEntryGetByFileEntry(SQLiteConnection& db) :
+    m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
-  void operator()(const RowId& fileid, std::vector<TileEntry>& tiles)
+  bool operator()(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile)
   {
-    if (fileid)
+    if (!image_id)
     {
-      m_stmt.bind_int64(1, fileid.get_id());
+      return false;
+    }
+    else
+    {
+      m_stmt.bind_int64(1, image_id.get_id());
+      m_stmt.bind_int(2, scale);
+      m_stmt.bind_int(3, pos.x);
+      m_stmt.bind_int(4, pos.y);
 
       SQLiteReader reader = m_stmt.execute_query();
-      while(reader.next())
+
+      if (reader.next())
       {
-        TileEntry tile(fileid,
-                       reader.get_int(1), // scale
-                       Vector2i(reader.get_int (2),  // x
-                                reader.get_int (3)), // y
-                       reader.get_blob(4),
-                       static_cast<TileEntry::Format>(reader.get_int(6)));
-      
-        // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
-        // Blob, so we don't do encode/decode when doing a database
-        // merge
+        tile = TileEntry(image_id,
+                         reader.get_int(1), // scale
+                         Vector2i(reader.get_int(2), // pos
+                                  reader.get_int(3)),
+                         reader.get_blob(4),
+                         static_cast<TileEntry::Format>(reader.get_int(6)));
+
         BlobPtr blob = tile.get_blob();
         switch(tile.get_format())
         {
@@ -70,15 +70,19 @@ public:
           default:
             assert(!"never reached");
         }
-
-        tiles.push_back(tile);
+      
+        return true;
+      }
+      else
+      {
+        return false;
       }
     }
   }
 
 private:
-  TileEntryGetAllByFileEntryStatement(const TileEntryGetAllByFileEntryStatement&);
-  TileEntryGetAllByFileEntryStatement& operator=(const TileEntryGetAllByFileEntryStatement&);
+  TileEntryGetByFileEntry(const TileEntryGetByFileEntry&);
+  TileEntryGetByFileEntry& operator=(const TileEntryGetByFileEntry&);
 };
 
 #endif

@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,21 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/tables/video_table.hpp"
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_FILE_ID_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_FILE_ID_STATEMENT_HPP
 
-VideoTable::VideoTable(SQLiteConnection& db) :
-  m_db(db)
+class FileEntryGetByFileId
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS video (\n"
-            "  id           INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  resource_id  INTEGER,\n"
-            "  width        INTEGER,\n"
-            "  height       INTEGER,\n"
-            "  duration     INTEGER,\n"
-            "  aspect_ratio REAL\n"
-            ");");
+private:
+  SQLiteStatement m_stmt;
 
-  //m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS video_index ON video ( id, file_id, width, height, duration );");
-}
+public:
+  FileEntryGetByFileId(SQLiteConnection& db) :
+    m_stmt(db, "SELECT * FROM file WHERE id = ?1;")
+  {}
+
+private:
+  FileEntryGetByFileId(const FileEntryGetByFileId&);
+  FileEntryGetByFileId& operator=(const FileEntryGetByFileId&);
+};
+
+#endif
 
 /* EOF */

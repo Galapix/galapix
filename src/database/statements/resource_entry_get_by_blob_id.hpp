@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,48 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_URL_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_URL_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_ENTRY_GET_BY_BLOB_ID_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_ENTRY_GET_BY_BLOB_ID_STATEMENT_HPP
 
-class FileEntryGetByUrlStatement
+#include <boost/optional.hpp>
+
+class ResourceEntryGetByBlobId final
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  FileEntryGetByUrlStatement(SQLiteConnection& db) :
+  ResourceEntryGetByBlobId(SQLiteConnection& db) :
     m_stmt(db, 
            "SELECT\n"
-           "  file.id, file.url, file.mtime, file.handler, file.parent_file_id, blob.id, blob.sha1, blob.size\n"
+           "  *\n"
            "FROM\n"
-           "  file\n"
-           "LEFT OUTER JOIN\n"
-           "  blob\n"
-           "ON\n"
-           "  file.blob_id = blob.rowid\n"
+           "  resource\n"
            "WHERE\n"
-           "  file.url = ?1;")
+           "  resource.blob_id = ?1;")
   {}
 
-  bool operator()(const URL& url, FileEntry& entry_out)
+  boost::optional<ResourceEntry> operator()(RowId id)
   {
-    m_stmt.bind_text(1, url.str());
+    m_stmt.bind_int64(1, id.get_id());
+    
     SQLiteReader reader = m_stmt.execute_query();
-
-    if (reader.next())
+    if (reader.next())  
     {
-      entry_out = FileEntry::from_reader(reader);
-      return true;
+      //return boost::optional<ResourceEntry>(reader.get_int(0),);
+      return boost::optional<ResourceEntry>();
     }
     else
     {
-      return false;
+      return boost::optional<ResourceEntry>();
     }
   }
 
 private:
-  FileEntryGetByUrlStatement(const FileEntryGetByUrlStatement&);
-  FileEntryGetByUrlStatement& operator=(const FileEntryGetByUrlStatement&);
+  ResourceEntryGetByBlobId(const ResourceEntryGetByBlobId&);
+  ResourceEntryGetByBlobId& operator=(const ResourceEntryGetByBlobId&);
 };
 
 #endif

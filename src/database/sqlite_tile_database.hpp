@@ -24,13 +24,13 @@
 
 #include "database/file_tile_database.hpp"
 #include "database/memory_tile_database.hpp"
-#include "database/statements/tile_entry_delete_statement.hpp"
-#include "database/statements/tile_entry_get_all_by_file_entry_statement.hpp"
-#include "database/statements/tile_entry_get_all_statement.hpp"
-#include "database/statements/tile_entry_get_by_file_entry_statement.hpp"
-#include "database/statements/tile_entry_get_min_max_scale_statement.hpp"
-#include "database/statements/tile_entry_has_statement.hpp"
-#include "database/statements/tile_entry_store_statement.hpp"
+#include "database/statements/tile_entry_delete.hpp"
+#include "database/statements/tile_entry_get_all_by_file_entry.hpp"
+#include "database/statements/tile_entry_get_all.hpp"
+#include "database/statements/tile_entry_get_by_file_entry.hpp"
+#include "database/statements/tile_entry_get_min_max_scale.hpp"
+#include "database/statements/tile_entry_has.hpp"
+#include "database/statements/tile_entry_store.hpp"
 #include "database/tables/tile_table.hpp"
 #include "galapix/tile.hpp"
 
@@ -46,12 +46,12 @@ private:
   ResourceDatabase& m_files;
 
   TileTable m_tile_table;
-  TileEntryStoreStatement             m_tile_entry_store;
-  TileEntryGetAllByFileEntryStatement m_tile_entry_get_all_by_fileid;
-  TileEntryHasStatement               m_tile_entry_has;
-  TileEntryGetByFileEntryStatement    m_tile_entry_get_by_fileid;
-  TileEntryGetMinMaxScaleStatement    m_tile_entry_get_min_max_scale;
-  TileEntryDeleteStatement            m_tile_entry_delete;
+  TileEntryStore             m_tile_entry_store;
+  TileEntryGetAllByFileEntry m_tile_entry_get_all_by_fileid;
+  TileEntryHas               m_tile_entry_has;
+  TileEntryGetByFileEntry    m_tile_entry_get_by_fileid;
+  TileEntryGetMinMaxScale    m_tile_entry_get_min_max_scale;
+  TileEntryDelete            m_tile_entry_delete;
 
 public:
   SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files);
