@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/archive_table.hpp"
+#include "database/tables/archive_table.hpp"
 
 #include "sqlite/connection.hpp"
 

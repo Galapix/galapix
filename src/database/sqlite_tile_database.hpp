@@ -31,7 +31,7 @@
 #include "database/statements/tile_entry_get_min_max_scale_statement.hpp"
 #include "database/statements/tile_entry_has_statement.hpp"
 #include "database/statements/tile_entry_store_statement.hpp"
-#include "database/tile_table.hpp"
+#include "database/tables/tile_table.hpp"
 #include "galapix/tile.hpp"
 
 class Database;

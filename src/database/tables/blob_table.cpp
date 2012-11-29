@@ -16,23 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/file_table.hpp"
+#include "database/tables/blob_table.hpp"
 
 #include "sqlite/connection.hpp"
 
-FileTable::FileTable(SQLiteConnection& db) :
+BlobTable::BlobTable(SQLiteConnection& db) :
   m_db(db)
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS file (\n"
+  m_db.exec("CREATE TABLE IF NOT EXISTS blob (\n"
             "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  url       TEXT UNIQUE,\n"
-            "  mtime     INTEGER,\n"
-            "  handler   INTEGER,\n"
-            "  blob_id   INTEGER,\n"
-            "  parent_file_id INTEGER\n"
+            "  sha1      BLOB UNIQUE,\n"
+            "  size      INTEGER\n"
             ");");
 
-  //m_db.exec("CREATE INDEX IF NOT EXISTS file_index ON file ( url, mtime, handler, blob_id );");
+  //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
 }
 
 /* EOF */

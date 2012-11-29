@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_DELETE_STATEMENT_HPP
 
 #include "database/row_id.hpp"
+#include "sqlite/statement.hpp"
 
 class FileEntryDeleteStatement
 {

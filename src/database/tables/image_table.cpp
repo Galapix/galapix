@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/image_table.hpp"
+#include "database/tables/image_table.hpp"
 
 ImageTable::ImageTable(SQLiteConnection& db) :
   m_db(db)

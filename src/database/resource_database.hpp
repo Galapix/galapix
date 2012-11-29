@@ -22,13 +22,7 @@
 #include <vector>
 #include <boost/optional.hpp>
 
-#include "sqlite/statement.hpp"
-#include "math/size.hpp"
-#include "database/archive_table.hpp"
-#include "database/blob_table.hpp"
 #include "database/entries/resource_entry.hpp"
-#include "database/file_table.hpp"
-#include "database/image_table.hpp"
 #include "database/statements/file_entry_delete_statement.hpp"
 #include "database/statements/file_entry_get_all_statement.hpp"
 #include "database/statements/file_entry_get_by_file_id_statement.hpp"
@@ -37,7 +31,13 @@
 #include "database/statements/file_entry_store_statement.hpp"
 #include "database/statements/image_entry_get_statement.hpp"
 #include "database/statements/image_entry_store_statement.hpp"
-#include "database/video_table.hpp"
+#include "database/tables/archive_table.hpp"
+#include "database/tables/blob_table.hpp"
+#include "database/tables/file_table.hpp"
+#include "database/tables/image_table.hpp"
+#include "database/tables/video_table.hpp"
+#include "math/size.hpp"
+#include "sqlite/statement.hpp"
 
 class Database;
 class FileEntry;
