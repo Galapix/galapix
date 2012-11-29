@@ -16,31 +16,39 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_RESOURCE_INFO_HPP
-#define HEADER_GALAPIX_GALAPIX_RESOURCE_INFO_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ARCHIVE_FILE_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_ARCHIVE_FILE_ENTRY_HPP
 
-#include <vector>
+#include <string>
+#include "database/row_id.hpp"
 
-#include "galapix/resource_locator.hpp"
-#include "galapix/resource_name.hpp"
-
-class ResourceInfo
+class ArchiveFileEntry
 {
 private:
-  ResourceLocator m_locator;
-  ResourceName m_name;
-  std::vector<ResourceLocator> m_children;
-
-public:
-  static ResourceInfo from_locator(const ResourceLocator& locator);
+  RowId m_id;
+  RowId m_archive_id;
+  RowId m_blob_id;
+  std::string m_path;
   
 public:
-  ResourceInfo();
+  ArchiveFileEntry(RowId id, 
+                   RowId archive_id,
+                   RowId blob_id,
+                   std::string path) :
+    m_id(id),
+    m_archive_id(archive_id),
+    m_blob_id(blob_id),
+    m_path(path)
+  {}
 
-public:
-  ResourceLocator get_locator() const { return m_locator; }
-  ResourceName get_name() const { return m_name; }
-  std::vector<ResourceLocator> get_children() const { return m_children; }
+  RowId get_id()         const { return m_id; }
+  RowId get_archive_id() const { return m_archive_id; }
+  RowId get_blob_id()    const { return m_blob_id; }
+  std::string get_path() const { return m_path; }
+
+private:
+  ArchiveFileEntry(const ArchiveFileEntry&);
+  ArchiveFileEntry& operator=(const ArchiveFileEntry&);
 };
 
 #endif

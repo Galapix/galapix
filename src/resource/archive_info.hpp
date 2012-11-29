@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,25 +16,20 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_PLUGINS_TAR_HPP
-#define HEADER_GALAPIX_PLUGINS_TAR_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_ARCHIVE_INFO_HPP
+#define HEADER_GALAPIX_GALAPIX_ARCHIVE_INFO_HPP
 
-#include <string>
-#include <vector>
-
-#include "util/blob.hpp"
-
-class Tar
+class ArchiveInfo
 {
+private:
 public:
-  static std::vector<std::string> get_filenames(const std::string& rar_filename);
-  static BlobPtr get_file(const std::string& rar_filename, const std::string& filename);
+  ArchiveInfo();
 
-  /** Extract the content of \a archive to \a target_directory, \a
-      target_directory must exist prior to calling this function */
-  static void extract(const std::string& archive, const std::string& target_directory);
+private:
+  ArchiveInfo(const ArchiveInfo&);
+  ArchiveInfo& operator=(const ArchiveInfo&);
 };
-
+
 #endif
 
 /* EOF */

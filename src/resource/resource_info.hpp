@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,25 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_PLUGINS_TAR_HPP
-#define HEADER_GALAPIX_PLUGINS_TAR_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_RESOURCE_INFO_HPP
+#define HEADER_GALAPIX_GALAPIX_RESOURCE_INFO_HPP
 
-#include <string>
 #include <vector>
 
-#include "util/blob.hpp"
-
-class Tar
-{
-public:
-  static std::vector<std::string> get_filenames(const std::string& rar_filename);
-  static BlobPtr get_file(const std::string& rar_filename, const std::string& filename);
+#include "resource/resource_locator.hpp"
+#include "resource/resource_name.hpp"
 
-  /** Extract the content of \a archive to \a target_directory, \a
-      target_directory must exist prior to calling this function */
-  static void extract(const std::string& archive, const std::string& target_directory);
+class ResourceInfo
+{
+private:
+  ResourceLocator m_locator;
+  ResourceName m_name;
+  std::vector<ResourceLocator> m_children;
+
+public:
+  static ResourceInfo from_locator(const ResourceLocator& locator);
+  
+public:
+  ResourceInfo();
+
+public:
+  ResourceLocator get_locator() const { return m_locator; }
+  ResourceName get_name() const { return m_name; }
+  std::vector<ResourceLocator> get_children() const { return m_children; }
 };
-
+
 #endif
 
 /* EOF */

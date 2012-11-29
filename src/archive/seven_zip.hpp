@@ -32,6 +32,14 @@ public:
   /** FIXME: Not very practical as 7-Zip has to extract the whole
       archive to get to a single file */
   static BlobPtr get_file(const std::string& zip_filename, const std::string& filename);
+
+  /**
+     Extract the content of \a archive to \a target_directory, \a
+     target_directory will be created if it does not exist prior to
+     calling this function. \a target_directory must be empty if it
+     already exists.
+  */
+  static void extract(const std::string& archive, const std::string& target_directory);
 };
 
 #endif

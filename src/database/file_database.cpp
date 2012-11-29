@@ -96,6 +96,13 @@ FileDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
   m_file_entry_get_all(entries_out);
 }
 
+boost::optional<ResourceEntry>
+FileDatabase::get_resource_entry(const RowId& blob_id)
+{
+  //m_resource_entry_get_by_blob_id();
+  return boost::optional<ResourceEntry>();
+}
+
 void
 FileDatabase::delete_file_entry(const RowId& file_id)
 {

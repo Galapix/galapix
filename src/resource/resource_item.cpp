@@ -40,6 +40,17 @@ ResourceItem::on_shutdown()
   // cancel jobs
 }
 #endif
+
+void
+ResourceItem::draw(const Rectf& cliprect, float zoom)
+{
+}
+
+void
+ResourceItem::draw_mark()
+{
+}
+
 void
 ResourceItem::receive_resource_info(const ResourceInfo& resource_info)
 {

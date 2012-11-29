@@ -24,13 +24,13 @@
 
 #include "database/file_tile_database.hpp"
 #include "database/memory_tile_database.hpp"
-#include "database/tile_entry_delete_statement.hpp"
-#include "database/tile_entry_get_all_by_file_entry_statement.hpp"
-#include "database/tile_entry_get_all_statement.hpp"
-#include "database/tile_entry_get_by_file_entry_statement.hpp"
-#include "database/tile_entry_get_min_max_scale_statement.hpp"
-#include "database/tile_entry_has_statement.hpp"
-#include "database/tile_entry_store_statement.hpp"
+#include "database/statements/tile_entry_delete_statement.hpp"
+#include "database/statements/tile_entry_get_all_by_file_entry_statement.hpp"
+#include "database/statements/tile_entry_get_all_statement.hpp"
+#include "database/statements/tile_entry_get_by_file_entry_statement.hpp"
+#include "database/statements/tile_entry_get_min_max_scale_statement.hpp"
+#include "database/statements/tile_entry_has_statement.hpp"
+#include "database/statements/tile_entry_store_statement.hpp"
 #include "database/tile_table.hpp"
 #include "galapix/tile.hpp"
 

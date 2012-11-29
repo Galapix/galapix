@@ -16,38 +16,24 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_RESOURCE_ITEM_HPP
-#define HEADER_GALAPIX_GALAPIX_RESOURCE_ITEM_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_IMAGE_INFO_HPP
+#define HEADER_GALAPIX_GALAPIX_IMAGE_INFO_HPP
 
-#include "galapix/workspace_item.hpp"
-#include "galapix/resource_locator.hpp"
-#include "galapix/resource_info.hpp"
+#include "database/row_id.hpp"
 
-class ResourceItem : public WorkspaceItem
+class ImageInfo
 {
 private:
-  ResourceLocator m_locator;
-  ResourceInfo m_resource_info;
+  RowId m_rowid;
 
 public:
-  ResourceItem(const ResourceLocator& locator);
-  ~ResourceItem();
-  
-  void draw(const Rectf& cliprect, float zoom);
-  void draw_mark();
-  
-  ResourceInfo get_resource_info() const;
+  ImageInfo();
 
-  int get_original_width() const { return 0; }
-  int get_original_height() const { return 0; }
-  URL get_url() const { return URL(); }
+  RowId get_rowid() const { return m_rowid; }
 
 private:
-  void receive_resource_info(const ResourceInfo& resource_info);
-
-private:
-  ResourceItem(const ResourceItem&);
-  ResourceItem& operator=(const ResourceItem&);
+  ImageInfo(const ImageInfo&);
+  ImageInfo& operator=(const ImageInfo&);
 };
 
 #endif

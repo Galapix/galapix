@@ -20,18 +20,20 @@
 #define HEADER_GALAPIX_DATABASE_FILE_DATABASE_HPP
 
 #include <vector>
+#include <boost/optional.hpp>
 
 #include "sqlite/statement.hpp"
 #include "math/size.hpp"
-#include "database/file_entry_delete_statement.hpp"
-#include "database/file_entry_get_all_statement.hpp"
-#include "database/file_entry_get_by_file_id_statement.hpp"
-#include "database/file_entry_get_by_pattern_statement.hpp"
-#include "database/file_entry_get_by_url_statement.hpp"
-#include "database/file_entry_store_statement.hpp"
-#include "database/image_entry_store_statement.hpp"
-#include "database/image_entry_get_statement.hpp"
+#include "database/statements/file_entry_delete_statement.hpp"
+#include "database/statements/file_entry_get_all_statement.hpp"
+#include "database/statements/file_entry_get_by_file_id_statement.hpp"
+#include "database/statements/file_entry_get_by_pattern_statement.hpp"
+#include "database/statements/file_entry_get_by_url_statement.hpp"
+#include "database/statements/file_entry_store_statement.hpp"
+#include "database/statements/image_entry_store_statement.hpp"
+#include "database/statements/image_entry_get_statement.hpp"
 #include "database/archive_table.hpp"
+#include "database/resource_entry.hpp"
 #include "database/blob_table.hpp"
 #include "database/file_table.hpp"
 #include "database/image_table.hpp"
@@ -87,6 +89,7 @@ public:
      @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
   bool get_file_entry(const URL& url, FileEntry& entry_out);
+  boost::optional<ResourceEntry> get_resource_entry(const RowId& blob_id);
   void get_file_entries(std::vector<FileEntry>& entries_out);
   void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
 

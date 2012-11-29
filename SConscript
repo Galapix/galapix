@@ -161,6 +161,7 @@ class Project:
                                                             Glob("src/galapix/layouter/*.cpp") + \
                                                             Glob("src/job/*.cpp") + \
                                                             Glob("src/jobs/*.cpp") + \
+                                                            Glob("src/resource/*.cpp") + \
                                                             Glob("src/sqlite/*.cpp") + \
                                                             Glob("src/tools/*.cpp") + \
                                                             self.optional_sources)
@@ -206,7 +207,7 @@ class Project:
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()
-        libgalapix_extra_apps_env.Prepend(LIBS=[self.libgalapix_util, self.libgalapix])
+        libgalapix_extra_apps_env.Prepend(LIBS=[self.libgalapix_util, self.libgalapix, 'mhash'])
         for filename in Glob("extra/*.cpp", strings=True):
             libgalapix_extra_apps_env.Program(filename[:-4], filename)
 

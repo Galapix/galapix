@@ -95,8 +95,20 @@ SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
   }
   else
   {
-    raise_runtime_error("SevenZip::get_file(): " + zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
+    raise_runtime_error(zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
     return BlobPtr();
+  }
+}
+
+void
+SevenZip::extract(const std::string& archive, const std::string& target_directory)
+{
+  Exec zip("7zr");
+  zip.arg("x").arg("-o" + target_directory);
+  zip.arg(archive);
+  if (zip.exec() != 0)
+  {
+    raise_runtime_error(zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
   }
 }
 

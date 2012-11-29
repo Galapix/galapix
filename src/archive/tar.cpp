@@ -64,7 +64,20 @@ Tar::get_file(const std::string& tar_filename, const std::string& filename)
   {
     raise_runtime_error("Tar::get_file(): " + tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
   }
+}
 
+void
+Tar::extract(const std::string& archive, const std::string& target_directory)
+{
+  Exec tar("tar");
+  tar
+    .arg("--extract")
+    .arg("--directory").arg(target_directory)
+    .arg("--file").arg(archive);
+  if (tar.exec() != 0)
+  {
+    raise_runtime_error(tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
+  }
 }
 
 /* EOF */
