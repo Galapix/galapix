@@ -21,9 +21,9 @@
 
 #include <memory>
 
-#include "database/tile_database_interface.hpp"
-#include "database/file_database.hpp"
 #include "database/memory_tile_database.hpp"
+#include "database/resource_database.hpp"
+#include "database/tile_database_interface.hpp"
 
 /** */
 class Database
@@ -31,14 +31,14 @@ class Database
 private:
   std::unique_ptr<SQLiteConnection> m_db;
   std::unique_ptr<SQLiteConnection> m_tile_db;
-  std::unique_ptr<FileDatabase> m_files;
+  std::unique_ptr<ResourceDatabase> m_resources;
   std::unique_ptr<TileDatabaseInterface> m_tiles;
 
 public:
   Database(const std::string& prefix);
   ~Database();
 
-  FileDatabase& get_files() { return *m_files; }
+  ResourceDatabase& get_resources() { return *m_resources; }
   TileDatabaseInterface& get_tiles() { return *m_tiles; }
 
   void delete_file_entry(const RowId& fileid);

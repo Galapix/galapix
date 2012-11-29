@@ -22,7 +22,7 @@
 #include <iostream>
 #include <assert.h>
 
-#include "database/image_entry.hpp"
+#include "database/entries/image_entry.hpp"
 
 class ImageEntryStoreStatement
 {

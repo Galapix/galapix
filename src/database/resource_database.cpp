@@ -16,18 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/file_database.hpp"
+#include "database/resource_database.hpp"
 
 #include <iostream>
 
-#include "database/file_entry.hpp"
+#include "database/entries/file_entry.hpp"
 #include "database/database.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
 
-FileDatabase::FileDatabase(SQLiteConnection& db) :
+ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_db(db),
 
   m_blob_table(m_db),
@@ -47,64 +47,64 @@ FileDatabase::FileDatabase(SQLiteConnection& db) :
 {
 }
 
-FileDatabase::~FileDatabase()
+ResourceDatabase::~ResourceDatabase()
 {
 }
  
 FileEntry
-FileDatabase::store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler)
+ResourceDatabase::store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler)
 {
   RowId file_id = m_file_entry_store(url, SHA1(), size, mtime, handler);
   return FileEntry(file_id, url, size, mtime, handler);
 }
 
 FileEntry
-FileDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler, const RowId& archive_id)
+ResourceDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler, const RowId& archive_id)
 {
   RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
   return FileEntry(file_id, url, size, mtime, handler);
 }
 
 ImageEntry
-FileDatabase::store_image_entry(const ImageEntry& image)
+ResourceDatabase::store_image_entry(const ImageEntry& image)
 {
   m_image_entry_store(image);
   return image;
 }
 
 bool
-FileDatabase::get_image_entry(const FileEntry& entry, ImageEntry& image_out)
+ResourceDatabase::get_image_entry(const FileEntry& entry, ImageEntry& image_out)
 {
   return m_image_entry_get(entry.get_blob_entry().get_id(), image_out);
 }
 
 bool
-FileDatabase::get_file_entry(const URL& url, FileEntry& entry_out)
+ResourceDatabase::get_file_entry(const URL& url, FileEntry& entry_out)
 {
   return m_file_entry_get_by_url(url, entry_out);
 }
 
 void
-FileDatabase::get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out)
+ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out)
 {
   m_file_entry_get_by_pattern(pattern, entries_out);
 }
 
 void
-FileDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
+ResourceDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
 {
   m_file_entry_get_all(entries_out);
 }
 
 boost::optional<ResourceEntry>
-FileDatabase::get_resource_entry(const RowId& blob_id)
+ResourceDatabase::get_resource_entry(const RowId& blob_id)
 {
   //m_resource_entry_get_by_blob_id();
   return boost::optional<ResourceEntry>();
 }
 
 void
-FileDatabase::delete_file_entry(const RowId& file_id)
+ResourceDatabase::delete_file_entry(const RowId& file_id)
 {
   m_file_entry_delete(file_id);
 }

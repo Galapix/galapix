@@ -20,14 +20,14 @@
 
 #include <iostream>
 
-#include "database/tile_entry.hpp"
+#include "database/entries/tile_entry.hpp"
 #include "database/row_id.hpp"
 #include "database/database.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "util/software_surface_factory.hpp"
 
-SQLiteTileDatabase::SQLiteTileDatabase(SQLiteConnection& db, FileDatabase& files) :
+SQLiteTileDatabase::SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files) :
   m_db(db),
   m_files(files),
   m_tile_table(m_db),

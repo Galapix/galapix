@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/image_entry.hpp"
+#include "database/entries/image_entry.hpp"
 
 
 /* EOF */

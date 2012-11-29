@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
 
-#include "database/file_entry.hpp"
+#include "database/entries/file_entry.hpp"
 
 class FileEntryGetAllStatement
 {

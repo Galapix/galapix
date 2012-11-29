@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_TILE_HPP
 #define HEADER_GALAPIX_GALAPIX_TILE_HPP
 
-#include "database/tile_entry.hpp"
+#include "database/entries/tile_entry.hpp"
 #include "math/vector2i.hpp"
 #include "util/software_surface.hpp"
 

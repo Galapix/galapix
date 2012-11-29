@@ -23,7 +23,7 @@
 #include <boost/signals.hpp>
 #include <mutex>
 
-#include "database/file_entry.hpp"
+#include "database/entries/file_entry.hpp"
 #include "galapix/tile.hpp"
 #include "job/job.hpp"
 #include "math/vector2i.hpp"

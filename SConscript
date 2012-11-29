@@ -156,6 +156,7 @@ class Project:
         
         self.libgalapix = self.libgalapix_env.StaticLibrary('galapix.sdl', 
                                                             Glob("src/database/*.cpp") + \
+                                                            Glob("src/database/entries/*.cpp") + \
                                                             Glob("src/display/*.cpp") + \
                                                             Glob("src/galapix/*.cpp") + \
                                                             Glob("src/galapix/layouter/*.cpp") + \

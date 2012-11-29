@@ -21,8 +21,8 @@
 
 #include <assert.h>
 
-#include "database/file_entry.hpp"
-#include "database/tile_entry.hpp"
+#include "database/entries/file_entry.hpp"
+#include "database/entries/tile_entry.hpp"
 #include "util/software_surface_factory.hpp"
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"

@@ -16,27 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_DATABASE_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_DATABASE_HPP
+#ifndef HEADER_GALAPIX_DATABASE_RESOURCE_DATABASE_HPP
+#define HEADER_GALAPIX_DATABASE_RESOURCE_DATABASE_HPP
 
 #include <vector>
 #include <boost/optional.hpp>
 
 #include "sqlite/statement.hpp"
 #include "math/size.hpp"
+#include "database/archive_table.hpp"
+#include "database/blob_table.hpp"
+#include "database/entries/resource_entry.hpp"
+#include "database/file_table.hpp"
+#include "database/image_table.hpp"
 #include "database/statements/file_entry_delete_statement.hpp"
 #include "database/statements/file_entry_get_all_statement.hpp"
 #include "database/statements/file_entry_get_by_file_id_statement.hpp"
 #include "database/statements/file_entry_get_by_pattern_statement.hpp"
 #include "database/statements/file_entry_get_by_url_statement.hpp"
 #include "database/statements/file_entry_store_statement.hpp"
-#include "database/statements/image_entry_store_statement.hpp"
 #include "database/statements/image_entry_get_statement.hpp"
-#include "database/archive_table.hpp"
-#include "database/resource_entry.hpp"
-#include "database/blob_table.hpp"
-#include "database/file_table.hpp"
-#include "database/image_table.hpp"
+#include "database/statements/image_entry_store_statement.hpp"
 #include "database/video_table.hpp"
 
 class Database;
@@ -46,14 +46,14 @@ class TileEntry;
 class URL;
 class SHA1;
 
-/** The FileDatabase keeps a record of all files that have been
+/** The ResourceDatabase keeps a record of all files that have been
     view. It keeps information on the last modification time and
     filesize to detect a need to regenerate the tiles and also handles
     the mapping from url to fileid, which is used for loookup of
-    tiles in the TileDatabase. The FileDatabase also stores the size
+    tiles in the TileDatabase. The ResourceDatabase also stores the size
     of an image, so that the image file itself doesn't need to be
     touched. */
-class FileDatabase
+class ResourceDatabase
 {
 private:
   SQLiteConnection& m_db;
@@ -74,8 +74,8 @@ private:
   ImageEntryGetStatement         m_image_entry_get;
 
 public:
-  FileDatabase(SQLiteConnection& db);
-  ~FileDatabase();
+  ResourceDatabase(SQLiteConnection& db);
+  ~ResourceDatabase();
   
   /**
      Lookup a FileEntry by its url. If there is no corresponding
@@ -102,8 +102,8 @@ public:
   void delete_file_entry(const RowId& file_id);
 
 private:
-  FileDatabase (const FileDatabase&);
-  FileDatabase& operator= (const FileDatabase&);
+  ResourceDatabase (const ResourceDatabase&);
+  ResourceDatabase& operator= (const ResourceDatabase&);
 };
 
 #endif

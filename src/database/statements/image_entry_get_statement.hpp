@@ -19,6 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_IMAGE_ENTRY_GET_STATEMENT_HPP
 #define HEADER_GALAPIX_DATABASE_IMAGE_ENTRY_GET_STATEMENT_HPP
 
+#include "database/entries/image_entry.hpp"
 #include "util/log.hpp"
 
 class ImageEntryGetStatement final

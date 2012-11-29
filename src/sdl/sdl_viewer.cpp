@@ -22,7 +22,7 @@
 #include <thread>
 #include <boost/format.hpp>
 
-#include "database/file_entry.hpp"
+#include "database/entries/file_entry.hpp"
 #include "display/framebuffer.hpp"
 #include "galapix/database_thread.hpp"
 #include "galapix/viewer.hpp"

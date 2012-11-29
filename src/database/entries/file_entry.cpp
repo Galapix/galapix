@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/file_entry.hpp"
+#include "database/entries/file_entry.hpp"
 
 #include <iostream>
 

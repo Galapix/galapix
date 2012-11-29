@@ -22,7 +22,7 @@
 #include <memory>
 #include <assert.h>
 
-#include "database/blob_entry.hpp"
+#include "database/entries/blob_entry.hpp"
 #include "database/row_id.hpp"
 #include "math/math.hpp"
 #include "math/size.hpp"

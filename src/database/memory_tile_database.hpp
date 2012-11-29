@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "database/tile_entry.hpp"
+#include "database/entries/tile_entry.hpp"
 #include "database/tile_database_interface.hpp"
 
 class MemoryTileDatabase : public TileDatabaseInterface

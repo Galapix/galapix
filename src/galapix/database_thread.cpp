@@ -127,7 +127,7 @@ DatabaseThread::request_file(const URL& url,
       if (!job_handle.is_aborted())
       {
         FileEntry file_entry;
-        if (!m_database.get_files().get_file_entry(url, file_entry))
+        if (!m_database.get_resources().get_file_entry(url, file_entry))
         {
           // file entry is not in the database, so try to generate it
           DatabaseThread::current()->generate_file_entry(job_handle, url, 
@@ -150,7 +150,7 @@ DatabaseThread::request_all_files(const std::function<void (FileEntry)>& callbac
   std::function<void (FileEntry)> callback = callback_; // FIXME: internal error workaround
   m_request_queue.wait_and_push([this, callback]{
       std::vector<FileEntry> entries;
-      m_database.get_files().get_file_entries(entries);
+      m_database.get_resources().get_file_entries(entries);
       for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
         callback(*i);
@@ -163,7 +163,7 @@ DatabaseThread::request_files_by_pattern(const std::function<void (FileEntry)>& 
 {
   m_request_queue.wait_and_push([this, callback, pattern](){
       std::vector<FileEntry> entries;
-      m_database.get_files().get_file_entries(pattern, entries);
+      m_database.get_resources().get_file_entries(pattern, entries);
       for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
         callback(*i);
@@ -366,7 +366,7 @@ DatabaseThread::store_file_entry(const JobHandle& job_handle_in,
 {
   m_receive_queue.wait_and_push([this, job_handle_in, url, size, mtime, handler, callback](){
       JobHandle job_handle = job_handle_in;
-      FileEntry file_entry = m_database.get_files().store_file_entry(url, size, mtime, handler);
+      FileEntry file_entry = m_database.get_resources().store_file_entry(url, size, mtime, handler);
       if (callback)
       {
         callback(file_entry);
@@ -379,7 +379,7 @@ void
 DatabaseThread::receive_file(const FileEntry& file_entry)
 {
   m_receive_queue.wait_and_push([this, file_entry]() {
-      m_database.get_files().store_file_entry(file_entry.get_url(), 
+      m_database.get_resources().store_file_entry(file_entry.get_url(), 
                                               file_entry.get_blob_entry().get_size(), 
                                               file_entry.get_mtime(),
                                               file_entry.get_handler());

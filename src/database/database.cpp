@@ -26,7 +26,7 @@
 Database::Database(const std::string& prefix) :
   m_db(),
   m_tile_db(),
-  m_files(),
+  m_resources(),
   m_tiles()
 {
   Filesystem::mkdir(prefix);
@@ -34,12 +34,12 @@ Database::Database(const std::string& prefix) :
   m_db.reset(new SQLiteConnection(prefix + "/cache4.sqlite3"));
   m_tile_db.reset(new SQLiteConnection(prefix + "/cache4_tiles.sqlite3"));
 
-  m_files.reset(new FileDatabase(*m_db));
+  m_resources.reset(new ResourceDatabase(*m_db));
 
   if (true)
   {
     m_tiles.reset(new CachedTileDatabase(std::unique_ptr<TileDatabaseInterface>(
-                                           new SQLiteTileDatabase(*m_tile_db, *m_files))));
+                                           new SQLiteTileDatabase(*m_tile_db, *m_resources))));
   }
   else
   {
@@ -58,7 +58,7 @@ Database::delete_file_entry(const RowId& fileid)
   std::cout << "Begin Delete" << std::endl;
   m_db->exec("BEGIN;");
   m_tiles->delete_tiles(fileid);
-  m_files->delete_file_entry(fileid);
+  m_resources->delete_file_entry(fileid);
   m_db->exec("END;");
   std::cout << "End Delete" << std::endl;
 }

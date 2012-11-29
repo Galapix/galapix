@@ -25,7 +25,7 @@
 #include <iostream>
 #include <limits>
 
-#include "database/image_entry.hpp"
+#include "database/entries/image_entry.hpp"
 #include "galapix/tile.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"

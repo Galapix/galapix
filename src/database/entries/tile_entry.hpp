@@ -21,7 +21,7 @@
 
 #include "math/vector2i.hpp"
 #include "util/software_surface.hpp"
-#include "database/file_entry.hpp"
+#include "database/entries/file_entry.hpp"
 
 class TileEntry
 {

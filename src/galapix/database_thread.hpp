@@ -21,7 +21,7 @@
 
 #include <list>
 
-#include "database/tile_entry.hpp"
+#include "database/entries/tile_entry.hpp"
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 #include "job/job_manager.hpp"

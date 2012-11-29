@@ -35,7 +35,7 @@
 #include "galapix/tile.hpp"
 
 class Database;
-class FileDatabase;
+class ResourceDatabase;
 class FileEntry;
 class TileEntry;
 
@@ -43,7 +43,7 @@ class SQLiteTileDatabase : public TileDatabaseInterface
 {
 private:
   SQLiteConnection& m_db;
-  FileDatabase& m_files;
+  ResourceDatabase& m_files;
 
   TileTable m_tile_table;
   TileEntryStoreStatement             m_tile_entry_store;
@@ -54,7 +54,7 @@ private:
   TileEntryDeleteStatement            m_tile_entry_delete;
 
 public:
-  SQLiteTileDatabase(SQLiteConnection& db, FileDatabase& files);
+  SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files);
   ~SQLiteTileDatabase();
   
   bool has_tile(const RowId& image_id, const Vector2i& pos, int scale) override;

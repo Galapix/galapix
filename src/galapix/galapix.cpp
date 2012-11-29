@@ -85,7 +85,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
   int image_num = 0;
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
   {
-    FileEntry entry = db.get_files().get_file_entry(*i);
+    FileEntry entry = db.get_resources().get_file_entry(*i);
     if (!entry)
     {
       std::cerr << "Error: Couldn't get file entry for " << *i << std::endl;
@@ -140,13 +140,13 @@ Galapix::list(const Options& opts)
   std::vector<FileEntry> entries;
   if (opts.patterns.empty())
   {
-    db.get_files().get_file_entries(entries);
+    db.get_resources().get_file_entries(entries);
   }
   else
   {
     for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
     {
-      db.get_files().get_file_entries(*i, entries);
+      db.get_resources().get_file_entries(*i, entries);
     }
   }
 
@@ -229,18 +229,18 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       {
         // special case to display everything, might be faster then
         // using the pattern
-        database.get_files().get_file_entries(file_entries);
+        database.get_resources().get_file_entries(file_entries);
       }
       else
       {
-        database.get_files().get_file_entries(*i, file_entries);
+        database.get_resources().get_file_entries(*i, file_entries);
       }
     }
 
     for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
       ImageEntry image_entry;
-      if (!database.get_files().get_image_entry(*i, image_entry))
+      if (!database.get_resources().get_image_entry(*i, image_entry))
       {
         log_warn("no ImageEntry for " << i->get_url());
       }
@@ -294,14 +294,14 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     else
     {
       FileEntry file_entry;
-      if (!database.get_files().get_file_entry(*i, file_entry))
+      if (!database.get_resources().get_file_entry(*i, file_entry))
       {
         workspace.add_image(WorkspaceItemPtr(new Image(*i)));
       }
       else
       {
         ImageEntry image_entry;
-        if (!database.get_files().get_image_entry(file_entry, image_entry))
+        if (!database.get_resources().get_image_entry(file_entry, image_entry))
         {
           log_warn("no ImageEntry for " << *i);
         }

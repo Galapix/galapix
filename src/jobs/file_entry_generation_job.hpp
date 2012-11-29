@@ -24,7 +24,7 @@
 
 #include "util/url.hpp"
 #include "job/job.hpp"
-#include "database/file_entry.hpp"
+#include "database/entries/file_entry.hpp"
 #include "galapix/tile.hpp"
 
 class FileEntryGenerationJob : public Job
