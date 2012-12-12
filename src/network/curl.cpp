@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/curl.hpp"
+#include "network/curl.hpp"
 
 #include <sstream>
 #include <stdexcept>
@@ -34,30 +34,30 @@ static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void*
 BlobPtr
 CURLHandler::get_data(const std::string& url, std::string* mime_type)
 {
-  CURL* handle = curl_easy_init();
+  std::unique_ptr<CURL, decltype(&curl_easy_cleanup)> handle{curl_easy_init(), &curl_easy_cleanup};
 
   std::vector<uint8_t> data;
 
   char errbuf[CURL_ERROR_SIZE];
   const char* url_str = url.c_str();
-  curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, &my_curl_write_callback);
-  curl_easy_setopt(handle, CURLOPT_WRITEDATA, &data); // userdata
-  curl_easy_setopt(handle, CURLOPT_URL, url_str);
-  curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, errbuf);
+  curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, &my_curl_write_callback);
+  curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &data); // userdata
+  curl_easy_setopt(handle.get(), CURLOPT_URL, url_str);
+  curl_easy_setopt(handle.get(), CURLOPT_ERRORBUFFER, errbuf);
 
   // Fake the referer
-  curl_easy_setopt(handle, CURLOPT_REFERER, url_str);
+  curl_easy_setopt(handle.get(), CURLOPT_REFERER, url_str);
 
-  CURLcode ret = curl_easy_perform(handle);
+  CURLcode ret = curl_easy_perform(handle.get());
   long response_code;
-  curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &response_code);
-  // curl_easy_getinfo(handle, CURLINFO_FILETIME, ...) // mtime
+  curl_easy_getinfo(handle.get(), CURLINFO_RESPONSE_CODE, &response_code);
+  // curl_easy_getinfo(handle.get(), CURLINFO_FILETIME, ...) // mtime
 
   // get the mime-type
   if (mime_type)
   {
     char* content_type = NULL;
-    curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);
+    curl_easy_getinfo(handle.get(), CURLINFO_CONTENT_TYPE, &content_type);
 
     if (content_type)
     {
@@ -68,8 +68,8 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
       *mime_type = "";
     }
   }
-
-  curl_easy_cleanup(handle);
+  
+  curl_easy_cleanup(handle.get());
 
   if (response_code/100 != 2 && response_code/100 != 3)
   {
