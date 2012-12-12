@@ -26,15 +26,20 @@ ZipArchiveLoader::ZipArchiveLoader()
 {
 }
 
-void
-ZipArchiveLoader::register_loader(ArchiveManager& manager)
+std::vector<std::string>
+ZipArchiveLoader::get_magics() const
 {
-  manager.register_by_extension(this, "zip");
-  manager.register_by_extension(this, "cbz");
+  return {
+    "PK\003\004", // regular archive
+    "PK\005\006", // empty archive
+    "PK\007\008"  // spanned archive
+      };
+}
 
-  manager.register_by_magic(this, "PK\003\004"); // regular archive
-  manager.register_by_magic(this, "PK\005\006"); // empty archive
-  manager.register_by_magic(this, "PK\007\008"); // spanned archive
+std::vector<std::string>
+ZipArchiveLoader::get_extensions() const
+{
+  return { "zip", "cbz" };
 }
 
 std::vector<std::string>
@@ -49,10 +54,10 @@ ZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& f
   return Zip::get_file(zip_filename, filename);
 }
 
-std::shared_ptr<Extraction>
-ZipArchiveLoader::get_extraction(const std::string& filename) const
+void
+ZipArchiveLoader::extract(const std::string& archive, const std::string& target_directory) const
 {
-  return std::make_shared<IncrementalExtraction<Zip> >(filename);
+  Zip::extract(archive, target_directory);
 }
 
 /* EOF */

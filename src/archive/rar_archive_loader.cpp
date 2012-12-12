@@ -26,13 +26,16 @@ RarArchiveLoader::RarArchiveLoader()
 {
 }
 
-void
-RarArchiveLoader::register_loader(ArchiveManager& manager)
+std::vector<std::string>
+RarArchiveLoader::get_magics() const
 {
-  manager.register_by_extension(this, "rar");
-  manager.register_by_extension(this, "cbr");
+  return { std::string("Rar!\x1A\a\0", 7) };
+}
 
-  manager.register_by_magic(this, std::string("Rar!\x1A\a\0", 7));
+std::vector<std::string>
+RarArchiveLoader::get_extensions() const
+{
+  return { "rar", "cbr" };
 }
 
 std::vector<std::string>
@@ -47,10 +50,10 @@ RarArchiveLoader::get_file(const std::string& zip_filename, const std::string& f
   return Rar::get_file(zip_filename, filename);
 }
 
-std::shared_ptr<Extraction>
-RarArchiveLoader::get_extraction(const std::string& filename) const
+void
+RarArchiveLoader::extract(const std::string& archive, const std::string& target_directory) const
 {
-  return std::make_shared<IncrementalExtraction<Rar> >(filename);
+  Rar::extract(archive, target_directory);
 }
 
 /* EOF */

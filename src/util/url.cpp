@@ -26,7 +26,7 @@
 #include "archive/zip.hpp"
 #include "archive/seven_zip.hpp"
 #include "archive/tar.hpp"
-#include "plugins/curl.hpp"
+#include "network/curl.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 

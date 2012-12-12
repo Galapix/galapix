@@ -159,6 +159,21 @@ public:
     m_queue_not_empty_cond.wait(lock, [this, &abort_condition]{ return !m_queue.empty() || abort_condition(); });
   }
 
+  void wait_for_data()
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    if (m_queue.empty())
+    {
+      m_queue_not_empty_cond.wait(lock);
+    }
+  }
+
+  void wait_for_data(const std::function<bool ()>& abort_condition)
+  {
+    std::unique_lock<std::mutex> lock(m_mutex);
+    m_queue_not_empty_cond.wait(lock, [this, &abort_condition]{ return !m_queue.empty() || abort_condition(); });
+  }
+
   void wakeup()
   {
     m_queue_not_full_cond.notify_all();

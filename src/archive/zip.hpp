@@ -29,7 +29,7 @@ class Zip
 public:
   static std::vector<std::string> get_filenames(const std::string& zip_filename);
   static BlobPtr get_file(const std::string& zip_filename, const std::string& filename);
-  
+  static void extract(const std::string& archive, const std::string& target_directory);
 };
 
 #endif

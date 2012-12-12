@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include "plugins/curl.hpp"
+#include "network/curl.hpp"
 
 int main(int argc, char** argv)
 {

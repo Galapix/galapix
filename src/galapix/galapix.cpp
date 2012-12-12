@@ -18,7 +18,6 @@
 
 #include "galapix/galapix.hpp"
 
-#include <curl/curl.h>
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -28,6 +27,7 @@
 #include <string>
 #include <vector>
 
+#include "archive/archive_manager.hpp"
 #include "database/database.hpp"
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
@@ -45,11 +45,11 @@
 #include "math/rect.hpp"
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
+#include "network/download_manager.hpp"
 #include "plugins/imagemagick.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "plugins/xcf.hpp"
-#include "archive/archive_manager.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"
@@ -313,7 +313,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
     }
   }
-
+  
   if (!urls.empty())
   {
     std::cout << std::endl;
@@ -390,18 +390,11 @@ Galapix::main(int argc, char** argv)
     opts.database = Filesystem::get_home() + "/.galapix/cache4";
     parse_args(argc, argv, opts);
 
-    if (curl_global_init(CURL_GLOBAL_ALL) != 0)
-    {
-      std::cout << "Galapix::main(): curl_global_init() failed" << std::endl;
-      return EXIT_FAILURE;
-    }
-
+    DownloadManager download_manager;
     ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
 
     run(opts);
-
-    curl_global_cleanup();
 
     return EXIT_SUCCESS;
   }

@@ -47,6 +47,23 @@ DatabaseThread::~DatabaseThread()
 {
   assert(m_quit);
 }
+
+void
+DatabaseThread::stop_thread()
+{
+  m_quit  = true;
+  m_request_queue.wakeup();
+  m_receive_queue.wakeup();
+}
+
+void
+DatabaseThread::abort_thread()
+{
+  m_quit  = true;
+  m_abort = true;
+  m_request_queue.wakeup();
+  m_receive_queue.wakeup();
+}
 
 JobHandle
 DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
@@ -198,20 +215,12 @@ DatabaseThread::delete_file_entry(const RowId& fileid)
 }
 
 void
-DatabaseThread::stop_thread()
+DatabaseThread::request_resource_entry(const RowId& blob_id,
+                                       const std::function<void (const boost::optional<ResourceEntry>&)>& callback)
 {
-  m_quit  = true;
-  m_request_queue.wakeup();
-  m_receive_queue.wakeup();
-}
-
-void
-DatabaseThread::abort_thread()
-{
-  m_quit  = true;
-  m_abort = true;
-  m_request_queue.wakeup();
-  m_receive_queue.wakeup();
+  m_request_queue.wait_and_push([=](){
+      callback(m_database.get_resources().get_resource_entry(blob_id));
+    });
 }
 
 void

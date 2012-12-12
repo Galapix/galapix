@@ -23,41 +23,40 @@
 
 #include "job/thread.hpp"
 #include "job/thread_message_queue2.hpp"
+#include "util/async_messenger.hpp"
 #include "util/blob.hpp"
+#include "util/failable.hpp"
 #include "util/currenton.hpp"
 
 class ArchiveInfo;
 class DatabaseThread;
+class Generator;
 class ImageInfo;
 class ResourceInfo;
 class ResourceLocator;
 class TileInfo;
 
-class ResourceManager : public Thread,
+class ResourceManager : public AsyncMessenger,
                         public Currenton<ResourceManager>
 {
 private:
-  bool m_quit;
   DatabaseThread& m_database;
-  ThreadMessageQueue2<std::function<void ()> > m_queue;
+  Generator& m_generator;
   
 public:
-  ResourceManager(DatabaseThread& database);
+  ResourceManager(DatabaseThread& database,
+                  Generator& generator);
   
   void request_tile_info(const ImageInfo& image, int scale, int x, int y,
-                         const std::function<void (const TileInfo&)>& callback);
+                         const std::function<void (const Failable<TileInfo>&)>& callback);
   void request_image_info(const ResourceInfo& resource,
-                          const std::function<void (const ImageInfo&)>& callback);
+                          const std::function<void (const Failable<ImageInfo>&)>& callback);
   void request_archive_info(const ResourceInfo& resource,
-                            const std::function<void (const ArchiveInfo&)>& callback);
+                            const std::function<void (const Failable<ArchiveInfo>&)>& callback);
   void request_resource_info(const ResourceLocator& locator,
-                             const std::function<void (const ResourceInfo&)>& callback);
+                             const std::function<void (const Failable<ResourceInfo>&)>& callback);
   void request_blob(const ResourceLocator& locator, 
-                    const std::function<void (BlobPtr)>& callback);
-  
-public:
-  void run();
-  void stop_thread();
+                    const std::function<void (Failable<BlobPtr>)>& callback);
   
 private:
   ResourceManager(const ResourceManager&) = delete;

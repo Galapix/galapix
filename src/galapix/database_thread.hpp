@@ -20,8 +20,10 @@
 #define HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
 
 #include <list>
+#include <boost/optional.hpp>
 
 #include "database/entries/tile_entry.hpp"
+#include "database/entries/resource_entry.hpp"
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 #include "job/job_manager.hpp"
@@ -97,6 +99,9 @@ public:
   /** Delete the given FileEntry along with all TileEntry refering to it */
   void      delete_file_entry(const RowId& fileid);
   /* @} */
+
+  void request_resource_entry(const RowId& blob_id,
+                              const std::function<void (const boost::optional<ResourceEntry>&)>& callback);
 
 private:
   void remove_job(std::shared_ptr<Job> job);

@@ -16,38 +16,15 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#include "resource/file_info.hpp"
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
+#include "util/filesystem.hpp"
 
-int main(int argc, char** argv)
+FileInfo
+FileInfo::from_file(const std::string& filename)
 {
-  if (argc == 2)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
-  }
-  else if (argc == 3)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
-  }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
+  return FileInfo(SHA1::from_file(filename),
+                  Filesystem::get_mtime(filename));
 }
 
 /* EOF */

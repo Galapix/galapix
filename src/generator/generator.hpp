@@ -16,38 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#ifndef HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
+#define HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
+#include "util/async_messenger.hpp"
 
-int main(int argc, char** argv)
+class Generator : public AsyncMessenger
 {
-  if (argc == 2)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
-  }
-  else if (argc == 3)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
-  }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
-}
+private:
+  JobManager& m_job_manager;
+
+public:
+  Generator(JobManager& job_manager);
+
+  void request_file_info(const ResourceLocator& locator, 
+                         const std::function<void (const Failable<FileInfo>&)>& callback);
+
+private:
+  Generator(const Generator&);
+  Generator& operator=(const Generator&);
+};
+
+#endif
 
 /* EOF */

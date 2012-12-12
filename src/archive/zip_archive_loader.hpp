@@ -27,11 +27,13 @@ private:
 public:
   ZipArchiveLoader();
 
-  void register_loader(ArchiveManager& manager);
+  std::vector<std::string> get_magics() const;
+  std::vector<std::string> get_extensions() const;
 
   std::vector<std::string> get_filenames(const std::string& zip_filename) const;
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
-  std::shared_ptr<Extraction> get_extraction(const std::string& filename) const;
+  void extract(const std::string& archive, const std::string& target_directory) const;
+  bool is_seekable(const std::string& archive) const { return true; }
 
   std::string str() const { return "zip"; }
 

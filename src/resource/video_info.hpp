@@ -16,38 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#ifndef HEADER_GALAPIX_RESOURCE_VIDEO_INFO_HPP
+#define HEADER_GALAPIX_RESOURCE_VIDEO_INFO_HPP
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
-
-int main(int argc, char** argv)
+class VideoInfo
 {
-  if (argc == 2)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
-  }
-  else if (argc == 3)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
-  }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
-}
+private:
+  int m_width; 
+  int m_height;
+  float m_duration;
+  float m_aspect_ratio;
+
+public:
+  VideoInfo();
+
+  int get_width() const { return m_width; } 
+  int get_height() const { return m_height; }
+  float get_duration() const { return m_duration; }
+  float get_aspect_ratio() const { return m_aspect_ratio; }
+
+private:
+  VideoInfo(const VideoInfo&);
+  VideoInfo& operator=(const VideoInfo&);
+};
+
+#endif
 
 /* EOF */

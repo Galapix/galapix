@@ -16,38 +16,32 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#ifndef HEADER_GALAPIX_RESOURCE_FILE_INFO_HPP
+#define HEADER_GALAPIX_RESOURCE_FILE_INFO_HPP
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
+#include <string>
 
-int main(int argc, char** argv)
+#include "util/sha1.hpp"
+
+class FileInfo
 {
-  if (argc == 2)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
-  }
-  else if (argc == 3)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
-  }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
-}
+private:
+  SHA1 m_sha1;
+  int  m_mtime;
+
+public:
+  static FileInfo from_file(const std::string& filename);
+  
+  SHA1 get_sha1() const { return m_sha1; }
+  int  get_mtime() const { return m_mtime; }
+  
+private:
+  FileInfo(SHA1 sha1, int mtime) :
+    m_sha1(sha1),
+    m_mtime(mtime)
+  {}
+};
+
+#endif
 
 /* EOF */

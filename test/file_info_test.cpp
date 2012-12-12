@@ -18,36 +18,17 @@
 
 #include <iostream>
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
+#include "resource/file_info.hpp"
 
 int main(int argc, char** argv)
 {
-  if (argc == 2)
+  for(int i = 1; i < argc; ++i)
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
+    FileInfo info = FileInfo::from_file(argv[i]);
+    std::cout << info.get_mtime() << " " << info.get_sha1().str() << " " << argv[i] << std::endl;
   }
-  else if (argc == 3)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
-  }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
+
+  return 0;
 }
 
 /* EOF */

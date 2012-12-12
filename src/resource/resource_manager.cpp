@@ -23,87 +23,90 @@
 #include "resource/image_info.hpp"
 #include "resource/tile_info.hpp"
 
-ResourceManager::ResourceManager(DatabaseThread& database) :
-  m_quit(false),
+ResourceManager::ResourceManager(DatabaseThread& database, Generator& generator) :
   m_database(database),
-  m_queue()
+  m_generator(generator)
 {
 }
 
 void
 ResourceManager::request_tile_info(const ImageInfo& image, int scale, int x, int y,
-                                   const std::function<void (const TileInfo&)>& callback)
+                                   const std::function<void (const Failable<TileInfo>&)>& callback)
 {
-  m_queue.wait_and_push(
-    [=]
+#if 0
+  m_database.request_tile(
+    image.get_rowid(), scale, x, y, 
+    [this](const boost::optional<TileEntry> tile_entry)
+    { 
+      if (!tile_entry)
+      {
+        generate_tiles(
+          image, scale, 
+          [this]()
+          {
+            
+          });
+      }
+      else
+      {
+        callback(TileInfo(tile_entry));
+      }
+    });
+#endif
+}
+
+#if 0
+void
+ResourceManager::generate_tiles()
+{
+  // tile is not in the database, so request it's generation
+  m_generator.request_tiling(
+    image, scale, 
+    [this]()
     {
-      /*
-        m_database.request_tile(image.get_rowid(), scale, x, y, 
-        [](const TileEntry& tile_entry){ 
-        //callback(); 
+      // once generation is complete, rerequest the tile
+      m_database.request_tile(
+        image.get_rowid(), scale, x, y, 
+        [this](const boost::optional<TileEntry>& tile_entry)
+        {
+          callback(TileInfo(tile_entry));
         });
-      */
     });
 }
+#endif
 
 void
 ResourceManager::request_image_info(const ResourceInfo& resource,
-                                    const std::function<void (const ImageInfo&)>& callback)
+                                    const std::function<void (const Failable<ImageInfo>&)>& callback)
 {
 }
 
 void
 ResourceManager::request_archive_info(const ResourceInfo& resource,
-                                      const std::function<void (const ArchiveInfo&)>& callback)
+                                      const std::function<void (const Failable<ArchiveInfo>&)>& callback)
 {
 }
 
 void
 ResourceManager::request_resource_info(const ResourceLocator& locator,
-                                       const std::function<void (const ResourceInfo&)>& callback)
+                                       const std::function<void (const Failable<ResourceInfo>&)>& callback)
 {
-  /*
-  m_database.request_file_entry(locator,
-                                [](const boost::optional<FileEntry>& file_entry)
-                                {
-                                  if (file_entry)
-                                  {
-                                    [=]
-                                    {
-                                      m_database.request_resource(image.get_rowid(), scale, x, y, 
-                                                                  [](const ResourceEntry& resource_entry)
-                                                                  { 
-                                    
-                                                                  });
-                                    } 
-                                  }
-                                  else
-                                  {
-                                        
-                                  }
-                                });
-  */
-}
-
-void
-ResourceManager::run()
-{
-  while(!m_quit)
-  {
-    std::function<void()> func;
-    while(m_queue.try_pop(func))
+#if 0
+  auto file_entry_callback = [](const boost::optional<FileEntry>& file_entry)
     {
-      func();
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(1));
-  }
+      if (!file_entry)
+      {
+        m_generator.request_file_entry();
+      }
+      else
+      {
+        m_database.request_resource(image.get_rowid(), scale, x, y, 
+                                  [](const ResourceEntry& resource_entry));
+      }
+    };
+
+  m_database.request_file_entry(locator, file_entry_callback);
+#endif
 }
 
-void
-ResourceManager::stop_thread()
-{
-  m_quit = true;
-  m_queue.wakeup();
-}
-
 /* EOF */

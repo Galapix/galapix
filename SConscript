@@ -149,6 +149,7 @@ class Project:
         
         self.libgalapix_util = self.libgalapix_env.StaticLibrary('galapix_util',
                                                                  Glob("src/archive/*.cpp") + \
+                                                                 Glob("src/network/*.cpp") + \
                                                                  Glob("src/util/*.cpp") + \
                                                                  Glob("src/plugins/*.cpp") + \
                                                                  Glob("src/lisp/*.cpp") + \

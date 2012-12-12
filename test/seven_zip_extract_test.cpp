@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2010 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,38 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#include "archive/seven_zip.hpp"
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
+#include <iostream>
 
 int main(int argc, char** argv)
 {
-  if (argc == 2)
+  try
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
+    if (argc == 3)
     {
-      std::cout << filename << std::endl;
+      SevenZip::extract(argv[1], argv[2]);
     }
-    return 0;
+    else 
+    {
+      std::cout << "Usage: " << argv[0] << " ZIPFILE TARGETDIR" << std::endl;
+    }
   }
-  else if (argc == 3)
+  catch(std::exception& err) 
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
+    std::cout << "Error: " << err.what() << std::endl;
   }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
+  return 0;
 }
 
 /* EOF */

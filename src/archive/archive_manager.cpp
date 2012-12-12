@@ -20,10 +20,13 @@
 
 #include <string.h>
 #include <stdexcept>
+#include <boost/filesystem.hpp>
 
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 
+#include "archive/directory_extraction.hpp"
+#include "archive/incremental_extraction.hpp"
 #include "archive/rar_archive_loader.hpp"
 #include "archive/seven_zip_archive_loader.hpp"
 #include "archive/tar_archive_loader.hpp"
@@ -41,6 +44,12 @@ bool has_prefix(const std::string& lhs, const std::string& rhs)
 } // namespace
 
 ArchiveManager::ArchiveManager() :
+  ArchiveManager(boost::filesystem::temp_directory_path().string())
+{
+}
+
+ArchiveManager::ArchiveManager(const std::string& tmpdir) :
+  m_tmpdir(tmpdir),
   m_loader(),
   m_loader_by_file_exts(),
   m_loader_by_magic()
@@ -52,7 +61,15 @@ ArchiveManager::ArchiveManager() :
 
   for(auto& loader: m_loader)
   {
-    loader->register_loader(*this);
+    for(const auto& magic: loader->get_magics())
+    {
+      m_loader_by_magic[magic] = loader.get();
+    }
+
+    for(const auto& ext: loader->get_extensions())
+    {
+      m_loader_by_file_exts[ext] = loader.get();
+    }
   }
 }
 
@@ -60,22 +77,38 @@ ArchiveManager::~ArchiveManager()
 {
 }
 
-void
-ArchiveManager::register_by_magic(ArchiveLoader* loader, const std::string& magic)
-{
-  m_loader_by_magic[magic] = loader;
-}
-
-void
-ArchiveManager::register_by_extension(ArchiveLoader* loader, const std::string& extension)
-{
-  m_loader_by_file_exts[extension] = loader;
-}
-
 bool
 ArchiveManager::is_archive(const std::string& filename) const
 {
-  return find_loader_by_filename(filename) != 0;
+  try
+  {
+    get_loader(filename);
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
+}
+
+const ArchiveLoader& 
+ArchiveManager::get_loader(const std::string& filename) const
+{
+  auto loader = find_loader_by_magic(filename);
+
+  if (!loader)
+  {
+    loader = find_loader_by_filename(filename);
+  }
+
+  if (!loader)
+  {
+    raise_exception(std::runtime_error, "failed to find loader for archive file: " << filename);
+  }
+  else
+  {
+    return *loader;
+  }
 }
 
 const ArchiveLoader*
@@ -112,88 +145,45 @@ std::vector<std::string>
 ArchiveManager::get_filenames(const std::string& zip_filename, 
                               const ArchiveLoader** loader_out) const
 {
-  auto loader = find_loader_by_filename(zip_filename);
-  if (!loader)
+  const auto& loader = get_loader(zip_filename);
+  const auto& files = loader.get_filenames(zip_filename);
+  if (loader_out) 
   {
-    raise_exception(std::runtime_error, "failed to find loader for archive file: " << zip_filename);
+    *loader_out = &loader;
   }
-  else
-  {
-    try
-    {
-      if (loader_out) { *loader_out = loader; }
-      return loader->get_filenames(zip_filename);
-    }
-    catch(const std::exception& err)
-    {
-      auto new_loader = find_loader_by_magic(zip_filename);
-      
-      if (!new_loader || new_loader == loader)
-      {
-        throw;
-        return std::vector<std::string>();
-      }
-      else
-      {
-        loader = new_loader;
-        if (!loader)
-        {
-          raise_exception(std::runtime_error, "failed to find loader for archive file: " << zip_filename);
-        }
-        else
-        {
-          log_warn(err.what());
-          if (loader_out) { *loader_out = loader; }
-          return loader->get_filenames(zip_filename);
-        }
-      }
-    }
-  }
+  return files;
 }
 
 BlobPtr
-ArchiveManager::get_file(const std::string& zip_filename, const std::string& filename) const
+ArchiveManager::get_file(const std::string& archive, const std::string& filename) const
 {
-  auto loader = find_loader_by_filename(zip_filename);
-  if (!loader)
-  {
-    raise_exception(std::runtime_error, "failed to find loader for archive file: " << zip_filename);
-  }
-  else
-  {
-    try
-    {
-      return loader->get_file(zip_filename, filename);
-    }
-    catch(const std::exception& err)
-    {
-      log_warn(err.what());
-
-      loader = find_loader_by_magic(zip_filename);
-      if (!loader)
-      {
-        raise_exception(std::runtime_error, "failed to find loader for archive file: " << zip_filename);
-      }
-      else
-      {
-        return loader->get_file(zip_filename, filename);
-      }
-    }
-  }
+  const auto& loader = get_loader(archive);
+  return loader.get_file(archive, filename);
 }
 
 std::shared_ptr<Extraction>
-ArchiveManager::get_extraction(const std::string& filename) const
+ArchiveManager::get_extraction(const std::string& archive)
 {
-  auto loader = find_loader_by_magic(filename);
-  if (!loader)
+  const auto& loader = get_loader(archive);
+  if (loader.is_seekable(archive))
   {
-    raise_exception(std::runtime_error, "failed to find loader for archive file: " << filename);
+    return std::make_shared<IncrementalExtraction>(loader, archive);
   }
   else
   {
-    return loader->get_extraction(filename);
+    std::string tmpdir = create_extraction_directory();
+    loader.extract(archive, tmpdir);
+    return std::make_shared<DirectoryExtraction>(tmpdir);
   }
+}
+
+std::string
+ArchiveManager::create_extraction_directory()
+{
+  boost::filesystem::path directory = m_tmpdir / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
+  log_info("creating directory: " << directory);
+  boost::filesystem::create_directory(directory);
+  return directory.string();
 }
 
 /* EOF */

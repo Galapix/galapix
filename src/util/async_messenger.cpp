@@ -16,38 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <iostream>
+#include "util/async_messenger.hpp"
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
+#include "util/log.hpp"
 
-int main(int argc, char** argv)
+void
+AsyncMessenger::run()
 {
-  if (argc == 2)
+  while(!m_quit)
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
+    std::function<void()> func;
+    while(m_queue.try_pop(func))
     {
-      std::cout << filename << std::endl;
+      try 
+      {
+        func();
+      }
+      catch(std::exception& err)
+      {
+        log_error(err.what());
+      }
     }
-    return 0;
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   }
-  else if (argc == 3)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
-  }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
+}
+
+void
+AsyncMessenger::stop_thread()
+{
+  m_quit = true;
+  m_queue.wakeup();
+}
+
+void
+AsyncMessenger::queue(const std::function<void ()>& message)
+{
+  m_queue.wait_and_push(message);
 }
 
 /* EOF */

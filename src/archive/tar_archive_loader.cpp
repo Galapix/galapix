@@ -19,6 +19,7 @@
 #include "archive/tar_archive_loader.hpp"
 
 #include "archive/archive_manager.hpp"
+#include "archive/directory_extraction.hpp"
 #include "archive/incremental_extraction.hpp"
 #include "archive/tar.hpp"
 
@@ -26,25 +27,16 @@ TarArchiveLoader::TarArchiveLoader()
 {
 }
 
-void
-TarArchiveLoader::register_loader(ArchiveManager& manager)
+std::vector<std::string>
+TarArchiveLoader::get_magics() const
 {
-  manager.register_by_extension(this, "tar");
+  return {};
+}
 
-  manager.register_by_extension(this, "tgz");
-  manager.register_by_extension(this, "tar.gz");
-
-  manager.register_by_extension(this, "tbz");
-  manager.register_by_extension(this, "tar.bz2");
-
-  manager.register_by_extension(this, "taz");
-  manager.register_by_extension(this, "tar.Z");
-
-  manager.register_by_extension(this, "tlz");
-  manager.register_by_extension(this, "tar.lz");
-
-  manager.register_by_extension(this, "txz");
-  manager.register_by_extension(this, "tar.xz");
+std::vector<std::string>
+TarArchiveLoader::get_extensions() const
+{
+  return { "tar", "tgz", "tar.gz", "tbz", "cbt", "tar.bz2", "taz", "tar.Z", "tlz", "tar.lz", "txz", "tar.xz" };
 }
 
 std::vector<std::string>
@@ -59,10 +51,10 @@ TarArchiveLoader::get_file(const std::string& zip_filename, const std::string& f
   return Tar::get_file(zip_filename, filename);
 }
 
-std::shared_ptr<Extraction>
-TarArchiveLoader::get_extraction(const std::string& filename) const
+void
+TarArchiveLoader::extract(const std::string& archive, const std::string& target_directory) const
 {
-  return std::make_shared<IncrementalExtraction<Tar> >(filename);
+  Tar::extract(archive, target_directory);
 }
 
 /* EOF */

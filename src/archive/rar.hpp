@@ -29,6 +29,7 @@ class Rar
 public:
   static std::vector<std::string> get_filenames(const std::string& rar_filename);
   static BlobPtr get_file(const std::string& rar_filename, const std::string& filename);
+  static void extract(const std::string& archive, const std::string& target_directory);
 };
 
 #endif

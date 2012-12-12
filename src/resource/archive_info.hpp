@@ -19,11 +19,21 @@
 #ifndef HEADER_GALAPIX_GALAPIX_ARCHIVE_INFO_HPP
 #define HEADER_GALAPIX_GALAPIX_ARCHIVE_INFO_HPP
 
+#include "resource/file_info.hpp"
+
 class ArchiveInfo
 {
 private:
+  std::vector<FileInfo> m_files;
+  std::string m_password;
+  bool m_has_password;
+
 public:
   ArchiveInfo();
+
+  std::vector<FileInfo> get_files() const { return m_files; }
+  std::string get_password() const { return m_password; }
+  bool has_password() const { return m_has_password; }
 
 private:
   ArchiveInfo(const ArchiveInfo&);

@@ -22,31 +22,33 @@
 #include <boost/filesystem.hpp>
 
 #include "archive/extraction.hpp"
+#include "archive/archive_loader.hpp"
 
-template<typename Extractor>
 class IncrementalExtraction : public Extraction
 {
 private:
+  const ArchiveLoader& m_loader;
   std::string m_archive;
 
 public:
-  IncrementalExtraction(const std::string& archive) :
+  IncrementalExtraction(const ArchiveLoader& loader, const std::string& archive) :
+    m_loader(loader),
     m_archive(archive)
   {}
 
   std::vector<std::string> get_filenames() const
   {
-    return Extractor::get_filenames(m_archive);
+    return m_loader.get_filenames(m_archive);
   }
 
   BlobPtr get_file(const std::string& filename) const
   {
-    return Extractor::get_file(m_archive, filename);
+    return m_loader.get_file(m_archive, filename);
   }
 
   std::string get_file_as_path(const std::string& filename) const
   {
-    BlobPtr blob = Extractor::get_file(m_archive, filename);
+    BlobPtr blob = m_loader.get_file(m_archive, filename);
     boost::filesystem::path path = boost::filesystem::temp_directory_path() /
       boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
     blob->write_to_file(path.string());

@@ -20,12 +20,14 @@
 
 #include "archive/zip.hpp"
 #include "archive/incremental_extraction.hpp"
+#include "archive/zip_archive_loader.hpp"
 
 int main(int argc, char** argv)
 {
   for(int i = 1; i < argc; ++i)
   {
-    IncrementalExtraction<Zip> extraction(argv[i]);
+    ZipArchiveLoader loader;
+    IncrementalExtraction extraction(loader, argv[i]);
     
     for(auto& filename : extraction.get_filenames())
     {

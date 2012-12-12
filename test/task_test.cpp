@@ -16,38 +16,32 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "util/task.hpp"
+
+#include <stdexcept>
+#include <functional>
 #include <iostream>
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
-
-int main(int argc, char** argv)
+int main()
 {
-  if (argc == 2)
+  Task<int> task{[]{ 
+      std::cout << "doing a thing" << std::endl;
+      throw std::runtime_error("broken");
+      return 5;
+    }};
+
+  task();
+  std::cout << "still ok" << std::endl;
+  try
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
+    std::cout << "value: " << task.get() << std::endl;
   }
-  else if (argc == 3)
+  catch(const std::exception& err)
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
+    std::cout << "catched error" << std::endl;
   }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
+
+  return 0;
 }
 
 /* EOF */

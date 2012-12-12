@@ -25,7 +25,7 @@
 #include "job/job_manager.hpp"
 #include "job/job.hpp"
 #include "math/math.hpp"
-#include "plugins/curl.hpp"
+#include "network/curl.hpp"
 #include "plugins/jpeg.hpp"
 #include "util/raise_exception.hpp"
 

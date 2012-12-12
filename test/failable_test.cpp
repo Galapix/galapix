@@ -17,37 +17,42 @@
 */
 
 #include <iostream>
+#include <stdexcept>
 
-#include "archive/zip.hpp"
-#include "archive/incremental_extraction.hpp"
-#include "archive/zip_archive_loader.hpp"
+#include "util/failable.hpp"
 
-int main(int argc, char** argv)
+class Foo
 {
-  if (argc == 2)
+public:
+  Foo() { std::cout << "Foo()" << std::endl; }
+  ~Foo() { std::cout << "~Foo()" << std::endl; }
+  Foo(const Foo&) { std::cout << "Foo(const Foo&)" << std::endl; }
+  Foo& operator=(const Foo&) { std::cout << "Foo::operator=()" << std::endl; return *this; }
+};
+
+std::ostream& operator<<(std::ostream& os, const Foo& foo)
+{
+  return os << "<Foo()>";
+}
+
+int main()
+{
+  Failable<Foo> foo;
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
+    foo.reset(Foo());
+    foo.reset(Foo());
+    //foo.set_exception(std::copy_exception(std::runtime_error("My Exception")));
   }
-  else if (argc == 3)
+  try 
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
+    std::cout << "Failable::get(): " << foo.get() << std::endl;
   }
-  else
+  catch(const std::exception& err)
   {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
+    std::cout << "caught: " << err.what() << std::endl;
   }
+
+  return 0;
 }
 
 /* EOF */

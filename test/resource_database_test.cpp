@@ -19,14 +19,14 @@
 #include <iostream>
 
 #include "sqlite/connection.hpp"
-#include "database/file_database.hpp"
+#include "database/resource_database.hpp"
 #include "util/filesystem.hpp"
 #include "util/sha1.hpp"
 
 int main(int argc, char** argv)
 {
   SQLiteConnection db("/tmp/database.sqlite3");
-  FileDatabase filedb(db);
+  ResourceDatabase filedb(db);
 
   for(int i = 1; i < argc; ++i)
   {

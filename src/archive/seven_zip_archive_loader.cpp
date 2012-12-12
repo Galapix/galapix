@@ -20,18 +20,23 @@
 
 #include "archive/archive_manager.hpp"
 #include "archive/incremental_extraction.hpp"
+#include "archive/directory_extraction.hpp"
 #include "archive/seven_zip.hpp"
 
 SevenZipArchiveLoader::SevenZipArchiveLoader()
 {
 }
 
-void
-SevenZipArchiveLoader::register_loader(ArchiveManager& manager)
+std::vector<std::string>
+SevenZipArchiveLoader::get_magics() const
 {
-  manager.register_by_extension(this, "7z");
+  return { "7z\xBC\xAF\x27\x1C" };
+}
 
-  manager.register_by_magic(this, "7z\xBC\xAF\x27\x1C");
+std::vector<std::string>
+SevenZipArchiveLoader::get_extensions() const
+{
+  return { "7z", "cb7" };
 }
 
 std::vector<std::string>
@@ -46,10 +51,10 @@ SevenZipArchiveLoader::get_file(const std::string& zip_filename, const std::stri
   return SevenZip::get_file(zip_filename, filename);
 }
 
-std::shared_ptr<Extraction>
-SevenZipArchiveLoader::get_extraction(const std::string& filename) const
+void
+SevenZipArchiveLoader::extract(const std::string& archive, const std::string& target_directory) const
 {
-  return std::make_shared<IncrementalExtraction<SevenZip> >(filename);
+  SevenZip::extract(archive, target_directory);
 }
 
 /* EOF */

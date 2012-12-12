@@ -37,7 +37,6 @@ public:
 public:
   ResourceInfo();
 
-public:
   ResourceLocator get_locator() const { return m_locator; }
   ResourceName get_name() const { return m_name; }
   std::vector<ResourceLocator> get_children() const { return m_children; }
