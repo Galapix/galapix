@@ -1,0 +1,37 @@
+#include <iostream>
+
+#include "resource/resource_locator.hpp"
+
+int main(int argc, char** argv)
+{
+  if (argc != 1)
+  {
+    for(int i = 1; i < argc; ++i)
+    {
+      ResourceLocator loc = ResourceLocator::from_string(argv[i]);
+      std::cout << "url.scheme    : '" << loc.get_url().get_scheme() << "'\n";
+      std::cout << "url.authority : '" << loc.get_url().get_authority() << "'\n";
+      std::cout << "url.path      : '" << loc.get_url().get_path() << "'\n";
+      for(const auto& handler : loc.get_handler())
+      {
+        std::cout << "handler: " << handler.name << std::endl;
+        
+        for(const auto& arg : handler.args)
+        {
+          std::cout << "  arg: '" << arg << "'" << std::endl;
+        }
+      }
+    }
+  }
+  else
+  {
+    ResourceURL::from_string("http://www.example.com");
+    ResourceURL::from_string("http://www.example.com:8080");
+    ResourceURL::from_string("http://www.example.com:8080/index.html");
+    ResourceURL::from_string("file:///home/juser/test.txt");
+    ResourceURL::from_string("file://home/juser/test.txt");
+    ResourceURL::from_string("file:/home/juser/test.txt");
+  }
+}
+
+/* EOF */

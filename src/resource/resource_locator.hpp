@@ -22,14 +22,17 @@
 #include <string>
 #include <vector>
 
-#include "util/url.hpp"
+#include "resource/resource_url.hpp"
 
 class ResourceHandler
 {
 public:
-  std::string type;
   std::string name;
   std::vector<std::string> args;
+
+  ResourceHandler() : name(), args() {}
+
+  static ResourceHandler from_string(const std::string& handler);
 };
 
 /**
@@ -50,17 +53,24 @@ public:
 class ResourceLocator
 {
 private:
-  URL m_url;
+  ResourceURL m_url;
   std::vector<ResourceHandler> m_handler;
 
 public:
   /** Takes a filename in the form of a string and transforms it into
       a ResourceLocator */
-  ResourceLocator from_string(const std::string& str);
+  static ResourceLocator from_string(const std::string& str);
 
 public:
   ResourceLocator() : m_url(), m_handler() {}
-  ResourceLocator(const URL& url, const std::vector<ResourceHandler>& handler);
+  ResourceLocator(const ResourceURL& url, const std::vector<ResourceHandler>& handler) :
+    m_url(url),
+    m_handler(handler)
+  {}
+
+  const ResourceURL& get_url() const { return m_url; }
+  const std::vector<ResourceHandler>& get_handler() const { return m_handler; }
+  std::string str() const;
 };
 
 #endif
