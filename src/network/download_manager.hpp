@@ -19,43 +19,24 @@
 #ifndef HEADER_GALAPIX_DOWNLOAD_DOWNLOAD_MANAGER_HPP
 #define HEADER_GALAPIX_DOWNLOAD_DOWNLOAD_MANAGER_HPP
 
-#include <thread>
+#include <boost/optional.hpp>
+#include <boost/uuid/uuid.hpp>
 #include <curl/curl.h>
+#include <thread>
+#include <atomic>
 
 #include "job/job_manager.hpp"
-#include "util/blob.hpp"
 #include "job/thread_message_queue2.hpp"
+#include "util/blob.hpp"
 
-class DownloadResult
-{
-public:
-  DownloadResult() :
-    mime_type(),
-    blob()
-  {}
-
-  std::string mime_type;
-  BlobPtr blob;
-};
+class DownloadTransfer;
+class DownloadResult;
 
 class DownloadManager
 {
-private:
-  struct Transfer
-  {
-    Transfer();
-    ~Transfer();
-
-    CURL* handle;
-    char errbuf[CURL_ERROR_SIZE];
-    std::vector<uint8_t> data;
-    std::function<void (const DownloadResult&)> callback;
-    std::function<bool (double total, double now)> progress_callback;
-
-  private:
-    Transfer(const Transfer&) = delete;
-    Transfer& operator=(const Transfer&) = delete;
-  };
+public:
+  typedef bool ProgressFunc(double dltotal, double dlnow, double ultotal, double ulnow);
+  typedef unsigned int TransferHandle;
 
 private:
   std::thread m_thread;
@@ -65,26 +46,40 @@ private:
   bool m_stop;
   ThreadMessageQueue2<std::function<void ()> > m_queue;
 
-  std::vector<Transfer*> m_transfers;
+  std::vector<std::unique_ptr<DownloadTransfer> > m_transfers;
   CURLM* m_multi_handle;
+
+  std::atomic<TransferHandle> m_next_transfer_handle;
 
 public:
   DownloadManager();
   ~DownloadManager();
+  
+  TransferHandle request_get(const std::string& url, 
+                             const std::function<void (const DownloadResult&)>& callback,
+                             const std::function<ProgressFunc>& progress_callback 
+                             = std::function<ProgressFunc>());
 
-  void abort();
-  void stop();
-  void request_url(const std::string& url, 
-                   const std::function<void (const DownloadResult&)>& callback,
-                   const std::function<bool (double total, double now)>& progress_callback 
-                   = std::function<bool (double total, double now)>());
+  TransferHandle request_post(const std::string& url,
+                              const std::string& data,
+                              const std::function<void (const DownloadResult&)>& callback,
+                              const std::function<ProgressFunc>& progress_callback 
+                              = std::function<ProgressFunc>());
+
+  void cancel_transfer(TransferHandle handle);
+  void cancel_all_transfers();
 
 private:
+  void stop();
+
   void run();
   void finish_transfer(CURL* handle);
 
-  static size_t write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata);
-  static int progress_callback_wrap(void *clientp, double dltotal, double dlnow, double ultotal, double ulnow);
+  TransferHandle generate_transfer_handle();
+
+  void wakeup_pipe();
+  void wait_for_curl_data();
+  void process_curl_data();
 
 private:
   DownloadManager(const DownloadManager&);

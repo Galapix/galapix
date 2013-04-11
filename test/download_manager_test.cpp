@@ -18,28 +18,112 @@
 
 #include <iostream>
 #include <thread>
+#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/string_generator.hpp>
 
 #include "network/download_manager.hpp"
+#include "network/download_result.hpp"
 #include "util/log.hpp"
 
 int main(int argc, char** argv)
 {
   g_logger.set_log_level(Logger::kDebug);
+
   DownloadManager downloader;
 
-  for(int i = 1; i < argc; ++i)
+  std::cout << "Commands: get, post, cancel, cancel_all" << std::endl;
+
+  std::string line;
+  while(std::getline(std::cin, line))
   {
-    std::cout << "sending request: " << argv[i] << std::endl;
-    downloader.request_url(argv[i], 
-                           [=](const DownloadResult& result) {
-                             std::cout << "got result for " << argv[i] << std::endl;
-                           },
-                           [=](double total, double now) -> bool {
-                             std::cout << argv[i] << ": " << now/1000 << " / " << total/1000 << std::endl;
-                             return false;
-                           });
+    std::vector<std::string> args;
+    boost::split(args, line, boost::is_any_of(" "), boost::token_compress_on);
+
+    if (!args.empty())
+    {
+      if (args[0] == "get")
+      {
+        if (args.size() != 2)
+        {
+          std::cout << "'get' requires two arguments" << std::endl;
+        }
+        else
+        {
+          auto handle =
+            downloader.request_get(args[1], 
+                                   [=](const DownloadResult& result) {
+                                     std::cout << "got " << result.get_response_code() << " for " << " " << args[1] << std::endl;
+                                     if (result.success())
+                                     {
+                                       std::cout.write(reinterpret_cast<char*>(result.get_blob()->get_data()),
+                                                       result.get_blob()->size());
+                                     }
+                                     else
+                                     {
+                                       std::cout << "failure: " << result.get_response_code() << std::endl;
+                                     }
+                                   },
+                                   [=](double dltotal, double dlnow, double ultotal, double ulnow) -> bool {
+                                     std::cout << args[1] << ": " << dlnow/1000 << " / " << dltotal/1000 << std::endl;
+                                     return false;
+                                   });
+          std::cout << "launched " << handle << std::endl;
+        }
+      }
+      else if (args[0] == "post")
+      {
+        if (args.size() != 3)
+        {
+          std::cout << "'post' requires three arguments" << std::endl;
+        }
+        else
+        {
+          auto handle =
+            downloader.request_post(args[1], 
+                                    args[2],
+                                    [=](const DownloadResult& result) {
+                                      std::cout << "got " << result.get_response_code() << " for " << " " << args[1] << std::endl;
+                                      if (result.success())
+                                      {
+                                        std::cout.write(reinterpret_cast<char*>(result.get_blob()->get_data()),
+                                                        result.get_blob()->size());
+                                      }
+                                      else
+                                      {
+                                        std::cout << "failure: " << result.get_response_code() << std::endl;
+                                      }
+                                    },
+                                    [=](double dltotal, double dlnow, double ultotal, double ulnow) -> bool {
+                                      std::cout << args[1] << ": " << dlnow/1000 << " / " << dltotal/1000 << std::endl;
+                                      return false;
+                                    });
+          std::cout << "launched " << handle << std::endl;
+        }
+      }
+      else if (args[0] == "cancel_all")
+      {
+        downloader.cancel_all_transfers();
+      }
+      else if (args[0] == "cancel")
+      {
+        if (args.size() != 2)
+        {
+          std::cout << "'cancel' requires one arguments" << std::endl;
+        }
+        else
+        {
+          downloader.cancel_transfer(boost::lexical_cast<DownloadManager::TransferHandle>(args[1]));
+        }
+      }
+      else
+      {
+        std::cout << "unknown command: " << args[0] << std::endl;
+      }
+    }
   }
-  
+
   return 0;
 }
 

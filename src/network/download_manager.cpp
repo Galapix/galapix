@@ -20,13 +20,17 @@
 
 #include <algorithm>
 #include <assert.h>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <curl/curl.h>
-#include <signal.h>
-#include <unistd.h>
 #include <errno.h>
+#include <signal.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "network/curl.hpp"
+#include "network/download_transfer.hpp"
+#include "network/download_result.hpp"
 #include "util/raise_exception.hpp"
 
 DownloadManager::DownloadManager() :
@@ -36,7 +40,8 @@ DownloadManager::DownloadManager() :
   m_stop(false),
   m_queue(),
   m_transfers(),
-  m_multi_handle()
+  m_multi_handle(),
+  m_next_transfer_handle(1)
 {
   int ret = pipe(m_pipefd);
   if (ret < 0)
@@ -50,22 +55,20 @@ DownloadManager::DownloadManager() :
   }
 
   m_multi_handle = curl_multi_init();
+  if (!m_multi_handle)
+  {
+    raise_runtime_error("curl_multi_init() failed");
+  }
 
   m_thread = std::thread(std::bind(&DownloadManager::run, this));
-  /*
-    When using multiple threads you should set the CURLOPT_NOSIGNAL
-    option to 1 for all handles. Everything will or might work fine
-    except that timeouts are not honored during the DNS lookup -
-    which you can work around by building libcurl with c-ares
-    support. c-ares is a library that provides asynchronous name
-    resolves. On some platforms, libcurl simply will not function
-    properly multi-threaded unless this option is set.
-  */
 }
 
 DownloadManager::~DownloadManager()
 {
-  stop();
+  if (!m_abort)
+  {
+    stop();
+  }
 
   try 
   {
@@ -76,11 +79,11 @@ DownloadManager::~DownloadManager()
     log_error(err.what());
   }
    
-  for(auto transfer : m_transfers)
+  for(auto& transfer : m_transfers)
   {
     curl_multi_remove_handle(m_multi_handle, transfer->handle);
-    delete transfer;
   }
+  m_transfers.clear();
   curl_multi_cleanup(m_multi_handle); 
   curl_global_cleanup();
 
@@ -89,9 +92,8 @@ DownloadManager::~DownloadManager()
 }
 
 void
-DownloadManager::abort()
+DownloadManager::wakeup_pipe()
 {
-  m_abort = true;
   // send a signal to the wakeup pipe to break out of select
   char buf[1] = {0};
   ssize_t ret = write(m_pipefd[1], buf, sizeof(buf));
@@ -105,138 +107,142 @@ void
 DownloadManager::stop()
 {
   m_stop = true;
-  // send a signal to the wakeup pipe to break out of select
-  char buf[1] = {0};
-  ssize_t ret = write(m_pipefd[1], buf, sizeof(buf));
-  if (ret < 0)
+  wakeup_pipe();
+  m_queue.wakeup();
+}
+
+void
+DownloadManager::wait_for_curl_data()
+{
+  fd_set read_fd_set;
+  fd_set write_fd_set;
+  fd_set exc_fd_set;
+  int max_fd;
+
+  FD_ZERO(&read_fd_set);
+  FD_ZERO(&write_fd_set);
+  FD_ZERO(&exc_fd_set);
+      
+  curl_multi_fdset(m_multi_handle, &read_fd_set, &write_fd_set, &exc_fd_set, &max_fd);
+       
+  if (max_fd == -1)
+  {         
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+  else
   {
-    log_error("write() to pipe failed: " << strerror(errno));
+    // add the wakeup pipe into the mix
+    FD_SET(m_pipefd[0], &read_fd_set);
+    max_fd = std::max(m_pipefd[0], max_fd);
+
+    select(max_fd+1, &read_fd_set, &write_fd_set, &exc_fd_set, NULL);
+        
+    if (FD_ISSET(m_pipefd[0], &read_fd_set))
+    {
+      // eat up the junk written to the wakeup pipe
+      char buf[32];
+      read(m_pipefd[0], buf, 32);
+    }
+  }
+}
+
+void
+DownloadManager::process_curl_data()
+{  
+  // give control to cURL to do it's thing
+  int running_handles;
+  curl_multi_perform(m_multi_handle, &running_handles);
+        
+  int msgs_in_queue;
+  CURLMsg* msg;
+  while ((msg = curl_multi_info_read(m_multi_handle, &msgs_in_queue)))
+  {
+    switch(msg->msg)
+    {
+      case CURLMSG_DONE:
+        curl_multi_remove_handle(m_multi_handle, msg->easy_handle);
+        finish_transfer(msg->easy_handle);
+        break;
+
+      default:
+        log_error("unhandled cURL message: " << msg->msg);
+        break;
+    }
   }
 }
 
 void
 DownloadManager::run()
 {
-  int running_handles = 0;
-  while(!m_abort)
+  while(!(m_stop && m_queue.empty() && m_transfers.empty()))
   {
-    // if no transfers are in progress, wait for data on the queue
-    log_info("transfers: " << m_transfers.size());
-    log_info("queue size: " << m_queue.size());
     if (m_transfers.empty())
     {
-      log_info("wait for data");
       m_queue.wait_for_data();
-      log_info("got data");
     }
 
-    // process everything in the queue
-    log_info("try pop");
     std::function<void()> func;
     while(m_queue.try_pop(func))
-    {
-      log_info("poped");
+    {     
       func();
     }
 
-    // wait for data to be available to cURL
     if (!m_transfers.empty())
     {
-      {
-        // wait till data is ready
-        fd_set read_fd_set;
-        fd_set write_fd_set;
-        fd_set exc_fd_set;
-        int max_fd;
-
-        FD_ZERO(&read_fd_set);
-        FD_ZERO(&write_fd_set);
-        FD_ZERO(&exc_fd_set);
-      
-        curl_multi_fdset(m_multi_handle, &read_fd_set, &write_fd_set, &exc_fd_set, &max_fd);
-       
-        if (max_fd == -1)
-        {
-          log_info("XXXXXXXXXX sleep a bit XXXXXXXXXXXXXXX");
-          std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-        else
-        {
-          // add the wakeup pipe into the mix
-          FD_SET(m_pipefd[0], &read_fd_set);
-          max_fd = std::max(m_pipefd[0], max_fd);
-
-          log_info("select: transfer" << m_transfers.size() << " " << running_handles);
-          /*struct timeval timeout;
-          timeout.tv_sec  = 1;
-          timeout.tv_usec = 0;*/
-          select(max_fd+1, &read_fd_set, &write_fd_set, &exc_fd_set, NULL);
-          log_info("select done");
-
-          if (FD_ISSET(m_pipefd[0], &read_fd_set))
-          {
-            // eat up the junk written to the wakeup pipe
-            char buf[32];
-            read(m_pipefd[0], buf, 32);
-          }
-        }
-      }
-
-      // give control to cURL to do it's thing
-      {
-        curl_multi_perform(m_multi_handle, &running_handles);
-        log_info("-- running handles: " << running_handles);
-
-        int msgs_in_queue;
-        CURLMsg* msg;
-        while ((msg = curl_multi_info_read(m_multi_handle, &msgs_in_queue)))
-        {
-          log_info("-- msgs_in_queue: " << msgs_in_queue);
-
-          switch(msg->msg)
-          {
-            case CURLMSG_DONE:
-              log_info("transfer done: " << msg->easy_handle);
-              curl_multi_remove_handle(m_multi_handle, msg->easy_handle);
-              finish_transfer(msg->easy_handle);
-              break;
-
-            default:
-              break;
-          }
-        }
-      }
-    }
-
-    if (m_stop && m_queue.empty() && running_handles == 0)
-    {
-      break;
+      wait_for_curl_data();
+      process_curl_data();
     }
   }
 }
 
 void
+DownloadManager::cancel_transfer(TransferHandle id)
+{
+  m_queue.wait_and_push(
+    [=]{
+      auto it = std::find_if(m_transfers.begin(), m_transfers.end(), 
+                             [&id](std::unique_ptr<DownloadTransfer>& transfer) {
+                               return transfer->id == id;
+                             });
+      if (it == m_transfers.end())
+      {
+        log_info("transfer not found: " << id);
+      }
+      else
+      {
+        curl_multi_remove_handle(m_multi_handle, (*it)->handle);
+        m_transfers.erase(it);
+      }
+    });
+}
+
+void
+DownloadManager::cancel_all_transfers()
+{
+  m_queue.wait_and_push(
+    [=]{
+      for(auto& transfer : m_transfers)
+      {
+        curl_multi_remove_handle(m_multi_handle, transfer->handle);
+      }
+      m_transfers.clear();
+    });
+}
+
+void
 DownloadManager::finish_transfer(CURL* handle)
 {
-  auto it = std::find_if(m_transfers.begin(), m_transfers.end(), [handle](Transfer* transfer) {
-      return transfer->handle == handle;
-    });
+  auto it = std::find_if(m_transfers.begin(), m_transfers.end(), 
+                         [handle](std::unique_ptr<DownloadTransfer>& transfer) {
+                           return transfer->handle == handle;
+                         });
   if (it == m_transfers.end())
   {
     log_error("handle not found, this shouldn't happen");
   }
   else
   {
-    Transfer* transfer = *it;
-    DownloadResult result;
-
-    char* content_type = nullptr;
-    curl_easy_getinfo(transfer->handle, CURLINFO_CONTENT_TYPE, &content_type);
-    if (content_type)
-    {
-      result.mime_type = content_type;
-    }
-    result.blob = Blob::copy(transfer->data);
+    auto& transfer = *it;
 
     if (!transfer->callback)
     {
@@ -244,87 +250,60 @@ DownloadManager::finish_transfer(CURL* handle)
     }
     else
     {
-      transfer->callback(result);
+      transfer->callback(DownloadResult::from_curl(transfer->handle, Blob::copy(transfer->data)));
     }
     
     m_transfers.erase(it);
-    delete *it;
   }
+}
+
+DownloadManager::TransferHandle
+DownloadManager::generate_transfer_handle()
+{
+  return m_next_transfer_handle.fetch_add(1);
 }
 
-size_t
-DownloadManager::write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata)
-{
-  DownloadManager::Transfer* transfer = static_cast<Transfer*>(userdata);
-  std::copy((uint8_t*)ptr, (uint8_t*)ptr + size*nmemb, std::back_inserter(transfer->data));
-  return nmemb * size;
-}
-
-int
-DownloadManager::progress_callback_wrap(void* userdata, double dltotal, double dlnow, double ultotal, double ulnow)
-{
-  DownloadManager::Transfer* transfer = static_cast<Transfer*>(userdata);
-  return transfer->progress_callback(dltotal, dlnow);
-}
-
-void
-DownloadManager::request_url(const std::string& url,
+DownloadManager::TransferHandle
+DownloadManager::request_get(const std::string& url,
                              const std::function<void (const DownloadResult&)>& callback,
-                             const std::function<bool (double total, double now)>& progress_callback)
+                             const std::function<ProgressFunc>& progress_callback)
 {
-  //JobHandle m_job_manager(std::shared_ptr<Job> job,
-  // const std::function<void (std::shared_ptr<Job>, bool)>& callback 
-  //                          = std::function<void (std::shared_ptr<Job>, bool)>());
+  TransferHandle uuid = generate_transfer_handle();
 
-  log_info("request: " << url);
-  m_queue.wait_and_push([=]{
-      log_info("creating transfer: " << url);
-      Transfer* transfer = new Transfer;
-     
-      transfer->callback = callback;
-
-      curl_easy_setopt(transfer->handle, CURLOPT_WRITEFUNCTION, &DownloadManager::write_callback_wrap);
-      curl_easy_setopt(transfer->handle, CURLOPT_WRITEDATA, transfer); // userdata
-      curl_easy_setopt(transfer->handle, CURLOPT_URL, url.c_str());
-      curl_easy_setopt(transfer->handle, CURLOPT_ERRORBUFFER, transfer->errbuf);
-
-      if (progress_callback)
-      {
-        transfer->progress_callback = progress_callback;
-        curl_easy_setopt(transfer->handle, CURLOPT_NOPROGRESS, 0);
-        curl_easy_setopt(transfer->handle, CURLOPT_PROGRESSFUNCTION, &DownloadManager::progress_callback_wrap);
-        curl_easy_setopt(transfer->handle, CURLOPT_PROGRESSDATA, transfer);
-      }
-
-      // Fake the referer
-      curl_easy_setopt(transfer->handle, CURLOPT_REFERER, url.c_str());
-
+  m_queue.wait_and_push(
+    [=]{
+      log_info("downloading: " << url);
+      std::unique_ptr<DownloadTransfer> transfer(new DownloadTransfer(uuid, url, boost::optional<std::string>(),
+                                                                      callback, progress_callback));
       curl_multi_add_handle(m_multi_handle, transfer->handle);
-
-      m_transfers.push_back(transfer);
+      m_transfers.push_back(std::move(transfer));
     });
 
-  // send a signal to the wakeup pipe to break out of select
-  char buf[1] = {0};
-  ssize_t ret = write(m_pipefd[1], buf, sizeof(buf));
-  if (ret < 0)
-  {
-    log_error("write() to pipe failed: " << strerror(errno));
-  }
+  wakeup_pipe();
+
+  return uuid;
 }
 
-DownloadManager::Transfer::Transfer() :
-  handle(curl_easy_init()),
-  errbuf(),
-  data(),
-  callback(),
-  progress_callback()
+DownloadManager::TransferHandle
+DownloadManager::request_post(const std::string& url,
+                              const std::string& post_data,
+                              const std::function<void (const DownloadResult&)>& callback,
+                              const std::function<ProgressFunc>& progress_callback)
 {
-}
+  TransferHandle uuid = generate_transfer_handle();
 
-DownloadManager::Transfer::~Transfer()
-{
-  curl_easy_cleanup(handle);
-}
+  m_queue.wait_and_push(
+    [=]{
+      log_info("downloading: " << url);
+      std::unique_ptr<DownloadTransfer> transfer(new DownloadTransfer(uuid, url, post_data,
+                                                                      callback, progress_callback));
+      curl_multi_add_handle(m_multi_handle, transfer->handle);
+      m_transfers.push_back(std::move(transfer));
+    });
 
+  wakeup_pipe();
+
+  return uuid;
+}
+
 /* EOF */
