@@ -16,28 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
-#define HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ENTRIES_URL_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_ENTRIES_URL_ENTRY_HPP
 
-class URLInfo
+#include <string>
+
+#include "database/row_id.hpp"
+
+class SQLiteReader;
+
+class URLEntry
 {
 private:
-  long m_mtime;
-  std::string m_content_type;
-  BlobPtr blob_id;
-
 public:
-  URLInfo() :
-    m_mtime(-1),
-    m_content_type()
+  static URLEntry from_reader(SQLiteReader& reader);
+
+  URLEntry(const RowId& id,
+           const std::string& host,
+           const std::string& path,
+           const std::string& content_type,
+           long mtime,
+           const RowId& blob_id) :
+    m_id(id),
+    m_host(host),
+    m_path(path),
+    m_content_type(content_type),
+    m_mtime(mtime),
+    m_blob_id(blob_id)
   {}
 
-  long get_mtime() const { return m_mtime; }
-  std::string get_content_type() const { return m_content_type; }
-
 private:
-  URLInfo(const URLInfo&);
-  URLInfo& operator=(const URLInfo&);
+  RowId m_id;
+  std::string m_host;
+  std::string m_path;
+  std::string m_content_type;
+  long m_mtime;
+  RowId m_blob_id;
 };
 
 #endif
