@@ -56,16 +56,16 @@ public:
                   ArchiveManager& archive_mgr);
   virtual ~ResourceManager();
 
-  void request_info(const ResourceLocator& locator, 
-                    const std::function<void (Failable<ResourceInfo>)>& callback);
-
   void request_blob(const ResourceLocator& locator, 
                     const std::function<void (Failable<BlobPtr>)>& callback);
 
-  void request_file_info(const ResourceLocator& locator, 
+  void request_info(const ResourceLocator& locator, 
+                    const std::function<void (Failable<ResourceInfo>)>& callback);
+
+  void request_file_info(const std::string& filename, 
                          const std::function<void (Failable<FileInfo>)>& callback);
-  void request_url_info(const ResourceLocator& locator, 
-                         const std::function<void (Failable<URLInfo>)>& callback);
+  void request_url_info(const std::string& url, 
+                        const std::function<void (Failable<URLInfo>)>& callback);
 
   void request_resource_info(const ResourceLocator& locator,
                              const std::function<void (const Failable<ResourceInfo>&)>& callback);

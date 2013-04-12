@@ -46,13 +46,6 @@ ResourceManager::~ResourceManager()
 }
 
 void
-ResourceManager::request_info(const ResourceLocator& locator, 
-                              const std::function<void (Failable<ResourceInfo>)>& callback)
-{
-  
-}
-
-void
 ResourceManager::request_blob(const ResourceLocator& locator, 
                               const std::function<void (Failable<BlobPtr>)>& callback)
 {
@@ -106,6 +99,25 @@ ResourceManager::request_blob(const ResourceLocator& locator,
   {
     
   }
+}
+
+void
+ResourceManager::request_file_info(const std::string& filename, 
+                                   const std::function<void (Failable<FileInfo>)>& callback)
+{
+}
+
+void
+ResourceManager::request_url_info(const std::string& url,
+                                  const std::function<void (Failable<URLInfo>)>& callback)
+{
+}
+
+void
+ResourceManager::request_info(const ResourceLocator& locator, 
+                              const std::function<void (Failable<ResourceInfo>)>& callback)
+{
+  
 }
 
 void
