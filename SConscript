@@ -202,11 +202,22 @@ class Project:
                         self.optional_sources)
 
     def build_tests(self):
+        gtest = Environment()
+        gtest.Append(CPPPATH = [ "external/gtest-1.6.0/include/",
+                                 "external/gtest-1.6.0/" ])
+        libgtest = gtest.StaticLibrary("external/gtest-1.6.0/src/gtest-all.cc")
+        libgtest_main = gtest.StaticLibrary("external/gtest-1.6.0/src/gtest_main.cc")
+        
         libgalapix_test_env = self.libgalapix_env.Clone()
-        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash'])
+        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash', libgtest])
+
         for filename in Glob("test/*_test.cpp", strings=True):
             libgalapix_test_env.Program(filename[:-4],
                                         [filename] + self.sdl_sources)
+
+        for filename in Glob("test/*_gtest.cpp", strings=True):
+            libgalapix_test_env.Program(filename[:-4],
+                                        [filename] + self.sdl_sources + libgtest_main)
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()
