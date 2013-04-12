@@ -63,6 +63,8 @@ Bugs and Issues
 
 * images belonging to an archive/directory need to be groupable
 
+http://stackoverflow.com/questions/3151779/how-its-better-to-invoke-gdb-from-program-to-print-its-stacktrace/4611112#4611112
+
 Galapix 0.1.3 Release ToDo:
 ===========================
 

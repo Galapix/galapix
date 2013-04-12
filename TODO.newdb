@@ -35,6 +35,14 @@ archive_file:
   path: string
   blob_id: rowid
 
+group:
+  name: string
+  resource_id: rowid
+
+resource_group:
+  group_id: rowid
+  resource_id: rowid
+
 video:
   resource_id: rowid
   duration: real [seconds]
@@ -72,8 +80,14 @@ resource_tag
 
 ...
 
-Examples:
+Resource:
 =========
+
+  resource = scheme ":" path { "//" handler { ":" args } }
+
+
+Resource Examples:
+==================
 
 Simple ResourceName:
   sha1:118011f6ac3f8f017542bd90506725a9d78c88c3//image-jpeg
@@ -84,7 +98,11 @@ Simple ResourceName:
 Complex ResourceName:
   sha1:fab9582fca66b22c88cc7816acce0d727aed0707//image-wmv:34.0  # image of the video at second 34
   sha1:fab9582fca66b22c88cc7816acce0d727aed0707//image-pdf:23    # page 23 of a PDF as image
-  sha1:fab9582fca66b22c88cc7816acce0d727aed0707//image-pdf:10 
+  sha1:fab9582fca66b22c88cc7816acce0d727aed0707//image-pdf:10
+
+ResourceName Handler Stack:
+  sha1:d0b2bf5e1feaaa8d7247dfd6fe5d7a86dcec9c4d//image-png//image-contrast:50
+    -> not yet supported, maybe later
 
 Incorrect ResourceName:
   sha1:16273c96b3343af5972202654c1aff90566b12e8//archive-rar:subdir/subdir/example.txt
@@ -97,16 +115,39 @@ ResourceLocator:
   -> either give a blob or child ResourceLocators when it's an archive
 
 Untyped ResourceLocator:
-   file:///home/juser/image/photo/test.jpg
+  file:///home/juser/image/photo/test.jpg
      -> lookup blob_id, use blob_id to lookup resource_id which has type
 
 Typed ResourceLocator:
-   file:///home/juser/image/photo/test.jpg//image-jpeg
+  file:///home/juser/image/photo/test.jpg//image-jpeg
      -> not supported, maybe later to override automatic type detection
 
 Untyped Archive ResourceLocator:
-   file:///home/juser/image/photo.rar//archive-rar:photos/img001.jpg
+  file:///home/juser/image/photo.rar//archive-rar:photos/img001.jpg
      -> give a blob
 
+Resource Handler Stacks:
+  file:///archive.rar//archive-rar:archive2.zip//archive-zip:test.jpg
+    -> decomposed into:
+      file:///archive.rar
+      sha1:118011f6ac3f8f017542bd90506725a9d78c88c3//archive-rar:archive2.zip
+      sha1:39c44100942ee19cd8b7440bc231aa6a34c0e735//archive-zip:test.jpg
+      sha1:d0b2bf5e1feaaa8d7247dfd6fe5d7a86dcec9c4d//image-jpg
+
+  file:///test.jpg//image-jpeg//image-contrast:50%//image-gamma:0.8
+   -> not yet supported, maybe later
+
+Valid URL characters:
+  ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=.
+  Any other character needs to be encoded with the percent-encoding (%hh).
+
+Valid filename characters:
+  Everything except '/' and '\0'
+
+Handlersplit characters:
+  ^  works with URL, does not work with filenames
+  // works with normalized filenames, works with most URLs, but conflicts with the spec
+
+Check libarchive for some more supported archive file formats
 
 # EOF #
