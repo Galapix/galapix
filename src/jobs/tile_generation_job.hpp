@@ -23,7 +23,7 @@
 #include <boost/signals.hpp>
 #include <mutex>
 
-#include "database/entries/file_entry.hpp"
+#include "database/entries/old_file_entry.hpp"
 #include "galapix/tile.hpp"
 #include "job/job.hpp"
 #include "math/vector2i.hpp"
@@ -61,7 +61,7 @@ private:
   } m_state;
 
   URL       m_url;
-  FileEntry m_file_entry;
+  OldFileEntry m_file_entry;
 
   /** Only valid if state is kRunning or kDone */
   int       m_min_scale;
@@ -82,7 +82,7 @@ private:
   boost::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
 
 public:
-  TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
+  TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
   ~TileGenerationJob();
 
   /** Request a tile to be generated, returns true if the request will

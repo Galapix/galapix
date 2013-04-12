@@ -25,7 +25,7 @@
 #include "jobs/tile_generator.hpp"
 #include "database/entries/tile_entry.hpp"
 
-TileGenerationJob::TileGenerationJob(const FileEntry& file_entry, int min_scale_in_db, int max_scale_in_db) :
+TileGenerationJob::TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db) :
   Job(JobHandle::create()),
   m_state_mutex(),
   m_state(kWaiting),

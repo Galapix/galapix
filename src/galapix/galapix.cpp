@@ -137,7 +137,7 @@ Galapix::list(const Options& opts)
 {
   Database db(opts.database);
 
-  std::vector<FileEntry> entries;
+  std::vector<OldFileEntry> entries;
   if (opts.patterns.empty())
   {
     db.get_resources().get_file_entries(entries);
@@ -150,7 +150,7 @@ Galapix::list(const Options& opts)
     }
   }
 
-  for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+  for(std::vector<OldFileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
   {
     std::cout << i->get_url() << std::endl;
   }  
@@ -168,7 +168,7 @@ Galapix::thumbgen(const Options& opts,
   database_thread.start_thread();
   job_manager.start_thread();
 
-  std::vector<FileEntry> file_entries;
+  std::vector<OldFileEntry> file_entries;
 
   JobHandleGroup job_handle_group;
 
@@ -176,7 +176,7 @@ Galapix::thumbgen(const Options& opts,
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
   {
     job_handle_group.add(database_thread.request_file(*i, 
-                                                      [&file_entries](const FileEntry& entry) { 
+                                                      [&file_entries](const OldFileEntry& entry) { 
                                                         file_entries.push_back(entry); 
                                                       }));
   }
@@ -186,7 +186,7 @@ Galapix::thumbgen(const Options& opts,
   std::cout << "Got " << file_entries.size() << " files, generating tiles...: "  << generate_all_tiles << std::endl;
 
   // gather thumbnails
-  for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
+  for(std::vector<OldFileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
   {
     int min_scale = 0;
     int max_scale = 1; // FIXME: i->get_thumbnail_scale();
@@ -219,7 +219,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
   Workspace workspace;
 
   { // process all -p PATTERN options 
-    std::vector<FileEntry> file_entries;
+    std::vector<OldFileEntry> file_entries;
 
     for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
     {
@@ -237,7 +237,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
     }
 
-    for(std::vector<FileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
+    for(std::vector<OldFileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
     {
       ImageEntry image_entry;
       if (!database.get_resources().get_image_entry(*i, image_entry))
@@ -293,7 +293,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     }
     else
     {
-      FileEntry file_entry;
+      OldFileEntry file_entry;
       if (!database.get_resources().get_file_entry(*i, file_entry))
       {
         workspace.add_image(WorkspaceItemPtr(new Image(*i)));

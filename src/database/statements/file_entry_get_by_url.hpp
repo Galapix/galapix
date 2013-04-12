@@ -39,14 +39,14 @@ public:
            "  file.url = ?1;")
   {}
 
-  bool operator()(const URL& url, FileEntry& entry_out)
+  bool operator()(const URL& url, OldFileEntry& entry_out)
   {
     m_stmt.bind_text(1, url.str());
     SQLiteReader reader = m_stmt.execute_query();
 
     if (reader.next())
     {
-      entry_out = FileEntry::from_reader(reader);
+      entry_out = OldFileEntry::from_reader(reader);
       return true;
     }
     else

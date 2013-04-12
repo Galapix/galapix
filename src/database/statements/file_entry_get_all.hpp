@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
 
-#include "database/entries/file_entry.hpp"
+#include "database/entries/old_file_entry.hpp"
 
 class FileEntryGetAll
 {
@@ -39,13 +39,13 @@ public:
            "  file.blob_id = blob.id;")
   {}
 
-  void operator()(std::vector<FileEntry>& entries_out)
+  void operator()(std::vector<OldFileEntry>& entries_out)
   {
     SQLiteReader reader = m_stmt.execute_query();
 
     while (reader.next())  
     {
-      entries_out.push_back(FileEntry::from_reader(reader));
+      entries_out.push_back(OldFileEntry::from_reader(reader));
     }
   }
 

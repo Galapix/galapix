@@ -24,7 +24,7 @@
 
 #include "util/url.hpp"
 #include "job/job.hpp"
-#include "database/entries/file_entry.hpp"
+#include "database/entries/old_file_entry.hpp"
 #include "galapix/tile.hpp"
 
 class FileEntryGenerationJob : public Job
@@ -32,14 +32,14 @@ class FileEntryGenerationJob : public Job
 private:
   URL m_url;
 
-  boost::signal<void (FileEntry)> m_sig_file_callback;
+  boost::signal<void (OldFileEntry)> m_sig_file_callback;
 
 public:
   FileEntryGenerationJob(const JobHandle& job_handle, const URL& url);
 
   void run();
 
-  boost::signal<void (FileEntry)>& sig_file_callback() { return m_sig_file_callback; }
+  boost::signal<void (OldFileEntry)>& sig_file_callback() { return m_sig_file_callback; }
 
 private:
   FileEntryGenerationJob(const FileEntryGenerationJob&);

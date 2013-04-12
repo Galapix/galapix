@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_HPP
+#ifndef HEADER_GALAPIX_DATABASE_OLD_FILE_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_OLD_FILE_ENTRY_HPP
 
 #include <memory>
 #include <assert.h>
@@ -30,7 +30,7 @@
 
 class SQLiteReader;
 
-class FileEntry final
+class OldFileEntry final
 {
 public:
   enum Handler { 
@@ -41,9 +41,9 @@ public:
   };
 
 public:
-  static FileEntry from_reader(SQLiteReader& reader);
+  static OldFileEntry from_reader(SQLiteReader& reader);
 
-  FileEntry() :
+  OldFileEntry() :
     m_id(),
     m_url(),
     m_mtime(),
@@ -52,7 +52,7 @@ public:
     m_parent()
   {}
 
-  FileEntry(const RowId& id,
+  OldFileEntry(const RowId& id,
             const URL& url,
             int size,
             int mtime,
@@ -65,7 +65,7 @@ public:
     m_parent()
   {}
 
-  FileEntry(const RowId& id,
+  OldFileEntry(const RowId& id,
             const URL& url,
             int mtime,
             Handler handler, 
@@ -87,7 +87,7 @@ public:
   RowId   get_parent() const { return m_parent; }
   
 private:
-  /** Unique id by which one can refer to this FileEntry, used in the
+  /** Unique id by which one can refer to this OldFileEntry, used in the
       'tile' table in the database */
   RowId m_id;
 
@@ -105,7 +105,7 @@ private:
   RowId m_parent;
 };
 
-std::ostream& operator<<(std::ostream& os, const FileEntry& entry);
+std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry);
 
 #endif
 

@@ -16,28 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "database/entries/file_entry.hpp"
+#include "database/entries/old_file_entry.hpp"
 
 #include <iostream>
 
 #include "sqlite/reader.hpp"
 
-FileEntry 
-FileEntry::from_reader(SQLiteReader& reader)
+OldFileEntry 
+OldFileEntry::from_reader(SQLiteReader& reader)
 {
-  return FileEntry(RowId(reader.get_int(0)),  // fileid
+  return OldFileEntry(RowId(reader.get_int(0)),  // fileid
                    URL::from_string(reader.get_text(1)), // url
                    reader.get_int(2),  // mtime
-                   static_cast<FileEntry::Handler>(reader.get_int(3)), // handler
+                   static_cast<OldFileEntry::Handler>(reader.get_int(3)), // handler
                    RowId(reader.get_int64(4)),
                    BlobEntry(reader.get_int64(5),
                              SHA1(reader.get_blob(6)),
                              reader.get_int(7)));
 }
 
-std::ostream& operator<<(std::ostream& os, const FileEntry& entry)
+std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry)
 {
-  return os << "FileEntry(\n" 
+  return os << "OldFileEntry(\n" 
             << "         id: " << entry.get_id() << '\n'
             << "        url: " << entry.get_url() << '\n'
             << "      mtime: " << entry.get_mtime() << '\n'

@@ -42,7 +42,7 @@
 #include "sqlite/statement.hpp"
 
 class Database;
-class FileEntry;
+class OldFileEntry;
 class ImageEntry;
 class TileEntry;
 class URL;
@@ -92,15 +92,15 @@ public:
      @param[out] entry   Lokation where the file information will be stored 
      @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
-  bool get_file_entry(const URL& url, FileEntry& entry_out);
+  bool get_file_entry(const URL& url, OldFileEntry& entry_out);
   boost::optional<ResourceEntry> get_resource_entry(const RowId& blob_id);
-  void get_file_entries(std::vector<FileEntry>& entries_out);
-  void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
+  void get_file_entries(std::vector<OldFileEntry>& entries_out);
+  void get_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out);
 
-  bool get_image_entry(const FileEntry& entry, ImageEntry& image_out);
+  bool get_image_entry(const OldFileEntry& entry, ImageEntry& image_out);
 
-  FileEntry  store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler);
-  FileEntry  store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler, const RowId& archive_id);
+  OldFileEntry  store_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler);
+  OldFileEntry  store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id);
   ImageEntry store_image_entry(const ImageEntry& image);
 
   void delete_file_entry(const RowId& file_id);

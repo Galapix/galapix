@@ -20,7 +20,7 @@
 
 #include <iostream>
 
-#include "database/entries/file_entry.hpp"
+#include "database/entries/old_file_entry.hpp"
 #include "database/database.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
@@ -53,18 +53,18 @@ ResourceDatabase::~ResourceDatabase()
 {
 }
  
-FileEntry
-ResourceDatabase::store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler)
+OldFileEntry
+ResourceDatabase::store_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler)
 {
   //RowId file_id = m_file_entry_store(url, SHA1(), size, mtime, handler);
-  return FileEntry(RowId(), url, size, mtime, handler);
+  return OldFileEntry(RowId(), url, size, mtime, handler);
 }
 
-FileEntry
-ResourceDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler, const RowId& archive_id)
+OldFileEntry
+ResourceDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id)
 {
   //RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
-  return FileEntry(RowId(), url, size, mtime, handler);
+  return OldFileEntry(RowId(), url, size, mtime, handler);
 }
 
 ImageEntry
@@ -75,25 +75,25 @@ ResourceDatabase::store_image_entry(const ImageEntry& image)
 }
 
 bool
-ResourceDatabase::get_image_entry(const FileEntry& entry, ImageEntry& image_out)
+ResourceDatabase::get_image_entry(const OldFileEntry& entry, ImageEntry& image_out)
 {
   return false; //m_image_entry_get(entry.get_blob_entry().get_id(), image_out);
 }
 
 bool
-ResourceDatabase::get_file_entry(const URL& url, FileEntry& entry_out)
+ResourceDatabase::get_file_entry(const URL& url, OldFileEntry& entry_out)
 {
   return false; //m_file_entry_get_by_url(url, entry_out);
 }
 
 void
-ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out)
+ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out)
 {
   //m_file_entry_get_by_pattern(pattern, entries_out);
 }
 
 void
-ResourceDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
+ResourceDatabase::get_file_entries(std::vector<OldFileEntry>& entries_out)
 {
   //m_file_entry_get_all(entries_out);
 }

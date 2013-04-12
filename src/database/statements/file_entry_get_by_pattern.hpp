@@ -36,14 +36,14 @@ public:
            "  file.url GLOB ?1;")
   {}
 
-  void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
+  void operator()(const std::string& pattern, std::vector<OldFileEntry>& entries_out)
   {
     m_stmt.bind_text(1, pattern);
     SQLiteReader reader = m_stmt.execute_query();
 
     while (reader.next())  
     {
-      entries_out.push_back(FileEntry::from_reader(reader));
+      entries_out.push_back(OldFileEntry::from_reader(reader));
     }
   }
 

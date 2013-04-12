@@ -28,11 +28,11 @@
 class DatabaseTileProvider : public TileProvider
 {
 private:
-  FileEntry  m_file_entry;
+  OldFileEntry  m_file_entry;
   ImageEntry m_image_entry;
 
 public:
-  DatabaseTileProvider(const FileEntry& file_entry,
+  DatabaseTileProvider(const OldFileEntry& file_entry,
                        const ImageEntry& image_entry) :
     m_file_entry(file_entry),
     m_image_entry(image_entry)

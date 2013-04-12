@@ -21,7 +21,7 @@
 #include <algorithm>
 #include <iostream>
 
-#include "database/entries/file_entry.hpp"
+#include "database/entries/old_file_entry.hpp"
 #include "galapix/database_thread.hpp"
 #include "galapix/layouter/random_layouter.hpp"
 #include "galapix/layouter/regular_layouter.hpp"

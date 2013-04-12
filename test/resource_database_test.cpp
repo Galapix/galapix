@@ -34,11 +34,11 @@ int main(int argc, char** argv)
     int size  = url.get_size();
     int mtime = url.get_mtime();
 
-    FileEntry file_entry;
+    OldFileEntry file_entry;
     if (!filedb.get_file_entry(url, file_entry))
     { 
       SHA1 sha1 = SHA1::from_file(url.get_stdio_name());
-      file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler, RowId());
+      file_entry = filedb.store_file_entry(url, sha1, size, mtime, OldFileEntry::kUnknownHandler, RowId());
       std::cout << "stored: " << file_entry << std::endl;
     }
     else
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
       if (size  != file_entry.get_blob_entry().get_size() ||
           mtime != file_entry.get_mtime())
       { 
-        file_entry = filedb.store_file_entry(url, sha1, size, mtime, FileEntry::kUnknownHandler, RowId());
+        file_entry = filedb.store_file_entry(url, sha1, size, mtime, OldFileEntry::kUnknownHandler, RowId());
         std::cout << "replaced: " << file_entry << std::endl;
       }
       else
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
   }
 
   std::cout << "\nAll Entries: " << std::endl;
-  std::vector<FileEntry> entries;
+  std::vector<OldFileEntry> entries;
   filedb.get_file_entries(entries);
   for(auto it = entries.begin(); it != entries.end(); ++it)
   {

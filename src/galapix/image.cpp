@@ -21,7 +21,7 @@
 #include <functional>
 #include <iostream>
 
-#include "database/entries/file_entry.hpp"
+#include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"
 #include "galapix/database_thread.hpp"
 #include "galapix/database_tile_provider.hpp"
