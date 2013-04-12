@@ -30,18 +30,19 @@
 ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_db(db),
 
+  m_archive_table(m_db),
   m_blob_table(m_db),
   m_file_table(m_db),
   m_image_table(m_db),
-  m_archive_table(m_db),
+  m_resource_table(m_db),
   m_video_table(m_db),
 
-  m_file_entry_get_all(m_db),
-  m_file_entry_get_by_fileid(m_db),
-  m_file_entry_get_by_pattern(m_db),
-  m_file_entry_get_by_url(m_db),
-  m_file_entry_store(m_db),
-  m_file_entry_delete(m_db),
+  //m_file_entry_get_all(m_db),
+  //m_file_entry_get_by_fileid(m_db),
+  //m_file_entry_get_by_pattern(m_db),
+  //m_file_entry_get_by_url(m_db),
+  //m_file_entry_store(m_db),
+  //m_file_entry_delete(m_db),
   m_image_entry_store(m_db),
   m_image_entry_get(m_db),
   m_resource_entry_get_by_blob_id(m_db)
@@ -55,15 +56,15 @@ ResourceDatabase::~ResourceDatabase()
 FileEntry
 ResourceDatabase::store_file_entry(const URL& url, int size, int mtime, FileEntry::Handler handler)
 {
-  RowId file_id = m_file_entry_store(url, SHA1(), size, mtime, handler);
-  return FileEntry(file_id, url, size, mtime, handler);
+  //RowId file_id = m_file_entry_store(url, SHA1(), size, mtime, handler);
+  return FileEntry(RowId(), url, size, mtime, handler);
 }
 
 FileEntry
 ResourceDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, FileEntry::Handler handler, const RowId& archive_id)
 {
-  RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
-  return FileEntry(file_id, url, size, mtime, handler);
+  //RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
+  return FileEntry(RowId(), url, size, mtime, handler);
 }
 
 ImageEntry
@@ -76,25 +77,25 @@ ResourceDatabase::store_image_entry(const ImageEntry& image)
 bool
 ResourceDatabase::get_image_entry(const FileEntry& entry, ImageEntry& image_out)
 {
-  return m_image_entry_get(entry.get_blob_entry().get_id(), image_out);
+  return false; //m_image_entry_get(entry.get_blob_entry().get_id(), image_out);
 }
 
 bool
 ResourceDatabase::get_file_entry(const URL& url, FileEntry& entry_out)
 {
-  return m_file_entry_get_by_url(url, entry_out);
+  return false; //m_file_entry_get_by_url(url, entry_out);
 }
 
 void
 ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out)
 {
-  m_file_entry_get_by_pattern(pattern, entries_out);
+  //m_file_entry_get_by_pattern(pattern, entries_out);
 }
 
 void
 ResourceDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
 {
-  m_file_entry_get_all(entries_out);
+  //m_file_entry_get_all(entries_out);
 }
 
 boost::optional<ResourceEntry>
@@ -107,7 +108,7 @@ ResourceDatabase::get_resource_entry(const RowId& blob_id)
 void
 ResourceDatabase::delete_file_entry(const RowId& file_id)
 {
-  m_file_entry_delete(file_id);
+  //m_file_entry_delete(file_id);
 }
 
 /* EOF */

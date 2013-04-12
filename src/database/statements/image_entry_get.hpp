@@ -31,7 +31,7 @@ private:
 public:
   ImageEntryGet(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "SELECT id, blob_id, width, height, handler FROM image WHERE id = ?1;")
+    m_stmt(db, "SELECT id, resource_id, width, height FROM image WHERE id = ?1;")
   {}
 
   bool operator()(const RowId& image_id, ImageEntry& image_out)
@@ -45,8 +45,7 @@ public:
       image_out = ImageEntry(reader.get_int64(0),
                              reader.get_int64(1),
                              reader.get_int(2),   
-                             reader.get_int(3),
-                             reader.get_int(4));
+                             reader.get_int(3));
       return true;
     }
     else

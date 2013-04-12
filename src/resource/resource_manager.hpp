@@ -29,34 +29,52 @@
 #include "util/currenton.hpp"
 
 class ArchiveInfo;
+class ArchiveManager;
 class DatabaseThread;
+class DownloadManager;
+class FileInfo;
 class Generator;
 class ImageInfo;
 class ResourceInfo;
 class ResourceLocator;
 class TileInfo;
+class URLInfo;
 
-class ResourceManager : public AsyncMessenger,
+class ResourceManager : //public AsyncMessenger,
                         public Currenton<ResourceManager>
 {
 private:
   DatabaseThread& m_database;
   Generator& m_generator;
+  DownloadManager& m_download_mgr;
+  ArchiveManager& m_archive_mgr;
   
 public:
   ResourceManager(DatabaseThread& database,
-                  Generator& generator);
-  
-  void request_tile_info(const ImageInfo& image, int scale, int x, int y,
-                         const std::function<void (const Failable<TileInfo>&)>& callback);
-  void request_image_info(const ResourceInfo& resource,
-                          const std::function<void (const Failable<ImageInfo>&)>& callback);
-  void request_archive_info(const ResourceInfo& resource,
-                            const std::function<void (const Failable<ArchiveInfo>&)>& callback);
-  void request_resource_info(const ResourceLocator& locator,
-                             const std::function<void (const Failable<ResourceInfo>&)>& callback);
+                  Generator& generator,
+                  DownloadManager& download_mgr,
+                  ArchiveManager& archive_mgr);
+  virtual ~ResourceManager();
+
+  void request_info(const ResourceLocator& locator, 
+                    const std::function<void (Failable<ResourceInfo>)>& callback);
+
   void request_blob(const ResourceLocator& locator, 
                     const std::function<void (Failable<BlobPtr>)>& callback);
+
+  void request_file_info(const ResourceLocator& locator, 
+                         const std::function<void (Failable<FileInfo>)>& callback);
+  void request_url_info(const ResourceLocator& locator, 
+                         const std::function<void (Failable<URLInfo>)>& callback);
+
+  void request_resource_info(const ResourceLocator& locator,
+                             const std::function<void (const Failable<ResourceInfo>&)>& callback);
+  void request_archive_info(const ResourceInfo& resource,
+                            const std::function<void (const Failable<ArchiveInfo>&)>& callback);
+  void request_image_info(const ResourceInfo& resource,
+                          const std::function<void (const Failable<ImageInfo>&)>& callback);
+  void request_tile_info(const ImageInfo& image, int scale, int x, int y,
+                         const std::function<void (const Failable<TileInfo>&)>& callback);
   
 private:
   ResourceManager(const ResourceManager&) = delete;

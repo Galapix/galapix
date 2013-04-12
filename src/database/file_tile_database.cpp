@@ -223,6 +223,8 @@ FileTileDatabase::get_complete_directory(const RowId& file_id)
 bool
 FileTileDatabase::parse_filename(const std::string& filename, Vector2i* pos_out, int* scale_out, int* format_out)
 {
+  return false;
+#if 0
   char format[4];
   if (sscanf(filename.c_str(), "tile-%d-%d-%d.%3s", scale_out, &pos_out->x, &pos_out->y, format) == 3)
   {
@@ -245,6 +247,7 @@ FileTileDatabase::parse_filename(const std::string& filename, Vector2i* pos_out,
   {
     return false;
   }
+#endif
 }
 
 void

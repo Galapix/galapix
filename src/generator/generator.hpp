@@ -19,7 +19,10 @@
 #ifndef HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
 #define HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
 
+#include "resource/file_info.hpp"
 #include "util/async_messenger.hpp"
+#include "util/failable.hpp"
+#include "job/job_manager.hpp"
 
 class Generator : public AsyncMessenger
 {
@@ -29,7 +32,7 @@ private:
 public:
   Generator(JobManager& job_manager);
 
-  void request_file_info(const ResourceLocator& locator, 
+  void request_file_info(const std::string& path, 
                          const std::function<void (const Failable<FileInfo>&)>& callback);
 
 private:

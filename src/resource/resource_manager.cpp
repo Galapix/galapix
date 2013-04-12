@@ -18,14 +18,127 @@
 
 #include "resource/resource_manager.hpp"
 
-#include "resource/archive_info.hpp"
-#include "galapix/database_thread.hpp"
-#include "resource/image_info.hpp"
-#include "resource/tile_info.hpp"
+#include <future>
 
-ResourceManager::ResourceManager(DatabaseThread& database, Generator& generator) :
+#include "galapix/database_thread.hpp"
+#include "network/download_manager.hpp"
+#include "network/download_result.hpp"
+#include "resource/archive_info.hpp"
+#include "resource/image_info.hpp"
+#include "resource/resource_locator.hpp"
+#include "resource/resource_url.hpp"
+#include "resource/tile_info.hpp"
+#include "util/format.hpp"
+
+ResourceManager::ResourceManager(DatabaseThread& database, 
+                                 Generator& generator,
+                                 DownloadManager& download_mgr,
+                                 ArchiveManager& archive_mgr) :
   m_database(database),
-  m_generator(generator)
+  m_generator(generator),
+  m_download_mgr(download_mgr),
+  m_archive_mgr(archive_mgr)
+{
+}
+
+ResourceManager::~ResourceManager()
+{
+}
+
+void
+ResourceManager::request_info(const ResourceLocator& locator, 
+                              const std::function<void (Failable<ResourceInfo>)>& callback)
+{
+  
+}
+
+void
+ResourceManager::request_blob(const ResourceLocator& locator, 
+                              const std::function<void (Failable<BlobPtr>)>& callback)
+{
+  if (locator.get_handler().empty())
+  {
+    ResourceURL url = locator.get_url();
+    if (url.get_scheme() == "file")
+    {
+      std::async(std::launch::async, [=]{
+          try 
+          {
+            BlobPtr blob = Blob::from_file(url.get_path());
+            Failable<BlobPtr> failable(blob);
+            callback(blob);
+          }
+          catch(const std::exception& err)
+          {
+            Failable<BlobPtr> failable;
+            failable.set_exception(std::make_exception_ptr(err));
+            callback(failable);
+          }
+        });
+    }
+    else if (url.get_scheme() == "http" ||
+             url.get_scheme() == "https" ||
+             url.get_scheme() == "ftp")
+    {
+      m_download_mgr.request_get(url.str(), [=](const DownloadResult& result) {
+          if (result.success())
+          {
+            callback(Failable<BlobPtr>(result.get_blob()));
+          }
+          else
+          {
+            Failable<BlobPtr> failable;
+            failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: invalid response code: %d", 
+                                                                                     url.str(), result.get_response_code()))));
+            callback(failable);
+          }
+        });
+    }
+    else
+    {
+      Failable<BlobPtr> failable;
+      failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s", 
+                                                                               locator.str(), url.get_scheme()))));
+      callback(failable);
+    }
+  }
+  else
+  {
+    
+  }
+}
+
+void
+ResourceManager::request_resource_info(const ResourceLocator& locator,
+                                       const std::function<void (const Failable<ResourceInfo>&)>& callback)
+{
+#if 0
+  auto file_entry_callback = [](const boost::optional<FileEntry>& file_entry)
+    {
+      if (!file_entry)
+      {
+        m_generator.request_file_entry();
+      }
+      else
+      {
+        m_database.request_resource(image.get_rowid(), scale, x, y, 
+                                  [](const ResourceEntry& resource_entry));
+      }
+    };
+
+  m_database.request_file_entry(locator, file_entry_callback);
+#endif
+}
+
+void
+ResourceManager::request_image_info(const ResourceInfo& resource,
+                                    const std::function<void (const Failable<ImageInfo>&)>& callback)
+{
+}
+
+void
+ResourceManager::request_archive_info(const ResourceInfo& resource,
+                                      const std::function<void (const Failable<ArchiveInfo>&)>& callback)
 {
 }
 
@@ -74,39 +187,5 @@ ResourceManager::generate_tiles()
     });
 }
 #endif
-
-void
-ResourceManager::request_image_info(const ResourceInfo& resource,
-                                    const std::function<void (const Failable<ImageInfo>&)>& callback)
-{
-}
-
-void
-ResourceManager::request_archive_info(const ResourceInfo& resource,
-                                      const std::function<void (const Failable<ArchiveInfo>&)>& callback)
-{
-}
-
-void
-ResourceManager::request_resource_info(const ResourceLocator& locator,
-                                       const std::function<void (const Failable<ResourceInfo>&)>& callback)
-{
-#if 0
-  auto file_entry_callback = [](const boost::optional<FileEntry>& file_entry)
-    {
-      if (!file_entry)
-      {
-        m_generator.request_file_entry();
-      }
-      else
-      {
-        m_database.request_resource(image.get_rowid(), scale, x, y, 
-                                  [](const ResourceEntry& resource_entry));
-      }
-    };
-
-  m_database.request_file_entry(locator, file_entry_callback);
-#endif
-}
 
 /* EOF */

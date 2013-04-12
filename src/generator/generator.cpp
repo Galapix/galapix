@@ -18,15 +18,17 @@
 
 #include "generator.hpp"
 
-Generator::Generator(JobManager& job_manager)
+Generator::Generator(JobManager& job_manager) :
+  m_job_manager(job_manager)
 {
 }
 
 void
-Generator::request_file_info(const ResourceLocator& locator, 
+Generator::request_file_info(const std::string& path, 
                              const std::function<void (const Failable<FileInfo>&)>& callback)
 {
-  
+  FileInfo info = FileInfo::from_file(path);
+  callback(info);
 }
 
 /* EOF */

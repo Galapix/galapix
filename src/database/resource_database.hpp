@@ -36,6 +36,7 @@
 #include "database/tables/blob_table.hpp"
 #include "database/tables/file_table.hpp"
 #include "database/tables/image_table.hpp"
+#include "database/tables/resource_table.hpp"
 #include "database/tables/video_table.hpp"
 #include "math/size.hpp"
 #include "sqlite/statement.hpp"
@@ -48,29 +49,30 @@ class URL;
 class SHA1;
 
 /** The ResourceDatabase keeps a record of all files that have been
-    view. It keeps information on the last modification time and
+    viewed. It keeps information on the last modification time and
     filesize to detect a need to regenerate the tiles and also handles
-    the mapping from url to fileid, which is used for loookup of
-    tiles in the TileDatabase. The ResourceDatabase also stores the size
-    of an image, so that the image file itself doesn't need to be
+    the mapping from url to fileid, which is used for loookup of tiles
+    in the TileDatabase. The ResourceDatabase also stores the size of
+    an image, so that the image file itself doesn't need to be
     touched. */
 class ResourceDatabase
 {
 private:
   SQLiteConnection& m_db;
 
-  BlobTable                      m_blob_table;
-  FileTable                      m_file_table;
-  ImageTable                     m_image_table;
-  ArchiveTable                   m_archive_table;
-  VideoTable                     m_video_table;
-
-  FileEntryGetAll          m_file_entry_get_all;
-  FileEntryGetByFileId     m_file_entry_get_by_fileid;
-  FileEntryGetByPattern    m_file_entry_get_by_pattern;
-  FileEntryGetByUrl        m_file_entry_get_by_url;
-  FileEntryStore           m_file_entry_store;
-  FileEntryDelete          m_file_entry_delete;
+  ArchiveTable             m_archive_table;
+  BlobTable                m_blob_table;
+  FileTable                m_file_table;
+  ImageTable               m_image_table;
+  ResourceTable            m_resource_table;
+  VideoTable               m_video_table;
+  
+  //FileEntryGetAll          m_file_entry_get_all;
+  //FileEntryGetByFileId     m_file_entry_get_by_fileid;
+  //FileEntryGetByPattern    m_file_entry_get_by_pattern;
+  //FileEntryGetByUrl        m_file_entry_get_by_url;
+  //FileEntryStore           m_file_entry_store;
+  //FileEntryDelete          m_file_entry_delete;
   ImageEntryStore          m_image_entry_store;
   ImageEntryGet            m_image_entry_get;
   ResourceEntryGetByBlobId m_resource_entry_get_by_blob_id;

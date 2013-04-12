@@ -150,9 +150,11 @@ class Project:
         self.libgalapix_util = self.libgalapix_env.StaticLibrary('galapix_util',
                                                                  Glob("src/archive/*.cpp") + \
                                                                  Glob("src/network/*.cpp") + \
+                                                                 Glob("src/generator/*.cpp") + \
                                                                  Glob("src/util/*.cpp") + \
                                                                  Glob("src/plugins/*.cpp") + \
                                                                  Glob("src/lisp/*.cpp") + \
+                                                                 Glob("src/resource/*.cpp") + \
                                                                  Glob("src/math/*.cpp"))
         
         self.libgalapix = self.libgalapix_env.StaticLibrary('galapix.sdl', 
@@ -164,7 +166,6 @@ class Project:
                                                             Glob("src/galapix/layouter/*.cpp") + \
                                                             Glob("src/job/*.cpp") + \
                                                             Glob("src/jobs/*.cpp") + \
-                                                            Glob("src/resource/*.cpp") + \
                                                             Glob("src/sqlite/*.cpp") + \
                                                             Glob("src/tools/*.cpp") + \
                                                             self.optional_sources)

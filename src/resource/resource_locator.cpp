@@ -18,6 +18,8 @@
 
 #include "resource_locator.hpp"
 
+#include <sstream>
+
 ResourceHandler
 ResourceHandler::from_string(const std::string& handler)
 {
@@ -72,6 +74,22 @@ ResourceLocator::from_string(const std::string& locator)
                                        path.substr(0, handler_start)),
                            handler);
   }
+}
+
+std::string
+ResourceLocator::str() const
+{
+  std::ostringstream out;
+  out << m_url.str();
+  for(const auto& handler : m_handler)
+  {
+    out << "//" << handler.name;
+    for(const auto& arg : handler.args)
+    {
+      out << ':' << arg;
+    }
+  }
+  return out.str();
 }
 
 /* EOF */

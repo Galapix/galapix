@@ -31,7 +31,9 @@ JobManager::JobManager(int num_threads) :
   assert(num_threads > 0);
 
   for(int i = 0; i < num_threads; ++i)
+  {
     threads.push_back(JobWorkerThreadPtr(new JobWorkerThread()));
+  }
 }
 
 JobManager::~JobManager()
@@ -44,7 +46,9 @@ JobManager::start_thread()
   std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+  {
     (*i)->start_thread();
+  }
 }
 
 void
@@ -53,7 +57,9 @@ JobManager::stop_thread()
   std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+  {
     (*i)->stop_thread();
+  }
 }
 
 void
@@ -62,7 +68,9 @@ JobManager::abort_thread()
   std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+  {
     (*i)->abort_thread();
+  }
 }
 
 void
@@ -71,7 +79,9 @@ JobManager::join_thread()
   std::unique_lock<std::mutex> lock(mutex);
 
   for(Threads::iterator i = threads.begin(); i != threads.end(); ++i)
+  {
     (*i)->join_thread();
+  }
 }
 
 JobHandle
@@ -85,7 +95,9 @@ JobManager::request(std::shared_ptr<Job> job,
   
   next_thread += 1;
   if (next_thread >= threads.size())
+  {
     next_thread = 0;
+  }
 
   return handle;
 }

@@ -25,9 +25,9 @@ ArchiveTable::ArchiveTable(SQLiteConnection& db) :
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS archive (\n"
             "  id          INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  blob_id     INTEGER,"
-            "  password    TEXT,"
-            "  handler     INTEGER"
+            "  blob_id     INTEGER,\n"
+            "  password    TEXT,\n"
+            "  handler     INTEGER\n"
             ");");
 
   //m_db.exec("CREATE INDEX IF NOT EXISTS archive_index ON archive ( id, file_id );");

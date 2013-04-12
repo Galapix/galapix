@@ -25,7 +25,18 @@ class ResourceEntry
 {
 public:
   enum Type {};
-  enum Handler {};
+  enum Handler 
+  {
+    kUnknownHandler,
+    kJPEGHandler,
+    kPNGHandler,
+    kRSVGHandler,
+    kKRAHandler,
+    kUFRawHandler,
+    kVidThumbHandler,
+    kDDSHandler,
+    kImagemagickHandler
+  };
 
 private:
   Type m_type;

@@ -42,19 +42,19 @@ public:
   }
 
   Failable(const T& obj) :
-  m_obj(obj),
-  m_initialized(true),
-  m_eptr()
+    m_obj(obj),
+    m_initialized(true),
+    m_eptr()
   {
   }
 
   Failable(const Failable& rhs) :
-  m_eptr(),
-  m_initialized(false)
+    m_initialized(false),
+    m_eptr()
   {
     if (rhs.is_initialized())
     {
-      construct(rhs.m_data);
+      construct(rhs.m_obj);
     }
   }
 
@@ -64,7 +64,7 @@ public:
     {
       if (rhs.is_initialized())
       {
-        assign(rhs.m_data);
+        assign(rhs.m_obj);
       }
       else
       {

@@ -39,7 +39,7 @@ JobWorkerThread::run()
 {
   while(!m_quit)
   {
-    m_queue.wait_for_pop([this]{ return m_abort; });
+    m_queue.wait_for_pop([this]{ return m_abort || m_quit; });
 
     Task task;
     while(!m_abort && m_queue.try_pop(task))

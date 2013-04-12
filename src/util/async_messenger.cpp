@@ -20,6 +20,12 @@
 
 #include "util/log.hpp"
 
+AsyncMessenger::AsyncMessenger() :
+  m_quit(false),
+  m_queue()
+{
+}
+
 void
 AsyncMessenger::run()
 {
