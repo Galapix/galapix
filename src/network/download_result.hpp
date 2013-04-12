@@ -33,11 +33,13 @@ private:
   DownloadResult() :
     m_content_type(),
     m_blob(),
+    m_mtime(-1),
     m_response_code()
   {}
 
 public:
   std::string get_content_type() const { return m_content_type; }
+  long get_mtime() const { return m_mtime; }
   BlobPtr get_blob() const { return m_blob; }
   long get_response_code() const { return m_response_code; }
   bool success() const {
@@ -47,6 +49,7 @@ public:
 private:
   std::string m_content_type;
   BlobPtr m_blob;
+  long m_mtime;
   long m_response_code;
 };
 

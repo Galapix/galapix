@@ -54,7 +54,11 @@ int main(int argc, char** argv)
           auto handle =
             downloader.request_get(args[1], 
                                    [=](const DownloadResult& result) {
-                                     std::cout << "got " << result.get_response_code() << " for " << " " << args[1] << std::endl;
+
+                                     std::cout << "results for " << args[1] << std::endl;
+                                     std::cout << "  response code     : " << result.get_response_code() << std::endl;
+                                     std::cout << "  modification time : " << result.get_mtime() << std::endl;
+
                                      if (result.success())
                                      {
                                        std::cout.write(reinterpret_cast<char*>(result.get_blob()->get_data()),

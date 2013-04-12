@@ -57,6 +57,7 @@ DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
     curl_easy_setopt(handle, CURLOPT_URL, url.c_str());
     curl_easy_setopt(handle, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt(handle, CURLOPT_REFERER, url.c_str());
+    curl_easy_setopt(handle, CURLOPT_FILETIME, 1L);
 
     if (post_data_)
     {
