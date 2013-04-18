@@ -86,6 +86,44 @@ SHA1::from_file(const std::string& filename)
     }
   }
 }
+
+SHA1
+SHA1::parse_string(const std::string& str)
+{
+  auto hex2int = [str](char hex)
+    {
+      if ('0' <= hex && hex <= '9')
+      {
+        return hex - '0';
+      }
+      else if ('a' <= hex && hex <= 'f')
+      {
+        return hex - 'a' + 0xa;
+      }
+      else if ('A' <= hex && hex <= 'F')
+      {
+        return hex - 'A' + 0xa;
+      }
+      else
+      {
+        raise_runtime_error("not a valid SHA1 string: " + str);
+      }
+    };
+
+  if (str.size() != 40)
+  {
+    raise_runtime_error("not a valid SHA1 string: " + str);
+  }
+  else
+  {    
+    uint8_t data[20];
+    for(int i = 0; i < 20; ++i)
+    {
+      data[i] = static_cast<uint8_t>(hex2int(str[2*i]) * 0x10 + hex2int(str[2*i+1]));
+    }
+    return SHA1(data);
+  }
+}
 
 SHA1::SHA1() :
   m_data()

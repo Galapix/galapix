@@ -30,6 +30,7 @@ public:
   static SHA1 from_mem(const uint8_t* data, size_t len);
   static SHA1 from_string(const std::string& str);
   static SHA1 from_file(const std::string& filename);
+  static SHA1 parse_string(const std::string& str);
 
 public:
   SHA1();
