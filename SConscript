@@ -179,10 +179,10 @@ class Project:
         sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
-        sdl_env.Program('galapix.sdl', 
-                        self.sdl_sources + \
-                        self.galapix_sources + \
-                        self.optional_sources)
+        Default(sdl_env.Program('galapix.sdl', 
+                                self.sdl_sources + \
+                                    self.galapix_sources + \
+                                    self.optional_sources))
 
 
     def build_galapix_gtk(self):
@@ -213,21 +213,22 @@ class Project:
         libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash', libgtest])
 
         for filename in Glob("test/*_test.cpp", strings=True):
-            libgalapix_test_env.Program(filename[:-4],
-                                        [filename] + self.sdl_sources)
+            Alias('test', libgalapix_test_env.Program(filename[:-4],
+                                        [filename] + self.sdl_sources))
 
         for filename in Glob("test/*_gtest.cpp", strings=True):
-            libgalapix_test_env.Program(filename[:-4],
-                                        [filename] + self.sdl_sources + libgtest_main)
+            Alias('test', libgalapix_test_env.Program(filename[:-4],
+                                                      [filename] + self.sdl_sources + libgtest_main))
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()
         libgalapix_extra_apps_env.Prepend(LIBS=[self.libgalapix_util, self.libgalapix, 'mhash'])
         for filename in Glob("extra/*.cpp", strings=True):
-            libgalapix_extra_apps_env.Program(filename[:-4], filename)
+            Alias('extra', libgalapix_extra_apps_env.Program(filename[:-4], filename))
 
-        libgalapix_extra_apps_env.Program("extra/imagescaler/imagescaler", Glob("extra/imagescaler/imagescaler.cpp"))
-                    
+        Alias('extra', libgalapix_extra_apps_env.Program("extra/imagescaler/imagescaler", Glob("extra/imagescaler/imagescaler.cpp")))
+
+Alias('all', ['extra', 'test'] + DEFAULT_TARGETS)
 project = Project()
 project.build()
 
