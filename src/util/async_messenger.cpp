@@ -26,6 +26,10 @@ AsyncMessenger::AsyncMessenger() :
 {
 }
 
+AsyncMessenger::~AsyncMessenger()
+{
+}
+
 void
 AsyncMessenger::run()
 {

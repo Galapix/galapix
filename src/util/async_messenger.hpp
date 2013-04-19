@@ -30,6 +30,7 @@ private:
 
 public:
   AsyncMessenger();
+  ~AsyncMessenger();
 
   void run();
   void stop_thread();
