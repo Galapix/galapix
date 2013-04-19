@@ -29,8 +29,11 @@
 #include "job/job_manager.hpp"
 #include "job/thread.hpp"
 #include "job/thread_message_queue2.hpp"
+#include "util/failable.hpp"
 
 class URL;
+class FileInfo;
+class URLInfo;
 class Database;
 class DatabaseMessage;
 class TileDatabaseMessage;
@@ -68,6 +71,14 @@ public:
 
   void stop_thread();
   void abort_thread();
+
+  void request_file_info(const std::string& path, const std::function<void (const boost::optional<FileInfo>&)>& callback);
+  void store_file_info(const FileInfo& file_info,
+                       const std::function<void (const Failable<FileInfo>&)>& callback);
+
+  void request_url_info(const std::string& url, const std::function<void (const boost::optional<URLInfo>&)>& callback);
+  void store_url_info(const std::string& url,
+                       const std::function<void (const Failable<URLInfo>&)>& callback);
 
   /* @{ */ // syncronized functions to be used by other threads
   /**

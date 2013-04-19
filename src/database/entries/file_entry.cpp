@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,29 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_RESOURCE_INFO_HPP
-#define HEADER_GALAPIX_GALAPIX_RESOURCE_INFO_HPP
+#include "database/entries/file_entry.hpp"
 
-#include <vector>
+#include "sqlite/reader.hpp"
 
-#include "resource/resource_locator.hpp"
-#include "resource/resource_name.hpp"
-
-class ResourceInfo
+FileEntry
+FileEntry::from_reader(SQLiteReader& reader)
 {
-private:
-  ResourceLocator m_locator;
-  ResourceName m_name;
-  std::vector<ResourceLocator> m_children;
-
-public:
-  ResourceInfo();
-
-  ResourceLocator get_locator() const { return m_locator; }
-  ResourceName get_name() const { return m_name; }
-  std::vector<ResourceLocator> get_children() const { return m_children; }
-};
-
-#endif
+  return FileEntry(
+    RowId(reader.get_int64(0)),  // fileid
+    reader.get_text(1), // path
+    reader.get_int(2),  // mtime
+    RowId(reader.get_int64(3)) // rowid
+    );
+}
 
 /* EOF */

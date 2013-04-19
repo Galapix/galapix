@@ -25,6 +25,8 @@
 #include "jobs/file_entry_generation_job.hpp"
 #include "jobs/multiple_tile_generation_job.hpp"
 #include "jobs/tile_generation_job.hpp"
+#include "resource/file_info.hpp"
+#include "resource/url_info.hpp"
 #include "util/log.hpp"
 
 DatabaseThread* DatabaseThread::current_ = 0;
@@ -65,6 +67,41 @@ DatabaseThread::abort_thread()
   m_receive_queue.wakeup();
 }
 
+void
+DatabaseThread::request_file_info(const std::string& path, 
+                                  const std::function<void (const boost::optional<FileInfo>&)>& callback)
+{ 
+  m_request_queue.wait_and_push([this, path, callback](){
+      boost::optional<FileInfo> file_info = m_database.get_resources().get_file_info(path);
+      callback(file_info);
+    });
+}
+
+void
+DatabaseThread::store_file_info(const FileInfo& file_info,
+                                const std::function<void (const Failable<FileInfo>&)>& callback)
+{
+  m_receive_queue.wait_and_push([this, file_info, callback](){
+      RowId row_id = m_database.get_resources().store_file_info(file_info);
+      callback(FileInfo(row_id, file_info));
+    });
+}
+
+void
+DatabaseThread::request_url_info(const std::string& url, const std::function<void (const boost::optional<URLInfo>&)>& callback)
+{
+  log_debug("not implemented");
+  callback(boost::optional<URLInfo>());
+}
+
+void
+DatabaseThread::store_url_info(const std::string& url,
+                               const std::function<void (const Failable<URLInfo>&)>& callback)
+{
+  log_debug("not implemented");
+}
+
+
 JobHandle
 DatabaseThread::request_tile(const OldFileEntry& file_entry, int tilescale, const Vector2i& pos, 
                              const std::function<void (Tile)>& callback)
@@ -144,7 +181,7 @@ DatabaseThread::request_file(const URL& url,
       if (!job_handle.is_aborted())
       {
         OldFileEntry file_entry;
-        if (!m_database.get_resources().get_file_entry(url, file_entry))
+        if (!m_database.get_resources().get_old_file_entry(url, file_entry))
         {
           // file entry is not in the database, so try to generate it
           DatabaseThread::current()->generate_file_entry(job_handle, url, 
@@ -167,7 +204,7 @@ DatabaseThread::request_all_files(const std::function<void (OldFileEntry)>& call
   std::function<void (OldFileEntry)> callback = callback_; // FIXME: internal error workaround
   m_request_queue.wait_and_push([this, callback]{
       std::vector<OldFileEntry> entries;
-      m_database.get_resources().get_file_entries(entries);
+      m_database.get_resources().get_old_file_entries(entries);
       for(std::vector<OldFileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
         callback(*i);
@@ -180,7 +217,7 @@ DatabaseThread::request_files_by_pattern(const std::function<void (OldFileEntry)
 {
   m_request_queue.wait_and_push([this, callback, pattern](){
       std::vector<OldFileEntry> entries;
-      m_database.get_resources().get_file_entries(pattern, entries);
+      m_database.get_resources().get_old_file_entries(pattern, entries);
       for(std::vector<OldFileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
       {
         callback(*i);
@@ -375,7 +412,7 @@ DatabaseThread::store_file_entry(const JobHandle& job_handle_in,
 {
   m_receive_queue.wait_and_push([this, job_handle_in, url, size, mtime, handler, callback](){
       JobHandle job_handle = job_handle_in;
-      OldFileEntry file_entry = m_database.get_resources().store_file_entry(url, size, mtime, handler);
+      OldFileEntry file_entry = m_database.get_resources().store_old_file_entry(url, size, mtime, handler);
       if (callback)
       {
         callback(file_entry);
@@ -388,7 +425,7 @@ void
 DatabaseThread::receive_file(const OldFileEntry& file_entry)
 {
   m_receive_queue.wait_and_push([this, file_entry]() {
-      m_database.get_resources().store_file_entry(file_entry.get_url(), 
+      m_database.get_resources().store_old_file_entry(file_entry.get_url(), 
                                               file_entry.get_blob_entry().get_size(), 
                                               file_entry.get_mtime(),
                                               file_entry.get_handler());

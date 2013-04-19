@@ -25,7 +25,7 @@ BlobTable::BlobTable(SQLiteConnection& db) :
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS blob (\n"
             "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  sha1      BLOB UNIQUE,\n"
+            "  sha1      TEXT UNIQUE,\n"
             "  size      INTEGER\n"
             ");");
 

@@ -23,8 +23,10 @@
 FileInfo
 FileInfo::from_file(const std::string& filename)
 {
-  return FileInfo(SHA1::from_file(filename),
-                  Filesystem::get_mtime(filename));
+  return FileInfo(filename, 
+                  Filesystem::get_mtime(filename),
+                  SHA1::from_file(filename),
+                  Filesystem::get_size(filename));
 }
 
 /* EOF */

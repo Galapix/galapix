@@ -27,7 +27,7 @@
 #include "database/statements/file_entry_get_all.hpp"
 #include "database/statements/file_entry_get_by_file_id.hpp"
 #include "database/statements/file_entry_get_by_pattern.hpp"
-#include "database/statements/file_entry_get_by_url.hpp"
+#include "database/statements/file_entry_get_by_path.hpp"
 #include "database/statements/file_entry_store.hpp"
 #include "database/statements/image_entry_get.hpp"
 #include "database/statements/image_entry_store.hpp"
@@ -40,6 +40,8 @@
 #include "database/tables/video_table.hpp"
 #include "math/size.hpp"
 #include "sqlite/statement.hpp"
+#include "resource/file_info.hpp"
+#include "resource/resource_info.hpp"
 
 class Database;
 class OldFileEntry;
@@ -47,6 +49,9 @@ class ImageEntry;
 class TileEntry;
 class URL;
 class SHA1;
+class FileInfoStore;
+class FileInfoGetByPath;
+
 
 /** The ResourceDatabase keeps a record of all files that have been
     viewed. It keeps information on the last modification time and
@@ -66,13 +71,17 @@ private:
   ImageTable               m_image_table;
   ResourceTable            m_resource_table;
   VideoTable               m_video_table;
+
+  std::unique_ptr<FileInfoStore>     m_file_info_store;
+  std::unique_ptr<FileInfoGetByPath> m_file_info_get_by_path;
   
-  //FileEntryGetAll          m_file_entry_get_all;
+  FileEntryGetAll          m_file_entry_get_all;
   //FileEntryGetByFileId     m_file_entry_get_by_fileid;
-  //FileEntryGetByPattern    m_file_entry_get_by_pattern;
-  //FileEntryGetByUrl        m_file_entry_get_by_url;
-  //FileEntryStore           m_file_entry_store;
-  //FileEntryDelete          m_file_entry_delete;
+  FileEntryGetByPattern    m_file_entry_get_by_pattern;
+  FileEntryGetByPath       m_file_entry_get_by_path;
+  FileEntryStore           m_file_entry_store;
+  FileEntryDelete          m_file_entry_delete;
+
   ImageEntryStore          m_image_entry_store;
   ImageEntryGet            m_image_entry_get;
   ResourceEntryGetByBlobId m_resource_entry_get_by_blob_id;
@@ -80,6 +89,17 @@ private:
 public:
   ResourceDatabase(SQLiteConnection& db);
   ~ResourceDatabase();
+
+  boost::optional<FileInfo> get_file_info(const std::string& path);
+  RowId store_file_info(const FileInfo& file_info);
+
+  boost::optional<ResourceInfo> get_resource_info(const SHA1& sha1);
+  RowId store_resource_info(const ResourceInfo& resource_info);
+
+  boost::optional<FileEntry> get_file_entry(const std::string& path);
+  void get_file_entries(std::vector<FileEntry>& entries_out);
+  void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
+  void store_file_entry(const std::string& path, int mtime);
   
   /**
      Lookup a FileEntry by its url. If there is no corresponding
@@ -92,18 +112,18 @@ public:
      @param[out] entry   Lokation where the file information will be stored 
      @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
-  bool get_file_entry(const URL& url, OldFileEntry& entry_out);
+  bool get_old_file_entry(const URL& url, OldFileEntry& entry_out);
   boost::optional<ResourceEntry> get_resource_entry(const RowId& blob_id);
-  void get_file_entries(std::vector<OldFileEntry>& entries_out);
-  void get_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out);
+  void get_old_file_entries(std::vector<OldFileEntry>& entries_out);
+  void get_old_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out);
 
   bool get_image_entry(const OldFileEntry& entry, ImageEntry& image_out);
 
-  OldFileEntry  store_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler);
-  OldFileEntry  store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id);
+  OldFileEntry  store_old_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler);
+  OldFileEntry  store_old_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id);
   ImageEntry store_image_entry(const ImageEntry& image);
 
-  void delete_file_entry(const RowId& file_id);
+  void delete_old_file_entry(const RowId& file_id);
 
 private:
   ResourceDatabase (const ResourceDatabase&);

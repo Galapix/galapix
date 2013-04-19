@@ -140,13 +140,13 @@ Galapix::list(const Options& opts)
   std::vector<OldFileEntry> entries;
   if (opts.patterns.empty())
   {
-    db.get_resources().get_file_entries(entries);
+    db.get_resources().get_old_file_entries(entries);
   }
   else
   {
     for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
     {
-      db.get_resources().get_file_entries(*i, entries);
+      db.get_resources().get_old_file_entries(*i, entries);
     }
   }
 
@@ -229,11 +229,11 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       {
         // special case to display everything, might be faster then
         // using the pattern
-        database.get_resources().get_file_entries(file_entries);
+        database.get_resources().get_old_file_entries(file_entries);
       }
       else
       {
-        database.get_resources().get_file_entries(*i, file_entries);
+        database.get_resources().get_old_file_entries(*i, file_entries);
       }
     }
 
@@ -294,7 +294,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     else
     {
       OldFileEntry file_entry;
-      if (!database.get_resources().get_file_entry(*i, file_entry))
+      if (!database.get_resources().get_old_file_entry(*i, file_entry))
       {
         workspace.add_image(WorkspaceItemPtr(new Image(*i)));
       }

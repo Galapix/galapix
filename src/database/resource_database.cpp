@@ -20,6 +20,9 @@
 
 #include <iostream>
 
+#include "database/statements/file_info_get_by_path.hpp"
+#include "database/statements/file_info_store.hpp"
+
 #include "database/entries/old_file_entry.hpp"
 #include "database/database.hpp"
 #include "util/software_surface.hpp"
@@ -36,13 +39,14 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_image_table(m_db),
   m_resource_table(m_db),
   m_video_table(m_db),
-
-  //m_file_entry_get_all(m_db),
+  m_file_info_store(new FileInfoStore(m_db)),
+  m_file_info_get_by_path(new FileInfoGetByPath(m_db)),
+  m_file_entry_get_all(m_db),
   //m_file_entry_get_by_fileid(m_db),
-  //m_file_entry_get_by_pattern(m_db),
-  //m_file_entry_get_by_url(m_db),
-  //m_file_entry_store(m_db),
-  //m_file_entry_delete(m_db),
+  m_file_entry_get_by_pattern(m_db),
+  m_file_entry_get_by_path(m_db),
+  m_file_entry_store(m_db),
+  m_file_entry_delete(m_db),
   m_image_entry_store(m_db),
   m_image_entry_get(m_db),
   m_resource_entry_get_by_blob_id(m_db)
@@ -52,16 +56,66 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
 ResourceDatabase::~ResourceDatabase()
 {
 }
- 
+
+boost::optional<FileInfo>
+ResourceDatabase::get_file_info(const std::string& path)
+{
+  return (*m_file_info_get_by_path)(path);
+}
+
+RowId
+ResourceDatabase::store_file_info(const FileInfo& file_info)
+{
+  return (*m_file_info_store)(file_info);
+}
+
+boost::optional<ResourceInfo>
+ResourceDatabase::get_resource_info(const SHA1& sha1)
+{
+  log_debug("not implemented");
+  return boost::optional<ResourceInfo>();
+}
+
+RowId
+ResourceDatabase::store_resource_info(const ResourceInfo& resource_info)
+{
+  log_debug("not implemented");
+  return RowId();
+}
+
+boost::optional<FileEntry>
+ResourceDatabase::get_file_entry(const std::string& path)
+{
+  return m_file_entry_get_by_path(path);
+}
+
+void
+ResourceDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
+{
+  return m_file_entry_get_all(entries_out);
+}
+
+void
+ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out)
+{
+  return m_file_entry_get_by_pattern(pattern, entries_out);
+}
+   
+void
+ResourceDatabase::store_file_entry(const std::string& path, int mtime)
+{
+  m_file_entry_store(path, mtime);
+}
+
 OldFileEntry
-ResourceDatabase::store_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler)
+ResourceDatabase::store_old_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler)
 {
   //RowId file_id = m_file_entry_store(url, SHA1(), size, mtime, handler);
   return OldFileEntry(RowId(), url, size, mtime, handler);
 }
 
 OldFileEntry
-ResourceDatabase::store_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id)
+ResourceDatabase::store_old_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id)
 {
   //RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
   return OldFileEntry(RowId(), url, size, mtime, handler);
@@ -81,19 +135,19 @@ ResourceDatabase::get_image_entry(const OldFileEntry& entry, ImageEntry& image_o
 }
 
 bool
-ResourceDatabase::get_file_entry(const URL& url, OldFileEntry& entry_out)
+ResourceDatabase::get_old_file_entry(const URL& url, OldFileEntry& entry_out)
 {
   return false; //m_file_entry_get_by_url(url, entry_out);
 }
 
 void
-ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out)
+ResourceDatabase::get_old_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out)
 {
   //m_file_entry_get_by_pattern(pattern, entries_out);
 }
 
 void
-ResourceDatabase::get_file_entries(std::vector<OldFileEntry>& entries_out)
+ResourceDatabase::get_old_file_entries(std::vector<OldFileEntry>& entries_out)
 {
   //m_file_entry_get_all(entries_out);
 }
@@ -106,7 +160,7 @@ ResourceDatabase::get_resource_entry(const RowId& blob_id)
 }
 
 void
-ResourceDatabase::delete_file_entry(const RowId& file_id)
+ResourceDatabase::delete_old_file_entry(const RowId& file_id)
 {
   //m_file_entry_delete(file_id);
 }

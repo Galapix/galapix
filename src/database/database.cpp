@@ -58,7 +58,7 @@ Database::delete_file_entry(const RowId& fileid)
   std::cout << "Begin Delete" << std::endl;
   m_db->exec("BEGIN;");
   m_tiles->delete_tiles(fileid);
-  m_resources->delete_file_entry(fileid);
+  m_resources->delete_old_file_entry(fileid);
   m_db->exec("END;");
   std::cout << "End Delete" << std::endl;
 }

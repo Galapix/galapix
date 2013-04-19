@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,48 +16,49 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_URL_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_URL_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_GET_BY_PATH_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_GET_BY_PATH_HPP
 
-class FileEntryGetByUrl
+class FileInfoGetByPath
 {
 private:
-  SQLiteStatement m_stmt;
+  SQLiteStatement   m_stmt;
 
 public:
-  FileEntryGetByUrl(SQLiteConnection& db) :
+  FileInfoGetByPath(SQLiteConnection& db) :
     m_stmt(db, 
            "SELECT\n"
-           "  file.id, file.url, file.mtime, file.handler, file.parent_file_id, blob.id, blob.sha1, blob.size\n"
+           "  file.id, file.path, file.mtime, blob.sha1, blob.size\n"
            "FROM\n"
-           "  file\n"
-           "LEFT OUTER JOIN\n"
-           "  blob\n"
-           "ON\n"
-           "  file.blob_id = blob.rowid\n"
+           "  file, blob\n"
            "WHERE\n"
-           "  file.url = ?1;")
+           "  file.path = ?1 AND blob.id = file.blob_id;")
   {}
 
-  bool operator()(const URL& url, OldFileEntry& entry_out)
+  boost::optional<FileInfo> operator()(const std::string& path)
   {
-    m_stmt.bind_text(1, url.str());
+    m_stmt.bind_text(1, path);
     SQLiteReader reader = m_stmt.execute_query();
-
+    
     if (reader.next())
     {
-      entry_out = OldFileEntry::from_reader(reader);
-      return true;
+      return FileInfo(
+        RowId(reader.get_int64(0)),
+        reader.get_text(1),
+        reader.get_int(2),
+        SHA1::parse_string(reader.get_text(3)),
+        reader.get_int(4)
+        );
     }
     else
     {
-      return false;
+      return boost::optional<FileInfo>();
     }
   }
 
 private:
-  FileEntryGetByUrl(const FileEntryGetByUrl&);
-  FileEntryGetByUrl& operator=(const FileEntryGetByUrl&);
+  FileInfoGetByPath(const FileInfoGetByPath&);
+  FileInfoGetByPath& operator=(const FileInfoGetByPath&);
 };
 
 #endif

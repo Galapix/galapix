@@ -24,7 +24,6 @@ class URLInfo
 private:
   long m_mtime;
   std::string m_content_type;
-  BlobPtr blob_id;
 
 public:
   URLInfo() :

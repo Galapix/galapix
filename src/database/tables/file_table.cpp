@@ -25,7 +25,7 @@ FileTable::FileTable(SQLiteConnection& db) :
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS file (\n"
             "  id       INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  path     TEXT,\n"
+            "  path     TEXT UNIQUE,\n"
             "  mtime    INTEGER,\n"
             "  blob_id  INTEGER\n"
             ");");

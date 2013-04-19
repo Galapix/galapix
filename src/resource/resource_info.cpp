@@ -18,18 +18,6 @@
 
 #include "resource_info.hpp"
 
-ResourceInfo
-ResourceInfo::from_locator(const ResourceLocator& locator)
-{
-  ResourceInfo info;
-  
-  info.m_locator = locator;
-  // info.m_name = get sha1 from locator.url, run magic to detect type
-  // info.m_children = if archive, gather filenames in archive
-
-  return info;
-}
-
 ResourceInfo::ResourceInfo() :
   m_locator(),
   m_name(),

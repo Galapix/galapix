@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATTERN_STATEMENT_HPP
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATTERN_STATEMENT_HPP
 
+#include "database/entries/file_entry.hpp"
+
 class FileEntryGetByPattern
 {
 private:
@@ -28,22 +30,21 @@ public:
   FileEntryGetByPattern(SQLiteConnection& db) :
     m_stmt(db, 
            "SELECT\n"
-           "  file.id, file.url, file.mtime, file.handler, file.parent_file_id, blob.id, blob.sha1, blob.size\n"
+           "  file.id, file.path, file.mtime, file.blob_id\n"
            "FROM\n"
-           "  file, blob\n"
+           "  file\n"
            "WHERE\n"
-           "  file.blob_id = blob.rowid AND\n"
-           "  file.url GLOB ?1;")
+           "  file.path GLOB ?1;")
   {}
 
-  void operator()(const std::string& pattern, std::vector<OldFileEntry>& entries_out)
+  void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
   {
     m_stmt.bind_text(1, pattern);
     SQLiteReader reader = m_stmt.execute_query();
 
     while (reader.next())  
     {
-      entries_out.push_back(OldFileEntry::from_reader(reader));
+      entries_out.push_back(FileEntry::from_reader(reader));
     }
   }
 

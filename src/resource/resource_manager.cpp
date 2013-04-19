@@ -21,6 +21,7 @@
 #include <future>
 
 #include "galapix/database_thread.hpp"
+#include "generator/generator.hpp"
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
 #include "resource/archive_info.hpp"
@@ -105,6 +106,25 @@ void
 ResourceManager::request_file_info(const std::string& filename, 
                                    const std::function<void (Failable<FileInfo>)>& callback)
 {
+  m_database.request_file_info(filename, [this, filename, callback](const boost::optional<FileInfo>& db_file_info){
+      if (db_file_info)
+      {
+        callback(*db_file_info);
+      }
+      else
+      {
+        m_generator.request_file_info(filename, [this, callback](const Failable<FileInfo>& file_info){
+            if (file_info.is_initialized())
+            {
+              m_database.store_file_info(file_info.get(), callback);
+            }
+            else
+            {
+              callback(file_info);
+            }
+          });
+      }
+    });
 }
 
 void
@@ -114,10 +134,23 @@ ResourceManager::request_url_info(const std::string& url,
 }
 
 void
-ResourceManager::request_info(const ResourceLocator& locator, 
-                              const std::function<void (Failable<ResourceInfo>)>& callback)
+ResourceManager::request_resource_info(const SHA1& sha1, 
+                                       const std::function<void (Failable<ResourceInfo>)>& callback)
 {
-  
+  /*
+  m_database.request_resource_info(sha1, [this, callback](const boost::optional<ResourceInfo>&)>& resource_info){
+    if (resource_info)
+    {
+      callback(*resource_info);
+    }
+    else
+    {
+      m_generator.request_resource_info(??? [this, callback](const Failable<ResourceInfo>&){
+          
+        });
+    }
+  });
+  */
 }
 
 void

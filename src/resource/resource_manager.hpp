@@ -37,6 +37,7 @@ class Generator;
 class ImageInfo;
 class ResourceInfo;
 class ResourceLocator;
+class SHA1;
 class TileInfo;
 class URLInfo;
 
@@ -59,8 +60,8 @@ public:
   void request_blob(const ResourceLocator& locator, 
                     const std::function<void (Failable<BlobPtr>)>& callback);
 
-  void request_info(const ResourceLocator& locator, 
-                    const std::function<void (Failable<ResourceInfo>)>& callback);
+  void request_resource_info(const SHA1& sha1, 
+                             const std::function<void (Failable<ResourceInfo>)>& callback);
 
   void request_file_info(const std::string& filename, 
                          const std::function<void (Failable<FileInfo>)>& callback);

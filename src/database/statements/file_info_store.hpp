@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,36 +16,39 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_STORE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_STORE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
 
-#include <iostream>
-#include <assert.h>
-
-class FileEntryStore
+class FileInfoStore
 {
 private:
   SQLiteConnection& m_db;
+  SQLiteStatement   m_blob_stmt;
   SQLiteStatement   m_file_stmt;
 
 public:
-  FileEntryStore(SQLiteConnection& db) :
+  FileInfoStore(SQLiteConnection& db) :
     m_db(db),
-    m_file_stmt(db, "INSERT OR REPLACE INTO file (path, mtime) VALUES (?1, ?2);")
+    m_blob_stmt(db, "INSERT INTO blob (sha1, size) VALUES (?1, ?2);"),
+    m_file_stmt(db, "INSERT OR REPLACE INTO file (path, mtime, blob_id) VALUES (?1, ?2, last_insert_rowid());")
   {}
 
-  RowId operator()(const std::string& path, long mtime)
+  RowId operator()(const FileInfo& file_info)
   {
-    m_file_stmt.bind_text (1, path);
-    m_file_stmt.bind_int  (2, mtime);
+    m_blob_stmt.bind_text(1, file_info.get_sha1().str());
+    m_blob_stmt.bind_int(2, file_info.get_size());
+    m_blob_stmt.execute();
+
+    m_file_stmt.bind_text (1, file_info.get_path());
+    m_file_stmt.bind_int  (2, file_info.get_mtime());
     m_file_stmt.execute();
   
     return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
 
 private:
-  FileEntryStore(const FileEntryStore&);
-  FileEntryStore& operator=(const FileEntryStore&);
+  FileInfoStore(const FileInfoStore&) = delete;
+  FileInfoStore& operator=(const FileInfoStore&) = delete;
 };
 
 #endif

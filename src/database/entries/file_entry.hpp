@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,28 +16,40 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
-#define HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ENTRIES_FILE_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_ENTRIES_FILE_ENTRY_HPP
 
-#include "resource/file_info.hpp"
-#include "util/async_messenger.hpp"
-#include "util/failable.hpp"
-#include "job/job_manager.hpp"
+#include <string>
 
-class Generator// : public AsyncMessenger
+#include "database/row_id.hpp"
+
+class SQLiteReader;
+
+class FileEntry
 {
-private:
-  JobManager& m_job_manager;
-
 public:
-  Generator(JobManager& job_manager);
+  static FileEntry from_reader(SQLiteReader& reader);
+  
+  FileEntry(RowId id,
+            const std::string& path,
+            long mtime,
+            RowId blob_id) :
+    m_id(id),
+    m_path(path),
+    m_mtime(mtime),
+    m_blob_id(blob_id)
+  {}
 
-  void request_file_info(const std::string& path, 
-                         const std::function<void (const Failable<FileInfo>&)>& callback);
+  RowId get_id() const { return m_id; }
+  std::string get_path() const { return m_path; }
+  long get_mtime() const { return m_mtime; }
+  RowId get_blob_id() const { return m_blob_id; }
 
 private:
-  Generator(const Generator&);
-  Generator& operator=(const Generator&);
+  RowId m_id;
+  std::string m_path;
+  long m_mtime;
+  RowId m_blob_id;
 };
 
 #endif

@@ -22,24 +22,51 @@
 #include <string>
 
 #include "util/sha1.hpp"
+#include "database/row_id.hpp"
 
 class FileInfo
 {
 private:
-  SHA1 m_sha1;
+  RowId m_id;
+  std::string m_path;
   int  m_mtime;
+
+  SHA1 m_sha1;
+  int  m_size;
 
 public:
   static FileInfo from_file(const std::string& filename);
-  
-  SHA1 get_sha1() const { return m_sha1; }
-  int  get_mtime() const { return m_mtime; }
-  
-private:
-  FileInfo(SHA1 sha1, int mtime) :
-    m_sha1(sha1),
-    m_mtime(mtime)
+
+  FileInfo(const RowId& row_id, const FileInfo& rhs) :
+    m_id(row_id),
+    m_path(rhs.m_path),
+    m_mtime(rhs.m_mtime),
+    m_sha1(rhs.m_sha1),
+    m_size(rhs.m_size)
   {}
+
+  FileInfo(const RowId& id, const std::string& path, int mtime, const SHA1& sha1, int size) :
+    m_id(id),
+    m_path(path),
+    m_mtime(mtime),
+    m_sha1(sha1),
+    m_size(size)
+  {}
+ 
+  FileInfo(const std::string& path, int mtime, const SHA1& sha1, int size) :
+    m_id(),
+    m_path(path),
+    m_mtime(mtime),
+    m_sha1(sha1),
+    m_size(size)
+  {}
+
+  RowId get_id() const { return m_id; }
+  std::string get_path() const { return m_path; }
+  int  get_mtime() const { return m_mtime; }
+
+  SHA1 get_sha1() const { return m_sha1; }
+  int  get_size() const { return m_size; }
 };
 
 #endif

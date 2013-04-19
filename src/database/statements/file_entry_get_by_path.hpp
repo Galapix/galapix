@@ -16,40 +16,48 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_ALL_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATH_STATEMENT_HPP
+#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_GET_BY_PATH_STATEMENT_HPP
 
-#include "sqlite/connection.hpp"
-#include "sqlite/statement.hpp"
-#include "database/entries/file_entry.hpp"
+#include <boost/optional.hpp>
 
-class FileEntryGetAll
+#include "util/url.hpp"
+#include "database/entries/old_file_entry.hpp"
+
+class FileEntryGetByPath
 {
 private:
   SQLiteStatement m_stmt;
 
 public:
-  FileEntryGetAll(SQLiteConnection& db) :
+  FileEntryGetByPath(SQLiteConnection& db) :
     m_stmt(db, 
            "SELECT\n"
-           "  file.id, file.path, file.mtime, file.blob_id\n"
+           "  file.id, file.path, file.mtime\n"
            "FROM\n"
-           "  file;")
+           "  file\n"
+           "WHERE\n"
+           "  file.path = ?1;")
   {}
 
-  void operator()(std::vector<FileEntry>& entries_out)
+  boost::optional<FileEntry> operator()(const std::string& path)
   {
+    m_stmt.bind_text(1, path);
     SQLiteReader reader = m_stmt.execute_query();
 
-    while (reader.next())  
+    if (reader.next())
     {
-      entries_out.push_back(FileEntry::from_reader(reader));
+      return FileEntry::from_reader(reader);
+    }
+    else
+    {
+      return boost::optional<FileEntry>();
     }
   }
 
 private:
-  FileEntryGetAll(const FileEntryGetAll&);
-  FileEntryGetAll& operator=(const FileEntryGetAll&);
+  FileEntryGetByPath(const FileEntryGetByPath&);
+  FileEntryGetByPath& operator=(const FileEntryGetByPath&);
 };
 
 #endif
