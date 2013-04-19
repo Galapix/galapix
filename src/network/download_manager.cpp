@@ -34,6 +34,7 @@
 #include "util/raise_exception.hpp"
 
 DownloadManager::DownloadManager() :
+  m_cache("/tmp/cachdir"),
   m_thread(),
   m_pipefd(),
   m_abort(false),
@@ -250,7 +251,9 @@ DownloadManager::finish_transfer(CURL* handle)
     }
     else
     {
-      transfer->callback(DownloadResult::from_curl(transfer->handle, Blob::copy(transfer->data)));
+      DownloadResult result = DownloadResult::from_curl(transfer->handle, Blob::copy(transfer->data));
+      m_cache.store(transfer->url, result);
+      transfer->callback(result);
     }
     
     m_transfers.erase(it);
@@ -272,11 +275,20 @@ DownloadManager::request_get(const std::string& url,
 
   m_queue.wait_and_push(
     [=]{
-      log_info("downloading: " << url);
-      std::unique_ptr<DownloadTransfer> transfer(new DownloadTransfer(uuid, url, boost::optional<std::string>(),
-                                                                      callback, progress_callback));
-      curl_multi_add_handle(m_multi_handle, transfer->handle);
-      m_transfers.push_back(std::move(transfer));
+      boost::optional<DownloadResult> cached_result = m_cache.get(url);
+      if (cached_result)
+      {
+        log_info("downloading from cache: " << url);
+        callback(*cached_result);
+      }
+      else
+      {
+        log_info("downloading: " << url);
+        std::unique_ptr<DownloadTransfer> transfer(new DownloadTransfer(uuid, url, boost::optional<std::string>(),
+                                                                        callback, progress_callback));
+        curl_multi_add_handle(m_multi_handle, transfer->handle);
+        m_transfers.push_back(std::move(transfer));
+      }
     });
 
   wakeup_pipe();

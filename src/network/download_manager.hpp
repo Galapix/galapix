@@ -27,6 +27,7 @@
 
 #include "job/job_manager.hpp"
 #include "job/thread_message_queue2.hpp"
+#include "network/download_cache.hpp"
 #include "util/blob.hpp"
 
 class DownloadTransfer;
@@ -39,6 +40,7 @@ public:
   typedef unsigned int TransferHandle;
 
 private:
+  DownloadCache m_cache;
   std::thread m_thread;
   int m_pipefd[2];
 
