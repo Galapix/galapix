@@ -25,45 +25,40 @@
 
 int main(int argc, char** argv)
 {
-  SQLiteConnection db("/tmp/database.sqlite3");
-  ResourceDatabase filedb(db);
+  SQLiteConnection db(""); //("/tmp/resource_database_test.sqlite3");
+  ResourceDatabase res_db(db);
 
-  for(int i = 1; i < argc; ++i)
+  res_db.store_file_info(FileInfo("/tmp/hello_world.txt", 123, SHA1::from_string("hello world"), 98787));
+  res_db.store_file_info(FileInfo("/tmp/foobar.txt", 456, SHA1::from_string("foobar"), 1234578));
+  res_db.store_file_info(FileInfo("/tmp/barfoo.txt", 789, SHA1::from_string("barfoo"), 1234578));
+
+  for(auto& path : { "/tmp/foobar.txt", "/tmp/barfoo.txt", "/tmp/unknown.txt", "/tmp/hello_world.txt",  })
   {
-    URL url   = URL::from_filename(argv[i]);
-    int size  = url.get_size();
-    int mtime = url.get_mtime();
-
-    OldFileEntry file_entry;
-    if (!filedb.get_file_entry(url, file_entry))
-    { 
-      SHA1 sha1 = SHA1::from_file(url.get_stdio_name());
-      file_entry = filedb.store_file_entry(url, sha1, size, mtime, OldFileEntry::kUnknownHandler, RowId());
-      std::cout << "stored: " << file_entry << std::endl;
+    boost::optional<FileInfo> file_info = res_db.get_file_info(path);
+    if (file_info)
+    {
+      std::cout << file_info->get_path() << '\n'
+                << "  mtime : " << file_info->get_mtime() << '\n'
+                << "  sha1  : " << file_info->get_sha1().str() << '\n'
+                << "  size  : " << file_info->get_size() << '\n'
+                << std::endl;
     }
     else
     {
-      SHA1 sha1 = SHA1::from_file(url.get_stdio_name());
-      if (size  != file_entry.get_blob_entry().get_size() ||
-          mtime != file_entry.get_mtime())
-      { 
-        file_entry = filedb.store_file_entry(url, sha1, size, mtime, OldFileEntry::kUnknownHandler, RowId());
-        std::cout << "replaced: " << file_entry << std::endl;
-      }
-      else
-      {
-        // file already in the database
-        std::cout << "ignored: " << file_entry << std::endl;
-      }
+      std::cout << path << ": not found\n" << std::endl;
     }
   }
 
-  std::cout << "\nAll Entries: " << std::endl;
-  std::vector<OldFileEntry> entries;
-  filedb.get_file_entries(entries);
-  for(auto it = entries.begin(); it != entries.end(); ++it)
+
+  if (false)
   {
-    std::cout << *it << std::endl;
+    res_db.store_file_entry("/tmp/foo/bar.txt", 23445);
+    res_db.store_file_entry("/tmp/foo/bam.txt", 2989);
+    res_db.store_file_entry("/tmp/bar/foo.txt", 298998);
+
+    std::vector<FileEntry> entries;
+    res_db.get_file_entries(entries);
+    std::cout << "got " << entries.size() << " entries" << std::endl;
   }
   
   return 0;

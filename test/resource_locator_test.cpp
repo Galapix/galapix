@@ -8,18 +8,25 @@ int main(int argc, char** argv)
   {
     for(int i = 1; i < argc; ++i)
     {
-      ResourceLocator loc = ResourceLocator::from_string(argv[i]);
-      std::cout << "url.scheme    : '" << loc.get_url().get_scheme() << "'\n";
-      std::cout << "url.authority : '" << loc.get_url().get_authority() << "'\n";
-      std::cout << "url.path      : '" << loc.get_url().get_path() << "'\n";
-      for(const auto& handler : loc.get_handler())
+      try
       {
-        std::cout << "handler: " << handler.name << std::endl;
-        
-        for(const auto& arg : handler.args)
+        ResourceLocator loc = ResourceLocator::from_string(argv[i]);
+        std::cout << "url.scheme    : '" << loc.get_url().get_scheme() << "'\n";
+        std::cout << "url.authority : '" << loc.get_url().get_authority() << "'\n";
+        std::cout << "url.path      : '" << loc.get_url().get_path() << "'\n";
+        for(const auto& handler : loc.get_handler())
         {
-          std::cout << "  arg: '" << arg << "'" << std::endl;
+          std::cout << "handler: " << handler.name << std::endl;
+        
+          for(const auto& arg : handler.args)
+          {
+            std::cout << "  arg: '" << arg << "'" << std::endl;
+          }
         }
+      }
+      catch(const std::exception& err)
+      {
+        std::cout << "error: " << err.what() << std::endl;
       }
     }
   }
