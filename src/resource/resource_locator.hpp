@@ -27,10 +27,11 @@
 class ResourceHandler
 {
 public:
+  std::string type;
   std::string name;
   std::vector<std::string> args;
 
-  ResourceHandler() : name(), args() {}
+  ResourceHandler() : type(), name(), args() {}
 
   static ResourceHandler from_string(const std::string& handler);
 };
@@ -70,6 +71,8 @@ public:
 
   const ResourceURL& get_url() const { return m_url; }
   const std::vector<ResourceHandler>& get_handler() const { return m_handler; }
+  std::string get_type() const;
+
   std::string str() const;
 };
 

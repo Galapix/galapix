@@ -21,6 +21,7 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "util/filesystem.hpp"
 #include "util/format.hpp"
 
 ResourceURL::ResourceURL(const std::string& scheme,
@@ -30,6 +31,10 @@ ResourceURL::ResourceURL(const std::string& scheme,
   m_authority(authority),
   m_path(path)
 {
+  if (m_scheme == "file")
+  {
+    m_path = Filesystem::realpath(m_path);
+  }
 }
 
 ResourceURL::ResourceURL(const std::string& scheme,
@@ -38,6 +43,10 @@ ResourceURL::ResourceURL(const std::string& scheme,
   m_authority(),
   m_path(path)
 {
+  if (m_scheme == "file")
+  {
+    m_path = Filesystem::realpath(m_path);
+  }
 }
 
 ResourceURL

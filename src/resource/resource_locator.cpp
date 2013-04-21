@@ -27,6 +27,16 @@ ResourceHandler::from_string(const std::string& handler)
 
   ResourceHandler result;
   result.name = handler.substr(0, p);
+  std::string::size_type minus = result.name.find('-');
+  if (minus == std::string::npos)
+  {
+    result.type = "unknown";
+  }
+  else
+  {
+    result.type = result.name.substr(0, minus);
+    result.name = result.name.substr(minus+1);
+  }
 
   while(p != std::string::npos)
   {
@@ -73,6 +83,19 @@ ResourceLocator::from_string(const std::string& locator)
                                        url.get_authority(),
                                        path.substr(0, handler_start)),
                            handler);
+  }
+}
+
+std::string
+ResourceLocator::get_type() const
+{
+  if (m_handler.empty())
+  {
+    return "blob";
+  }
+  else
+  {
+    return m_handler.back().type;
   }
 }
 
