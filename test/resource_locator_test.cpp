@@ -11,6 +11,7 @@ int main(int argc, char** argv)
       try
       {
         ResourceLocator loc = ResourceLocator::from_string(argv[i]);
+        std::cout << "locator       : " << loc.str() << '\n';
         std::cout << "url.scheme    : '" << loc.get_url().get_scheme() << "'\n";
         std::cout << "url.authority : '" << loc.get_url().get_authority() << "'\n";
         std::cout << "url.path      : '" << loc.get_url().get_path() << "'\n";
