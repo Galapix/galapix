@@ -45,6 +45,8 @@ ThreadPool::~ThreadPool()
     m_forced_shutdown = true;
   }
 
+  m_queue.wakeup();
+
   for(auto& thread : m_threads)
   {
     thread.join();
@@ -72,8 +74,11 @@ ThreadPool::run()
     try
     {
       Task task;
-      m_queue.wait_and_pop(task);
-      task();
+      m_queue.wait_for_pop([this]{ return m_forced_shutdown || m_shutdown; });
+      if (m_queue.try_pop(task))
+      {
+        task();
+      }
     }
     catch(const std::exception& err)
     {

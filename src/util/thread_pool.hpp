@@ -44,7 +44,7 @@ private:
   ThreadMessageQueue2<Task> m_queue;
 
 public:
-  ThreadPool(int num_threads = 4, ShutdownPolicy shutdown_policy = kWaitForActiveTasks);
+  ThreadPool(int num_threads = 4, ShutdownPolicy shutdown_policy = kWaitForAllTasks);
   ~ThreadPool();
 
   void schedule(const Task& task);
