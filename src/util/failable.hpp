@@ -35,6 +35,13 @@ private:
   std::exception_ptr m_eptr;
 
 public:
+  template<typename E>
+  static Failable<T> from_exception(const E& e) 
+  {
+    return Failable<T>(std::make_exception_ptr(e));
+  }
+
+
   Failable() :
     m_initialized(false),
     m_eptr()
