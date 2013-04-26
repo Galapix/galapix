@@ -36,8 +36,14 @@ private:
 
 public:
   Failable() :
-    m_initialized(),
+    m_initialized(false),
     m_eptr()
+  {
+  }
+
+  Failable(const std::exception_ptr& eptr) :
+    m_initialized(false),
+    m_eptr(eptr)
   {
   }
 
