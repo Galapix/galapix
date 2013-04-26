@@ -16,34 +16,42 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
-#define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
+#ifndef HEADER_GALAPIX_RESOURCE_BLOB_INFO_HPP
+#define HEADER_GALAPIX_RESOURCE_BLOB_INFO_HPP
 
-class FileInfoStore
+#include "util/blob.hpp"
+#include "util/sha1.hpp"
+
+class BlobInfo
 {
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  RowId m_id;
+  SHA1 m_sha1;
+  int  m_size;
 
 public:
-  FileInfoStore(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "INSERT OR REPLACE INTO file (path, mtime, blob_id) SELECT ?1, ?2, blob.id FROM blob WHERE blob.sha1 = ?3;")
-  {}
-
-  RowId operator()(const FileInfo& file_info)
+  static BlobInfo from_blob(BlobPtr blob)
   {
-    m_stmt.bind_text (1, file_info.get_path());
-    m_stmt.bind_int  (2, file_info.get_mtime());
-    m_stmt.bind_text (3, file_info.get_blob().get_sha1().str());
-    m_stmt.execute();
-  
-    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
+    return BlobInfo(SHA1::from_mem(blob->get_data(), blob->size()),
+                    blob->size());
   }
 
-private:
-  FileInfoStore(const FileInfoStore&) = delete;
-  FileInfoStore& operator=(const FileInfoStore&) = delete;
+  BlobInfo() :
+    m_id(),
+    m_sha1(),
+    m_size()
+  {}
+
+  BlobInfo(const SHA1& sha1,
+           int size) :
+    m_id(),
+    m_sha1(sha1),
+    m_size(size)
+  {}
+
+  RowId get_id() const { return m_id; }
+  SHA1 get_sha1() const { return m_sha1; }
+  int  get_size() const { return m_size; }
 };
 
 #endif

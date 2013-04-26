@@ -16,34 +16,33 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
-#define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_BLOB_INFO_STORE_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_BLOB_INFO_STORE_HPP
 
-class FileInfoStore
+class BlobInfoStore
 {
 private:
   SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLiteStatement m_stmt;
 
 public:
-  FileInfoStore(SQLiteConnection& db) :
+  BlobInfoStore(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "INSERT OR REPLACE INTO file (path, mtime, blob_id) SELECT ?1, ?2, blob.id FROM blob WHERE blob.sha1 = ?3;")
+    m_stmt(db, "INSERT INTO blob (sha1, size) VALUES (?1, ?2);")
   {}
 
-  RowId operator()(const FileInfo& file_info)
+  RowId operator()(const BlobInfo& blob_info)
   {
-    m_stmt.bind_text (1, file_info.get_path());
-    m_stmt.bind_int  (2, file_info.get_mtime());
-    m_stmt.bind_text (3, file_info.get_blob().get_sha1().str());
+    m_stmt.bind_text(1, blob_info.get_sha1().str());
+    m_stmt.bind_int(2,  blob_info.get_size());
     m_stmt.execute();
-  
+
     return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
 
 private:
-  FileInfoStore(const FileInfoStore&) = delete;
-  FileInfoStore& operator=(const FileInfoStore&) = delete;
+  BlobInfoStore(const BlobInfoStore&);
+  BlobInfoStore& operator=(const BlobInfoStore&);
 };
 
 #endif

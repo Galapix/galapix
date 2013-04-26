@@ -106,8 +106,8 @@ ResourceManager::request_blob(const ResourceLocator& locator,
 }
 
 void
-ResourceManager::request_sha1(const ResourceLocator& locator, 
-                              const std::function<void (Failable<SHA1>)>& callback)
+ResourceManager::request_blob_info(const ResourceLocator& locator, 
+                                   const std::function<void (Failable<BlobInfo>)>& callback)
 {
   ResourceLocator blob_locator = locator.get_blob_locator();
   if (blob_locator.get_url().is_remote())
@@ -117,11 +117,11 @@ ResourceManager::request_sha1(const ResourceLocator& locator,
                      {
                        try
                        {
-                         callback(url_info.get().get_sha1());
+                         callback(url_info.get().get_blob());
                        }
                        catch(...)
                        {
-                         callback(Failable<SHA1>(std::current_exception()));
+                         callback(Failable<BlobInfo>(std::current_exception()));
                        }
                      });
   }
@@ -132,11 +132,11 @@ ResourceManager::request_sha1(const ResourceLocator& locator,
                       {
                         try
                         {
-                          callback(file_info.get().get_sha1());
+                          callback(file_info.get().get_blob());
                         }
                         catch(...)
                         {
-                          callback(Failable<SHA1>(std::current_exception()));
+                          callback(Failable<BlobInfo>(std::current_exception()));
                         }
                       });    
   }
@@ -171,36 +171,37 @@ void
 ResourceManager::request_url_info(const std::string& url,
                                   const std::function<void (Failable<URLInfo>)>& callback)
 {
-#if 0
   m_database.request_url_info
     (url, 
-     [](const boost::optional<URLInfo>& url_info)
+     [this, url, callback](const boost::optional<URLInfo>& db_url_info)
      {
-       if (url_info)
+       if (db_url_info)
        {
-         callback(url_info);
+         callback(*db_url_info);
        }
        else
        {
          m_download_mgr.request_get
            (url,
-            [](const DownloadResult& result)
+            [this, url, callback](const DownloadResult& result)
             {
               if (result.success())
               {
-                URLInfo info(result.get_mtime(), result.get_content_type());
-                callback(url_info);
+                m_database.store_url_info
+                  (URLInfo(url, result.get_mtime(), result.get_content_type(), 
+                           BlobInfo::from_blob(result.get_blob())),
+                   [callback](const Failable<URLInfo>& url_info)
+                   {
+                     callback(url_info);
+                   });
               }
               else
               {
-                Failable<ResourceInfo> failable;
-                failable.set_exception(std::make_exception_ptr(std::runtime_error("request URLInfo failed")));
-                callback(failable);
+                callback(Failable<URLInfo>::from_exception(std::runtime_error("request URLInfo failed")));
               }
-            }
-       }
+            });
+       };
      });
-#endif
 }
 
 void
@@ -212,22 +213,22 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const SHA
   callback(result);    
 
   /*
-   m_database.request_resource_info
+    m_database.request_resource_info
     (locator, sha1,
-     [this, callback](const boost::optional<ResourceInfo>& resource_info) 
-     {
-       if (resource_info)
-       {
-         callback(*resource_info);
-       }
-       else
-       {
-         log_error("not implemented");
-         m_generator.request_resource_info(??? [this, callback](const Failable<ResourceInfo>&){
+    [this, callback](const boost::optional<ResourceInfo>& resource_info) 
+    {
+    if (resource_info)
+    {
+    callback(*resource_info);
+    }
+    else
+    {
+    log_error("not implemented");
+    m_generator.request_resource_info(??? [this, callback](const Failable<ResourceInfo>&){
           
-           });
-        }
-     });
+    });
+    }
+    });
   */
 }
 
@@ -282,13 +283,13 @@ ResourceManager::request_image_info(const ResourceInfo& resource,
        }
        else
        {
-        m_generator.request_image_info
-          (resource, 
-           // full generation or incremental generation
-           [this, callback](const Failable<ImageInfo>& result)
-           {
+         m_generator.request_image_info
+           (resource, 
+            // full generation or incremental generation
+            [this, callback](const Failable<ImageInfo>& result)
+            {
              
-           });
+            });
        }
      });
 }
@@ -346,3 +347,4 @@ ResourceManager::generate_tiles()
 #endif
 
 /* EOF */
+

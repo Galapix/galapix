@@ -22,17 +22,24 @@
 class URLInfoStore
 {
 private:
-  SQLiteStatement m_stmt;
+  SQLiteConnection& m_db;
+  SQLiteStatement   m_stmt;
 
 public:
   URLInfoStore(SQLiteConnection& db) :
-    m_stmt(db, "")
+    m_db(db),
+    m_stmt(db, "INSERT OR REPLACE INTO url (url, mtime, content_type, blob_id) SELECT ?1, ?2, ?3, blob.id FROM blob WHERE blob.sha1 = ?4;")
   {}
 
   RowId operator()(const URLInfo& url_info)
   {
-    log_error("not implemented");
-    return RowId();
+    m_stmt.bind_text (1, url_info.get_url());
+    m_stmt.bind_int  (2, url_info.get_mtime());
+    m_stmt.bind_text (3, url_info.get_content_type());
+    m_stmt.bind_text (4, url_info.get_blob().get_sha1().str());
+    m_stmt.execute();
+  
+    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
 
 private:

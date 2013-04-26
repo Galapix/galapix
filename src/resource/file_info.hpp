@@ -23,6 +23,7 @@
 
 #include "util/sha1.hpp"
 #include "database/row_id.hpp"
+#include "resource/blob_info.hpp"
 
 class FileInfo
 {
@@ -30,43 +31,39 @@ private:
   RowId m_id;
   std::string m_path;
   int  m_mtime;
-
-  SHA1 m_sha1;
-  int  m_size;
+  BlobInfo m_blob;
 
 public:
   static FileInfo from_file(const std::string& filename);
 
-  FileInfo(const RowId& row_id, const FileInfo& rhs) :
-    m_id(row_id),
+  FileInfo(const RowId& id, const FileInfo& rhs) :
+    m_id(id),
     m_path(rhs.m_path),
     m_mtime(rhs.m_mtime),
-    m_sha1(rhs.m_sha1),
-    m_size(rhs.m_size)
+    m_blob(rhs.m_blob)
   {}
 
   FileInfo(const RowId& id, const std::string& path, int mtime, const SHA1& sha1, int size) :
     m_id(id),
     m_path(path),
     m_mtime(mtime),
-    m_sha1(sha1),
-    m_size(size)
+    m_blob(sha1, size)
   {}
  
   FileInfo(const std::string& path, int mtime, const SHA1& sha1, int size) :
     m_id(),
     m_path(path),
     m_mtime(mtime),
-    m_sha1(sha1),
-    m_size(size)
+    m_blob(sha1, size)
   {}
-
+    
   RowId get_id() const { return m_id; }
   std::string get_path() const { return m_path; }
   int  get_mtime() const { return m_mtime; }
+  BlobInfo get_blob() const { return m_blob; }
 
-  SHA1 get_sha1() const { return m_sha1; }
-  int  get_size() const { return m_size; }
+  SHA1 get_sha1() const { return m_blob.get_sha1(); }
+  int  get_size() const { return m_blob.get_size(); }
 };
 
 #endif

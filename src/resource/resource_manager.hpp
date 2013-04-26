@@ -30,6 +30,7 @@
 
 class ArchiveInfo;
 class ArchiveManager;
+class BlobInfo;
 class DatabaseThread;
 class DownloadManager;
 class FileInfo;
@@ -60,8 +61,8 @@ public:
   void request_blob(const ResourceLocator& locator, 
                     const std::function<void (Failable<BlobPtr>)>& callback);
 
-  void request_sha1(const ResourceLocator& locator, 
-                    const std::function<void (Failable<SHA1>)>& callback);
+  void request_blob_info(const ResourceLocator& locator, 
+                         const std::function<void (Failable<BlobInfo>)>& callback);
 
   void request_file_info(const std::string& filename, 
                          const std::function<void (Failable<FileInfo>)>& callback);

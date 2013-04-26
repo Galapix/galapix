@@ -139,8 +139,6 @@ DatabaseThread::store_file_info(const FileInfo& file_info,
 void
 DatabaseThread::request_url_info(const std::string& url, const std::function<void (const boost::optional<URLInfo>&)>& callback)
 {
-  log_debug("not implemented");
-
   m_receive_queue.wait_and_push
     ([this, url, callback]()
      {
@@ -153,7 +151,6 @@ void
 DatabaseThread::store_url_info(const URLInfo& url_info,
                                const std::function<void (const Failable<URLInfo>&)>& callback)
 {
-  log_debug("not implemented");
   m_receive_queue.wait_and_push
     ([this, url_info, callback]()
      {

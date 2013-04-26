@@ -20,18 +20,17 @@
 
 #include <iostream>
 
+#include "database/database.hpp"
+#include "database/entries/old_file_entry.hpp"
+#include "database/statements/blob_info_store.hpp"
 #include "database/statements/file_info_get_by_path.hpp"
 #include "database/statements/file_info_store.hpp"
-
 #include "database/statements/url_info_get.hpp"
 #include "database/statements/url_info_store.hpp"
-
-#include "database/entries/old_file_entry.hpp"
-#include "database/database.hpp"
-#include "util/software_surface.hpp"
-#include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
+#include "util/software_surface.hpp"
+#include "util/software_surface_factory.hpp"
 
 ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_db(db),
@@ -41,11 +40,13 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_file_table(m_db),
   m_image_table(m_db),
   m_resource_table(m_db),
+  m_url_table(m_db),
   m_video_table(m_db),
   m_file_info_store(new FileInfoStore(m_db)),
   m_file_info_get_by_path(new FileInfoGetByPath(m_db)),
   m_url_info_store(new URLInfoStore(m_db)),
   m_url_info_get(new URLInfoGet(m_db)),
+  m_blob_info_store(new BlobInfoStore(m_db)),
   m_file_entry_get_all(m_db),
   //m_file_entry_get_by_fileid(m_db),
   m_file_entry_get_by_pattern(m_db),
@@ -99,6 +100,10 @@ ResourceDatabase::get_url_info(const std::string& url)
 RowId
 ResourceDatabase::store_url_info(const URLInfo& url_info)
 {
+  if (!url_info.get_blob().get_id())
+  {
+    (*m_blob_info_store)(url_info.get_blob());
+  }
   return (*m_url_info_store)(url_info);
 }
 
@@ -111,6 +116,10 @@ ResourceDatabase::get_file_info(const std::string& path)
 RowId
 ResourceDatabase::store_file_info(const FileInfo& file_info)
 {
+  if (!file_info.get_blob().get_id())
+  {
+    (*m_blob_info_store)(file_info.get_blob());
+  }
   return (*m_file_info_store)(file_info);
 }
 

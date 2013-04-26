@@ -49,16 +49,20 @@ int main(int argc, char** argv)
   int count = 0;
   for(int i = 1; i < argc; ++i)
   {
-    ResourceLocator locator = ResourceLocator::from_string(argv[i]);
+    std::string url = argv[i];
 
-    resource_mgr.request_sha1
-      (locator,
-       [&count, locator](const Failable<SHA1>& data) 
+    resource_mgr.request_url_info
+      (url,
+       [&count, url](const Failable<URLInfo>& data) 
        {
         try
         {
-          std::cout << "locator : " << locator.str() << std::endl;
-          std::cout << "SHA1    : " << data.get().str() << std::endl;
+          const URLInfo& info = data.get();
+          std::cout << "URL    : " << url << std::endl;
+          std::cout << "SHA1   : " << info.get_blob().get_sha1().str() << std::endl;
+          std::cout << "size   : " << info.get_blob().get_size() << std::endl;
+          std::cout << "mtime  : " << info.get_mtime() << std::endl;
+          std::cout << "content_type : " << info.get_content_type() << std::endl;
         }
         catch(const std::exception& err)
         {

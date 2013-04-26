@@ -39,6 +39,7 @@
 #include "database/tables/file_table.hpp"
 #include "database/tables/image_table.hpp"
 #include "database/tables/resource_table.hpp"
+#include "database/tables/url_table.hpp"
 #include "database/tables/video_table.hpp"
 #include "math/size.hpp"
 #include "sqlite/statement.hpp"
@@ -47,6 +48,7 @@
 #include "resource/resource_info.hpp"
 #include "resource/url_info.hpp"
 
+class BlobInfoStore;
 class Database;
 class FileInfoGetByPath;
 class FileInfoStore;
@@ -79,6 +81,7 @@ private:
   FileTable                m_file_table;
   ImageTable               m_image_table;
   ResourceTable            m_resource_table;
+  URLTable                 m_url_table;
   VideoTable               m_video_table;
 
   std::unique_ptr<FileInfoStore>     m_file_info_store;
@@ -86,6 +89,8 @@ private:
 
   std::unique_ptr<URLInfoStore> m_url_info_store;
   std::unique_ptr<URLInfoGet>   m_url_info_get;
+
+  std::unique_ptr<BlobInfoStore> m_blob_info_store;
   
   FileEntryGetAll          m_file_entry_get_all;
   //FileEntryGetByFileId     m_file_entry_get_by_fileid;

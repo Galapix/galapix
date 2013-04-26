@@ -26,13 +26,35 @@ private:
 
 public:
   URLInfoGet(SQLiteConnection& db) :
-    m_stmt(db, "")
+    m_stmt(db, 
+           "SELECT\n"
+           "  url.id, url.mtime, url.content_type, blob.sha1, blob.size\n"
+           "FROM\n"
+           "  url, blob\n"
+           "WHERE\n"
+           "  url.url = ?1 AND blob.id = url.blob_id;")
   {}
 
   boost::optional<URLInfo> operator()(const std::string& url)
   {
-    log_error("not implemented");
-    return boost::optional<URLInfo>();
+    m_stmt.bind_text(1, url);
+    SQLiteReader reader = m_stmt.execute_query();
+    
+    if (reader.next())
+    {
+      return URLInfo(
+        RowId(reader.get_int64(0)),
+        URLInfo(url, 
+                reader.get_int(1),
+                reader.get_text(2),
+                BlobInfo(SHA1::parse_string(reader.get_text(3)),
+                         reader.get_int(4)))
+        );
+    }
+    else
+    {
+      return boost::optional<URLInfo>();
+    }
   }
 
 private:

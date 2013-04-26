@@ -19,41 +19,49 @@
 #ifndef HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
 #define HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
 
+#include "resource/blob_info.hpp"
+
 class URLInfo
 {
 private:
   RowId m_id;
+  std::string m_url;
   long m_mtime;
   std::string m_content_type;
-  SHA1 m_sha1;
+  BlobInfo m_blob;
 
 public:
   URLInfo() :
     m_id(),
+    m_url(),
     m_mtime(-1),
     m_content_type(),
-    m_sha1()
+    m_blob()
   {}
 
   URLInfo(const RowId& id, const URLInfo& other) :
     m_id(id),
+    m_url(other.m_url),
     m_mtime(other.m_mtime),
     m_content_type(other.m_content_type),
-    m_sha1(other.m_sha1)
+    m_blob(other.m_blob)
   {}
 
-  URLInfo(long mtime,
+  URLInfo(const std::string& url, 
+          long mtime,
           const std::string& content_type,
-          const SHA1& sha1) :
+          const BlobInfo& blob) :
     m_id(),
+    m_url(url),
     m_mtime(mtime),
     m_content_type(content_type),
-    m_sha1(sha1)
+    m_blob(blob)
   {}
 
+  std::string get_url() const { return m_url; }
   long get_mtime() const { return m_mtime; }
   std::string get_content_type() const { return m_content_type; }
-  SHA1 get_sha1() const { return m_sha1; }
+  BlobInfo get_blob() const { return m_blob; }
 };
 
 #endif
