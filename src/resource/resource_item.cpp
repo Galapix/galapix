@@ -58,9 +58,9 @@ ResourceItem::receive_resource_info(const ResourceInfo& resource_info)
   m_resource_info = resource_info;
 
   // create child items
-  for(const auto& locator : m_resource_info.get_children())
+  //for(const auto& locator : m_resource_info.get_children())
   {
-    add_child(std::make_shared<ResourceItem>(locator));
+    //  add_child(std::make_shared<ResourceItem>(locator));
   }
 
   //m_renderer = Renderer::from_resource_info(m_resource_info);

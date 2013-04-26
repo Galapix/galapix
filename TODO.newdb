@@ -1,29 +1,39 @@
 Database
 ========
 
+SELECT file.mtime
+FROM file
+WHERE file.path = ?
+
 ---
 resource:
   blob_id: rowid
-  type: { archive, image, directory }
-  handler: { pdf, jpeg, png, rar, 7z, zip, ... }
+  type: { archive, image, directory, collection } ('collection's are for PDF and other files containing multiple child resources)
+  handler: { pdf, jpeg, png, rar, 7zip, zip, ... }
   arguments: string
+  // parent_id: rowid (parent resource_id in case of 'collections', like PDFs)
+  status: { error, access_error, success, incremental }
+
+collection: // either resource.parent_id or separate collection table
+  resource_id: row_id
+  parent_id: row_id
 
 blob:
-  checksum: string # could also be blob
+  sha1: blob
   size: integer
 
 file:
   path: string
-  blob_id: rowid 
+  blob_id: rowid
   mtime: integer
 
 url:
   host: string (e.g. http://www.google.com)
   path: string (e.g. /index.html)
-  blob_id: rowid
   mtime: string (e.g. "Wed, 14 Nov 2012 21:35:42 GMT")
   content_type: string (e.g. "text/html")
-  header: string (i.e. full dump of header from last access)
+  // header: string (i.e. full dump of header from last access)
+  blob_id: rowid
 
 archive:
   resource_id: rowid
@@ -136,6 +146,7 @@ Resource Handler Stacks:
 
   file:///test.jpg//image-jpeg//image-contrast:50%//image-gamma:0.8
    -> not yet supported, maybe later
+   -> for now only the last handler is allowed to be a type other then blob
 
 Valid URL characters:
   ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=.

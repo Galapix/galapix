@@ -24,20 +24,26 @@
 class ImageInfo
 {
 private:
-  RowId m_rowid;
+  RowId m_id;
   int m_width;
   int m_height;
 
 public:
-  ImageInfo();
+  ImageInfo() :
+    m_id(),
+    m_width(),
+    m_height()
+  {}
 
-  RowId get_rowid() const { return m_rowid; }
+  ImageInfo(const RowId& id, const ImageInfo& image_info) :
+    m_id(id),
+    m_width(image_info.m_width),
+    m_height(image_info.m_height)
+  {}
+
+  RowId get_id() const { return m_id; }
   int get_width() const { return m_width; }
   int get_height() const { return m_height; }
-
-private:
-  ImageInfo(const ImageInfo&);
-  ImageInfo& operator=(const ImageInfo&);
 };
 
 #endif

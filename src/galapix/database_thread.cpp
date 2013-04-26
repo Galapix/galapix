@@ -68,37 +68,98 @@ DatabaseThread::abort_thread()
 }
 
 void
+DatabaseThread::request_image_info(const ResourceInfo& resource, 
+                                   const std::function<void (const boost::optional<ImageInfo>&)>& callback)
+{
+  m_request_queue.wait_and_push([this, resource, callback](){
+      boost::optional<ImageInfo> image_info = m_database.get_resources().get_image_info(resource);
+      callback(image_info);
+    });
+}
+
+void
+DatabaseThread::request_resource_info(const ResourceLocator& locator, const SHA1& sha1,
+                                      const std::function<void (const Failable<ResourceInfo>&)>& callback)
+{
+  m_request_queue.wait_and_push
+    ([this, locator, sha1]()
+     {
+       
+     });
+}
+
+void
+DatabaseThread::store_resource_info(const ResourceInfo& resource_info,
+                                    const std::function<void (const Failable<ResourceInfo>&)>& callback)
+{
+    m_request_queue.wait_and_push
+    ([this, resource_info, callback]()
+     {
+       RowId id = m_database.get_resources().store_resource_info(resource_info);
+       callback(ResourceInfo(id, resource_info));
+     });
+}
+
+void
+DatabaseThread::store_image_info(const ImageInfo& image_info,
+                                 const std::function<void (const Failable<ImageInfo>&)>& callback)
+{
+  m_request_queue.wait_and_push
+    ([this, image_info, callback]()
+     {
+      RowId row_id = m_database.get_resources().store_image_info(image_info);
+      callback(ImageInfo(row_id, image_info));
+     });
+}
+
+void
 DatabaseThread::request_file_info(const std::string& path, 
                                   const std::function<void (const boost::optional<FileInfo>&)>& callback)
 { 
-  m_request_queue.wait_and_push([this, path, callback](){
+  m_request_queue.wait_and_push
+    ([this, path, callback]()
+     {
       boost::optional<FileInfo> file_info = m_database.get_resources().get_file_info(path);
       callback(file_info);
-    });
+     });
 }
 
 void
 DatabaseThread::store_file_info(const FileInfo& file_info,
                                 const std::function<void (const Failable<FileInfo>&)>& callback)
 {
-  m_receive_queue.wait_and_push([this, file_info, callback](){
-      RowId row_id = m_database.get_resources().store_file_info(file_info);
-      callback(FileInfo(row_id, file_info));
-    });
+  m_receive_queue.wait_and_push
+    ([this, file_info, callback]()
+     {
+       RowId row_id = m_database.get_resources().store_file_info(file_info);
+       callback(FileInfo(row_id, file_info));
+     });
 }
 
 void
 DatabaseThread::request_url_info(const std::string& url, const std::function<void (const boost::optional<URLInfo>&)>& callback)
 {
   log_debug("not implemented");
-  callback(boost::optional<URLInfo>());
+
+  m_receive_queue.wait_and_push
+    ([this, url, callback]()
+     {
+       boost::optional<URLInfo> url_info = m_database.get_resources().get_url_info(url);
+       callback(url_info);
+     });
 }
 
 void
-DatabaseThread::store_url_info(const std::string& url,
+DatabaseThread::store_url_info(const URLInfo& url_info,
                                const std::function<void (const Failable<URLInfo>&)>& callback)
 {
   log_debug("not implemented");
+  m_receive_queue.wait_and_push
+    ([this, url_info, callback]()
+     {
+       RowId id = m_database.get_resources().store_url_info(url_info);
+       callback(URLInfo(id, url_info));
+     });
 }
 
 
@@ -108,37 +169,39 @@ DatabaseThread::request_tile(const OldFileEntry& file_entry, int tilescale, cons
 {
   JobHandle job_handle_ = JobHandle::create();
 
-  m_request_queue.wait_and_push([this, job_handle_, file_entry, tilescale, pos, callback](){
-      JobHandle job_handle = job_handle_;
-      if (!job_handle.is_aborted())
-      {
-        TileEntry tile;
-        if (m_database.get_tiles().get_tile(file_entry.get_id(), tilescale, pos, tile))
-        {
-          // Tile has been found, so return it and finish up
-          if (callback)
-          {
-            callback(tile);
-          }
-          job_handle.set_finished();
-        }
-        else
-        {
-          // Tile hasn't been found, so we need to generate it
-          if (0)
-            std::cout << "Error: Couldn't get tile: " 
-                      << file_entry.get_id() << " "
-                      << pos.x << " "
-                      << pos.y << " "
-                      << tilescale
-                      << std::endl;
+  m_request_queue.wait_and_push
+    ([this, job_handle_, file_entry, tilescale, pos, callback]()
+     {
+       JobHandle job_handle = job_handle_;
+       if (!job_handle.is_aborted())
+       {
+         TileEntry tile;
+         if (m_database.get_tiles().get_tile(file_entry.get_id(), tilescale, pos, tile))
+         {
+           // Tile has been found, so return it and finish up
+           if (callback)
+           {
+             callback(tile);
+           }
+           job_handle.set_finished();
+         }
+         else
+         {
+           // Tile hasn't been found, so we need to generate it
+           if (0)
+             std::cout << "Error: Couldn't get tile: " 
+                       << file_entry.get_id() << " "
+                       << pos.x << " "
+                       << pos.y << " "
+                       << tilescale
+                       << std::endl;
         
-          {
-            DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
-          }
-        }
-      }
-    });
+           {
+             DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
+           }
+         }
+       }
+     });
 
   return job_handle_;
 }
@@ -149,15 +212,17 @@ DatabaseThread::request_tiles(const OldFileEntry& file_entry, int min_scale, int
 {
   JobHandle job_handle = JobHandle::create();
 
-  m_request_queue.wait_and_push([this, job_handle, file_entry, min_scale, max_scale, callback]{
-      if (!job_handle.is_aborted())
-      {
-        generate_tiles(job_handle,
-                       file_entry,
-                       min_scale, max_scale, 
-                       callback);
-      }
-    });
+  m_request_queue.wait_and_push
+    ([this, job_handle, file_entry, min_scale, max_scale, callback]
+     {
+       if (!job_handle.is_aborted())
+       {
+         generate_tiles(job_handle,
+                        file_entry,
+                        min_scale, max_scale, 
+                        callback);
+       }
+     });
 
   return job_handle;
 }
@@ -176,7 +241,9 @@ DatabaseThread::request_file(const URL& url,
 {
   JobHandle job_handle_ = JobHandle::create();
 
-  m_request_queue.wait_and_push([this, job_handle_, url, file_callback](){
+  m_request_queue.wait_and_push
+    ([this, job_handle_, url, file_callback]()
+     {
       JobHandle job_handle = job_handle_;
       if (!job_handle.is_aborted())
       {

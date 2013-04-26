@@ -60,16 +60,19 @@ public:
   void request_blob(const ResourceLocator& locator, 
                     const std::function<void (Failable<BlobPtr>)>& callback);
 
-  void request_resource_info(const SHA1& sha1, 
-                             const std::function<void (Failable<ResourceInfo>)>& callback);
+  void request_sha1(const ResourceLocator& locator, 
+                    const std::function<void (Failable<SHA1>)>& callback);
 
   void request_file_info(const std::string& filename, 
                          const std::function<void (Failable<FileInfo>)>& callback);
   void request_url_info(const std::string& url, 
                         const std::function<void (Failable<URLInfo>)>& callback);
 
+  void request_resource_info(const ResourceLocator& locator, const SHA1& sha1, 
+                             const std::function<void (Failable<ResourceInfo>)>& callback);
   void request_resource_info(const ResourceLocator& locator,
                              const std::function<void (const Failable<ResourceInfo>&)>& callback);
+
   void request_archive_info(const ResourceInfo& resource,
                             const std::function<void (const Failable<ArchiveInfo>&)>& callback);
   void request_image_info(const ResourceInfo& resource,

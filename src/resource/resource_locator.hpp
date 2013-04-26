@@ -22,19 +22,8 @@
 #include <string>
 #include <vector>
 
+#include "resource/resource_handler.hpp"
 #include "resource/resource_url.hpp"
-
-class ResourceHandler
-{
-public:
-  std::string type;
-  std::string name;
-  std::vector<std::string> args;
-
-  ResourceHandler() : type(), name(), args() {}
-
-  static ResourceHandler from_string(const std::string& handler);
-};
 
 /**
    The ResourceLocator provides a path to a retrievable resource, most
@@ -69,6 +58,7 @@ public:
     m_handler(handler)
   {}
 
+  ResourceLocator get_blob_locator() const;
   const ResourceURL& get_url() const { return m_url; }
   const std::vector<ResourceHandler>& get_handler() const { return m_handler; }
   std::string get_type() const;

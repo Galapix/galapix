@@ -16,42 +16,35 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_RESOURCE_RESOURCE_URL_HPP
-#define HEADER_GALAPIX_RESOURCE_RESOURCE_URL_HPP
+#ifndef HEADER_GALAPIX_RESOURCE_RESOURCE_HANDLER_HPP
+#define HEADER_GALAPIX_RESOURCE_RESOURCE_HANDLER_HPP
 
 #include <string>
 
-class ResourceURL
+// FIXME: rename ResourceHandler to BlobHandler?
+class ResourceHandler
 {
 private:
-  std::string m_scheme;
-  std::string m_authority;
-  std::string m_path;
+  std::string m_type;
+  std::string m_name;
+  std::string m_args;
 
 public:
-  /** scheme ":" [ "//" authority ] path */
-  static ResourceURL from_string(const std::string& url);
+  ResourceHandler() : 
+    m_type(), m_name(), m_args() 
+  {}
 
-public:
-  ResourceURL() : m_scheme(), m_authority(), m_path() {}
+  ResourceHandler(const std::string& type, const std::string& name, const std::string& args) : 
+    m_type(type), m_name(name), m_args(args)
+  {}
 
-  ResourceURL(const std::string& scheme,
-              const std::string& authority,
-              const std::string& path);
-
-  ResourceURL(const std::string& scheme,
-              const std::string& path);
-
-  /** Usually "http" or "file" */
-  std::string get_scheme() const { return m_scheme; }
-
-  /** [ userinfo "@" ] host [ ":" port ] */
-  std::string get_authority() const { return m_authority; }
-  std::string get_path() const { return m_path; }
-
-  bool is_remote() const;
+  std::string get_type() const { return m_type; }
+  std::string get_name() const { return m_name; }
+  std::string get_args() const { return m_args; }
 
   std::string str() const;
+
+  static ResourceHandler from_string(const std::string& handler);
 };
 
 #endif

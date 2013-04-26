@@ -23,6 +23,9 @@
 #include "database/statements/file_info_get_by_path.hpp"
 #include "database/statements/file_info_store.hpp"
 
+#include "database/statements/url_info_get.hpp"
+#include "database/statements/url_info_store.hpp"
+
 #include "database/entries/old_file_entry.hpp"
 #include "database/database.hpp"
 #include "util/software_surface.hpp"
@@ -41,6 +44,8 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_video_table(m_db),
   m_file_info_store(new FileInfoStore(m_db)),
   m_file_info_get_by_path(new FileInfoGetByPath(m_db)),
+  m_url_info_store(new URLInfoStore(m_db)),
+  m_url_info_get(new URLInfoGet(m_db)),
   m_file_entry_get_all(m_db),
   //m_file_entry_get_by_fileid(m_db),
   m_file_entry_get_by_pattern(m_db),
@@ -49,12 +54,52 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_file_entry_delete(m_db),
   m_image_entry_store(m_db),
   m_image_entry_get(m_db),
-  m_resource_entry_get_by_blob_id(m_db)
+  m_resource_entry_get_by_blob_id(m_db),
+  m_resource_info_get(m_db),
+  m_resource_info_store(m_db)
 {
 }
 
 ResourceDatabase::~ResourceDatabase()
 {
+}
+
+boost::optional<ImageInfo>
+ResourceDatabase::get_image_info(const ResourceInfo& resource)
+{
+  log_error("not implemented");
+  return boost::optional<ImageInfo>();
+}
+
+RowId
+ResourceDatabase::store_image_info(const ImageInfo& image_info)
+{
+  log_error("not implemented");
+  return RowId();
+}
+
+boost::optional<ResourceInfo>
+ResourceDatabase::get_resource_info(const ResourceLocator& locator, const SHA1& sha1)
+{
+  return m_resource_info_get(locator, sha1);
+}
+
+RowId
+ResourceDatabase::store_resource_info(const ResourceInfo& info)
+{
+  return m_resource_info_store(info);
+}
+
+boost::optional<URLInfo>
+ResourceDatabase::get_url_info(const std::string& url)
+{
+  return (*m_url_info_get)(url);
+}
+
+RowId
+ResourceDatabase::store_url_info(const URLInfo& url_info)
+{
+  return (*m_url_info_store)(url_info);
 }
 
 boost::optional<FileInfo>
@@ -74,13 +119,6 @@ ResourceDatabase::get_resource_info(const SHA1& sha1)
 {
   log_debug("not implemented");
   return boost::optional<ResourceInfo>();
-}
-
-RowId
-ResourceDatabase::store_resource_info(const ResourceInfo& resource_info)
-{
-  log_debug("not implemented");
-  return RowId();
 }
 
 boost::optional<FileEntry>

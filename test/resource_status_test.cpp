@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,21 +16,17 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "resource_table.hpp"
+#include "resource/resource_status.hpp"
 
-ResourceTable::ResourceTable(SQLiteConnection& db) :
-  m_db(db)
+#include <iostream>
+
+int main()
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS resource (\n"
-            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  blob_id   INTEGER,\n"
-            "  type      TEXT,\n"
-            "  handler   TEXT,\n"
-            "  arguments TEXT,\n"
-            "  status    TEXT\n"
-            ");");
+  ResourceStatus status = ResourceStatus::AccessError; 
+  assert(status == ResourceStatus::AccessError);
+  std::cout << to_string(status) << std::endl;
 
-  //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
+  return 0;
 }
 
 /* EOF */

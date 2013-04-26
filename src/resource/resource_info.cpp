@@ -18,11 +18,4 @@
 
 #include "resource_info.hpp"
 
-ResourceInfo::ResourceInfo() :
-  m_locator(),
-  m_name(),
-  m_children()
-{
-}
-
 /* EOF */

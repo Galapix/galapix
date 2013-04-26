@@ -18,40 +18,28 @@
 
 #include "resource_locator.hpp"
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
-
-ResourceHandler
-ResourceHandler::from_string(const std::string& handler)
-{
-  std::string::size_type p = handler.find(':');
-
-  ResourceHandler result;
-  result.name = handler.substr(0, p);
-  std::string::size_type minus = result.name.find('-');
-  if (minus == std::string::npos)
-  {
-    result.type = "unknown";
-  }
-  else
-  {
-    result.type = result.name.substr(0, minus);
-    result.name = result.name.substr(minus+1);
-  }
-
-  while(p != std::string::npos)
-  {
-    std::string::size_type beg = p+1;
-    p = handler.find(':', beg);
-    result.args.emplace_back(handler.substr(beg, p - beg));
-  }
-
-  return result;
-}
 
 ResourceLocator
 ResourceLocator::from_string(const std::string& locator)
 {
-  ResourceURL url = ResourceURL::from_string(locator);
+  ResourceURL url;
+
+  // FIXME: rewrite this whole thing, use regex or something
+
+  if (boost::starts_with(locator, "file:") ||
+      boost::starts_with(locator, "ftp:")  ||
+      boost::starts_with(locator, "http:") ||
+      boost::starts_with(locator, "https:"))
+  {
+    url = ResourceURL::from_string(locator);
+  }
+  else
+  {
+    url = ResourceURL("file", std::string(), locator);
+  }
+
   std::string path = url.get_path();
   std::string::size_type handler_start = path.find("//", 0, 2);
   if (handler_start == std::string::npos)
@@ -95,8 +83,19 @@ ResourceLocator::get_type() const
   }
   else
   {
-    return m_handler.back().type;
+    return m_handler.back().get_type();
   }
+}
+
+ResourceLocator
+ResourceLocator::get_blob_locator() const
+{
+  ResourceLocator blob_locator(*this);
+  while(blob_locator.get_type() != "blob")
+  {
+    blob_locator.m_handler.pop_back();
+  }
+  return blob_locator;
 }
 
 std::string
@@ -106,8 +105,8 @@ ResourceLocator::str() const
   out << m_url.str();
   for(const auto& handler : m_handler)
   {
-    out << "//" << handler.name;
-    for(const auto& arg : handler.args)
+    out << "//" << handler.get_type() << "-" << handler.get_name();
+    for(const auto& arg : handler.get_args())
     {
       out << ':' << arg;
     }

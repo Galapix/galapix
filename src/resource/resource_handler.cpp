@@ -16,46 +16,46 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
-#define HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
+#include "resource/resource_handler.hpp"
 
-class URLInfo
+#include <sstream>
+
+ResourceHandler
+ResourceHandler::from_string(const std::string& handler)
 {
-private:
-  RowId m_id;
-  long m_mtime;
-  std::string m_content_type;
-  SHA1 m_sha1;
+  std::string::size_type p = handler.find(':');
 
-public:
-  URLInfo() :
-    m_id(),
-    m_mtime(-1),
-    m_content_type(),
-    m_sha1()
-  {}
+  ResourceHandler result;
+  result.m_name = handler.substr(0, p);
+  std::string::size_type minus = result.m_name.find('-');
+  if (minus == std::string::npos)
+  {
+    result.m_type = "unknown";
+  }
+  else
+  {
+    result.m_type = result.m_name.substr(0, minus);
+    result.m_name = result.m_name.substr(minus+1);
+  }
 
-  URLInfo(const RowId& id, const URLInfo& other) :
-    m_id(id),
-    m_mtime(other.m_mtime),
-    m_content_type(other.m_content_type),
-    m_sha1(other.m_sha1)
-  {}
+  if(p != std::string::npos)
+  {
+    result.m_args = handler.substr(p);
+  }
 
-  URLInfo(long mtime,
-          const std::string& content_type,
-          const SHA1& sha1) :
-    m_id(),
-    m_mtime(mtime),
-    m_content_type(content_type),
-    m_sha1(sha1)
-  {}
+  return result;
+}
 
-  long get_mtime() const { return m_mtime; }
-  std::string get_content_type() const { return m_content_type; }
-  SHA1 get_sha1() const { return m_sha1; }
-};
-
-#endif
+std::string
+ResourceHandler::str() const
+{
+  std::ostringstream out;
+  out << m_type << '-' << m_name;
+  if (!m_args.empty())
+  {
+    out << ':' << m_args;
+  }
+  return out.str();
+}
 
 /* EOF */

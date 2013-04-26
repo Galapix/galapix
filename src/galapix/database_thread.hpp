@@ -31,14 +31,17 @@
 #include "job/thread_message_queue2.hpp"
 #include "util/failable.hpp"
 
-class URL;
-class FileInfo;
-class URLInfo;
 class Database;
 class DatabaseMessage;
+class FileInfo;
+class ImageInfo;
+class OldFileEntry;
+class ResourceInfo;
+class ResourceLocator;
 class TileDatabaseMessage;
 class TileGenerationJob;
-class OldFileEntry;
+class URL;
+class URLInfo;
 
 class DatabaseThread : public Thread
 {
@@ -72,13 +75,22 @@ public:
   void stop_thread();
   void abort_thread();
 
+  void request_image_info(const ResourceInfo& resource, const std::function<void (const boost::optional<ImageInfo>&)>& callback);
+  void store_image_info(const ImageInfo& image_info,
+                       const std::function<void (const Failable<ImageInfo>&)>& callback);
+
+  void request_resource_info(const ResourceLocator& locator, const SHA1& sha1,
+                             const std::function<void (const Failable<ResourceInfo>&)>& callback);
+  void store_resource_info(const ResourceInfo& resource_info,
+                           const std::function<void (const Failable<ResourceInfo>&)>& callback);
+  
   void request_file_info(const std::string& path, const std::function<void (const boost::optional<FileInfo>&)>& callback);
   void store_file_info(const FileInfo& file_info,
                        const std::function<void (const Failable<FileInfo>&)>& callback);
 
   void request_url_info(const std::string& url, const std::function<void (const boost::optional<URLInfo>&)>& callback);
-  void store_url_info(const std::string& url,
-                       const std::function<void (const Failable<URLInfo>&)>& callback);
+  void store_url_info(const URLInfo& url_info,
+                      const std::function<void (const Failable<URLInfo>&)>& callback);
 
   /* @{ */ // syncronized functions to be used by other threads
   /**

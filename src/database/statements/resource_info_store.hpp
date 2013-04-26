@@ -16,44 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
-#define HEADER_GALAPIX_RESOURCE_URL_INFO_HPP
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_INFO_STORE_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_INFO_STORE_HPP
 
-class URLInfo
+class ResourceInfoStore
 {
 private:
-  RowId m_id;
-  long m_mtime;
-  std::string m_content_type;
-  SHA1 m_sha1;
+  SQLiteStatement m_stmt;
 
 public:
-  URLInfo() :
-    m_id(),
-    m_mtime(-1),
-    m_content_type(),
-    m_sha1()
+  ResourceInfoStore(SQLiteConnection& db) :
+    m_stmt(db,
+           "INSERT INTO resource (blob_id, type, handler, arguments) VALUES (?1, ?2, ?3, ?4);")
   {}
 
-  URLInfo(const RowId& id, const URLInfo& other) :
-    m_id(id),
-    m_mtime(other.m_mtime),
-    m_content_type(other.m_content_type),
-    m_sha1(other.m_sha1)
-  {}
+  RowId operator()(const ResourceInfo& info)
+  {
+    /*
+    m_stmt.bind_text(1, info.type);
+    m_stmt.bind_text(2, info.handler);
+    m_stmt.bind_text(3, info.args);
+    m_stmt.bind_int64(4, 0); // parent_id
+    m_stmt.bind_int(5, 0); // status
+    m_stmt.execute();
+    */
+    return RowId();
+  }
 
-  URLInfo(long mtime,
-          const std::string& content_type,
-          const SHA1& sha1) :
-    m_id(),
-    m_mtime(mtime),
-    m_content_type(content_type),
-    m_sha1(sha1)
-  {}
-
-  long get_mtime() const { return m_mtime; }
-  std::string get_content_type() const { return m_content_type; }
-  SHA1 get_sha1() const { return m_sha1; }
+private:
+  ResourceInfoStore(const ResourceInfoStore&);
+  ResourceInfoStore& operator=(const ResourceInfoStore&);
 };
 
 #endif

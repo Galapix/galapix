@@ -26,10 +26,13 @@
 #include "network/download_result.hpp"
 #include "resource/archive_info.hpp"
 #include "resource/image_info.hpp"
+#include "resource/resource_info.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/resource_url.hpp"
 #include "resource/tile_info.hpp"
+#include "resource/url_info.hpp"
 #include "util/format.hpp"
+#include "util/log.hpp"
 
 ResourceManager::ResourceManager(DatabaseThread& database, 
                                  Generator& generator,
@@ -70,7 +73,7 @@ ResourceManager::request_blob(const ResourceLocator& locator,
           }
         });
     }
-    else if (url.get_scheme() == "http" ||
+    else if (url.get_scheme() == "http"  ||
              url.get_scheme() == "https" ||
              url.get_scheme() == "ftp")
     {
@@ -103,6 +106,43 @@ ResourceManager::request_blob(const ResourceLocator& locator,
 }
 
 void
+ResourceManager::request_sha1(const ResourceLocator& locator, 
+                              const std::function<void (Failable<SHA1>)>& callback)
+{
+  ResourceLocator blob_locator = locator.get_blob_locator();
+  if (blob_locator.get_url().is_remote())
+  {
+    request_url_info(locator.get_url().get_path(),
+                     [callback](const Failable<URLInfo>& url_info)
+                     {
+                       try
+                       {
+                         callback(url_info.get().get_sha1());
+                       }
+                       catch(...)
+                       {
+                         callback(Failable<SHA1>(std::current_exception()));
+                       }
+                     });
+  }
+  else
+  {
+    request_file_info(locator.get_url().get_path(),
+                      [callback](const Failable<FileInfo>& file_info)
+                      {
+                        try
+                        {
+                          callback(file_info.get().get_sha1());
+                        }
+                        catch(...)
+                        {
+                          callback(Failable<SHA1>(std::current_exception()));
+                        }
+                      });    
+  }
+}
+
+void
 ResourceManager::request_file_info(const std::string& filename, 
                                    const std::function<void (Failable<FileInfo>)>& callback)
 {
@@ -131,25 +171,63 @@ void
 ResourceManager::request_url_info(const std::string& url,
                                   const std::function<void (Failable<URLInfo>)>& callback)
 {
+#if 0
+  m_database.request_url_info
+    (url, 
+     [](const boost::optional<URLInfo>& url_info)
+     {
+       if (url_info)
+       {
+         callback(url_info);
+       }
+       else
+       {
+         m_download_mgr.request_get
+           (url,
+            [](const DownloadResult& result)
+            {
+              if (result.success())
+              {
+                URLInfo info(result.get_mtime(), result.get_content_type());
+                callback(url_info);
+              }
+              else
+              {
+                Failable<ResourceInfo> failable;
+                failable.set_exception(std::make_exception_ptr(std::runtime_error("request URLInfo failed")));
+                callback(failable);
+              }
+            }
+       }
+     });
+#endif
 }
 
 void
-ResourceManager::request_resource_info(const SHA1& sha1, 
+ResourceManager::request_resource_info(const ResourceLocator& locator, const SHA1& sha1,
                                        const std::function<void (Failable<ResourceInfo>)>& callback)
 {
+  Failable<ResourceInfo> result;
+  result.set_exception(std::make_exception_ptr(std::runtime_error("ResourceInfo request not yet implemented")));
+  callback(result);    
+
   /*
-  m_database.request_resource_info(sha1, [this, callback](const boost::optional<ResourceInfo>&)>& resource_info){
-    if (resource_info)
-    {
-      callback(*resource_info);
-    }
-    else
-    {
-      m_generator.request_resource_info(??? [this, callback](const Failable<ResourceInfo>&){
+   m_database.request_resource_info
+    (locator, sha1,
+     [this, callback](const boost::optional<ResourceInfo>& resource_info) 
+     {
+       if (resource_info)
+       {
+         callback(*resource_info);
+       }
+       else
+       {
+         log_error("not implemented");
+         m_generator.request_resource_info(??? [this, callback](const Failable<ResourceInfo>&){
           
-        });
-    }
-  });
+           });
+        }
+     });
   */
 }
 
@@ -157,28 +235,62 @@ void
 ResourceManager::request_resource_info(const ResourceLocator& locator,
                                        const std::function<void (const Failable<ResourceInfo>&)>& callback)
 {
-#if 0
-  auto file_entry_callback = [](const boost::optional<FileEntry>& file_entry)
-    {
-      if (!file_entry)
-      {
-        m_generator.request_file_entry();
-      }
-      else
-      {
-        m_database.request_resource(image.get_rowid(), scale, x, y, 
-                                  [](const ResourceEntry& resource_entry));
-      }
-    };
-
-  m_database.request_file_entry(locator, file_entry_callback);
-#endif
+  if (locator.get_url().get_scheme() == "file")
+  {
+    request_file_info
+      (locator.get_url().get_path(),
+       [this, locator, callback](const Failable<FileInfo>& data)
+       {
+         try
+         {
+           const FileInfo& file_info = data.get();
+           request_resource_info(locator, file_info.get_sha1(), callback);
+         }
+         catch(...)
+         {
+           Failable<ResourceInfo> result;
+           result.set_exception(std::current_exception());
+           callback(result);
+         }
+       });
+  }
+  else if (locator.get_url().is_remote())
+  {
+    Failable<ResourceInfo> result;
+    result.set_exception(std::make_exception_ptr(std::runtime_error("remote URLs not yet implemented")));
+    callback(result);    
+  }
+  else
+  {
+    Failable<ResourceInfo> result;
+    result.set_exception(std::make_exception_ptr(std::runtime_error("unknown URL schema")));
+    callback(result);
+  }
 }
 
 void
 ResourceManager::request_image_info(const ResourceInfo& resource,
                                     const std::function<void (const Failable<ImageInfo>&)>& callback)
 {
+  m_database.request_image_info
+    (resource,
+     [this, resource, callback](const boost::optional<ImageInfo> image_info)
+     {
+       if (image_info)
+       {
+         callback(*image_info);
+       }
+       else
+       {
+        m_generator.request_image_info
+          (resource, 
+           // full generation or incremental generation
+           [this, callback](const Failable<ImageInfo>& result)
+           {
+             
+           });
+       }
+     });
 }
 
 void

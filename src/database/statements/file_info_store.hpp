@@ -35,6 +35,7 @@ public:
 
   RowId operator()(const FileInfo& file_info)
   {
+    // FIXME: Add conflict resolution when two files share the same SHA1, write BlobInfoStore
     m_blob_stmt.bind_text(1, file_info.get_sha1().str());
     m_blob_stmt.bind_int(2, file_info.get_size());
     m_blob_stmt.execute();

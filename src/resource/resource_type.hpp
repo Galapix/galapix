@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,21 +16,19 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "resource_table.hpp"
+#ifndef HEADER_GALAPIX_RESOURCE_RESOURCE_TYPE_HPP
+#define HEADER_GALAPIX_RESOURCE_RESOURCE_TYPE_HPP
 
-ResourceTable::ResourceTable(SQLiteConnection& db) :
-  m_db(db)
+#include <ostream>
+
+enum class ResourceType
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS resource (\n"
-            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  blob_id   INTEGER,\n"
-            "  type      TEXT,\n"
-            "  handler   TEXT,\n"
-            "  arguments TEXT,\n"
-            "  status    TEXT\n"
-            ");");
+  Unknown, Blob, Image, Video, Archive, Collection
+};
 
-  //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
-}
+ResourceType ResourceType_from_string(const std::string& value);
+std::ostream& operator<<(std::ostream& os, ResourceType type);
+
+#endif
 
 /* EOF */

@@ -32,6 +32,8 @@
 #include "database/statements/image_entry_get.hpp"
 #include "database/statements/image_entry_store.hpp"
 #include "database/statements/resource_entry_get_by_blob_id.hpp"
+#include "database/statements/resource_info_get.hpp"
+#include "database/statements/resource_info_store.hpp"
 #include "database/tables/archive_table.hpp"
 #include "database/tables/blob_table.hpp"
 #include "database/tables/file_table.hpp"
@@ -41,17 +43,24 @@
 #include "math/size.hpp"
 #include "sqlite/statement.hpp"
 #include "resource/file_info.hpp"
+#include "resource/image_info.hpp"
 #include "resource/resource_info.hpp"
+#include "resource/url_info.hpp"
 
 class Database;
-class OldFileEntry;
+class FileInfoGetByPath;
+class FileInfoStore;
 class ImageEntry;
+class OldFileEntry;
+class ResourceHandler;
+class ResourceInfo;
+class ResourceLocator;
+class SHA1;
 class TileEntry;
 class URL;
-class SHA1;
-class FileInfoStore;
-class FileInfoGetByPath;
-
+class URLInfo;
+class URLInfoGet;
+class URLInfoStore;
 
 /** The ResourceDatabase keeps a record of all files that have been
     viewed. It keeps information on the last modification time and
@@ -74,6 +83,9 @@ private:
 
   std::unique_ptr<FileInfoStore>     m_file_info_store;
   std::unique_ptr<FileInfoGetByPath> m_file_info_get_by_path;
+
+  std::unique_ptr<URLInfoStore> m_url_info_store;
+  std::unique_ptr<URLInfoGet>   m_url_info_get;
   
   FileEntryGetAll          m_file_entry_get_all;
   //FileEntryGetByFileId     m_file_entry_get_by_fileid;
@@ -85,16 +97,26 @@ private:
   ImageEntryStore          m_image_entry_store;
   ImageEntryGet            m_image_entry_get;
   ResourceEntryGetByBlobId m_resource_entry_get_by_blob_id;
+  
+  ResourceInfoGet   m_resource_info_get;
+  ResourceInfoStore m_resource_info_store;
 
 public:
   ResourceDatabase(SQLiteConnection& db);
   ~ResourceDatabase();
 
+  boost::optional<ImageInfo> get_image_info(const ResourceInfo& resource);
+  RowId store_image_info(const ImageInfo& image_info);
+
+  boost::optional<ResourceInfo> get_resource_info(const ResourceLocator& locator, const SHA1& sha1);
+  boost::optional<ResourceInfo> get_resource_info(const SHA1& sha1);
+  RowId store_resource_info(const ResourceInfo& resource_info);
+
   boost::optional<FileInfo> get_file_info(const std::string& path);
   RowId store_file_info(const FileInfo& file_info);
 
-  boost::optional<ResourceInfo> get_resource_info(const SHA1& sha1);
-  RowId store_resource_info(const ResourceInfo& resource_info);
+  boost::optional<URLInfo> get_url_info(const std::string& url);
+  RowId store_url_info(const URLInfo& url_info);
 
   boost::optional<FileEntry> get_file_entry(const std::string& path);
   void get_file_entries(std::vector<FileEntry>& entries_out);

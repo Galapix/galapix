@@ -83,6 +83,12 @@ ResourceURL::from_string(const std::string& url)
   }
 }
 
+bool
+ResourceURL::is_remote() const
+{
+  return m_scheme != "file";
+}
+
 std::string 
 ResourceURL::str() const
 {

@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,21 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "resource_table.hpp"
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_URL_INFO_STORE_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_URL_INFO_STORE_HPP
 
-ResourceTable::ResourceTable(SQLiteConnection& db) :
-  m_db(db)
+class URLInfoStore
 {
-  m_db.exec("CREATE TABLE IF NOT EXISTS resource (\n"
-            "  id        INTEGER PRIMARY KEY AUTOINCREMENT,\n"
-            "  blob_id   INTEGER,\n"
-            "  type      TEXT,\n"
-            "  handler   TEXT,\n"
-            "  arguments TEXT,\n"
-            "  status    TEXT\n"
-            ");");
+private:
+  SQLiteStatement m_stmt;
 
-  //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
-}
+public:
+  URLInfoStore(SQLiteConnection& db) :
+    m_stmt(db, "")
+  {}
+
+  RowId operator()(const URLInfo& url_info)
+  {
+    log_error("not implemented");
+    return RowId();
+  }
+
+private:
+  URLInfoStore(const URLInfoStore&);
+  URLInfoStore& operator=(const URLInfoStore&);
+};
+
+#endif
 
 /* EOF */

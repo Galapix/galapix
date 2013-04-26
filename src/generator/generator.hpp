@@ -20,20 +20,26 @@
 #define HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
 
 #include "resource/file_info.hpp"
-#include "util/async_messenger.hpp"
 #include "util/failable.hpp"
-#include "job/job_manager.hpp"
+#include "util/thread_pool.hpp"
 
-class Generator// : public AsyncMessenger
+class ImageInfo;
+class ResourceInfo;
+
+class Generator
 {
 private:
-  JobManager& m_job_manager;
-
+  ThreadPool m_pool;
+  
 public:
-  Generator(JobManager& job_manager);
+  Generator();
+  ~Generator();
 
   void request_file_info(const std::string& path, 
                          const std::function<void (const Failable<FileInfo>&)>& callback);
+
+  void request_image_info(const ResourceInfo& resource,
+                          const std::function<void (const Failable<ImageInfo>&)>& callback);
 
 private:
   Generator(const Generator&);

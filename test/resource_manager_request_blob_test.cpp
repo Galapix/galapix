@@ -17,7 +17,7 @@ int main(int argc, char** argv)
   job_manager.start_thread();
 
   DatabaseThread database(db, job_manager);
-  Generator generator(job_manager);
+  Generator generator;
   DownloadManager download_mgr;
   ArchiveManager archive_mgr;
 
