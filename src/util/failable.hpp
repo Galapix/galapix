@@ -36,11 +36,10 @@ private:
 
 public:
   template<typename E>
-  static Failable<T> from_exception(const E& e) 
+  static Failable<T> from_exception(const E& e)
   {
     return Failable<T>(std::make_exception_ptr(e));
   }
-
 
   Failable() :
     m_initialized(false),
