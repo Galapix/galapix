@@ -18,26 +18,53 @@
 
 #include <iostream>
 
-#include "scheduler/scheduler.hpp"
+#include "util/thread_pool.hpp"
 
 int main()
 {
-  ThreadPool pool(4);
-  std::mutex mutex;
-
-  for(int i = 0; i < 100; ++i)
   {
-    pool.schedule([i, &mutex]{
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        {
-          std::lock_guard<std::mutex> lock(mutex);
-          std::cout << "task " << i << std::endl;
-        }
-      });
+    std::cout << "TEST: ThreadPool::~ThreadPool()" << std::endl;
+    ThreadPool pool(4);
+    std::mutex mutex;
+
+    for(int i = 0; i < 30; ++i)
+    {
+      pool.schedule([i, &mutex]{
+          std::this_thread::sleep_for(std::chrono::milliseconds(200));
+          {
+            std::lock_guard<std::mutex> lock(mutex);
+            std::cout << "task " << i << std::endl;
+          }
+        });
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "ThreadPool::~ThreadPool()" << std::endl;
   }
 
-  std::this_thread::sleep_for(std::chrono::seconds(1));
-  pool.abort();
+  {
+    std::cout << "TEST: ThreadPool::abort()" << std::endl;
+    ThreadPool pool(4);
+    std::mutex mutex;
+
+    for(int i = 0; i < 30; ++i)
+    {
+      pool.schedule([i, &mutex]{
+          std::this_thread::sleep_for(std::chrono::milliseconds(200));
+          {
+            std::lock_guard<std::mutex> lock(mutex);
+            std::cout << "task " << i << std::endl;
+          }
+        });
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::cout << "ThreadPool::abort()" << std::endl;
+    pool.abort();
+  }
+
+  {
+    std::cout << "TEST: empty ThreadPool" << std::endl;
+    ThreadPool pool(4);
+  }
 }
 
 /* EOF */
