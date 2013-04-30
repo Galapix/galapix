@@ -18,11 +18,16 @@
 
 #include "generator/generator.hpp"
 
+#include "resource/blob_manager.hpp"
 #include "resource/image_info.hpp"
 #include "resource/resource_info.hpp"
+#include "resource/resource_status.hpp"
 #include "util/log.hpp"
+#include "util/software_surface_factory.hpp"
+#include "util/software_surface_loader.hpp"
 
-Generator::Generator() :
+Generator::Generator(BlobManager& blob_mgr) :
+  m_blob_mgr(blob_mgr),
   m_pool(4)
 {
 }
@@ -57,6 +62,105 @@ Generator::request_file_info(const std::string& path,
         callback(result);
       }
     });
+}
+
+void
+Generator::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob_info,
+                                 const std::function<void (Failable<ResourceInfo>)>& callback)
+{
+  m_blob_mgr.request_blob
+    (locator,
+     [this, locator, blob_info, callback](const Failable<BlobPtr>& result)
+     {
+       try
+       {
+         BlobPtr blob = result.get();
+         m_pool.schedule
+           ([this, locator, blob, blob_info, callback]
+            {
+              try
+              {
+                //ResourceInfo info = generate_resource_info(locator, blob, blob_info);
+                //callback(info);
+              }
+              catch(...)
+              {
+                callback(Failable<ResourceInfo>(std::current_exception()));
+              }
+            });
+       }
+       catch(...)
+       {
+         callback(Failable<ResourceInfo>(std::current_exception()));
+       }
+     });
+}
+
+void
+Generator::request_resource_processing(const ResourceLocator& locator,
+                                       GeneratorCallbacksPtr callbacks)
+{
+  
+}
+
+void
+Generator::request_resource_processing(const ResourceLocator& locator, const BlobInfo& blob_info,
+                                       GeneratorCallbacksPtr callbacks)
+{
+#if 0
+  m_blob_mgr.request_blob
+    (locator,
+     [this, locator, blob_info, callbacks](const Failable<BlobPtr>& result)
+     {
+       try
+       {
+         BlobPtr blob = result.get();
+         m_pool.schedule
+           ([this, locator, blob, blob_info, callbacks]
+            {
+              try
+              {
+                ResourceInfo info = generate_resource_info(locator, blob, blob_info);
+                callback(info);
+              }
+              catch(...)
+              {
+                callback(Failable<ResourceInfo>(std::current_exception()));
+              }
+            });
+       }
+       catch(...)
+       {
+         callback(Failable<ResourceInfo>(std::current_exception()));
+       }
+     });
+#endif
+}
+
+void
+Generator::process_resource(const ResourceLocator& locator, const BlobPtr& blob, const BlobInfo& blob_info,
+                            GeneratorCallbacksPtr callbacks)
+{
+  // FIXME: 
+  // 1) use BlobAccessor instead
+  // 2) pass BlobAccessor to SurfaceFactory
+  //    - const SoftwareSurfaceLoader* find_loader_by_filename(const std::string& filename) const;
+  //    - const SoftwareSurfaceLoader* find_loader_by_magic(const std::string& data) const;
+  // 3) add magic to detect archives
+  // 4) return ResourceInfo
+  const SoftwareSurfaceLoader* loader = SoftwareSurfaceFactory::current().find_loader_by_magic(blob);
+  if (loader)
+  {
+    ResourceHandler handler("image", loader->get_name(), std::string());
+    ResourceInfo resource_info(RowId(), 
+                               ResourceName(blob_info, handler), 
+                               ResourceStatus::InProgress);
+    callbacks->on_resource_info(resource_info);
+  }
+  else
+  {
+    throw std::runtime_error("Generator: unknown image type");
+  }
 }
 
 void

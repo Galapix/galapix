@@ -19,20 +19,30 @@
 #ifndef HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
 #define HEADER_GALAPIX_GENERATOR_GENERATOR_HPP
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include "resource/file_info.hpp"
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
+#include "generator/generator_callbacks.hpp"
 
+class BlobInfo;
+class BlobManager;
+class Extraction;
 class ImageInfo;
 class ResourceInfo;
+class ResourceLocator;
 
 class Generator
 {
 private:
+  BlobManager& m_blob_mgr;
   ThreadPool m_pool;
   
 public:
-  Generator();
+  Generator(BlobManager& blob_mgr);
   ~Generator();
 
   void request_file_info(const std::string& path, 
@@ -41,9 +51,22 @@ public:
   void request_image_info(const ResourceInfo& resource,
                           const std::function<void (const Failable<ImageInfo>&)>& callback);
 
+  void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
+                             const std::function<void (Failable<ResourceInfo>)>& callback);
+
+  void request_resource_processing(const ResourceLocator& locator,
+                                   GeneratorCallbacksPtr callbacks);
+
+  void request_resource_processing(const ResourceLocator& locator, const BlobInfo& blob,
+                                   GeneratorCallbacksPtr callbacks);
+
 private:
-  Generator(const Generator&);
-  Generator& operator=(const Generator&);
+  void process_resource(const ResourceLocator& locator, const BlobPtr& blob, const BlobInfo& blob_info,
+                        GeneratorCallbacksPtr callbacks);
+
+private:
+  Generator(const Generator&) = delete;
+  Generator& operator=(const Generator&) = delete;
 };
 
 #endif
