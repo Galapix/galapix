@@ -24,6 +24,7 @@
 #include <stdexcept>
 
 #include "database/row_id.hpp"
+#include "resource/blob_info.hpp"
 #include "resource/resource_handler.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/resource_name.hpp"
@@ -34,38 +35,34 @@ class ResourceInfo
 {
 private:
   RowId m_id;
-  SHA1 m_sha1;
-  ResourceHandler m_handler;
+  ResourceName m_name;
   ResourceStatus m_status;
   
 public:
   ResourceInfo() :
     m_id(),
-    m_sha1(),
-    m_handler(),
+    m_name(),
     m_status()
   {}
 
   ResourceInfo(const RowId& id, const ResourceInfo& other) :
     m_id(id),
-    m_sha1(other.m_sha1),
-    m_handler(other.m_handler),
+    m_name(other.m_name),
     m_status(other.m_status)
   {}
 
   ResourceInfo(const RowId& id,
-               const SHA1& sha1,
-               const ResourceHandler& handler,
+               const ResourceName& name,
                ResourceStatus status) :
     m_id(id),
-    m_sha1(sha1),
-    m_handler(handler),
+    m_name(name),
     m_status(status)
   {}
 
   RowId get_id() const { return m_id; }
-  const SHA1& get_sha1() const { return m_sha1; }
-  ResourceHandler get_handler() const { return m_handler; }
+  BlobInfo get_blob() const { return m_name.get_blob_info(); }
+  ResourceHandler get_handler() const { return m_name.get_handler(); }
+  ResourceName get_resource_name() const { return m_name; }
   ResourceStatus get_status() const { return m_status; }
 
   //ResourceLocator get_locator() const { return m_locator; }

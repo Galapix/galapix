@@ -19,6 +19,7 @@
 #ifndef HEADER_GALAPIX_RESOURCE_BLOB_INFO_HPP
 #define HEADER_GALAPIX_RESOURCE_BLOB_INFO_HPP
 
+#include "database/row_id.hpp"
 #include "util/blob.hpp"
 #include "util/sha1.hpp"
 
@@ -50,8 +51,8 @@ public:
   {}
 
   RowId get_id() const { return m_id; }
-  SHA1 get_sha1() const { return m_sha1; }
-  int  get_size() const { return m_size; }
+  SHA1  get_sha1() const { return m_sha1; }
+  int   get_size() const { return m_size; }
 };
 
 #endif
