@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,28 +16,31 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_ARCHIVE_INFO_HPP
-#define HEADER_GALAPIX_GALAPIX_ARCHIVE_INFO_HPP
+#ifndef HEADER_GALAPIX_RESOURCE_ARCHIVE_FILE_INFO_HPP
+#define HEADER_GALAPIX_RESOURCE_ARCHIVE_FILE_INFO_HPP
 
-#include "resource/archive_file_info.hpp"
+#include <string>
 
-class ArchiveInfo
+#include "database/row_id.hpp"
+#include "resource/blob_info.hpp"
+
+class ArchiveFileInfo
 {
 private:
-  std::vector<ArchiveFileInfo> m_files;
-  std::string m_password;
-  bool m_has_password;
+  RowId m_id;
+  std::string m_path;
+  BlobInfo m_blob_info;  
 
 public:
-  ArchiveInfo() :
-    m_files(),
-    m_password(),
-    m_has_password()
+  ArchiveFileInfo() :
+    m_id(),
+    m_path(),
+    m_blob_info()
   {}
 
-  std::vector<ArchiveFileInfo> get_files() const { return m_files; }
-  std::string get_password() const { return m_password; }
-  bool has_password() const { return m_has_password; }
+  RowId get_id() const { return m_id; }
+  std::string get_path() const { return m_path; }
+  BlobInfo get_blob_info() const { return m_blob_info; }
 };
 
 #endif
