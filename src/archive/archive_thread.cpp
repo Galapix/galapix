@@ -46,7 +46,7 @@ ArchiveThread::request_blob(const std::string archive_filename, const std::strin
        }
        catch(...)
        {
-         callback(Failable<BlobPtr>::from_exception(std::current_exception()));
+         callback(Failable<BlobPtr>(std::current_exception()));
        }
      });
 }
@@ -76,7 +76,7 @@ ArchiveThread::request_extraction(const std::string& archive_filename,
        }
        catch(...)
        {
-         callback(Failable<ExtractionPtr>::from_exception(std::current_exception()));
+         callback(Failable<ExtractionPtr>(std::current_exception()));
        }
      });
 }
