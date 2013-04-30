@@ -31,6 +31,7 @@
 #include "job/thread_message_queue2.hpp"
 #include "util/failable.hpp"
 
+class BlobInfo;
 class Database;
 class DatabaseMessage;
 class FileInfo;
@@ -79,8 +80,8 @@ public:
   void store_image_info(const ImageInfo& image_info,
                        const std::function<void (const Failable<ImageInfo>&)>& callback);
 
-  void request_resource_info(const ResourceLocator& locator, const SHA1& sha1,
-                             const std::function<void (const Failable<ResourceInfo>&)>& callback);
+  void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
+                             const std::function<void (const boost::optional<ResourceInfo>&)>& callback);
   void store_resource_info(const ResourceInfo& resource_info,
                            const std::function<void (const Failable<ResourceInfo>&)>& callback);
   

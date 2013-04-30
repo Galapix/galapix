@@ -113,8 +113,8 @@ public:
   boost::optional<ImageInfo> get_image_info(const ResourceInfo& resource);
   RowId store_image_info(const ImageInfo& image_info);
 
-  boost::optional<ResourceInfo> get_resource_info(const ResourceLocator& locator, const SHA1& sha1);
-  boost::optional<ResourceInfo> get_resource_info(const SHA1& sha1);
+  boost::optional<ResourceInfo> get_resource_info(const ResourceLocator& locator, const BlobInfo& blob);
+  boost::optional<ResourceInfo> get_resource_info(const BlobInfo& blob);
   RowId store_resource_info(const ResourceInfo& resource_info);
 
   boost::optional<FileInfo> get_file_info(const std::string& path);

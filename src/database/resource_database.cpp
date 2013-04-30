@@ -80,9 +80,16 @@ ResourceDatabase::store_image_info(const ImageInfo& image_info)
 }
 
 boost::optional<ResourceInfo>
-ResourceDatabase::get_resource_info(const ResourceLocator& locator, const SHA1& sha1)
+ResourceDatabase::get_resource_info(const ResourceLocator& locator, const BlobInfo& blob)
 {
-  return m_resource_info_get(locator, sha1);
+  return m_resource_info_get(locator, blob);
+}
+
+boost::optional<ResourceInfo>
+ResourceDatabase::get_resource_info(const BlobInfo& blob)
+{
+  log_debug("not implemented");
+  return boost::optional<ResourceInfo>();
 }
 
 RowId
@@ -121,13 +128,6 @@ ResourceDatabase::store_file_info(const FileInfo& file_info)
     (*m_blob_info_store)(file_info.get_blob());
   }
   return (*m_file_info_store)(file_info);
-}
-
-boost::optional<ResourceInfo>
-ResourceDatabase::get_resource_info(const SHA1& sha1)
-{
-  log_debug("not implemented");
-  return boost::optional<ResourceInfo>();
 }
 
 boost::optional<FileEntry>

@@ -38,9 +38,9 @@ public:
   {}
 
   /** scan through all resource entries trying to find one that matches the given handler */
-  boost::optional<ResourceInfo> operator()(const ResourceLocator& locator, const SHA1& sha1)
+  boost::optional<ResourceInfo> operator()(const ResourceLocator& locator, const BlobInfo& blob)
   {
-    m_stmt.bind_text(1, sha1.str());
+    m_stmt.bind_text(1, blob.get_sha1().str());
 
     SQLiteReader reader = m_stmt.execute_query();
     
@@ -53,14 +53,17 @@ public:
       if (locator.get_handler().empty())
       {
         // locator doesn't provide us with a handler, so just return the first we find
-        return ResourceInfo(RowId(reader.get_int64(0)), sha1, locator.get_handler().back(),
+        return ResourceInfo(RowId(reader.get_int64(0)), 
+                            ResourceName(blob, 
+                                         ResourceHandler(reader.get_text(2), reader.get_text(3), reader.get_text(4))),
                             ResourceStatus_from_string(reader.get_text(5)));
       }
       else if (type    == locator.get_handler().back().get_type() ||
                handler == locator.get_handler().back().get_name() ||
                args    == locator.get_handler().back().get_args())
       {
-        return ResourceInfo(RowId(reader.get_int64(0)), sha1, locator.get_handler().back(),
+        return ResourceInfo(RowId(reader.get_int64(0)), 
+                            ResourceName(blob, locator.get_handler().back()),
                             ResourceStatus_from_string(reader.get_text(5)));
       }
     }

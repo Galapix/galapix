@@ -78,13 +78,14 @@ DatabaseThread::request_image_info(const ResourceInfo& resource,
 }
 
 void
-DatabaseThread::request_resource_info(const ResourceLocator& locator, const SHA1& sha1,
-                                      const std::function<void (const Failable<ResourceInfo>&)>& callback)
+DatabaseThread::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
+                                      const std::function<void (const boost::optional<ResourceInfo>&)>& callback)
 {
   m_request_queue.wait_and_push
-    ([this, locator, sha1]()
+    ([this, callback, locator, blob]()
      {
-       
+       boost::optional<ResourceInfo> result = m_database.get_resources().get_resource_info(locator, blob);
+       callback(result);
      });
 }
 

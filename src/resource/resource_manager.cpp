@@ -50,62 +50,6 @@ ResourceManager::~ResourceManager()
 }
 
 void
-ResourceManager::request_blob(const ResourceLocator& locator, 
-                              const std::function<void (Failable<BlobPtr>)>& callback)
-{
-  if (locator.get_handler().empty())
-  {
-    ResourceURL url = locator.get_url();
-    if (url.get_scheme() == "file")
-    {
-      std::async(std::launch::async, [=]{
-          try 
-          {
-            BlobPtr blob = Blob::from_file(url.get_path());
-            Failable<BlobPtr> failable(blob);
-            callback(blob);
-          }
-          catch(const std::exception& err)
-          {
-            Failable<BlobPtr> failable;
-            failable.set_exception(std::make_exception_ptr(err));
-            callback(failable);
-          }
-        });
-    }
-    else if (url.get_scheme() == "http"  ||
-             url.get_scheme() == "https" ||
-             url.get_scheme() == "ftp")
-    {
-      m_download_mgr.request_get(url.str(), [=](const DownloadResult& result) {
-          if (result.success())
-          {
-            callback(Failable<BlobPtr>(result.get_blob()));
-          }
-          else
-          {
-            Failable<BlobPtr> failable;
-            failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: invalid response code: %d", 
-                                                                                     url.str(), result.get_response_code()))));
-            callback(failable);
-          }
-        });
-    }
-    else
-    {
-      Failable<BlobPtr> failable;
-      failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s", 
-                                                                               locator.str(), url.get_scheme()))));
-      callback(failable);
-    }
-  }
-  else
-  {
-    
-  }
-}
-
-void
 ResourceManager::request_blob_info(const ResourceLocator& locator, 
                                    const std::function<void (Failable<BlobInfo>)>& callback)
 {
@@ -205,31 +149,27 @@ ResourceManager::request_url_info(const std::string& url,
 }
 
 void
-ResourceManager::request_resource_info(const ResourceLocator& locator, const SHA1& sha1,
+ResourceManager::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
                                        const std::function<void (Failable<ResourceInfo>)>& callback)
 {
-  Failable<ResourceInfo> result;
-  result.set_exception(std::make_exception_ptr(std::runtime_error("ResourceInfo request not yet implemented")));
-  callback(result);    
-
-  /*
-    m_database.request_resource_info
-    (locator, sha1,
-    [this, callback](const boost::optional<ResourceInfo>& resource_info) 
-    {
-    if (resource_info)
-    {
-    callback(*resource_info);
-    }
-    else
-    {
-    log_error("not implemented");
-    m_generator.request_resource_info(??? [this, callback](const Failable<ResourceInfo>&){
-          
-    });
-    }
-    });
-  */
+  m_database.request_resource_info
+    (locator, blob,
+     [this, locator, blob, callback](const boost::optional<ResourceInfo>& reply) 
+     {
+       if (reply)
+       {
+         callback(*reply);
+       }
+       else
+       {
+         m_generator.request_resource_info
+           (locator, blob,
+            [callback](const Failable<ResourceInfo>& resource_info)
+            {
+              callback(resource_info);
+            });
+       }
+     });
 }
 
 void
@@ -245,21 +185,30 @@ ResourceManager::request_resource_info(const ResourceLocator& locator,
          try
          {
            const FileInfo& file_info = data.get();
-           request_resource_info(locator, file_info.get_sha1(), callback);
+           request_resource_info(locator, file_info.get_blob(), callback);
          }
          catch(...)
          {
-           Failable<ResourceInfo> result;
-           result.set_exception(std::current_exception());
-           callback(result);
+           callback(Failable<ResourceInfo>(std::current_exception()));
          }
        });
   }
   else if (locator.get_url().is_remote())
   {
-    Failable<ResourceInfo> result;
-    result.set_exception(std::make_exception_ptr(std::runtime_error("remote URLs not yet implemented")));
-    callback(result);    
+    request_url_info
+      (locator.get_url().str(),
+       [this, locator, callback](const Failable<URLInfo>& data)
+       {
+         try
+         {
+           const URLInfo& url_info = data.get();
+           request_resource_info(locator, url_info.get_blob(), callback);
+         }
+         catch(...)
+         {
+           callback(Failable<ResourceInfo>(std::current_exception()));
+         }
+       });
   }
   else
   {
