@@ -162,7 +162,7 @@ ArchiveManager::get_file(const std::string& archive, const std::string& filename
 }
 
 std::shared_ptr<Extraction>
-ArchiveManager::get_extraction(const std::string& archive)
+ArchiveManager::get_extraction(const std::string& archive) const
 {
   const auto& loader = get_loader(archive);
   if (loader.is_seekable(archive))
@@ -178,7 +178,7 @@ ArchiveManager::get_extraction(const std::string& archive)
 }
 
 std::string
-ArchiveManager::create_extraction_directory()
+ArchiveManager::create_extraction_directory() const
 {
   boost::filesystem::path directory = m_tmpdir / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
   log_info("creating directory: " << directory);

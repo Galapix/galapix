@@ -61,11 +61,11 @@ public:
      means the file are extracted to a temporary directiory, seekable
      archives are accessed directly. 
   */
-  std::shared_ptr<Extraction> get_extraction(const std::string& filename);
+  std::shared_ptr<Extraction> get_extraction(const std::string& filename) const;
 
 private:
   /** Returns a path to an empty directory that can be used for extractions */
-  std::string create_extraction_directory();
+  std::string create_extraction_directory() const;
 
   const ArchiveLoader& get_loader(const std::string& filename) const;
   const ArchiveLoader* find_loader_by_filename(const std::string& filename) const;
