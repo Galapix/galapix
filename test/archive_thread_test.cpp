@@ -36,7 +36,7 @@ int main(int argc, char** argv)
        {
          try
          {
-           std::cout << "extraction received" << std::endl;
+           std::cout << "extraction received: " << extraction.get() << std::endl;
          }
          catch(const std::exception& err)
          {
