@@ -57,7 +57,8 @@ public:
   void register_by_extension(const SoftwareSurfaceLoader* loader, const std::string& extension);
 
   const SoftwareSurfaceLoader* find_loader_by_filename(const std::string& filename) const;
-  const SoftwareSurfaceLoader* find_loader_by_magic(const std::string& filename) const;
+  const SoftwareSurfaceLoader* find_loader_by_magic(const std::string& data) const;
+  const SoftwareSurfaceLoader* find_loader_by_magic(const BlobPtr& data) const;
 
   SoftwareSurfacePtr from_url(const URL& url) const;
   SoftwareSurfacePtr from_file(const std::string& filename) const;
