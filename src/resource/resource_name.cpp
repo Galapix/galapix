@@ -18,8 +18,23 @@
 
 #include "resource/resource_name.hpp"
 
-ResourceName::ResourceName()
+ResourceName::ResourceName() :
+  m_blob_info(),
+  m_handler()
+{}
+
+ResourceName::ResourceName(const BlobInfo& blob_info,
+                           const ResourceHandler& handler) :
+  m_blob_info(blob_info),
+  m_handler(handler)
+{}
+
+std::string
+ResourceName::str() const
 {
+  std::ostringstream os;
+  os << "sha1:" << m_blob_info.get_sha1().str() << "-" << m_blob_info.get_size() << "//" << m_handler.str();
+  return os.str();
 }
 
 /* EOF */

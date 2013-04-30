@@ -19,6 +19,12 @@
 #ifndef HEADER_GALAPIX_GALAPIX_RESOURCE_NAME_HPP
 #define HEADER_GALAPIX_GALAPIX_RESOURCE_NAME_HPP
 
+#include <string>
+#include <sstream>
+
+#include "resource/blob_info.hpp"
+#include "resource/resource_handler.hpp"
+
 /** 
     The ResourceName uniquely identifies a resource. Resources stored
     in different places will have the same ResourceName when they
@@ -39,8 +45,18 @@
 class ResourceName
 {
 private:
+  BlobInfo m_blob_info;
+  ResourceHandler m_handler;
+
 public:
   ResourceName();
+  ResourceName(const BlobInfo& blob_info,
+               const ResourceHandler& handler);
+
+  BlobInfo get_blob_info() const { return m_blob_info; }
+  ResourceHandler get_handler() const { return m_handler; }
+
+  std::string str() const;
 };
 
 #endif
