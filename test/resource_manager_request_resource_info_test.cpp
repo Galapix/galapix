@@ -51,33 +51,33 @@ int main(int argc, char** argv)
   int count = 0;
   for(int i = 1; i < argc; ++i)
   {
-    std::string url = argv[i];
+    ResourceLocator locator = ResourceLocator::from_string(argv[i]);
 
-    resource_mgr.request_url_info
-      (url,
-       [&count, url](const Failable<URLInfo>& data) 
+    resource_mgr.request_resource_info
+      (locator, [&count](const Failable<ResourceInfo>& data)
        {
-        try
-        {
-          const URLInfo& info = data.get();
-          std::cout << "URL    : " << url << std::endl;
-          std::cout << "SHA1   : " << info.get_blob().get_sha1().str() << std::endl;
-          std::cout << "size   : " << info.get_blob().get_size() << std::endl;
-          std::cout << "mtime  : " << info.get_mtime() << std::endl;
-          std::cout << "content_type : " << info.get_content_type() << std::endl;
-        }
-        catch(const std::exception& err)
-        {
-          std::cout << "error: " << err.what() << std::endl;
-        }
-        count -= 1;
-      });
+         try
+         {
+           ResourceInfo info = data.get();
+           std::cout << "ResourceInfo retrieved:\n"
+                     << "  rowid : ";
+           if (info.get_id()) { std::cout << info.get_id().get_id(); } else { std::cout << "<invalid>"; } std::cout << '\n';
+           std::cout << "  status  : " << to_string(info.get_status()) << '\n'
+                     << "  blob    : " << info.get_blob().get_sha1().str() << " " << info.get_blob().get_size() << '\n'
+                     << "  handler : " << info.get_handler().str() << '\n';
+         }
+         catch(const std::exception& err)
+         {
+           std::cout << "Error: " << err.what() << std::endl;
+         }
+         count -= 1;
+       });
     count += 1;
   }
 
   log_debug("going into loop");
   while(count > 0) 
-  {
+  { 
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   log_debug("going out of loop");

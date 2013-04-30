@@ -24,9 +24,10 @@
 #include "generator/generator.hpp"
 #include "job/job_manager.hpp"
 #include "network/download_manager.hpp"
+#include "resource/blob_manager.hpp"
 #include "resource/file_info.hpp"
-#include "resource/resource_manager.hpp"
 #include "resource/resource_locator.hpp"
+#include "resource/resource_manager.hpp"
 
 int main(int argc, char** argv)
 {
@@ -38,9 +39,10 @@ int main(int argc, char** argv)
   job_manager.start_thread();
 
   DatabaseThread database(db, job_manager);
-  Generator generator;
   DownloadManager download_mgr;
   ArchiveManager archive_mgr;
+  BlobManager blob_mgr(download_mgr, archive_mgr);
+  Generator generator(blob_mgr);
 
   database.start_thread();
 

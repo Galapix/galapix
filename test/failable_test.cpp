@@ -37,11 +37,11 @@ std::ostream& operator<<(std::ostream& os, const Foo& foo)
 
 int main()
 {
-  Failable<Foo> foo;
-  {
+  Failable<Foo> foo = Failable<Foo>::from_exception(std::runtime_error("My Exception"));
+  if(false){
     foo.reset(Foo());
     foo.reset(Foo());
-    //foo.set_exception(std::copy_exception(std::runtime_error("My Exception")));
+    //foo.set_exception();
   }
   try 
   {
