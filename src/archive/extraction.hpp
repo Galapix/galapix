@@ -40,6 +40,8 @@ private:
   Extraction& operator=(const Extraction&) = delete;
 };
 
+typedef std::shared_ptr<Extraction> ExtractionPtr;
+
 #endif
 
 /* EOF */
