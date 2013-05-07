@@ -25,49 +25,45 @@
 
 #include "util/raise_exception.hpp"
 
-Blob::Blob(const std::vector<uint8_t>& data) :
-  m_data(new uint8_t[data.size()]),
-  m_len(data.size())
+Blob::Blob(std::vector<uint8_t> data) :
+  m_data(std::move(data))
 {
-  memcpy(m_data.get(), &*data.begin(), m_len);
 }
 
 Blob::Blob(const void* data, int len) :
-  m_data(new uint8_t[len]),
-  m_len(len)
+  m_data(len)
 {
-  memcpy(m_data.get(), data, m_len);
+  memcpy(m_data.data(), data, m_data.size());
 }
 
 Blob::Blob(int len) :
-  m_data(new uint8_t[len]),
-  m_len(len)
-{  
+  m_data(len)
+{
 }
 
 int
 Blob::size() const 
 {
-  return m_len;
+  return m_data.size();
 }
 
-uint8_t* 
+const uint8_t* 
 Blob::get_data() const 
 {
-  return m_data.get();
+  return m_data.data();
 }
 
 std::string
 Blob::str() const
 {
-  return std::string(reinterpret_cast<char*>(m_data.get()), m_len);
+  return std::string(reinterpret_cast<const char*>(m_data.data()), m_data.size());
 }
 
 void
 Blob::write_to_file(const std::string& filename)
 {
   std::ofstream out(filename.c_str(), std::ios::binary);
-  out.write(reinterpret_cast<char*>(m_data.get()), m_len);
+  out.write(reinterpret_cast<const char*>(m_data.data()), m_data.size());
 }
 
 
@@ -107,9 +103,9 @@ Blob::copy(const void* data, int len)
 }
 
 BlobPtr
-Blob::copy(const std::vector<uint8_t>& data)
+Blob::copy(std::vector<uint8_t> data)
 {
-  return BlobPtr(new Blob(data));
+  return BlobPtr(new Blob(std::move(data)));
 }
 
 /* EOF */

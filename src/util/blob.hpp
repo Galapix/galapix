@@ -33,17 +33,16 @@ typedef std::shared_ptr<Blob> BlobPtr;
 class Blob
 {
 private:
-  std::unique_ptr<uint8_t[]> m_data;
-  int m_len;
+  std::vector<uint8_t> m_data;
 
 private:
-  Blob(const std::vector<uint8_t>& data); 
+  Blob(std::vector<uint8_t> data);
   Blob(const void* data, int len);
   Blob(int len);
 
 public:
   int size() const;
-  uint8_t* get_data() const;
+  const uint8_t* get_data() const;
 
   std::string str() const;
   
@@ -56,7 +55,7 @@ public:
  
   /** Copy the given data into a Blob object */
   static BlobPtr copy(const void* data, int len);
-  static BlobPtr copy(const std::vector<uint8_t>& data);
+  static BlobPtr copy(std::vector<uint8_t> data);
 };
 
 #endif
