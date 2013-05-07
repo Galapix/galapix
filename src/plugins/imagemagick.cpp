@@ -156,7 +156,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 }
 
 SoftwareSurfacePtr
-Imagemagick::load_from_mem(void* data, int len)
+Imagemagick::load_from_mem(const void* data, int len)
 {
   // FIXME: Magick::Blob creates an unneeded copy of the data
   return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len))); 

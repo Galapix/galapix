@@ -457,7 +457,7 @@ SoftwareSurface::vflip()
 SoftwareSurfacePtr
 SoftwareSurface::crop(const Rect& rect_in)
 {
-  // FIXME: We could do a crop without copying contain, simply
+  // FIXME: We could do a crop without copying content, simply
   // reference the old SoftwareSurfaceImpl and have a different pitch
   // and pixel offset
   assert(rect_in.is_normal());

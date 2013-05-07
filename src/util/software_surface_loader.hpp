@@ -37,7 +37,7 @@ public:
   virtual SoftwareSurfacePtr from_file(const std::string& filename) const =0;
 
   virtual bool supports_from_mem() const =0;
-  virtual SoftwareSurfacePtr from_mem(uint8_t* data, int len) const =0;
+  virtual SoftwareSurfacePtr from_mem(const uint8_t* data, int len) const =0;
 
 private:
   SoftwareSurfaceLoader(const SoftwareSurfaceLoader&);

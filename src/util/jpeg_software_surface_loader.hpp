@@ -48,7 +48,7 @@ public:
     return JPEG::load_from_file(filename);
   }
 
-  SoftwareSurfacePtr from_mem(uint8_t* data, int len) const
+  SoftwareSurfacePtr from_mem(const uint8_t* data, int len) const
   {
     return JPEG::load_from_mem(data, len);
   }
