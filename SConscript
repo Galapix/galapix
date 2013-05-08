@@ -6,10 +6,10 @@ import os
 # CacheDir('cache')
 
 preset_cxxflags = {
-    'release':     [ "-std=c++11", "-O3", "-s" ],
-    'profile':     [ "-std=c++11", "-O2", "-g3", "-pg" ],
-    'debug':       [ "-std=c++11", "-O0", "-g3" ],
-    'development': [ "-std=c++11", "-O0", "-g3",
+    'release':     [ "-std=c++1y", "-O3", "-s" ],
+    'profile':     [ "-std=c++1y", "-O2", "-g3", "-pg" ],
+    'debug':       [ "-std=c++1y", "-O0", "-g3" ],
+    'development': [ "-std=c++1y", "-O0", "-g3",
                      # "-ansi",
                      "-pedantic",
                      "-Wall",
@@ -154,6 +154,7 @@ class Project:
                                                                  Glob("src/util/*.cpp") + \
                                                                  Glob("src/plugins/*.cpp") + \
                                                                  Glob("src/lisp/*.cpp") + \
+                                                                 Glob("src/jobs/*.cpp") + \
                                                                  Glob("src/resource/*.cpp") + \
                                                                  Glob("src/math/*.cpp"))
         
@@ -165,7 +166,6 @@ class Project:
                                                             Glob("src/galapix/*.cpp") + \
                                                             Glob("src/galapix/layouter/*.cpp") + \
                                                             Glob("src/job/*.cpp") + \
-                                                            Glob("src/jobs/*.cpp") + \
                                                             Glob("src/sqlite/*.cpp") + \
                                                             Glob("src/tools/*.cpp") + \
                                                             self.optional_sources)
