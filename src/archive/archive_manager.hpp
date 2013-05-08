@@ -44,6 +44,7 @@ public:
   ~ArchiveManager();
 
   bool is_archive(const std::string& filename) const;
+  bool is_archive(const BlobPtr& blob) const;
   
   /**
      Returns the list of files contained in the archive, if \a loader

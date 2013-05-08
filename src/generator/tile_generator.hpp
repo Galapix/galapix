@@ -16,34 +16,18 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
-#define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
+#ifndef HEADER_GALAPIX_GENERATOR_TILE_GENERATOR_HPP<2>
+#define HEADER_GALAPIX_GENERATOR_TILE_GENERATOR_HPP<2>
 
-class FileInfoStore
+class TileGenerator
 {
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
-  FileInfoStore(SQLiteConnection& db) :
-    m_db(db),
-    m_stmt(db, "INSERT OR REPLACE INTO file (path, mtime, blob_id) SELECT ?1, ?2, blob.id FROM blob WHERE blob.sha1 = ?3;")
-  {}
-
-  RowId operator()(const FileInfo& file_info)
-  {
-    m_stmt.bind_text (1, file_info.get_path());
-    m_stmt.bind_int  (2, file_info.get_mtime());
-    m_stmt.bind_text (3, file_info.get_blob_info().get_sha1().str());
-    m_stmt.execute();
-  
-    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
-  }
+  TileGenerator();
 
 private:
-  FileInfoStore(const FileInfoStore&) = delete;
-  FileInfoStore& operator=(const FileInfoStore&) = delete;
+  TileGenerator(const TileGenerator&) = delete;
+  TileGenerator& operator=(const TileGenerator&) = delete;
 };
 
 #endif

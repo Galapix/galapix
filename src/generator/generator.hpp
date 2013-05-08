@@ -26,6 +26,7 @@
 #include "resource/file_info.hpp"
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
+#include "util/software_surface.hpp"
 #include "generator/generator_callbacks.hpp"
 
 class BlobInfo;
@@ -48,21 +49,13 @@ public:
   void request_file_info(const std::string& path, 
                          const std::function<void (const Failable<FileInfo>&)>& callback);
 
-  void request_image_info(const ResourceInfo& resource,
-                          const std::function<void (const Failable<ImageInfo>&)>& callback);
-
-  void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
-                             const std::function<void (Failable<ResourceInfo>)>& callback);
-
   void request_resource_processing(const ResourceLocator& locator,
                                    GeneratorCallbacksPtr callbacks);
 
-  void request_resource_processing(const ResourceLocator& locator, const BlobInfo& blob,
-                                   GeneratorCallbacksPtr callbacks);
-
 private:
-  void process_resource(const ResourceLocator& locator, const BlobPtr& blob, const BlobInfo& blob_info,
+  void process_resource(const ResourceLocator& locator, const BlobPtr& blob,
                         GeneratorCallbacksPtr callbacks);
+  void process_image_resource(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks);
 
 private:
   Generator(const Generator&) = delete;

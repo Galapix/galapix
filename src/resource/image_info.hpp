@@ -35,6 +35,12 @@ public:
     m_height()
   {}
 
+  ImageInfo(const RowId& id, int width, int height) :
+    m_id(id),
+    m_width(width),
+    m_height(height)
+  {}
+
   ImageInfo(const RowId& id, const ImageInfo& image_info) :
     m_id(id),
     m_width(image_info.m_width),

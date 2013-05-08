@@ -19,6 +19,8 @@
 #ifndef HEADER_GALAPIX_GENERATOR_GENERATOR_CALLBACKS_HPP
 #define HEADER_GALAPIX_GENERATOR_GENERATOR_CALLBACKS_HPP
 
+#include "resource/resource_status.hpp"
+
 class ResourceInfo;
 class ArchiveInfo;
 class ArchiveFileInfo;
@@ -33,6 +35,9 @@ private:
 public:
   virtual ~GeneratorCallbacks() {}
 
+  virtual void on_child_resource   (const ResourceInfo    & resource_info)     = 0;
+
+  virtual void on_blob_info        (const BlobInfo        & blob_info)         = 0;
   virtual void on_resource_info    (const ResourceInfo    & resource_info)     = 0;
 
   virtual void on_archive_info     (const ArchiveInfo     & archive_info)      = 0;
@@ -43,6 +48,9 @@ public:
 
   virtual void on_video_info       (const VideoInfo       & video_info)        = 0;
   virtual void on_video_data       (const VideoData       & video_data)        = 0;
+
+  virtual void on_success(ResourceStatus status) = 0;
+  virtual void on_error(ResourceStatus status, const std::string& err) = 0;
 };
 
 typedef std::shared_ptr<GeneratorCallbacks> GeneratorCallbacksPtr;

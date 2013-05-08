@@ -59,6 +59,13 @@ public:
     m_status(status)
   {}
 
+  ResourceInfo(const ResourceName& name,
+               ResourceStatus status) :
+    m_id(),
+    m_name(name),
+    m_status(status)
+  {}
+
   RowId get_id() const { return m_id; }
   BlobInfo get_blob() const { return m_name.get_blob_info(); }
   ResourceHandler get_handler() const { return m_name.get_handler(); }

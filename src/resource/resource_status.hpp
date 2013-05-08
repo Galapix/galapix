@@ -22,12 +22,33 @@
 #include <string>
 #include <assert.h>
 
-enum class ResourceStatus {
+enum class ResourceStatus 
+{
+  /** ResourceStatus has not been set */
   Unknown,
+    
+  /** The underlying Blob could not be accessed, this might be
+      temporary (directory not mounted, CD not inserted, etc.) */
   AccessError,
+
+  /** No handler could be found for the given resource */
+  UnknownHandler,
+
+  /** The Blob could be accessed but the given handler was unable to
+      process it, this effect is permanent */
   HandlerError,
+
+  /** The Blob was fully processed and thumbnails and related cache
+      information was generated */
   Success, 
-  InProgress
+
+  /** Blob processing was started, but hasn't finished yet, the
+      information in the cache might be incomplete */
+  InProgress,
+
+  /** The resource is a JPEG or seekable archive and cache data is
+      generated on demand */
+  Incremental
 };
 
 ResourceStatus ResourceStatus_from_string(const std::string& value);

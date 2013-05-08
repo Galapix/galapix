@@ -34,7 +34,7 @@ public:
     m_type(), m_name(), m_args() 
   {}
 
-  ResourceHandler(const std::string& type, const std::string& name, const std::string& args) : 
+  ResourceHandler(const std::string& type, const std::string& name, const std::string& args = std::string()) : 
     m_type(type), m_name(name), m_args(args)
   {}
 

@@ -123,9 +123,9 @@ ResourceDatabase::get_file_info(const std::string& path)
 RowId
 ResourceDatabase::store_file_info(const FileInfo& file_info)
 {
-  if (!file_info.get_blob().get_id())
+  if (!file_info.get_blob_info().get_id())
   {
-    (*m_blob_info_store)(file_info.get_blob());
+    (*m_blob_info_store)(file_info.get_blob_info());
   }
   return (*m_file_info_store)(file_info);
 }

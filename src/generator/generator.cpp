@@ -18,8 +18,12 @@
 
 #include "generator/generator.hpp"
 
+#include "galapix/tile.hpp"
+#include "generator/image_data.hpp"
+#include "jobs/tile_generator.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/image_info.hpp"
+#include "resource/resource_cache_state.hpp"
 #include "resource/resource_info.hpp"
 #include "resource/resource_status.hpp"
 #include "util/log.hpp"
@@ -65,80 +69,35 @@ Generator::request_file_info(const std::string& path,
 }
 
 void
-Generator::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob_info,
-                                 const std::function<void (Failable<ResourceInfo>)>& callback)
-{
-  m_blob_mgr.request_blob
-    (locator,
-     [this, locator, blob_info, callback](const Failable<BlobPtr>& result)
-     {
-       try
-       {
-         BlobPtr blob = result.get();
-         m_pool.schedule
-           ([this, locator, blob, blob_info, callback]
-            {
-              try
-              {
-                //ResourceInfo info = generate_resource_info(locator, blob, blob_info);
-                //callback(info);
-              }
-              catch(...)
-              {
-                callback(Failable<ResourceInfo>(std::current_exception()));
-              }
-            });
-       }
-       catch(...)
-       {
-         callback(Failable<ResourceInfo>(std::current_exception()));
-       }
-     });
-}
-
-void
 Generator::request_resource_processing(const ResourceLocator& locator,
                                        GeneratorCallbacksPtr callbacks)
 {
-  
-}
-
-void
-Generator::request_resource_processing(const ResourceLocator& locator, const BlobInfo& blob_info,
-                                       GeneratorCallbacksPtr callbacks)
-{
-#if 0
   m_blob_mgr.request_blob
     (locator,
-     [this, locator, blob_info, callbacks](const Failable<BlobPtr>& result)
+     [this, locator, callbacks](const Failable<BlobPtr>& result)
      {
        try
        {
          BlobPtr blob = result.get();
          m_pool.schedule
-           ([this, locator, blob, blob_info, callbacks]
+           ([this, locator, blob, callbacks]
             {
-              try
-              {
-                ResourceInfo info = generate_resource_info(locator, blob, blob_info);
-                callback(info);
-              }
-              catch(...)
-              {
-                callback(Failable<ResourceInfo>(std::current_exception()));
-              }
+              process_resource(locator, blob, callbacks);
             });
+       }
+       catch(const std::exception& err)
+       {
+         callbacks->on_error(ResourceStatus::AccessError, err.what());
        }
        catch(...)
        {
-         callback(Failable<ResourceInfo>(std::current_exception()));
+         callbacks->on_error(ResourceStatus::AccessError, "unknown exception");
        }
      });
-#endif
 }
 
 void
-Generator::process_resource(const ResourceLocator& locator, const BlobPtr& blob, const BlobInfo& blob_info,
+Generator::process_resource(const ResourceLocator& locator, const BlobPtr& blob,
                             GeneratorCallbacksPtr callbacks)
 {
   // FIXME: 
@@ -148,91 +107,64 @@ Generator::process_resource(const ResourceLocator& locator, const BlobPtr& blob,
   //    - const SoftwareSurfaceLoader* find_loader_by_magic(const std::string& data) const;
   // 3) add magic to detect archives
   // 4) return ResourceInfo
+
+  // generate BlobInfo from the Blob
+  BlobInfo blob_info = BlobInfo::from_blob(blob);
+  callbacks->on_blob_info(blob_info);
+
+  // generate ImageData if it is an image
   const SoftwareSurfaceLoader* loader = SoftwareSurfaceFactory::current().find_loader_by_magic(blob);
   if (loader)
   {
-    ResourceHandler handler("image", loader->get_name(), std::string());
-    ResourceInfo resource_info(RowId(), 
-                               ResourceName(blob_info, handler), 
-                               ResourceStatus::InProgress);
-    callbacks->on_resource_info(resource_info);
+    ResourceName resource_name(blob_info, ResourceHandler("image", loader->get_name()));
+
+    // mark as in progress
+    callbacks->on_resource_info(ResourceInfo(resource_name, ResourceStatus::InProgress));
+
+    try
+    {
+      SoftwareSurfacePtr surface = loader->from_mem(blob->get_data(), blob->size());
+      //callbacks->on_image_info(ImageInfo(RowId(), surface->get_width(), surface->get_height()));
+      process_image_resource(surface, callbacks);
+      
+      // mark as success
+      callbacks->on_resource_info(ResourceInfo(resource_name, ResourceStatus::Success));
+    }
+    catch(const std::exception& err)
+    {
+      callbacks->on_error(ResourceStatus::AccessError, err.what());
+    }
+  }
+  else if (false /* ArchiveManager::is_archive(blob)) */)
+  {
+    // find archive type and stuff
+    callbacks->on_error(ResourceStatus::UnknownHandler, "Generator: not implemented");
   }
   else
   {
-    throw std::runtime_error("Generator: unknown image type");
+    callbacks->on_error(ResourceStatus::UnknownHandler, "Generator: unknown resource type");
   }
 }
 
 void
-Generator::request_image_info(const ResourceInfo& resource,
-                              const std::function<void (const Failable<ImageInfo>&)>& callback)
+Generator::process_image_resource(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks)
 {
-#if 0
-  m_pool.schedule
-    ([]{
-      try 
-      {
-        SoftwareSurfacePtr surface;
-        Size size;
-        int min_scale;
-        int max_scale;
-    
-        // FIXME: JPEG::filename_is_jpeg() is ugly
-        if (!m_url.is_remote() && JPEG::filename_is_jpeg(m_url.str()))
-        {
-          BlobPtr blob;
+  std::vector<Tile> tiles;
 
-          if (m_url.has_stdio_name())
-          {
-            size = JPEG::get_size(m_url.get_stdio_name());
-          }
-          else
-          {
-            blob = m_url.get_blob();
-            size = JPEG::get_size(blob->get_data(), blob->size());
-          }
+  int min_scale = 0;
+  int max_scale = 8; log_error("FIXME: incorrect max scale");
 
-          // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
-          file_entry = FileEntry(RowId(), m_url, m_url.get_size(), m_url.get_mtime(), FileEntry::kUnknownHandler);
+  TileGenerator::generate(surface, min_scale, max_scale,
+                          [&tiles](int x, int y, int scale, SoftwareSurfacePtr tile)
+                          {
+                            tiles.emplace_back(Tile(scale, Vector2i(x, y), tile));
+                          });
 
-          // 2^3 is the highest scale JPEG supports, so we limit the
-          // min_scale to that
-          min_scale = Math::min(min_scale, 3);
-
-          // FIXME: recalc min_scale from jpeg scale
-          if (!blob)
-          {
-            surface = JPEG::load_from_file(m_url.get_stdio_name(), Math::pow2(min_scale));
-          }
-          else
-          {
-            surface = JPEG::load_from_mem(blob->get_data(), blob->size(), Math::pow2(min_scale));
-          }
-        }
-        else
-        {
-          // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
-          surface = SoftwareSurfaceFactory::current().from_url(m_url);
-          size = surface->get_size();
-          file_entry = FileEntry(RowId(), m_url, m_url.get_size(), m_url.get_mtime(), FileEntry::kImageHandler);
-          min_scale = 0;
-          max_scale = file_entry.get_thumbnail_scale();
-        }
-
-        m_sig_file_callback(file_entry);
-    
-        TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale, 
-                                      [this](const Tile& tile){
-                                        m_sig_tile_callback(tile);
-                                      });
-      }
-      catch(const std::exception& err)
-      {
-        log_error("Error while processing " << m_url);
-        log_error("  Exception: " << err.what());
-      }
-    });
-#endif
+  // build ImageData
+  ImageData image_data(ImageInfo(RowId(), surface->get_width(), surface->get_height()), 
+                       std::move(tiles));
+  callbacks->on_image_data(image_data);
+  callbacks->on_success(ResourceStatus::Success);
 }
 
 /* EOF */

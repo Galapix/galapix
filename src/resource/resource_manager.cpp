@@ -76,7 +76,7 @@ ResourceManager::request_blob_info(const ResourceLocator& locator,
                       {
                         try
                         {
-                          callback(file_info.get().get_blob());
+                          callback(file_info.get().get_blob_info());
                         }
                         catch(...)
                         {
@@ -162,12 +162,15 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
        }
        else
        {
-         m_generator.request_resource_info
+         callback(Failable<ResourceInfo>::from_exception(std::runtime_error("not implemented")));
+#if 0     
+         m_generator.request_resource_processing
            (locator, blob,
             [callback](const Failable<ResourceInfo>& resource_info)
             {
               callback(resource_info);
             });
+#endif
        }
      });
 }
@@ -185,7 +188,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator,
          try
          {
            const FileInfo& file_info = data.get();
-           request_resource_info(locator, file_info.get_blob(), callback);
+           request_resource_info(locator, file_info.get_blob_info(), callback);
          }
          catch(...)
          {
@@ -232,13 +235,14 @@ ResourceManager::request_image_info(const ResourceInfo& resource,
        }
        else
        {
-         m_generator.request_image_info
-           (resource, 
+         /*
+         m_generator.request_resource_processing(resource,
             // full generation or incremental generation
             [this, callback](const Failable<ImageInfo>& result)
             {
              
             });
+         */
        }
      });
 }

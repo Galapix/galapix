@@ -154,4 +154,45 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
   while (scale <= max_scale);
 }
 
+
+void
+TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
+                              const std::function<void (int x, int y, SoftwareSurfacePtr)>& callback)
+{
+  int tile_w = (surface->get_width()  + (TILE_WIDTH  - 1)) / TILE_WIDTH;
+  int tile_h = (surface->get_height() + (TILE_HEIGHT - 1)) / TILE_HEIGHT;
+
+  for(int y = 0; y < tile_h; ++y)
+    for(int x = 0; x < tile_w; ++x)
+    {
+      SoftwareSurfacePtr croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
+                                                             Size(256, 256)));
+      
+      callback(x, y, croped_surface);
+    }
+}
+
+void
+TileGenerator::generate(SoftwareSurfacePtr surface, int min_scale, int max_scale,
+                        const std::function<void (int x, int y, int scale, SoftwareSurfacePtr)>& callback)
+{
+  Size target_size(surface->get_width()  / Math::pow2(min_scale),
+                   surface->get_height() / Math::pow2(min_scale));
+  surface = surface->scale(target_size);
+
+  for(int scale = min_scale; scale < max_scale; ++scale)
+  {
+    if (scale != min_scale)
+    {
+      surface = surface->halve();
+    }
+    
+    cut_into_tiles(surface, 
+                   [scale, callback](int x, int y, const SoftwareSurfacePtr& tile)
+                   {
+                     callback(x, y, scale, tile);
+                   });
+  }
+}
+
 /* EOF */

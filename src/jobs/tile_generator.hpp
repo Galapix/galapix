@@ -29,6 +29,9 @@ class FileEntry;
 class TileGenerator
 {
 private:
+  static const int TILE_WIDTH  = 256;
+  static const int TILE_HEIGHT = 256;
+
 public:
   static void generate_old(const URL& url,
                            int m_min_scale_in_db, int m_max_scale_in_db,
@@ -48,6 +51,14 @@ public:
                              const Size& original_size,
                              int min_scale, int max_scale,
                              const std::function<void (Tile)>& callback);
+
+  /** Cuts the given surface into tiles, returning the results to the callback */
+  static void cut_into_tiles(SoftwareSurfacePtr surface,
+                             const std::function<void (int x, int y, SoftwareSurfacePtr)>& callback);
+
+  /** Generate tiles for all the given downsample/scale levels */
+  static void generate(SoftwareSurfacePtr surface, int min_scale, int max_scale,
+                       const std::function<void (int x, int y, int scale, SoftwareSurfacePtr)>& callback);
 
 private:
   TileGenerator(const TileGenerator&);

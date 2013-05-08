@@ -16,40 +16,40 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GENERATOR_IMAGE_DATA_HPP
-#define HEADER_GALAPIX_GENERATOR_IMAGE_DATA_HPP
+#include "resource/resource_cache_state.hpp"
 
-#include "resource/image_info.hpp"
-#include "galapix/tile.hpp"
-
-class ImageData
+ResourceCacheState::ResourceCacheState()
 {
-private:
-  // ResourceLocator m_locator;
-  // ResoruceInfo m_resource_info
-  ImageInfo m_image_info;
-  std::vector<Tile> m_image_tiles;
+}
 
-public:
-  ImageData() :
-    m_image_info(),
-    m_image_tiles()
-  {}
+ResourceInfo
+ResourceCacheState::get_resource_info() const
+{
+  return ResourceInfo();
+}
 
-  ImageData(const ImageInfo& image_info,
-            std::vector<Tile> image_tiles) :
-    m_image_info(image_info),
-    m_image_tiles(std::move(image_tiles))
-  {}
+ImageInfo
+ResourceCacheState::get_image_info() const
+{
+  return ImageInfo();
+}
 
-  ImageInfo get_image_info() const { return m_image_info; }
-  const std::vector<Tile>& get_image_tiles() const { return m_image_tiles; }
+VideoInfo
+ResourceCacheState::get_video_info() const
+{
+  return VideoInfo();
+}
 
-private:
-  ImageData(const ImageData&) = delete;
-  ImageData& operator=(const ImageData&) = delete;
-};
+ArchiveInfo
+ResourceCacheState::get_archive_info() const
+{
+  return ArchiveInfo();
+}
 
-#endif
+std::vector<ResourceCacheState>
+ResourceCacheState::get_children() const
+{
+  return std::vector<ResourceCacheState>();
+}
 
 /* EOF */

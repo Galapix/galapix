@@ -91,6 +91,13 @@ ArchiveManager::is_archive(const std::string& filename) const
   }
 }
 
+bool
+ArchiveManager::is_archive(const BlobPtr& blob) const
+{
+  log_error("not implemented");
+  return false;
+}
+
 const ArchiveLoader& 
 ArchiveManager::get_loader(const std::string& filename) const
 {

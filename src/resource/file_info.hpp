@@ -31,7 +31,7 @@ private:
   RowId m_id;
   std::string m_path;
   int  m_mtime;
-  BlobInfo m_blob;
+  BlobInfo m_blob_info;
 
 public:
   static FileInfo from_file(const std::string& filename);
@@ -40,30 +40,30 @@ public:
     m_id(id),
     m_path(rhs.m_path),
     m_mtime(rhs.m_mtime),
-    m_blob(rhs.m_blob)
+    m_blob_info(rhs.m_blob_info)
   {}
 
   FileInfo(const RowId& id, const std::string& path, int mtime, const SHA1& sha1, int size) :
     m_id(id),
     m_path(path),
     m_mtime(mtime),
-    m_blob(sha1, size)
+    m_blob_info(sha1, size)
   {}
  
   FileInfo(const std::string& path, int mtime, const SHA1& sha1, int size) :
     m_id(),
     m_path(path),
     m_mtime(mtime),
-    m_blob(sha1, size)
+    m_blob_info(sha1, size)
   {}
     
   RowId get_id() const { return m_id; }
   std::string get_path() const { return m_path; }
   int  get_mtime() const { return m_mtime; }
-  BlobInfo get_blob() const { return m_blob; }
+  BlobInfo get_blob_info() const { return m_blob_info; }
 
-  SHA1 get_sha1() const { return m_blob.get_sha1(); }
-  int  get_size() const { return m_blob.get_size(); }
+  SHA1 get_sha1() const { return m_blob_info.get_sha1(); }
+  int  get_size() const { return m_blob_info.get_size(); }
 };
 
 #endif

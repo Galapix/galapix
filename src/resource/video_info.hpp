@@ -34,10 +34,6 @@ public:
   int get_height() const { return m_height; }
   float get_duration() const { return m_duration; }
   float get_aspect_ratio() const { return m_aspect_ratio; }
-
-private:
-  VideoInfo(const VideoInfo&);
-  VideoInfo& operator=(const VideoInfo&);
 };
 
 #endif
