@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
                                      if (result.success())
                                      {
-                                       std::cout.write(reinterpret_cast<char*>(result.get_blob()->get_data()),
+                                       std::cout.write(reinterpret_cast<const char*>(result.get_blob()->get_data()),
                                                        result.get_blob()->size());
                                      }
                                      else
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
                                       std::cout << "got " << result.get_response_code() << " for " << " " << args[1] << std::endl;
                                       if (result.success())
                                       {
-                                        std::cout.write(reinterpret_cast<char*>(result.get_blob()->get_data()),
+                                        std::cout.write(reinterpret_cast<const char*>(result.get_blob()->get_data()),
                                                         result.get_blob()->size());
                                       }
                                       else

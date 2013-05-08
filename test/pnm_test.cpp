@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     {
       BlobPtr blob = Blob::from_file(argv[i]);
 
-      SoftwareSurfacePtr surface = PNM::load_from_mem((char*)blob->get_data(), blob->size());
+      SoftwareSurfacePtr surface = PNM::load_from_mem(reinterpret_cast<const char*>(blob->get_data()), blob->size());
 
       std::ostringstream output_filename;
       output_filename << "/tmp/pnm_test" << i << ".png";
