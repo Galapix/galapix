@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_JOB_HPP
 #define HEADER_GALAPIX_GALAPIX_MANDELBROT_TILE_JOB_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 
 #include "job/job.hpp"
 #include "math/size.hpp"
@@ -32,11 +32,11 @@ private:
   Size     m_size;
   int      m_scale;
   Vector2i m_pos;
-  boost::function<void (Tile)> m_callback;
+  std::function<void (Tile)> m_callback;
 
 public:
   MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
-                    const boost::function<void (Tile)>& callback);
+                    const std::function<void (Tile)>& callback);
 
   void run();
 };

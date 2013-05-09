@@ -19,7 +19,6 @@
 #ifndef HEADER_GALAPIX_GALAPIX_WORKSPACE_HPP
 #define HEADER_GALAPIX_GALAPIX_WORKSPACE_HPP
 
-#include <boost/scoped_ptr.hpp>
 #include <set>
 
 #include "galapix/image.hpp"
@@ -34,25 +33,11 @@
 class Rectf;
 class Layouter;
 
-class ImageRequest
-{
-public:
-  URL      url;
-  Vector2f pos;
-  float    scale;
-
-public:
-  ImageRequest(const URL&      url_,
-               const Vector2f& pos_,
-               float           scale_) :
-    url(url_), pos(pos_), scale(scale_)
-  {}
-};
-
+/** The Workspace houses all the images, the current selection and
+    things like layouting of the image collection */
 class Workspace
 {
 private:
-  typedef std::vector<ImageRequest> ImageRequests;
 
 private:
   ImageCollection m_images;
@@ -63,7 +48,7 @@ private:
       start animation */
   float     m_progress;
 
-  ThreadMessageQueue<FileEntry> m_file_queue;
+  ThreadMessageQueue2<FileEntry> m_file_queue;
 
   LayouterPtr m_layouter;
 

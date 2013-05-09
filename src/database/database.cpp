@@ -25,25 +25,40 @@
 
 Database::Database(const std::string& prefix) :
   m_db(),
-  files(),
-  tiles()
+  m_tile_db(),
+  m_files(),
+  m_tiles()
 {
   Filesystem::mkdir(prefix);
+
   m_db.reset(new SQLiteConnection(prefix + "/cache3.sqlite3"));
-  files.reset(new FileDatabase(*this));
+  m_tile_db.reset(new SQLiteConnection(prefix + "/cache3_tiles.sqlite3"));
+
+  m_files.reset(new FileDatabase(*m_db));
 
   if (true)
   {
-    tiles.reset(new TileDatabase(*this));
+    m_tiles.reset(new TileDatabase(*m_tile_db, *m_files));
   }
   else
   {
-    tiles.reset(new CachedTileDatabase(*this, new FileTileDatabase(prefix + "/tiles")));
+    m_tiles.reset(new CachedTileDatabase(*this, new FileTileDatabase(prefix + "/tiles")));
   }
 }
 
 Database::~Database()
 {
+}
+
+void
+Database::delete_file_entry(const FileId& fileid)
+{
+  std::cout << "Begin Delete" << std::endl;
+  m_db->exec("BEGIN;");
+  m_tiles->delete_tiles(fileid);
+  m_files->delete_file_entry(fileid);
+  m_db->exec("END;");
+  std::cout << "End Delete" << std::endl;
 }
 
 void

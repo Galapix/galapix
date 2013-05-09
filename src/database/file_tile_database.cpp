@@ -171,9 +171,9 @@ FileTileDatabase::store_tile(const FileEntry& file_entry, const Tile& tile)
 void
 FileTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 {
-  for(std::vector<TileEntry>::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
+  for(const auto& tile_entry: tiles)
   {
-    store_tile(i->get_file_entry(), Tile(*i));
+    store_tile(tile_entry.get_file_entry(), Tile(tile_entry));
   }
 }
 

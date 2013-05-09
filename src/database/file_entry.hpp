@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_HPP
 #define HEADER_GALAPIX_DATABASE_FILE_ENTRY_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <assert.h>
 
 #include "database/file_id.hpp"
@@ -151,7 +151,7 @@ public:
   }
 
 private:
-  boost::shared_ptr<FileEntryImpl> impl;
+  std::shared_ptr<FileEntryImpl> impl;
 };
 
 std::ostream& operator<<(std::ostream& os, const FileEntry& entry);

@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_DATABASE_HPP
 #define HEADER_GALAPIX_DATABASE_DATABASE_HPP
 
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include "database/tile_database_interface.hpp"
 #include "database/file_database.hpp"
@@ -29,18 +29,19 @@
 class Database
 {
 private:
-  boost::scoped_ptr<SQLiteConnection> m_db;
-  boost::scoped_ptr<FileDatabase> files;
-  boost::scoped_ptr<TileDatabaseInterface> tiles;
+  std::unique_ptr<SQLiteConnection> m_db;
+  std::unique_ptr<SQLiteConnection> m_tile_db;
+  std::unique_ptr<FileDatabase> m_files;
+  std::unique_ptr<TileDatabaseInterface> m_tiles;
 
 public:
   Database(const std::string& prefix);
   ~Database();
 
-  SQLiteConnection& get_db() { return *m_db; }
+  FileDatabase& get_files() { return *m_files; }
+  TileDatabaseInterface& get_tiles() { return *m_tiles; }
 
-  FileDatabase& get_files() { return *files; }
-  TileDatabaseInterface& get_tiles() { return *tiles; }
+  void delete_file_entry(const FileId& fileid);
 
   void cleanup();
 

@@ -18,7 +18,7 @@
 
 #include "galapix/image.hpp"
 
-#include <boost/bind.hpp>
+#include <functional>
 #include <iostream>
 
 #include "database/file_entry.hpp"
@@ -69,10 +69,24 @@ Image::Image(const URL& url, TileProviderPtr provider) :
   set_provider(m_provider);
 }
 
+Image::~Image()
+{
+  for(auto& job: m_jobs)
+  {
+    job.set_aborted();
+  }
+}
+
 Vector2f
 Image::get_top_left_pos() const
 {
   return m_pos - Vector2f(get_scaled_width()/2, get_scaled_height()/2);
+}
+
+void
+Image::set_top_left_pos(const Vector2f& p)
+{
+  m_pos = p + Vector2f(get_scaled_width()/2, get_scaled_height()/2);
 }
 
 void
@@ -226,11 +240,9 @@ void
 Image::process_queues()
 {
   // Check if there was an update of the FileEntry
-  while(!m_file_entry_queue.empty())
+  FileEntry file_entry;
+  while(m_file_entry_queue.try_pop(file_entry))
   {
-    FileEntry file_entry = m_file_entry_queue.front();
-    m_file_entry_queue.pop();
-
     if (file_entry.get_image_size() == Size(0, 0))
     { // reject images with invalid size
       std::cout << "Image::Image(): invalid image size: " << file_entry << std::endl;
@@ -242,20 +254,19 @@ Image::process_queues()
     }
   }
 
-  while(!m_tile_queue.empty())
+  Tile tile;
+  while(m_tile_queue.try_pop(tile))
   {
     if (m_cache)
     {
-      m_cache->receive_tile(m_tile_queue.front());
+      m_cache->receive_tile(tile);
     }
-
-    m_tile_queue.pop();
   }
-
-  while(!m_tile_provider_queue.empty())
+  
+  TileProviderPtr tile_provider;
+  while(m_tile_provider_queue.try_pop(tile_provider))
   {
-    set_provider(m_tile_provider_queue.front());
-    m_tile_provider_queue.pop();
+    set_provider(tile_provider);
   }
 }
 
@@ -273,8 +284,8 @@ Image::draw(const Rectf& cliprect, float zoom)
     {
       m_file_entry_requested = true;
       m_jobs.push_back(DatabaseThread::current()->request_file(m_url,
-                                                               weak(boost::bind(&Image::receive_file_entry, _1, _2), m_self),
-                                                               weak(boost::bind(&Image::receive_tile, _1, _2, _3), m_self)));
+                                                               weak(std::bind(&Image::receive_file_entry, std::placeholders::_1, std::placeholders::_2), m_self),
+                                                               weak(std::bind(&Image::receive_tile, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3), m_self)));
     }
   }
   else
@@ -331,7 +342,7 @@ Image::refresh(bool force)
   {
     if (m_provider)
     {
-      m_provider->refresh(weak(boost::bind(&Image::receive_tile_provider, _1, _2), m_self));
+      m_provider->refresh(weak(std::bind(&Image::receive_tile_provider, std::placeholders::_1, std::placeholders::_2), m_self));
       clear_provider();
     }
   }
@@ -409,20 +420,20 @@ Image::receive_file_entry(const FileEntry& file_entry)
 {
   // std::cout << "Image::receive_file_entry: " << file_entry << std::endl;
   assert(file_entry);
-  m_file_entry_queue.push(file_entry);
+  m_file_entry_queue.wait_and_push(file_entry);
 }
 
 void
 
 Image::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_tile_queue.push(tile);
+  m_tile_queue.wait_and_push(tile);
 }
 
 void
 Image::receive_tile_provider(TileProviderPtr provider)
 {
-  m_tile_provider_queue.push(provider);
+  m_tile_provider_queue.wait_and_push(provider);
 }
 
 /* EOF */

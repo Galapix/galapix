@@ -18,6 +18,7 @@
 
 #include "galapix/workspace.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 #include "database/file_entry.hpp"
@@ -28,27 +29,7 @@
 #include "galapix/tight_layouter.hpp"
 #include "util/file_reader.hpp"
 #include "util/log.hpp"
-
-struct ImageSorter
-{
-  bool operator()(const ImagePtr& lhs, const ImagePtr& rhs)
-  {
-    return lhs->get_url() < rhs->get_url();
-  }
-};
-
-struct ImageRequestFinder
-{
-  std::string str;
-
-  ImageRequestFinder(const std::string& str_) :
-    str(str_)
-  {}
-
-  bool operator()(const ImageRequest& lhs) const {
-    return str == lhs.url.str();
-  }
-};
+#include "util/string_util.hpp"
 
 Workspace::Workspace() :
   m_images(),
@@ -213,7 +194,10 @@ Workspace::update(float delta)
 void
 Workspace::sort()
 {
-  std::sort(m_images.begin(), m_images.end(), ImageSorter());
+  std::sort(m_images.begin(), m_images.end(), 
+            [](const ImagePtr& lhs, const ImagePtr& rhs) {
+              return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
+            });
   if (m_layouter)
   {
     m_layouter->layout(m_images, true);
@@ -224,7 +208,10 @@ Workspace::sort()
 void
 Workspace::sort_reverse()
 {
-  std::sort(m_images.rbegin(), m_images.rend(), ImageSorter());
+  std::sort(m_images.rbegin(), m_images.rend(), 
+            [](const ImagePtr& lhs, const ImagePtr& rhs) {
+              return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
+            });
   if (m_layouter)
   {
     m_layouter->layout(m_images, true);
@@ -340,29 +327,18 @@ Workspace::isolate_selection()
   m_selection->clear();
 }
 
-struct ImagesMemberOf
-{
-  SelectionPtr selection;
-
-  ImagesMemberOf(const SelectionPtr& selection_)
-    : selection(selection_)
-  {}
-
-  bool operator()(const ImagePtr& image)
-  {
-    for(Selection::iterator i = selection->begin(); i != selection->end(); ++i)
-    {
-      if (*i == image)
-        return true;
-    }
-    return false;
-  }
-};
-
 void
 Workspace::delete_selection()
 {
-  m_images.erase(std::remove_if(m_images.begin(), m_images.end(), ImagesMemberOf(m_selection)),
+  m_images.erase(std::remove_if(m_images.begin(), m_images.end(), 
+                                [this](const ImagePtr& image)->bool{
+                                  for(Selection::iterator i = m_selection->begin(); i != m_selection->end(); ++i)
+                                  {
+                                    if (*i == image)
+                                      return true;
+                                  }
+                                  return false;
+                                }),
                  m_images.end());
   m_selection->clear();
 }

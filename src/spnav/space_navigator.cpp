@@ -19,10 +19,18 @@
 #include "spnav/space_navigator.hpp"
 
 #include <SDL.h>
+#include <assert.h>
 #include <iostream>
 #include <spnav.h>
+#include <unistd.h>
+
+#include "util/log.hpp"
+#include "util/select.hpp"
 
-SpaceNavigator::SpaceNavigator()
+SpaceNavigator::SpaceNavigator() :
+  m_quit{true},
+  m_thread{},
+  m_pipefd{-1,-1}
 {
 }
 
@@ -39,6 +47,41 @@ SpaceNavigator::run()
   }
   else
   {
+    if (pipe(m_pipefd) < 0)
+    {
+      std::cout << "Error: SpaceNavigator: pipe() failed" << std::endl;
+    }
+
+    Select sel;
+
+    while(!m_quit)
+    {
+      sel.clear();
+      sel.add_fd(m_pipefd[0]);
+      sel.add_fd(spnav_fd());
+
+      if (sel.wait() > 0)
+      {
+        if (sel.is_ready(spnav_fd()))
+        {
+          spnav_event spnav_ev;
+          while(spnav_poll_event(&spnav_ev))
+          {
+            SDL_Event event;
+
+            event.type = SDL_USEREVENT;
+            event.user.code  = 0;
+            event.user.data1 = new spnav_event(spnav_ev);
+            event.user.data2 = 0;
+
+            while (SDL_PushEvent(&event) != 0) {}           
+          }
+        }
+      }
+    }
+    
+#if 0
+    // old obsolete code
     spnav_event* spnav_ev;
     while(spnav_wait_event(spnav_ev = new spnav_event))
     {
@@ -50,12 +93,37 @@ SpaceNavigator::run()
 
       while (SDL_PushEvent(&event) != 0) {}
     }
+#endif
 
     if (spnav_close() != 0)
     {
       std::cout << "Error: SpaceNavigator: close" << std::endl;
     }
+
+    close(m_pipefd[0]);
+    close(m_pipefd[1]);
   }
+}
+
+void
+SpaceNavigator::start_thread()
+{
+  m_quit = false;
+  m_thread = std::thread(std::bind(&SpaceNavigator::run, this));
+}
+
+void
+SpaceNavigator::stop_thread()
+{
+  assert(!m_quit);
+
+  m_quit = true;
+
+  // write some data to the pipe to wake up the select() call
+  char data[]{0};
+  write(m_pipefd[1], data, 1);
+
+  m_thread.join();
 }
 
 /* EOF */

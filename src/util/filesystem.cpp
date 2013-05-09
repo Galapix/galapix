@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
+#include <future>
 #include <string.h>
 #include <dirent.h>
 #include <errno.h>
@@ -27,15 +28,19 @@
 #include <sys/time.h>
 #include <utime.h>
 #include <sstream>
+#include <algorithm>
 
+#include "plugins/rar.hpp"
+#include "plugins/seven_zip.hpp"
 #include "plugins/tar.hpp"
 #include "plugins/zip.hpp"
-#include "plugins/seven_zip.hpp"
-#include "plugins/rar.hpp"
-#include "util/software_surface.hpp"
-#include "util/software_surface_factory.hpp"
+#include "util/archive_manager.hpp"
+#include "util/archive_loader.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
+#include "util/raise_exception.hpp"
+#include "util/software_surface.hpp"
+#include "util/software_surface_factory.hpp"
 
 std::string Filesystem::home_directory;
 
@@ -247,6 +252,28 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
   }
 }
 
+std::string
+Filesystem::get_magic(const std::string& filename)
+{
+  char buf[512];
+  std::ifstream in(filename, std::ios::binary);
+  if (!in)
+  {
+    raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+  }
+  else
+  {
+    if (!in.read(buf, sizeof(buf)))
+    {
+      raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+    }
+    else
+    {
+      return std::string(buf, in.gcount());
+    }
+  }
+}
+
 unsigned int
 Filesystem::get_size(const std::string& filename)
 {
@@ -286,73 +313,45 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
   }
   else
   {
+    // generate a list of all the files in the directories
     std::vector<std::string> lst;
 
     if (is_directory(pathname))
+    {
       open_directory_recursivly(pathname, lst);
+    }
     else
+    {
       lst.push_back(pathname);
+    }
   
+    // check the file list for valid entries, if entries are archives,
+    // get a file list from them
+    std::vector<std::future<std::vector<URL>>> archive_tasks;
     for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
     {
       URL url = URL::from_filename(*i);
 
       try 
       {
-        if (has_extension(*i, ".rar")      || 
-            has_extension(*i, ".rar.part") ||
-            has_extension(*i, ".cbr"))
+        if (ArchiveManager::current().is_archive(*i))
         {
-          const std::vector<std::string>& files = Rar::get_filenames(*i);
-          for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
-          {
-            URL archive_url = URL::from_string(url.str() + "//rar:" + *j);
-            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
-            {
-              file_list.push_back(archive_url);
-            }
-          }
-        }
-        else if (has_extension(*i, ".zip") || 
-                 has_extension(*i, ".cbz"))
-        {
-          const std::vector<std::string>& files = Zip::get_filenames(*i);
-          for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
-          {
-            URL archive_url = URL::from_string(url.str() + "//zip:" + *j);
-            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
-            {
-              file_list.push_back(archive_url);
-            }
-          }
-        }
-        else if (has_extension(*i, ".7z"))
-        {
-          const std::vector<std::string>& files = SevenZip::get_filenames(*i);
-          for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
-          {
-            URL archive_url = URL::from_string(url.str() + "//7zip:" + *j);
-            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
-            {
-              file_list.push_back(archive_url);
-            }
-          }
-        }
-        else if (has_extension(*i, ".tar")    || 
-                 has_extension(*i, ".tar.bz") || 
-                 has_extension(*i, ".tar.gz") ||
-                 has_extension(*i, ".tgz")    || 
-                 has_extension(*i, ".tbz"))
-        {
-          const std::vector<std::string>& files = Tar::get_filenames(*i);
-          for(std::vector<std::string>::const_iterator j = files.begin(); j != files.end(); ++j)
-          {
-            URL archive_url = URL::from_string(url.str() + "//tar:" + *j);
-            if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
-            {
-              file_list.push_back(archive_url);
-            }
-          }
+          archive_tasks.push_back(std::async([i, url]() -> std::vector<URL> {
+                std::vector<URL> sub_file_list;
+
+                const ArchiveLoader* loader;
+                const auto& files = ArchiveManager::current().get_filenames(*i, &loader);
+                for(const auto& file: files)
+                {
+                  URL archive_url = URL::from_string(url.str() + "//" + loader->str() + ":" + file);
+                  if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
+                  {
+                    sub_file_list.push_back(archive_url);
+                  }
+                }
+
+                return sub_file_list;
+              }));
         }
         else if (has_extension(*i, ".galapix"))
         {
@@ -375,7 +374,20 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           //log_debug << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
         }
       } 
-      catch(std::exception& err) 
+      catch(const std::exception& err) 
+      {
+        log_warning << "Warning: " << err.what() << std::endl;
+      }
+    }
+
+    for(auto& task: archive_tasks)
+    {
+      try 
+      {
+        const auto& sub_lst = task.get();
+        file_list.insert(file_list.end(), sub_lst.begin(), sub_lst.end());
+      }
+      catch(const std::exception& err)
       {
         log_warning << "Warning: " << err.what() << std::endl;
       }

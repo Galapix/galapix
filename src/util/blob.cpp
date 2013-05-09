@@ -18,6 +18,7 @@
 
 #include "util/blob.hpp"
 
+#include <assert.h>
 #include <stdexcept>
 #include <fstream>
 #include <string.h>
@@ -67,11 +68,6 @@ Blob::write_to_file(const std::string& filename)
   out.write(reinterpret_cast<char*>(m_data.get()), m_len);
 }
 
-void
-Blob::append(const void* data, int len)
-{
-  assert(!"Blob::append(const void* data, int len): Implement me");
-}
 
 BlobPtr
 Blob::create(int len)

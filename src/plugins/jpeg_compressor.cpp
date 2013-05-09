@@ -50,7 +50,7 @@ JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
  
   jpeg_start_compress(&m_cinfo, TRUE);
 
-  boost::scoped_array<JSAMPROW> row_pointer(new JSAMPROW[surface->get_height()]);
+  std::unique_ptr<JSAMPROW[]> row_pointer(new JSAMPROW[surface->get_height()]);
   
   for(int y = 0; y < surface->get_height(); ++y)
   {

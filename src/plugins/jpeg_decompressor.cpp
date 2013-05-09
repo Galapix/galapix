@@ -18,8 +18,9 @@
 
 #include "plugins/jpeg_decompressor.hpp"
 
-#include <sstream>
+#include <assert.h>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 void
@@ -115,7 +116,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
  
     if (m_cinfo.output_components == 3) // RGB Image
     { 
-      boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[m_cinfo.output_height]);
+      std::unique_ptr<JSAMPLE*[]> scanlines(new JSAMPLE*[m_cinfo.output_height]);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
         scanlines[y] = surface->get_row_data(y);
@@ -128,7 +129,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
     }
     else if (m_cinfo.output_components == 1)  // Greyscale Image
     {
-      boost::scoped_array<JSAMPLE*> scanlines(new JSAMPLE*[m_cinfo.output_height]);
+      std::unique_ptr<JSAMPLE*[]> scanlines(new JSAMPLE*[m_cinfo.output_height]);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
         scanlines[y] = surface->get_row_data(y);

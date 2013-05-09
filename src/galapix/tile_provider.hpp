@@ -19,16 +19,17 @@
 #ifndef HEADER_GALAPIX_GALAPIX_TILE_PROVIDER_HPP
 #define HEADER_GALAPIX_GALAPIX_TILE_PROVIDER_HPP
 
-#include <boost/shared_ptr.hpp>
-#include <boost/function.hpp>
+#include <memory>
 
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 
 class TileProvider;
 
-typedef boost::shared_ptr<TileProvider> TileProviderPtr;
+typedef std::shared_ptr<TileProvider> TileProviderPtr;
 
+/** A TileProvider is the data source from which an Image requests the
+    tiles */
 class TileProvider
 {
 private:
@@ -37,14 +38,14 @@ public:
   virtual ~TileProvider() {}
   
   virtual JobHandle request_tile(int tilescale, const Vector2i& pos, 
-                                 const boost::function<void (Tile)>& callback) =0;
+                                 const std::function<void (Tile)>& callback) =0;
 
   virtual int  get_max_scale() const =0;
   virtual int  get_tilesize() const =0;
   virtual int  get_overlap() const =0;
   virtual Size get_size() const =0;
 
-  virtual void refresh(const boost::function<void (TileProviderPtr)>& callback) {}
+  virtual void refresh(const std::function<void (TileProviderPtr)>& callback) {}
 
 private:
   TileProvider(const TileProvider&);

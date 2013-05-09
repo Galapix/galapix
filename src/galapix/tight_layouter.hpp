@@ -33,6 +33,7 @@ private:
 public:
   TightLayouter(float w, float h);
 
+  void layout_zigzag(const ImageCollection& images, bool animated);
   void layout(const ImageCollection& images, bool animated);
 
 private:

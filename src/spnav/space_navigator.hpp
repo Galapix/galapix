@@ -19,14 +19,25 @@
 #ifndef HEADER_GALAPIX_SPNAV_SPACE_NAVIGATOR_HPP
 #define HEADER_GALAPIX_SPNAV_SPACE_NAVIGATOR_HPP
 
+#include <thread>
+
 class Viewer;
 
 class SpaceNavigator
 {
+private:
+  bool m_quit;
+  std::thread m_thread;
+  int m_pipefd[2];
+
 public:
   SpaceNavigator();
   ~SpaceNavigator();
 
+  void start_thread();
+  void stop_thread();
+
+private:
   void run();
 
 private:

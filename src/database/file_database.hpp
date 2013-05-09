@@ -47,7 +47,8 @@ class Database;
 class FileDatabase
 {
 private:
-  Database& m_db;
+  SQLiteConnection& m_db;
+
   FileTable m_file_table;
   FileEntryGetAllStatement       m_file_entry_get_all;
   FileEntryGetByFileIdStatement  m_file_entry_get_by_fileid;
@@ -61,7 +62,7 @@ private:
   void update_file_entry(FileEntry& entry);
  
 public:
-  FileDatabase(Database& db);
+  FileDatabase(SQLiteConnection& db);
   ~FileDatabase();
   
   /** Lookup a FileEntry by its url. If there is no corresponding

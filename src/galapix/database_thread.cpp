@@ -19,10 +19,8 @@
 #include "galapix/database_thread.hpp"
 
 #include <typeinfo>
-#include <boost/bind.hpp>
 
 #include "database/database.hpp"
-#include "galapix/database_message.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/file_entry_generation_job.hpp"
 #include "jobs/multiple_tile_generation_job.hpp"
@@ -52,61 +50,171 @@ DatabaseThread::~DatabaseThread()
 
 JobHandle
 DatabaseThread::request_tile(const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
-                             const boost::function<void (Tile)>& callback)
+                             const std::function<void (Tile)>& callback)
 {
   assert(file_entry);
-  JobHandle job_handle = JobHandle::create();
-  m_request_queue.push(new RequestTileDatabaseMessage(job_handle, file_entry, tilescale, pos, callback));
-  return job_handle;
+
+  JobHandle job_handle_ = JobHandle::create();
+
+  m_request_queue.wait_and_push([this, job_handle_, file_entry, tilescale, pos, callback](){
+      JobHandle job_handle = job_handle_;
+      if (!job_handle.is_aborted())
+      {
+        TileEntry tile;
+        if (m_database.get_tiles().get_tile(file_entry, tilescale, pos, tile))
+        {
+          // Tile has been found, so return it and finish up
+          if (callback)
+          {
+            callback(tile);
+          }
+          job_handle.set_finished();
+        }
+        else
+        {
+          // Tile hasn't been found, so we need to generate it
+          if (0)
+            std::cout << "Error: Couldn't get tile: " 
+                      << file_entry.get_fileid() << " "
+                      << pos.x << " "
+                      << pos.y << " "
+                      << tilescale
+                      << std::endl;
+        
+          {
+            DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
+          }
+        }
+      }
+    });
+
+  return job_handle_;
 }
 
 JobHandle
 DatabaseThread::request_tiles(const FileEntry& file_entry, int min_scale, int max_scale,
-                              const boost::function<void (Tile)>& callback)
+                              const std::function<void (Tile)>& callback)
 {
   JobHandle job_handle = JobHandle::create();
-  m_request_queue.push(new RequestTilesDatabaseMessage(job_handle, file_entry, min_scale, max_scale, callback));
+
+  m_request_queue.wait_and_push([this, job_handle, file_entry, min_scale, max_scale, callback]{
+      if (!job_handle.is_aborted())
+      {
+        generate_tiles(job_handle,
+                       file_entry,
+                       min_scale, max_scale, 
+                       callback);
+      }
+    });
+
   return job_handle;
 }
 
 void
-DatabaseThread::request_job_removal(boost::shared_ptr<Job> job, bool)
+DatabaseThread::request_job_removal(std::shared_ptr<Job> job, bool)
 {
-  m_request_queue.push(new RequestJobRemovalDatabaseMessage(job));
+  m_request_queue.wait_and_push([this, job](){
+      remove_job(job);
+    });
 }
 
 JobHandle
 DatabaseThread::request_file(const URL& url, 
-                             const boost::function<void (FileEntry)>& file_callback,
-                             const boost::function<void (FileEntry, Tile)>& tile_callback)
+                             const std::function<void (FileEntry)>& file_callback_,
+                             const std::function<void (FileEntry, Tile)>& tile_callback_)
 {
-  JobHandle job_handle = JobHandle::create();
-  m_request_queue.push(new RequestFileDatabaseMessage(job_handle, url, file_callback, tile_callback));
-  return job_handle;
+  JobHandle job_handle_ = JobHandle::create();
+  
+  std::function<void (FileEntry)> file_callback = file_callback_;
+  std::function<void (FileEntry, Tile)> tile_callback = tile_callback_;
+
+  m_request_queue.wait_and_push([this, job_handle_, url, file_callback, tile_callback](){
+      JobHandle job_handle = job_handle_;
+      if (!job_handle.is_aborted())
+      {
+        FileEntry file_entry = m_database.get_files().get_file_entry(url);
+        if (!file_entry)
+        {
+          // file entry is not in the database, so try to generate it
+          DatabaseThread::current()->generate_file_entry(job_handle, url, 
+                                                         file_callback, tile_callback);
+        }
+        else
+        {
+          file_callback(file_entry);
+
+          TileEntry tile_entry;
+          if (m_database.get_tiles().get_tile(file_entry, file_entry.get_thumbnail_scale(), Vector2i(0, 0), tile_entry))
+          {
+            if (tile_callback)
+            {
+              tile_callback(file_entry, tile_entry);
+            }
+          }
+          else
+          {
+            std::cout << "RequestFileDatabaseMessage: " << file_entry << " " << Vector2i(0,0) << file_entry.get_thumbnail_scale() << std::endl;
+          }
+
+          job_handle.set_finished();
+        }
+      }
+    });
+  
+  return job_handle_;
 }
 
 void
-DatabaseThread::request_all_files(const boost::function<void (FileEntry)>& callback)
+DatabaseThread::request_all_files(const std::function<void (FileEntry)>& callback_)
 {
-  m_request_queue.push(new AllFilesDatabaseMessage(callback));
+  std::function<void (FileEntry)> callback = callback_; // FIXME: internal error workaround
+  m_request_queue.wait_and_push([this, callback]{
+      std::vector<FileEntry> entries;
+      m_database.get_files().get_file_entries(entries);
+      for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+      {
+        callback(*i);
+      }
+    });
 }
 
 void
-DatabaseThread::request_files_by_pattern(const boost::function<void (FileEntry)>& callback, const std::string& pattern)
+DatabaseThread::request_files_by_pattern(const std::function<void (FileEntry)>& callback, const std::string& pattern)
 {
-  m_request_queue.push(new FilesByPatternDatabaseMessage(callback, pattern));
+  m_request_queue.wait_and_push([this, callback, pattern](){
+      std::vector<FileEntry> entries;
+      m_database.get_files().get_file_entries(pattern, entries);
+      for(std::vector<FileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
+      {
+        callback(*i);
+      }               
+      });
 }
 
 void
 DatabaseThread::receive_tile(const FileEntry& file_entry, const Tile& tile)
 {
-  m_receive_queue.push(new ReceiveTileDatabaseMessage(file_entry, tile));
+  m_receive_queue.wait_and_push([this, file_entry, tile](){
+      // FIXME: Make some better error checking in case of loading failure
+      if (tile)
+      {
+        // FIXME: Test the performance of this
+        //if (!m_database.get_tiles().has_tile(tile.fileid, tile.pos, tile.scale))
+        m_database.get_tiles().store_tile(file_entry, tile);
+      }
+      else
+      {
+        
+      }
+    });
 }
 
 void
 DatabaseThread::delete_file_entry(const FileId& fileid)
 {
-  m_request_queue.push(new DeleteFileEntryDatabaseMessage(fileid));
+  m_request_queue.wait_and_push([this, fileid](){
+      m_database.delete_file_entry(fileid);
+    });
 }
 
 void
@@ -133,8 +241,7 @@ DatabaseThread::run()
   
   while(!m_quit)
   {
-    //m_queue.wait();
-
+    // FIXME: This really should be a priority queue
     process_queue(m_receive_queue);
     process_queue(m_request_queue);
     
@@ -143,24 +250,20 @@ DatabaseThread::run()
 }
 
 void
-DatabaseThread::process_queue(ThreadMessageQueue<DatabaseMessage*>& queue)
+DatabaseThread::process_queue(ThreadMessageQueue2<std::function<void()>>& queue)
 { 
-  while(!m_abort && !queue.empty())
+  std::function<void()> func;
+  while(!m_abort && queue.try_pop(func))
   {
-    DatabaseMessage* msg = queue.front();
-    queue.pop();
-
     //std::cout << "DatabaseThread::queue.size(): " << m_queue.size() << " - " << typeid(*msg).name() << std::endl;
-
-    msg->run(m_database);
-    delete msg;
+    func();
   }
 }
 
 void
-DatabaseThread::remove_job(boost::shared_ptr<Job> job)
+DatabaseThread::remove_job(std::shared_ptr<Job> job)
 {
-  for(std::list<boost::shared_ptr<TileGenerationJob> >::iterator i = m_tile_generation_jobs.begin(); 
+  for(std::list<std::shared_ptr<TileGenerationJob> >::iterator i = m_tile_generation_jobs.begin(); 
       i != m_tile_generation_jobs.end(); ++i)
   {
     if (*i == job)
@@ -171,24 +274,10 @@ DatabaseThread::remove_job(boost::shared_ptr<Job> job)
   }
 }
 
-struct FindByFileEntry
-{
-  URL m_url;
-
-  FindByFileEntry(URL url) :
-    m_url(url)
-  {}
-  
-  bool operator()(boost::shared_ptr<TileGenerationJob> job) const
-  {
-    return job->get_url() == m_url;
-  }
-};
-
 void
 DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& file_entry,
                                int min_scale, int max_scale,
-                               const boost::function<void (Tile)>& callback)
+                               const std::function<void (Tile)>& callback)
 {
   // FIXME: We are ignoring the callback, but shouldn't so assert in
   // case somebody tries to use one
@@ -199,12 +288,12 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
 
   m_database.get_tiles().get_min_max_scale(file_entry, min_scale_in_db, max_scale_in_db);
 
-  boost::shared_ptr<MultipleTileGenerationJob> 
+  std::shared_ptr<MultipleTileGenerationJob> 
     job_ptr(new MultipleTileGenerationJob(job_handle, 
                                           file_entry,
                                           min_scale_in_db, max_scale_in_db,
                                           min_scale, max_scale,
-                                          boost::bind(&DatabaseThread::receive_tile, this, file_entry, _1)));
+                                          std::bind(&DatabaseThread::receive_tile, this, file_entry, std::placeholders::_1)));
 
   // Not removing the job from the queue
   m_tile_job_manager.request(job_ptr);
@@ -213,11 +302,14 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const FileEntry& fil
 void
 DatabaseThread::generate_tile(const JobHandle& job_handle,
                               const FileEntry& file_entry, int tilescale, const Vector2i& pos, 
-                              const boost::function<void (Tile)>& callback)
+                              const std::function<void (Tile)>& callback)
 { 
-  std::list<boost::shared_ptr<TileGenerationJob> >::iterator it = 
+
+  std::list<std::shared_ptr<TileGenerationJob> >::iterator it = 
     std::find_if(m_tile_generation_jobs.begin(), m_tile_generation_jobs.end(), 
-                 FindByFileEntry(file_entry.get_url()));
+                 [&file_entry](const std::shared_ptr<TileGenerationJob>& job){ 
+                   return job->get_url() == file_entry.get_url(); 
+                 });
 
   if (it != m_tile_generation_jobs.end() && 
       (*it)->request_tile(job_handle, tilescale, pos, callback))
@@ -253,12 +345,12 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
       }
     }
 
-    boost::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db));
-    job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1, _2));
+    std::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db));
+    job_ptr->sig_tile_callback().connect(std::bind(&DatabaseThread::receive_tile, this, std::placeholders::_1, std::placeholders::_2));
 
     job_ptr->request_tile(job_handle, tilescale, pos, callback);
 
-    m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
+    m_tile_job_manager.request(job_ptr, std::bind(&DatabaseThread::request_job_removal, this, std::placeholders::_1, std::placeholders::_2));
 
     m_tile_generation_jobs.push_front(job_ptr);
   }
@@ -266,11 +358,11 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
 
 void
 DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
-                                    const boost::function<void (FileEntry)>& file_callback,
-                                    const boost::function<void (FileEntry, Tile)>& tile_callback)
+                                    const std::function<void (FileEntry)>& file_callback,
+                                    const std::function<void (FileEntry, Tile)>& tile_callback)
 {
   //log_info << " << url << " " << job_handle << std::endl;
-  boost::shared_ptr<FileEntryGenerationJob> job_ptr(new FileEntryGenerationJob(job_handle, url));
+  std::shared_ptr<FileEntryGenerationJob> job_ptr(new FileEntryGenerationJob(job_handle, url));
 
   if (file_callback)
   {
@@ -282,26 +374,37 @@ DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
     job_ptr->sig_tile_callback().connect(tile_callback);
   }
 
-  job_ptr->sig_file_callback().connect(boost::bind(&DatabaseThread::receive_file, this, _1));
-  job_ptr->sig_tile_callback().connect(boost::bind(&DatabaseThread::receive_tile, this, _1, _2));
+  job_ptr->sig_file_callback().connect(std::bind(&DatabaseThread::receive_file, this, std::placeholders::_1));
+  job_ptr->sig_tile_callback().connect(std::bind(&DatabaseThread::receive_tile, this, std::placeholders::_1, std::placeholders::_2));
 
   m_tile_job_manager.request(job_ptr);
-  //m_tile_job_manager.request(job_ptr, boost::bind(&DatabaseThread::request_job_removal, this, _1, _2));
+  //m_tile_job_manager.request(job_ptr, std::bind(&DatabaseThread::request_job_removal, this, _1, _2));
   //m_tile_generation_jobs.push_front(job_ptr);
 }
 
 void
-DatabaseThread::store_file_entry(const JobHandle& job_handle, 
+DatabaseThread::store_file_entry(const JobHandle& job_handle_in, 
                                  const URL& url, const Size& size, int format,
-                                 const boost::function<void (FileEntry)>& callback)
+                                 const std::function<void (FileEntry)>& callback)
 {
-  m_receive_queue.push(new StoreFileEntryDatabaseMessage(job_handle, url, size, format, callback));
+  
+  m_receive_queue.wait_and_push([this, job_handle_in, url, size, format, callback](){
+      JobHandle job_handle = job_handle_in;
+      FileEntry file_entry = m_database.get_files().store_file_entry(url, size, format);
+      if (callback)
+      {
+        callback(file_entry);
+      }
+      job_handle.set_finished();
+    });
 }
 
 void
 DatabaseThread::receive_file(const FileEntry& file_entry)
 {
-  m_receive_queue.push(new ReceiveFileEntryDatabaseMessage(file_entry));
+  m_receive_queue.wait_and_push([this, file_entry](){
+      m_database.get_files().store_file_entry(file_entry);
+    });
 }
 
 /* EOF */

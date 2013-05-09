@@ -20,10 +20,10 @@
 
 #include "display/framebuffer.hpp"
 
-ViewerState::ViewerState()
-  : scale(1.0f),
-    angle(0.0f),
-    offset(0.0f, 0.0f)
+ViewerState::ViewerState() :
+  scale{1.0f},
+  angle{0.0f},
+  offset{0.0f, 0.0f}
 {
 }
 
@@ -31,7 +31,16 @@ void
 ViewerState::zoom(float factor, const Vector2i& pos)
 {
   scale *= factor;
-  offset = Vector2f(pos) - ((Vector2f(pos) - offset) * factor);
+
+  Vector2f center(static_cast<float>(Framebuffer::get_width())  / 2.0f,
+                  static_cast<float>(Framebuffer::get_height()) / 2.0f);
+
+  Vector2f rotated_pos{pos};
+  rotated_pos -= center;
+  rotated_pos = rotated_pos.rotate(-angle/360.0f*Math::tau);
+  rotated_pos += center;
+
+  offset = rotated_pos - ((rotated_pos - offset) * factor);
 }
 
 void
@@ -63,7 +72,7 @@ void
 ViewerState::set_scale(float s)
 {
   scale = s;
-}  
+}
 
 void
 ViewerState::move(const Vector2f& pos)

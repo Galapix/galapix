@@ -17,9 +17,8 @@
 */
 
 #include <iostream>
-
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <memory>
+#include <functional>
 
 #include "util/weak_functor.hpp"
 
@@ -39,10 +38,10 @@ public:
 
 int main()
 {
-  boost::shared_ptr<Foobar> foobar(new Foobar);
+  std::shared_ptr<Foobar> foobar(new Foobar);
 
-  boost::function<void (int)> callback  = weak(boost::bind(&Foobar::callme, _1, _2), foobar);
-  boost::function<void ()> callback2 = weak(boost::bind(&Foobar::call, _1), foobar);
+  std::function<void (int)> callback  = weak(std::bind(&Foobar::callme, std::placeholders::_1, std::placeholders::_2), foobar);
+  std::function<void ()> callback2 = weak(std::bind(&Foobar::call, std::placeholders::_1), foobar);
 
   callback(1323);
 

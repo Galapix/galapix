@@ -32,6 +32,7 @@ namespace Math {
 
 const float pi   = 3.14159265358979323846f;	/* pi */
 const float pi_2 = 1.57079632679489661923f;	/* pi/2 */
+const float tau  = 3.14159265358979323846f * 2.0f; /* 2*pi */
 
 // Win32 defines these are defines already, so we have to undef them
 #ifdef min
@@ -130,6 +131,16 @@ inline bool is_power_of_two(int n)
 inline int ceil_div(int a, int b)
 {
   return (a + b - 1) / b;
+}
+
+inline float rad2deg(float v)
+{
+  return v / tau * 360.0f;
+}
+
+inline float deg2rad(float v)
+{
+  return v / 360.0f * tau;
 }
 
 } // namespace Math

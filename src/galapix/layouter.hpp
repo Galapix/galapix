@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
 #define HEADER_GALAPIX_GALAPIX_LAYOUTER_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class ImageCollection;
 
@@ -38,7 +38,7 @@ private:
   Layouter& operator=(const Layouter&);
 };
 
-typedef boost::shared_ptr<Layouter> LayouterPtr;
+typedef std::shared_ptr<Layouter> LayouterPtr;
 
 #endif
 

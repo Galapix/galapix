@@ -34,14 +34,16 @@
 #include "database/tile_entry_delete_statement.hpp"
 #include "database/tile_cache.hpp"
 
-class TileEntry;
-class FileEntry;
 class Database;
+class FileDatabase;
+class FileEntry;
+class TileEntry;
 
 class TileDatabase : public TileDatabaseInterface
 {
 private:
-  Database& m_db;
+  SQLiteConnection& m_db;
+  FileDatabase& m_files;
 
   TilesTable m_tiles_table;
   TileEntryStoreStatement             m_tile_entry_store;
@@ -54,7 +56,7 @@ private:
   TileCache m_cache;
 
 public:
-  TileDatabase(Database& db);
+  TileDatabase(SQLiteConnection& db, FileDatabase& files);
   ~TileDatabase();
   
   bool has_tile(const FileEntry& file_entry, const Vector2i& pos, int scale);

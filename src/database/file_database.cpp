@@ -26,15 +26,15 @@
 #include "util/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 
-FileDatabase::FileDatabase(Database& db) :
+FileDatabase::FileDatabase(SQLiteConnection& db) :
   m_db(db),
-  m_file_table(m_db.get_db()),
-  m_file_entry_get_all(m_db.get_db()),
-  m_file_entry_get_by_fileid(m_db.get_db()),
-  m_file_entry_get_by_pattern(m_db.get_db()),
-  m_file_entry_get_by_url(m_db.get_db()),
-  m_file_entry_store(m_db.get_db()),
-  m_file_entry_delete(m_db.get_db()),
+  m_file_table(m_db),
+  m_file_entry_get_all(m_db),
+  m_file_entry_get_by_fileid(m_db),
+  m_file_entry_get_by_pattern(m_db),
+  m_file_entry_get_by_url(m_db),
+  m_file_entry_store(m_db),
+  m_file_entry_delete(m_db),
   m_file_entry_cache()
 {
 }
@@ -125,12 +125,12 @@ FileDatabase::flush_cache()
   if (!m_file_entry_cache.empty())
   {
     std::cout << "FileDatabes::flush_cache()" << std::endl;
-    m_db.get_db().exec("BEGIN;");
+    m_db.exec("BEGIN;");
     for(std::vector<FileEntry>::iterator i = m_file_entry_cache.begin(); i != m_file_entry_cache.end(); ++i)
     {
       store_file_entry_without_cache(*i);
     }
-    m_db.get_db().exec("END;");
+    m_db.exec("END;");
     m_file_entry_cache.clear();
   }
 }

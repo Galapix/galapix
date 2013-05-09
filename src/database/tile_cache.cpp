@@ -18,6 +18,8 @@
 
 #include "database/tile_cache.hpp"
 
+#include <algorithm>
+
 #include "database/tile_database.hpp"
 
 TileCache::TileCache() :
@@ -62,11 +64,11 @@ TileCache::get_tile(const FileEntry& file_entry, int scale, const Vector2i& pos,
 void
 TileCache::get_tiles(const FileEntry& file_entry, std::vector<TileEntry>& tiles_out)
 {
-  for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
+  for(const auto& tile_entry : m_cache)
   {
-    if (i->get_file_entry() == file_entry)
+    if (tile_entry.get_file_entry() == file_entry)
     {
-      tiles_out.push_back(*i);
+      tiles_out.push_back(tile_entry);
     }
   }
 }

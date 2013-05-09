@@ -18,8 +18,6 @@
 
 #include "jobs/tile_generation_job.hpp"
 
-#include <boost/bind.hpp>
-
 #include "math/rect.hpp"
 #include "plugins/jpeg.hpp"
 #include "util/log.hpp"
@@ -52,9 +50,9 @@ TileGenerationJob::~TileGenerationJob()
 
 bool
 TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
-                                const boost::function<void (Tile)>& callback)
+                                const std::function<void (Tile)>& callback)
 {
-  boost::mutex::scoped_lock lock(m_state_mutex);
+  std::unique_lock<std::mutex> lock(m_state_mutex);
   
   switch(m_state)
   {
@@ -136,7 +134,7 @@ TileGenerationJob::process_tile(const Tile& tile)
 bool
 TileGenerationJob::is_aborted()
 {
-  boost::mutex::scoped_lock lock(m_state_mutex);
+  std::unique_lock<std::mutex> lock(m_state_mutex);
 
   if (!m_file_entry)
   {
@@ -167,7 +165,7 @@ void
 TileGenerationJob::run()
 {
   { // Calculate min/max_scale
-    boost::mutex::scoped_lock lock(m_state_mutex);
+    std::unique_lock<std::mutex> lock(m_state_mutex);
     assert(m_state == kWaiting);
     m_state = kRunning;
 
@@ -206,7 +204,7 @@ TileGenerationJob::run()
   {
     // Do the main work
     TileGenerator::generate(m_url, m_min_scale, m_max_scale,
-                            boost::bind(&TileGenerationJob::process_tile, this, _1));
+                            std::bind(&TileGenerationJob::process_tile, this, std::placeholders::_1));
   }
   catch(const std::exception& err)
   {
@@ -215,7 +213,7 @@ TileGenerationJob::run()
   }
 
   {
-    boost::mutex::scoped_lock lock(m_state_mutex);
+    std::unique_lock<std::mutex> lock(m_state_mutex);
     assert(m_state == kRunning);
     m_state = kDone;
 

@@ -92,7 +92,7 @@ Exec::exec()
     close(stderr_fd[1]);
 
     // Create C-style array for arguments 
-    boost::scoped_array<char*> c_arguments(new char*[m_arguments.size()+2]);
+    std::unique_ptr<char*[]> c_arguments(new char*[m_arguments.size()+2]);
     c_arguments[0] = strdup(m_program.c_str());
     for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
       c_arguments[i+1] = strdup(m_arguments[i].c_str());
@@ -130,7 +130,7 @@ Exec::exec()
     {
       int child_status = 0;
       waitpid(pid, &child_status, 0);
-      throw err;
+      throw;
     }
 
     int child_status = 0;

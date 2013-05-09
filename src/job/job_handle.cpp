@@ -16,28 +16,29 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <boost/thread/condition.hpp>
-
-#include <boost/bind.hpp>
-#include <boost/thread/mutex.hpp>
+#include <condition_variable>
+#include <mutex>
+#include <ostream>
 
 #include "job/job_handle.hpp"
 
 class JobHandleImpl
 {
 public:
-  JobHandleImpl()
-    : aborted(false),
-      finished(false),
-      mutex(),
-      cond()
+  JobHandleImpl() :
+    aborted(false),
+    finished(false),
+    failed(false),
+    mutex(),
+    cond()
   {}
 
   bool aborted;
   bool finished;
+  bool failed;
 
-  boost::mutex     mutex;
-  boost::condition cond;
+  std::mutex     mutex;
+  std::condition_variable cond;
 };
 
 JobHandle 
@@ -58,16 +59,8 @@ JobHandle::~JobHandle()
 void
 JobHandle::set_aborted()
 {
-  boost::mutex::scoped_lock lock(impl->mutex);
+  std::lock_guard<std::mutex> lock(impl->mutex);
   impl->aborted = true;
-  impl->cond.notify_all();
-}
-
-void
-JobHandle::set_finished()
-{
-  boost::mutex::scoped_lock lock(impl->mutex);
-  impl->finished = true;
   impl->cond.notify_all();
 }
 
@@ -77,8 +70,16 @@ JobHandle::is_aborted() const
   return impl->aborted;
 }
 
+void
+JobHandle::set_finished()
+{
+  std::lock_guard<std::mutex> lock(impl->mutex);
+  impl->finished = true;
+  impl->cond.notify_all();
+}
+
 bool
-JobHandle::is_done() const
+JobHandle::is_finished() const
 {
   return impl->finished || impl->aborted;
 }
@@ -86,27 +87,33 @@ JobHandle::is_done() const
 void
 JobHandle::set_failed()
 {
-  // FIXME: implement me
+  std::lock_guard<std::mutex> lock(impl->mutex);
+  impl->finished = true;
+  impl->failed   = true;
+  impl->cond.notify_all();
+}
+
+bool
+JobHandle::is_failed() const
+{
+  return impl->failed;
 }
 
 void
 JobHandle::wait()
 {
-  boost::mutex::scoped_lock lock(impl->mutex);
-  if (!impl->finished && !impl->aborted)
+  std::unique_lock<std::mutex> lock(impl->mutex);
+  if (!impl->finished && !impl->aborted && !impl->failed)
   {
-    while(!is_done())
-    {
-      impl->cond.wait(lock);
-    }
+    impl->cond.wait(lock, [this]{ return is_finished(); });
   }
 }
 
 std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle)
 {
-  return os << "JobHandle(this=" << job_handle.impl 
+  return os << "JobHandle(this=" << job_handle.impl.get() 
             << ", aborted=" << job_handle.is_aborted()
-            << ", done=" << job_handle.is_done() << ")";
+            << ", done=" << job_handle.is_finished() << ")";
 }
 
 /* EOF */

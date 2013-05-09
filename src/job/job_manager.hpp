@@ -19,10 +19,10 @@
 #ifndef HEADER_GALAPIX_JOB_JOB_MANAGER_HPP
 #define HEADER_GALAPIX_JOB_JOB_MANAGER_HPP
 
-#include <boost/thread/mutex.hpp>
-#include <boost/function.hpp>
-#include <boost/shared_ptr.hpp>
+#include <functional>
+#include <memory>
 #include <vector>
+#include <mutex>
 
 #include "job/job_handle.hpp"
 
@@ -32,11 +32,11 @@ class Job;
 class JobManager
 {
 private:
-  typedef std::vector<boost::shared_ptr<JobWorkerThread> > Threads;
+  typedef std::vector<std::shared_ptr<JobWorkerThread> > Threads;
   Threads threads;
   Threads::size_type next_thread;
 
-  boost::mutex mutex;
+  std::mutex mutex;
 
 public:
   JobManager(int num_threads);
@@ -49,9 +49,9 @@ public:
 
   /** \a job is processed and once finished \a callback is called, \a
       job will be deleted afterwards */
-  JobHandle request(boost::shared_ptr<Job> job,
-                    const boost::function<void (boost::shared_ptr<Job>, bool)>& callback 
-                    = boost::function<void (boost::shared_ptr<Job>, bool)>());
+  JobHandle request(std::shared_ptr<Job> job,
+                    const std::function<void (std::shared_ptr<Job>, bool)>& callback 
+                    = std::function<void (std::shared_ptr<Job>, bool)>());
 };
 
 #endif

@@ -19,9 +19,8 @@
 #include "sdl/sdl_viewer.hpp"
 
 #include <iostream>
+#include <thread>
 #include <boost/format.hpp>
-#include <boost/thread.hpp>
-#include <boost/bind.hpp>
 
 #include "database/file_entry.hpp"
 #include "display/framebuffer.hpp"
@@ -47,20 +46,37 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
   m_anti_aliasing(anti_aliasing),
   m_quit(false),
   m_spnav_allow_rotate(false),
-  m_viewer(viewer)
+  m_viewer(viewer),
+  m_joysticks()
 {
-  if (SDL_Init(SDL_INIT_VIDEO) != 0)
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
   {
     log_error << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
     exit(1);
   }
   atexit(SDL_Quit); 
 
+  int num_joysticks = SDL_NumJoysticks();
+  for(int i = 0; i < num_joysticks; ++i)
+  {
+    SDL_Joystick* joy = SDL_JoystickOpen(i);
+    if (joy)
+    {
+      m_joysticks.push_back(joy);
+    }
+  }
+
   SDLFramebuffer::set_video_mode(geometry, fullscreen, anti_aliasing);
 }
 
 SDLViewer::~SDLViewer()
 {
+  for(auto joy: m_joysticks)
+  {
+    SDL_JoystickClose(joy);
+  }
+
+  SDL_Quit();
 }
 
 void
@@ -81,33 +97,33 @@ SDLViewer::process_event(const SDL_Event& event)
         switch(spnav_ev->type)
         {
           case SPNAV_EVENT_MOTION:
-          {
-            if (0)
-              log_debug << "MotionEvent: " 
-                        << "("
-                        << spnav_ev->motion.x << ", "
-                        << spnav_ev->motion.y << ", "
-                        << spnav_ev->motion.z
-                        << ") ("
-                        << spnav_ev->motion.rx << ", "
-                        << spnav_ev->motion.ry << ", "
-                        << spnav_ev->motion.rz
-                        << std::endl;              
+            {
+              if (0)
+                log_debug << "MotionEvent: " 
+                          << "("
+                          << spnav_ev->motion.x << ", "
+                          << spnav_ev->motion.y << ", "
+                          << spnav_ev->motion.z
+                          << ") ("
+                          << spnav_ev->motion.rx << ", "
+                          << spnav_ev->motion.ry << ", "
+                          << spnav_ev->motion.rz
+                          << std::endl;              
 
-            float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
+              float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
 
-            if (spnav_ev->motion.y > 0)
-              m_viewer.get_state().zoom(1.0f+factor);
-            else if (spnav_ev->motion.y < 0)
-              m_viewer.get_state().zoom(1.0f/(1.0f+factor));
+              if (spnav_ev->motion.y > 0)
+                m_viewer.get_state().zoom(1.0f+factor);
+              else if (spnav_ev->motion.y < 0)
+                m_viewer.get_state().zoom(1.0f/(1.0f+factor));
 
-            m_viewer.get_state().move(Vector2f(static_cast<float>(-spnav_ev->motion.x) / 10.0f,
-                                               static_cast<float>(+spnav_ev->motion.z) / 10.0f));
+              m_viewer.get_state().move(Vector2f(static_cast<float>(-spnav_ev->motion.x) / 10.0f,
+                                                 static_cast<float>(+spnav_ev->motion.z) / 10.0f));
 
-            if (m_spnav_allow_rotate)
-              m_viewer.get_state().rotate(static_cast<float>(spnav_ev->motion.ry) / 200.0f);
-          }
-          break;
+              if (m_spnav_allow_rotate)
+                m_viewer.get_state().rotate(static_cast<float>(spnav_ev->motion.ry) / 200.0f);
+            }
+            break;
             
           case SPNAV_EVENT_BUTTON:
             if (0)
@@ -131,6 +147,21 @@ SDLViewer::process_event(const SDL_Event& event)
       {
         // New tile arrived
       }
+      break;
+
+    case SDL_JOYAXISMOTION:
+      break;
+
+    case SDL_JOYBALLMOTION:
+      break;
+
+    case SDL_JOYHATMOTION:
+      break;
+
+    case SDL_JOYBUTTONDOWN:
+      break;
+
+    case SDL_JOYBUTTONUP:
       break;
 
     case SDL_QUIT:
@@ -255,21 +286,21 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_F12:
-        {
-          SoftwareSurfacePtr surface = Framebuffer::screenshot();
-          // FIXME: Could do this in a worker thread to avoid pause on screenshotting
-          for(int i = 0; ; ++i)
           {
-            std::string outfile = (boost::format("/tmp/galapix-screenshot-%04d.png") % i).str();
-            if (!Filesystem::exist(outfile.c_str()))
+            SoftwareSurfacePtr surface = Framebuffer::screenshot();
+            // FIXME: Could do this in a worker thread to avoid pause on screenshotting
+            for(int i = 0; ; ++i)
             {
-              PNG::save(surface, outfile);
-              std::cout << "Screenshot written to " << outfile << std::endl;
-              break;
+              std::string outfile = (boost::format("/tmp/galapix-screenshot-%04d.png") % i).str();
+              if (!Filesystem::exist(outfile.c_str()))
+              {
+                PNG::save(surface, outfile);
+                std::cout << "Screenshot written to " << outfile << std::endl;
+                break;
+              }
             }
           }
-        }
-        break;              
+          break;              
 
         case SDLK_i:
           m_viewer.isolate_selection();
@@ -418,6 +449,76 @@ SDLViewer::process_event(const SDL_Event& event)
   }
 }
 
+float
+SDLViewer::get_axis(SDL_Joystick* joy, int axis) const
+{
+  int value = SDL_JoystickGetAxis(joy, axis);
+  if (value == 0)
+  {
+    return 0.0f;
+  }
+  else if (value > 0)
+  {
+    return static_cast<float>(value) / 32767.0f;  
+  }
+  else // if (value < 0)
+  {
+    return static_cast<float>(value) / 32768.0f;  
+  }
+}
+
+void
+SDLViewer::update_joysticks(float delta)
+{
+  const int move_x_axis = 0;
+  const int move_y_axis = 1;
+  const int zoom_axis   = 3;
+  const int rotate_left_axis = 4;
+  const int rotate_right_axis = 5;
+
+  for(auto joy: m_joysticks)
+  {
+    { // zoom
+      float value = get_axis(joy, zoom_axis);
+      
+      value *= 4.0f;
+
+      if (value < 0.0f)
+      {
+        m_viewer.get_state().zoom(1.0f + (-value * delta));
+      }
+      else if (value > 0.0f)
+      {
+        m_viewer.get_state().zoom(1.0f / (1.0f + (value * delta)));
+      }
+    }
+
+    { // move
+      float x_value = get_axis(joy, move_x_axis);
+      float y_value = get_axis(joy, move_y_axis);
+
+      x_value *= 2048.0f;
+      y_value *= 2048.0f;
+
+      if (x_value != 0.0f || y_value != 0.0f)
+      {
+        m_viewer.get_state().move(Vector2f(x_value * delta, 
+                                           y_value * delta));
+      }
+    }
+
+    { // rotate left
+      float value = (get_axis(joy, rotate_left_axis) + 1.0f) / 2.0f * 180.0f;
+      m_viewer.get_state().rotate(value * delta);
+    }
+
+    { // rotate right
+      float value = (get_axis(joy, rotate_right_axis) + 1.0f) / 2.0f * 180.0f;
+      m_viewer.get_state().rotate(-value * delta);
+    }
+  }
+}
+
 void
 SDLViewer::run()
 {
@@ -425,12 +526,12 @@ SDLViewer::run()
 
 #ifdef HAVE_SPACE_NAVIGATOR
   SpaceNavigator space_navigator;
-  boost::thread  space_navigator_thread(boost::bind(&SpaceNavigator::run, &space_navigator));
+  space_navigator.start_thread();
 #endif
 
   while(!m_quit)
   {     
-    if (m_viewer.is_active())
+    if (m_viewer.is_active() || true) // FIXME: hack for joystick support
     {
       SDL_Event event;
       while (SDL_PollEvent(&event))
@@ -441,6 +542,8 @@ SDLViewer::run()
       Uint32 cticks = SDL_GetTicks();
       float delta = static_cast<float>(cticks - ticks) / 1000.0f;
       ticks = cticks;
+
+      update_joysticks(delta);
 
       m_viewer.update(delta);
       m_viewer.draw();
@@ -471,8 +574,7 @@ SDLViewer::run()
   }
 
 #ifdef HAVE_SPACE_NAVIGATOR
-  // How should be join stuff that is waiting for stuff?
-  // space_navigator_thread.join();
+  space_navigator.stop_thread();
 #endif
 
   log_info << "done" << std::endl;

@@ -18,34 +18,34 @@
 
 #include "job/thread.hpp"
 
-#include <boost/bind.hpp>
+#include <assert.h>
 #include <iostream>
 
-Thread::Thread()
-  : m_thread()
+Thread::Thread() :
+  m_state(kNothing),
+  m_thread()
 {
 }
 
 Thread::~Thread()
 {
+  assert(m_state == kJoined);
 }
 
 void
 Thread::join_thread()
 {
-  assert(m_thread);
-  //assert(thread->joinable());
-  
-  m_thread->join();
-
-  m_thread.reset();
+  assert(m_state == kRunning);
+  m_thread.join();
+  m_state = kJoined;
 }
 
 void
 Thread::start_thread()
 {
-  assert(!m_thread);
-  m_thread.reset(new boost::thread(boost::bind(&Thread::run_wrap, this)));
+  assert(m_state == kNothing);
+  m_thread = std::thread([this]{ run_wrap(); });
+  m_state = kRunning;
 }
 
 void

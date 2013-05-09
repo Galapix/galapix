@@ -30,8 +30,8 @@ class CachedTileDatabase : public TileDatabaseInterface
 {
 private:
   Database& m_db;
-  std::auto_ptr<TileCache> m_tile_cache;
-  std::auto_ptr<TileDatabaseInterface> m_tile_database;
+  std::unique_ptr<TileCache> m_tile_cache;
+  std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
 public:
   CachedTileDatabase(Database& db, TileDatabaseInterface* tile_database);

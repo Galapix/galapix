@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_FACTORY_HPP
 
 #include <map>
+#include <string>
 
 #include "util/currenton.hpp"
 #include "util/software_surface.hpp"
@@ -32,10 +33,13 @@ class SoftwareSurfaceFactory : public Currenton<SoftwareSurfaceFactory>
 private:
   typedef std::map<std::string, const SoftwareSurfaceLoader*> ExtensionMap;
   typedef std::map<std::string, const SoftwareSurfaceLoader*> MimeTypeMap;
+  typedef std::map<std::string, const SoftwareSurfaceLoader*> MagicMap;
+  
+  std::vector<std::unique_ptr<SoftwareSurfaceLoader> > m_loader;
 
-  std::vector<boost::shared_ptr<SoftwareSurfaceLoader> > m_loader;
   ExtensionMap m_extension_map;
   MimeTypeMap  m_mime_type_map;
+  MagicMap m_magic_map;
   
 public:
   SoftwareSurfaceFactory();
@@ -43,13 +47,21 @@ public:
 
   void add_loader(SoftwareSurfaceLoader* loader);
   bool has_supported_extension(const URL& url);
-  
-  void register_by_magick(const SoftwareSurfaceLoader* loader, int offset, const std::string& magick);
+
+  /** Files are handled in the order of mime-type, extension, magic,
+      if one fails, the next in line is tried. Extension is the most
+      important one, as it is used to filter valid files when
+      generating file lists */
+  void register_by_magic(const SoftwareSurfaceLoader* loader, const std::string& magic);
   void register_by_mime_type(const SoftwareSurfaceLoader* loader, const std::string& mime_type);
   void register_by_extension(const SoftwareSurfaceLoader* loader, const std::string& extension);
 
+  const SoftwareSurfaceLoader* find_loader_by_filename(const std::string& filename) const;
+  const SoftwareSurfaceLoader* find_loader_by_magic(const std::string& filename) const;
+
   SoftwareSurfacePtr from_url(const URL& url) const;
   SoftwareSurfacePtr from_file(const std::string& filename) const;
+  SoftwareSurfacePtr from_file(const std::string& filename, const SoftwareSurfaceLoader* loader) const;
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);

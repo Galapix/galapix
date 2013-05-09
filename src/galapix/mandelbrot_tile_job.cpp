@@ -23,7 +23,7 @@
 #include "math/rgb.hpp"
 
 MandelbrotTileJob::MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
-                                     const boost::function<void (Tile)>& callback) :
+                                     const std::function<void (Tile)>& callback) :
   Job(job_handle),
   m_size(size),
   m_scale(scale),
@@ -46,19 +46,19 @@ MandelbrotTileJob::run()
 
     for(int px = 0; px < surface->get_width(); ++px)
     {
-      float x0 = static_cast<float>(256 * m_pos.x + px) / static_cast<float>(imagesize.width)  * 4.0f - 2.5f;
-      float y0 = static_cast<float>(256 * m_pos.y + py) / static_cast<float>(imagesize.height) * 3.0f - 1.5f;
+      double x0 = static_cast<double>(256 * m_pos.x + px) / static_cast<double>(imagesize.width)  * 4.0f - 2.5f;
+      double y0 = static_cast<double>(256 * m_pos.y + py) / static_cast<double>(imagesize.height) * 3.0f - 1.5f;
 
-      float x = 0;
-      float y = 0;
+      double x = 0;
+      double y = 0;
 
       int iteration = 0;
-      int max_iteration = 255;
+      const int max_iteration = 160;
     
       while(x*x + y*y <= (2*2) && 
             iteration < max_iteration)
       {
-        float xtemp = x * x - y * y + x0;
+        double xtemp = x * x - y * y + x0;
         y = 2 * x * y + y0;
 
         x = xtemp;

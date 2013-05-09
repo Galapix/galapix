@@ -21,7 +21,7 @@
 
 #include <string>
 #include <jpeglib.h>
-#include <boost/function.hpp>
+#include <functional>
 
 #include "util/software_surface.hpp"
 

@@ -19,9 +19,9 @@
 #ifndef HEADER_GALAPIX_JOBS_TILE_GENERATION_JOB_HPP
 #define HEADER_GALAPIX_JOBS_TILE_GENERATION_JOB_HPP
 
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/signals.hpp>
-#include <boost/thread/mutex.hpp>
+#include <mutex>
 
 #include "database/file_entry.hpp"
 #include "galapix/tile.hpp"
@@ -37,11 +37,11 @@ private:
     JobHandle job_handle;
     int       scale;
     Vector2i  pos;
-    boost::function<void (Tile)> callback;
+    std::function<void (Tile)> callback;
     
     TileRequest(const JobHandle& job_handle_,
                 int scale_, const Vector2i& pos_,
-                const boost::function<void (Tile)>& callback_) :
+                const std::function<void (Tile)>& callback_) :
       job_handle(job_handle_),
       scale(scale_), pos(pos_),
       callback(callback_)
@@ -51,7 +51,7 @@ private:
   typedef std::vector<TileRequest> TileRequests;
   
 private: 
-  boost::mutex m_state_mutex;
+  std::mutex m_state_mutex;
 
   enum { 
     kWaiting,
@@ -90,7 +90,7 @@ public:
       be honored, false if the tile generation is already in progress
       and the request has to be discarded */
   bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
-                    const boost::function<void (Tile)>& callback);
+                    const std::function<void (Tile)>& callback);
   void run();
 
   URL get_url() const { return m_url; }

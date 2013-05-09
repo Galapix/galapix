@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_HPP
 
 #include <stdint.h>
+#include <memory>
 
 #include "util/blob.hpp"
 
@@ -31,7 +32,7 @@ class Size;
 class SoftwareSurfaceImpl;
 class SoftwareSurface;
 
-typedef boost::shared_ptr<SoftwareSurface> SoftwareSurfacePtr;
+typedef std::shared_ptr<SoftwareSurface> SoftwareSurfacePtr;
 
 class SoftwareSurface
 {
@@ -100,7 +101,7 @@ public:
   void blit(SoftwareSurfacePtr& dst, const Vector2i& pos);
 
 private:
-  boost::scoped_ptr<SoftwareSurfaceImpl> impl;
+  std::unique_ptr<SoftwareSurfaceImpl> impl;
 };
 
 #endif

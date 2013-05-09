@@ -103,12 +103,17 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
   int height = image.rows();
 
   int shift;
-  if (MaxRGB == 65535)
+
+  // FIXME: QuantumRange is a macro that needs the type Quantum, but
+  // Magick++ puts it inside a namespace.
+  using Quantum = MagickCore::Quantum;
+
+  if (QuantumRange == 65535)
     shift = 8;
-  else if (MaxRGB == 255)
+  else if (QuantumRange == 255)
     shift = 0;
   else
-    assert(!"Imagemagick: Unknown MaxRGB");
+    assert(!"Imagemagick: Unknown QuantumRange");
 
   if (image.matte())
   {

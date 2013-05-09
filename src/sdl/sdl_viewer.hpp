@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_SDL_SDL_VIEWER_HPP
 
 #include <SDL.h>
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 #include "math/size.hpp"
 
@@ -42,6 +42,8 @@ private:
   bool m_spnav_allow_rotate;
 
   Viewer& m_viewer;
+
+  std::vector<SDL_Joystick*> m_joysticks;
   
 public:
   SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
@@ -52,6 +54,9 @@ public:
 
 private:
   void process_event(const SDL_Event& event);
+  void update_joysticks(float delta);
+
+  float get_axis(SDL_Joystick* joy, int axis) const;
 
 private:
   SDLViewer (const SDLViewer&);

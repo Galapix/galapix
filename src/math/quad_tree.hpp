@@ -21,7 +21,6 @@
 
 #include <vector>
 #include <memory>
-#include <boost/scoped_ptr.hpp>
 
 #include "math/rect.hpp"
 
@@ -54,10 +53,10 @@ private:
   Items    m_items;
   int      m_depth;
 
-  boost::scoped_ptr<QuadTreeNode<C> > m_nw;
-  boost::scoped_ptr<QuadTreeNode<C> > m_ne;
-  boost::scoped_ptr<QuadTreeNode<C> > m_sw;
-  boost::scoped_ptr<QuadTreeNode<C> > m_se;
+  std::unique_ptr<QuadTreeNode<C> > m_nw;
+  std::unique_ptr<QuadTreeNode<C> > m_ne;
+  std::unique_ptr<QuadTreeNode<C> > m_sw;
+  std::unique_ptr<QuadTreeNode<C> > m_se;
 
 public:
   QuadTreeNode(int depth, const Rectf& bounding_rect) :
@@ -195,7 +194,7 @@ template<class C>
 class QuadTree 
 {
 private:
-  boost::scoped_ptr<QuadTreeNode<C> > m_main_node;
+  std::unique_ptr<QuadTreeNode<C> > m_main_node;
 
 public: 
   QuadTree(const Rectf& bounding_rect) :

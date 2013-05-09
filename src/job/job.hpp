@@ -41,7 +41,7 @@ private:
   Job& operator= (const Job&);
 };
 
-typedef boost::shared_ptr<Job> JobPtr;
+typedef std::shared_ptr<Job> JobPtr;
 
 #endif
 

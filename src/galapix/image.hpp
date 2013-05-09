@@ -19,18 +19,16 @@
 #ifndef HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 #define HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 
-#include <boost/scoped_ptr.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <map>
 #include <string>
-#include <boost/thread/mutex.hpp>
 
 #include "database/file_entry.hpp"
 #include "galapix/image_handle.hpp"
 #include "galapix/tile_provider.hpp"
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
-#include "job/thread_message_queue.hpp"
+#include "job/thread_message_queue2.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
@@ -45,7 +43,7 @@ class Rectf;
 class Image
 {
 private:
-  boost::weak_ptr<Image> m_self;
+  std::weak_ptr<Image> m_self;
 
   URL       m_url;
   TileProviderPtr m_provider;
@@ -68,12 +66,12 @@ private:
 
   bool m_file_entry_requested;
 
-  boost::shared_ptr<ImageTileCache> m_cache;
-  boost::scoped_ptr<ImageRenderer>  m_renderer;
+  std::shared_ptr<ImageTileCache> m_cache;
+  std::unique_ptr<ImageRenderer>  m_renderer;
 
-  ThreadMessageQueue<FileEntry> m_file_entry_queue;
-  ThreadMessageQueue<Tile> m_tile_queue;
-  ThreadMessageQueue<TileProviderPtr> m_tile_provider_queue;
+  ThreadMessageQueue2<FileEntry> m_file_entry_queue;
+  ThreadMessageQueue2<Tile> m_tile_queue;
+  ThreadMessageQueue2<TileProviderPtr> m_tile_provider_queue;
   typedef std::vector<JobHandle> Jobs;
   Jobs m_jobs;
 
@@ -84,6 +82,9 @@ private:
 
 public:
   static ImagePtr create(const URL& url, TileProviderPtr provider = TileProviderPtr());
+
+public:
+  ~Image();
 
   // _____________________________________________________
   // Drawing stuff
@@ -123,6 +124,7 @@ public:
   int get_original_height() const;
 
   Vector2f get_top_left_pos() const;
+  void set_top_left_pos(const Vector2f&);
 
   // _____________________________________________________
   // Debug stuff

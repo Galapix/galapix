@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_UTIL_WEAK_FUNCTOR_HPP
 
 #include <iostream>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 #include "util/log.hpp"
 
@@ -32,7 +32,7 @@
  *
  *  Use it like:
  * 
- *   weak(boost::bind(&Foobar::callme, _1), object);
+ *   weak(std::bind(&Foobar::callme, _1), object);
  *
  */
 
@@ -41,7 +41,7 @@ class WeakFunctor
 {
 private:
   F m_func;
-  boost::weak_ptr<typename C::element_type> m_obj;
+  std::weak_ptr<typename C::element_type> m_obj;
 
 public: 
   WeakFunctor(F func, C obj) :
@@ -51,7 +51,7 @@ public:
 
   void operator()()
   {
-    boost::shared_ptr<typename C::element_type> obj = m_obj.lock();
+    std::shared_ptr<typename C::element_type> obj = m_obj.lock();
     if (obj)
     {
       m_func(obj);
@@ -65,7 +65,7 @@ public:
   template<class A1>
   void operator()(A1 a)
   {
-    boost::shared_ptr<typename C::element_type> obj = m_obj.lock();
+    std::shared_ptr<typename C::element_type> obj = m_obj.lock();
     if (obj)
     {
       m_func(obj, a);
@@ -79,7 +79,7 @@ public:
   template<class A1, class A2>
   void operator()(A1 a1, A2 a2)
   {
-    boost::shared_ptr<typename C::element_type> obj = m_obj.lock();
+    std::shared_ptr<typename C::element_type> obj = m_obj.lock();
     if (obj)
     {
       m_func(obj, a1, a2);
