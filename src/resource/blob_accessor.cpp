@@ -16,31 +16,39 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "blob_accessor.hpp"
+#include "resource/blob_accessor.hpp"
 
 #include <boost/filesystem.hpp>
 
 BlobAccessor::BlobAccessor(const std::string& filename) :
+  m_mutex(),
   m_filename(filename),
-  m_blob()
+  m_blob(),
+  m_blob_info()
 {
 }
 
 BlobAccessor::BlobAccessor(BlobPtr blob) :
+  m_mutex(),
   m_filename(),
-  m_blob(blob)
+  m_blob(blob),
+  m_blob_info()
 {
 }
 
 bool
 BlobAccessor::has_stdio_name() const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
   return !m_filename.empty();
 }
 
 std::string
-BlobAccessor::get_stdio_name()
+BlobAccessor::get_stdio_name() const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
   if (!m_filename.empty())
   {
     return m_filename;
@@ -57,12 +65,16 @@ BlobAccessor::get_stdio_name()
 bool
 BlobAccessor::has_blob() const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
   return static_cast<bool>(m_blob);
 }
 
 BlobPtr
-BlobAccessor::get_blob()
+BlobAccessor::get_blob() const
 {
+  std::lock_guard<std::mutex> lock(m_mutex);
+
   if (m_blob)
   {
     return m_blob;
@@ -72,6 +84,36 @@ BlobAccessor::get_blob()
     m_blob = Blob::from_file(m_filename);
     return m_blob;
   }
+}
+
+BlobInfo
+BlobAccessor::get_blob_info() const
+{
+  std::lock_guard<std::mutex> lock(m_mutex);
+
+  if (m_blob_info)
+  {
+    return *m_blob_info;
+  }
+  else
+  {
+    m_blob_info = BlobInfo::from_blob(*this);
+    return *m_blob_info;
+  }
+}
+
+int
+BlobAccessor::size() const
+{
+  // TODO: rewrite this to handle stdio
+  return get_blob()->size();
+}
+
+const uint8_t* 
+BlobAccessor::get_data() const
+{
+  // TODO: rewrite this to handle stdio
+  return get_blob()->get_data();
 }
 
 /* EOF */

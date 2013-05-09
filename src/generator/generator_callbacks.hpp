@@ -21,13 +21,18 @@
 
 #include "resource/resource_status.hpp"
 
-class ResourceInfo;
-class ArchiveInfo;
+class ArchiveData;
 class ArchiveFileInfo;
-class ImageInfo;
+class ArchiveInfo;
+class GeneratorCallbacks;
 class ImageData;
-class VideoInfo;
+class ImageInfo;
+class ResourceInfo;
+class ResourceLocator;
 class VideoData;
+class VideoInfo;
+
+typedef std::shared_ptr<GeneratorCallbacks> GeneratorCallbacksPtr;
 
 class GeneratorCallbacks
 {
@@ -35,25 +40,17 @@ private:
 public:
   virtual ~GeneratorCallbacks() {}
 
-  virtual void on_child_resource   (const ResourceInfo    & resource_info)     = 0;
+  virtual GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) = 0;
 
-  virtual void on_blob_info        (const BlobInfo        & blob_info)         = 0;
-  virtual void on_resource_info    (const ResourceInfo    & resource_info)     = 0;
+  virtual void on_blob_info        (const BlobInfo     & blob_info)     = 0;
+  virtual void on_resource_info    (const ResourceInfo & resource_info) = 0;
 
-  virtual void on_archive_info     (const ArchiveInfo     & archive_info)      = 0;
-  virtual void on_archive_file_info(const ArchiveFileInfo & archive_file_info) = 0;
-
-  virtual void on_image_info       (const ImageInfo       & image_info)        = 0;
-  virtual void on_image_data       (const ImageData       & image_data)        = 0;
-
-  virtual void on_video_info       (const VideoInfo       & video_info)        = 0;
-  virtual void on_video_data       (const VideoData       & video_data)        = 0;
+  virtual void on_archive_data     (const ArchiveInfo & archive_info)   = 0;
+  virtual void on_image_data       (const ImageData   & image_data)     = 0;
 
   virtual void on_success(ResourceStatus status) = 0;
   virtual void on_error(ResourceStatus status, const std::string& err) = 0;
 };
-
-typedef std::shared_ptr<GeneratorCallbacks> GeneratorCallbacksPtr;
 
 #endif
 

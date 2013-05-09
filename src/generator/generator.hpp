@@ -29,6 +29,7 @@
 #include "util/software_surface.hpp"
 #include "generator/generator_callbacks.hpp"
 
+class ArchiveManager;
 class BlobInfo;
 class BlobManager;
 class Extraction;
@@ -40,10 +41,11 @@ class Generator
 {
 private:
   BlobManager& m_blob_mgr;
+  ArchiveManager& m_archive_mgr;
   ThreadPool m_pool;
   
 public:
-  Generator(BlobManager& blob_mgr);
+  Generator(BlobManager& blob_mgr, ArchiveManager& archive_mgr);
   ~Generator();
 
   void request_file_info(const std::string& path, 
@@ -53,9 +55,10 @@ public:
                                    GeneratorCallbacksPtr callbacks);
 
 private:
-  void process_resource(const ResourceLocator& locator, const BlobPtr& blob,
-                        GeneratorCallbacksPtr callbacks);
-  void process_image_resource(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks);
+  void process_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks);
+  bool process_image_resource(const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info, GeneratorCallbacksPtr callbacks);
+  bool process_archive_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks);
+  void process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks);
 
 private:
   Generator(const Generator&) = delete;

@@ -23,6 +23,7 @@
 #include <set>
 
 #include "resource/resource_locator.hpp"
+#include "resource/blob_accessor.hpp"
 #include "util/blob.hpp"
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
@@ -54,7 +55,7 @@ public:
   ~BlobManager();
   
   void request_blob(const ResourceLocator& locator,
-                    const std::function<void (Failable<BlobPtr>)>& callback);
+                    const std::function<void (Failable<BlobAccessorPtr>)>& callback);
 
 private:
   void register_request(const ResourceLocator& locator);

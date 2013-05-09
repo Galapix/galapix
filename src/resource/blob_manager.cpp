@@ -39,14 +39,14 @@ BlobManager::~BlobManager()
 
 void
 BlobManager::request_blob(const ResourceLocator& locator,
-                          const std::function<void (Failable<BlobPtr>)>& callback)
+                          const std::function<void (Failable<BlobAccessorPtr>)>& callback)
 {
   // register_request()
 
   if (!locator.get_handler().empty())
   {
     //callback(Failable<BlobPtr>::from_exception(std::runtime_error("not a valid blob locator: " + locator.str())));
-    callback(Failable<BlobPtr>::from_exception(std::runtime_error("handler are not supported")));
+    callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error("handler are not supported")));
   }
   else
   {
@@ -58,15 +58,13 @@ BlobManager::request_blob(const ResourceLocator& locator,
          {
            try 
            {
-             BlobPtr blob = Blob::from_file(url.get_path());
-
-             // magick handler stuff
-
+             BlobAccessorPtr blob = std::make_shared<BlobAccessor>(url.get_path());
+             // TOOD: insert handler stuff
              callback(blob);
            }
            catch(const std::exception& err)
            {
-             callback(Failable<BlobPtr>(std::current_exception()));
+             callback(Failable<BlobAccessorPtr>(std::current_exception()));
            }
          });
     }
@@ -80,18 +78,18 @@ BlobManager::request_blob(const ResourceLocator& locator,
          {
            if (result.success())
            {
-             callback(Failable<BlobPtr>(result.get_blob()));
+             callback(Failable<BlobAccessorPtr>(std::make_shared<BlobAccessor>(result.get_blob())));
            }
            else
            {
-             callback(Failable<BlobPtr>::from_exception(std::runtime_error(format("%s: error: invalid response code: %d", 
-                                                                                  url.str(), result.get_response_code()))));
+             callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(format("%s: error: invalid response code: %d", 
+                                                                                          url.str(), result.get_response_code()))));
            }
          });
     }
     else
     {
-      Failable<BlobPtr> failable;
+      Failable<BlobAccessorPtr> failable;
       failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s", 
                                                                                locator.str(), url.get_scheme()))));
       callback(failable);

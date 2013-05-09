@@ -16,34 +16,37 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GENERATOR_BLOB_ACCESSOR_HPP
-#define HEADER_GALAPIX_GENERATOR_BLOB_ACCESSOR_HPP
+#include "resource/blob_info.hpp"
 
-#include <string>
+#include "resource/blob_accessor.hpp"
 
-#include "util/blob.hpp"
-
-class BlobAccessor
+BlobInfo
+BlobInfo::from_blob(BlobPtr blob)
 {
-private:
-  std::string m_filename;
-  BlobPtr m_blob;
+  return BlobInfo(SHA1::from_mem(blob->get_data(), blob->size()),
+                  blob->size());
+}
 
-public:
-  BlobAccessor(const std::string& filename);
-  BlobAccessor(BlobPtr blob);
+BlobInfo
+BlobInfo::from_blob(const BlobAccessor& blob_accessor)
+{
+  if (blob_accessor.has_stdio_name())
+  {
+    const std::string& path = blob_accessor.get_stdio_name();
+    return BlobInfo(SHA1::from_file(path), Filesystem::get_size(path));
+  }
+  else
+  {
+    const BlobPtr& blob = blob_accessor.get_blob();
+    return BlobInfo(SHA1::from_mem(blob->get_data(), blob->size()),
+                    blob->size());
+  }
+}
 
-  bool has_stdio_name() const;
-  std::string get_stdio_name();
-
-  bool has_blob() const;
-  BlobPtr get_blob();
-  
-private:
-  BlobAccessor(const BlobAccessor&);
-  BlobAccessor& operator=(const BlobAccessor&);
-};
-
-#endif
+BlobInfo
+BlobInfo::from_blob(const BlobAccessorPtr& blob_accessor)
+{
+  return from_blob(*blob_accessor);
+}
 
 /* EOF */

@@ -19,11 +19,11 @@ int main(int argc, char** argv)
     std::cout << "requesting " << locator.str() << std::endl;
     blob_mgr.request_blob
       (locator, 
-       [&count](const Failable<BlobPtr>& data)
+       [&count](const Failable<BlobAccessorPtr>& data)
        {
          try
          {
-           std::cout << "data retrieved: " << data.get()->size() << std::endl;
+           std::cout << "data retrieved: " << data.get()->get_blob()->size() << std::endl;
          }
          catch(const std::exception& err)
          {

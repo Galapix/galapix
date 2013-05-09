@@ -19,9 +19,15 @@
 #ifndef HEADER_GALAPIX_RESOURCE_BLOB_INFO_HPP
 #define HEADER_GALAPIX_RESOURCE_BLOB_INFO_HPP
 
+#include <memory>
+
 #include "database/row_id.hpp"
 #include "util/blob.hpp"
 #include "util/sha1.hpp"
+#include "util/filesystem.hpp"
+
+class BlobAccessor;
+typedef std::shared_ptr<BlobAccessor> BlobAccessorPtr;
 
 class BlobInfo
 {
@@ -31,11 +37,9 @@ private:
   int  m_size;
 
 public:
-  static BlobInfo from_blob(BlobPtr blob)
-  {
-    return BlobInfo(SHA1::from_mem(blob->get_data(), blob->size()),
-                    blob->size());
-  }
+  static BlobInfo from_blob(BlobPtr blob);
+  static BlobInfo from_blob(const BlobAccessor& blob_accessor);
+  static BlobInfo from_blob(const BlobAccessorPtr& blob_accessor);
 
   BlobInfo() :
     m_id(),

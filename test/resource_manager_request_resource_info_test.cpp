@@ -42,7 +42,7 @@ int main(int argc, char** argv)
   DownloadManager download_mgr;
   ArchiveManager archive_mgr;
   BlobManager blob_mgr(download_mgr, archive_mgr);
-  Generator generator(blob_mgr);
+  Generator generator(blob_mgr, archive_mgr);
 
   database.start_thread();
 

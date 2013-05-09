@@ -16,38 +16,45 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_RESOURCE_ARCHIVE_FILE_INFO_HPP
-#define HEADER_GALAPIX_RESOURCE_ARCHIVE_FILE_INFO_HPP
+#ifndef HEADER_GALAPIX_GENERATOR_BLOB_ACCESSOR_HPP
+#define HEADER_GALAPIX_GENERATOR_BLOB_ACCESSOR_HPP
 
 #include <string>
+#include <mutex>
+#include <boost/optional.hpp>
 
-#include "database/row_id.hpp"
+#include "util/blob.hpp"
 #include "resource/blob_info.hpp"
 
-class ArchiveFileInfo
+class BlobAccessor
 {
 private:
-  RowId m_id;
-  std::string m_path;
-  BlobInfo m_blob_info;  
-  
+  mutable std::mutex m_mutex;
+  mutable std::string m_filename;
+  mutable BlobPtr m_blob;
+  mutable boost::optional<BlobInfo> m_blob_info;
+
 public:
-  ArchiveFileInfo() :
-    m_id(),
-    m_path(),
-    m_blob_info()
-  {}
+  BlobAccessor(const std::string& filename);
+  BlobAccessor(BlobPtr blob);
 
-  ArchiveFileInfo(const std::string& path, const BlobInfo& blob_info) :
-    m_id(),
-    m_path(path),
-    m_blob_info(blob_info)
-  {}
+  bool has_stdio_name() const;
+  std::string get_stdio_name() const;
 
-  RowId get_id() const { return m_id; }
-  std::string get_path() const { return m_path; }
-  BlobInfo get_blob_info() const { return m_blob_info; }
+  bool has_blob() const;
+  BlobPtr get_blob() const;
+
+  int size() const;
+  const uint8_t* get_data() const;
+
+  BlobInfo get_blob_info() const;
+  
+private:
+  BlobAccessor(const BlobAccessor&);
+  BlobAccessor& operator=(const BlobAccessor&);
 };
+
+typedef std::shared_ptr<BlobAccessor> BlobAccessorPtr;
 
 #endif
 

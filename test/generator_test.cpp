@@ -45,8 +45,9 @@ public:
   {
   }
 
-  void on_child_resource(const ResourceInfo& resource_info) override
+  GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) override
   {
+    return std::make_shared<TestGeneratorCallbacks>(locator, std::function<void ()>());
   }
 
   void on_blob_info(const BlobInfo& blob_info) override
@@ -59,19 +60,9 @@ public:
     std::cout << "on_resource_info: " << resource_info.get_resource_name().str() << std::endl;
   }
 
-  void on_archive_info(const ArchiveInfo& archive_info) override
-  {
-    std::cout << "on_archive_info: " << std::endl;
-  }
 
-  void on_archive_file_info(const ArchiveFileInfo& archive_file_info) override
+  void on_archive_data(const ArchiveInfo& archive_info) override
   {
-    std::cout << "on_archive_file_info: " << std::endl;
-  }
-
-  void on_image_info(const ImageInfo& image_info) override
-  {
-    std::cout << "on_image_info: " << std::endl;
   }
 
   void on_image_data(const ImageData& image_data) override
@@ -80,16 +71,6 @@ public:
               << image_data.get_image_info().get_width() << "x" << image_data.get_image_info().get_height()
               << " tiles: " << image_data.get_image_tiles().size()
               << std::endl;
-  }
-
-  void on_video_info(const VideoInfo& video_info) override
-  {
-    std::cout << "on_video_info: " << std::endl;
-  }
-
-  void on_video_data(const VideoData& video_data) override
-  {
-    std::cout << "on_video_data: " << std::endl;
   }
 
   void on_success(ResourceStatus status) override
@@ -111,7 +92,7 @@ int main(int argc, char** argv)
   DownloadManager download_mgr;
   ArchiveManager archive_mgr;
   BlobManager blob_mgr(download_mgr, archive_mgr);
-  Generator   generator(blob_mgr);
+  Generator   generator(blob_mgr, archive_mgr);
 
   int count = 0;
   for(int i = 1; i < argc; ++i)
