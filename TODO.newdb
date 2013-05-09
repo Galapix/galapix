@@ -12,7 +12,7 @@ resource:
   handler: { pdf, jpeg, png, rar, 7zip, zip, ... }
   arguments: string
   // parent_id: rowid (parent resource_id in case of 'collections', like PDFs)
-  status: { error, access_error, success, incremental }
+  status: { error, access_error, success, in_progress }
 
 collection: // either resource.parent_id or separate collection table
   resource_id: row_id
@@ -28,8 +28,9 @@ file:
   mtime: integer
 
 url:
-  host: string (e.g. http://www.google.com)
-  path: string (e.g. /index.html)
+  url (e.g. http://www.google.com/foo.html)
+  // host: string (e.g. http://www.google.com)
+  // path: string (e.g. /index.html)
   mtime: string (e.g. "Wed, 14 Nov 2012 21:35:42 GMT")
   content_type: string (e.g. "text/html")
   // header: string (i.e. full dump of header from last access)
