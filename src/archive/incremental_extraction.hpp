@@ -55,6 +55,11 @@ public:
     return path.string();
   }
 
+  std::string get_type() const
+  {
+    return m_loader.str();
+  }
+
 private:
   IncrementalExtraction(const IncrementalExtraction&);
   IncrementalExtraction& operator=(const IncrementalExtraction&);

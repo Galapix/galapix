@@ -21,21 +21,21 @@
 
 #include "archive/archive_loader.hpp"
 
-class RarArchiveLoader : public ArchiveLoader
+class RarArchiveLoader final : public ArchiveLoader
 {
 private:
 public:
   RarArchiveLoader();
 
-  std::vector<std::string> get_magics() const;
-  std::vector<std::string> get_extensions() const;
+  std::vector<std::string> get_magics() const override;
+  std::vector<std::string> get_extensions() const override;
 
-  std::vector<std::string> get_filenames(const std::string& zip_filename) const;
-  BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
-  void extract(const std::string& archive, const std::string& target_directory) const;
-  bool is_seekable(const std::string& archive) const { return true; }
+  std::vector<std::string> get_filenames(const std::string& zip_filename) const override;
+  BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const override;
+  void extract(const std::string& archive, const std::string& target_directory) const override;
+  bool is_seekable(const std::string& archive) const override { return true; }
 
-  std::string str() const { return "rar"; }
+  std::string str() const override { return "rar"; }
 
 private:
   RarArchiveLoader(const RarArchiveLoader&);

@@ -56,8 +56,10 @@ collect_files(const boost::filesystem::path& path,
 
 } // namespace
 
-DirectoryExtraction::DirectoryExtraction(const std::string& path) :
-  m_path(path)
+DirectoryExtraction::DirectoryExtraction(const std::string& path,
+                                         const std::string& type) :
+  m_path(path),
+  m_type(type)
 {
 }
 

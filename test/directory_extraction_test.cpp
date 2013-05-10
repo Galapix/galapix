@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 {
   for(int i = 1; i < argc; ++i)
   {
-    DirectoryExtraction extraction(argv[i]);
+    DirectoryExtraction extraction(argv[i], "directory");
     
     for(auto& filename : extraction.get_filenames())
     {

@@ -23,17 +23,21 @@
 
 #include <boost/filesystem.hpp>
 
-class DirectoryExtraction : public Extraction
+class DirectoryExtraction final : public Extraction
 {
 private:
   boost::filesystem::path m_path;
+  std::string m_type;
 
 public:
-  DirectoryExtraction(const std::string& path);
+  DirectoryExtraction(const std::string& path,
+                      const std::string& type);
 
-  std::vector<std::string> get_filenames() const;
-  BlobPtr get_file(const std::string& filename) const;
-  std::string get_file_as_path(const std::string& filename) const;
+  std::vector<std::string> get_filenames() const override;
+  BlobPtr get_file(const std::string& filename) const override;
+  std::string get_file_as_path(const std::string& filename) const override;
+
+  std::string get_type() const override { return m_type; }
 
 private:
   DirectoryExtraction(const DirectoryExtraction&);
