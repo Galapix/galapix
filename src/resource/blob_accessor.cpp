@@ -97,7 +97,15 @@ BlobAccessor::get_blob_info() const
   }
   else
   {
-    m_blob_info = BlobInfo::from_blob(*this);
+    if (!m_filename.empty())
+    {
+      m_blob_info.reset(BlobInfo(SHA1::from_file(m_filename), Filesystem::get_size(m_filename)));
+    }
+    else
+    {
+      m_blob_info.reset(BlobInfo(SHA1::from_mem(m_blob->get_data(), m_blob->size()),
+                                 m_blob->size()));
+    }
     return *m_blob_info;
   }
 }
