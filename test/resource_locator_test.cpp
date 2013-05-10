@@ -17,12 +17,12 @@ int main(int argc, char** argv)
         std::cout << "url.path      : '" << loc.get_url().get_path() << "'\n";
         for(const auto& handler : loc.get_handler())
         {
-          std::cout << "handler: " << handler.get_type() << " - " << handler.get_name() << std::endl;
-        
-          for(const auto& arg : handler.get_args())
+          std::cout << "handler: " << handler.get_type() << " - " << handler.get_name();
+          if (!handler.get_args().empty())
           {
-            std::cout << "  arg: '" << arg << "'" << std::endl;
+            std::cout << " : " << handler.get_args();
           }
+          std::cout << std::endl;
         }
       }
       catch(const std::exception& err)

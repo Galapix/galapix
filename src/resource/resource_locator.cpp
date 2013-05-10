@@ -24,53 +24,49 @@
 ResourceLocator
 ResourceLocator::from_string(const std::string& locator)
 {
-  ResourceURL url;
+  std::string::size_type skip = 0;
+  if      (boost::starts_with(locator, "file://" )) { skip = 7; }
+  else if (boost::starts_with(locator, "ftp://"  )) { skip = 6; }
+  else if (boost::starts_with(locator, "http://" )) { skip = 7; }
+  else if (boost::starts_with(locator, "https://")) { skip = 8; }
+  else                                              { skip = 0; }
 
-  // FIXME: rewrite this whole thing, use regex or something
-
-  if (boost::starts_with(locator, "file:") ||
-      boost::starts_with(locator, "ftp:")  ||
-      boost::starts_with(locator, "http:") ||
-      boost::starts_with(locator, "https:"))
-  {
-    url = ResourceURL::from_string(locator);
-  }
-  else
-  {
-    url = ResourceURL("file", std::string(), locator);
-  }
-
-  std::string path = url.get_path();
-  std::string::size_type handler_start = path.find("//", 0, 2);
+  std::string::size_type handler_start = locator.find("//", skip, 2);
   if (handler_start == std::string::npos)
   {
-    return ResourceLocator(url, std::vector<ResourceHandler>());
+    if (skip == 0)
+    {
+      return ResourceLocator(ResourceURL("file", std::string(), locator), std::vector<ResourceHandler>());
+    }
+    else
+    {
+      return ResourceLocator(ResourceURL::from_string(locator), std::vector<ResourceHandler>());
+    }
   }
   else
   {
-    std::string::size_type beg = handler_start;
-
+    std::string path = locator.substr(skip, handler_start - skip);
+    ResourceURL url = ResourceURL("file", std::string(), path);
     std::vector<ResourceHandler> handler;
+
+    std::string::size_type beg = handler_start;
     do
     {
       beg += 2;
-      std::string::size_type end = path.find("//", beg + 2, 2);
+      std::string::size_type end = locator.find("//", beg, 2);
       if (end == std::string::npos)
       {
-        handler.push_back(ResourceHandler::from_string(path.substr(beg)));
+        handler.push_back(ResourceHandler::from_string(locator.substr(beg, end - beg)));
       }
       else
       {
-        handler.push_back(ResourceHandler::from_string(path.substr(beg, end - beg)));
+        handler.push_back(ResourceHandler::from_string(locator.substr(beg, end - beg)));
       }
       beg = end;
     } 
     while(beg != std::string::npos);
 
-    return ResourceLocator(ResourceURL(url.get_scheme(),
-                                       url.get_authority(),
-                                       path.substr(0, handler_start)),
-                           handler);
+    return ResourceLocator(url, handler);
   }
 }
 

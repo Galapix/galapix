@@ -40,7 +40,7 @@ ResourceHandler::from_string(const std::string& handler)
 
   if(p != std::string::npos)
   {
-    result.m_args = handler.substr(p);
+    result.m_args = handler.substr(p+1);
   }
 
   return result;
