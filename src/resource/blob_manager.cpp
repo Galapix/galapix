@@ -18,6 +18,7 @@
 
 #include "resource/blob_manager.hpp"
 
+#include "archive/archive_manager.hpp"
 #include "network/download_manager.hpp"
 #include "resource/resource_locator.hpp"
 #include "util/format.hpp"
@@ -43,57 +44,68 @@ BlobManager::request_blob(const ResourceLocator& locator,
 {
   // register_request()
 
-  if (!locator.get_handler().empty())
+  ResourceURL url = locator.get_url();
+  if (url.get_scheme() == "file")
   {
-    //callback(Failable<BlobPtr>::from_exception(std::runtime_error("not a valid blob locator: " + locator.str())));
-    callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error("handler are not supported")));
+    m_pool.schedule
+      ([this, locator, url, callback]
+       {
+         try 
+         {
+           BlobAccessorPtr blob = std::make_shared<BlobAccessor>(url.get_path());
+           for(const auto& handler : locator.get_handler())
+           {
+             blob = m_archive_mgr.get_file(blob, handler.get_name(), handler.get_args());
+           }
+           callback(blob);
+         }
+         catch(...)
+         {
+           callback(Failable<BlobAccessorPtr>(std::current_exception()));
+         }
+       });
+  }
+  else if (url.get_scheme() == "http"  ||
+           url.get_scheme() == "https" ||
+           url.get_scheme() == "ftp")
+  {
+    m_download_mgr.request_get
+      (url.str(), 
+       [this, callback, locator, url](const DownloadResult& result)
+       {
+         if (result.success())
+         {
+           m_pool.schedule
+             ([this, callback, locator, result]()
+              {
+                try
+                {
+                  BlobAccessorPtr blob = std::make_shared<BlobAccessor>(result.get_blob());
+                  for(const auto& handler : locator.get_handler())
+                  {
+                    blob = m_archive_mgr.get_file(blob, handler.get_name(), handler.get_args());
+                  }
+                  callback(Failable<BlobAccessorPtr>(blob));
+                }
+                catch(...)
+                {
+                  callback(Failable<BlobAccessorPtr>(std::current_exception()));
+                }
+              });
+         }
+         else
+         {
+           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(format("%s: error: invalid response code: %d", 
+                                                                                        url.str(), result.get_response_code()))));
+         }
+       });
   }
   else
   {
-    ResourceURL url = locator.get_url();
-    if (url.get_scheme() == "file")
-    {
-      m_pool.schedule
-        ([url, callback]
-         {
-           try 
-           {
-             BlobAccessorPtr blob = std::make_shared<BlobAccessor>(url.get_path());
-             // TOOD: insert handler stuff
-             callback(blob);
-           }
-           catch(const std::exception& err)
-           {
-             callback(Failable<BlobAccessorPtr>(std::current_exception()));
-           }
-         });
-    }
-    else if (url.get_scheme() == "http"  ||
-             url.get_scheme() == "https" ||
-             url.get_scheme() == "ftp")
-    {
-      m_download_mgr.request_get
-        (url.str(), 
-         [=](const DownloadResult& result)
-         {
-           if (result.success())
-           {
-             callback(Failable<BlobAccessorPtr>(std::make_shared<BlobAccessor>(result.get_blob())));
-           }
-           else
-           {
-             callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(format("%s: error: invalid response code: %d", 
-                                                                                          url.str(), result.get_response_code()))));
-           }
-         });
-    }
-    else
-    {
-      Failable<BlobAccessorPtr> failable;
-      failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s", 
-                                                                               locator.str(), url.get_scheme()))));
-      callback(failable);
-    }
+    Failable<BlobAccessorPtr> failable;
+    failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s", 
+                                                                             locator.str(), url.get_scheme()))));
+    callback(failable);
   }
 }
 

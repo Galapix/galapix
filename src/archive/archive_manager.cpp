@@ -184,6 +184,25 @@ ArchiveManager::get_extraction(const std::string& archive) const
   }
 }
 
+BlobAccessorPtr
+ArchiveManager::get_file(const BlobAccessorPtr& archive, const std::string& type, const std::string& args) const
+{
+  auto it = std::find_if(m_loader.begin(), m_loader.end(), 
+                         [&type](std::unique_ptr<ArchiveLoader> const& loader)
+                         {
+                           return loader->str() == type; 
+                         });
+  
+  if (it == m_loader.end())
+  {
+    raise_exception(std::runtime_error, "unknown archive type: " << type);
+  }
+  else
+  {
+    return std::make_shared<BlobAccessor>((*it)->get_file(archive->get_stdio_name(), args));
+  }
+}
+
 std::string
 ArchiveManager::create_extraction_directory() const
 {

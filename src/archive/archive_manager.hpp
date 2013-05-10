@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "resource/blob_accessor.hpp"
 #include "util/blob.hpp"
 #include "util/currenton.hpp"
 
@@ -55,6 +56,7 @@ public:
                                          const ArchiveLoader** loader_out = nullptr) const;
 
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
+  BlobAccessorPtr get_file(const BlobAccessorPtr& archive, const std::string& type, const std::string& args) const;
 
   /**
      Returns an Extraction object that allows fast access to files
