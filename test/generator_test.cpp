@@ -84,12 +84,15 @@ public:
   void on_success(ResourceStatus status) override
   {
     std::cout << m_locator.str() << " on_success: " << std::endl;
-    m_done_function();
+    if (m_done_function) 
+    {
+      m_done_function();
+    }
   }
 
   void on_error(ResourceStatus status, const std::string& err) override
   {
-    std::cout << m_locator.str() << " on_error: " << std::endl;
+    std::cout << m_locator.str() << " on_error: " << to_string(status) << " " << err << std::endl;
     m_done_function();
   }
 };
