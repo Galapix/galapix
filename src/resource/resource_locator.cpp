@@ -106,9 +106,9 @@ ResourceLocator::str() const
   for(const auto& handler : m_handler)
   {
     out << "//" << handler.get_type() << "-" << handler.get_name();
-    for(const auto& arg : handler.get_args())
+    if (!handler.get_args().empty())
     {
-      out << ':' << arg;
+      out << ':' << handler.get_args();
     }
   }
   return out.str();
