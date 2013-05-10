@@ -180,7 +180,7 @@ ArchiveManager::get_extraction(const std::string& archive) const
   {
     std::string tmpdir = create_extraction_directory();
     loader.extract(archive, tmpdir);
-    return std::make_shared<DirectoryExtraction>(tmpdir);
+    return std::make_shared<DirectoryExtraction>(tmpdir, loader.str());
   }
 }
 

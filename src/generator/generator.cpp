@@ -21,7 +21,6 @@
 #include "archive/archive_manager.hpp"
 #include "archive/extraction.hpp"
 #include "galapix/tile.hpp"
-#include "generator/archive_data.hpp"
 #include "generator/image_data.hpp"
 #include "jobs/tile_generator.hpp"
 #include "resource/blob_manager.hpp"
@@ -87,7 +86,7 @@ Generator::request_resource_processing(const ResourceLocator& locator,
          m_pool.schedule
            ([this, locator, blob, callbacks]
             {
-              process_resource(blob, callbacks);
+              process_resource(locator, blob, callbacks);
             });
        }
        catch(const std::exception& err)
@@ -102,7 +101,9 @@ Generator::request_resource_processing(const ResourceLocator& locator,
 }
 
 void
-Generator::process_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks)
+Generator::process_resource(const ResourceLocator& locator, 
+                            const BlobAccessorPtr& blob_accessor,
+                            GeneratorCallbacksPtr callbacks)
 {
   // FIXME: 
   // 1) use BlobAccessor instead
@@ -116,12 +117,14 @@ Generator::process_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallb
   BlobInfo blob_info = BlobInfo::from_blob(blob_accessor);
   callbacks->on_blob_info(blob_info);
 
-  if (process_image_resource(blob_accessor, blob_info, callbacks))
+  if (process_image_resource(locator, blob_accessor, blob_info, callbacks))
   {
+    log_debug("-- process_image_resource: done");
     callbacks->on_success(ResourceStatus::Success);
   }
-  else if (process_archive_resource(blob_accessor, callbacks))
+  else if (process_archive_resource(locator, blob_accessor, callbacks))
   {
+    log_debug("-- process_archive_resource: done");
     callbacks->on_success(ResourceStatus::Success);
   }
   else
@@ -131,22 +134,33 @@ Generator::process_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallb
 }
 
 bool
-Generator::process_archive_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks)
+Generator::process_archive_resource(const ResourceLocator& locator, 
+                                    const BlobAccessorPtr& blob_accessor, 
+                                    GeneratorCallbacksPtr callbacks)
 {
   try
   {
+    log_debug("-- process_archive_resource: " << locator.str());
     ExtractionPtr extraction = m_archive_mgr.get_extraction(blob_accessor->get_stdio_name());
   
+    log_debug("-- process_archive_resource: got extraction");
+
     std::vector<ArchiveFileInfo> files;
     for(const auto& filename : extraction->get_filenames())
     {
+      log_debug("-- process_archive_resource: file: " << filename);
       BlobAccessorPtr child_blob = std::make_shared<BlobAccessor>(extraction->get_file(filename));
       BlobInfo child_blob_info = child_blob->get_blob_info();
       files.emplace_back(filename, child_blob_info);
 
-      ResourceLocator child_locator; // TODO: fill this with stuff
+      std::vector<ResourceHandler> handler = locator.get_handler();
+      handler.push_back(ResourceHandler("archive", extraction->get_type(), filename));
+      ResourceLocator child_locator(locator.get_url(), std::move(handler));
+
+      log_debug("-- process_archive_resource: child: " << child_locator.str());
+
       GeneratorCallbacksPtr child_callbacks = callbacks->on_child_resource(child_locator);
-      process_resource(child_blob, child_callbacks);
+      process_resource(child_locator, child_blob, child_callbacks);
     }
 
     ArchiveInfo archive_info(std::move(files), boost::optional<std::string>());
@@ -163,7 +177,9 @@ Generator::process_archive_resource(const BlobAccessorPtr& blob_accessor, Genera
 }
 
 bool
-Generator::process_image_resource(const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info, GeneratorCallbacksPtr callbacks)
+Generator::process_image_resource(const ResourceLocator& locator, 
+                                  const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info,
+                                  GeneratorCallbacksPtr callbacks)
 {
   // generate ImageData if it is an image
   const SoftwareSurfaceLoader* loader = nullptr;

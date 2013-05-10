@@ -20,11 +20,13 @@
 
 #include "archive/archive_manager.hpp"
 #include "generator/generator.hpp"
-#include "generator/image_data.hpp"
 #include "generator/generator_callbacks.hpp"
+#include "generator/image_data.hpp"
 #include "network/download_manager.hpp"
+#include "resource/archive_info.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/resource_info.hpp"
+#include "util/log.hpp"
 #include "util/software_surface_factory.hpp"
 
 class TestGeneratorCallbacks final : public GeneratorCallbacks
@@ -45,29 +47,35 @@ public:
   {
   }
 
-  GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) override
+  GeneratorCallbacksPtr on_child_resource(const ResourceLocator& child_locator) override
   {
-    return std::make_shared<TestGeneratorCallbacks>(locator, std::function<void ()>());
+    std::cout << m_locator.str() << " on_child_resource: " << child_locator.str() << std::endl;
+    return std::make_shared<TestGeneratorCallbacks>(child_locator, std::function<void ()>());
   }
 
   void on_blob_info(const BlobInfo& blob_info) override
   {
-    std::cout << "on_blob_info: " << blob_info.get_size() << " " << blob_info.get_sha1().str() << std::endl;
+    std::cout << m_locator.str() << " on_blob_info: " << blob_info.get_size() << " " << blob_info.get_sha1().str() << std::endl;
   }
 
   void on_resource_info(const ResourceInfo& resource_info) override
   {
-    std::cout << "on_resource_info: " << resource_info.get_resource_name().str() << std::endl;
+    std::cout << m_locator.str() << " on_resource_info: " << resource_info.get_resource_name().str() << std::endl;
   }
 
 
   void on_archive_data(const ArchiveInfo& archive_info) override
   {
+    std::cout << m_locator.str() << " on_archive_data: " << std::endl;
+    for(const auto& entry : archive_info.get_files())
+    {
+      std::cout << "  " << entry.get_blob_info().get_sha1().str() << " " << entry.get_path() << std::endl;
+    }
   }
 
   void on_image_data(const ImageData& image_data) override
   {
-    std::cout << "on_image_data: "
+    std::cout << m_locator.str() << " on_image_data: "
               << image_data.get_image_info().get_width() << "x" << image_data.get_image_info().get_height()
               << " tiles: " << image_data.get_image_tiles().size()
               << std::endl;
@@ -75,19 +83,21 @@ public:
 
   void on_success(ResourceStatus status) override
   {
-    std::cout << "on_success: " << std::endl;
+    std::cout << m_locator.str() << " on_success: " << std::endl;
     m_done_function();
   }
 
   void on_error(ResourceStatus status, const std::string& err) override
   {
-    std::cout << "on_error: " << std::endl;
+    std::cout << m_locator.str() << " on_error: " << std::endl;
     m_done_function();
   }
 };
 
 int main(int argc, char** argv)
 {
+  g_logger.set_log_level(Logger::kDebug);
+
   SoftwareSurfaceFactory surface_factory;
   DownloadManager download_mgr;
   ArchiveManager archive_mgr;

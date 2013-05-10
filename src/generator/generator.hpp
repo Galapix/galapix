@@ -55,9 +55,11 @@ public:
                                    GeneratorCallbacksPtr callbacks);
 
 private:
-  void process_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks);
-  bool process_image_resource(const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info, GeneratorCallbacksPtr callbacks);
-  bool process_archive_resource(const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks);
+  void process_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks);
+  bool process_image_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info, 
+                              GeneratorCallbacksPtr callbacks);
+  bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, 
+                                GeneratorCallbacksPtr callbacks);
   void process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks);
 
 private:
