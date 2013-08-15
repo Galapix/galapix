@@ -165,6 +165,8 @@ JobHandle
 DatabaseThread::request_tile(const OldFileEntry& file_entry, int tilescale, const Vector2i& pos, 
                              const std::function<void (Tile)>& callback)
 {
+  log_info(file_entry << " " << tilescale << " " << pos);
+
   JobHandle job_handle_ = JobHandle::create();
 
   m_request_queue.wait_and_push
@@ -237,6 +239,8 @@ JobHandle
 DatabaseThread::request_file(const URL& url, 
                              const std::function<void (OldFileEntry)>& file_callback)
 {
+  log_info(url);
+ 
   JobHandle job_handle_ = JobHandle::create();
 
   m_request_queue.wait_and_push
@@ -267,6 +271,7 @@ void
 DatabaseThread::request_all_files(const std::function<void (OldFileEntry)>& callback_)
 {
   std::function<void (OldFileEntry)> callback = callback_; // FIXME: internal error workaround
+
   m_request_queue.wait_and_push([this, callback]{
       std::vector<OldFileEntry> entries;
       m_database.get_resources().get_old_file_entries(entries);
@@ -280,6 +285,8 @@ DatabaseThread::request_all_files(const std::function<void (OldFileEntry)>& call
 void
 DatabaseThread::request_files_by_pattern(const std::function<void (OldFileEntry)>& callback, const std::string& pattern)
 {
+  log_info(pattern);
+
   m_request_queue.wait_and_push([this, callback, pattern](){
       std::vector<OldFileEntry> entries;
       m_database.get_resources().get_old_file_entries(pattern, entries);
@@ -293,6 +300,8 @@ DatabaseThread::request_files_by_pattern(const std::function<void (OldFileEntry)
 void
 DatabaseThread::receive_tile(const RowId& fileid, const Tile& tile)
 {
+  log_info(fileid << " " << "Tile(" << tile.get_scale() << ", " << tile.get_pos() << ")");
+
   m_receive_queue.wait_and_push([this, fileid, tile](){
       // FIXME: Make some better error checking in case of loading failure
       if (tile)
