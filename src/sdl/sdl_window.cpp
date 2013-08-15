@@ -56,6 +56,7 @@ SDLWindow::SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing) 
 
 SDLWindow::~SDLWindow()
 {
+  SDL_GL_DeleteContext(m_gl_context);
   SDL_DestroyWindow(m_window);
 
   for(auto joy: m_joysticks)
@@ -80,24 +81,24 @@ SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, anti_aliasing);
   }
   
-  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+  //SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   //SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); // vsync
 
   Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
   if (fullscreen)
   {
-flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-m_fullscreen = true;
+    flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    m_fullscreen = true;
   }
   else
   {
-m_fullscreen = false;
-}
+    m_fullscreen = false;
+  }
   
   m_window = SDL_CreateWindow("Galapix 0.2.0",
                               SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               size.width, size.height,
-                              SDL_WINDOW_OPENGL);
+                              flags);
   if (!m_window)
   {
     raise_runtime_error("unable to set video mode: " << SDL_GetError());
