@@ -248,7 +248,8 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
 
   if (utime(to_filename.c_str(), &time_buf) != 0)
   {
-    std::cout << "Filesystem:copy_mtime: " << to_filename << ": " << strerror(errno) << std::endl;
+    int err = errno;
+    std::cout << "Filesystem:copy_mtime: " << to_filename << ": " << strerror(err) << std::endl;
   }
 }
 
@@ -259,13 +260,14 @@ Filesystem::get_magic(const std::string& filename)
   std::ifstream in(filename, std::ios::binary);
   if (!in)
   {
-    raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+    int err = errno;
+    raise_exception(std::runtime_error, filename << ": couldn't open file: " << strerror(err));
   }
   else
   {
-    if (!in.read(buf, sizeof(buf)))
+    if (in.read(buf, sizeof(buf)).bad())
     {
-      raise_exception(std::runtime_error, filename << ": " << strerror(errno));
+      raise_exception(std::runtime_error, filename << ": failed to read " << sizeof(buf) << " bytes");
     }
     else
     {
