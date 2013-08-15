@@ -26,6 +26,7 @@
 #include "network/download_result.hpp"
 #include "resource/archive_info.hpp"
 #include "resource/image_info.hpp"
+#include "resource/resource_generator_callbacks.hpp"
 #include "resource/resource_info.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/resource_url.hpp"
@@ -82,7 +83,7 @@ ResourceManager::request_blob_info(const ResourceLocator& locator,
                         {
                           callback(Failable<BlobInfo>(std::current_exception()));
                         }
-                      });    
+                      });
   }
 }
 
@@ -90,14 +91,20 @@ void
 ResourceManager::request_file_info(const std::string& filename, 
                                    const std::function<void (Failable<FileInfo>)>& callback)
 {
-  m_database.request_file_info(filename, [this, filename, callback](const boost::optional<FileInfo>& db_file_info){
+  m_database.request_file_info
+    (filename, 
+     [this, filename, callback](const boost::optional<FileInfo>& db_file_info)
+     {
       if (db_file_info)
       {
         callback(*db_file_info);
       }
       else
       {
-        m_generator.request_file_info(filename, [this, callback](const Failable<FileInfo>& file_info){
+        m_generator.request_file_info
+          (filename, 
+           [this, callback](const Failable<FileInfo>& file_info)
+           {
             if (file_info.is_initialized())
             {
               m_database.store_file_info(file_info.get(), callback);
@@ -162,15 +169,10 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
        }
        else
        {
-         callback(Failable<ResourceInfo>::from_exception(std::runtime_error("not implemented")));
-#if 0     
          m_generator.request_resource_processing
-           (locator, blob,
-            [callback](const Failable<ResourceInfo>& resource_info)
-            {
-              callback(resource_info);
-            });
-#endif
+           (locator, std::make_shared<ResourceGeneratorCallbacks>());
+         
+         callback(Failable<ResourceInfo>::from_exception(std::runtime_error("not implemented")));
        }
      });
 }
@@ -227,7 +229,7 @@ ResourceManager::request_image_info(const ResourceInfo& resource,
 {
   m_database.request_image_info
     (resource,
-     [this, resource, callback](const boost::optional<ImageInfo> image_info)
+     [this, resource, callback](const boost::optional<ImageInfo>& image_info)
      {
        if (image_info)
        {
@@ -260,7 +262,7 @@ ResourceManager::request_tile_info(const ImageInfo& image, int scale, int x, int
 #if 0
   m_database.request_tile(
     image.get_rowid(), scale, x, y, 
-    [this](const boost::optional<TileEntry> tile_entry)
+    [this](const boost::optional<TileEntry>& tile_entry)
     { 
       if (!tile_entry)
       {

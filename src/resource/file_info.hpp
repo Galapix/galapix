@@ -36,6 +36,13 @@ private:
 public:
   static FileInfo from_file(const std::string& filename);
 
+  FileInfo() :
+    m_id(),
+    m_path(),
+    m_mtime(),
+    m_blob_info()
+  {}
+
   FileInfo(const RowId& id, const FileInfo& rhs) :
     m_id(id),
     m_path(rhs.m_path),

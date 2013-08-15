@@ -45,6 +45,9 @@ public:
   std::string str() const;
 
   static ResourceHandler from_string(const std::string& handler);
+
+  bool operator==(const ResourceHandler& other) const;
+  bool operator!=(const ResourceHandler& other) const;
 };
 
 #endif

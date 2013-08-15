@@ -34,6 +34,14 @@ ResourceStatus ResourceStatus_from_string(const std::string& value)
   {
     return ResourceStatus::AccessError;
   }
+  else if (value == "unknown_handler")
+  {
+    return ResourceStatus::UnknownHandler;
+  }
+  else if (value == "handle_error")
+  {
+    return ResourceStatus::HandlerError;
+  }
   else if (value == "success")
   {
     return ResourceStatus::Success;
@@ -41,6 +49,10 @@ ResourceStatus ResourceStatus_from_string(const std::string& value)
   else if (value == "in_progress")
   {
     return ResourceStatus::InProgress;
+  }
+  else if (value == "incremental")
+  {
+    return ResourceStatus::Incremental;
   }
   else
   {
@@ -58,6 +70,9 @@ std::string to_string(const ResourceStatus& value)
     case ResourceStatus::AccessError:
       return "access_error";
 
+    case ResourceStatus::UnknownHandler:
+      return "unknown_handler";
+
     case ResourceStatus::HandlerError:
       return "handle_error";
 
@@ -66,6 +81,9 @@ std::string to_string(const ResourceStatus& value)
 
     case ResourceStatus::InProgress:
       return "in_progress";
+
+    case ResourceStatus::Incremental:
+      return "incremental";
       
     default:
       throw std::invalid_argument("invalid ResourceStatus value");

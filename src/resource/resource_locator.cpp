@@ -21,6 +21,8 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
 
+#include "util/log.hpp"
+
 ResourceLocator
 ResourceLocator::from_string(const std::string& locator)
 {
@@ -92,6 +94,45 @@ ResourceLocator::get_blob_locator() const
     blob_locator.m_handler.pop_back();
   }
   return blob_locator;
+}
+
+bool
+ResourceLocator::is_parent_of(const ResourceLocator& other) const
+{
+  /*
+    Problem:
+    
+    "file://foo.rar" is a blob without a type
+    "file://foo.rar//archive-rar" is parent of "file://foo.rar//archive-rar:foo.png"
+    "file://foo.rar" is parent of "file://foo.rar//archive-rar:foo.png"
+    "file://foo.rar" is also parent of "file://foo.rar//archive-zip:foo.png"
+    
+    The last one might however never be catched 
+  */
+  if (m_url == other.m_url)
+  {
+    if (m_handler.size() <= other.m_handler.size())
+    {
+      for(std::vector<ResourceHandler>::size_type i = 0; i < m_handler.size(); ++i)
+      {
+        if (m_handler[i] != other.m_handler[i])
+        {
+          return false;
+        }
+      }
+      return true;
+    }
+    else
+    {
+      // 'this' has more handler then 'other'
+      return false;
+    }
+  }
+  else
+  {  
+    // urls don't match
+    return false;
+  }
 }
 
 std::string

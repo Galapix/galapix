@@ -45,6 +45,7 @@
 class ResourceName
 {
 private:
+  RowId m_id;
   BlobInfo m_blob_info;
   ResourceHandler m_handler;
 

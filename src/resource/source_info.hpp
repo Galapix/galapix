@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,27 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "resource/resource_name.hpp"
+#ifndef HEADER_GALAPIX_RESOURCE_SOURCE_INFO_HPP
+#define HEADER_GALAPIX_RESOURCE_SOURCE_INFO_HPP
 
-ResourceName::ResourceName() :
-  m_id(),
-  m_blob_info(),
-  m_handler()
-{}
+#include "resource/file_info.hpp"
+#include "resource/url_info.hpp"
 
-ResourceName::ResourceName(const BlobInfo& blob_info,
-                           const ResourceHandler& handler) :
-  m_id(),
-  m_blob_info(blob_info),
-  m_handler(handler)
-{}
+enum class SourceType { URL, File };
 
-std::string
-ResourceName::str() const
+class SourceInfo
 {
-  std::ostringstream os;
-  os << "sha1:" << m_blob_info.get_sha1().str() << "-" << m_blob_info.get_size() << "//" << m_handler.str();
-  return os.str();
-}
+private:
+public:
+  SourceInfo();
+  
+  SourceType get_type() const;
+  URLInfo  get_url_info() const;
+  FileInfo get_file_info() const;
+
+  BlobInfo get_blob_info() const;
+};
+
+#endif
 
 /* EOF */

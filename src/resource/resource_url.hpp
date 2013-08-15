@@ -52,6 +52,10 @@ public:
   bool is_remote() const;
 
   std::string str() const;
+
+  bool operator==(const ResourceURL& other) const;
+  bool operator!=(const ResourceURL& other) const;
+  bool operator<(const ResourceURL& other) const;
 };
 
 #endif

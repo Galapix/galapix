@@ -58,25 +58,33 @@ public:
                   ArchiveManager& archive_mgr);
   virtual ~ResourceManager();
 
+
+  void request_resource_info(const ResourceLocator& locator,
+                             const std::function<void (const Failable<ResourceInfo>&)>& callback);
+
+  void request_tile_info(const ImageInfo& image, int scale, int x, int y,
+                         const std::function<void (const Failable<TileInfo>&)>& callback);
+
+
+  // -- semi private stuff follows, could be removed as duplicating functions from BlobMgr and Generator
+
+  void request_archive_info(const ResourceInfo& resource,
+                            const std::function<void (const Failable<ArchiveInfo>&)>& callback);
+
+  void request_image_info(const ResourceInfo& resource,
+                          const std::function<void (const Failable<ImageInfo>&)>& callback);
+
   void request_blob_info(const ResourceLocator& locator, 
                          const std::function<void (Failable<BlobInfo>)>& callback);
 
   void request_file_info(const std::string& filename, 
                          const std::function<void (Failable<FileInfo>)>& callback);
+
   void request_url_info(const std::string& url, 
                         const std::function<void (Failable<URLInfo>)>& callback);
 
   void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
                              const std::function<void (Failable<ResourceInfo>)>& callback);
-  void request_resource_info(const ResourceLocator& locator,
-                             const std::function<void (const Failable<ResourceInfo>&)>& callback);
-
-  void request_archive_info(const ResourceInfo& resource,
-                            const std::function<void (const Failable<ArchiveInfo>&)>& callback);
-  void request_image_info(const ResourceInfo& resource,
-                          const std::function<void (const Failable<ImageInfo>&)>& callback);
-  void request_tile_info(const ImageInfo& image, int scale, int x, int y,
-                         const std::function<void (const Failable<TileInfo>&)>& callback);
   
 private:
   ResourceManager(const ResourceManager&) = delete;

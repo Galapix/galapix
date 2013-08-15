@@ -16,6 +16,110 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "resource_info.hpp"
+#include "resource/resource_info.hpp"
+
+ResourceInfo::ResourceInfo() :
+  m_id(),
+  m_name(),
+  m_locator(),
+  m_status(),
+  m_source_type(),
+  m_file_info(),
+  m_url_info(),
+  m_image_info(),
+  m_archive_info(),
+  m_children()
+{}
+
+ResourceInfo::ResourceInfo(const RowId& id, const ResourceInfo& other) :
+  m_id(id),
+  m_name(other.m_name),
+  m_locator(other.m_locator),
+  m_status(other.m_status),
+  m_source_type(other.m_source_type),
+  m_file_info(other.m_file_info),
+  m_url_info(other.m_url_info),
+  m_image_info(other.m_image_info),
+  m_archive_info(other.m_archive_info),
+  m_children(other.m_children)
+{}
+
+ResourceInfo::ResourceInfo(const RowId& id,
+                           const ResourceName& name,
+                           ResourceStatus status) :
+  m_id(id),
+  m_name(name),
+  m_locator(),
+  m_status(status),
+  m_source_type(),
+  m_file_info(),
+  m_url_info(),
+  m_image_info(),
+  m_archive_info(),
+  m_children()
+{}
+
+ResourceInfo::ResourceInfo(const ResourceName& name,
+                           ResourceStatus status) :
+  m_id(),
+  m_name(name),
+  m_locator(),
+  m_status(status),
+  m_source_type(),
+  m_file_info(),
+  m_url_info(),
+  m_image_info(),
+  m_archive_info(),
+  m_children()
+{}
+
+SourceType
+ResourceInfo::get_source_type() const
+{
+  return m_source_type;
+}
+
+URLInfo
+ResourceInfo::get_url_info() const
+{
+  assert(m_source_type == SourceType::URL);
+  return m_url_info;
+}
+
+FileInfo
+ResourceInfo::get_file_info() const
+{
+  assert(m_source_type == SourceType::File);
+  return m_file_info;
+}
+
+    
+ResourceType
+ResourceInfo::get_type() const
+{
+  return ResourceType_from_string(m_name.get_handler().get_type());
+}
+
+ImageInfo
+ResourceInfo::get_image_info() const
+{
+  assert(get_type() == ResourceType::Image);
+
+  return m_image_info;
+}
+
+ArchiveInfo
+ResourceInfo::get_archive_info() const
+{
+  assert(get_type() == ResourceType::Archive);
+  
+  return m_archive_info;
+}
+
+std::vector<ResourceInfo>
+ResourceInfo::get_children() const
+{
+  return m_children;
+}
 
 /* EOF */

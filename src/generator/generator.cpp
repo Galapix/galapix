@@ -86,7 +86,14 @@ Generator::request_resource_processing(const ResourceLocator& locator,
          m_pool.schedule
            ([this, locator, blob, callbacks]
             {
-              process_resource(locator, blob, callbacks);
+              try
+              {
+                process_resource(locator, blob, callbacks);
+              }
+              catch(const std::exception& err)
+              {
+                callbacks->on_error(ResourceStatus::AccessError, err.what());
+              }
             });
        }
        catch(const std::exception& err)
@@ -185,7 +192,8 @@ Generator::process_image_resource(const ResourceLocator& locator,
   const SoftwareSurfaceLoader* loader = nullptr;
   if (blob_accessor->has_stdio_name())
   {
-    loader = SoftwareSurfaceFactory::current().find_loader_by_magic(Filesystem::get_magic(blob_accessor->get_stdio_name()));
+    std::string magic = Filesystem::get_magic(blob_accessor->get_stdio_name());
+    loader = SoftwareSurfaceFactory::current().find_loader_by_magic(magic);
   }
   else
   {

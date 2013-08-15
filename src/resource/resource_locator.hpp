@@ -63,6 +63,8 @@ public:
   const std::vector<ResourceHandler>& get_handler() const { return m_handler; }
   std::string get_type() const;
 
+  bool is_parent_of(const ResourceLocator& other) const;
+
   std::string str() const;
 };
 

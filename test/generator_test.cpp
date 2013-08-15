@@ -60,9 +60,8 @@ public:
 
   void on_resource_info(const ResourceInfo& resource_info) override
   {
-    std::cout << m_locator.str() << " on_resource_info: " << resource_info.get_resource_name().str() << std::endl;
+    std::cout << m_locator.str() << " on_resource_info: " << resource_info.get_name().str() << std::endl;
   }
-
 
   void on_archive_data(const ArchiveInfo& archive_info) override
   {
@@ -79,11 +78,19 @@ public:
               << image_data.get_image_info().get_width() << "x" << image_data.get_image_info().get_height()
               << " tiles: " << image_data.get_image_tiles().size()
               << std::endl;
+    
+    for(const auto& tile : image_data.get_image_tiles())
+    {
+      std::cout << "  " << tile.get_pos() << " " << tile.get_scale() << " " 
+                << tile.get_surface()->get_width() << "x"
+                << tile.get_surface()->get_height()
+                << std::endl;
+    }
   }
 
   void on_success(ResourceStatus status) override
   {
-    std::cout << m_locator.str() << " on_success: " << std::endl;
+    std::cout << m_locator.str() << " on_success: " << to_string(status) << std::endl;
     if (m_done_function) 
     {
       m_done_function();
@@ -96,6 +103,8 @@ public:
     m_done_function();
   }
 };
+
+
 
 int main(int argc, char** argv)
 {
@@ -113,10 +122,11 @@ int main(int argc, char** argv)
     ResourceLocator locator = ResourceLocator::from_string(argv[i]);
     std::cout << "requesting: " << locator.str() << std::endl;
     count += 1;
-    generator.request_resource_processing(locator, std::make_shared<TestGeneratorCallbacks>(locator, 
-                                                                                            [&count]{
-                                                                                              count -= 1;
-                                                                                            }));
+    generator.request_resource_processing(locator, 
+                                          std::make_shared<TestGeneratorCallbacks>(locator, 
+                                                                                   [&count]{
+                                                                                     count -= 1;
+                                                                                   }));
   }
 
   // FIXME: we need to manually wait for the Generator to be done,

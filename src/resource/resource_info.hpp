@@ -24,57 +24,66 @@
 #include <stdexcept>
 
 #include "database/row_id.hpp"
+#include "resource/archive_info.hpp"
 #include "resource/blob_info.hpp"
+#include "resource/file_info.hpp"
+#include "resource/file_info.hpp"
+#include "resource/image_info.hpp"
 #include "resource/resource_handler.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/resource_name.hpp"
 #include "resource/resource_status.hpp"
+#include "resource/resource_type.hpp"
+#include "resource/source_info.hpp"
+#include "resource/url_info.hpp"
 #include "util/sha1.hpp"
 
+/** 
+    ResourceInfo provides access to all the meta data related to a
+    given ResourceLocator, such as the name, status 
+*/
 class ResourceInfo
 {
 private:
   RowId m_id;
-  ResourceName m_name;
-  ResourceStatus m_status;
+  ResourceName    m_name;
+  ResourceLocator m_locator;
+  ResourceStatus  m_status;
+
+  SourceType m_source_type;
+  FileInfo m_file_info;
+  URLInfo m_url_info;
+
+  ImageInfo m_image_info;
+  ArchiveInfo m_archive_info;
+
+  std::vector<ResourceInfo> m_children;
   
 public:
-  ResourceInfo() :
-    m_id(),
-    m_name(),
-    m_status()
-  {}
-
-  ResourceInfo(const RowId& id, const ResourceInfo& other) :
-    m_id(id),
-    m_name(other.m_name),
-    m_status(other.m_status)
-  {}
-
-  ResourceInfo(const RowId& id,
-               const ResourceName& name,
-               ResourceStatus status) :
-    m_id(id),
-    m_name(name),
-    m_status(status)
-  {}
-
-  ResourceInfo(const ResourceName& name,
-               ResourceStatus status) :
-    m_id(),
-    m_name(name),
-    m_status(status)
-  {}
+  ResourceInfo();
+  ResourceInfo(const RowId& id, const ResourceInfo& other);
+  ResourceInfo(const RowId& id, const ResourceName& name, ResourceStatus status);
+  ResourceInfo(const ResourceName& name, ResourceStatus status);
 
   RowId get_id() const { return m_id; }
-  BlobInfo get_blob() const { return m_name.get_blob_info(); }
-  ResourceHandler get_handler() const { return m_name.get_handler(); }
-  ResourceName get_resource_name() const { return m_name; }
+
+  ResourceName get_name() const { return m_name; }
+  ResourceLocator get_locator() const { return m_locator; }
+
   ResourceStatus get_status() const { return m_status; }
 
-  //ResourceLocator get_locator() const { return m_locator; }
-  //ResourceName get_name() const { return m_name; }
-  //std::vector<ResourceLocator> get_children() const { return m_children; }
+  BlobInfo get_blob_info() const { return m_name.get_blob_info(); }
+  ResourceHandler get_handler() const { return m_name.get_handler(); }
+
+  SourceType get_source_type() const;
+  URLInfo    get_url_info() const;
+  FileInfo   get_file_info() const;
+    
+  ResourceType get_type() const;
+  ImageInfo    get_image_info() const;
+  ArchiveInfo  get_archive_info() const;
+
+  std::vector<ResourceInfo> get_children() const;
 };
 
 #endif

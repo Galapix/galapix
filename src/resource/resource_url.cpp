@@ -20,6 +20,7 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <tuple>
 
 #include "util/filesystem.hpp"
 #include "util/format.hpp"
@@ -102,6 +103,30 @@ ResourceURL::str() const
   out << m_path;
   
   return out.str();
+}
+
+bool
+ResourceURL::operator==(const ResourceURL& other) const
+{
+  return
+    std::tie(this->m_scheme, this->m_authority, this->m_path)
+    == 
+    std::tie(other.m_scheme, other.m_authority, other.m_path);
+}
+
+bool
+ResourceURL::operator!=(const ResourceURL& other) const
+{
+  return !(*this == other);
+}
+
+bool
+ResourceURL::operator<(const ResourceURL& other) const
+{
+  return 
+    std::tie(this->m_scheme, this->m_authority, this->m_path) 
+    <
+    std::tie(other.m_scheme, other.m_authority, other.m_path);
 }
 
 /* EOF */

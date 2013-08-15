@@ -58,4 +58,19 @@ ResourceHandler::str() const
   return out.str();
 }
 
+bool
+ResourceHandler::operator==(const ResourceHandler& other) const
+{
+  return 
+    m_type == other.m_type &&
+    m_name == other.m_name &&
+    m_args == other.m_args;
+}
+
+bool
+ResourceHandler::operator!=(const ResourceHandler& other) const
+{
+  return !(*this == other);
+}
+
 /* EOF */

@@ -63,7 +63,7 @@ int main(int argc, char** argv)
                      << "  rowid : ";
            if (info.get_id()) { std::cout << info.get_id().get_id(); } else { std::cout << "<invalid>"; } std::cout << '\n';
            std::cout << "  status  : " << to_string(info.get_status()) << '\n'
-                     << "  blob    : " << info.get_blob().get_sha1().str() << " " << info.get_blob().get_size() << '\n'
+                     << "  blob    : " << info.get_name().get_blob_info().get_sha1().str() << " " << info.get_name().get_blob_info().get_size() << '\n'
                      << "  handler : " << info.get_handler().str() << '\n';
          }
          catch(const std::exception& err)
