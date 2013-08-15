@@ -62,7 +62,7 @@ public:
   void on_leave_screen() override;
 
 private:
-  void set_provider(TileProviderPtr provider);
+  void set_tile_provider(TileProviderPtr provider);
 
 private:
   URL       m_url;

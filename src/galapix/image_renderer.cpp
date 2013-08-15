@@ -27,9 +27,9 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 
-ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr cache)
-  : m_image(image),
-    m_cache(cache)
+ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr cache) :
+  m_image(image),
+  m_cache(cache)
 {
 }
 
@@ -134,8 +134,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
 
   if (!cliprect.is_overlapped(image_rect))
   {
-    //m_cache->cleanup();
-    m_image.cache_cleanup();
+    m_cache->cleanup();
     return false;
   }
   else

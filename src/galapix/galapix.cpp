@@ -246,8 +246,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
       else
       {
-        WorkspaceItemPtr image(new Image(i->get_url(), std::make_shared<DatabaseTileProvider>(*i, image_entry)));
-        workspace.add_image(image);
+        workspace.add_image(std::make_shared<Image>(i->get_url(), std::make_shared<DatabaseTileProvider>(*i, image_entry)));
 
         // print progress
         int n = (i - file_entries.begin())+1;
@@ -280,7 +279,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     {
       if (i->get_payload() == "mandelbrot")
       {
-        workspace.add_image(WorkspaceItemPtr(new Image(*i, TileProviderPtr(new MandelbrotTileProvider(job_manager)))));
+        workspace.add_image(std::make_shared<Image>(*i, std::make_shared<MandelbrotTileProvider>(job_manager)));
       }
       else
       {
@@ -289,14 +288,14 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
     }
     else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
     {
-      workspace.add_image(WorkspaceItemPtr(new Image(*i, ZoomifyTileProvider::create(*i, job_manager))));
+      workspace.add_image(std::make_shared<Image>(*i, ZoomifyTileProvider::create(*i, job_manager)));
     }
     else
     {
       OldFileEntry file_entry;
       if (!database.get_resources().get_old_file_entry(*i, file_entry))
       {
-        workspace.add_image(WorkspaceItemPtr(new Image(*i)));
+        workspace.add_image(std::make_shared<Image>(*i));
       }
       else
       {
@@ -307,8 +306,8 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
         }
         else
         {
-          WorkspaceItemPtr image(new Image(file_entry.get_url(), std::make_shared<DatabaseTileProvider>(file_entry, image_entry)));
-          workspace.add_image(image);
+          workspace.add_image(std::make_shared<Image>(file_entry.get_url(), 
+                                                      std::make_shared<DatabaseTileProvider>(file_entry, image_entry)));
         }
       }
     }

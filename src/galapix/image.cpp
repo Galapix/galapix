@@ -37,7 +37,7 @@ Image::Image(const URL& url, TileProviderPtr provider) :
   m_cache(),
   m_renderer()
 {
-  set_provider(m_provider);
+  set_tile_provider(m_provider);
 }
 
 Image::~Image()
@@ -104,7 +104,7 @@ Image::draw(const Rectf& cliprect, float zoom)
 }
 
 void
-Image::set_provider(TileProviderPtr provider)
+Image::set_tile_provider(TileProviderPtr provider)
 {
   float old_size = static_cast<float>(std::max(get_original_width(),
                                                get_original_height()));

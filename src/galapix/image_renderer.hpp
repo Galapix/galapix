@@ -38,7 +38,7 @@ public:
   ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> cache);
 
   /** Return true if something was drawn to the screen, false when
-   *  image was outside the cliprect */
+      image was outside the cliprect */
   bool draw(const Rectf& cliprect, float zoom);
 
 private:
