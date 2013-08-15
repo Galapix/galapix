@@ -30,7 +30,6 @@
 #include "galapix/workspace.hpp"
 #include "math/rgba.hpp"
 #include "plugins/png.hpp"
-#include "sdl/sdl_framebuffer.hpp"
 #include "spnav/space_navigator.hpp"
 #include "util/filesystem.hpp"
 #include "util/log.hpp"
@@ -41,7 +40,7 @@
 
 SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
-  SDLWindow(geometry, fullscreen, anti_aliasing),
+  m_window(geometry, fullscreen, anti_aliasing),
   m_viewer(viewer),
   m_quit(false),
   m_spnav_allow_rotate(false)
@@ -55,7 +54,7 @@ SDLViewer::~SDLViewer()
 void
 SDLViewer::process_event(const SDL_Event& event)
 {
-  Uint8* keystate = SDL_GetKeyState(0);
+  Uint8* keystate = SDL_GetKeyboardState(0);
 
   switch(event.type)
   {
@@ -141,11 +140,19 @@ SDLViewer::process_event(const SDL_Event& event)
       m_quit = true;
       break;
 
-    case SDL_VIDEOEXPOSE:
-      break;
+      //case SDL_VIDEOEXPOSE:
+      //break;
 
-    case SDL_VIDEORESIZE:
-      SDLFramebuffer::reshape(Size(event.resize.w, event.resize.h));
+    case SDL_WINDOWEVENT:
+      switch (event.window.event) 
+      {
+        case SDL_WINDOWEVENT_RESIZED:
+          Framebuffer::reshape(Size(event.window.data1, event.window.data2));
+          break;
+
+        default:
+          break;
+      }
       break;
 
     case SDL_MOUSEMOTION:
@@ -156,21 +163,8 @@ SDLViewer::process_event(const SDL_Event& event)
       // FIXME: When the mouse is set to left-hand mode, SDL reverses
       // the mouse buttons when a grab is active!
     case SDL_MOUSEBUTTONDOWN:
-      switch(event.button.button)
-      {
-        case SDL_BUTTON_WHEELUP:
-          m_viewer.get_state().zoom(1.1f, Vector2i(event.button.x, event.button.y));
-          break;
-              
-        case SDL_BUTTON_WHEELDOWN:
-          m_viewer.get_state().zoom(1.0f/1.1f, Vector2i(event.button.x, event.button.y));
-          break;
-
-        default:
-          m_viewer.on_mouse_button_down(Vector2i(event.button.x, event.button.y),
-                                        event.button.button);
-          break;
-      }
+      m_viewer.on_mouse_button_down(Vector2i(event.button.x, event.button.y),
+                                    event.button.button);
       break;
 
     case SDL_MOUSEBUTTONUP:
@@ -180,6 +174,18 @@ SDLViewer::process_event(const SDL_Event& event)
           m_viewer.on_mouse_button_up(Vector2i(event.button.x, event.button.y),
                                       event.button.button);
           break;
+      }
+      break;
+
+    case SDL_MOUSEWHEEL:
+      for(int i = event.wheel.y; i < 0; ++i)
+      {
+        m_viewer.get_state().zoom(1.1f, Vector2i(event.button.x, event.button.y));
+      }
+
+      for(int i = event.wheel.y; i > 0; --i)
+      {
+        m_viewer.get_state().zoom(1.0f/1.1f, Vector2i(event.button.x, event.button.y));
       }
       break;
 
@@ -202,19 +208,19 @@ SDLViewer::process_event(const SDL_Event& event)
           m_viewer.get_state().zoom(1.0f/1.25f);
           break;
 
-        case SDLK_KP8:
+        case SDLK_KP_8:
           m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(0.0f, +128.0f));
           break;
 
-        case SDLK_KP2:
+        case SDLK_KP_2:
           m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(0.0f, -128.0f));
           break;
 
-        case SDLK_KP4:
+        case SDLK_KP_4:
           m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(+128.0f, 0.0f));
           break;
 
-        case SDLK_KP6:
+        case SDLK_KP_6:
           m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(-128.0f, 0.0f));
           break;
 
@@ -243,7 +249,7 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_s:
-          if (keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT])
+          if (keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT])
           {
             m_viewer.sort_reverse_image_list();
           }
@@ -347,7 +353,7 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_F11:
-          SDLFramebuffer::toggle_fullscreen();
+          m_window.toggle_fullscreen();
           break;
 
         case SDLK_F2:
@@ -384,7 +390,7 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_b:
-          if (keystate[SDLK_LSHIFT] || keystate[SDLK_RSHIFT])
+          if (keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT])
           {
             m_viewer.toggle_background_color(true);
           }
@@ -448,7 +454,7 @@ SDLViewer::update_joysticks(float delta)
   const int rotate_left_axis = 4;
   const int rotate_right_axis = 5;
 
-  for(auto joy: m_joysticks)
+  for(auto joy: m_window.m_joysticks)
   {
     { // zoom
       float value = get_axis(joy, zoom_axis);
@@ -535,7 +541,7 @@ SDLViewer::run()
       ticks = SDL_GetTicks();
     }
 
-    SDLFramebuffer::flip();
+    m_window.flip();
 
     // std::cout << "." << std::flush;
 

@@ -31,9 +31,10 @@ class FileEntry;
 class Image;
 class Workspace;
 
-class SDLViewer : public SDLWindow
+class SDLViewer
 {
 private:
+  SDLWindow m_window;
   Viewer& m_viewer;
   bool m_quit;
   bool m_spnav_allow_rotate;

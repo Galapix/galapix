@@ -26,7 +26,6 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
-#include "sdl/sdl_framebuffer.hpp"
 #include "util/raise_exception.hpp"
 
 Size Framebuffer::size;
@@ -201,7 +200,8 @@ void
 Framebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
 {
 #ifdef GALAPIX_SDL
-  SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
+  assert(!"not implemented");
+  //SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
 #endif
 }
 

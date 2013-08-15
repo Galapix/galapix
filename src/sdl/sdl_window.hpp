@@ -27,29 +27,26 @@
 class SDLWindow
 {
 protected:
+  SDL_Window*   m_window;
+  SDL_GLContext m_gl_context;
+
   Size m_geometry;
   bool m_fullscreen;
   int  m_anti_aliasing;
 
+public: // FIXME: joysticks don't belong here
   std::vector<SDL_Joystick*> m_joysticks;
 
 public:
   SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing);
   virtual ~SDLWindow();
 
-  /*
-    void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
+  void flip();
+  void toggle_fullscreen();
+  void apply_gamma_ramp(float contrast, float brightness, float gamma);
 
-    void toggle_fullscreen();
-
-    int  get_width()  { return screen->w; }
-    int  get_height() { return screen->h; }
-    Size get_size()   { return Size(screen->w, screen->h); }
-
-    void reshape(const Size& size);
-    void apply_gamma_ramp(float contrast, float brightness, float gamma);
-  */
-    void flip();
+private:
+  void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
 
 private:
   SDLWindow(const SDLWindow&) = delete;
