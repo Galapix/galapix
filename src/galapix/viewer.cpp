@@ -575,14 +575,12 @@ Viewer::toggle_trackball_mode()
   if (pan_tool->get_trackball_mode())
   {
     log_info << "Trackball mode active, press 't' to leave" << std::endl;
-    SDL_ShowCursor(SDL_DISABLE);
-    SDL_WM_GrabInput(SDL_GRAB_ON);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
   }
   else
   {
     log_info << "Trackball mode deactivated" << std::endl;
-    SDL_ShowCursor(SDL_ENABLE);
-    SDL_WM_GrabInput(SDL_GRAB_OFF);
+    SDL_SetRelativeMouseMode(SDL_FALSE);
   }
 }
 

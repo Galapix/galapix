@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2012 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,50 +16,43 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_SDL_SDL_VIEWER_HPP
-#define HEADER_GALAPIX_SDL_SDL_VIEWER_HPP
+#ifndef HEADER_GALAPIX_SDL_SDL_WINDOW_HPP
+#define HEADER_GALAPIX_SDL_SDL_WINDOW_HPP
 
 #include <SDL.h>
-#include <memory>
+#include <vector>
 
 #include "math/size.hpp"
-#include "sdl/sdl_window.hpp"
-#include "galapix/image.hpp"
-
-class Viewer;
-class FileEntry;
-class Image;
-class Workspace;
-
-class SDLViewer
+
+class SDLWindow
 {
-private:
-  SDLWindow m_window;
-  Viewer& m_viewer;
+protected:
+  SDL_Window*   m_window;
+  SDL_GLContext m_gl_context;
 
-  bool m_quit;
-  bool m_spnav_allow_rotate;
+  Size m_geometry;
+  bool m_fullscreen;
+  int  m_anti_aliasing;
 
+public: // FIXME: joysticks don't belong here
   std::vector<SDL_Joystick*> m_joysticks;
-  
+
 public:
-  SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
-            Viewer& viewer);
-  ~SDLViewer();
+  SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing);
+  virtual ~SDLWindow();
 
-  void run();
-
-private:
-  void process_event(const SDL_Event& event);
-  void update_joysticks(float delta);
-
-  float get_axis(SDL_Joystick* joy, int axis) const;
+  void flip();
+  void toggle_fullscreen();
+  void apply_gamma_ramp(float contrast, float brightness, float gamma);
 
 private:
-  SDLViewer (const SDLViewer&);
-  SDLViewer& operator= (const SDLViewer&);
+  void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
+
+private:
+  SDLWindow(const SDLWindow&) = delete;
+  SDLWindow& operator=(const SDLWindow&) = delete;
 };
-
+
 #endif
 
 /* EOF */
