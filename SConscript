@@ -207,11 +207,11 @@ class Project:
         gtest = Environment()
         gtest.Append(CPPPATH = [ "external/gtest-1.6.0/include/",
                                  "external/gtest-1.6.0/" ])
-        libgtest = gtest.StaticLibrary("external/gtest-1.6.0/src/gtest-all.cc")
-        libgtest_main = gtest.StaticLibrary("external/gtest-1.6.0/src/gtest_main.cc")
+        libgtest = gtest.StaticLibrary("gtest", "external/gtest-1.6.0/src/gtest-all.cc")
+        libgtest_main = gtest.StaticLibrary("gtest_main", "external/gtest-1.6.0/src/gtest_main.cc")
         
         libgalapix_test_env = self.libgalapix_env.Clone()
-        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash', libgtest])
+        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash', libgtest, 'pthread'])
 
         for filename in Glob("test/*_test.cpp", strings=True):
             Alias('test', libgalapix_test_env.Program(filename[:-4],
