@@ -31,13 +31,13 @@
 #include "database/database.hpp"
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
+#include "galapix/arg_parser.hpp"
 #include "galapix/database_thread.hpp"
-#include "galapix/database_tile_provider.hpp"
-#include "galapix/mandelbrot_tile_provider.hpp"
 #include "galapix/options.hpp"
+#include "galapix/thumbnail_generator.hpp"
 #include "galapix/viewer.hpp"
+#include "galapix/viewer_command.hpp"
 #include "galapix/workspace.hpp"
-#include "galapix/zoomify_tile_provider.hpp"
 #include "job/job_handle_group.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/test_job.hpp"
@@ -63,9 +63,6 @@
 #endif
 
 Galapix::Galapix()
-  : fullscreen(false),
-    geometry(800, 600),
-    anti_aliasing(0)
 {
   Filesystem::init();
 }
@@ -155,225 +152,6 @@ Galapix::list(const Options& opts)
     std::cout << i->get_url() << std::endl;
   }  
 }
-
-void
-Galapix::thumbgen(const Options& opts,
-                  const std::vector<URL>& urls, 
-                  bool generate_all_tiles)
-{
-  Database       database(opts.database);
-  JobManager     job_manager(opts.threads);
-  DatabaseThread database_thread(database, job_manager);
-  
-  database_thread.start_thread();
-  job_manager.start_thread();
-
-  std::vector<OldFileEntry> file_entries;
-
-  JobHandleGroup job_handle_group;
-
-  // gather FileEntries
-  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
-  {
-    job_handle_group.add(database_thread.request_file(*i, 
-                                                      [&file_entries](const OldFileEntry& entry) { 
-                                                        file_entries.push_back(entry); 
-                                                      }));
-  }
-  job_handle_group.wait();
-  job_handle_group.clear();
-
-  std::cout << "Got " << file_entries.size() << " files, generating tiles...: "  << generate_all_tiles << std::endl;
-
-  // gather thumbnails
-  for(std::vector<OldFileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
-  {
-    int min_scale = 0;
-    int max_scale = 1; // FIXME: i->get_thumbnail_scale();
-
-    if (!generate_all_tiles)
-    {
-      min_scale = std::max(0, max_scale - 3);
-    }
-
-    job_handle_group.add(database_thread.request_tiles(*i, min_scale, max_scale,
-                                                       std::function<void(Tile)>()));
-  }
-
-  job_handle_group.wait();
-  job_handle_group.clear();
-
-  job_manager.stop_thread();
-  database_thread.stop_thread();
-
-  job_manager.join_thread();
-  database_thread.join_thread();
-}
-
-void
-Galapix::view(const Options& opts, const std::vector<URL>& urls)
-{
-  Database       database(opts.database);
-  JobManager     job_manager(opts.threads);
-
-  Workspace workspace;
-
-  { // process all -p PATTERN options 
-    std::vector<OldFileEntry> file_entries;
-
-    for(std::vector<std::string>::const_iterator i = opts.patterns.begin(); i != opts.patterns.end(); ++i)
-    {
-      std::cout << "Processing pattern: '" << *i << "'" << std::endl;
-
-      if (*i == "*")
-      {
-        // special case to display everything, might be faster then
-        // using the pattern
-        database.get_resources().get_old_file_entries(file_entries);
-      }
-      else
-      {
-        database.get_resources().get_old_file_entries(*i, file_entries);
-      }
-    }
-
-    for(std::vector<OldFileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
-    {
-      ImageEntry image_entry;
-      if (!database.get_resources().get_image_entry(*i, image_entry))
-      {
-        log_warn("no ImageEntry for " << i->get_url());
-      }
-      else
-      {
-        workspace.add_image(std::make_shared<Image>(i->get_url(), std::make_shared<DatabaseTileProvider>(*i, image_entry)));
-
-        // print progress
-        int n = (i - file_entries.begin())+1;
-        int total = file_entries.size();
-        std::cout << "Getting tiles: " << n << "/" << total << " - "
-                  << (100 * n / total) << '%'
-                  << '\r' << std::flush;
-      }
-    }
-
-    if (!file_entries.empty())
-    {
-      std::cout << std::endl;
-    }
-  }
-
-  // process regular URLs
-  for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
-  {
-    int n = (i - urls.begin())+1;
-    int total = urls.size();
-    std::cout << "Processing URLs: " << n << "/" << total << " - " << (100 * n / total) << "%\r" << std::flush;
-
-    if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))
-    {
-      // FIXME: Right place for this?
-      workspace.load(i->get_stdio_name());
-    }
-    else if (i->get_protocol() == "buildin")
-    {
-      if (i->get_payload() == "mandelbrot")
-      {
-        workspace.add_image(std::make_shared<Image>(*i, std::make_shared<MandelbrotTileProvider>(job_manager)));
-      }
-      else
-      {
-        std::cout << "Galapix::view(): unknown buildin:// requested: " << *i << " ignoring" << std::endl;
-      }
-    }
-    else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
-    {
-      workspace.add_image(std::make_shared<Image>(*i, ZoomifyTileProvider::create(*i, job_manager)));
-    }
-    else
-    {
-      OldFileEntry file_entry;
-      if (!database.get_resources().get_old_file_entry(*i, file_entry))
-      {
-        workspace.add_image(std::make_shared<Image>(*i));
-      }
-      else
-      {
-        ImageEntry image_entry;
-        if (!database.get_resources().get_image_entry(file_entry, image_entry))
-        {
-          log_warn("no ImageEntry for " << *i);
-        }
-        else
-        {
-          workspace.add_image(std::make_shared<Image>(file_entry.get_url(), 
-                                                      std::make_shared<DatabaseTileProvider>(file_entry, image_entry)));
-        }
-      }
-    }
-  }
-  
-  if (!urls.empty())
-  {
-    std::cout << std::endl;
-  }
-
-  DatabaseThread database_thread(database, job_manager);
-  job_manager.start_thread();  
-  database_thread.start_thread();
-
-#ifdef GALAPIX_SDL
-  Viewer viewer(&workspace);
-  SDLViewer sdl_viewer(geometry, fullscreen, anti_aliasing, viewer);
-  viewer.layout_tight();
-  viewer.zoom_to_selection();
-  sdl_viewer.run();
-#endif
-
-#ifdef GALAPIX_GTK
-  GtkViewer gtk_viewer;
-  gtk_viewer.set_workspace(&workspace);
-  gtk_viewer.run();
-#endif
-
-  job_manager.abort_thread();
-  database_thread.abort_thread();
-
-  job_manager.join_thread();
-  database_thread.join_thread();
-}
-
-void
-Galapix::print_usage()
-{
-  std::cout << "Usage: galapix view     [OPTIONS]... [FILES]...\n"
-            << "       galapix thumbgen [OPTIONS]... [FILES]...\n"
-            << "       galapix list     [OPTIONS]...\n"
-            << "       galapix cleanup  [OPTIONS]...\n"
-            << "\n"
-            << "Commands:\n"
-            << "  view      Display the given files\n"
-            << "  thumbgen  Generate only small thumbnails for all given images\n"
-            << "  list      Lists all files in the database\n"
-            << "  cleanup   Runs garbage collection on the database\n"
-            << "\n"
-            << "Options:\n"
-            << "  -d, --database FILE    Use FILE has database (default: none)\n"
-            << "  -f, --fullscreen       Start in fullscreen mode\n"
-            << "  -t, --threads          Number of worker threads (default: 2)\n"
-            << "  -F, --files-from FILE  Get urls from FILE\n"
-            << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
-            << "  -g, --geometry WxH     Start with window size WxH\n"        
-            << "  -a, --anti-aliasing N  Anti-aliasing factor 0,2,4 (default: 0)\n"
-            << "\n"
-            << "Compiled Fetures:\n" 
-#ifdef HAVE_SPACE_NAVIGATOR
-            << "  * SpaceNavigator: enabled\n"
-#else
-            << "  * SpaceNavigator: disabled\n"
-#endif
-            << std::endl;
-}
   
 int
 Galapix::main(int argc, char** argv)
@@ -387,7 +165,7 @@ Galapix::main(int argc, char** argv)
     Options opts;
     opts.threads  = 2;
     opts.database = Filesystem::get_home() + "/.galapix/cache4";
-    parse_args(argc, argv, opts);
+    ArgParser::parse_args(argc, argv, opts);
 
     DownloadManager download_manager;
     ArchiveManager archive_manager;
@@ -412,9 +190,10 @@ Galapix::run(const Options& opts)
   if (opts.rest.empty())
   {
 #ifdef GALAPIX_SDL
-    print_usage();
+    ArgParser::print_usage();
 #else
-    view(opts, std::vector<URL>());
+    ViewerCommand viewer(opts);
+    viewer.run(std::vector<URL>());
 #endif
   }
   else
@@ -445,7 +224,8 @@ Galapix::run(const Options& opts)
       }
       else
       {
-        view(opts, urls);
+        ViewerCommand viewer(opts);
+        viewer.run(urls);
       }
     }
     else if (command == "list")
@@ -462,130 +242,12 @@ Galapix::run(const Options& opts)
     }
     else if (command == "thumbgen")
     {
-      thumbgen(opts, urls, false);
+      ThumbnailGenerator generator(opts);
+      generator.run(urls, false);
     }
     else
     {
-      print_usage();
-    }
-  }
-}
-
-void
-Galapix::parse_args(int argc, char** argv, Options& opts)
-{
-  // Parse arguments
-  for(int i = 1; i < argc; ++i)
-  {
-    if (argv[i][0] == '-')
-    {
-      if (strcmp(argv[i], "--help") == 0 ||
-          strcmp(argv[i], "-h") == 0)
-      {
-        print_usage();
-        exit(0);
-      }
-      else if (strcmp(argv[i], "--database") == 0 ||
-               strcmp(argv[i], "-d") == 0)
-      {
-        ++i;
-        if (i < argc)
-        {
-          opts.database = argv[i];
-        }
-        else
-        {
-          raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
-        }
-      }
-      else if (strcmp(argv[i], "-D") == 0 ||
-               strcmp(argv[i], "--debug") == 0)
-      {
-        g_logger.set_log_level(Logger::kDebug);
-      }
-      else if (strcmp(argv[i], "-v") == 0 ||
-               strcmp(argv[i], "--verbose") == 0)
-      {
-        g_logger.set_log_level(Logger::kInfo);
-      }
-      else if (strcmp(argv[i], "-t") == 0 ||
-               strcmp(argv[i], "--threads") == 0)
-      {
-        ++i;
-        if (i < argc)
-        {
-          opts.threads = atoi(argv[i]);
-        }
-        else
-        {
-          raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
-        }              
-      }
-      else if (strcmp(argv[i], "-F") == 0 ||
-               strcmp(argv[i], "--files-from") == 0)
-      {
-        ++i;
-        if (i < argc)
-        {
-          std::string line;
-          std::ifstream in(argv[i]);
-          if (!in)
-          {
-            raise_runtime_error("Couldn't open " + std::string(argv[i]));
-          }
-          else
-          {
-            while(std::getline(in, line))
-            {
-              opts.rest.push_back(line);
-            }
-          }
-        }
-        else
-        {
-          raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
-        }
-      }
-      else if (strcmp(argv[i], "--pattern") == 0 ||
-               strcmp(argv[i], "-p") == 0)
-      {
-        i += 1;
-        if (i < argc)
-          opts.patterns.push_back(argv[i]);
-        else
-          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
-      }
-      else if (strcmp(argv[i], "--anti-aliasing") == 0 ||
-               strcmp(argv[i], "-a") == 0)
-      {
-        i += 1;
-        if (i < argc)
-          anti_aliasing = atoi(argv[i]);
-        else
-          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");                  
-      }
-      else if (strcmp(argv[i], "--geometry") == 0 ||
-               strcmp(argv[i], "-g") == 0)
-      {
-        i += 1;
-        if (i < argc)
-          sscanf(argv[i], "%dx%d", &geometry.width, &geometry.height);
-        else
-          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
-      }
-      else if (strcmp(argv[i], "--fullscreen") == 0 ||
-               strcmp(argv[i], "-f") == 0)
-      {
-        fullscreen = true;
-      }
-      else
-      {
-        raise_runtime_error("Unknown option " + std::string(argv[i]));
-      }
-    }
-    else
-    {
-      opts.rest.push_back(argv[i]);
+      ArgParser::print_usage();
     }
   }
 }

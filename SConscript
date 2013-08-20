@@ -47,6 +47,8 @@ class Project:
             'src/display/framebuffer.cpp',
             'src/galapix/galapix.cpp',
             'src/galapix/viewer.cpp',
+            'src/galapix/thumbnail_generator.cpp',
+            'src/galapix/viewer_command.cpp'
         ]
 
         self.sdl_sources = [

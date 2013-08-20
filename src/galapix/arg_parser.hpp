@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,31 +16,23 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
-#define HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_ARG_PARSER_HPP
+#define HEADER_GALAPIX_GALAPIX_ARG_PARSER_HPP
 
-#include <vector>
-#include <string>
-
-#include "util/url.hpp"
-#include "math/size.hpp"
-
 class Options;
 
-class Galapix
+class ArgParser
 {
+private:
 public:
-  Galapix();
-  ~Galapix();
+  static void print_usage();
+  static void parse_args(int argc, char** argv, Options& opts);
 
-  void run(const Options& opts);
-  int  main(int argc, char** argv);
-
-  void cleanup(const std::string& database);
-  void list(const Options& opts);
-  void export_images(const std::string& database, const std::vector<URL>& urls);
+private:
+  ArgParser(const ArgParser&) = delete;
+  ArgParser& operator=(const ArgParser&) = delete;
 };
-
+
 #endif
 
 /* EOF */

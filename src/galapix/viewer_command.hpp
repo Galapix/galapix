@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2013 Ingo Ruhnke <grumbel@gmx.de>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,31 +16,36 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
-#define HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_VIEWER_COMMAND_HPP
+#define HEADER_GALAPIX_GALAPIX_VIEWER_COMMAND_HPP
 
-#include <vector>
-#include <string>
+#include "database/database.hpp"
+#include "galapix/database_thread.hpp"
+#include "job/job_manager.hpp"
 
-#include "util/url.hpp"
-#include "math/size.hpp"
-
-class Options;
+#include "galapix/options.hpp"
 
-class Galapix
+class ViewerCommand
 {
+private:
+  Options m_opts;
+
+  Database   m_database;
+  JobManager m_job_manager;
+  DatabaseThread m_database_thread;
+  std::vector<std::string> m_patterns;
+
 public:
-  Galapix();
-  ~Galapix();
+  ViewerCommand(const Options& options);
+  ~ViewerCommand();
+  
+  void run(const std::vector<URL>& urls);
 
-  void run(const Options& opts);
-  int  main(int argc, char** argv);
-
-  void cleanup(const std::string& database);
-  void list(const Options& opts);
-  void export_images(const std::string& database, const std::vector<URL>& urls);
+private:
+  ViewerCommand(const ViewerCommand&) = delete;
+  ViewerCommand& operator=(const ViewerCommand&) = delete;
 };
-
+
 #endif
 
 /* EOF */

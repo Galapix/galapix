@@ -19,15 +19,28 @@
 #ifndef HEADER_GALAPIX_GALAPIX_OPTIONS_HPP
 #define HEADER_GALAPIX_GALAPIX_OPTIONS_HPP
 
+#include <vector>
+#include <string>
+
+#include "math/size.hpp"
+
 class Options
 {
 public:
+  bool fullscreen;
+  Size geometry;
+  int  anti_aliasing;
+
   std::string database;
   std::vector<std::string> patterns;
   int         threads;
   std::vector<std::string> rest;
 
   Options() :
+    fullscreen(false),
+    geometry(800, 600),
+    anti_aliasing(0),
+
     database(),
     patterns(),
     threads(),

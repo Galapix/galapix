@@ -20,6 +20,7 @@
 #define HEADER_XBOXDRV_RAISE_EXCEPTION_HPP
 
 #include <sstream>
+#include <stdexcept>
 
 #include "log.hpp"
 
