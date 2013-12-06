@@ -42,7 +42,7 @@ public:
   ~ImageCollection();
 
   void add(ImagePtr image);
-
+  void remove(ImagePtr image);
   void clear() { m_images.clear(); }
 
   iterator begin();
