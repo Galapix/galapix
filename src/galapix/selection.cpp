@@ -40,7 +40,7 @@ Selection::add_images(const ImageCollection& images)
 void
 Selection::remove_image(const ImagePtr& image)
 {
-  m_images.add(image);
+  m_images.remove(image);
 }
 
 void
