@@ -268,9 +268,15 @@ void
 Workspace::print_images(const Rectf& rect)
 {
   std::cout << "-- Visible images --------------------------------------" << std::endl;
-  for(ImageCollection::iterator i = m_images.begin(); i != m_images.end(); ++i)
+  ImageCollection images = m_selection->get_images();
+
+  for(ImageCollection::iterator i = images.begin(); i != images.end(); ++i)
   {
-    if ((*i)->overlaps(rect))
+    if ((*i)->get_url().has_stdio_name())
+    {
+      std::cout << (*i)->get_url().get_stdio_name() << std::endl;
+    }
+    else
     {
       std::cout << (*i)->get_url() << " "
                 << (*i)->get_original_width() << "x" << (*i)->get_original_height()
