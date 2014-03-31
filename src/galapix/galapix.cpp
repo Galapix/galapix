@@ -27,6 +27,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <Magick++.h>
 
 #include "database/database.hpp"
 #include "display/framebuffer.hpp"
@@ -517,6 +518,8 @@ Galapix::main(int argc, char** argv)
       std::cout << "Galapix::main(): curl_global_init() failed" << std::endl;
       return EXIT_FAILURE;
     }
+    
+    Magick::InitializeMagick(*argv);
 
     ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
