@@ -101,19 +101,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
   int width  = image.columns();
   int height = image.rows();
-
-  int shift;
-
-  // FIXME: QuantumRange is a macro that needs the type Quantum, but
-  // Magick++ puts it inside a namespace.
-  using Quantum = MagickCore::Quantum;
-
-  if (QuantumRange == 65535)
-    shift = 8;
-  else if (QuantumRange == 255)
-    shift = 0;
-  else
-    assert(!"Imagemagick: Unknown QuantumRange");
+  int shift = image.depth() - 8;
 
   if (image.matte())
   {
