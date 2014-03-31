@@ -26,6 +26,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <Magick++.h>
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
@@ -166,6 +167,8 @@ Galapix::main(int argc, char** argv)
     opts.threads  = 2;
     opts.database = Filesystem::get_home() + "/.galapix/cache4";
     ArgParser::parse_args(argc, argv, opts);
+
+    Magick::InitializeMagick(*argv);
 
     DownloadManager download_manager;
     ArchiveManager archive_manager;
