@@ -18,6 +18,7 @@
 
 #include "galapix/viewer_state.hpp"
 
+#define GLM_FORCE_RADIANS
 #include <glm/ext.hpp>
 
 #include "display/framebuffer.hpp"
@@ -37,7 +38,7 @@ ViewerState::zoom(float factor, const Vector2i& pos)
   Vector2f center(static_cast<float>(Framebuffer::get_width())  / 2.0f,
                   static_cast<float>(Framebuffer::get_height()) / 2.0f);
 
-  Vector2f rotated_pos{pos};
+  Vector2f rotated_pos(pos);
   rotated_pos -= center;
   rotated_pos = glm::rotate(rotated_pos, glm::radians(-angle));
   rotated_pos += center;
