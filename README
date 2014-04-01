@@ -67,19 +67,18 @@ Required Libraries and Tools:
   * librsvg  - http://librsvg.sourceforge.net/
   * libexif  - http://libexif.sourceforge.net/
 
-On Ubuntu 9.10 one can install all required libraries with this call:
+On Ubuntu 14.04 one can install all required libraries with this call:
 
   sudo apt-get install \
     libsqlite3-dev \
     libglew1.5-dev \
-    libjpeg62-dev \
+    libjpeg8-dev \
     libpng12-dev \
     scons \
     libmagick++-dev \
     libcurl4-gnutls-dev \
     libglademm-2.4-dev \
     libgtkglextmm-x11-1.2-dev \
-    libboost-thread-dev \
     libspnav-dev \
     libexif-dev
 
