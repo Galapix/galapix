@@ -137,7 +137,7 @@ class Project:
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
         self.libgalapix_env.Append(CPPDEFINES = self.optional_defines,
-                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals'] + self.optional_libs)
+                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif'] + self.optional_libs)
         self.libgalapix_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
@@ -162,7 +162,7 @@ class Project:
         sdl_env = self.env.Clone()
         sdl_env.Append(CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif'] + self.optional_libs,
                        OBJPREFIX="sdl.")
         sdl_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
@@ -179,7 +179,7 @@ class Project:
         gtk_env = self.env.Clone()
         gtk_env.Append(CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals'] + self.optional_libs,
+                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif'] + self.optional_libs,
                        OBJPREFIX="gtk.")
         gtk_env.ParseConfig('pkg-config libpng --libs --cflags | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('sdl-config --cflags --libs | sed "s/-I/-isystem/g"')
