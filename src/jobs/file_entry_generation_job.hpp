@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_JOBS_FILE_ENTRY_GENERATION_JOB_HPP
 
 #include <functional>
-#include <boost/signals.hpp>
+#include <boost/signals2.hpp>
 
 #include "util/url.hpp"
 #include "job/job.hpp"
@@ -32,14 +32,14 @@ class FileEntryGenerationJob : public Job
 private:
   URL m_url;
 
-  boost::signal<void (OldFileEntry)> m_sig_file_callback;
+  boost::signals2::signal<void (OldFileEntry)> m_sig_file_callback;
 
 public:
   FileEntryGenerationJob(const JobHandle& job_handle, const URL& url);
 
   void run();
 
-  boost::signal<void (OldFileEntry)>& sig_file_callback() { return m_sig_file_callback; }
+  boost::signals2::signal<void (OldFileEntry)>& sig_file_callback() { return m_sig_file_callback; }
 
 private:
   FileEntryGenerationJob(const FileEntryGenerationJob&);

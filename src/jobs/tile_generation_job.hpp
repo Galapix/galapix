@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_JOBS_TILE_GENERATION_JOB_HPP
 
 #include <functional>
-#include <boost/signals.hpp>
+#include <boost/signals2.hpp>
 #include <mutex>
 
 #include "database/entries/old_file_entry.hpp"
@@ -79,7 +79,7 @@ private:
   typedef std::vector<Tile> Tiles;
   Tiles m_tiles;
 
-  boost::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
+  boost::signals2::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
 
 public:
   TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
@@ -96,7 +96,7 @@ public:
 
   bool is_aborted();
 
-  boost::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
+  boost::signals2::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
   void process_tile(const Tile& tile);
