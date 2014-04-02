@@ -128,7 +128,7 @@ Viewer::redraw()
     event.user.data1 = 0;
     event.user.data2 = 0;
   
-    while (SDL_PushEvent(&event) != 0) {}
+    while (SDL_PushEvent(&event) != 1) {}
 #endif
   }
 }
