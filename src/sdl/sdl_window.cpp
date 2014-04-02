@@ -86,18 +86,18 @@ SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
   Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
   if (fullscreen)
   {
-flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
-m_fullscreen = true;
+    flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+    m_fullscreen = true;
   }
   else
   {
-m_fullscreen = false;
-}
+    m_fullscreen = false;
+  }
   
   m_window = SDL_CreateWindow("Galapix 0.2.0",
                               SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               size.width, size.height,
-                              SDL_WINDOW_OPENGL);
+                              flags);
   if (!m_window)
   {
     throw std::runtime_error("unable to set video mode: " + std::string(SDL_GetError()));
@@ -125,13 +125,15 @@ SDLWindow::flip()
 void
 SDLWindow::toggle_fullscreen()
 {
-  if (m_fullscreen)
+  if (!m_fullscreen)
   {
     SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    m_fullscreen = true;
   }
   else
   {
     SDL_SetWindowFullscreen(m_window, 0);
+    m_fullscreen = false;
   }
 
   Size s;
