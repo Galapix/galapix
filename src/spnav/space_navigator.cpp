@@ -74,7 +74,7 @@ SpaceNavigator::run()
             event.user.data1 = new spnav_event(spnav_ev);
             event.user.data2 = 0;
 
-            while (SDL_PushEvent(&event) != 0) {}           
+            while (SDL_PushEvent(&event) != 1) {}
           }
         }
       }
@@ -91,7 +91,7 @@ SpaceNavigator::run()
       event.user.data1 = spnav_ev;
       event.user.data2 = 0;
 
-      while (SDL_PushEvent(&event) != 0) {}
+      while (SDL_PushEvent(&event) != 1) {}
     }
 #endif
 
