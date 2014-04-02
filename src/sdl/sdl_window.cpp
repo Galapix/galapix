@@ -126,13 +126,15 @@ SDLWindow::flip()
 void
 SDLWindow::toggle_fullscreen()
 {
-  if (m_fullscreen)
+  if (!m_fullscreen)
   {
     SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    m_fullscreen = true;
   }
   else
   {
     SDL_SetWindowFullscreen(m_window, 0);
+    m_fullscreen = false;
   }
 
   Size s;
