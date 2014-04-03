@@ -56,13 +56,7 @@
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/string_util.hpp"
-#ifdef GALAPIX_SDL
-#  include "sdl/sdl_viewer.hpp"
-#endif
-#ifdef GALAPIX_GTK
-#  include "gtk/gtk_viewer.hpp"
-#endif
-
+
 Galapix::Galapix()
 {
   Filesystem::init();
