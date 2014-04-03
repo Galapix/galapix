@@ -55,8 +55,8 @@ class Project:
             'src/sdl/sdl_window.cpp',
             'src/sdl/sdl_viewer.cpp'
         ]
-        
-    def configure(self):       
+
+    def configure(self):
         if 'BUILD' in self.env:
             print "Build type: %s" % self.env['BUILD']
             self.env.Append(CXXFLAGS  = preset_cxxflags[self.env['BUILD']],
@@ -82,7 +82,7 @@ class Project:
         if not conf.CheckHeader("boost/filesystem.hpp", "<>", "c++"):
             print "Error: boost_filesystem is missing"
             Exit(1)
-            
+
         if not conf.CheckHeader("boost/signals2.hpp", "<>", "c++"):
             print "Error: boost_signals2 is missing"
             Exit(1)
@@ -126,7 +126,7 @@ class Project:
         opts.Update(self.env)
 
         self.configure()
-        
+
         self.build_libgalapix();
 
         if self.env['GALAPIX_SDL']:
@@ -149,7 +149,7 @@ class Project:
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
-        
+
         self.libgalapix_util = self.libgalapix_env.StaticLibrary('galapix_util',
                                                                  Glob("src/archive/*.cpp") + \
                                                                  Glob("src/network/*.cpp") + \
@@ -160,8 +160,8 @@ class Project:
                                                                  Glob("src/jobs/*.cpp") + \
                                                                  Glob("src/resource/*.cpp") + \
                                                                  Glob("src/math/*.cpp"))
-        
-        self.libgalapix = self.libgalapix_env.StaticLibrary('galapix.sdl', 
+
+        self.libgalapix = self.libgalapix_env.StaticLibrary('galapix.sdl',
                                                             Glob("src/database/*.cpp") + \
                                                             Glob("src/database/entries/*.cpp") + \
                                                             Glob("src/database/tables/*.cpp") + \
@@ -182,7 +182,7 @@ class Project:
         sdl_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
-        Default(sdl_env.Program('galapix.sdl', 
+        Default(sdl_env.Program('galapix.sdl',
                                 self.sdl_sources + \
                                     self.galapix_sources + \
                                     self.optional_sources))
@@ -199,7 +199,7 @@ class Project:
         gtk_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2 | sed "s/-I/-isystem/g"')
-        gtk_env.Program('galapix.gtk', 
+        gtk_env.Program('galapix.gtk',
                         ['src/gtk/gtk_viewer.cpp',
                          'src/gtk/gtk_viewer_widget.cpp'] + \
                         self.galapix_sources + \
@@ -211,7 +211,7 @@ class Project:
                                  "external/gtest-1.7.0/" ])
         libgtest = gtest.StaticLibrary("gtest", "external/gtest-1.7.0/src/gtest-all.cc")
         libgtest_main = gtest.StaticLibrary("gtest_main", "external/gtest-1.7.0/src/gtest_main.cc")
-        
+
         libgalapix_test_env = self.libgalapix_env.Clone()
         libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash', libgtest, 'pthread'])
 
