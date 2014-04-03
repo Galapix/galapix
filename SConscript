@@ -219,9 +219,12 @@ class Project:
             Alias('test', libgalapix_test_env.Program(filename[:-4],
                                         [filename] + self.sdl_sources))
 
-        for filename in Glob("test/*_gtest.cpp", strings=True):
-            Alias('test', libgalapix_test_env.Program(filename[:-4],
-                                                      [filename] + self.sdl_sources + libgtest_main))
+        prog = libgalapix_test_env.Program("test_galapix",
+                                           Glob("test/*_gtest.cpp")
+                                           + self.sdl_sources
+                                           + libgtest_main)
+        Alias('test', prog)
+        Alias('gtest', prog)
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()
