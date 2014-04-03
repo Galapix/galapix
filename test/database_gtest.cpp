@@ -3,18 +3,27 @@
 
 #include "database/database.hpp"
 
-TEST(DatabaseTest, check_cleanup) {
-  Database db("/tmp/database_test");
-  db.cleanup();
+class DatabaseTest : public testing::Test
+{
+protected:
+  DatabaseTest() :
+    m_db("/tmp/database_test")
+  {}
+
+  Database m_db;
+};
+
+TEST_F(DatabaseTest, check_cleanup)
+{
+  m_db.cleanup();
 }
 
-TEST(DatabaseTest, check_get) {
-  Database db("/tmp/database_test");
+TEST_F(DatabaseTest, check_get)
+{
+  m_db.get_resources();
+  m_db.get_tiles();
 
-  db.get_resources();
-  db.get_tiles();
-
-  db.cleanup();
+  m_db.cleanup();
 }
 
 /* EOF */
