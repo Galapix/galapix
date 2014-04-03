@@ -28,7 +28,7 @@ private:
 
 public:
   FileEntryGetByPattern(SQLiteConnection& db) :
-    m_stmt(db, 
+    m_stmt(db,
            "SELECT\n"
            "  file.id, file.path, file.mtime, file.blob_id\n"
            "FROM\n"
@@ -42,7 +42,7 @@ public:
     m_stmt.bind_text(1, pattern);
     SQLiteReader reader = m_stmt.execute_query();
 
-    while (reader.next())  
+    while (reader.next())
     {
       entries_out.push_back(FileEntry::from_reader(reader));
     }

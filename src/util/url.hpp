@@ -23,7 +23,7 @@
 
 #include "util/blob.hpp"
 
-/** Use Cases: 
+/** Use Cases:
     - normal system filename
     - filename inside an archive file
     - weburl (unsupported)
@@ -73,7 +73,7 @@ public:
   bool is_remote() const;
 
   static bool is_url(const std::string& url);
-  friend bool operator==(const URL& lhs, const URL& rhs);  
+  friend bool operator==(const URL& lhs, const URL& rhs);
 };
 
 std::ostream& operator<<(std::ostream& out, const URL& url);

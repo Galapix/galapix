@@ -25,7 +25,7 @@ ThumbnailGenerator::ThumbnailGenerator(const Options& opts) :
   m_database(opts.database),
   m_job_manager(opts.threads),
   m_database_thread(m_database, m_job_manager)
-{  
+{
   m_database_thread.start_thread();
   m_job_manager.start_thread();
 }
@@ -56,9 +56,9 @@ ThumbnailGenerator::run(const std::vector<URL>& urls, bool generate_all_tiles)
   // gather FileEntries
   for(const auto& url : urls)
   {
-    job_handle_group.add(m_database_thread.request_file(url, 
-                                                        [&file_entries](const OldFileEntry& entry) { 
-                                                          file_entries.push_back(entry); 
+    job_handle_group.add(m_database_thread.request_file(url,
+                                                        [&file_entries](const OldFileEntry& entry) {
+                                                          file_entries.push_back(entry);
                                                         }));
   }
   job_handle_group.wait();

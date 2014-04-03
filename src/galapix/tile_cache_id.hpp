@@ -30,7 +30,7 @@ public:
     m_pos(pos),
     m_scale(scale)
   {}
-  
+
   int get_scale() const { return m_scale; }
   Vector2i get_pos() const { return m_pos; }
 

@@ -29,7 +29,7 @@
 const int c_max_scale = 20;
 
 MandelbrotTileProvider::MandelbrotTileProvider(JobManager& job_manager) :
-  m_size(4 * 256 * Math::pow2(c_max_scale), 
+  m_size(4 * 256 * Math::pow2(c_max_scale),
          3 * 256 * Math::pow2(c_max_scale)),
   m_max_scale(c_max_scale),
   m_job_manager(job_manager)
@@ -39,9 +39,9 @@ MandelbrotTileProvider::MandelbrotTileProvider(JobManager& job_manager) :
 MandelbrotTileProvider::~MandelbrotTileProvider()
 {
 }
-  
+
 JobHandle
-MandelbrotTileProvider::request_tile(int scale, const Vector2i& pos, 
+MandelbrotTileProvider::request_tile(int scale, const Vector2i& pos,
                                      const std::function<void (Tile)>& callback)
 {
   //std::cout << "MandelbrotTileProvider::request_tile(): " << scale << " " << pos << std::endl;

@@ -9,7 +9,7 @@ inline void format(boost::format& fmt)
 {
 }
 
-template<typename Head, typename ...Rest> 
+template<typename Head, typename ...Rest>
 inline void format(boost::format& fmt, const Head& head, Rest... rest)
 {
   format(fmt % head, rest...);

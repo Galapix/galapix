@@ -90,18 +90,18 @@ ResourceURL::is_remote() const
   return m_scheme != "file";
 }
 
-std::string 
+std::string
 ResourceURL::str() const
 {
   std::ostringstream out;
-  
+
   out << m_scheme << "://";
   if (!m_authority.empty())
   {
     out << m_authority;
   }
   out << m_path;
-  
+
   return out.str();
 }
 
@@ -110,7 +110,7 @@ ResourceURL::operator==(const ResourceURL& other) const
 {
   return
     std::tie(this->m_scheme, this->m_authority, this->m_path)
-    == 
+    ==
     std::tie(other.m_scheme, other.m_authority, other.m_path);
 }
 
@@ -123,8 +123,8 @@ ResourceURL::operator!=(const ResourceURL& other) const
 bool
 ResourceURL::operator<(const ResourceURL& other) const
 {
-  return 
-    std::tie(this->m_scheme, this->m_authority, this->m_path) 
+  return
+    std::tie(this->m_scheme, this->m_authority, this->m_path)
     <
     std::tie(other.m_scheme, other.m_authority, other.m_path);
 }

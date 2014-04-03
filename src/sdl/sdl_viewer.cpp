@@ -71,7 +71,7 @@ SDLViewer::process_event(const SDL_Event& event)
           case SPNAV_EVENT_MOTION:
             {
               if (0)
-                log_debug("MotionEvent: " 
+                log_debug("MotionEvent: "
                           << "("
                           << spnav_ev->motion.x << ", "
                           << spnav_ev->motion.y << ", "
@@ -95,7 +95,7 @@ SDLViewer::process_event(const SDL_Event& event)
                 m_viewer.get_state().rotate(static_cast<float>(spnav_ev->motion.ry) / 200.0f);
             }
             break;
-            
+
           case SPNAV_EVENT_BUTTON:
             if (0)
               std::cout << "ButtonEvent: " << spnav_ev->button.press << spnav_ev->button.bnum << std::endl;
@@ -144,7 +144,7 @@ SDLViewer::process_event(const SDL_Event& event)
       //break;
 
     case SDL_WINDOWEVENT:
-      switch (event.window.event) 
+      switch (event.window.event)
       {
         case SDL_WINDOWEVENT_RESIZED:
           Framebuffer::reshape(Size(event.window.data1, event.window.data2));
@@ -195,7 +195,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_ESCAPE:
           m_quit = true;
           break;
-              
+
         case SDLK_d:
           m_viewer.zoom_to_selection();
           break;
@@ -235,7 +235,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_k:
           m_viewer.cleanup_cache();
           break;
-        
+
         case SDLK_z:
           m_viewer.set_zoom_tool();
           break;
@@ -278,7 +278,7 @@ SDLViewer::process_event(const SDL_Event& event)
               }
             }
           }
-          break;              
+          break;
 
         case SDLK_i:
           m_viewer.isolate_selection();
@@ -298,15 +298,15 @@ SDLViewer::process_event(const SDL_Event& event)
 
         case SDLK_F7:
           m_viewer.decrease_brightness();
-          break;        
+          break;
 
         case SDLK_F8:
           m_viewer.increase_contrast();
-          break;        
+          break;
 
         case SDLK_F9:
           m_viewer.decrease_contrast();
-          break;        
+          break;
 
         case SDLK_F10:
           m_viewer.reset_gamma();
@@ -363,7 +363,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_F3:
           m_viewer.save();
           break;
-                
+
         case SDLK_c:
           m_viewer.clear_cache();
           break;
@@ -371,7 +371,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_F5:
           m_viewer.refresh_selection();
           break;
-          
+
         case SDLK_t:
           m_viewer.toggle_trackball_mode();
           break;
@@ -403,7 +403,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_SPACE:
           m_viewer.print_images();
           break;
-              
+
         case SDLK_l:
           m_viewer.print_state();
           break;
@@ -420,7 +420,7 @@ SDLViewer::process_event(const SDL_Event& event)
 
     case SDL_KEYUP:
       m_viewer.on_key_up(event.key.keysym.sym);
-      break;                
+      break;
 
     default:
       break;
@@ -437,11 +437,11 @@ SDLViewer::get_axis(SDL_Joystick* joy, int axis) const
   }
   else if (value > 0)
   {
-    return static_cast<float>(value) / 32767.0f;  
+    return static_cast<float>(value) / 32767.0f;
   }
   else // if (value < 0)
   {
-    return static_cast<float>(value) / 32768.0f;  
+    return static_cast<float>(value) / 32768.0f;
   }
 }
 
@@ -458,7 +458,7 @@ SDLViewer::update_joysticks(float delta)
   {
     { // zoom
       float value = get_axis(joy, zoom_axis);
-      
+
       value *= 4.0f;
 
       if (value < 0.0f)
@@ -480,7 +480,7 @@ SDLViewer::update_joysticks(float delta)
 
       if (x_value != 0.0f || y_value != 0.0f)
       {
-        m_viewer.get_state().move(Vector2f(x_value * delta, 
+        m_viewer.get_state().move(Vector2f(x_value * delta,
                                            y_value * delta));
       }
     }
@@ -508,7 +508,7 @@ SDLViewer::run()
 #endif
 
   while(!m_quit)
-  {     
+  {
     if (m_viewer.is_active() || true) // FIXME: hack for joystick support
     {
       SDL_Event event;
@@ -537,7 +537,7 @@ SDLViewer::run()
 
       // FIXME: We should try to detect if we need a redraw and
       // only draw then, else we will redraw on each mouse motion
-      m_viewer.draw();          
+      m_viewer.draw();
       ticks = SDL_GetTicks();
     }
 

@@ -52,7 +52,7 @@ public:
   {
     return JPEG::load_from_mem(data, len);
   }
-  
+
 private:
   JPEGSoftwareSurfaceLoader(const JPEGSoftwareSurfaceLoader&);
   JPEGSoftwareSurfaceLoader& operator=(const JPEGSoftwareSurfaceLoader&);

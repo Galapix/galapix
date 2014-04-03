@@ -26,7 +26,7 @@ private:
 
 public:
   ResourceInfoGetBySHA1(SQLiteConnection& db) :
-    m_stmt(db, 
+    m_stmt(db,
            "SELECT\n"
            "  resource.type, resource.handler, resource.arguments\n"
            "FROM\n"
@@ -39,7 +39,7 @@ public:
   {
     m_stmt.bind_text(1, path);
     SQLiteReader reader = m_stmt.execute_query();
-    
+
     if (reader.next())
     {
       return ResourceInfo(reader.get_text(0),

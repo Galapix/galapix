@@ -99,7 +99,7 @@ Parser::parse(std::istream& stream, const std::string& filename)
     else
       throw ParseError(parser.get(), "extra tokens at end of file");
   }
-    
+
   return result;
 }
 
@@ -111,7 +111,7 @@ Parser::parse()
     switch(token) {
       case Lexer::TOKEN_OPEN_PAREN:
         token = lexer->getNextToken();
-      
+
         // Handle (_ "blup") strings that need to be translated
         if(token == Lexer::TOKEN_SYMBOL
             && strcmp(lexer->getString(), "_") == 0) {
@@ -119,13 +119,13 @@ Parser::parse()
           if(token != Lexer::TOKEN_STRING)
             throw ParseError(this, "Expected string after '(_' sequence");
           entries.push_back(std::shared_ptr<Lisp>(new Lisp(Lisp::TYPE_STRING, lexer->getString())));
-          
+
           token = lexer->getNextToken();
           if(token != Lexer::TOKEN_CLOSE_PAREN)
             throw ParseError(this, "Expected ')' after '(_ ""' sequence");
           break;
         }
-      
+
         entries.push_back(parse());
         if(token != Lexer::TOKEN_CLOSE_PAREN) {
           if(token == Lexer::TOKEN_EOF)
@@ -165,7 +165,7 @@ Parser::parse()
 
     token = lexer->getNextToken();
   }
-  
+
   return std::shared_ptr<Lisp>(new Lisp(entries));
 }
 

@@ -31,7 +31,7 @@ private:
 
 public:
   FileEntryGetByPath(SQLiteConnection& db) :
-    m_stmt(db, 
+    m_stmt(db,
            "SELECT\n"
            "  file.id, file.path, file.mtime\n"
            "FROM\n"

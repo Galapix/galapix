@@ -53,7 +53,7 @@ public:
   //param point: Initial top-left position of rectangle.
   //param size: Initial size of rectangle.
   //param rect: Initial rectangle position and size.
-  Rect() 
+  Rect()
     : left(0),
       top(0),
       right(0),
@@ -73,7 +73,7 @@ public:
     : left(p.x),
       top(p.y),
       right(left + size.width),
-      bottom(top + size.height) 
+      bottom(top + size.height)
   {}
 
   Rect(const Rect &rect)
@@ -145,9 +145,9 @@ public:
 
   //: Returns the size of the rectangle.
   Size get_size() const { return Size(right - left, bottom - top); }
-  
+
   //: Returns true if rectangle passed is overlapping or inside this rectangle.
-  bool is_overlapped(const Rect &r) const 
+  bool is_overlapped(const Rect &r) const
   {
     return (r.left < right && r.right > left && r.top < bottom && r.bottom > top);
   }
@@ -187,7 +187,7 @@ public:
     return result;
   }
 
-  bool is_normal() const 
+  bool is_normal() const
   {
     return left <= right && top <= bottom;
   }
@@ -247,9 +247,9 @@ public:
   {}
 
   Rectf(const Rect& rect)
-    : left((float)rect.left), 
-      top((float)rect.top), 
-      right((float)rect.right), 
+    : left((float)rect.left),
+      top((float)rect.top),
+      right((float)rect.right),
       bottom((float)rect.bottom)
   {}
 
@@ -348,7 +348,7 @@ public:
   bool is_inside(const Vector2f &p) const { return (p.x >= left && p.y >= top && p.x <= right && p.y <= bottom); }
 	
   //: Returns true if rectangle passed is overlapping or inside this rectangle.
-  bool is_overlapped(const Rectf &r) const 
+  bool is_overlapped(const Rectf &r) const
   {
     return (r.left < right && r.right > left && r.top < bottom && r.bottom > top);
   }
@@ -372,8 +372,8 @@ public:
     if (bottom < rect.bottom) result.bottom = bottom; else result.bottom = rect.bottom;
     return result;
   }
-  
-  bool is_normal() const 
+
+  bool is_normal() const
   {
     return left <= right && top <= bottom;
   }
@@ -418,19 +418,19 @@ public:
 
   // Moves each edge f away from the center, thus width = old_width + 2*f
   Rectf grow(float f) const {
-    return Rectf(left   - f, 
+    return Rectf(left   - f,
                  top    - f,
                  right  + f,
                  bottom + f);
   }
 
   Rectf grow(float x, float y) const {
-    return Rectf(left   - x, 
+    return Rectf(left   - x,
                  top    - y,
                  right  + x,
                  bottom + y);
   }
-  
+
   // Construct a rectangle large enough
   Rectf grow(const Rectf& rect) const {
     return Rectf(Math::min(left, rect.left),
@@ -438,7 +438,7 @@ public:
                  Math::max(right, rect.right),
                  Math::max(bottom, rect.bottom));
   }
-  
+
   float get_diagonal() const
   {
     return sqrtf((get_width() * get_width()) + (get_height() * get_height()));
@@ -450,14 +450,14 @@ public:
   //: Check if rect is inside this
   bool contains(const Rectf& rect) const
   {
-    return 
+    return
       left   <= rect.left  &&
       right  >= rect.right &&
       top    <= rect.top   &&
       bottom >= rect.bottom;
   }
 
-  Rectf clip_to(const Rectf& cliprect) const 
+  Rectf clip_to(const Rectf& cliprect) const
   {
     return Rectf(Math::max(left,   cliprect.left),
                  Math::max(top,    cliprect.top),
@@ -467,9 +467,9 @@ public:
 };
 
 inline Rect::Rect(const Rectf& rect)
-  : left(static_cast<int>(rect.left)), 
-    top(static_cast<int>(rect.top)), 
-    right(static_cast<int>(rect.right)), 
+  : left(static_cast<int>(rect.left)),
+    top(static_cast<int>(rect.top)),
+    right(static_cast<int>(rect.right)),
     bottom(static_cast<int>(rect.bottom))
 {}
 

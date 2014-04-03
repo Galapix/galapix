@@ -30,21 +30,21 @@ public:
 
   std::string get_name() const { return "dds"; }
 
-  void register_loader(SoftwareSurfaceFactory& factory) const 
+  void register_loader(SoftwareSurfaceFactory& factory) const
   {
-    factory.register_by_extension(this, "dds");       
+    factory.register_by_extension(this, "dds");
     factory.register_by_extension(this, "tex");
   }
 
   bool supports_from_file() const { return true; }
   bool supports_from_mem()  const { return false; }
 
-  SoftwareSurfacePtr from_file(const std::string& filename) const 
+  SoftwareSurfacePtr from_file(const std::string& filename) const
   {
     return DDS::load_from_file(filename);
   }
 
-  SoftwareSurfacePtr from_mem(const uint8_t* data, int len) const 
+  SoftwareSurfacePtr from_mem(const uint8_t* data, int len) const
   {
     assert(!"not implemented");
   }

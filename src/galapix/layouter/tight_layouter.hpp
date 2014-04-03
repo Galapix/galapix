@@ -30,7 +30,7 @@ class TightLayouter : public Layouter
 private:
   float m_aspect_w;
   float m_aspect_h;
-  
+
 public:
   TightLayouter(float w, float h);
 

@@ -37,7 +37,7 @@ ViewerCommand::ViewerCommand(const Options& opts) :
   m_database_thread(m_database, m_job_manager),
   m_patterns(opts.patterns)
 {
-  m_job_manager.start_thread();  
+  m_job_manager.start_thread();
   m_database_thread.start_thread();
 }
 
@@ -54,7 +54,7 @@ ViewerCommand::~ViewerCommand()
   catch(const std::exception& err)
   {
     log_error(err.what());
-  }  
+  }
 }
 
 void
@@ -62,7 +62,7 @@ ViewerCommand::run(const std::vector<URL>& urls)
 {
   Workspace workspace;
 
-  { // process all -p PATTERN options 
+  { // process all -p PATTERN options
     std::vector<OldFileEntry> file_entries;
 
     for(std::vector<std::string>::const_iterator i = m_patterns.begin(); i != m_patterns.end(); ++i)
@@ -150,13 +150,13 @@ ViewerCommand::run(const std::vector<URL>& urls)
         }
         else
         {
-          workspace.add_image(std::make_shared<Image>(file_entry.get_url(), 
+          workspace.add_image(std::make_shared<Image>(file_entry.get_url(),
                                                       std::make_shared<DatabaseTileProvider>(file_entry, image_entry)));
         }
       }
     }
   }
-  
+
   if (!urls.empty())
   {
     std::cout << std::endl;

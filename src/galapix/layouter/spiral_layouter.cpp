@@ -51,7 +51,7 @@ SpiralLayouter::advance()
         m_direction = kDown;
         m_pos.y += 1;
       }
-      else 
+      else
       {
         m_pos.x += 1;
       }
@@ -63,7 +63,7 @@ SpiralLayouter::advance()
         m_direction = kLeft;
         m_pos.x -= 1;
       }
-      else 
+      else
       {
         m_pos.y += 1;
       }
@@ -75,7 +75,7 @@ SpiralLayouter::advance()
         m_direction = kUp;
         m_pos.y -= 1;
       }
-      else 
+      else
       {
         m_pos.x -= 1;
       }
@@ -88,7 +88,7 @@ SpiralLayouter::advance()
         m_pos.x += 1;
         m_ring  += 1;
       }
-      else 
+      else
       {
         m_pos.y -= 1;
       }

@@ -58,7 +58,7 @@ public:
                           const std::function<void (Failable<ExtractionPtr>)>& callback);
 
 private:
-  ExtractionEntry& get_and_lock_extraction_entry(const std::string& archive_filename, 
+  ExtractionEntry& get_and_lock_extraction_entry(const std::string& archive_filename,
                                                  std::unique_lock<std::mutex>& lock_out);
 
 private:

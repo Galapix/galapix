@@ -102,11 +102,11 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
     }
 
     if (scale != 1) // scale the image down by \a scale
-    { 
+    {
       // by default all those values below are on 1
       m_cinfo.scale_num           = 1;
       m_cinfo.scale_denom         = scale;
-   
+
       m_cinfo.do_fancy_upsampling = FALSE; /* TRUE=apply fancy upsampling */
       m_cinfo.do_block_smoothing  = FALSE; /* TRUE=apply interblock smoothing */
     }
@@ -115,17 +115,17 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
 
     SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(m_cinfo.output_width,
                                                                                            m_cinfo.output_height));
- 
+
     if (m_cinfo.output_components == 3) // RGB Image
-    { 
+    {
       std::unique_ptr<JSAMPLE*[]> scanlines(new JSAMPLE*[m_cinfo.output_height]);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
         scanlines[y] = surface->get_row_data(y);
 
-      while (m_cinfo.output_scanline < m_cinfo.output_height) 
+      while (m_cinfo.output_scanline < m_cinfo.output_height)
       {
-        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline], 
+        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
     }
@@ -136,9 +136,9 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
         scanlines[y] = surface->get_row_data(y);
 
-      while (m_cinfo.output_scanline < m_cinfo.output_height) 
+      while (m_cinfo.output_scanline < m_cinfo.output_height)
       {
-        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline], 
+        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
 

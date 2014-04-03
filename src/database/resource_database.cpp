@@ -147,7 +147,7 @@ ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<FileE
 {
   return m_file_entry_get_by_pattern(pattern, entries_out);
 }
-   
+
 void
 ResourceDatabase::store_file_entry(const std::string& path, int mtime)
 {

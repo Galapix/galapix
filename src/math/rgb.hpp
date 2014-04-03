@@ -25,7 +25,7 @@ class RGB
 {
 public:
   uint8_t r;
-  uint8_t g; 
+  uint8_t g;
   uint8_t b;
 
   RGB()
@@ -37,7 +37,7 @@ public:
   {}
 
   RGB(uint32_t c)
-    : r(static_cast<uint8_t>((c>> 0) & 0xFF)), 
+    : r(static_cast<uint8_t>((c>> 0) & 0xFF)),
       g(static_cast<uint8_t>((c>> 8) & 0xFF)),
       b(static_cast<uint8_t>((c>>16) & 0xFF))
   {}

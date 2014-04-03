@@ -105,7 +105,7 @@ private:
             m_maxval = atoi(token.c_str());
             forward();
             m_pixel_data = m_ptr;
-            m_ptr = m_data + m_len; // set ptr to EOF 
+            m_ptr = m_data + m_len; // set ptr to EOF
             break;
         }
 

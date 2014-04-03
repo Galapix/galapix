@@ -31,14 +31,14 @@ private:
 
 public:
   ResizeTool(Viewer* viewer);
-  
+
   void move(const Vector2i& pos, const Vector2i& rel);
   void up  (const Vector2i& pos);
   void down(const Vector2i& pos);
 
   void draw() {}
   void update(const Vector2i& pos, float delta);
-  
+
 };
 
 #endif

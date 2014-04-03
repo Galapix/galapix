@@ -52,12 +52,12 @@ public:
   //param width: Initial width of size structure.
   //param height: Initial height of size structure.
   //param size: Size structure to construct this one from.
-  Size() 
+  Size()
     : width(0), height(0)
   {}
 
   Size(int width_, int height_)
-    : width(width_), height(height_) 
+    : width(width_), height(height_)
   {}
 
   Size(const Size &s)
@@ -121,19 +121,19 @@ public:
   //param width: Initial width of size structure.
   //param height: Initial height of size structure.
   //param size: Size structure to construct this one from.
-  Sizef() 
+  Sizef()
     : width(0.0f),
       height(0.0f)
   {}
 
-  Sizef(const Size& s) 
+  Sizef(const Size& s)
     : width(static_cast<float>(s.width)),
       height(static_cast<float>(s.height))
   {}
 
   Sizef(float width_, float height_)
-    : width(width_), 
-      height(height_) 
+    : width(width_),
+      height(height_)
   {}
 
   Sizef(const Sizef &s)

@@ -25,7 +25,7 @@
 
 DDSSurface::DDSSurface(std::istream& in) :
   magic(),
-  dwSize(), 
+  dwSize(),
   flags(),
   height(),
   width(),
@@ -46,7 +46,7 @@ DDSSurface::DDSSurface(std::istream& in) :
   dwPitchOrLinearSize = read_uint32(in);
   dwDepth = read_uint32(in);
   dwMipMapCount = read_uint32(in);
-    
+
   for(int i = 0; i < 11; ++i)
     dwReserved1[i] = read_uint32(in);
 
@@ -55,7 +55,7 @@ DDSSurface::DDSSurface(std::istream& in) :
   ddsCaps = DDSCapabilities(in);
 
   dwReserved2 = read_uint32(in);
-    
+
   read_data(in);
 }
 
@@ -103,7 +103,7 @@ DDSSurface::read_data(std::istream& in)
       case DDS_DXT3:
         read_data_dtx3(in);
         break;
-            
+
       case DDS_DXT4:
         raise_runtime_error("DXT4 Format not supported");
         break;
@@ -116,26 +116,26 @@ DDSSurface::read_data(std::istream& in)
         // HU?
         read_data_dxt1(in);
         break;
-            
+
       default:
         {
           std::ostringstream str;
           str << "Format unknown: " << pixel_format.dwFourCC << " " << std::string((char*)&pixel_format.dwFourCC, 4);
           raise_runtime_error(str.str());
-        }	     
+        }	
     }
   }
   else
   {
   }
 }
-  
+
 void
 DDSSurface::decode_dxt1(unsigned char buf[8], unsigned char out[4*4*3])
 {
   unsigned short color0 = static_cast<unsigned short>(buf[0] | (buf[1] << 8));
   unsigned short color1 = static_cast<unsigned short>(buf[2] | (buf[3] << 8));
-    
+
   unsigned int bits = buf[4] + 256 * (buf[5] + 256 * (buf[6] + 256 * buf[7]));
 
   DDSRGB rgb[4];
@@ -154,12 +154,12 @@ DDSSurface::decode_dxt1(unsigned char buf[8], unsigned char out[4*4*3])
     rgb[2] = (rgb[0] + rgb[1])/2;
     rgb[3] = DDSRGB(0);
   }
-    
+
   for(int y1 = 0; y1 < 4; ++y1)
     for(int x1 = 0; x1 < 4; ++x1)
     {
       unsigned int idx = ((bits >> (2*(4*(y1)+(x1)))) & 0x3);
- 
+
       out[3*4*y1 + 3*x1 + 2] = static_cast<uint8_t>(rgb[idx].r);
       out[3*4*y1 + 3*x1 + 1] = static_cast<uint8_t>(rgb[idx].g);
       out[3*4*y1 + 3*x1 + 0] = static_cast<uint8_t>(rgb[idx].b);
@@ -171,11 +171,11 @@ DDSSurface::read_data_dxt1(std::istream& in)
 {
   unsigned char buf[8];
   unsigned char out[4*4*3];
-    
+
   data.resize(width * height * 4);
   for(unsigned int y = 0; y < height; y += 4)
     for(unsigned int x = 0; x < width; x += 4)
-    {    
+    {
       in.read((char*)buf, 8);
       decode_dxt1(buf, out);
 
@@ -195,11 +195,11 @@ DDSSurface::read_data_dtx3(std::istream& in)
 {
   unsigned char buf[8];
   unsigned char out[4*4*3];
-    
+
   data.resize(width * height * 4);
   for(unsigned int y = 0; y < height; y += 4)
     for(unsigned int x = 0; x < width; x += 4)
-    {    
+    {
       in.read((char*)buf, 8);
       decode_dxt1(buf, out);
 
@@ -214,7 +214,7 @@ DDSSurface::read_data_dtx3(std::istream& in)
           data[4*(y+y1)*width + 4*(x+x1) + 2] = out[3*4*y1 + 3*x1 + 2];
           data[4*(y+y1)*width + 4*(x+x1) + 3] = 255;
         }
-    }    
+    }
 }
 
 /* EOF */

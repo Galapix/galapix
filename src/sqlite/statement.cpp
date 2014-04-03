@@ -25,7 +25,7 @@
 #include "sqlite/statement.hpp"
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection& db) :
-  m_db(db), 
+  m_db(db),
   m_stmt(0),
   m_stmt_str()
 {
@@ -116,7 +116,7 @@ SQLiteStatement::bind_null(int n)
   if (sqlite3_bind_null(m_stmt, n) != SQLITE_OK)
   {
     raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
-  }  
+  }
 
   return *this;
 }
@@ -150,7 +150,7 @@ SQLiteStatement::reset()
   }
 }
 
-void 
+void
 SQLiteStatement::execute()
 {
   if (sqlite3_step(m_stmt) != SQLITE_DONE)

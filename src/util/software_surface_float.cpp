@@ -20,7 +20,7 @@
 
 #include "math/math.hpp"
 
-SoftwareSurfaceFloatPtr 
+SoftwareSurfaceFloatPtr
 SoftwareSurfaceFloat::create(const Size& size)
 {
   return SoftwareSurfaceFloatPtr(new SoftwareSurfaceFloat(size));
@@ -32,7 +32,7 @@ SoftwareSurfaceFloat::SoftwareSurfaceFloat(const Size& size) :
 {
 }
 
-SoftwareSurfaceFloatPtr 
+SoftwareSurfaceFloatPtr
 SoftwareSurfaceFloat::from_software_surface(const SoftwareSurfacePtr& surface)
 {
   SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::create(surface->get_size());

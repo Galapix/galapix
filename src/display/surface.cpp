@@ -27,7 +27,7 @@ public:
   TexturePtr texture;
   Rectf   uv;
   Size    size;
-  
+
   SurfaceImpl(const TexturePtr& texture_, const Rectf& uv_, const Size& size_)
     : texture(texture_),
       uv(uv_),
@@ -44,12 +44,12 @@ public:
     assert(src);
 
     texture = Texture::create(src, srcrect);
-    
+
     uv = Rectf(Vector2f(0, 0), srcrect.get_size());
 
     size = Size(srcrect.get_size());
   }
-  
+
   ~SurfaceImpl()
   {
   }
@@ -61,7 +61,7 @@ public:
       texture->bind();
       glEnable(GL_BLEND);
       glEnable(GL_TEXTURE_RECTANGLE_ARB);
-      glColor3f(1.0f, 1.0f, 1.0f);       
+      glColor3f(1.0f, 1.0f, 1.0f);
 
       glBegin(GL_QUADS);
       glTexCoord2f(srcrect.left, srcrect.top);
@@ -76,7 +76,7 @@ public:
       glTexCoord2f(srcrect.left, srcrect.bottom);
       glVertex2f(dstrect.left, dstrect.bottom);
       glEnd();
-    }    
+    }
   }
 
   void draw(const Rectf& rect)
@@ -87,7 +87,7 @@ public:
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_TEXTURE_RECTANGLE_ARB);
-      glColor3f(1.0f, 1.0f, 1.0f);       
+      glColor3f(1.0f, 1.0f, 1.0f);
 
       glBegin(GL_QUADS);
       glTexCoord2f(uv.left, uv.top);
@@ -144,7 +144,7 @@ void
 Surface::draw(const Rectf& srcrect, const Rectf& dstrect)
 {
   if (impl.get())
-    impl->draw(srcrect, dstrect);  
+    impl->draw(srcrect, dstrect);
 }
 
 void
@@ -155,10 +155,10 @@ Surface::draw(const Rectf& rect)
 }
 
 int
-Surface::get_width() const 
+Surface::get_width() const
 {
   if (impl.get())
-    return impl->size.width; 
+    return impl->size.width;
   else
     return 0;
 }
@@ -167,7 +167,7 @@ int
 Surface::get_height() const
 {
   if (impl.get())
-    return impl->size.height; 
+    return impl->size.height;
   else
     return 0;
 }

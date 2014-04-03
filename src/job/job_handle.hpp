@@ -49,7 +49,7 @@ public:
   /** Reports that the Job couldn't be completed */
   void set_failed();
   bool is_failed() const;
-  
+
   void wait();
 
   friend std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);

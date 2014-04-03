@@ -84,7 +84,7 @@ GtkViewer::run()
   zoom_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("ZoomToolButton"));
   grid_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("GridToolButton"));
   move_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("MoveToolButton"));
-  
+
   pan_tool_button ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_pan_tool_toggled));
   zoom_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_tool_toggled));
   grid_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_tool_toggled));
@@ -104,7 +104,7 @@ GtkViewer::run()
 
   grid_toggle->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_toggle));
   grid_pin_toggle->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_pin_toggle));
-  
+
   layout_regular_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-regular"));
   layout_tight_button   = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-tight"));
   layout_random_button  = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-random"));
@@ -119,7 +119,7 @@ GtkViewer::run()
   //  *  http://www.gtkmm.org/docs/gtkmm-2.4/docs/tutorial/html/ch11.html
   Glib::RefPtr<Gtk::ActionGroup> action_group;
   action_group = Gtk::ActionGroup::create();
-  
+
   action_group->add(Gtk::Action::create("FileMenu", "_File"));
 
   action_group->add(Gtk::Action::create("New", Gtk::Stock::NEW),
@@ -128,7 +128,7 @@ GtkViewer::run()
   Glib::RefPtr<Gtk::UIManager> ui_manager = Gtk::UIManager::create();
   ui_manager->insert_action_group(action_group);
 
-  Glib::ustring ui_info = 
+  Glib::ustring ui_info =
   "<ui>"
   "  <menubar name='MenuBar'>"
   "    <menu action='FileMenu'>"
@@ -229,13 +229,13 @@ GtkViewer::on_zoom_out_clicked()
 void
 GtkViewer::on_zoom_home_clicked()
 {
-  viewer->zoom_to_selection(); 
+  viewer->zoom_to_selection();
 }
 
 void
 GtkViewer::on_menu_file_new()
 {
-  
+
 }
 
 /* EOF */

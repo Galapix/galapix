@@ -31,7 +31,7 @@ class Job;
 class JobWorkerThread : public Thread
 {
 private:
-  struct Task 
+  struct Task
   {
     std::shared_ptr<Job> job;
     std::function<void (std::shared_ptr<Job>, bool)> callback;
@@ -46,7 +46,7 @@ private:
   ThreadMessageQueue2<Task> m_queue;
   bool m_quit;
   bool m_abort;
-  
+
 public:
   JobWorkerThread();
   ~JobWorkerThread();
@@ -59,7 +59,7 @@ public:
   void abort_thread();
 
   bool empty() { return m_queue.empty(); }
-  
+
 private:
   JobWorkerThread (const JobWorkerThread&);
   JobWorkerThread& operator= (const JobWorkerThread&);

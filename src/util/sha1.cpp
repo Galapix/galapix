@@ -37,9 +37,9 @@ SHA1::from_mem(const uint8_t* data, size_t len)
     raise_runtime_error("Failed to init MHash");
   }
   else
-  {  
+  {
     mhash(td, data, len);
-  
+
     SHA1 sha1;
     mhash_deinit(td, sha1.m_data.data());
     return sha1;
@@ -56,22 +56,22 @@ SHA1
 SHA1::from_file(const std::string& filename)
 {
   MHASH td = mhash_init(MHASH_SHA1);
-  if (td == MHASH_FAILED) 
+  if (td == MHASH_FAILED)
   {
     raise_runtime_error("Failed to init MHash");
   }
   else
-  {  
+  {
     const unsigned int buf_size = 32768;
     char buf[buf_size];
-    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary); 
+    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
     if (!in)
     {
       raise_runtime_error("Couldn't open file " + filename);
     }
     else
     {
-    
+
       while(!in.eof())
       {
         in.read(buf, buf_size);
@@ -79,7 +79,7 @@ SHA1::from_file(const std::string& filename)
       }
 
       in.close();
-    
+
       SHA1 sha1;
       mhash_deinit(td, sha1.m_data.data());
       return sha1;
@@ -115,7 +115,7 @@ SHA1::parse_string(const std::string& str)
     raise_runtime_error("not a valid SHA1 string: " + str);
   }
   else
-  {    
+  {
     uint8_t data[20];
     for(int i = 0; i < 20; ++i)
     {
@@ -151,7 +151,7 @@ SHA1::operator bool() const
     {
       return true;
     }
-  }  
+  }
   return false;
 }
 

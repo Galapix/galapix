@@ -38,14 +38,14 @@ private:
   Rows rows;
 
 public:
-  Grid(int w, int h) 
+  Grid(int w, int h)
     : width(w),
       height(h)
   {
     for(int y = 0; y < height; ++y)
       rows.push_back(Columns(width));
   }
-  
+
   int get_width()  const { return width; }
   int get_height() const { return height; }
 

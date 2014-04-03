@@ -38,7 +38,7 @@ public:
     m_stmt.bind_text (3, url_info.get_content_type());
     m_stmt.bind_text (4, url_info.get_blob().get_sha1().str());
     m_stmt.execute();
-  
+
     return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
 

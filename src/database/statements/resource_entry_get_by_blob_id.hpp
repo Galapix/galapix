@@ -28,7 +28,7 @@ private:
 
 public:
   ResourceEntryGetByBlobId(SQLiteConnection& db) :
-    m_stmt(db, 
+    m_stmt(db,
            "SELECT\n"
            "  *\n"
            "FROM\n"
@@ -40,9 +40,9 @@ public:
   boost::optional<ResourceEntry> operator()(RowId id)
   {
     m_stmt.bind_int64(1, id.get_id());
-    
+
     SQLiteReader reader = m_stmt.execute_query();
-    if (reader.next())  
+    if (reader.next())
     {
       //return boost::optional<ResourceEntry>(reader.get_int(0),);
       return boost::optional<ResourceEntry>();

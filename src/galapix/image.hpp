@@ -67,7 +67,7 @@ private:
 private:
   URL       m_url;
   TileProviderPtr m_provider;
-  
+
   std::shared_ptr<ImageTileCache> m_cache;
   std::unique_ptr<ImageRenderer>  m_renderer;
 };

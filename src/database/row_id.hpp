@@ -32,10 +32,10 @@ public:
   RowId() : m_id(0) {}
   RowId(int64_t id) : m_id(id) {}
 
-  int64_t get_id() const 
-  { 
+  int64_t get_id() const
+  {
     assert(m_id != 0);
-    return m_id; 
+    return m_id;
   }
 
   bool operator==(const RowId& rhs) const
@@ -46,7 +46,7 @@ public:
     }
     else
     {
-      return m_id == rhs.m_id; 
+      return m_id == rhs.m_id;
     }
   }
 

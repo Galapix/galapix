@@ -25,7 +25,7 @@
 #include "resource/blob_info.hpp"
 #include "resource/resource_handler.hpp"
 
-/** 
+/**
     The ResourceName uniquely identifies a resource. Resources stored
     in different places will have the same ResourceName when they
     contain the same content.
@@ -33,13 +33,13 @@
     The {handler} part gives the type of resource and {args} allows to
     address subelements of the resource, such as individual pages in
     an PDF.
-    
+
     The ResourceName is represented as string in the form:
-    
-    "{checksum}//{handler}:{args}" 
+
+    "{checksum}//{handler}:{args}"
 
     Example:
-    
+
     "sha1:95e309e639e67fa2bb0c0a40532832971309dee9//pdf:5"
 */
 class ResourceName

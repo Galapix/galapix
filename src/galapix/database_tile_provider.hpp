@@ -38,22 +38,22 @@ public:
     m_image_entry(image_entry)
   {}
 
-  JobHandle request_tile(int tilescale, const Vector2i& pos, 
+  JobHandle request_tile(int tilescale, const Vector2i& pos,
                          const std::function<void (Tile)>& callback)
   {
     return DatabaseThread::current()->request_tile(m_file_entry, tilescale, pos, callback);
   }
-  
-  int get_max_scale() const 
+
+  int get_max_scale() const
   {
     return m_image_entry.get_max_scale();
   }
 
-  int get_tilesize() const 
+  int get_tilesize() const
   {
     return 256;
   }
-  
+
   Size get_size() const
   {
     return m_image_entry.get_size();
@@ -63,9 +63,9 @@ public:
   {
 #if 0
     DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());
-    DatabaseThread::current()->request_file(m_file_entry.get_url(), 
+    DatabaseThread::current()->request_file(m_file_entry.get_url(),
                                             [=](){
-                                              callback(DatabaseTileProvider::create(file_entry)); 
+                                              callback(DatabaseTileProvider::create(file_entry));
                                             });
 #else
     log_error("not implemented");

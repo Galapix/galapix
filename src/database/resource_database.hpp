@@ -91,7 +91,7 @@ private:
   std::unique_ptr<URLInfoGet>   m_url_info_get;
 
   std::unique_ptr<BlobInfoStore> m_blob_info_store;
-  
+
   FileEntryGetAll          m_file_entry_get_all;
   //FileEntryGetByFileId     m_file_entry_get_by_fileid;
   FileEntryGetByPattern    m_file_entry_get_by_pattern;
@@ -102,7 +102,7 @@ private:
   ImageEntryStore          m_image_entry_store;
   ImageEntryGet            m_image_entry_get;
   ResourceEntryGetByBlobId m_resource_entry_get_by_blob_id;
-  
+
   ResourceInfoGet   m_resource_info_get;
   ResourceInfoStore m_resource_info_store;
 
@@ -127,16 +127,16 @@ public:
   void get_file_entries(std::vector<FileEntry>& entries_out);
   void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
   void store_file_entry(const std::string& path, int mtime);
-  
+
   /**
      Lookup a FileEntry by its url. If there is no corresponding
      url, then the file will be looked up in the filesystem and
      then stored in the DB and returned. If the file can't be found
      in either the DB or the filesystem false will be returned, else
      true
-      
+
      @param[in] url The absolute path of the file
-     @param[out] entry   Lokation where the file information will be stored 
+     @param[out] entry   Lokation where the file information will be stored
      @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
   bool get_old_file_entry(const URL& url, OldFileEntry& entry_out);

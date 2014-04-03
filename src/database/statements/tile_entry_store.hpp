@@ -35,11 +35,11 @@ public:
   void operator()(const TileEntry& tile_)
   {
     TileEntry tile = tile_;
-  
+
     if (0)
       std::cout << "store_tile("
                 << "image_id: " << tile.get_image_id()
-                << ", scale: " << tile.get_scale() 
+                << ", scale: " << tile.get_scale()
                 << ", pos: " << tile.get_pos() << ")" << std::endl;
 
     if (!tile.get_blob())

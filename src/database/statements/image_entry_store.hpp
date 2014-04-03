@@ -35,7 +35,7 @@ public:
     m_db(db),
     m_stmt(db, "INSERT OR REPLACE INTO image (resource_id, width, height) VALUES (?1, ?2, ?3);")
   {}
-  
+
   void operator()(const ImageEntry& image)
   {
     m_stmt.bind_int64(1, image.get_resource_id().get_id());
@@ -43,7 +43,7 @@ public:
     m_stmt.bind_int(3, image.get_height());
 
     m_stmt.execute();
-    
+
     //return sqlite3_last_insert_rowid(m_db.get_db());
   }
 

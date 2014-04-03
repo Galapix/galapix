@@ -35,7 +35,7 @@
 #include "util/format.hpp"
 #include "util/log.hpp"
 
-ResourceManager::ResourceManager(DatabaseThread& database, 
+ResourceManager::ResourceManager(DatabaseThread& database,
                                  Generator& generator,
                                  DownloadManager& download_mgr,
                                  ArchiveManager& archive_mgr) :
@@ -51,7 +51,7 @@ ResourceManager::~ResourceManager()
 }
 
 void
-ResourceManager::request_blob_info(const ResourceLocator& locator, 
+ResourceManager::request_blob_info(const ResourceLocator& locator,
                                    const std::function<void (Failable<BlobInfo>)>& callback)
 {
   ResourceLocator blob_locator = locator.get_blob_locator();
@@ -88,11 +88,11 @@ ResourceManager::request_blob_info(const ResourceLocator& locator,
 }
 
 void
-ResourceManager::request_file_info(const std::string& filename, 
+ResourceManager::request_file_info(const std::string& filename,
                                    const std::function<void (Failable<FileInfo>)>& callback)
 {
   m_database.request_file_info
-    (filename, 
+    (filename,
      [this, filename, callback](const boost::optional<FileInfo>& db_file_info)
      {
       if (db_file_info)
@@ -102,7 +102,7 @@ ResourceManager::request_file_info(const std::string& filename,
       else
       {
         m_generator.request_file_info
-          (filename, 
+          (filename,
            [this, callback](const Failable<FileInfo>& file_info)
            {
             if (file_info.is_initialized())
@@ -123,7 +123,7 @@ ResourceManager::request_url_info(const std::string& url,
                                   const std::function<void (Failable<URLInfo>)>& callback)
 {
   m_database.request_url_info
-    (url, 
+    (url,
      [this, url, callback](const boost::optional<URLInfo>& db_url_info)
      {
        if (db_url_info)
@@ -139,7 +139,7 @@ ResourceManager::request_url_info(const std::string& url,
               if (result.success())
               {
                 m_database.store_url_info
-                  (URLInfo(url, result.get_mtime(), result.get_content_type(), 
+                  (URLInfo(url, result.get_mtime(), result.get_content_type(),
                            BlobInfo::from_blob(result.get_blob())),
                    [callback](const Failable<URLInfo>& url_info)
                    {
@@ -161,7 +161,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
 {
   m_database.request_resource_info
     (locator, blob,
-     [this, locator, blob, callback](const boost::optional<ResourceInfo>& reply) 
+     [this, locator, blob, callback](const boost::optional<ResourceInfo>& reply)
      {
        if (reply)
        {
@@ -171,7 +171,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
        {
          m_generator.request_resource_processing
            (locator, std::make_shared<ResourceGeneratorCallbacks>());
-         
+
          callback(Failable<ResourceInfo>::from_exception(
                     std::runtime_error("ResourceManager::request_resource_info(): not implemented")));
        }
@@ -243,7 +243,7 @@ ResourceManager::request_image_info(const ResourceInfo& resource,
             // full generation or incremental generation
             [this, callback](const Failable<ImageInfo>& result)
             {
-             
+
             });
          */
        }
@@ -262,16 +262,16 @@ ResourceManager::request_tile_info(const ImageInfo& image, int scale, int x, int
 {
 #if 0
   m_database.request_tile(
-    image.get_rowid(), scale, x, y, 
+    image.get_rowid(), scale, x, y,
     [this](const boost::optional<TileEntry>& tile_entry)
-    { 
+    {
       if (!tile_entry)
       {
         generate_tiles(
-          image, scale, 
+          image, scale,
           [this]()
           {
-            
+
           });
       }
       else
@@ -288,12 +288,12 @@ ResourceManager::generate_tiles()
 {
   // tile is not in the database, so request it's generation
   m_generator.request_tiling(
-    image, scale, 
+    image, scale,
     [this]()
     {
       // once generation is complete, rerequest the tile
       m_database.request_tile(
-        image.get_rowid(), scale, x, y, 
+        image.get_rowid(), scale, x, y,
         [this](const boost::optional<TileEntry>& tile_entry)
         {
           callback(TileInfo(tile_entry));

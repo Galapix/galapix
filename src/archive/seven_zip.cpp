@@ -45,7 +45,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
   if (zip.exec() != 0)
   {
     raise_runtime_error("SevenZip::get_filenames(): " + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
-    return std::vector<std::string>();    
+    return std::vector<std::string>();
   }
   else
   {
@@ -59,7 +59,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
       {
         std::string line(line_start, i);
         line_start = i + 1;
-        
+
         if (!parse_files)
         {
           if (line == file_start)

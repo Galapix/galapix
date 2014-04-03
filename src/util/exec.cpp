@@ -85,7 +85,7 @@ Exec::exec()
 
     raise_runtime_error("Exec::exec(): fork failed");
   }
-  else if (pid == 0) 
+  else if (pid == 0)
   { // child
     close(stdin_fd[1]);
     close(stdout_fd[0]);
@@ -100,13 +100,13 @@ Exec::exec()
     dup2(stderr_fd[1], STDERR_FILENO);
     close(stderr_fd[1]);
 
-    // Create C-style array for arguments 
+    // Create C-style array for arguments
     std::unique_ptr<char*[]> c_arguments(new char*[m_arguments.size()+2]);
     c_arguments[0] = strdup(m_program.c_str());
     for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
       c_arguments[i+1] = strdup(m_arguments[i].c_str());
     c_arguments[m_arguments.size()+1] = NULL;
-     
+
     if (m_working_directory)
     {
       if (chdir(m_working_directory->c_str()) != 0)
@@ -116,7 +116,7 @@ Exec::exec()
         _exit(EXIT_FAILURE);
       }
     }
- 
+
     // Execute the program
     if (m_absolute_path)
     {
@@ -126,12 +126,12 @@ Exec::exec()
     {
       execvp(c_arguments[0], c_arguments.get());
     }
-      
+
     int error_code = errno;
 
     // FIXME: this ain't proper, need to exit(1) on failure and signal error to parent somehow
 
-    // execvp() only returns on failure 
+    // execvp() only returns on failure
     log_error(m_program << ": " << strerror(error_code));
     _exit(EXIT_FAILURE);
   }
@@ -141,7 +141,7 @@ Exec::exec()
     close(stdout_fd[1]);
     close(stderr_fd[1]);
 
-    try 
+    try
     {
       process_io(stdin_fd[1], stdout_fd[0], stderr_fd[0]);
     }
@@ -163,7 +163,7 @@ void
 Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
 {
   char buffer[4096];
-      
+
   // write data to stdin
   if (m_stdin_data)
   {
@@ -185,18 +185,18 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
   bool stderr_eof = false;
   while(!(stdout_eof && stderr_eof))
   {
-    fd_set rfds;   
+    fd_set rfds;
     FD_ZERO(&rfds);
 
     int nfds = 0;
 
-    if (!stdout_eof) 
+    if (!stdout_eof)
     {
       FD_SET(stdout_fd, &rfds);
       nfds = std::max(nfds, stdout_fd);
     }
 
-    if (!stderr_eof) 
+    if (!stderr_eof)
     {
       FD_SET(stderr_fd, &rfds);
       nfds = std::max(nfds, stderr_fd);
@@ -222,7 +222,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
       if (!stdout_eof && FD_ISSET(stdout_fd, &rfds))
       {
         ssize_t len = read(stdout_fd, buffer, sizeof(buffer));
-        
+
         if (len < 0) // error
         {
           close(stdout_fd);

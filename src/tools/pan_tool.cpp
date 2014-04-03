@@ -43,7 +43,7 @@ PanTool::move(const Vector2i& pos, const Vector2i& rel)
     viewer->get_state().move(glm::vec2(rel) * 4.0f);
   }
   else if (move_active)
-  { 
+  {
     // FIXME: This is of course wrong, since depending on x/yrel will lead to drift
     viewer->get_state().move(glm::vec2(rel) * 4.0f);
   }

@@ -26,7 +26,7 @@
 
 /**
  * Simple Job for generating a range of Tiles, it doesn't allow any
- * way to add late Jobs like TileGenerationJob does 
+ * way to add late Jobs like TileGenerationJob does
  */
 class MultipleTileGenerationJob : public Job
 {
@@ -34,12 +34,12 @@ private:
   URL m_url;
   int m_min_scale_in_db;
   int m_max_scale_in_db;
-  int m_min_scale; 
+  int m_min_scale;
   int m_max_scale;
   std::function<void (Tile)> m_callback;
 
 public:
-  MultipleTileGenerationJob(const JobHandle& job_handle, 
+  MultipleTileGenerationJob(const JobHandle& job_handle,
                             const URL& url,
                             int min_scale_in_db, int max_scale_in_db,
                             int min_scale, int max_scale,

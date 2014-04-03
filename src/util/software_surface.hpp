@@ -37,13 +37,13 @@ typedef std::shared_ptr<SoftwareSurface> SoftwareSurfacePtr;
 class SoftwareSurface
 {
 public:
-  enum Format 
-  { 
-    RGB_FORMAT, 
-    RGBA_FORMAT 
+  enum Format
+  {
+    RGB_FORMAT,
+    RGBA_FORMAT
   };
 
-  enum Modifier 
+  enum Modifier
   {
     kRot0,
     kRot90,
@@ -79,7 +79,7 @@ public:
   SoftwareSurfacePtr hflip();
 
   BlobPtr get_raw_data()  const;
-   
+
   void put_pixel(int x, int y, const RGB& rgb);
   void get_pixel(int x, int y, RGB& rgb) const;
 

@@ -120,14 +120,14 @@ Viewer::redraw()
   if (!m_mark_for_redraw)
   {
     m_mark_for_redraw = true;
-  
+
 #ifdef GALAPIX_SDL
     SDL_Event event;
     event.type = SDL_USEREVENT;
     event.user.code  = 1;
     event.user.data1 = 0;
     event.user.data2 = 0;
-  
+
     while (SDL_PushEvent(&event) != 1) {}
 #endif
   }
@@ -150,7 +150,7 @@ Viewer::draw()
     glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
   }
 
-  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height())); 
+  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
 
   if (m_state.get_angle() != 0.0f)
   {
@@ -174,7 +174,7 @@ Viewer::draw()
 
   if (clip_debug)
     Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));
-  
+
   m_workspace->draw(cliprect,
                   m_state.get_scale());
 
@@ -188,7 +188,7 @@ Viewer::draw()
   {
     if (m_pin_grid)
     {
-      Framebuffer::draw_grid(m_grid_offset * m_state.get_scale() + m_state.get_offset(), 
+      Framebuffer::draw_grid(m_grid_offset * m_state.get_scale() + m_state.get_offset(),
                              m_grid_size * m_state.get_scale(),
                              m_grid_color);
     }
@@ -362,7 +362,7 @@ Viewer::set_move_resize_tool()
 {
   log_info("Move&Resize Tools selected");
   left_tool   = move_tool.get();
-  right_tool  = resize_tool.get();              
+  right_tool  = resize_tool.get();
   middle_tool = pan_tool.get();
 }
 
@@ -492,7 +492,7 @@ Viewer::toggle_pinned_grid()
   else
   {
     m_grid_offset = (m_grid_offset - m_state.get_offset()) / m_state.get_scale();
-    m_grid_size  /= m_state.get_scale();            
+    m_grid_size  /= m_state.get_scale();
   }
 }
 
@@ -536,13 +536,13 @@ Viewer::zoom_to_selection()
   }
 }
 
-void 
+void
 Viewer::rotate_view_90()
 {
   m_state.rotate(90.0f);
 }
 
-void 
+void
 Viewer::rotate_view_270()
 {
   m_state.rotate(-90.0f);

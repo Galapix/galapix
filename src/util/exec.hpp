@@ -43,9 +43,9 @@ private:
 public:
   static const bool ABSOLUTE_PATH = true;
 
-  /** Construct an Exec object 
+  /** Construct an Exec object
 
-      @param program  The name or path of the program 
+      @param program  The name or path of the program
 
       @param absolute_path Set to true if \a program is an absolute
       path, if false $PATH will be searched for an application with
@@ -53,7 +53,7 @@ public:
   */
   Exec(const std::string& program, bool absolute_path = false);
 
-  /** Add an argument to the list of arguments which will be used on execution 
+  /** Add an argument to the list of arguments which will be used on execution
 
       @param argument The argument to be passed, spaces and other
       special characters are allow, shell escaping is not needed
@@ -63,15 +63,15 @@ public:
   /** Set the working directory for executing the process */
   void set_working_directory(const std::string& path);
 
-  /** Set what will be passed to the process on stdin 
+  /** Set what will be passed to the process on stdin
 
       @param blob The data passed on stdin
    */
   void set_stdin(const BlobPtr& blob);
 
-  /** Start the external program 
-      
-      @return Returns the exit code of the external program 
+  /** Start the external program
+
+      @return Returns the exit code of the external program
   */
   int exec();
 

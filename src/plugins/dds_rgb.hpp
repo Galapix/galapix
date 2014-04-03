@@ -44,7 +44,7 @@ public:
     r = static_cast<dds_int_t>((color & 0x1F) << 3);
     g = static_cast<dds_int_t>(((color & 0x7E0) >> 5) << 2);
     b = static_cast<dds_int_t>(((color & 0xF800) >> 11) << 3);
-    
+
     return *this;
   }
 };

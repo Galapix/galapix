@@ -40,7 +40,7 @@ JobManager::~JobManager()
 {
 }
 
-void 
+void
 JobManager::start_thread()
 {
   std::unique_lock<std::mutex> lock(mutex);
@@ -85,14 +85,14 @@ JobManager::join_thread()
 }
 
 JobHandle
-JobManager::request(std::shared_ptr<Job> job, 
+JobManager::request(std::shared_ptr<Job> job,
                     const std::function<void (std::shared_ptr<Job>, bool)>& callback)
 {
   std::unique_lock<std::mutex> lock(mutex);
 
   JobHandle handle = job->get_handle();
   threads[next_thread]->request(job, callback);
-  
+
   next_thread += 1;
   if (next_thread >= threads.size())
   {

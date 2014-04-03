@@ -32,11 +32,11 @@
    files inside an archive.
 
    The ResourceLocator is represented as string in the form:
-    
+
    "{protocol}://{path}//{handler}:{args}"
 
     Example:
-    
+
     "http://www.example.org/test.zip//zip:image.jpg"
     "http://www.example.org/test.pdf//pdf:5"
  */

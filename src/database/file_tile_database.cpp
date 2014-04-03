@@ -67,7 +67,7 @@ FileTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos
     }
 
     tile_out = TileEntry(image_id, scale, pos, surface);
-    //Blob::from_file(filename), 
+    //Blob::from_file(filename),
     //static_cast<TileEntry::Format>(image_id.get_format())); // FIXME: should unify format
     return true;
   }
@@ -147,7 +147,7 @@ FileTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, i
 
 void
 FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
-{ 
+{
   // Ensure that the directory exists, FIX
   ensure_directory_exists(image_id);
 
@@ -164,7 +164,7 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
     case SoftwareSurface::RGBA_FORMAT:
       PNG::save(tile.get_surface(), filename);
       break;
-          
+
     default:
       assert(!"Never reached");
   }
@@ -191,7 +191,7 @@ std::string
 FileTileDatabase::get_directory(const RowId& file_id_obj)
 {
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
-  
+
   // FIXME: Ignoring the last 32 bits for now
   int part1 = (file_id >> 24) & 0xfff;
   int part2 = (file_id >> 12) & 0xfff;
@@ -254,7 +254,7 @@ void
 FileTileDatabase::ensure_directory_exists(const RowId& file_id_obj)
 {
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
-  
+
   // FIXME: Ignoring the last 32 bits for now
   int part1 = (file_id >> 24) & 0xfff;
   int part2 = (file_id >> 12) & 0xfff;

@@ -33,7 +33,7 @@ class TileDatabaseInterface
 public:
   TileDatabaseInterface() {}
   virtual ~TileDatabaseInterface() {}
-  
+
   virtual bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) =0;
   virtual bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) =0;
   virtual void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles) =0;

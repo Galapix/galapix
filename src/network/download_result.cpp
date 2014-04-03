@@ -30,7 +30,7 @@ DownloadResult::from_curl(CURL* handle, BlobPtr blob)
   if (content_type)
   {
     result.m_content_type = content_type;
-  } 
+  }
 
   curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &result.m_response_code);
   curl_easy_getinfo(handle, CURLINFO_FILETIME, &result.m_mtime);

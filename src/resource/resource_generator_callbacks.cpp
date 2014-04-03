@@ -33,32 +33,32 @@ ResourceGeneratorCallbacks::on_child_resource(const ResourceLocator& locator)
 }
 
 void
-ResourceGeneratorCallbacks::on_blob_info(const BlobInfo & blob_info) 
+ResourceGeneratorCallbacks::on_blob_info(const BlobInfo & blob_info)
 {
 }
 
 void
-ResourceGeneratorCallbacks::on_resource_info(const ResourceInfo & resource_info) 
+ResourceGeneratorCallbacks::on_resource_info(const ResourceInfo & resource_info)
 {
 }
 
 void
-ResourceGeneratorCallbacks::on_archive_data(const ArchiveInfo & archive_info) 
+ResourceGeneratorCallbacks::on_archive_data(const ArchiveInfo & archive_info)
 {
 }
 
 void
-ResourceGeneratorCallbacks::on_image_data(const ImageData & image_data) 
+ResourceGeneratorCallbacks::on_image_data(const ImageData & image_data)
 {
 }
 
 void
-ResourceGeneratorCallbacks::on_success(ResourceStatus status) 
+ResourceGeneratorCallbacks::on_success(ResourceStatus status)
 {
 }
 
 void
-ResourceGeneratorCallbacks::on_error(ResourceStatus status, const std::string& err) 
+ResourceGeneratorCallbacks::on_error(ResourceStatus status, const std::string& err)
 {
 }
 

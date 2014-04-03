@@ -75,7 +75,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 {
 #if 0
   Database db(database);
-  
+
   int wish_size = 512;
   int image_num = 0;
   for(std::vector<URL>::const_iterator i = url.begin(); i != url.end(); ++i)
@@ -120,7 +120,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 void
 Galapix::cleanup(const std::string& database)
 {
-  Database db(database); 
+  Database db(database);
   std::cout << "Running database cleanup routines, this process can take multiple minutes." << std::endl;
   std::cout << "You can interrupt it via Ctrl-c, which won't do harm, but will throw away all the cleanup work done till that point" << std::endl;
   db.cleanup();
@@ -144,13 +144,13 @@ Galapix::info(const Options& opts)
 
   ResourceManager resource_mgr(database, generator, download_mgr,
                                ArchiveManager::current());
-  
+
   int count = 0;
   auto files = std::vector<std::string>(opts.rest.begin() + 1, opts.rest.end());
   for(const auto& filename : files)
   {
 #if 0
-    auto callback = [&count, filename](const Failable<FileInfo>& data) 
+    auto callback = [&count, filename](const Failable<FileInfo>& data)
       {
         try
         {
@@ -172,13 +172,13 @@ Galapix::info(const Options& opts)
 
     resource_mgr.request_file_info(filename, callback);
 #else
-    auto callback = [&count, filename](const Failable<ResourceInfo>& data) 
+    auto callback = [&count, filename](const Failable<ResourceInfo>& data)
       {
         try
         {
           auto resource_info = data.get();
           std::cout << filename << ":\n";
-          
+
           if (resource_info.get_source_type() == SourceType::File)
           {
             auto file_info = resource_info.get_file_info();
@@ -210,8 +210,8 @@ Galapix::info(const Options& opts)
   }
 
   log_debug("going into loop");
-  while(count > 0) 
-  { 
+  while(count > 0)
+  {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   log_debug("going out of loop");
@@ -246,7 +246,7 @@ Galapix::list(const Options& opts)
     std::cout << i->get_url() << std::endl;
   }
 }
-  
+
 int
 Galapix::main(int argc, char** argv)
 {
@@ -254,7 +254,7 @@ Galapix::main(int argc, char** argv)
   // if (!sqlite3_threadsafe())
   //  raise_runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
 
-  try 
+  try
   {
     Options opts;
     opts.threads  = 2;
@@ -271,13 +271,13 @@ Galapix::main(int argc, char** argv)
 
     return EXIT_SUCCESS;
   }
-  catch(const std::exception& err) 
+  catch(const std::exception& err)
   {
     std::cout << "Exception: " << err.what() << std::endl;
     return EXIT_FAILURE;
   }
 }
-  
+
 void
 Galapix::run(const Options& opts)
 {
@@ -315,7 +315,7 @@ Galapix::run(const Options& opts)
       };
 
     const std::string& command = opts.rest.front();
-        
+
     if (command == "view")
     {
       auto urls = generate_urls();

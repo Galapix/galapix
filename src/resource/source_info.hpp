@@ -29,7 +29,7 @@ class SourceInfo
 private:
 public:
   SourceInfo();
-  
+
   SourceType get_type() const;
   URLInfo  get_url_info() const;
   FileInfo get_file_info() const;

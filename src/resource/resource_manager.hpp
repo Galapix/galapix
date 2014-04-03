@@ -50,7 +50,7 @@ private:
   Generator& m_generator;
   DownloadManager& m_download_mgr;
   ArchiveManager& m_archive_mgr;
-  
+
 public:
   ResourceManager(DatabaseThread& database,
                   Generator& generator,
@@ -74,18 +74,18 @@ public:
   void request_image_info(const ResourceInfo& resource,
                           const std::function<void (const Failable<ImageInfo>&)>& callback);
 
-  void request_blob_info(const ResourceLocator& locator, 
+  void request_blob_info(const ResourceLocator& locator,
                          const std::function<void (Failable<BlobInfo>)>& callback);
 
-  void request_file_info(const std::string& filename, 
+  void request_file_info(const std::string& filename,
                          const std::function<void (Failable<FileInfo>)>& callback);
 
-  void request_url_info(const std::string& url, 
+  void request_url_info(const std::string& url,
                         const std::function<void (Failable<URLInfo>)>& callback);
 
   void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
                              const std::function<void (Failable<ResourceInfo>)>& callback);
-  
+
 private:
   ResourceManager(const ResourceManager&) = delete;
   ResourceManager& operator=(const ResourceManager&) = delete;

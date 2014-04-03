@@ -20,7 +20,7 @@
 
 #define OUTPUT_BUF_SIZE 4096
 
-struct jpeg_memory_destination_mgr 
+struct jpeg_memory_destination_mgr
 {
   struct jpeg_destination_mgr pub;
 
@@ -39,10 +39,10 @@ void jpeg_memory_init_destination(j_compress_ptr cinfo)
 boolean jpeg_memory_empty_output_buffer(j_compress_ptr cinfo)
 {
   struct jpeg_memory_destination_mgr* mgr = (struct jpeg_memory_destination_mgr*)cinfo->dest;
-  
+
   // This function always gets OUTPUT_BUF_SIZE bytes,
   // cinfo->dest->free_in_buffer *must* be ignored
-  for(size_t i = 0; i < OUTPUT_BUF_SIZE; ++i) 
+  for(size_t i = 0; i < OUTPUT_BUF_SIZE; ++i)
   { // FIXME: Little slow maybe?
     mgr->data->push_back(mgr->buffer[i]);
   }
@@ -66,7 +66,7 @@ void jpeg_memory_term_destination(j_compress_ptr cinfo)
 
 void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data)
 {
-  if (cinfo->dest == NULL) 
+  if (cinfo->dest == NULL)
   {     /* first time for this JPEG object? */
     cinfo->dest = (struct jpeg_destination_mgr*)
       (*cinfo->mem->alloc_small)((j_common_ptr) cinfo, JPOOL_PERMANENT,

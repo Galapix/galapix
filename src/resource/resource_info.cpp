@@ -93,7 +93,7 @@ ResourceInfo::get_file_info() const
   return m_file_info;
 }
 
-    
+
 ResourceType
 ResourceInfo::get_type() const
 {
@@ -112,7 +112,7 @@ ArchiveInfo
 ResourceInfo::get_archive_info() const
 {
   assert(get_type() == ResourceType::Archive);
-  
+
   return m_archive_info;
 }
 

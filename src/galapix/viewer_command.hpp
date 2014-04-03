@@ -38,7 +38,7 @@ private:
 public:
   ViewerCommand(const Options& options);
   ~ViewerCommand();
-  
+
   void run(const std::vector<URL>& urls);
 
 private:

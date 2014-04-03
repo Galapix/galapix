@@ -56,14 +56,14 @@ public:
     m_mtime(mtime),
     m_blob_info(sha1, size)
   {}
- 
+
   FileInfo(const std::string& path, int mtime, const SHA1& sha1, int size) :
     m_id(),
     m_path(path),
     m_mtime(mtime),
     m_blob_info(sha1, size)
   {}
-    
+
   RowId get_id() const { return m_id; }
   std::string get_path() const { return m_path; }
   int  get_mtime() const { return m_mtime; }

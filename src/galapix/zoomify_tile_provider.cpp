@@ -47,7 +47,7 @@ int get_max_scale(const Size& size, int tilesize)
 
 } // namespace
 
-ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, 
+ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize,
                                          JobManager& job_manager) :
   m_size(size),
   m_tilesize(tilesize),
@@ -75,18 +75,18 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
   std::cout << "ZoomifyTileProvider: " << basedir << " " << m_size << " " << m_tilesize << " " << m_max_scale << std::endl;
 }
 
-std::shared_ptr<ZoomifyTileProvider> 
+std::shared_ptr<ZoomifyTileProvider>
 ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
 {
   std::string content = url.get_blob()->str();
 
   std::string url_str = url.str();
   // FIXME: use basedir() like function instead of raw unchecked string cutting
-  std::string basedir = url_str.substr(0, url_str.size() - 19); 
+  std::string basedir = url_str.substr(0, url_str.size() - 19);
   Size size;
   int  tilesize;
   int  num_tiles;
-  
+
   // FIXME: this isn't exactly a tolerant way to parse the xml file
   int ret = sscanf(content.c_str(),
                    "<IMAGE_PROPERTIES WIDTH=\"%d\" HEIGHT=\"%d\" NUMTILES=\"%d\" NUMIMAGES=\"1\" VERSION=\"1.8\" TILESIZE=\"%d\" />",
@@ -110,19 +110,19 @@ ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 }
 
 JobHandle
-ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos, 
+ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
                                   const std::function<void (Tile)>& callback)
 {
   int tile_group = get_tile_group(scale, pos);
 
   // construct the URL of the tile
   std::ostringstream out;
-  out << m_basedir << "TileGroup" << tile_group << "/" 
+  out << m_basedir << "TileGroup" << tile_group << "/"
       << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
 
   JobHandle job_handle = JobHandle::create();
   m_job_manager.request(std::make_shared<ZoomifyTileJob>(job_handle, URL::from_string(out.str()), scale, pos, callback));
   return job_handle;
 }
-  
+
 /* EOF */

@@ -140,7 +140,7 @@ FileReader::read_rect(const char* name, Rect& value)    const
   if (impl.get())
     return impl->read_rect(name, value);
   else
-    return false; 
+    return false;
 }
 
 bool

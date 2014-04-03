@@ -33,17 +33,17 @@ private:
 
   /** top right of the view in scaled inverse world co! (-offset/scale -> WO) */
   Vector2f offset;
-  
+
 public:
   ViewerState();
 
   /** Zoom the view, keeping pos on the same position of the framebuffer.
-      
+
       @param zoom  amount by which should be zoomed
       @param pos   position in framebuffer coordinates */
   void zoom(float factor, const Vector2i& pos);
   void zoom(float factor);
-  
+
   /** pos is in screen coordinates */
   void move(const Vector2f& pos);
 

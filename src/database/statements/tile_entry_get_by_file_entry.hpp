@@ -70,7 +70,7 @@ public:
           default:
             assert(!"never reached");
         }
-      
+
         return true;
       }
       else

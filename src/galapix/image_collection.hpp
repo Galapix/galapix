@@ -33,7 +33,7 @@ public:
   typedef Images::reverse_iterator reverse_iterator;
   typedef Images::const_reverse_iterator const_reverse_iterator;
   typedef Images::size_type  size_type;
-  
+
 private:
   Images m_images;
 

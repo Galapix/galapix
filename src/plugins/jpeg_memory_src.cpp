@@ -49,7 +49,7 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
   else
   {
     struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
-  
+
     cinfo->src->next_input_byte = mgr->data;
     cinfo->src->bytes_in_buffer = mgr->len;
 
@@ -73,13 +73,13 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 
 void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
 {
-  if (cinfo->src == NULL) 
+  if (cinfo->src == NULL)
   {
-    cinfo->src = (struct jpeg_source_mgr*)((*cinfo->mem->alloc_small)((j_common_ptr)cinfo, 
+    cinfo->src = (struct jpeg_source_mgr*)((*cinfo->mem->alloc_small)((j_common_ptr)cinfo,
                                                                       JPOOL_PERMANENT,
                                                                       sizeof(struct jpeg_memory_source_mgr)));
   }
-  
+
   cinfo->src->init_source       = jpeg_memory_init_source;
   cinfo->src->fill_input_buffer = jpeg_memory_fill_input_buffer;
   cinfo->src->skip_input_data   = jpeg_memory_skip_input_data;

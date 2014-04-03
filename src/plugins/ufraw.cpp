@@ -30,7 +30,7 @@
 bool
 UFRaw::is_available()
 {
-  try 
+  try
   {
     std::string exe = Filesystem::find_exe("ufraw-batch");
     log_info("found " << exe);
@@ -40,7 +40,7 @@ UFRaw::is_available()
   {
     log_warn(err.what());
     return false;
-  }  
+  }
 }
 
 SoftwareSurfacePtr
@@ -52,7 +52,7 @@ UFRaw::load_from_file(const std::string& filename)
     .arg("--silent")
     .arg("--out-type=ppm8")
     .arg("--output=-");
-     
+
   if (ufraw.exec())
   {
     raise_runtime_error("UFRaw::load_from_file(): " + std::string(ufraw.get_stderr().begin(), ufraw.get_stderr().end()));

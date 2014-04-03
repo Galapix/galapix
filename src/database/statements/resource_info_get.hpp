@@ -43,7 +43,7 @@ public:
     m_stmt.bind_text(1, blob.get_sha1().str());
 
     SQLiteReader reader = m_stmt.execute_query();
-    
+
     while(reader.next())
     {
       std::string type    = reader.get_text(1);
@@ -53,8 +53,8 @@ public:
       if (locator.get_handler().empty())
       {
         // locator doesn't provide us with a handler, so just return the first we find
-        return ResourceInfo(RowId(reader.get_int64(0)), 
-                            ResourceName(blob, 
+        return ResourceInfo(RowId(reader.get_int64(0)),
+                            ResourceName(blob,
                                          ResourceHandler(reader.get_text(2), reader.get_text(3), reader.get_text(4))),
                             ResourceStatus_from_string(reader.get_text(5)));
       }
@@ -62,7 +62,7 @@ public:
                handler == locator.get_handler().back().get_name() ||
                args    == locator.get_handler().back().get_args())
       {
-        return ResourceInfo(RowId(reader.get_int64(0)), 
+        return ResourceInfo(RowId(reader.get_int64(0)),
                             ResourceName(blob, locator.get_handler().back()),
                             ResourceStatus_from_string(reader.get_text(5)));
       }

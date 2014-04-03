@@ -45,14 +45,14 @@ Generator::~Generator()
 }
 
 void
-Generator::request_file_info(const std::string& path, 
+Generator::request_file_info(const std::string& path,
                              const std::function<void (const Failable<FileInfo>&)>& callback)
 {
   log_info(path);
-  
+
   m_pool.schedule
     ([path, callback]{
-      try 
+      try
       {
         log_debug("trying to get FileInfo");
 
@@ -108,11 +108,11 @@ Generator::request_resource_processing(const ResourceLocator& locator,
 }
 
 void
-Generator::process_resource(const ResourceLocator& locator, 
+Generator::process_resource(const ResourceLocator& locator,
                             const BlobAccessorPtr& blob_accessor,
                             GeneratorCallbacksPtr callbacks)
 {
-  // FIXME: 
+  // FIXME:
   // 1) use BlobAccessor instead
   // 2) pass BlobAccessor to SurfaceFactory
   //    - const SoftwareSurfaceLoader* find_loader_by_filename(const std::string& filename) const;
@@ -141,15 +141,15 @@ Generator::process_resource(const ResourceLocator& locator,
 }
 
 bool
-Generator::process_archive_resource(const ResourceLocator& locator, 
-                                    const BlobAccessorPtr& blob_accessor, 
+Generator::process_archive_resource(const ResourceLocator& locator,
+                                    const BlobAccessorPtr& blob_accessor,
                                     GeneratorCallbacksPtr callbacks)
 {
   try
   {
     log_debug("-- process_archive_resource: " << locator.str());
     ExtractionPtr extraction = m_archive_mgr.get_extraction(blob_accessor->get_stdio_name());
-  
+
     log_debug("-- process_archive_resource: got extraction");
 
     std::vector<ArchiveFileInfo> files;
@@ -179,7 +179,7 @@ Generator::process_archive_resource(const ResourceLocator& locator,
 
     ArchiveInfo archive_info(std::move(files), boost::optional<std::string>());
     callbacks->on_archive_data(archive_info);
-    
+
     return true;
   }
   catch(const std::exception& err)
@@ -191,7 +191,7 @@ Generator::process_archive_resource(const ResourceLocator& locator,
 }
 
 bool
-Generator::process_image_resource(const ResourceLocator& locator, 
+Generator::process_image_resource(const ResourceLocator& locator,
                                   const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info,
                                   GeneratorCallbacksPtr callbacks)
 {
@@ -233,7 +233,7 @@ Generator::process_image_resource(const ResourceLocator& locator,
 
       //callbacks->on_image_info(ImageInfo(RowId(), surface->get_width(), surface->get_height()));
       process_image_tiling(surface, callbacks);
-      
+
       // mark as success
       callbacks->on_resource_info(ResourceInfo(resource_name, ResourceStatus::Success));
       return true;
@@ -261,7 +261,7 @@ Generator::process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPt
                           });
 
   // build ImageData
-  ImageData image_data(ImageInfo(RowId(), surface->get_width(), surface->get_height()), 
+  ImageData image_data(ImageInfo(RowId(), surface->get_width(), surface->get_height()),
                        std::move(tiles));
   callbacks->on_image_data(image_data);
 }

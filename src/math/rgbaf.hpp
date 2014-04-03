@@ -26,7 +26,7 @@ class RGBAf
 {
 public:
   float r;
-  float g; 
+  float g;
   float b;
   float a;
 
@@ -59,8 +59,8 @@ public:
   static RGBAf from_rgb(const RGB& rgb)
   {
     return RGBAf(static_cast<float>(rgb.r)/255.0f,
-                 static_cast<float>(rgb.g)/255.0f, 
-                 static_cast<float>(rgb.b)/255.0f, 
+                 static_cast<float>(rgb.g)/255.0f,
+                 static_cast<float>(rgb.b)/255.0f,
                  1.0f);
   }
 

@@ -110,7 +110,7 @@ Image::set_tile_provider(TileProviderPtr provider)
                                                get_original_height()));
 
   // cleanup the old provider if present
-  if (m_provider)        
+  if (m_provider)
   {
     m_cache.reset();
     m_renderer.reset();

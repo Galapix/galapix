@@ -36,7 +36,7 @@ public:
   static Size get_size(const uint8_t* data, int len);
 
   /** Load a SoftwareSurface from the filesystem
-      
+
       @param[in]  filename Filename of the file to load
       @param[in]  scale    Scale the image by 1/scale (only 1,2,4,8 allowed)
       @param[out] size     The size of the unscaled image
@@ -45,8 +45,8 @@ public:
    */
   static SoftwareSurfacePtr load_from_file(const std::string& filename, int scale = 1, Size* size = NULL);
 
-  /** Load a JPEG from memory 
-      
+  /** Load a JPEG from memory
+
       @param[in]  data  Address of the JPEG data
       @param[in]  len   Length of the JPEG data
       @param[out] size  The size of the unscaled image

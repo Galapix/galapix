@@ -110,7 +110,7 @@ ViewerState::zoom_to(const Size& display_, const Rectf& rect)
   if ((display.height / display.width) > (rect.get_height() / rect.get_width()))
   { // match width
     scale = display.width / rect.get_width();
-      
+
     offset.x = -rect.left * scale;
     offset.y = -(rect.top - ((display.height / scale) - rect.get_height()) / 2.0f) * scale;
   }

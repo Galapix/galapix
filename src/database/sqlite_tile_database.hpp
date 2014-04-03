@@ -56,7 +56,7 @@ private:
 public:
   SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files);
   ~SQLiteTileDatabase();
-  
+
   bool has_tile(const RowId& image_id, const Vector2i& pos, int scale) override;
   bool get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out) override;
   void get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles) override;

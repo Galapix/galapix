@@ -84,7 +84,7 @@ public:
     return s;
   }
 
-  bool empty() 
+  bool empty()
   {
     std::unique_lock<std::mutex> lock(m_mutex);
     bool e = m_values.empty();

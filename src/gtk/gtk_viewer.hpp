@@ -28,7 +28,7 @@ class GtkViewer
 {
 private:
   Workspace* workspace;
-  
+
   Gtk::RadioToolButton* pan_tool_button;
   Gtk::RadioToolButton* zoom_tool_button;
   Gtk::RadioToolButton* grid_tool_button;
@@ -68,7 +68,7 @@ public:
   void on_zoom_out_clicked();
   void on_zoom_home_clicked();
 
-  
+
   void on_menu_file_new();
 
 private:

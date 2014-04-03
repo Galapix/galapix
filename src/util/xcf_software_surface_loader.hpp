@@ -27,7 +27,7 @@ private:
 public:
   XCFSoftwareSurfaceLoader()
   {}
-  
+
   std::string get_name() const
   {
     return "xcf";
@@ -48,10 +48,10 @@ public:
   bool supports_from_mem()  const { return true; }
 
   SoftwareSurfacePtr from_file(const std::string& filename) const
-  { 
+  {
     return XCF::load_from_file(filename);
   }
-  
+
   SoftwareSurfacePtr from_mem(const uint8_t* data, int len) const
   {
     return XCF::load_from_mem(data, len);

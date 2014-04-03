@@ -26,7 +26,7 @@ class ImageCollection;
 class Layouter
 {
 private:
-  
+
 public:
   Layouter() {}
   virtual ~Layouter() {}

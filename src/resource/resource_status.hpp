@@ -22,11 +22,11 @@
 #include <string>
 #include <assert.h>
 
-enum class ResourceStatus 
+enum class ResourceStatus
 {
   /** ResourceStatus has not been set */
   Unknown,
-    
+
   /** The underlying Blob could not be accessed, this might be
       temporary (directory not mounted, CD not inserted, etc.) */
   AccessError,
@@ -40,7 +40,7 @@ enum class ResourceStatus
 
   /** The Blob was fully processed and thumbnails and related cache
       information was generated */
-  Success, 
+  Success,
 
   /** Blob processing was started, but hasn't finished yet, the
       information in the cache might be incomplete */

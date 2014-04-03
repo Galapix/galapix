@@ -27,7 +27,7 @@
 static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   std::vector<uint8_t>* data = static_cast<std::vector<uint8_t>*>(userdata);
-  std::copy((uint8_t*)ptr, (uint8_t*)ptr + size*nmemb, std::back_inserter(*data)); 
+  std::copy((uint8_t*)ptr, (uint8_t*)ptr + size*nmemb, std::back_inserter(*data));
   return nmemb * size;
 }
 
@@ -68,7 +68,7 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
       *mime_type = "";
     }
   }
-  
+
   curl_easy_cleanup(handle.get());
 
   if (response_code/100 != 2 && response_code/100 != 3)

@@ -61,7 +61,7 @@ ResourceHandler::str() const
 bool
 ResourceHandler::operator==(const ResourceHandler& other) const
 {
-  return 
+  return
     m_type == other.m_type &&
     m_name == other.m_name &&
     m_args == other.m_args;

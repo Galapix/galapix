@@ -29,7 +29,7 @@
 class JPEGDecompressor
 {
 protected:
-  struct ErrorMgr 
+  struct ErrorMgr
   {
     struct jpeg_error_mgr pub;
     jmp_buf setjmp_buffer;
@@ -44,13 +44,13 @@ protected:
 
 public:
   virtual ~JPEGDecompressor();
-  
+
   Size read_size();
   SoftwareSurfacePtr read_image(int scale, Size* image_size);
 
 private:
   static void fatal_error_handler(j_common_ptr cinfo);
-  
+
 private:
   JPEGDecompressor(const JPEGDecompressor&);
   JPEGDecompressor& operator=(const JPEGDecompressor&);

@@ -78,7 +78,7 @@ static char hex2int(char c)
   else if (c >= 'a' && c <= 'f')
     return static_cast<char>(c - 'a' + 0xa);
   else
-    return 0;    
+    return 0;
 }
 
 float string2float(const std::string& str)

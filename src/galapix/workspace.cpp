@@ -69,7 +69,7 @@ Workspace::get_image(const Vector2f& pos) const
 void
 Workspace::add_image(const WorkspaceItemPtr& image)
 {
-  m_images.add(image);  
+  m_images.add(image);
 }
 
 void
@@ -120,7 +120,7 @@ Workspace::draw(const Rectf& cliprect, float zoom)
   for(auto& i: m_images)
   {
     if (i->get_image_rect().is_overlapped(cliprect))
-    {  
+    {
       if (!i->is_visible())
       {
         i->on_enter_screen();
@@ -154,13 +154,13 @@ Workspace::relayout()
   if (m_layouter)
   {
     m_layouter->layout(m_images);
-  } 
+  }
 }
 
 void
 Workspace::sort()
 {
-  std::sort(m_images.begin(), m_images.end(), 
+  std::sort(m_images.begin(), m_images.end(),
             [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
               return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
@@ -169,7 +169,7 @@ Workspace::sort()
 void
 Workspace::sort_reverse()
 {
-  std::sort(m_images.rbegin(), m_images.rend(), 
+  std::sort(m_images.rbegin(), m_images.rend(),
             [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
               return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
@@ -189,7 +189,7 @@ Workspace::clear_cache()
   for(auto& i: m_images)
   {
     i->clear_cache();
-  }  
+  }
 }
 
 void
@@ -277,7 +277,7 @@ Workspace::isolate_selection()
 void
 Workspace::delete_selection()
 {
-  m_images.erase(std::remove_if(m_images.begin(), m_images.end(), 
+  m_images.erase(std::remove_if(m_images.begin(), m_images.end(),
                                 [this](const WorkspaceItemPtr& image)->bool{
                                   for(auto& i: *m_selection)
                                   {
@@ -311,7 +311,7 @@ Workspace::solve_overlaps()
         if (irect.is_overlapped(jrect))
         {
           num_overlappings += 1;
-                  
+
           Rectf clip = irect.clip_to(jrect);
 
           // FIXME: This only works if one rect isn't completly within the other
@@ -328,7 +328,7 @@ Workspace::solve_overlaps()
         }
       }
     }
-    std::cout << "NumOverlappings: " << num_overlappings << std::endl; 
+    std::cout << "NumOverlappings: " << num_overlappings << std::endl;
   }
 }
 
@@ -338,7 +338,7 @@ Workspace::save(std::ostream& out)
   // FIXME: Rewrite with FileWriter
   out << "(galapix-workspace\n"
       << "  (images\n";
-  
+
   for(const auto& i: m_images)
   {
     // FIXME: Must escape the filename!
@@ -358,10 +358,10 @@ void
 Workspace::load(const std::string& filename)
 {
   FileReader reader = FileReader::parse(filename);
-  
+
   if (reader.get_name() != "galapix-workspace")
   {
-    std::cout << "Error: Unknown file format: " << reader.get_name() << std::endl;      
+    std::cout << "Error: Unknown file format: " << reader.get_name() << std::endl;
   }
   else
   {
@@ -405,8 +405,8 @@ Workspace::get_bounding_rect() const
 
     for(ImageCollection::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
-      const Rectf& image_rect = (*i)->get_image_rect(); 
-          
+      const Rectf& image_rect = (*i)->get_image_rect();
+
       if (isnan(image_rect.left) ||
           isnan(image_rect.right) ||
           isnan(image_rect.top) ||
@@ -423,7 +423,7 @@ Workspace::get_bounding_rect() const
         rect.bottom = Math::max(rect.bottom, image_rect.bottom);
       }
     }
-  
+
     return rect;
   }
 }

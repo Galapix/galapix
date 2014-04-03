@@ -47,7 +47,7 @@ public:
       if (reader.next())
       {
         return true;
-      }  
+      }
       else
       {
         return false;

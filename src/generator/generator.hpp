@@ -43,12 +43,12 @@ private:
   BlobManager& m_blob_mgr;
   ArchiveManager& m_archive_mgr;
   ThreadPool m_pool;
-  
+
 public:
   Generator(BlobManager& blob_mgr, ArchiveManager& archive_mgr);
   ~Generator();
 
-  void request_file_info(const std::string& path, 
+  void request_file_info(const std::string& path,
                          const std::function<void (const Failable<FileInfo>&)>& callback);
 
   void request_resource_processing(const ResourceLocator& locator,
@@ -56,9 +56,9 @@ public:
 
 private:
   void process_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks);
-  bool process_image_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info, 
+  bool process_image_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info,
                               GeneratorCallbacksPtr callbacks);
-  bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, 
+  bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor,
                                 GeneratorCallbacksPtr callbacks);
   void process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks);
 

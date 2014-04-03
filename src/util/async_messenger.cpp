@@ -38,7 +38,7 @@ AsyncMessenger::run()
     std::function<void()> func;
     while(m_queue.try_pop(func))
     {
-      try 
+      try
       {
         func();
       }

@@ -26,7 +26,7 @@ private:
 
 public:
   FileInfoGetByPath(SQLiteConnection& db) :
-    m_stmt(db, 
+    m_stmt(db,
            "SELECT\n"
            "  file.id, file.path, file.mtime, blob.sha1, blob.size\n"
            "FROM\n"
@@ -39,7 +39,7 @@ public:
   {
     m_stmt.bind_text(1, path);
     SQLiteReader reader = m_stmt.execute_query();
-    
+
     if (reader.next())
     {
       return FileInfo(

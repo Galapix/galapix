@@ -46,13 +46,13 @@ public:
 
   bool is_archive(const std::string& filename) const;
   bool is_archive(const BlobPtr& blob) const;
-  
+
   /**
      Returns the list of files contained in the archive, if \a loader
      is supply the loader used in the process will be returned in
      it.
   */
-  std::vector<std::string> get_filenames(const std::string& zip_filename, 
+  std::vector<std::string> get_filenames(const std::string& zip_filename,
                                          const ArchiveLoader** loader_out = nullptr) const;
 
   BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
@@ -62,7 +62,7 @@ public:
      Returns an Extraction object that allows fast access to files
      inside the archive. For archives that don't allow seeking this
      means the file are extracted to a temporary directiory, seekable
-     archives are accessed directly. 
+     archives are accessed directly.
   */
   std::shared_ptr<Extraction> get_extraction(const std::string& filename) const;
 

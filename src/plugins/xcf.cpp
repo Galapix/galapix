@@ -55,7 +55,7 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
     std::vector<char>::const_iterator line_end = std::find(start, end, '\n');
     std::string line(&*start, line_end - start);
     start = line_end+1;
-      
+
     char visible;
     int  width, height;
     char x_sign, y_sign;
@@ -73,14 +73,14 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
 
     layer_names.push_back(layer_name);
   }
-  
+
   return layer_names;
 }
 
 bool
 XCF::is_available()
 {
-  try 
+  try
   {
     std::string xcfinfo_exe = Filesystem::find_exe("xcfinfo");
     std::string xcf2png_exe = Filesystem::find_exe("xcf2png");
@@ -91,7 +91,7 @@ XCF::is_available()
   {
     log_warn(err.what());
     return false;
-  }  
+  }
 }
 
 std::vector<std::string>
@@ -142,7 +142,7 @@ XCF::get_size(const std::string& filename, Size& size)
     else
     {
       std::string line(stdout_lst.begin(), line_end);
-      int version, width, height;          
+      int version, width, height;
       if (sscanf(line.c_str(), "Version %d, %dx%d", &version, &width, &height) == 3)
       {
         size.width  = width;

@@ -34,7 +34,7 @@ RegularLayouter::layout(const ImageCollection& images)
   if (!images.empty())
   {
     int w = int(Math::sqrt(m_aspect_w * static_cast<float>(images.size()) / m_aspect_h));
-      
+
     for(int i = 0; i < int(images.size()); ++i)
     {
       float target_scale = Math::min(1000.0f / static_cast<float>(images[i]->get_original_width()),

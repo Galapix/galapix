@@ -20,7 +20,7 @@
 
 SQLiteError::SQLiteError(const std::string& err_)
   : err(err_)
-{  
+{
 }
 
 /* EOF */

@@ -31,12 +31,12 @@ template<class C>
 class Currenton
 {
 private:
-  static C* s_current; 
+  static C* s_current;
 
 protected:
   Currenton()  { assert(!s_current); s_current = static_cast<C*>(this); }
   virtual ~Currenton() { s_current = 0; }
-  
+
 public:
   static C& current() { assert(s_current); return *s_current; }
 };

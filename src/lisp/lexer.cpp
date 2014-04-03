@@ -55,7 +55,7 @@ Lexer::nextChar()
       throw EOFException();
     stream.read(buffer, BUFFER_SIZE);
     size_t bytes_read = stream.gcount();
-    
+
     c = buffer;
     bufend = buffer + bytes_read;
 
@@ -81,9 +81,9 @@ Lexer::getNextToken()
         ++linenumber;
       nextChar();
     };
-    
+
     token_length = 0;
-    
+
     switch(*c) {
       case ';': // comment
         while(true) {
@@ -142,7 +142,7 @@ Lexer::getNextToken()
       case '#': // constant
         try {
           nextChar();
-          
+
           while(isalnum(*c) || *c == '_') {
             if(token_length < MAX_TOKEN_LENGTH)
               token_string[token_length++] = *c;
@@ -175,15 +175,15 @@ Lexer::getNextToken()
           bool have_nondigits = false;
           bool have_digits = false;
           int have_floating_point = 0;
-          
+
           do {
             if(isdigit(*c))
               have_digits = true;
             else if(*c == '.')
               ++have_floating_point;
             else if(isalnum(*c) || *c == '_')
-              have_nondigits = true;  
-            
+              have_nondigits = true;
+
             if(token_length < MAX_TOKEN_LENGTH)
               token_string[token_length++] = *c;
 
@@ -191,7 +191,7 @@ Lexer::getNextToken()
           } while(!isspace(*c) && !strchr(delims, *c));
 
           token_string[token_length] = 0;
-          
+
           // no nextChar
 
           if(have_nondigits || !have_digits || have_floating_point > 1)
@@ -207,11 +207,11 @@ Lexer::getNextToken()
             nextChar();
           } while(!isspace(*c) && !strchr(delims, *c));
           token_string[token_length] = 0;
-          
+
           // no nextChar
 
           return TOKEN_SYMBOL;
-        }       
+        }
     }
   } catch(EOFException& ) {
     return TOKEN_EOF;

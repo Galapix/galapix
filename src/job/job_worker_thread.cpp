@@ -48,7 +48,7 @@ JobWorkerThread::run()
       if (!task.job->is_aborted())
       {
         //std::cout << "start job: " << task.job << std::endl;
-        try 
+        try
         {
           task.job->run();
         }
@@ -96,7 +96,7 @@ JobHandle
 JobWorkerThread::request(std::shared_ptr<Job> job, const std::function<void (std::shared_ptr<Job>, bool)>& callback)
 {
   JobHandle handle = job->get_handle();
-  
+
   Task task;
   task.job      = job;
   task.callback = callback;

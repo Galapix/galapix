@@ -71,7 +71,7 @@ DownloadManager::~DownloadManager()
     stop();
   }
 
-  try 
+  try
   {
     m_thread.join();
   }
@@ -79,13 +79,13 @@ DownloadManager::~DownloadManager()
   {
     log_error(err.what());
   }
-   
+
   for(auto& transfer : m_transfers)
   {
     curl_multi_remove_handle(m_multi_handle, transfer->handle);
   }
   m_transfers.clear();
-  curl_multi_cleanup(m_multi_handle); 
+  curl_multi_cleanup(m_multi_handle);
   curl_global_cleanup();
 
   close(m_pipefd[0]);
@@ -123,11 +123,11 @@ DownloadManager::wait_for_curl_data()
   FD_ZERO(&read_fd_set);
   FD_ZERO(&write_fd_set);
   FD_ZERO(&exc_fd_set);
-      
+
   curl_multi_fdset(m_multi_handle, &read_fd_set, &write_fd_set, &exc_fd_set, &max_fd);
-       
+
   if (max_fd == -1)
-  {         
+  {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   else
@@ -137,7 +137,7 @@ DownloadManager::wait_for_curl_data()
     max_fd = std::max(m_pipefd[0], max_fd);
 
     select(max_fd+1, &read_fd_set, &write_fd_set, &exc_fd_set, NULL);
-        
+
     if (FD_ISSET(m_pipefd[0], &read_fd_set))
     {
       // eat up the junk written to the wakeup pipe
@@ -149,11 +149,11 @@ DownloadManager::wait_for_curl_data()
 
 void
 DownloadManager::process_curl_data()
-{  
+{
   // give control to cURL to do it's thing
   int running_handles;
   curl_multi_perform(m_multi_handle, &running_handles);
-        
+
   int msgs_in_queue;
   CURLMsg* msg;
   while ((msg = curl_multi_info_read(m_multi_handle, &msgs_in_queue)))
@@ -184,7 +184,7 @@ DownloadManager::run()
 
     std::function<void()> func;
     while(m_queue.try_pop(func))
-    {     
+    {
       func();
     }
 
@@ -201,7 +201,7 @@ DownloadManager::cancel_transfer(TransferHandle id)
 {
   m_queue.wait_and_push(
     [=]{
-      auto it = std::find_if(m_transfers.begin(), m_transfers.end(), 
+      auto it = std::find_if(m_transfers.begin(), m_transfers.end(),
                              [&id](std::unique_ptr<DownloadTransfer>& transfer) {
                                return transfer->id == id;
                              });
@@ -233,7 +233,7 @@ DownloadManager::cancel_all_transfers()
 void
 DownloadManager::finish_transfer(CURL* handle)
 {
-  auto it = std::find_if(m_transfers.begin(), m_transfers.end(), 
+  auto it = std::find_if(m_transfers.begin(), m_transfers.end(),
                          [handle](std::unique_ptr<DownloadTransfer>& transfer) {
                            return transfer->handle == handle;
                          });
@@ -255,7 +255,7 @@ DownloadManager::finish_transfer(CURL* handle)
       m_cache.store(transfer->url, result);
       transfer->callback(result);
     }
-    
+
     m_transfers.erase(it);
   }
 }

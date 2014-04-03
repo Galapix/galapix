@@ -45,10 +45,10 @@ ArgParser::print_usage()
             << "  -t, --threads          Number of worker threads (default: 2)\n"
             << "  -F, --files-from FILE  Get urls from FILE\n"
             << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
-            << "  -g, --geometry WxH     Start with window size WxH\n"        
+            << "  -g, --geometry WxH     Start with window size WxH\n"
             << "  -a, --anti-aliasing N  Anti-aliasing factor 0,2,4 (default: 0)\n"
             << "\n"
-            << "Compiled Fetures:\n" 
+            << "Compiled Fetures:\n"
 #ifdef HAVE_SPACE_NAVIGATOR
             << "  * SpaceNavigator: enabled\n"
 #else
@@ -105,7 +105,7 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
         else
         {
           raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
-        }              
+        }
       }
       else if (strcmp(argv[i], "-F") == 0 ||
                strcmp(argv[i], "--files-from") == 0)
@@ -148,7 +148,7 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
         if (i < argc)
           opts.anti_aliasing = atoi(argv[i]);
         else
-          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");                  
+          raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
       }
       else if (strcmp(argv[i], "--geometry") == 0 ||
                strcmp(argv[i], "-g") == 0)

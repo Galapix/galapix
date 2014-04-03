@@ -29,7 +29,7 @@ class FileEntry
 {
 public:
   static FileEntry from_reader(SQLiteReader& reader);
-  
+
   FileEntry(RowId id,
             const std::string& path,
             long mtime,

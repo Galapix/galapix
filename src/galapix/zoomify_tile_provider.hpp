@@ -62,7 +62,7 @@ private:
 public:
   static std::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
 
-  JobHandle request_tile(int scale, const Vector2i& pos, 
+  JobHandle request_tile(int scale, const Vector2i& pos,
                          const std::function<void (Tile)>& callback);
 
   int  get_max_scale() const { return m_max_scale; }

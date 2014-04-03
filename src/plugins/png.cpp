@@ -49,8 +49,8 @@ void readPNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
 
 bool
 PNG::get_size(void* data, int len, Size& size)
-{ 
-  // FIXME: Could install error/warning handling functions here 
+{
+  // FIXME: Could install error/warning handling functions here
   png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   png_infop info_ptr  = png_create_info_struct(png_ptr);
 
@@ -70,7 +70,7 @@ PNG::get_size(void* data, int len, Size& size)
 
     png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
 
-    png_read_info(png_ptr, info_ptr); 
+    png_read_info(png_ptr, info_ptr);
 
     size.width  = png_get_image_width(png_ptr, info_ptr);
     size.height = png_get_image_height(png_ptr, info_ptr);
@@ -91,7 +91,7 @@ PNG::get_size(const std::string& filename, Size& size)
   }
   else
   {
-    // FIXME: Could install error/warning handling functions here 
+    // FIXME: Could install error/warning handling functions here
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     png_infop info_ptr  = png_create_info_struct(png_ptr);
 
@@ -105,7 +105,7 @@ PNG::get_size(const std::string& filename, Size& size)
     {
       png_init_io(png_ptr, in);
 
-      png_read_info(png_ptr, info_ptr); 
+      png_read_info(png_ptr, info_ptr);
 
       size.width  = png_get_image_width(png_ptr, info_ptr);
       size.height = png_get_image_height(png_ptr, info_ptr);
@@ -113,7 +113,7 @@ PNG::get_size(const std::string& filename, Size& size)
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
       fclose(in);
-        
+
       return true;
     }
   }
@@ -169,8 +169,8 @@ PNG::load_from_file(const std::string& filename)
 
     png_init_io(png_ptr, in);
 
-    png_read_info(png_ptr, info_ptr); 
-      
+    png_read_info(png_ptr, info_ptr);
+
     // Convert all formats to either RGB or RGBA so we don't have to
     // handle them all seperatly
     png_set_strip_16(png_ptr);
@@ -197,10 +197,10 @@ PNG::load_from_file(const std::string& filename)
         std::unique_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
         for (int y = 0; y < height; ++y)
           row_pointers[y] = surface->get_row_data(y);
-            
+
         png_read_image(png_ptr, row_pointers.get());
       }
-      break;           
+      break;
 
       case PNG_COLOR_TYPE_RGB:
       {
@@ -209,7 +209,7 @@ PNG::load_from_file(const std::string& filename)
         std::unique_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
         for (int y = 0; y < height; ++y)
           row_pointers[y] = surface->get_row_data(y);
-            
+
         png_read_image(png_ptr, row_pointers.get());
       }
       break;
@@ -218,7 +218,7 @@ PNG::load_from_file(const std::string& filename)
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
     fclose(in);
-        
+
     return surface;
   }
 }
@@ -243,8 +243,8 @@ PNG::load_from_mem(const uint8_t* data, int len)
 
   png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
 
-  png_read_info(png_ptr, info_ptr); 
-      
+  png_read_info(png_ptr, info_ptr);
+
   // Convert all formats to either RGB or RGBA so we don't have to
   // handle them all seperatly
   png_set_strip_16(png_ptr);
@@ -271,19 +271,19 @@ PNG::load_from_mem(const uint8_t* data, int len)
       std::unique_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
       for (int y = 0; y < height; ++y)
         row_pointers[y] = surface->get_row_data(y);
-            
+
       png_read_image(png_ptr, row_pointers.get());
     }
-    break;           
+    break;
 
     case PNG_COLOR_TYPE_RGB:
     {
       surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
-          
+
       std::unique_ptr<png_bytep[]> row_pointers(new png_bytep[height]);
       for (int y = 0; y < height; ++y)
         row_pointers[y] = surface->get_row_data(y);
-            
+
       png_read_image(png_ptr, row_pointers.get());
     }
     break;
@@ -319,10 +319,10 @@ PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
     // set up the output control if you are using standard C streams
     png_init_io(png_ptr, out);
 
-    png_set_IHDR(png_ptr, info_ptr, 
+    png_set_IHDR(png_ptr, info_ptr,
                  surface->get_width(), surface->get_height(), 8,
-                 (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA, 
-                 PNG_INTERLACE_NONE, 
+                 (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
+                 PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
@@ -372,10 +372,10 @@ PNG::save(const SoftwareSurfacePtr& surface)
   PNGWriteMemory mem;
   png_set_write_fn(png_ptr, &mem, &writePNGMemory, NULL);
 
-  png_set_IHDR(png_ptr, info_ptr, 
+  png_set_IHDR(png_ptr, info_ptr,
                surface->get_width(), surface->get_height(), 8,
-               (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA, 
-               PNG_INTERLACE_NONE, 
+               (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
+               PNG_INTERLACE_NONE,
                PNG_COMPRESSION_TYPE_DEFAULT,
                PNG_FILTER_TYPE_DEFAULT);
 

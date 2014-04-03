@@ -44,7 +44,7 @@ public:
     {
       image_out = ImageEntry(reader.get_int64(0),
                              reader.get_int64(1),
-                             reader.get_int(2),   
+                             reader.get_int(2),
                              reader.get_int(3));
       return true;
     }

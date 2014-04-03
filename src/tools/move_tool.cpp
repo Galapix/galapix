@@ -103,5 +103,5 @@ MoveTool::draw()
     Framebuffer::draw_rect(rect, RGB(255, 255, 255));
   }
 }
-  
+
 /* EOF */

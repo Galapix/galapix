@@ -73,7 +73,7 @@ URL::from_string(const std::string& url)
     ret.m_plugin_payload  = url.substr(k+1);
     //std::cout << "'" << protocol << "' '" << payload << "' '" << plugin << "' " << plugin_payload << std::endl;
   }
-  
+
   return ret;
 }
 
@@ -170,7 +170,7 @@ URL::get_mtime() const
   else
   {
     return 0;
-  } 
+  }
 }
 
 int
@@ -183,7 +183,7 @@ URL::get_size() const
   else
   {
     return 0;
-  }  
+  }
 }
 
 bool
@@ -200,7 +200,7 @@ URL::is_url(const std::string& url)
     for(std::string::size_type i = 0; i < k; ++i)
       if (!(url[i] >= 'a' && url[i] <= 'z'))
         return false;
-        
+
     return true;
   }
 }

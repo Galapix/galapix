@@ -34,14 +34,14 @@ FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, cons
 void
 FileEntryGenerationJob::run()
 {
-  try 
+  try
   {
 #if 0
     SoftwareSurfacePtr surface;
     Size size;
     int min_scale;
     int max_scale;
-    
+
     // FIXME: JPEG::filename_is_jpeg() is ugly
     if (!m_url.is_remote() && JPEG::filename_is_jpeg(m_url.str()))
     {
@@ -85,8 +85,8 @@ FileEntryGenerationJob::run()
     }
 
     m_sig_file_callback(file_entry);
-    
-    TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale, 
+
+    TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale,
                                   [this](const Tile& tile){
                                     m_sig_tile_callback(tile);
                                   });

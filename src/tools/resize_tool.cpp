@@ -27,7 +27,7 @@ ResizeTool::ResizeTool(Viewer* viewer_)
     resize_center(),
     selection_center(),
     old_scale(1.0f)
-{  
+{
 }
 
 void
@@ -44,7 +44,7 @@ ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
     {
       //std::cout << a << " " << b << " " << a / b << std::endl;
       viewer->get_workspace()->get_selection()->scale((1.0f/old_scale) * (a/b));
-      old_scale = a/b; // FIXME: Hack, should scale to original scale 
+      old_scale = a/b; // FIXME: Hack, should scale to original scale
     }
   }
 }

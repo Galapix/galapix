@@ -56,14 +56,14 @@ Filesystem::find_exe(const std::string& name)
 
     for(char* p = strtok_r(path, delim, &state); p != NULL; p = strtok_r(NULL, delim, &state))
     {
-      std::ostringstream fullpath; 
+      std::ostringstream fullpath;
       fullpath << p << "/" << name;
       if (access(fullpath.str().c_str(), X_OK) == 0)
       {
         return fullpath.str();
       }
     }
-      
+
     free(path);
 
     raise_runtime_error("Filesystem::find_exe(): Couldn't find " + name + " in PATH");
@@ -219,7 +219,7 @@ Filesystem::get_extension(const std::string& pathname)
 
   std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 
-  if (extension == "gz" || 
+  if (extension == "gz" ||
       extension == "bz2")
   {
     p = pathname.rfind('.', p-1);
@@ -242,7 +242,7 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
     raise_runtime_error("Filesystem::copy_mtime(): " + from_filename + ": " + strerror(errno));
   }
 
-  struct utimbuf time_buf; 
+  struct utimbuf time_buf;
   time_buf.actime  = stat_buf.st_atime;
   time_buf.modtime = stat_buf.st_mtime;
 
@@ -283,7 +283,7 @@ Filesystem::get_size(const std::string& filename)
   if (stat(filename.c_str(), &stat_buf) != 0)
   {
     raise_runtime_error("Filesystem::get_size(): " + filename + ": " + strerror(errno));
-  } 
+  }
   return stat_buf.st_size; // Is this reliable? or should be use fopen() and ftell()?
 }
 
@@ -294,7 +294,7 @@ Filesystem::get_mtime(const std::string& filename)
   if (stat(filename.c_str(), &stat_buf) != 0)
   {
     raise_runtime_error("Filesystem::get_mtime(): " + filename + ": " + strerror(errno));
-  } 
+  }
   return stat_buf.st_mtime;
 }
 
@@ -326,7 +326,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
     {
       lst.push_back(pathname);
     }
-  
+
     // check the file list for valid entries, if entries are archives,
     // get a file list from them
     std::vector<std::future<std::vector<URL>>> archive_tasks;
@@ -334,7 +334,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
     {
       URL url = URL::from_filename(*i);
 
-      try 
+      try
       {
         if (ArchiveManager::current().is_archive(*i))
         {
@@ -375,8 +375,8 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         {
           //log_debug << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
         }
-      } 
-      catch(const std::exception& err) 
+      }
+      catch(const std::exception& err)
       {
         log_warn(err.what());
       }
@@ -384,7 +384,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 
     for(auto& task: archive_tasks)
     {
-      try 
+      try
       {
         const auto& sub_lst = task.get();
         file_list.insert(file_list.end(), sub_lst.begin(), sub_lst.end());
@@ -403,7 +403,7 @@ Filesystem::realpath_system(const std::string& pathname)
   char* result = ::realpath(pathname.c_str(), NULL);
   std::string res = result;
   free(result);
-  
+
   return res;
 }
 
@@ -412,7 +412,7 @@ Filesystem::realpath_fast(const std::string& pathname)
 {
   std::string fullpath;
   std::string drive;
-  
+
   if (pathname.size() > 0 && pathname[0] == '/')
   {
     fullpath = pathname;
@@ -440,10 +440,10 @@ Filesystem::realpath_fast(const std::string& pathname)
     }
     drive.assign(buf, 2);
 #endif
-      
+
     fullpath = fullpath + buf + "/" + pathname;
   }
-  
+
   std::string result;
   std::string::reverse_iterator last_slash = fullpath.rbegin();
   int skip = 0;
@@ -453,7 +453,7 @@ Filesystem::realpath_fast(const std::string& pathname)
   { // FIXME: Little crude and hackish
     if (*i == '/')
     {
-      std::string dir(last_slash, i); 
+      std::string dir(last_slash, i);
       //std::cout << "'" << dir << "'" << std::endl;
       if (dir == ".." || dir == "/..")
       {
@@ -476,7 +476,7 @@ Filesystem::realpath_fast(const std::string& pathname)
       last_slash = i;
     }
   }
-  
+
   return drive + "/" + std::string(result.rbegin(), result.rend());
 }
 

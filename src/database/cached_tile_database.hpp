@@ -35,7 +35,7 @@ private:
 public:
   CachedTileDatabase(std::unique_ptr<TileDatabaseInterface> tile_database);
   ~CachedTileDatabase();
-  
+
   bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) override;
   bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) override;
   void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles) override;

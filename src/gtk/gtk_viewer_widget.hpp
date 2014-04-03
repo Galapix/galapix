@@ -25,7 +25,7 @@
 
 class Viewer;
 
-class GtkViewerWidget 
+class GtkViewerWidget
   : public Gtk::DrawingArea,
     public Gtk::GL::Widget<GtkViewerWidget>
 {

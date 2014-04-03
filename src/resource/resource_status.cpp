@@ -84,7 +84,7 @@ std::string to_string(const ResourceStatus& value)
 
     case ResourceStatus::Incremental:
       return "incremental";
-      
+
     default:
       throw std::invalid_argument("invalid ResourceStatus value");
       break;

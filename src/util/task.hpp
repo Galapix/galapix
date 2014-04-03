@@ -38,7 +38,7 @@ public:
     m_exception()
   {}
 
-  void operator()() 
+  void operator()()
   {
     try
     {
@@ -76,7 +76,7 @@ public:
     m_exception()
   {
   }
-  
+
   ReturnType get()
   {
     if (m_exception)
@@ -87,7 +87,7 @@ public:
     {
       return m_return_value;
     }
-  }  
+  }
 };
 
 #endif

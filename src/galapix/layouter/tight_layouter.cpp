@@ -34,8 +34,8 @@ TightLayouter::layout(const ImageCollection& images)
 {
   float spacing = 24.0f;
 
-  float width = 0;  
-  // calculate the total width 
+  float width = 0;
+  // calculate the total width
   for(const auto& image: images)
   {
     const float scale = (1000.0f + spacing) / static_cast<float>(image->get_original_height());
@@ -47,7 +47,7 @@ TightLayouter::layout(const ImageCollection& images)
   Vector2f pos(0.0f, 0.0f);
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
-  
+
   auto relayout_row = [width, spacing](std::vector<WorkspaceItemPtr>& row) {
     float row_width = spacing * static_cast<float>(row.size()-1);
     for(auto& image: row) { row_width += image->get_scaled_width(); }
@@ -84,8 +84,8 @@ TightLayouter::layout(const ImageCollection& images)
       if (pos.x + (static_cast<float>(image->get_original_width())*scale) > width)
       {
         pos.x = last_pos.x;
-        pos.y += 1000.0f + spacing;   
-              
+        pos.y += 1000.0f + spacing;
+
         go_right = false;
 
         set_pos(pos);
@@ -98,11 +98,11 @@ TightLayouter::layout(const ImageCollection& images)
       }
     }
     else
-    { 
+    {
       // going left
       if (pos.x - (static_cast<float>(image->get_original_width()) * scale) < 0)
       {
-        pos.y += 1000.0f + spacing;   
+        pos.y += 1000.0f + spacing;
         go_right = true;
 
         set_pos(pos);
@@ -125,8 +125,8 @@ TightLayouter::layout_zigzag(const ImageCollection& images)
 {
   float spacing = 24.0f;
 
-  float width = 0;  
-  // calculate the total width 
+  float width = 0;
+  // calculate the total width
   for(const auto& image: images)
   {
     const float scale = (1000.0f + spacing) / static_cast<float>(image->get_original_height());
@@ -138,7 +138,7 @@ TightLayouter::layout_zigzag(const ImageCollection& images)
   Vector2f pos(0.0f, 0.0f);
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
-  
+
   for(const auto& image: images)
   {
     const float scale = 1000.0f / static_cast<float>(image->get_original_height());
@@ -156,8 +156,8 @@ TightLayouter::layout_zigzag(const ImageCollection& images)
       if (pos.x + (static_cast<float>(image->get_original_width())*scale) > width)
       {
         pos.x = last_pos.x;
-        pos.y += 1000.0f + spacing;   
-              
+        pos.y += 1000.0f + spacing;
+
         go_right = false;
 
         set_pos(pos);
@@ -169,11 +169,11 @@ TightLayouter::layout_zigzag(const ImageCollection& images)
       }
     }
     else
-    { 
+    {
       // going left
       if (pos.x - (static_cast<float>(image->get_original_width()) * scale) < 0)
       {
-        pos.y += 1000.0f + spacing;   
+        pos.y += 1000.0f + spacing;
         go_right = true;
 
         set_pos(pos);

@@ -37,20 +37,20 @@ private:
   std::function<void (Tile)> m_callback;
 
 public:
-  ZoomifyTileJob(JobHandle job_handle, const URL& url, 
+  ZoomifyTileJob(JobHandle job_handle, const URL& url,
                  int scale, const Vector2i& pos,
                  const std::function<void (Tile)>& callback) :
-    Job(job_handle), 
+    Job(job_handle),
     m_url(url),
     m_scale(scale),
     m_pos(pos),
     m_callback(callback)
-  {    
+  {
   }
 
   void run()
   {
-    try 
+    try
     {
       if (m_url.has_stdio_name())
       {

@@ -32,11 +32,11 @@ RandomLayouter::layout(const ImageCollection& images)
 
   for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
   {
-    (*i)->set_pos(Vector2f(static_cast<float>(rand() % width), 
+    (*i)->set_pos(Vector2f(static_cast<float>(rand() % width),
                                   static_cast<float>(rand() % width)));
 
     // FIXME: Make this relative to image size
-    (*i)->set_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f); 
+    (*i)->set_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f);
   }
 }
 

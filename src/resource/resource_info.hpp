@@ -38,9 +38,9 @@
 #include "resource/url_info.hpp"
 #include "util/sha1.hpp"
 
-/** 
+/**
     ResourceInfo provides access to all the meta data related to a
-    given ResourceLocator, such as the name, status 
+    given ResourceLocator, such as the name, status
 */
 class ResourceInfo
 {
@@ -58,7 +58,7 @@ private:
   ArchiveInfo m_archive_info;
 
   std::vector<ResourceInfo> m_children;
-  
+
 public:
   ResourceInfo();
   ResourceInfo(const RowId& id, const ResourceInfo& other);
@@ -78,7 +78,7 @@ public:
   SourceType get_source_type() const;
   URLInfo    get_url_info() const;
   FileInfo   get_file_info() const;
-    
+
   ResourceType get_type() const;
   ImageInfo    get_image_info() const;
   ArchiveInfo  get_archive_info() const;

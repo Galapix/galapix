@@ -75,9 +75,9 @@ Selection::clear()
 }
 
 ImageCollection
-Selection::get_images() const 
+Selection::get_images() const
 {
-  return m_images; 
+  return m_images;
 }
 
 bool
@@ -141,8 +141,8 @@ Selection::get_bounding_rect() const
 
     for(ImageCollection::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
-      const Rectf& image_rect = (*i)->get_image_rect(); 
-          
+      const Rectf& image_rect = (*i)->get_image_rect();
+
       rect.left   = Math::min(rect.left,   image_rect.left);
       rect.right  = Math::max(rect.right,  image_rect.right);
       rect.top    = Math::min(rect.top,    image_rect.top);
@@ -157,7 +157,7 @@ Selection::get_bounding_rect() const
         assert(!"NAN Rect encountered");
       }
     }
-  
+
     return rect;
   }
 }

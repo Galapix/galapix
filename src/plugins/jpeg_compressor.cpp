@@ -47,11 +47,11 @@ JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
 
   jpeg_set_defaults(&m_cinfo);
   jpeg_set_quality(&m_cinfo, quality, TRUE /* limit to baseline-JPEG values */);
- 
+
   jpeg_start_compress(&m_cinfo, TRUE);
 
   std::unique_ptr<JSAMPROW[]> row_pointer(new JSAMPROW[surface->get_height()]);
-  
+
   for(int y = 0; y < surface->get_height(); ++y)
   {
     row_pointer[y] = static_cast<JSAMPLE*>(surface->get_row_data(y));
@@ -59,11 +59,11 @@ JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
 
   while(m_cinfo.next_scanline < m_cinfo.image_height)
   {
-    jpeg_write_scanlines(&m_cinfo, &row_pointer[m_cinfo.next_scanline], 
+    jpeg_write_scanlines(&m_cinfo, &row_pointer[m_cinfo.next_scanline],
                          surface->get_height() - m_cinfo.next_scanline);
   }
 
-  jpeg_finish_compress(&m_cinfo);  
+  jpeg_finish_compress(&m_cinfo);
 }
 
 /* EOF */

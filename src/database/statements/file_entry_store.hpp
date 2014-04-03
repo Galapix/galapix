@@ -39,7 +39,7 @@ public:
     m_file_stmt.bind_text (1, path);
     m_file_stmt.bind_int  (2, mtime);
     m_file_stmt.execute();
-  
+
     return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
 

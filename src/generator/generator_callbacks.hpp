@@ -54,7 +54,7 @@ public:
 
   /** Once the file is opened and the SHA1 calculated, the BlobInfo is returned */
   virtual void on_blob_info        (const BlobInfo     & blob_info)     = 0;
-  
+
   /** This function gets called as soon as the generator has
       determined the resource type of the given locator. It will be
       called multiple times in the generation process. */

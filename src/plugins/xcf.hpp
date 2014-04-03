@@ -32,7 +32,7 @@ class XCF
 private:
 public:
   static bool is_available();
-  
+
   static std::vector<std::string> get_layers(const URL& url);
   static bool get_size(const std::string& filename, Size& size);
 

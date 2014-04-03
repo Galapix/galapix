@@ -38,8 +38,8 @@ private:
 public:
   MandelbrotTileProvider(JobManager& job_manager);
   ~MandelbrotTileProvider();
-  
-  JobHandle request_tile(int tilescale, const Vector2i& pos, 
+
+  JobHandle request_tile(int tilescale, const Vector2i& pos,
                                  const std::function<void (Tile)>& callback);
 
   int  get_max_scale() const;

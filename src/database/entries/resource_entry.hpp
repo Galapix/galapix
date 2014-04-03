@@ -25,7 +25,7 @@ class ResourceEntry
 {
 public:
   enum Type {};
-  enum Handler 
+  enum Handler
   {
     kUnknownHandler,
     kJPEGHandler,
@@ -46,7 +46,7 @@ private:
 
 public:
   ResourceEntry();
-  
+
   Type    get_type() const { return m_type; }
   Handler get_handler() const { return m_handler; }
   RowId   get_blob_id() const { return m_blob_id; }

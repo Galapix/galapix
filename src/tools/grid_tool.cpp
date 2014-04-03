@@ -44,12 +44,12 @@ GridTool::up  (const Vector2i& pos)
     drag_active = false;
     //Rect rect(click_pos, mouse_pos);
     //rect.normalize();
-      
+
     Rectf rect(viewer->get_state().screen2world(click_pos),
                viewer->get_state().screen2world(mouse_pos));
     rect.normalize();
 
-    viewer->set_grid(Vector2f(rect.left, rect.top), 
+    viewer->set_grid(Vector2f(rect.left, rect.top),
                      rect.get_size());
   }
 }

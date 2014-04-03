@@ -65,7 +65,7 @@ ResourceLocator::from_string(const std::string& locator)
         handler.push_back(ResourceHandler::from_string(locator.substr(beg, end - beg)));
       }
       beg = end;
-    } 
+    }
     while(beg != std::string::npos);
 
     return ResourceLocator(url, handler);
@@ -101,13 +101,13 @@ ResourceLocator::is_parent_of(const ResourceLocator& other) const
 {
   /*
     Problem:
-    
+
     "file://foo.rar" is a blob without a type
     "file://foo.rar//archive-rar" is parent of "file://foo.rar//archive-rar:foo.png"
     "file://foo.rar" is parent of "file://foo.rar//archive-rar:foo.png"
     "file://foo.rar" is also parent of "file://foo.rar//archive-zip:foo.png"
-    
-    The last one might however never be catched 
+
+    The last one might however never be catched
   */
   if (m_url == other.m_url)
   {
@@ -129,7 +129,7 @@ ResourceLocator::is_parent_of(const ResourceLocator& other) const
     }
   }
   else
-  {  
+  {
     // urls don't match
     return false;
   }

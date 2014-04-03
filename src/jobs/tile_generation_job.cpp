@@ -52,7 +52,7 @@ TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Ve
                                 const std::function<void (Tile)>& callback)
 {
   std::unique_lock<std::mutex> lock(m_state_mutex);
-  
+
   switch(m_state)
   {
     case kWaiting:
@@ -174,7 +174,7 @@ TileGenerationJob::run()
     m_state = kRunning;
 
     if (m_url.is_remote() || !JPEG::filename_is_jpeg(m_url.str()))
-    { 
+    {
       // Generate all tiles instead of just the requested for non-jpeg formats
       m_min_scale = 0;
       m_max_scale = m_file_entry.get_thumbnail_scale();
@@ -183,12 +183,12 @@ TileGenerationJob::run()
     {
       m_max_scale = (m_min_scale_in_db != -1) ? m_min_scale_in_db-1 : m_file_entry.get_thumbnail_scale();
       m_min_scale = m_max_scale;
-    
+
       for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
       {
         m_min_scale = std::min(m_min_scale, i->scale);
       }
-      
+
       // catch weird database inconsisntencies
       if (m_min_scale == -1 || m_max_scale == -1)
       {
@@ -204,7 +204,7 @@ TileGenerationJob::run()
     }
   }
 
-  try 
+  try
   {
     // Do the main work
     TileGenerator::generate(m_url, m_min_scale, m_max_scale,

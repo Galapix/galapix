@@ -25,7 +25,7 @@ ResourceItem::ResourceItem(const ResourceLocator& locator) :
 }
 
 ResourceItem::~ResourceItem()
-{  
+{
 }
 #if 0
 void

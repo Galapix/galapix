@@ -38,7 +38,7 @@ private:
     int       scale;
     Vector2i  pos;
     std::function<void (Tile)> callback;
-    
+
     TileRequest(const JobHandle& job_handle_,
                 int scale_, const Vector2i& pos_,
                 const std::function<void (Tile)>& callback_) :
@@ -49,11 +49,11 @@ private:
   };
 
   typedef std::vector<TileRequest> TileRequests;
-  
-private: 
+
+private:
   std::mutex m_state_mutex;
 
-  enum { 
+  enum {
     kWaiting,
     kRunning,
     kAborted,
@@ -66,16 +66,16 @@ private:
   /** Only valid if state is kRunning or kDone */
   int       m_min_scale;
   int       m_max_scale;
-  
+
   int       m_min_scale_in_db;
   int       m_max_scale_in_db;
-  
+
   /** Regular TileRequests */
   TileRequests m_tile_requests;
 
   /** TileRequests that came in when the process was already running */
   TileRequests m_late_tile_requests;
-  
+
   typedef std::vector<Tile> Tiles;
   Tiles m_tiles;
 

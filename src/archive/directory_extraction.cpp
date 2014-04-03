@@ -28,7 +28,7 @@ collect_files(const boost::filesystem::path& path,
               const boost::filesystem::path& base,
               std::vector<std::string>& lst)
 {
-  try 
+  try
   {
     for(boost::filesystem::directory_iterator it(path);
         it != boost::filesystem::directory_iterator();
@@ -67,9 +67,9 @@ std::vector<std::string>
 DirectoryExtraction::get_filenames() const
 {
   std::vector<std::string> lst;
-    
+
   collect_files(m_path, boost::filesystem::path(), lst);
-  
+
   return lst;
 }
 

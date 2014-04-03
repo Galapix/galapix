@@ -66,7 +66,7 @@ public:
   virtual int get_original_height() const = 0;
 
   virtual Rectf get_image_rect() const;
-  
+
   virtual void draw(const Rectf& cliprect, float zoom) = 0;
   virtual void draw_mark() = 0;
 

@@ -35,13 +35,13 @@ public:
   {
     assert(src);
 
-    glGenTextures(1, &handle); 
+    glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_RECTANGLE_ARB, handle);
     glEnable(GL_TEXTURE_RECTANGLE_ARB);
 
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
-    
+
     int gl_format = GL_RGB;
     switch(src->get_format())
     {
@@ -65,7 +65,7 @@ public:
                  src->get_data() + (src->get_pitch() * srcrect.top) + (srcrect.left * src->get_bytes_per_pixel()));
 
     assert_gl("packing image texture");
-    
+
     glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
@@ -76,7 +76,7 @@ public:
 
   ~TextureImpl()
   {
-    glDeleteTextures(1, &handle);    
+    glDeleteTextures(1, &handle);
   }
 };
 

@@ -37,7 +37,7 @@ public:
 
   void clear_bindings();
   void reset();
-  
+
   SQLiteStatement& bind_null(int n);
   SQLiteStatement& bind_int(int n, int i);
   SQLiteStatement& bind_int64(int n, int64_t i);

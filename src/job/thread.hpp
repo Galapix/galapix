@@ -40,7 +40,7 @@ public:
 
   /** Set conditions so that the run() function can terminate, joining is done in the destructor, not here */
   virtual void stop_thread() =0;
-  
+
   virtual void run() =0;
 
 private:

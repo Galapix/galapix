@@ -6,12 +6,12 @@
 **  it under the terms of the GNU General Public License as published by
 **  the Free Software Foundation, either version 3 of the License, or
 **  (at your option) any later version.
-**  
+**
 **  This program is distributed in the hope that it will be useful,
 **  but WITHOUT ANY WARRANTY; without even the implied warranty of
 **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 **  GNU General Public License for more details.
-**  
+**
 **  You should have received a copy of the GNU General Public License
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -131,10 +131,10 @@ MemoryTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 void
 MemoryTileDatabase::delete_tiles(const RowId& image_id)
 {
-  m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(), 
+  m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(),
                                [&](const TileEntry& tile_entry) {
                                  return tile_entry.get_image_id() == image_id;
-                               }), 
+                               }),
                 m_cache.end());
 }
 

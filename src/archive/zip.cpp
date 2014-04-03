@@ -29,7 +29,7 @@ std::string zip_error_to_string(int err)
   // codes are taken from the unzip manpage
   switch(err)
   {
-    case 0: 
+    case 0:
       return "normal; no errors or warnings detected.";
 
     case 1:
@@ -38,16 +38,16 @@ std::string zip_error_to_string(int err)
         "more files was skipped due to unsupported compression method or "
         "encryption with an unknown password.";
 
-    case 2: 
+    case 2:
       return "a generic error in the zipfile format was detected.  Processing may "
         "have completed successfully anyway; some broken zipfiles created by "
         "other archivers have simple work-arounds.";
 
-    case 3: 
+    case 3:
       return "a severe error in the zipfile format was detected.  Processing "
         "probably failed immediately.";
 
-    case 4:  
+    case 4:
       return "unzip was unable to allocate memory for one or more buffers during "
         "program initialization.";
 
@@ -57,30 +57,30 @@ std::string zip_error_to_string(int err)
 
     case 6:
       return "unzip was unable to allocate memory during decompression to disk.";
-  
-    case 7: 
+
+    case 7:
       return "unzip was unable to allocate memory during in-memory decompression.";
 
-    case 8: 
+    case 8:
       return "[currently not used]";
 
-    case 9:  
+    case 9:
       return "the specified zipfiles were not found.";
 
     case 10:
       return "invalid options were specified on the command line.";
 
-    case 11:   
+    case 11:
       return "no matching files were found.";
-          
-    case 50: 
+
+    case 50:
       return "the disk is (or was) full during extraction.";
 
-    case 51:  
+    case 51:
       return "the end of the ZIP archive was encountered prematurely.";
-      break;                                                                 
+      break;
 
-    case 80:  
+    case 80:
       return "the user aborted unzip prematurely with control-C (or similar)";
 
     case 81:
@@ -103,7 +103,7 @@ std::string zip_error_to_string(int err)
 void unzip_parse_line(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end,
                       std::vector<std::string>& lst)
 {
-  
+
   if (start != end && *(end-1) == '/')
   { // Do nothing if the given entry is a directory
     return;
@@ -181,7 +181,7 @@ Zip::get_file(const std::string& archive, const std::string& filename_in)
   std::string filename;
   for(std::string::const_iterator i = filename_in.begin(); i != filename_in.end(); ++i)
   {
-    if (*i == '[' || 
+    if (*i == '[' ||
         *i == ']' ||
         *i == '?' ||
         *i == '*')
@@ -229,7 +229,7 @@ Zip::extract(const std::string& archive, const std::string& target_directory)
     out << "Zip::extract(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
-    raise_runtime_error(out.str());    
+    raise_runtime_error(out.str());
   }
 }
 

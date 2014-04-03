@@ -41,7 +41,7 @@ public:
 
   int get_width() const;
   int get_height() const;
-  
+
   void bind();
 
 private:

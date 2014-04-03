@@ -24,14 +24,14 @@
 
 #include "util/log.hpp"
 
-/** 
+/**
  *  WeakFunctor allows you to create functors from objects that are
  *  stored in a shared_ptr<> by using a weak_ptr<>. When the object
  *  gets deleted before the functor is called, the callback will
- *  simply do nothing. 
+ *  simply do nothing.
  *
  *  Use it like:
- * 
+ *
  *   weak(std::bind(&Foobar::callme, _1), object);
  *
  */
@@ -42,7 +42,7 @@ private:
   F m_func;
   std::weak_ptr<typename C::element_type> m_obj;
 
-public: 
+public:
   WeakFunctor(const F& func, const C& obj) :
     m_func(func),
     m_obj(obj)

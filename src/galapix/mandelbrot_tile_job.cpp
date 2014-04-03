@@ -54,8 +54,8 @@ MandelbrotTileJob::run()
 
       int iteration = 0;
       const int max_iteration = 160;
-    
-      while(x*x + y*y <= (2*2) && 
+
+      while(x*x + y*y <= (2*2) &&
             iteration < max_iteration)
       {
         double xtemp = x * x - y * y + x0;
@@ -65,13 +65,13 @@ MandelbrotTileJob::run()
 
         ++iteration;
       }
- 
+
       surface->put_pixel(px, py, RGB(static_cast<uint8_t>(255 * iteration / max_iteration),
-                                     static_cast<uint8_t>(255 * iteration / max_iteration), 
+                                     static_cast<uint8_t>(255 * iteration / max_iteration),
                                      static_cast<uint8_t>(255 * iteration / max_iteration)));
     }
   }
-  
+
   m_callback(Tile(m_scale, m_pos, surface));
   get_handle().set_finished();
 }

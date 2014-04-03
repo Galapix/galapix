@@ -27,7 +27,7 @@
 
 FileJPEGCompressor::FileJPEGCompressor(const std::string& filename) :
   m_out(fopen(filename.c_str(), "wb"))
-{  
+{
   if (!m_out)
   {
     std::ostringstream out;

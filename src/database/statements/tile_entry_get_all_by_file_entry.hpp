@@ -52,7 +52,7 @@ public:
                                 reader.get_int (3)), // y
                        reader.get_blob(4),
                        static_cast<TileEntry::Format>(reader.get_int(6)));
-      
+
         // FIXME: TileEntry shouldn't contain a SoftwareSurface, but a
         // Blob, so we don't do encode/decode when doing a database
         // merge

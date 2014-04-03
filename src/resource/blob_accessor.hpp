@@ -48,7 +48,7 @@ public:
   const uint8_t* get_data() const;
 
   BlobInfo get_blob_info() const;
-  
+
 private:
   BlobAccessor(const BlobAccessor&);
   BlobAccessor& operator=(const BlobAccessor&);

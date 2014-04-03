@@ -52,7 +52,7 @@ public:
   static DatabaseThread* current() { return current_; }
 
 private:
-  
+
 private:
   Database& m_database;
 
@@ -60,12 +60,12 @@ private:
 
   bool m_quit;
   bool m_abort;
-  
+
   ThreadMessageQueue2<std::function<void()>> m_request_queue;
   ThreadMessageQueue2<std::function<void()>> m_receive_queue;
   std::list<std::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
 
-protected: 
+protected:
   void run();
 
 public:
@@ -84,7 +84,7 @@ public:
                              const std::function<void (const boost::optional<ResourceInfo>&)>& callback);
   void store_resource_info(const ResourceInfo& resource_info,
                            const std::function<void (const Failable<ResourceInfo>&)>& callback);
-  
+
   void request_file_info(const std::string& path, const std::function<void (const boost::optional<FileInfo>&)>& callback);
   void store_file_info(const FileInfo& file_info,
                        const std::function<void (const Failable<FileInfo>&)>& callback);
@@ -98,16 +98,16 @@ public:
    *  Request the tile from the database, if not in the database the
    *  tile will be generated from the source image
    */
-  JobHandle request_tile(const OldFileEntry&, int tilescale, const Vector2i& pos, 
+  JobHandle request_tile(const OldFileEntry&, int tilescale, const Vector2i& pos,
                          const std::function<void (Tile)>& callback);
 
-  JobHandle request_tiles(const OldFileEntry&, int min_scale, int max_scale, 
+  JobHandle request_tiles(const OldFileEntry&, int min_scale, int max_scale,
                           const std::function<void (Tile)>& callback);
 
   void      request_job_removal(std::shared_ptr<Job> job, bool);
 
   /** Request the OldFileEntry for \a filename */
-  JobHandle request_file(const URL& url, 
+  JobHandle request_file(const URL& url,
                          const std::function<void (OldFileEntry)>& file_callback);
 
   /** Request OldFileEntrys by glob pattern from the database */
@@ -116,7 +116,7 @@ public:
   /** Request all OldFileEntrys available in the database */
   void      request_all_files(const std::function<void (OldFileEntry)>& callback);
 
-  void      store_file_entry(const JobHandle& job_handle, 
+  void      store_file_entry(const JobHandle& job_handle,
                              const URL& url, int size, int mtime, OldFileEntry::Handler handler,
                              const std::function<void (OldFileEntry)>& callback);
 
@@ -137,7 +137,7 @@ private:
 
   /** Generates the requested tile from its original image */
   void generate_tile(const JobHandle& job_handle,
-                     const OldFileEntry&, int tilescale, const Vector2i& pos, 
+                     const OldFileEntry&, int tilescale, const Vector2i& pos,
                      const std::function<void (Tile)>& callback);
 
   void generate_file_entry(const JobHandle& job_handle, const URL& url,

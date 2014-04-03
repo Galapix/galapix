@@ -37,7 +37,7 @@ PNM::load_from_mem(const char* data, int len)
   assert(pnm.get_maxval() == 255);
 
   const int pixel_data_len = ((reinterpret_cast<const uint8_t*>(data) + len) - src_pixels);
-   
+
   if (pnm.get_magic() == "P6") // RGB
   {
     if (surface->get_width() * surface->get_height() * 3 > pixel_data_len)

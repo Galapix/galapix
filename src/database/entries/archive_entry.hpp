@@ -22,7 +22,7 @@
 class ArchiveEntry
 {
 public:
-  enum Handler 
+  enum Handler
   {
     kUnknownHandler,
     kRarHandler,

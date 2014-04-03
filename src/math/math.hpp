@@ -110,9 +110,9 @@ inline int round_to_power_of_two(int n)
   n = n | (n >> 4);
   n = n | (n >> 8);
   n = n | (n >> 16);
-  
+
   n = n + 1;
-  
+
   return n;
 }
 

@@ -25,8 +25,8 @@
 
 bool
 KRA::is_available()
-{    
-  try 
+{
+  try
   {
     std::string exe = Filesystem::find_exe("koconverter");
     log_info("found " << exe);
@@ -47,7 +47,7 @@ KRA::load_from_file(const std::string& filename)
   koconverter.arg("--batch").arg("--mimetype").arg("image/png");
   koconverter.arg(filename).arg("/dev/stdout");
   koconverter.exec();
-  
+
   return PNG::load_from_mem(reinterpret_cast<const uint8_t*>(&*koconverter.get_stdout().begin()),
                             koconverter.get_stdout().size());
 }
@@ -60,7 +60,7 @@ KRA::load_from_file(const std::string& filename)
 //   koconverter.arg("/dev/stdin").arg("/dev/stdout");
 //   koconverter.set_stdin(Blob(data, len));
 //   koconverter.exec();
-  
+
 //   return PNG::load_from_mem((uint8_t*)&*koconverter.get_stdout().begin(), koconverter.get_stdout().size());
 // }
 

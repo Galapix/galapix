@@ -47,7 +47,7 @@ public:
     m_blob_info(other.m_blob_info)
   {}
 
-  URLInfo(const std::string& url, 
+  URLInfo(const std::string& url,
           long mtime,
           const std::string& content_type,
           const BlobInfo& blob) :

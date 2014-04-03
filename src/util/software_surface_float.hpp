@@ -40,7 +40,7 @@ public:
   static SoftwareSurfaceFloatPtr from_software_surface(const SoftwareSurfacePtr& surface);
 
   SoftwareSurfacePtr to_software_surface() const;
-  
+
   void apply_gamma(float gamma);
 
   Size get_size()   const;

@@ -32,10 +32,10 @@ private:
 public:
   ResourceItem(const ResourceLocator& locator);
   ~ResourceItem();
-  
+
   void draw(const Rectf& cliprect, float zoom);
   void draw_mark();
-  
+
   ResourceInfo get_resource_info() const;
 
   int get_original_width() const { return 0; }

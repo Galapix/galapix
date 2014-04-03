@@ -31,16 +31,16 @@
 bool
 Imagemagick::get_size(const std::string& filename, Size& size)
 {
-  try 
+  try
   {
     Magick::Image image(filename);
-  
+
     size.width  = image.columns();
     size.height = image.rows();
 
     return true;
-  } 
-  catch(std::exception& err) 
+  }
+  catch(std::exception& err)
   {
     std::cout << "Imagemagick: " << filename << ": " << err.what() << std::endl;
     return false;
@@ -93,7 +93,7 @@ Imagemagick::get_supported_extensions()
   }
 }
 
-static 
+static
 SoftwareSurfacePtr
 MagickImage2SoftwareSurface(const Magick::Image& image)
 {
@@ -117,7 +117,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
   if (image.matte())
   {
-    surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, 
+    surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT,
                                       Size(width, height));
 
     for(int y = 0; y < height; ++y)
@@ -136,7 +136,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
   }
   else
   {
-    surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, 
+    surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
                                       Size(width, height));
     for(int y = 0; y < height; ++y)
     {
@@ -150,7 +150,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
         dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue  >> shift);
       }
     }
-  }  
+  }
 
   return surface;
 }
@@ -159,7 +159,7 @@ SoftwareSurfacePtr
 Imagemagick::load_from_mem(const void* data, int len)
 {
   // FIXME: Magick::Blob creates an unneeded copy of the data
-  return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len))); 
+  return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len)));
 }
 
 SoftwareSurfacePtr

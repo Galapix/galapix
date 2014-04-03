@@ -29,8 +29,8 @@ class ArchiveFileInfo
 private:
   RowId m_id;
   std::string m_path;
-  BlobInfo m_blob_info;  
-  
+  BlobInfo m_blob_info;
+
 public:
   ArchiveFileInfo() :
     m_id(),

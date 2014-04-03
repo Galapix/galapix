@@ -82,7 +82,7 @@ ArchiveThread::request_extraction(const std::string& archive_filename,
 }
 
 ArchiveThread::ExtractionEntry&
-ArchiveThread::get_and_lock_extraction_entry(const std::string& archive_filename, 
+ArchiveThread::get_and_lock_extraction_entry(const std::string& archive_filename,
                                              std::unique_lock<std::mutex>& lock_out)
 {
   std::lock_guard<std::mutex> lock(m_mutex);
@@ -94,7 +94,7 @@ ArchiveThread::get_and_lock_extraction_entry(const std::string& archive_filename
 
     ExtractionEntry& entry = *entry_uptr;
     m_extractions[archive_filename] = std::move(entry_uptr);
-    
+
     lock_out = std::unique_lock<std::mutex>(entry.mutex);
     return entry;
   }

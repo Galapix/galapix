@@ -142,5 +142,5 @@ JPEG::save(const SoftwareSurfacePtr& surface, int quality)
   // FIXME: Unneeded copy of data
   return Blob::copy(data);
 }
-  
+
 /* EOF */

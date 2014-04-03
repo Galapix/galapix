@@ -39,7 +39,7 @@ private:
   Vector2i m_pos;
   int m_ring;
   Direction m_direction;
-  
+
 public:
   SpiralLayouter();
 

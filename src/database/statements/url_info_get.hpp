@@ -26,7 +26,7 @@ private:
 
 public:
   URLInfoGet(SQLiteConnection& db) :
-    m_stmt(db, 
+    m_stmt(db,
            "SELECT\n"
            "  url.id, url.mtime, url.content_type, blob.sha1, blob.size\n"
            "FROM\n"
@@ -39,12 +39,12 @@ public:
   {
     m_stmt.bind_text(1, url);
     SQLiteReader reader = m_stmt.execute_query();
-    
+
     if (reader.next())
     {
       return URLInfo(
         RowId(reader.get_int64(0)),
-        URLInfo(url, 
+        URLInfo(url,
                 reader.get_int(1),
                 reader.get_text(2),
                 BlobInfo(SHA1::parse_string(reader.get_text(3)),

@@ -22,7 +22,7 @@
 
 #include "sqlite/reader.hpp"
 
-OldFileEntry 
+OldFileEntry
 OldFileEntry::from_reader(SQLiteReader& reader)
 {
   return OldFileEntry(RowId(reader.get_int(0)),  // fileid
@@ -37,7 +37,7 @@ OldFileEntry::from_reader(SQLiteReader& reader)
 
 std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry)
 {
-  return os << "OldFileEntry(\n" 
+  return os << "OldFileEntry(\n"
             << "         id: " << entry.get_id() << '\n'
             << "        url: " << entry.get_url() << '\n'
             << "      mtime: " << entry.get_mtime() << '\n'

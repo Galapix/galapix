@@ -40,9 +40,9 @@ typedef std::shared_ptr<ImageTileCache> ImageTileCachePtr;
 class ImageTileCache : public std::enable_shared_from_this<ImageTileCache>
 {
 public:
-  struct SurfaceStruct 
+  struct SurfaceStruct
   {
-    enum Status 
+    enum Status
     {
       SURFACE_SUCCEEDED,
       SURFACE_REQUESTED
@@ -51,13 +51,13 @@ public:
     JobHandle  job_handle;
     Status     status;
     SurfacePtr surface;
-  
+
     SurfaceStruct() :
       job_handle(JobHandle::create()),
       status(),
       surface()
     {}
-  
+
     SurfaceStruct(JobHandle  job_handle_,
                   Status     status_,
                   SurfacePtr surface_) :
@@ -68,20 +68,20 @@ public:
   };
 
 private:
-  typedef std::map<TileCacheId, SurfaceStruct> Cache; 
+  typedef std::map<TileCacheId, SurfaceStruct> Cache;
 
 public:
   Cache m_cache;
 
   ThreadMessageQueue2<Tile> m_tile_queue;
-  
+
   TileProviderPtr m_tile_provider;
 
   /** The maximum scale for which tiles exist */
   int m_max_scale;
 
   /** The smallest scale that is stored permanently */
-  int m_min_keep_scale; 
+  int m_min_keep_scale;
 
 public:
   ImageTileCache(TileProviderPtr tile_provider);
@@ -100,7 +100,7 @@ public:
 
   /**
    *  \a rect and \a scale are the currently visible area, everything
-   *  not in there will be canceled 
+   *  not in there will be canceled
    */
   void cancel_jobs(const Rect& rect, int scale);
 

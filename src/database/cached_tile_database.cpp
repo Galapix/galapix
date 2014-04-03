@@ -88,7 +88,7 @@ CachedTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out,
         return true;
       }
       else
-      {    
+      {
         return true;
       }
     }

@@ -44,7 +44,7 @@ class Viewer
 {
 private:
   static Viewer* current_;
- 
+
 public:
   static Viewer* current() { return current_; }
 
@@ -136,7 +136,7 @@ public:
   // Other stuff
   void toggle_grid();
   void toggle_pinned_grid();
-  
+
   void toggle_background_color(bool backwards = false);
 
   void layout_auto();
@@ -161,7 +161,7 @@ public:
   void sort_image_list();
   void sort_reverse_image_list();
   void shuffle_image_list();
-  
+
   void isolate_selection();
 
   void print_images();

@@ -36,8 +36,8 @@ private:
 public:
   TileProvider() {}
   virtual ~TileProvider() {}
-  
-  virtual JobHandle request_tile(int tilescale, const Vector2i& pos, 
+
+  virtual JobHandle request_tile(int tilescale, const Vector2i& pos,
                                  const std::function<void (Tile)>& callback) =0;
 
   virtual int  get_max_scale() const =0;

@@ -42,13 +42,13 @@ Blob::Blob(int len) :
 }
 
 int
-Blob::size() const 
+Blob::size() const
 {
   return m_data.size();
 }
 
-const uint8_t* 
-Blob::get_data() const 
+const uint8_t*
+Blob::get_data() const
 {
   return m_data.data();
 }
@@ -70,7 +70,7 @@ Blob::write_to_file(const std::string& filename)
 BlobPtr
 Blob::create(int len)
 {
-  return BlobPtr(new Blob(len));  
+  return BlobPtr(new Blob(len));
 }
 
 BlobPtr
@@ -90,7 +90,7 @@ Blob::from_file(const std::string& filename)
       int len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
       std::copy(buffer, buffer+len, std::back_inserter(data));
     }
-      
+
     // FIXME: useless copy, should read directly into the blob
     return Blob::copy(data);
   }

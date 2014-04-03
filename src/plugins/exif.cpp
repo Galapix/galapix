@@ -24,7 +24,7 @@ namespace {
 
 SoftwareSurface::Modifier get_orientation(ExifData* ed)
 {
-  if (!ed) 
+  if (!ed)
   {
     return SoftwareSurface::kRot0;
   }
@@ -32,7 +32,7 @@ SoftwareSurface::Modifier get_orientation(ExifData* ed)
   {
     ExifEntry* entry = exif_data_get_entry(ed, EXIF_TAG_ORIENTATION);
 
-    if (!entry) 
+    if (!entry)
     {
       return SoftwareSurface::kRot0;
     }
@@ -40,7 +40,7 @@ SoftwareSurface::Modifier get_orientation(ExifData* ed)
     {
       ExifByteOrder byte_order = exif_data_get_byte_order(ed);
       int orientation = exif_get_short(entry->data, byte_order);
-      
+
       switch(orientation)
       {
         case 1: // The 0th row is at the visual top    of the image, and the 0th column is the visual left-hand side.

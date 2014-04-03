@@ -53,14 +53,14 @@ public:
   BlobManager(DownloadManager& download_mgr,
               ArchiveManager& archive_mgr);
   ~BlobManager();
-  
+
   void request_blob(const ResourceLocator& locator,
                     const std::function<void (Failable<BlobAccessorPtr>)>& callback);
 
 private:
   void register_request(const ResourceLocator& locator);
   void unregister_request(const ResourceLocator& locator);
-  
+
 private:
   BlobManager(const BlobManager&) = delete;
   BlobManager& operator=(const BlobManager&) = delete;

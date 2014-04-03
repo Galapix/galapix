@@ -28,7 +28,7 @@ private:
   Vector2i mouse_pos;
   bool     drag_active;
   Vector2f click_pos;
-  
+
 public:
   ZoomRectTool(Viewer* viewer);
 

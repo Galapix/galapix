@@ -36,14 +36,14 @@ MD5::from_string(const std::string& str)
     raise_runtime_error("Failed to init MHash");
   }
   else
-  {  
+  {
     mhash(td, str.c_str(), str.length());
-  
+
     mhash_deinit(td, hash);
 
     // Convert to string representation
     std::ostringstream out;
-    for (int i = 0; i < 16; i++) 
+    for (int i = 0; i < 16; i++)
       out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
 
     return out.str();
@@ -55,22 +55,22 @@ MD5::from_file(const std::string& filename)
 {
   unsigned char hash[16]; /* enough size for MD5 */
   MHASH td = mhash_init(MHASH_MD5);
-  if (td == MHASH_FAILED) 
+  if (td == MHASH_FAILED)
   {
     raise_runtime_error("Failed to init MHash");
   }
   else
-  {  
+  {
     const unsigned int buf_size = 32768;
     char buf[buf_size];
-    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary); 
+    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
     if (!in)
     {
       raise_runtime_error("Couldn't open file " + filename);
     }
     else
     {
-    
+
       while(!in.eof())
       {
         in.read(buf, buf_size);
@@ -78,7 +78,7 @@ MD5::from_file(const std::string& filename)
       }
 
       in.close();
-    
+
       mhash_deinit(td, hash);
 
       // Convert to string representation
@@ -86,7 +86,7 @@ MD5::from_file(const std::string& filename)
       for (int i = 0; i < 16; i++)
         out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
 
-      return out.str();  
+      return out.str();
     }
   }
 }

@@ -49,16 +49,16 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
       raise_runtime_error("GtkViewerWidget(): *** Cannot find any OpenGL-capable visual.");
     }
   }
- 
+
   set_gl_capability(glconfig);
 
   add_events(Gdk::POINTER_MOTION_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK |
-             Gdk::KEY_PRESS_MASK      | Gdk::KEY_RELEASE_MASK | 
+             Gdk::KEY_PRESS_MASK      | Gdk::KEY_RELEASE_MASK |
              Gdk::ENTER_NOTIFY_MASK   | Gdk::LEAVE_NOTIFY_MASK);
 
   // Gdk::POINTER_MOTION_HINT_MASK |
   // Gdk::BUTTON_MOTION_MASK | Gdk::BUTTON1_MOTION_MASK | Gdk::BUTTON2_MOTION_MASK |
-  // Gdk::BUTTON3_MOTION_MASK | 
+  // Gdk::BUTTON3_MOTION_MASK |
 
   set_flags(get_flags()|Gtk::CAN_FOCUS);
 
@@ -84,10 +84,10 @@ GtkViewerWidget::on_timeout()
 {
   // FIXME: Calculate real time here
   viewer->update(0.033f);
-  
+
   // FIXME: Troublesome
   queue_draw();
-  
+
   return true;
 }
 
@@ -204,7 +204,7 @@ GtkViewerWidget::key_press(GdkEventKey* ev)
       viewer->print_state();
       break;
 
-    case GDK_h:        
+    case GDK_h:
       viewer->zoom_home();
       break;
 

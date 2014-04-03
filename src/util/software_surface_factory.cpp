@@ -186,7 +186,7 @@ SoftwareSurfacePtr
 SoftwareSurfaceFactory::from_file(const std::string& filename, const SoftwareSurfaceLoader* loader) const
 {
   assert(loader);
-  
+
   if (loader->supports_from_file())
   {
     return loader->from_file(filename);
@@ -214,7 +214,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
   }
   else
   {
-    try 
+    try
     {
       return from_file(filename, loader);
     }
@@ -222,7 +222,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
     {
       // retry with magic
       std::string magic = Filesystem::get_magic(filename);
-      auto new_loader = find_loader_by_magic(magic);           
+      auto new_loader = find_loader_by_magic(magic);
       if (new_loader && new_loader != loader)
       {
         log_warn(filename << ": file extension error, file is a " << new_loader->get_name());
@@ -278,19 +278,19 @@ SoftwareSurfaceFactory::from_url(const URL& url) const
     {
       std::ostringstream out;
       out << "SoftwareSurfaceFactory::from_url(): " << url.str() << ": unknown file type";
-      raise_runtime_error(out.str());      
+      raise_runtime_error(out.str());
     }
     else
     {
       if (loader->supports_from_mem())
       {
-        return loader->from_mem(blob->get_data(), blob->size()); 
+        return loader->from_mem(blob->get_data(), blob->size());
       }
       else
       {
         std::ostringstream out;
         out << "SoftwareSurfaceFactory::from_url(): " << url.str() << ": loader doesn't support from_mem(), workaround not implemented";
-        raise_runtime_error(out.str());        
+        raise_runtime_error(out.str());
       }
     }
   }

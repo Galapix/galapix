@@ -33,7 +33,7 @@ public:
   JobHandleGroup()
     : m_job_handles()
   {}
-  
+
   void add(JobHandle job_handle)
   {
     m_job_handles.push_back(job_handle);
@@ -51,7 +51,7 @@ public:
   {
     m_job_handles.clear();
   }
-  
+
 private:
   JobHandleGroup(const JobHandleGroup&);
   JobHandleGroup& operator=(const JobHandleGroup&);

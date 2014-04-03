@@ -55,7 +55,7 @@ public:
 
   static unsigned int get_mtime(const std::string& filename);
   static unsigned int get_size(const std::string& filename);
-  
+
   /** Generate a recursive list of all images in pathname */
   static void generate_image_file_list(const std::string& pathname, std::vector<URL>& file_list);
 

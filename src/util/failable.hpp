@@ -31,7 +31,7 @@ private:
   };
 
   bool m_initialized;
-  
+
   std::exception_ptr m_eptr;
 
 public:
@@ -85,7 +85,7 @@ public:
         reset();
       }
     }
-    
+
     return *this;
   }
 
@@ -111,27 +111,27 @@ public:
     assign(data);
   }
 
-  const T&  get() const 
-  { 
-    if (m_eptr != std::exception_ptr()) 
+  const T&  get() const
+  {
+    if (m_eptr != std::exception_ptr())
     {
       std::rethrow_exception(m_eptr);
     }
     else
     {
-      return m_obj; 
+      return m_obj;
     }
   }
 
   T& get()
-  { 
-    if (m_eptr != std::exception_ptr()) 
+  {
+    if (m_eptr != std::exception_ptr())
     {
       std::rethrow_exception(m_eptr);
     }
     else
     {
-      return m_obj; 
+      return m_obj;
     }
   }
 

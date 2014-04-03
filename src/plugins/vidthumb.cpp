@@ -30,7 +30,7 @@
 bool
 VidThumb::is_available()
 {
-  try 
+  try
   {
     std::string exe = Filesystem::find_exe("vidthumb");
     log_info("found " << exe);
@@ -64,9 +64,9 @@ VidThumb::load_from_file(const std::string& filename)
   }
   else
   {
-    raise_runtime_error("VidThumb::load_from_file(): " + std::string(vidthumb.get_stderr().begin(), 
+    raise_runtime_error("VidThumb::load_from_file(): " + std::string(vidthumb.get_stderr().begin(),
                                                                           vidthumb.get_stderr().end()));
-  }  
+  }
 }
 
 /* EOF */

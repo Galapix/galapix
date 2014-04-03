@@ -43,10 +43,10 @@ void assert_gl(const char* message)
 }
 #endif
 
-void 
+void
 Framebuffer::init()
 {
-  // Init Glew 
+  // Init Glew
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
@@ -54,7 +54,7 @@ Framebuffer::init()
     str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
     raise_runtime_error(str.str());
   }
-  
+
   if (!GLEW_ARB_texture_rectangle)
   {
     raise_runtime_error("Framebuffer::init(): OpenGL ARB_texture_rectangle extension not found, but required");
@@ -63,7 +63,7 @@ Framebuffer::init()
 
 void
 Framebuffer::reshape(const Size& size_)
-{ 
+{
   size = size_;
 
   glViewport(0, 0, size.width, size.height);
@@ -73,7 +73,7 @@ Framebuffer::reshape(const Size& size_)
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  
+
   // Magic Voodoo to get pixel perfect graphics, see:
   //   http://www.opengl.org/resources/faq/technical/transformations.htm
   // On Nvidia this seems to break things, instead of fixing them, so
@@ -95,7 +95,7 @@ void
 Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
   glDisable(GL_TEXTURE_RECTANGLE_ARB);
-    
+
   glColor3ub(rgb.r, rgb.g, rgb.b);
 
   glBegin(GL_LINE_LOOP);
@@ -124,7 +124,7 @@ void
 Framebuffer::draw_grid(int num_cells)
 {
   glDisable(GL_TEXTURE_RECTANGLE_ARB);
- 
+
   glBegin(GL_LINES);
   //  if (grid_color)
   glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
@@ -152,7 +152,7 @@ void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
 {
   glDisable(GL_TEXTURE_RECTANGLE_ARB);
- 
+
   glBegin(GL_LINES);
   glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
 
@@ -171,7 +171,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     glVertex2f(static_cast<float>(Framebuffer::get_width()), y);
   }
 
-  glEnd();  
+  glEnd();
 }
 
 int

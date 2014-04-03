@@ -29,9 +29,9 @@ private:
   RowId m_archive_id;
   RowId m_blob_id;
   std::string m_path;
-  
+
 public:
-  ArchiveFileEntry(RowId id, 
+  ArchiveFileEntry(RowId id,
                    RowId archive_id,
                    RowId blob_id,
                    std::string path) :

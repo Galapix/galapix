@@ -33,7 +33,7 @@ class SQLiteReader;
 class OldFileEntry final
 {
 public:
-  enum Handler { 
+  enum Handler {
     kUnknownHandler,
     kUnhandledHandler,
     kImageHandler,
@@ -68,7 +68,7 @@ public:
   OldFileEntry(const RowId& id,
             const URL& url,
             int mtime,
-            Handler handler, 
+            Handler handler,
             const RowId& parent,
             const BlobEntry& blob_entry) :
     m_id(id),
@@ -85,7 +85,7 @@ public:
   Handler get_handler() const { return m_handler; }
   const BlobEntry& get_blob_entry() const { return m_blob_entry; }
   RowId   get_parent() const { return m_parent; }
-  
+
 private:
   /** Unique id by which one can refer to this OldFileEntry, used in the
       'tile' table in the database */

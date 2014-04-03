@@ -23,12 +23,12 @@
 DownloadCache::DownloadCache(const std::string& cache_directory) :
   m_cache_directory(cache_directory)
 {
-  
+
 }
 
 DownloadCache::~DownloadCache()
 {
-  
+
 }
 
 boost::optional<DownloadResult>
@@ -38,7 +38,7 @@ DownloadCache::get(const std::string& url)
   //
   // if (exist(m_cache_directory + hashed(url)))
   // {
-  //     
+  //
   // }
   log_error("not implemented");
   return boost::optional<DownloadResult>();

@@ -79,7 +79,7 @@ SpaceNavigator::run()
         }
       }
     }
-    
+
 #if 0
     // old obsolete code
     spnav_event* spnav_ev;

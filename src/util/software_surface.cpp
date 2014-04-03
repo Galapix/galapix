@@ -60,7 +60,7 @@ public:
   Size     size;
   int      pitch;
   std::unique_ptr<uint8_t[]> pixels;
-  
+
   SoftwareSurfaceImpl(SoftwareSurface::Format format_, const Size& size_) :
     format(format_),
     size(size_),
@@ -73,7 +73,7 @@ public:
         pitch  = size.width * 3;
         pixels.reset(new uint8_t[pitch * size.height]);
         break;
-          
+
       case SoftwareSurface::RGBA_FORMAT:
         pitch  = size.width * 4;
         pixels.reset(new uint8_t[pitch * size.height]);
@@ -107,14 +107,14 @@ SoftwareSurface::put_pixel(int x, int y, const RGBA& rgba)
     case RGBA_FORMAT:
       impl->pixels[y * impl->pitch + x*4 + 0] = rgba.r;
       impl->pixels[y * impl->pitch + x*4 + 1] = rgba.g;
-      impl->pixels[y * impl->pitch + x*4 + 2] = rgba.b;  
+      impl->pixels[y * impl->pitch + x*4 + 2] = rgba.b;
       impl->pixels[y * impl->pitch + x*4 + 3] = rgba.a;
       break;
 
     case RGB_FORMAT:
       impl->pixels[y * impl->pitch + x*3 + 0] = rgba.r;
       impl->pixels[y * impl->pitch + x*3 + 1] = rgba.g;
-      impl->pixels[y * impl->pitch + x*3 + 2] = rgba.b;  
+      impl->pixels[y * impl->pitch + x*3 + 2] = rgba.b;
       break;
   }
 }
@@ -126,7 +126,7 @@ SoftwareSurface::get_pixel(int x, int y, RGBA& rgb) const
          y >= 0 && y < impl->size.height);
 
   switch(impl->format)
-  {  
+  {
     case RGBA_FORMAT:
       rgb.r = impl->pixels[y * impl->pitch + x*4 + 0];
       rgb.g = impl->pixels[y * impl->pitch + x*4 + 1];
@@ -171,7 +171,7 @@ SoftwareSurfacePtr
 SoftwareSurface::halve()
 {
   SoftwareSurfacePtr dstsrc = SoftwareSurface::create(impl->format, impl->size/2);
-  
+
   uint8_t* dst = dstsrc->get_data();
   uint8_t* src = get_data();
 
@@ -211,7 +211,7 @@ SoftwareSurface::halve()
           d[3] = static_cast<uint8_t>((s[3] + s[3+4] + s[3+src_p] + s[3+src_p+4])/4);
         }
       break;
-        
+
     default:
       assert(!"Not reachable");
       break;
@@ -242,7 +242,7 @@ SoftwareSurface::scale(const Size& size)
             get_pixel(x * impl->size.width  / surface->impl->size.width,
                       y * impl->size.height / surface->impl->size.height,
                       rgb);
-                
+
             surface->put_pixel(x, y, rgb);
           }
       }
@@ -257,7 +257,7 @@ SoftwareSurface::scale(const Size& size)
             get_pixel(x * impl->size.width  / surface->impl->size.width,
                       y * impl->size.height / surface->impl->size.height,
                       rgba);
-                
+
             surface->put_pixel(x, y, rgba);
           }
       }
@@ -376,7 +376,7 @@ SoftwareSurface::rotate180()
       break;
   }
 
-  return out; 
+  return out;
 }
 
 SoftwareSurfacePtr
@@ -407,7 +407,7 @@ SoftwareSurface::rotate270()
       break;
   }
 
-  return out; 
+  return out;
 }
 
 SoftwareSurfacePtr
@@ -438,7 +438,7 @@ SoftwareSurface::hflip()
       break;
   }
 
-  return out; 
+  return out;
 }
 
 SoftwareSurfacePtr
@@ -461,18 +461,18 @@ SoftwareSurface::crop(const Rect& rect_in)
   // reference the old SoftwareSurfaceImpl and have a different pitch
   // and pixel offset
   assert(rect_in.is_normal());
- 
+
   // Clip the rectangle to the image
   Rect rect(Math::clamp(0, rect_in.left,   get_width()),
             Math::clamp(0, rect_in.top,    get_height()),
-            Math::clamp(0, rect_in.right,  get_width()), 
+            Math::clamp(0, rect_in.right,  get_width()),
             Math::clamp(0, rect_in.bottom, get_height()));
 
   SoftwareSurfacePtr surface = SoftwareSurface::create(impl->format, rect.get_size());
 
   for(int y = rect.top; y < rect.bottom; ++y)
   {
-    memcpy(surface->get_row_data(y - rect.top), 
+    memcpy(surface->get_row_data(y - rect.top),
            get_row_data(y) + rect.left * get_bytes_per_pixel(),
            rect.get_width() * get_bytes_per_pixel());
   }
@@ -564,7 +564,7 @@ SoftwareSurface::to_rgb()
   {
     case RGB_FORMAT:
       return clone();
-        
+
     case RGBA_FORMAT:
     {
       SoftwareSurfacePtr surface = SoftwareSurface::create(RGB_FORMAT, impl->size);
@@ -582,7 +582,7 @@ SoftwareSurface::to_rgb()
 
       return surface;
     }
-        
+
     default:
       assert(!"SoftwareSurface::to_rgb: Unknown format");
       return SoftwareSurfacePtr();
@@ -592,7 +592,7 @@ SoftwareSurface::to_rgb()
 int
 SoftwareSurface::get_bytes_per_pixel() const
 {
-  switch(impl->format) 
+  switch(impl->format)
   {
     case RGB_FORMAT:
       return 3;
@@ -618,14 +618,14 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
   if (dst->impl->format == RGB_FORMAT && impl->format == RGB_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
-      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*3, 
+      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*3,
              get_row_data(y) + start_x*3,
              (end_x - start_x)*3);
   }
   else if (dst->impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
-      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*4, 
+      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*4,
              get_row_data(y) + start_x*4,
              (end_x - start_x)*4);
   }
@@ -635,9 +635,9 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
     {
       uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*4;
       uint8_t* srcpx = get_row_data(y) + start_x*3;
-          
+
       for(int x = 0; x < (end_x - start_x); ++x)
-      { 
+      {
         dstpx[4*x+0] = srcpx[3*x+0];
         dstpx[4*x+1] = srcpx[3*x+1];
         dstpx[4*x+2] = srcpx[3*x+2];
@@ -651,9 +651,9 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
     {
       uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*3;
       uint8_t* srcpx = get_row_data(y) + start_x*4;
-          
+
       for(int x = 0; x < (end_x - start_x); ++x)
-      { 
+      {
         uint8_t alpha = srcpx[4*x+3];
         dstpx[3*x+0] = static_cast<uint8_t>(srcpx[4*x+0] * alpha / 255);
         dstpx[3*x+1] = static_cast<uint8_t>(srcpx[4*x+1] * alpha / 255);
@@ -666,5 +666,5 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
     assert(!"Not implemented");
   }
 }
-  
+
 /* EOF */

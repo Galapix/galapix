@@ -95,7 +95,7 @@ WorkspaceItem::get_scaled_height() const
 Rectf
 WorkspaceItem::get_image_rect() const
 {
-  return Rectf(get_top_left_pos(), 
+  return Rectf(get_top_left_pos(),
                Sizef(get_scaled_width(), get_scaled_height()));
 }
 

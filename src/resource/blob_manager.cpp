@@ -50,7 +50,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
     m_pool.schedule
       ([this, locator, url, callback]
        {
-         try 
+         try
          {
            BlobAccessorPtr blob = std::make_shared<BlobAccessor>(url.get_path());
            for(const auto& handler : locator.get_handler())
@@ -70,7 +70,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
            url.get_scheme() == "ftp")
   {
     m_download_mgr.request_get
-      (url.str(), 
+      (url.str(),
        [this, callback, locator, url](const DownloadResult& result)
        {
          if (result.success())
@@ -95,7 +95,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
          }
          else
          {
-           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(format("%s: error: invalid response code: %d", 
+           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(format("%s: error: invalid response code: %d",
                                                                                         url.str(), result.get_response_code()))));
          }
        });
@@ -103,7 +103,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
   else
   {
     Failable<BlobAccessorPtr> failable;
-    failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s", 
+    failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s",
                                                                              locator.str(), url.get_scheme()))));
     callback(failable);
   }

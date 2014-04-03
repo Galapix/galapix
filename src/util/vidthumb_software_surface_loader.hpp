@@ -41,7 +41,7 @@ public:
     factory.register_by_extension(this, "flv");
     factory.register_by_extension(this, "ogv");
     factory.register_by_extension(this, "mkv");
-    factory.register_by_extension(this, "mp4");     
+    factory.register_by_extension(this, "mp4");
   }
 
   bool supports_from_file() const { return true;  }

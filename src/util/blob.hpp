@@ -45,14 +45,14 @@ public:
   const uint8_t* get_data() const;
 
   std::string str() const;
-  
+
   void write_to_file(const std::string& filename);
 
 public:
   static BlobPtr create(int len);
 
   static BlobPtr from_file(const std::string& filename);
- 
+
   /** Copy the given data into a Blob object */
   static BlobPtr copy(const void* data, int len);
   static BlobPtr copy(std::vector<uint8_t> data);

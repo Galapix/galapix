@@ -37,7 +37,7 @@ public:
       call can take quite a while (~1min) for larger databases, since
       the whole database gets copied in the process */
   void vacuum();
-  
+
   std::string get_error_msg();
 
   sqlite3* get_db() const { return db; }

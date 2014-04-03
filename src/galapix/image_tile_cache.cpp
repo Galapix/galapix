@@ -67,7 +67,7 @@ ImageTileCache::request_tile(int x, int y, int scale)
   if (i == m_cache.end())
   {
     JobHandle job_handle = m_tile_provider->request_tile(
-      scale, Vector2i(x, y), 
+      scale, Vector2i(x, y),
       weak(std::mem_fn(&ImageTileCache::receive_tile), shared_from_this()));
 
     // FIXME: Something to try: Request the next smaller tile too,
@@ -157,7 +157,7 @@ ImageTileCache::process_queue()
     assert(tile.get_surface());
 
     TileCacheId tile_id(tile.get_pos(), tile.get_scale());
-  
+
     Cache::iterator i = m_cache.find(tile_id);
 
     if (i == m_cache.end())

@@ -94,10 +94,10 @@ public:
   void wait_and_push(const Data& data)
   {
     std::unique_lock<std::mutex> lock(m_mutex);
-   
+
     m_queue_not_full_cond.wait(lock, [this]{ return static_cast<int>(m_queue.size()) != m_max_size; });
 
-    // push the data to the queue    
+    // push the data to the queue
     m_queue.push(data);
 
     // notify that the queue is no longer empty
@@ -109,7 +109,7 @@ public:
   void wait_for_push(std::function<bool ()> abort_condition)
   {
     std::unique_lock<std::mutex> lock(m_mutex);
-    m_queue_not_full_cond.wait(lock, [this, &abort_condition]{ 
+    m_queue_not_full_cond.wait(lock, [this, &abort_condition]{
         return static_cast<int>(m_queue.size()) != m_max_size || abort_condition();
       });
   }
@@ -123,7 +123,7 @@ public:
       return false;
     }
     else
-    {        
+    {
       // pop the data
       data_out = m_queue.front();
       m_queue.pop();

@@ -79,7 +79,7 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
     // The JPEG class can only scale down by factor 2,4,8, so we have to
     // limit things (FIXME: is that true? if so, why?)
     int jpeg_scale = Math::min(Math::pow2(min_scale), 8);
-              
+
     if (url.has_stdio_name())
     {
       return JPEG::load_from_file(url.get_stdio_name(), jpeg_scale, size);
@@ -119,12 +119,12 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
     if (0 <= x_miss && x_miss <= 1 &&
         0 <= y_miss && y_miss <= 1)
     {
-      log_debug("image doesn't match target size, ignoring as it is close enough: target=" 
+      log_debug("image doesn't match target size, ignoring as it is close enough: target="
                 << target_size << " vs surface=" << surface->get_size());
     }
     else
     {
-      log_debug("image doesn't match target size, doing scaling: target=" 
+      log_debug("image doesn't match target size, doing scaling: target="
                 << target_size << " vs surface=" << surface->get_size());
       surface = surface->scale(target_size);
     }
@@ -167,7 +167,7 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
     {
       SoftwareSurfacePtr croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
                                                              Size(256, 256)));
-      
+
       callback(x, y, croped_surface);
     }
 }
@@ -186,8 +186,8 @@ TileGenerator::generate(SoftwareSurfacePtr surface, int min_scale, int max_scale
     {
       surface = surface->halve();
     }
-    
-    cut_into_tiles(surface, 
+
+    cut_into_tiles(surface,
                    [scale, callback](int x, int y, const SoftwareSurfacePtr& tile)
                    {
                      callback(x, y, scale, tile);

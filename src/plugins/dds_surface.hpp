@@ -110,14 +110,14 @@ public:
   // format. dwFlags should include DDPF_RGB in this case. This value
   // is usually 16, 24, or 32. For A8R8G8B8, this value would be 32.
   uint32_t dwRGBBitCount;
-  
+
   // For RGB formats, these three fields contain the masks for the
   // red, green, and blue channels. For A8R8G8B8, these values would
   // be 0x00ff0000, 0x0000ff00, and 0x000000ff respectively.
   uint32_t dwRBitMask;
   uint32_t dwGBitMask;
   uint32_t dwBBitMask;
-  
+
   // For RGB formats, this contains the mask for the alpha channel, if
   // any. dwFlags should include DDPF_ALPHAPIXELS in this case. For
   // A8R8G8B8, this value would be 0xff000000.
@@ -156,7 +156,7 @@ public:
   }
 };
 
-enum 
+enum
 {
   DDS_DXT1 = 827611204,
   DDS_DXT2 = 844388420,
@@ -165,7 +165,7 @@ enum
   DDS_DXT5 = 894720068
 };
 
-enum DDSFlags 
+enum DDSFlags
 {
   DDSD_ALL          = 1047022,
   DDSD_ALPHABITDEPTH =    128,
@@ -193,7 +193,7 @@ public:
   uint32_t magic;
 
   // Size of structure. This member must be set to 124.
-  uint32_t dwSize; 
+  uint32_t dwSize;
 
   // Flags to indicate valid fields. Always include DDSD_CAPS,
   // DDSD_PIXELFORMAT, DDSD_WIDTH, DDSD_HEIGHT.
@@ -211,11 +211,11 @@ public:
   // total number of bytes for the main image. dwFlags should be
   // include DDSD_LINEARSIZE in this case.
   uint32_t dwPitchOrLinearSize;
-  
+
   // For volume textures, this is the depth of the volume. dwFlags
   // should include DDSD_DEPTH in this case.
   uint32_t dwDepth;
-  
+
   // For items with mipmap levels, this is the total number of levels
   // in the mipmap chain of the main image. dwFlags should include
   // DDSD_MIPMAPCOUNT in this case.
@@ -226,7 +226,7 @@ public:
 
   // 32-byte value that specifies the pixel format structure.
   PixelFormat pixel_format;
-  
+
   // 16-byte value that specifies the capabilities structure.
   DDSCapabilities ddsCaps;
 
@@ -236,7 +236,7 @@ public:
 private:
   // Contains the data of the image in RGBA format, only valid after calling read_data()
   std::vector<uint8_t> data;
-  
+
 public:
   DDSSurface(std::istream& in);
 

@@ -30,7 +30,7 @@
 bool
 RSVG::is_available()
 {
-  try 
+  try
   {
     std::string exe = Filesystem::find_exe("rsvg");
     log_info("found " << exe);

@@ -51,11 +51,11 @@ Thread::start_thread()
 void
 Thread::run_wrap()
 {
-  try 
+  try
   {
     run();
   }
-  catch(std::exception& err) 
+  catch(std::exception& err)
   {
     std::cout << "Thread: Error: " << err.what() << std::endl;
     assert(!"Thread::run_wrap(): Should never happen");

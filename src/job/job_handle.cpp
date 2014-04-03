@@ -41,10 +41,10 @@ public:
   std::condition_variable cond;
 };
 
-JobHandle 
-JobHandle::create() 
+JobHandle
+JobHandle::create()
 {
-  return JobHandle(); 
+  return JobHandle();
 }
 
 JobHandle::JobHandle()
@@ -111,7 +111,7 @@ JobHandle::wait()
 
 std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle)
 {
-  return os << "JobHandle(this=" << job_handle.impl.get() 
+  return os << "JobHandle(this=" << job_handle.impl.get()
             << ", aborted=" << job_handle.is_aborted()
             << ", done=" << job_handle.is_finished() << ")";
 }

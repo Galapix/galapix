@@ -49,8 +49,8 @@ retry:
 
     case SQLITE_LOCKED:
     case SQLITE_BUSY:
-      goto retry;        
-        
+      goto retry;
+
     case SQLITE_ERROR:
     case SQLITE_MISUSE:
     default:

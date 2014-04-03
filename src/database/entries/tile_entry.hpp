@@ -26,7 +26,7 @@
 class TileEntry
 {
 public:
-  enum Format 
+  enum Format
   {
     UNKNOWN_FORMAT = -1,
     JPEG_FORMAT =  0,
@@ -41,7 +41,7 @@ private:
   SoftwareSurfacePtr m_surface;
   Format     m_format;
 
-public:  
+public:
   TileEntry() :
     m_image_id(),
     m_scale(),
@@ -59,7 +59,7 @@ public:
     m_surface(surface),
     m_format(UNKNOWN_FORMAT)
   {}
-  
+
   TileEntry(const RowId& image_id, int scale, const Vector2i& pos, const BlobPtr& blob, Format format) :
     m_image_id(image_id),
     m_scale(scale),

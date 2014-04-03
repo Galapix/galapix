@@ -98,7 +98,7 @@ ArchiveManager::is_archive(const BlobPtr& blob) const
   return false;
 }
 
-const ArchiveLoader& 
+const ArchiveLoader&
 ArchiveManager::get_loader(const std::string& filename) const
 {
   auto loader = find_loader_by_magic(filename);
@@ -144,17 +144,17 @@ ArchiveManager::find_loader_by_magic(const std::string& filename) const
       return it.second;
     }
   }
-  
+
   return nullptr;
 }
 
 std::vector<std::string>
-ArchiveManager::get_filenames(const std::string& zip_filename, 
+ArchiveManager::get_filenames(const std::string& zip_filename,
                               const ArchiveLoader** loader_out) const
 {
   const auto& loader = get_loader(zip_filename);
   const auto& files = loader.get_filenames(zip_filename);
-  if (loader_out) 
+  if (loader_out)
   {
     *loader_out = &loader;
   }
@@ -187,12 +187,12 @@ ArchiveManager::get_extraction(const std::string& archive) const
 BlobAccessorPtr
 ArchiveManager::get_file(const BlobAccessorPtr& archive, const std::string& type, const std::string& args) const
 {
-  auto it = std::find_if(m_loader.begin(), m_loader.end(), 
+  auto it = std::find_if(m_loader.begin(), m_loader.end(),
                          [&type](std::unique_ptr<ArchiveLoader> const& loader)
                          {
-                           return loader->str() == type; 
+                           return loader->str() == type;
                          });
-  
+
   if (it == m_loader.end())
   {
     raise_exception(std::runtime_error, "unknown archive type: " << type);
