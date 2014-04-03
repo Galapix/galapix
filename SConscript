@@ -184,9 +184,9 @@ class Project:
         sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         self.libgalapix_sdl = sdl_env.StaticLibrary("galapix_sdl", self.sdl_sources)
         Default(sdl_env.Program('galapix.sdl',
-                                self.libgalapix_sdl + \
-                                self.galapix_sources + \
-                                self.optional_sources))
+                                self.galapix_sources +
+                                self.optional_sources +
+                                self.libgalapix_sdl))
 
 
     def build_galapix_gtk(self):
