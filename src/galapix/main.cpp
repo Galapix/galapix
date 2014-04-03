@@ -23,14 +23,8 @@
 
 int main(int argc, char** argv)
 {
-  int ret;
-  {
-    Galapix app;
-    ret = app.main(argc, argv);
-  }
-  std::cout << "Waiting time" << std::endl;
-  //sleep(50000);
-  return ret;
+  Galapix app;
+  return app.main(argc, argv);
 }
 
 /* EOF */
