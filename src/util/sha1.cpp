@@ -155,6 +155,19 @@ SHA1::operator bool() const
   return false;
 }
 
+bool
+SHA1::operator==(const SHA1& rhs) const
+{
+  return m_data == rhs.m_data;
+}
+
+bool
+SHA1::operator!=(const SHA1& rhs) const
+{
+  return !operator==(rhs);
+}
+
+
 std::string
 SHA1::str() const
 {

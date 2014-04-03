@@ -43,6 +43,9 @@ public:
 
   explicit operator bool() const;
 
+  bool operator==(const SHA1& rhs) const;
+  bool operator!=(const SHA1& rhs) const;
+
 private:
   std::array<uint8_t, 20> m_data;
 };
