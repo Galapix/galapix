@@ -39,6 +39,7 @@
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_command.hpp"
 #include "galapix/workspace.hpp"
+#include "generator/generator.cpp"
 #include "job/job_handle_group.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/test_job.hpp"
@@ -51,6 +52,8 @@
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "plugins/xcf.hpp"
+#include "resource/blob_manager.hpp"
+#include "resource/resource_manager.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"
@@ -125,6 +128,102 @@ Galapix::cleanup(const std::string& database)
 }
 
 void
+Galapix::info(const Options& opts)
+{
+  Database db(opts.database);
+  JobManager job_manager(4);
+
+  job_manager.start_thread();
+
+  DatabaseThread database(db, job_manager);
+  DownloadManager download_mgr;
+  BlobManager blob_mgr(download_mgr, ArchiveManager::current());
+  Generator generator(blob_mgr, ArchiveManager::current());
+
+  database.start_thread();
+
+  ResourceManager resource_mgr(database, generator, download_mgr,
+                               ArchiveManager::current());
+  
+  int count = 0;
+  auto files = std::vector<std::string>(opts.rest.begin() + 1, opts.rest.end());
+  for(const auto& filename : files)
+  {
+#if 0
+    auto callback = [&count, filename](const Failable<FileInfo>& data) 
+      {
+        try
+        {
+          auto file_info = data.get();
+          std::cout << filename << ":\n"
+          << "  rowid: " << file_info.get_id() << "\n"
+          << "   path: " << file_info.get_path() << "\n"
+          << "   sha1: " << file_info.get_blob_info().get_sha1() << "\n"
+          << "   size: " << file_info.get_blob_info().get_size() << "\n"
+          << "  mtime: " << file_info.get_mtime() << "\n"
+          << std::endl;
+        }
+        catch(const std::exception& err)
+        {
+          std::cout << "error: " << err.what() << std::endl;
+        }
+        count -= 1;
+      };
+
+    resource_mgr.request_file_info(filename, callback);
+#else
+    auto callback = [&count, filename](const Failable<ResourceInfo>& data) 
+      {
+        try
+        {
+          auto resource_info = data.get();
+          std::cout << filename << ":\n";
+          
+          if (resource_info.get_source_type() == SourceType::File)
+          {
+            auto file_info = resource_info.get_file_info();
+            std::cout
+              << "  rowid: " << file_info.get_id() << "\n"
+              << "   path: " << file_info.get_path() << "\n"
+              << "   sha1: " << file_info.get_blob_info().get_sha1() << "\n"
+              << "   size: " << file_info.get_blob_info().get_size() << "\n"
+              << "  mtime: " << file_info.get_mtime() << "\n"
+              << std::endl;
+          }
+          else if (resource_info.get_source_type() == SourceType::URL)
+          {
+            std::cout << "--URL--" << std::endl;
+          }
+        }
+        catch(const std::exception& err)
+        {
+          std::cout << "error: " << err.what() << std::endl;
+        }
+        count -= 1;
+      };
+
+    ResourceLocator locator = ResourceLocator::from_string(filename);
+    resource_mgr.request_resource_info(locator, callback);
+#endif
+
+    count += 1;
+  }
+
+  log_debug("going into loop");
+  while(count > 0) 
+  { 
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+  log_debug("going out of loop");
+
+  database.abort_thread();
+  database.join_thread();
+
+  job_manager.stop_thread();
+  job_manager.join_thread();
+}
+
+void
 Galapix::list(const Options& opts)
 {
   Database db(opts.database);
@@ -145,7 +244,7 @@ Galapix::list(const Options& opts)
   for(std::vector<OldFileEntry>::iterator i = entries.begin(); i != entries.end(); ++i)
   {
     std::cout << i->get_url() << std::endl;
-  }  
+  }
 }
   
 int
@@ -195,26 +294,31 @@ Galapix::run(const Options& opts)
   }
   else
   {
-    std::vector<URL> urls;
+    auto generate_urls = [&opts]() -> std::vector<URL>
+      {
+        std::vector<URL> urls;
 
-    std::cout << "Scanning directories... " << std::flush;
-    for(std::vector<std::string>::const_iterator i = opts.rest.begin()+1; i != opts.rest.end(); ++i)
-    {
-      if (URL::is_url(*i))
-        urls.push_back(URL::from_string(*i));
-      else
-        Filesystem::generate_image_file_list(*i, urls);
-    }
-    std::sort(urls.begin(), urls.end(),
-              [](const URL& lhs, const URL& rhs) {
-                return StringUtil::numeric_less(lhs.str(), rhs.str());
-              });
-    std::cout << urls.size() << " files found." << std::endl;
+        std::cout << "Scanning directories... " << std::flush;
+        for(std::vector<std::string>::const_iterator i = opts.rest.begin()+1; i != opts.rest.end(); ++i)
+        {
+          if (URL::is_url(*i))
+            urls.push_back(URL::from_string(*i));
+          else
+            Filesystem::generate_image_file_list(*i, urls);
+        }
+        std::sort(urls.begin(), urls.end(),
+                  [](const URL& lhs, const URL& rhs) {
+                    return StringUtil::numeric_less(lhs.str(), rhs.str());
+                  });
+        std::cout << urls.size() << " files found." << std::endl;
+        return urls;
+      };
 
     const std::string& command = opts.rest.front();
         
     if (command == "view")
     {
+      auto urls = generate_urls();
       if (urls.empty() && opts.patterns.empty())
       {
         std::cout << "Galapix::run(): Error: No URLs given" << std::endl;
@@ -224,6 +328,10 @@ Galapix::run(const Options& opts)
         ViewerCommand viewer(opts);
         viewer.run(urls);
       }
+    }
+    else if (command == "info")
+    {
+      info(opts);
     }
     else if (command == "list")
     {
@@ -235,10 +343,12 @@ Galapix::run(const Options& opts)
     }
     else if (command == "export")
     {
+      auto urls = generate_urls();
       export_images(opts.database, urls);
     }
     else if (command == "thumbgen")
     {
+      auto urls = generate_urls();
       ThumbnailGenerator generator(opts);
       generator.run(urls, false);
     }

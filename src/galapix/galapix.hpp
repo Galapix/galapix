@@ -27,7 +27,7 @@
 
 class Options;
 
-class Galapix
+class Galapix final
 {
 public:
   Galapix();
@@ -38,6 +38,7 @@ public:
 
   void cleanup(const std::string& database);
   void list(const Options& opts);
+  void info(const Options& opts);
   void export_images(const std::string& database, const std::vector<URL>& urls);
 };
 
