@@ -56,8 +56,10 @@ Features:
 Required Libraries and Tools:
 =============================
 
+  * gtkmm    - http://www.gtkmm.org/en/
+  * SDL2     - https://libsdl.org/
   * OpenGL   - http://www.opengl.org 
-  * SQlite   - http://www.sqlite.org/
+  * SQlite3  - http://www.sqlite.org/
   * libjpeg  - http://www.ijg.org/
   * libpng   - http://www.libpng.org/pub/png/
   * scons    - http://www.scons.org/ 
@@ -67,21 +69,22 @@ Required Libraries and Tools:
   * librsvg  - http://librsvg.sourceforge.net/
   * libexif  - http://libexif.sourceforge.net/
 
-On Ubuntu 9.10 one can install all required libraries with this call:
+On Ubuntu 14.04 one can install all required libraries with this call:
 
   sudo apt-get install \
-    libsqlite3-dev \
-    libglew1.5-dev \
-    libjpeg62-dev \
-    libpng12-dev \
-    scons \
-    libmagick++-dev \
+    libboost1.55-dev \
     libcurl4-gnutls-dev \
+    libexif-dev \
     libglademm-2.4-dev \
+    libglew1.5-dev \
     libgtkglextmm-x11-1.2-dev \
-    libboost-thread-dev \
+    libjpeg8-dev \
+    libmagick++-dev \
+    libpng12-dev \
+    libsdl2-dev \
     libspnav-dev \
-    libexif-dev
+    libsqlite3-dev \
+    scons
 
 The following packages are optional and used to handle some more
 exotic image formats:
