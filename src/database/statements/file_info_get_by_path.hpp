@@ -46,7 +46,7 @@ public:
         RowId(reader.get_int64(0)),
         reader.get_text(1),
         reader.get_int(2),
-        SHA1::parse_string(reader.get_text(3)),
+        SHA1::from_string(reader.get_text(3)),
         reader.get_int(4)
         );
     }

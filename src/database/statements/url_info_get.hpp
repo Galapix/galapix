@@ -47,7 +47,7 @@ public:
         URLInfo(url,
                 reader.get_int(1),
                 reader.get_text(2),
-                BlobInfo(SHA1::parse_string(reader.get_text(3)),
+                BlobInfo(SHA1::from_string(reader.get_text(3)),
                          reader.get_int(4)))
         );
     }

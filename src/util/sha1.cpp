@@ -47,7 +47,7 @@ SHA1::from_mem(const uint8_t* data, size_t len)
 }
 
 SHA1
-SHA1::from_string(const std::string& str)
+SHA1::from_mem(const std::string& str)
 {
   return from_mem(reinterpret_cast<const uint8_t*>(str.data()), str.size());
 }
@@ -88,7 +88,7 @@ SHA1::from_file(const std::string& filename)
 }
 
 SHA1
-SHA1::parse_string(const std::string& str)
+SHA1::from_string(const std::string& str)
 {
   auto hex2int = [str](char hex)
     {

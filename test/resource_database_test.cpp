@@ -28,9 +28,9 @@ int main(int argc, char** argv)
   SQLiteConnection db(""); //("/tmp/resource_database_test.sqlite3");
   ResourceDatabase res_db(db);
 
-  res_db.store_file_info(FileInfo("/tmp/hello_world.txt", 123, SHA1::from_string("hello world"), 98787));
-  res_db.store_file_info(FileInfo("/tmp/foobar.txt", 456, SHA1::from_string("foobar"), 1234578));
-  res_db.store_file_info(FileInfo("/tmp/barfoo.txt", 789, SHA1::from_string("barfoo"), 1234578));
+  res_db.store_file_info(FileInfo("/tmp/hello_world.txt", 123, SHA1::from_mem("hello world"), 98787));
+  res_db.store_file_info(FileInfo("/tmp/foobar.txt", 456, SHA1::from_mem("foobar"), 1234578));
+  res_db.store_file_info(FileInfo("/tmp/barfoo.txt", 789, SHA1::from_mem("barfoo"), 1234578));
 
   for(auto& path : { "/tmp/foobar.txt", "/tmp/barfoo.txt", "/tmp/unknown.txt", "/tmp/hello_world.txt",  })
   {
