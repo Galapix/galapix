@@ -107,9 +107,9 @@ ResourceDatabase::get_url_info(const std::string& url)
 RowId
 ResourceDatabase::store_url_info(const URLInfo& url_info)
 {
-  if (!url_info.get_blob().get_id())
+  if (!url_info.get_blob_info().get_id())
   {
-    (*m_blob_info_store)(url_info.get_blob());
+    (*m_blob_info_store)(url_info.get_blob_info());
   }
   return (*m_url_info_store)(url_info);
 }

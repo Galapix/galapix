@@ -62,7 +62,7 @@ ResourceManager::request_blob_info(const ResourceLocator& locator,
                      {
                        try
                        {
-                         callback(url_info.get().get_blob());
+                         callback(url_info.get().get_blob_info());
                        }
                        catch(...)
                        {
@@ -208,7 +208,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator,
          try
          {
            const URLInfo& url_info = data.get();
-           request_resource_info(locator, url_info.get_blob(), callback);
+           request_resource_info(locator, url_info.get_blob_info(), callback);
          }
          catch(...)
          {

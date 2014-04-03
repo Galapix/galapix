@@ -61,7 +61,7 @@ public:
   std::string get_url() const { return m_url; }
   long get_mtime() const { return m_mtime; }
   std::string get_content_type() const { return m_content_type; }
-  BlobInfo get_blob() const { return m_blob_info; }
+  BlobInfo get_blob_info() const { return m_blob_info; }
 };
 
 #endif
