@@ -167,7 +167,14 @@ Generator::process_archive_resource(const ResourceLocator& locator,
       log_debug("-- process_archive_resource: child: " << child_locator.str());
 
       GeneratorCallbacksPtr child_callbacks = callbacks->on_child_resource(child_locator);
-      process_resource(child_locator, child_blob, child_callbacks);
+      if (!child_callbacks)
+      {
+        log_warn("callback is null, not processing child resource: " << child_locator.str());
+      }
+      else
+      {
+        process_resource(child_locator, child_blob, child_callbacks);
+      }
     }
 
     ArchiveInfo archive_info(std::move(files), boost::optional<std::string>());

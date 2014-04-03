@@ -172,7 +172,8 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
          m_generator.request_resource_processing
            (locator, std::make_shared<ResourceGeneratorCallbacks>());
          
-         callback(Failable<ResourceInfo>::from_exception(std::runtime_error("not implemented")));
+         callback(Failable<ResourceInfo>::from_exception(
+                    std::runtime_error("ResourceManager::request_resource_info(): not implemented")));
        }
      });
 }
