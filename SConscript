@@ -182,10 +182,11 @@ class Project:
         sdl_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
+        self.libgalapix_sdl = sdl_env.StaticLibrary("galapix_sdl", self.sdl_sources)
         Default(sdl_env.Program('galapix.sdl',
-                                self.sdl_sources + \
-                                    self.galapix_sources + \
-                                    self.optional_sources))
+                                self.libgalapix_sdl + \
+                                self.galapix_sources + \
+                                self.optional_sources))
 
 
     def build_galapix_gtk(self):
@@ -206,25 +207,27 @@ class Project:
                         self.optional_sources)
 
     def build_tests(self):
-        gtest = Environment()
-        gtest.Append(CPPPATH = [ "external/gtest-1.7.0/include/",
-                                 "external/gtest-1.7.0/" ])
-        libgtest = gtest.StaticLibrary("gtest", "external/gtest-1.7.0/src/gtest-all.cc")
-        libgtest_main = gtest.StaticLibrary("gtest_main", "external/gtest-1.7.0/src/gtest_main.cc")
+        # build automated unit tests
+        gtest_env = self.libgalapix_env.Clone()
+        gtest_env.Append(CXXFLAGS = ["-isystemexternal/gtest-1.7.0/include/",
+                                     "-isystemexternal/gtest-1.7.0/"])
+        libgtest = gtest_env.StaticLibrary("gtest", "external/gtest-1.7.0/src/gtest-all.cc")
+        libgtest_main = gtest_env.StaticLibrary("gtest_main", "external/gtest-1.7.0/src/gtest_main.cc")
 
+        gtest_env.Append(LIBS=[self.libgalapix_sdl, self.libgalapix, self.libgalapix_util, 'mhash'])
+        prog = gtest_env.Program("test_galapix",
+                                 Glob("test/*_gtest.cpp")
+                                 + libgtest_main
+                                 + libgtest)
+        Alias('gtest', prog)
+
+        # build interactive tests
         libgalapix_test_env = self.libgalapix_env.Clone()
-        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash', libgtest, 'pthread'])
+        libgalapix_test_env.Prepend(LIBS=[self.libgalapix, self.libgalapix_util, 'mhash', 'pthread'])
 
         for filename in Glob("test/*_test.cpp", strings=True):
             Alias('test', libgalapix_test_env.Program(filename[:-4],
-                                        [filename] + self.sdl_sources))
-
-        prog = libgalapix_test_env.Program("test_galapix",
-                                           Glob("test/*_gtest.cpp")
-                                           + self.sdl_sources
-                                           + libgtest_main)
-        Alias('test', prog)
-        Alias('gtest', prog)
+                                                      [filename] + self.libgalapix_sdl))
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()
