@@ -28,13 +28,14 @@ private:
 public:
   ImageInfoStore(SQLiteConnection& db) :
     m_db(db),
-    m_stmt(db, "INSERT OR REPLACE INTO image (width, height) SELECT ?1, ?2;")
+    m_stmt(db, "INSERT OR REPLACE INTO image (resource_id, width, height) SELECT ?1, ?2, ?3;")
   {}
 
-  RowId operator()(const ImageInfo& url_info)
+  RowId operator()(const ImageInfo& image_info)
   {
-    m_stmt.bind_int(1, image_info.get_width());
-    m_stmt.bind_text(2, image_info.get_height());
+    m_stmt.bind_int64(1, image_info.get_resource_id().get_id());
+    m_stmt.bind_int(2, image_info.get_width());
+    m_stmt.bind_int(3, image_info.get_height());
     m_stmt.execute();
 
     return {sqlite3_last_insert_rowid(m_db.get_db())};

@@ -32,17 +32,18 @@ public:
            "FROM\n"
            "  image\n"
            "WHERE\n"
-           "       ");
+           "  image.resource_id = ?;")
   {}
 
   boost::optional<ImageInfo> operator()(const ResourceInfo& resource_info)
   {
-    m_stmt.bind_text(1, url);
+    m_stmt.bind_int64(1, resource_info.get_id().get_id());
     SQLiteReader reader = m_stmt.execute_query();
 
     if (reader.next())
     {
       return ImageInfo(RowId(reader.get_int64(0)),
+                       resource_info.get_id(),
                        reader.get_int(1),
                        reader.get_int(2));
     }

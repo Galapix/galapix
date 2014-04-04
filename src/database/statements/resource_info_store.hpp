@@ -22,25 +22,26 @@
 class ResourceInfoStore
 {
 private:
+  SQLiteConnection& m_db;
   SQLiteStatement m_stmt;
 
 public:
   ResourceInfoStore(SQLiteConnection& db) :
+    m_db(db),
     m_stmt(db,
-           "INSERT INTO resource (blob_id, type, handler, arguments) VALUES (?1, ?2, ?3, ?4);")
+           "INSERT INTO resource (blob_id, type, handler, arguments, status) VALUES (?1, ?2, ?3, ?4, ?5);")
   {}
 
   RowId operator()(const ResourceInfo& info)
   {
-    /*
-    m_stmt.bind_text(1, info.type);
-    m_stmt.bind_text(2, info.handler);
-    m_stmt.bind_text(3, info.args);
-    m_stmt.bind_int64(4, 0); // parent_id
-    m_stmt.bind_int(5, 0); // status
+    m_stmt.bind_int64(1, info.get_name().get_blob_info().get_id().get_id());
+    m_stmt.bind_text(2, info.get_handler().get_type());
+    m_stmt.bind_text(3, info.get_handler().get_name());
+    m_stmt.bind_text(4, info.get_handler().get_args());
+    m_stmt.bind_int(5, static_cast<int>(info.get_status()));
     m_stmt.execute();
-    */
-    return RowId();
+
+    return {sqlite3_last_insert_rowid(m_db.get_db())};
   }
 
 private:

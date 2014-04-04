@@ -48,7 +48,7 @@ TEST_F(ResourceDatabaseTest, url_info)
 
 TEST_F(ResourceDatabaseTest, resource_info)
 {
-  auto blob_info = BlobInfo(SHA1::from_string("0a4d55a8d778e5022fab701977c5d840bbc486d0"), 11);
+  auto blob_info = BlobInfo(RowId(1), SHA1::from_string("0a4d55a8d778e5022fab701977c5d840bbc486d0"), 11);
   auto handler = ResourceHandler("image", "png");
   auto name = ResourceName(blob_info, handler);
   auto res_info = ResourceInfo(name, ResourceStatus::Unknown);
@@ -66,12 +66,14 @@ TEST_F(ResourceDatabaseTest, resource_info)
 
 TEST_F(ResourceDatabaseTest, image_info)
 {
-  ImageInfo image_info;
+  auto resource_id = RowId(1);
+
+  ImageInfo image_info(RowId(), resource_id, 1024, 768);
 
   RowId row_id = m_resource.store_image_info(image_info);
   ASSERT_TRUE(static_cast<bool>(row_id));
 
-  ResourceInfo resource_info;
+  auto resource_info = ResourceInfo(row_id, ResourceInfo());
 
   auto result = m_resource.get_image_info(resource_info);
   ASSERT_TRUE(result);

@@ -27,7 +27,7 @@ ResourceTable::ResourceTable(SQLiteConnection& db) :
             "  type      TEXT,\n"
             "  handler   TEXT,\n"
             "  arguments TEXT,\n"
-            "  status    TEXT\n"
+            "  status    INTEGER\n"
             ");");
 
   //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");

@@ -25,29 +25,41 @@ class ImageInfo
 {
 private:
   RowId m_id;
+  RowId m_resource_id;
   int m_width;
   int m_height;
 
 public:
   ImageInfo() :
     m_id(),
+    m_resource_id(),
     m_width(),
     m_height()
   {}
 
-  ImageInfo(const RowId& id, int width, int height) :
+  ImageInfo(int width, int height) :
+    m_id(),
+    m_resource_id(),
+    m_width(width),
+    m_height(height)
+  {}
+
+  ImageInfo(const RowId& id, const RowId& resource_id, int width, int height) :
     m_id(id),
+    m_resource_id(resource_id),
     m_width(width),
     m_height(height)
   {}
 
   ImageInfo(const RowId& id, const ImageInfo& image_info) :
     m_id(id),
+    m_resource_id(image_info.m_resource_id),
     m_width(image_info.m_width),
     m_height(image_info.m_height)
   {}
 
   RowId get_id() const { return m_id; }
+  RowId get_resource_id() const { return m_resource_id; }
   int get_width() const { return m_width; }
   int get_height() const { return m_height; }
 };

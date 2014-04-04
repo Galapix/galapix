@@ -25,6 +25,10 @@
 #include "database/statements/blob_info_store.hpp"
 #include "database/statements/file_info_get_by_path.hpp"
 #include "database/statements/file_info_store.hpp"
+#include "database/statements/image_info_get.hpp"
+#include "database/statements/image_info_store.hpp"
+#include "database/statements/resource_info_get.hpp"
+#include "database/statements/resource_info_store.hpp"
 #include "database/statements/url_info_get.hpp"
 #include "database/statements/url_info_store.hpp"
 #include "util/filesystem.hpp"
@@ -44,8 +48,12 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_video_table(m_db),
   m_file_info_store(new FileInfoStore(m_db)),
   m_file_info_get_by_path(new FileInfoGetByPath(m_db)),
+  m_image_info_store(new ImageInfoStore(m_db)),
+  m_image_info_get(new ImageInfoGet(m_db)),
   m_url_info_store(new URLInfoStore(m_db)),
   m_url_info_get(new URLInfoGet(m_db)),
+  m_resource_info_get(new ResourceInfoGet(m_db)),
+  m_resource_info_store(new ResourceInfoStore(m_db)),
   m_blob_info_store(new BlobInfoStore(m_db)),
   m_file_entry_get_all(m_db),
   //m_file_entry_get_by_fileid(m_db),
@@ -55,9 +63,7 @@ ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_file_entry_delete(m_db),
   m_image_entry_store(m_db),
   m_image_entry_get(m_db),
-  m_resource_entry_get_by_blob_id(m_db),
-  m_resource_info_get(m_db),
-  m_resource_info_store(m_db)
+  m_resource_entry_get_by_blob_id(m_db)
 {
 }
 
@@ -68,34 +74,31 @@ ResourceDatabase::~ResourceDatabase()
 boost::optional<ImageInfo>
 ResourceDatabase::get_image_info(const ResourceInfo& resource)
 {
-  log_error("not implemented");
-  return boost::optional<ImageInfo>();
+  return (*m_image_info_get)(resource);
 }
 
 RowId
 ResourceDatabase::store_image_info(const ImageInfo& image_info)
 {
-  log_error("not implemented");
-  return RowId();
+  return (*m_image_info_store)(image_info);
 }
 
 boost::optional<ResourceInfo>
 ResourceDatabase::get_resource_info(const ResourceLocator& locator, const BlobInfo& blob)
 {
-  return m_resource_info_get(locator, blob);
+  return (*m_resource_info_get)(locator, blob);
 }
 
 boost::optional<ResourceInfo>
 ResourceDatabase::get_resource_info(const BlobInfo& blob)
 {
-  log_debug("not implemented");
-  return boost::optional<ResourceInfo>();
+  return (*m_resource_info_get)(blob);
 }
 
 RowId
 ResourceDatabase::store_resource_info(const ResourceInfo& info)
 {
-  return m_resource_info_store(info);
+  return (*m_resource_info_store)(info);
 }
 
 boost::optional<URLInfo>

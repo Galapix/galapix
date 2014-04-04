@@ -47,6 +47,14 @@ public:
     m_size()
   {}
 
+  BlobInfo(const RowId& id,
+           const SHA1& sha1,
+           int size) :
+    m_id(id),
+    m_sha1(sha1),
+    m_size(size)
+  {}
+
   BlobInfo(const SHA1& sha1,
            int size) :
     m_id(),

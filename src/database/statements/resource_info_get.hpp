@@ -25,6 +25,7 @@ class ResourceInfoGet
 {
 private:
   SQLiteStatement m_stmt;
+  SQLiteStatement m_blob_stmt;
 
 public:
   ResourceInfoGet(SQLiteConnection& db) :
@@ -34,8 +35,36 @@ public:
            "FROM\n"
            "  resource, blob\n"
            "WHERE\n"
-           "  resource.blob_id = blob.id AND blob.sha1 = ?;")
+           "  resource.blob_id = blob.id AND blob.sha1 = ?;"),
+    m_blob_stmt(db,
+           "SELECT\n"
+           "  resource.id, resource.type, resource.handler, resource.arguments, resource.status\n"
+           "FROM\n"
+           "  resource\n"
+           "WHERE\n"
+           "  resource.blob_id = ?1;")
   {}
+
+  boost::optional<ResourceInfo> operator()(const BlobInfo& blob)
+  {
+    m_blob_stmt.bind_int64(1, blob.get_id().get_id());
+
+    SQLiteReader reader = m_blob_stmt.execute_query();
+    if (reader.next())
+    {
+      ResourceInfo info(RowId(reader.get_int64(0)),
+                        ResourceName(BlobInfo(), 
+                                     ResourceHandler(reader.get_text(1),
+                                                     reader.get_text(2),
+                                                     reader.get_text(3))),
+                        static_cast<ResourceStatus>(reader.get_int(4)));
+      return info;
+    }
+    else
+    {
+      return {};
+    }
+  }
 
   /** scan through all resource entries trying to find one that matches the given handler */
   boost::optional<ResourceInfo> operator()(const ResourceLocator& locator, const BlobInfo& blob)

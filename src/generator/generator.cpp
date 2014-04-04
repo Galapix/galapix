@@ -261,7 +261,7 @@ Generator::process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPt
                           });
 
   // build ImageData
-  ImageData image_data(ImageInfo(RowId(), surface->get_width(), surface->get_height()),
+  ImageData image_data(ImageInfo(surface->get_width(), surface->get_height()),
                        std::move(tiles));
   callbacks->on_image_data(image_data);
 }

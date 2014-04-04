@@ -32,8 +32,6 @@
 #include "database/statements/image_entry_get.hpp"
 #include "database/statements/image_entry_store.hpp"
 #include "database/statements/resource_entry_get_by_blob_id.hpp"
-#include "database/statements/resource_info_get.hpp"
-#include "database/statements/resource_info_store.hpp"
 #include "database/tables/archive_table.hpp"
 #include "database/tables/blob_table.hpp"
 #include "database/tables/file_table.hpp"
@@ -63,6 +61,10 @@ class URL;
 class URLInfo;
 class URLInfoGet;
 class URLInfoStore;
+class ImageInfoGet;
+class ImageInfoStore;
+class ResourceInfoGet;
+class ResourceInfoStore;
 
 /** The ResourceDatabase keeps a record of all files that have been
     viewed. It keeps information on the last modification time and
@@ -84,16 +86,21 @@ private:
   URLTable                 m_url_table;
   VideoTable               m_video_table;
 
-  std::unique_ptr<FileInfoStore>     m_file_info_store;
+  std::unique_ptr<FileInfoStore> m_file_info_store;
   std::unique_ptr<FileInfoGetByPath> m_file_info_get_by_path;
 
+  std::unique_ptr<ImageInfoStore> m_image_info_store;
+  std::unique_ptr<ImageInfoGet> m_image_info_get;
+
   std::unique_ptr<URLInfoStore> m_url_info_store;
-  std::unique_ptr<URLInfoGet>   m_url_info_get;
+  std::unique_ptr<URLInfoGet> m_url_info_get;
+
+  std::unique_ptr<ResourceInfoGet> m_resource_info_get;
+  std::unique_ptr<ResourceInfoStore> m_resource_info_store;
 
   std::unique_ptr<BlobInfoStore> m_blob_info_store;
 
   FileEntryGetAll          m_file_entry_get_all;
-  //FileEntryGetByFileId     m_file_entry_get_by_fileid;
   FileEntryGetByPattern    m_file_entry_get_by_pattern;
   FileEntryGetByPath       m_file_entry_get_by_path;
   FileEntryStore           m_file_entry_store;
@@ -102,9 +109,6 @@ private:
   ImageEntryStore          m_image_entry_store;
   ImageEntryGet            m_image_entry_get;
   ResourceEntryGetByBlobId m_resource_entry_get_by_blob_id;
-
-  ResourceInfoGet   m_resource_info_get;
-  ResourceInfoStore m_resource_info_store;
 
 public:
   ResourceDatabase(SQLiteConnection& db);
