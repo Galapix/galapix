@@ -1,67 +1,82 @@
-/*
-**  Galapix - an image viewer for large image collections
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
-**
-**  This program is free software: you can redistribute it and/or modify
-**  it under the terms of the GNU General Public License as published by
-**  the Free Software Foundation, either version 3 of the License, or
-**  (at your option) any later version.
-**
-**  This program is distributed in the hope that it will be useful,
-**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-**  GNU General Public License for more details.
-**
-**  You should have received a copy of the GNU General Public License
-**  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+#include <gtest/gtest.h>
 
-#include <iostream>
-
-#include "sqlite/connection.hpp"
 #include "database/resource_database.hpp"
-#include "util/filesystem.hpp"
-#include "util/sha1.hpp"
 
-int main(int argc, char** argv)
+class ResourceDatabaseTest : public testing::Test
 {
-  SQLiteConnection db(""); //("/tmp/resource_database_test.sqlite3");
-  ResourceDatabase res_db(db);
+protected:
+  ResourceDatabaseTest() :
+    m_db(""),
+    m_resource(m_db)
+  {}
 
-  res_db.store_file_info(FileInfo("/tmp/hello_world.txt", 123, SHA1::from_mem("hello world"), 98787));
-  res_db.store_file_info(FileInfo("/tmp/foobar.txt", 456, SHA1::from_mem("foobar"), 1234578));
-  res_db.store_file_info(FileInfo("/tmp/barfoo.txt", 789, SHA1::from_mem("barfoo"), 1234578));
+  SQLiteConnection m_db;
+  ResourceDatabase m_resource;
+};
 
-  for(auto& path : { "/tmp/foobar.txt", "/tmp/barfoo.txt", "/tmp/unknown.txt", "/tmp/hello_world.txt",  })
-  {
-    boost::optional<FileInfo> file_info = res_db.get_file_info(path);
-    if (file_info)
-    {
-      std::cout << file_info->get_path() << '\n'
-                << "  mtime : " << file_info->get_mtime() << '\n'
-                << "  sha1  : " << file_info->get_sha1().str() << '\n'
-                << "  size  : " << file_info->get_size() << '\n'
-                << std::endl;
-    }
-    else
-    {
-      std::cout << path << ": not found\n" << std::endl;
-    }
-  }
+TEST_F(ResourceDatabaseTest, file_info)
+{
+  FileInfo file_info("/tmp/test.txt", 12345, SHA1::from_string("0a4d55a8d778e5022fab701977c5d840bbc486d0"), 11);
+  auto row_id = m_resource.store_file_info(file_info);
+  ASSERT_TRUE(static_cast<bool>(row_id));
 
+  auto result = m_resource.get_file_info(file_info.get_path());
+  ASSERT_TRUE(result);
+  EXPECT_EQ(file_info.get_path(), result->get_path());
+  EXPECT_EQ(file_info.get_mtime(), result->get_mtime());
+  EXPECT_EQ(file_info.get_blob_info().get_sha1(), result->get_blob_info().get_sha1());
+  EXPECT_EQ(file_info.get_blob_info().get_size(), result->get_blob_info().get_size());
+}
 
-  if (false)
-  {
-    res_db.store_file_entry("/tmp/foo/bar.txt", 23445);
-    res_db.store_file_entry("/tmp/foo/bam.txt", 2989);
-    res_db.store_file_entry("/tmp/bar/foo.txt", 298998);
+TEST_F(ResourceDatabaseTest, url_info)
+{
+  auto blob_info = BlobInfo(SHA1::from_string("0a4d55a8d778e5022fab701977c5d840bbc486d0"), 11);
+  auto url = std::string("http://www.example.com");
+  auto url_info = URLInfo(url, 34234234, "image/png", blob_info);
 
-    std::vector<FileEntry> entries;
-    res_db.get_file_entries(entries);
-    std::cout << "got " << entries.size() << " entries" << std::endl;
-  }
-  
-  return 0;
+  RowId row_id = m_resource.store_url_info(url_info);
+  ASSERT_TRUE(static_cast<bool>(row_id));
+
+  auto result = m_resource.get_url_info(url);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(url_info.get_url(), result->get_url());
+  EXPECT_EQ(url_info.get_mtime(), result->get_mtime());
+  EXPECT_EQ(url_info.get_content_type(), result->get_content_type());
+  EXPECT_EQ(url_info.get_blob_info().get_sha1(), result->get_blob_info().get_sha1());
+  EXPECT_EQ(url_info.get_blob_info().get_size(), result->get_blob_info().get_size());
+}
+
+TEST_F(ResourceDatabaseTest, resource_info)
+{
+  auto blob_info = BlobInfo(SHA1::from_string("0a4d55a8d778e5022fab701977c5d840bbc486d0"), 11);
+  auto handler = ResourceHandler("image", "png");
+  auto name = ResourceName(blob_info, handler);
+  auto res_info = ResourceInfo(name, ResourceStatus::Unknown);
+
+  RowId row_id = m_resource.store_resource_info(res_info);
+  ASSERT_TRUE(static_cast<bool>(row_id));
+
+  auto result = m_resource.get_resource_info(blob_info);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(res_info.get_type(), result->get_type());
+  EXPECT_EQ(res_info.get_source_type(), result->get_source_type());
+  //ASSERT_EQ(res_info.get_name(), result->get_name());
+  //ASSERT_EQ(res_info.get_locator(), result->get_locator());
+}
+
+TEST_F(ResourceDatabaseTest, image_info)
+{
+  ImageInfo image_info;
+
+  RowId row_id = m_resource.store_image_info(image_info);
+  ASSERT_TRUE(static_cast<bool>(row_id));
+
+  ResourceInfo resource_info;
+
+  auto result = m_resource.get_image_info(resource_info);
+  ASSERT_TRUE(result);
+  EXPECT_EQ(image_info.get_width(), result->get_width());
+  EXPECT_EQ(image_info.get_height(), result->get_height());
 }
 
 /* EOF */

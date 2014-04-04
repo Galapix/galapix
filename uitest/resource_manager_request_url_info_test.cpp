@@ -61,8 +61,8 @@ int main(int argc, char** argv)
         {
           const URLInfo& info = data.get();
           std::cout << "URL    : " << url << std::endl;
-          std::cout << "SHA1   : " << info.get_blob().get_sha1().str() << std::endl;
-          std::cout << "size   : " << info.get_blob().get_size() << std::endl;
+          std::cout << "SHA1   : " << info.get_blob_info().get_sha1().str() << std::endl;
+          std::cout << "size   : " << info.get_blob_info().get_size() << std::endl;
           std::cout << "mtime  : " << info.get_mtime() << std::endl;
           std::cout << "content_type : " << info.get_content_type() << std::endl;
         }

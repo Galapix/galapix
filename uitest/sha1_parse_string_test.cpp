@@ -8,7 +8,7 @@ int main(int argc, char** argv)
   for(int i = 1; i < argc; ++i)
   {
     std::string in  = argv[i];
-    std::string out = SHA1::parse_string(in).str();
+    std::string out = SHA1::from_string(in).str();
     std::cout <<  in << "  " << out << std::endl;
     assert(in == out);
   }
