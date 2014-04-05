@@ -94,7 +94,7 @@ SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
     m_fullscreen = false;
   }
   
-  m_window = SDL_CreateWindow("Galapix 0.2.0",
+  m_window = SDL_CreateWindow("Galapix 0.2.2",
                               SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               size.width, size.height,
                               flags);
