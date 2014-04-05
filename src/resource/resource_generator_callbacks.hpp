@@ -20,23 +20,26 @@
 #define HEADER_GALAPIX_RESOURCE_RESOURCE_GENERATOR_CALLBACKS_HPP
 
 #include "generator/generator_callbacks.hpp"
+#include "resource/resource_locator.hpp"
 
 class ResourceGeneratorCallbacks : public GeneratorCallbacks
 {
 private:
+  ResourceLocator m_locator;
+
 public:
-  ResourceGeneratorCallbacks();
+  ResourceGeneratorCallbacks(const ResourceLocator& locator);
   virtual ~ResourceGeneratorCallbacks();
 
   GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) override;
 
-  void on_blob_info        (const BlobInfo     & blob_info)     override;
-  void on_resource_info    (const ResourceInfo & resource_info) override;
+  void on_blob_info(const BlobInfo& blob_info) override;
+  void on_resource_name(const ResourceName& resource_name) override;
 
-  void on_archive_data     (const ArchiveInfo & archive_info)   override;
-  void on_image_data       (const ImageData   & image_data)     override;
+  void on_archive_data(const ArchiveInfo& archive_info) override;
+  void on_image_data(const ImageData& image_data) override;
 
-  void on_success(ResourceStatus status) override;
+  void on_status(ResourceStatus status) override;
   void on_error(ResourceStatus status, const std::string& err) override;
 };
 

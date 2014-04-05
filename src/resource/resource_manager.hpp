@@ -36,7 +36,9 @@ class DownloadManager;
 class FileInfo;
 class Generator;
 class ImageInfo;
+class ResourceData;
 class ResourceInfo;
+class ResourceName;
 class ResourceLocator;
 class SHA1;
 class TileInfo;
@@ -58,6 +60,8 @@ public:
                   ArchiveManager& archive_mgr);
   virtual ~ResourceManager();
 
+  void request_resource_data(const ResourceName& name,
+                             const std::function<void (const Failable<ResourceData>&)>& callback);
 
   void request_resource_info(const ResourceLocator& locator,
                              const std::function<void (const Failable<ResourceInfo>&)>& callback);

@@ -24,19 +24,10 @@
 #include <stdexcept>
 
 #include "database/row_id.hpp"
-#include "resource/archive_info.hpp"
-#include "resource/blob_info.hpp"
-#include "resource/file_info.hpp"
-#include "resource/file_info.hpp"
-#include "resource/image_info.hpp"
 #include "resource/resource_handler.hpp"
-#include "resource/resource_locator.hpp"
 #include "resource/resource_name.hpp"
 #include "resource/resource_status.hpp"
 #include "resource/resource_type.hpp"
-#include "resource/source_info.hpp"
-#include "resource/url_info.hpp"
-#include "util/sha1.hpp"
 
 /**
     ResourceInfo provides access to all the meta data related to a
@@ -47,17 +38,7 @@ class ResourceInfo
 private:
   RowId m_id;
   ResourceName    m_name;
-  ResourceLocator m_locator;
   ResourceStatus  m_status;
-
-  SourceType m_source_type;
-  FileInfo m_file_info;
-  URLInfo m_url_info;
-
-  ImageInfo m_image_info;
-  ArchiveInfo m_archive_info;
-
-  std::vector<ResourceInfo> m_children;
 
 public:
   ResourceInfo();
@@ -68,22 +49,12 @@ public:
   RowId get_id() const { return m_id; }
 
   ResourceName get_name() const { return m_name; }
-  ResourceLocator get_locator() const { return m_locator; }
-
   ResourceStatus get_status() const { return m_status; }
 
   BlobInfo get_blob_info() const { return m_name.get_blob_info(); }
   ResourceHandler get_handler() const { return m_name.get_handler(); }
 
-  SourceType get_source_type() const;
-  URLInfo    get_url_info() const;
-  FileInfo   get_file_info() const;
-
   ResourceType get_type() const;
-  ImageInfo    get_image_info() const;
-  ArchiveInfo  get_archive_info() const;
-
-  std::vector<ResourceInfo> get_children() const;
 };
 
 #endif

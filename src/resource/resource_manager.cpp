@@ -156,6 +156,13 @@ ResourceManager::request_url_info(const std::string& url,
 }
 
 void
+ResourceManager::request_resource_data(const ResourceName& name,
+                                       const std::function<void (const Failable<ResourceData>&)>& callback)
+{
+  assert(!"implement me");
+}
+
+void
 ResourceManager::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
                                        const std::function<void (Failable<ResourceInfo>)>& callback)
 {
@@ -170,7 +177,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
        else
        {
          m_generator.request_resource_processing
-           (locator, std::make_shared<ResourceGeneratorCallbacks>());
+           (locator, std::make_shared<ResourceGeneratorCallbacks>(locator));
 
          callback(Failable<ResourceInfo>::from_exception(
                     std::runtime_error("ResourceManager::request_resource_info(): not implemented")));

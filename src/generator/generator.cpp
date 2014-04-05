@@ -26,7 +26,6 @@
 #include "resource/blob_manager.hpp"
 #include "resource/image_info.hpp"
 #include "resource/resource_cache_state.hpp"
-#include "resource/resource_info.hpp"
 #include "resource/resource_status.hpp"
 #include "util/log.hpp"
 #include "util/software_surface_factory.hpp"
@@ -127,12 +126,12 @@ Generator::process_resource(const ResourceLocator& locator,
   if (process_image_resource(locator, blob_accessor, blob_info, callbacks))
   {
     log_debug("-- process_image_resource: done");
-    callbacks->on_success(ResourceStatus::Success);
+    callbacks->on_status(ResourceStatus::Success);
   }
   else if (process_archive_resource(locator, blob_accessor, callbacks))
   {
     log_debug("-- process_archive_resource: done");
-    callbacks->on_success(ResourceStatus::Success);
+    callbacks->on_status(ResourceStatus::Success);
   }
   else
   {
@@ -216,7 +215,8 @@ Generator::process_image_resource(const ResourceLocator& locator,
     ResourceName resource_name(blob_info, ResourceHandler("image", loader->get_name()));
 
     // mark as in progress
-    callbacks->on_resource_info(ResourceInfo(resource_name, ResourceStatus::InProgress));
+    callbacks->on_resource_name(resource_name);
+    callbacks->on_status(ResourceStatus::InProgress);
 
     try
     {
@@ -235,7 +235,7 @@ Generator::process_image_resource(const ResourceLocator& locator,
       process_image_tiling(surface, callbacks);
 
       // mark as success
-      callbacks->on_resource_info(ResourceInfo(resource_name, ResourceStatus::Success));
+      callbacks->on_status(ResourceStatus::Success);
       return true;
     }
     catch(const std::exception& err)
@@ -246,13 +246,25 @@ Generator::process_image_resource(const ResourceLocator& locator,
   }
 }
 
+inline int calc_max_scale(int width, int height)
+{
+  int s = Math::max(width, height);
+  int max_scale = 0;
+  while(s > 8)
+  {
+    s /= 2;
+    max_scale += 1;
+  }
+  return max_scale;
+}
+
 void
 Generator::process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks)
 {
   std::vector<Tile> tiles;
 
   int min_scale = 0;
-  int max_scale = 8; log_error("FIXME: incorrect max scale");
+  int max_scale = calc_max_scale(surface->get_width(), surface->get_height());
 
   TileGenerator::generate(surface, min_scale, max_scale,
                           [&tiles](int x, int y, int scale, SoftwareSurfacePtr tile)

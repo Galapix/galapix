@@ -149,29 +149,6 @@ Galapix::info(const Options& opts)
   auto files = std::vector<std::string>(opts.rest.begin() + 1, opts.rest.end());
   for(const auto& filename : files)
   {
-#if 0
-    auto callback = [&count, filename](const Failable<FileInfo>& data)
-      {
-        try
-        {
-          auto file_info = data.get();
-          std::cout << filename << ":\n"
-          << "  rowid: " << file_info.get_id() << "\n"
-          << "   path: " << file_info.get_path() << "\n"
-          << "   sha1: " << file_info.get_blob_info().get_sha1() << "\n"
-          << "   size: " << file_info.get_blob_info().get_size() << "\n"
-          << "  mtime: " << file_info.get_mtime() << "\n"
-          << std::endl;
-        }
-        catch(const std::exception& err)
-        {
-          std::cout << "error: " << err.what() << std::endl;
-        }
-        count -= 1;
-      };
-
-    resource_mgr.request_file_info(filename, callback);
-#else
     auto callback = [&count, filename](const Failable<ResourceInfo>& data)
       {
         try
@@ -179,6 +156,7 @@ Galapix::info(const Options& opts)
           auto resource_info = data.get();
           std::cout << filename << ":\n";
 
+#if 0
           if (resource_info.get_source_type() == SourceType::File)
           {
             auto file_info = resource_info.get_file_info();
@@ -194,6 +172,7 @@ Galapix::info(const Options& opts)
           {
             std::cout << "--URL--" << std::endl;
           }
+#endif
         }
         catch(const std::exception& err)
         {
@@ -204,7 +183,6 @@ Galapix::info(const Options& opts)
 
     ResourceLocator locator = ResourceLocator::from_string(filename);
     resource_mgr.request_resource_info(locator, callback);
-#endif
 
     count += 1;
   }

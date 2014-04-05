@@ -32,6 +32,7 @@ class ImageData;
 class ImageInfo;
 class ResourceInfo;
 class ResourceLocator;
+class ResourceName;
 class VideoData;
 class VideoInfo;
 
@@ -53,24 +54,23 @@ public:
   virtual GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) = 0;
 
   /** Once the file is opened and the SHA1 calculated, the BlobInfo is returned */
-  virtual void on_blob_info        (const BlobInfo     & blob_info)     = 0;
+  virtual void on_blob_info (const BlobInfo& blob_info) = 0;
 
   /** This function gets called as soon as the generator has
-      determined the resource type of the given locator. It will be
-      called multiple times in the generation process. */
-  virtual void on_resource_info    (const ResourceInfo & resource_info) = 0;
+      determined the resource type of the given locator. */
+  virtual void on_resource_name (const ResourceName& resource_name) = 0;
 
   /** Called only on archives and contains info on the files within an
       archive */
-  virtual void on_archive_data     (const ArchiveInfo & archive_info)   = 0;
+  virtual void on_archive_data (const ArchiveInfo& archive_info) = 0;
 
   /** Called only for images and contains information on width/height
       as well as the actual image tiles */
-  virtual void on_image_data       (const ImageData   & image_data)     = 0;
+  virtual void on_image_data (const ImageData& image_data) = 0;
 
-  /** Called on success, the status indicates if generation was done
-      completely or incrementally. */
-  virtual void on_success(ResourceStatus status) = 0;
+  /** Called when the status changes, the status indicates if
+      generation was done completely or incrementally. */
+  virtual void on_status(ResourceStatus status) = 0;
 
   /** Called when an error occured, no further processing will be done
       after this point. */

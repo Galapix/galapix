@@ -26,6 +26,7 @@
 #include "jobs/multiple_tile_generation_job.hpp"
 #include "jobs/tile_generation_job.hpp"
 #include "resource/file_info.hpp"
+#include "resource/resource_locator.hpp"
 #include "resource/url_info.hpp"
 #include "util/log.hpp"
 

@@ -22,7 +22,7 @@
 #include "resource/file_info.hpp"
 #include "resource/url_info.hpp"
 
-enum class SourceType { URL, File };
+enum class SourceType { URL, File, Unknown };
 
 class SourceInfo
 {

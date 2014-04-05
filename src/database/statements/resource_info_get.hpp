@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_INFO_GET_HPP
 
 #include "resource/resource_info.hpp"
+#include "resource/resource_locator.hpp"
 
 class ResourceInfoGet
 {
