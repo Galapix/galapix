@@ -58,9 +58,9 @@ public:
     std::cout << m_locator.str() << " on_blob_info: " << blob_info.get_size() << " " << blob_info.get_sha1().str() << std::endl;
   }
 
-  void on_resource_info(const ResourceInfo& resource_info) override
+  void on_resource_name(const ResourceName& resource_name) override
   {
-    std::cout << m_locator.str() << " on_resource_info: " << resource_info.get_name().str() << std::endl;
+    std::cout << m_locator.str() << " on_resource_name: " << resource_name.str() << std::endl;
   }
 
   void on_archive_data(const ArchiveInfo& archive_info) override
@@ -88,9 +88,9 @@ public:
     }
   }
 
-  void on_success(ResourceStatus status) override
+  void on_status(ResourceStatus status) override
   {
-    std::cout << m_locator.str() << " on_success: " << to_string(status) << std::endl;
+    std::cout << m_locator.str() << " on_status: " << to_string(status) << std::endl;
     if (m_done_function) 
     {
       m_done_function();
