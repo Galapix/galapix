@@ -31,7 +31,7 @@
 #include "resource/url_info.hpp"
 #include "util/sha1.hpp"
 
-class ResourceData
+class ResourceMetadata
 {
 private:
   ResourceInfo m_info;
@@ -47,7 +47,7 @@ private:
   std::vector<ResourceName> m_children;
 
 public:
-  ResourceData() :
+  ResourceMetadata() :
     m_info(),
     m_locator(),
     m_source_type(),
@@ -77,8 +77,8 @@ public:
   std::vector<ResourceName> get_children() const;
 
 private:
-  ResourceData(const ResourceData&) = delete;
-  ResourceData& operator=(const ResourceData&) = delete;
+  ResourceMetadata(const ResourceMetadata&) = delete;
+  ResourceMetadata& operator=(const ResourceMetadata&) = delete;
 };
 
 #endif

@@ -16,30 +16,30 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "resource/resource_data.hpp"
+#include "resource/resource_metadata.hpp"
 
 SourceType
-ResourceData::get_source_type() const
+ResourceMetadata::get_source_type() const
 {
   return m_source_type;
 }
 
 URLInfo
-ResourceData::get_url_info() const
+ResourceMetadata::get_url_info() const
 {
   assert(m_source_type == SourceType::URL);
   return m_url_info;
 }
 
 FileInfo
-ResourceData::get_file_info() const
+ResourceMetadata::get_file_info() const
 {
   assert(m_source_type == SourceType::File);
   return m_file_info;
 }
 
 ImageInfo
-ResourceData::get_image_info() const
+ResourceMetadata::get_image_info() const
 {
   assert(get_type() == ResourceType::Image);
 
@@ -47,7 +47,7 @@ ResourceData::get_image_info() const
 }
 
 ArchiveInfo
-ResourceData::get_archive_info() const
+ResourceMetadata::get_archive_info() const
 {
   assert(get_type() == ResourceType::Archive);
 
@@ -55,14 +55,14 @@ ResourceData::get_archive_info() const
 }
 
 std::vector<ResourceName>
-ResourceData::get_children() const
+ResourceMetadata::get_children() const
 {
   return m_children;
 }
 
 
 ResourceType
-ResourceData::get_type() const
+ResourceMetadata::get_type() const
 {
   return ResourceType_from_string(m_info.get_name().get_handler().get_type());
 }
