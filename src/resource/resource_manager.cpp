@@ -29,6 +29,7 @@
 #include "resource/resource_generator_callbacks.hpp"
 #include "resource/resource_info.hpp"
 #include "resource/resource_locator.hpp"
+#include "resource/resource_metadata.hpp"
 #include "resource/resource_url.hpp"
 #include "resource/tile_info.hpp"
 #include "resource/url_info.hpp"
@@ -50,117 +51,30 @@ ResourceManager::~ResourceManager()
 {
 }
 
+#if 0
 void
-ResourceManager::request_blob_info(const ResourceLocator& locator,
-                                   const std::function<void (Failable<BlobInfo>)>& callback)
+ResourceManager::request_resource_metadata(const ResourceLocator& locator,
+                                           const std::function<void (const Failable<ResourceMetadata>&)>& callback)
 {
-  ResourceLocator blob_locator = locator.get_blob_locator();
-  if (blob_locator.get_url().is_remote())
-  {
-    request_url_info(locator.get_url().get_path(),
-                     [callback](const Failable<URLInfo>& url_info)
-                     {
-                       try
-                       {
-                         callback(url_info.get().get_blob_info());
-                       }
-                       catch(...)
-                       {
-                         callback(Failable<BlobInfo>(std::current_exception()));
-                       }
-                     });
-  }
-  else
-  {
-    request_file_info(locator.get_url().get_path(),
-                      [callback](const Failable<FileInfo>& file_info)
-                      {
-                        try
-                        {
-                          callback(file_info.get().get_blob_info());
-                        }
-                        catch(...)
-                        {
-                          callback(Failable<BlobInfo>(std::current_exception()));
-                        }
-                      });
-  }
-}
-
-void
-ResourceManager::request_file_info(const std::string& filename,
-                                   const std::function<void (Failable<FileInfo>)>& callback)
-{
-  m_database.request_file_info
-    (filename,
-     [this, filename, callback](const boost::optional<FileInfo>& db_file_info)
+  m_database.request_resource_info
+    (locator, blob,
+     [this, locator, blob, callback](const boost::optional<ResourceInfo>& reply)
      {
-      if (db_file_info)
-      {
-        callback(*db_file_info);
-      }
-      else
-      {
-        m_generator.request_file_info
-          (filename,
-           [this, callback](const Failable<FileInfo>& file_info)
-           {
-            if (file_info.is_initialized())
-            {
-              m_database.store_file_info(file_info.get(), callback);
-            }
-            else
-            {
-              callback(file_info);
-            }
-          });
-      }
-    });
-}
-
-void
-ResourceManager::request_url_info(const std::string& url,
-                                  const std::function<void (Failable<URLInfo>)>& callback)
-{
-  m_database.request_url_info
-    (url,
-     [this, url, callback](const boost::optional<URLInfo>& db_url_info)
-     {
-       if (db_url_info)
+       if (reply)
        {
-         callback(*db_url_info);
+         callback(*reply);
        }
        else
        {
-         m_download_mgr.request_get
-           (url,
-            [this, url, callback](const DownloadResult& result)
-            {
-              if (result.success())
-              {
-                m_database.store_url_info
-                  (URLInfo(url, result.get_mtime(), result.get_content_type(),
-                           BlobInfo::from_blob(result.get_blob())),
-                   [callback](const Failable<URLInfo>& url_info)
-                   {
-                     callback(url_info);
-                   });
-              }
-              else
-              {
-                callback(Failable<URLInfo>::from_exception(std::runtime_error("request URLInfo failed")));
-              }
-            });
-       };
+         m_generator.request_resource_processing
+           (locator, std::make_shared<ResourceGeneratorCallbacks>(locator));
+
+         callback(Failable<ResourceInfo>::from_exception(
+                    std::runtime_error("ResourceManager::request_resource_info(): not implemented")));
+       }
      });
 }
-
-void
-ResourceManager::request_resource_data(const ResourceName& name,
-                                       const std::function<void (const Failable<ResourceData>&)>& callback)
-{
-  assert(!"implement me");
-}
+#endif
 
 void
 ResourceManager::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
@@ -186,9 +100,10 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
 }
 
 void
-ResourceManager::request_resource_info(const ResourceLocator& locator,
-                                       const std::function<void (const Failable<ResourceInfo>&)>& callback)
+ResourceManager::request_resource_metadata(const ResourceLocator& locator,
+                                           const std::function<void (const Failable<ResourceMetadata>&)>& callback)
 {
+#if 0
   if (locator.get_url().get_scheme() == "file")
   {
     request_file_info
@@ -198,7 +113,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator,
          try
          {
            const FileInfo& file_info = data.get();
-           request_resource_info(locator, file_info.get_blob_info(), callback);
+           request_resource_metadata(locator, file_info.get_blob_info(), callback);
          }
          catch(...)
          {
@@ -229,8 +144,10 @@ ResourceManager::request_resource_info(const ResourceLocator& locator,
     result.set_exception(std::make_exception_ptr(std::runtime_error("unknown URL schema")));
     callback(result);
   }
+#endif
 }
 
+#if 0
 void
 ResourceManager::request_image_info(const ResourceInfo& resource,
                                     const std::function<void (const Failable<ImageInfo>&)>& callback)
@@ -288,6 +205,7 @@ ResourceManager::request_tile_info(const ImageInfo& image, int scale, int x, int
     });
 #endif
 }
+#endif
 
 #if 0
 void
@@ -310,4 +228,3 @@ ResourceManager::generate_tiles()
 #endif
 
 /* EOF */
-

@@ -25,8 +25,6 @@
 #include "resource/file_info.hpp"
 #include "resource/image_info.hpp"
 #include "resource/resource_info.hpp"
-#include "resource/resource_locator.hpp"
-#include "resource/resource_locator.hpp"
 #include "resource/source_info.hpp"
 #include "resource/url_info.hpp"
 #include "util/sha1.hpp"
@@ -35,7 +33,6 @@ class ResourceMetadata
 {
 private:
   ResourceInfo m_info;
-  ResourceLocator m_locator;
 
   SourceType m_source_type;
   FileInfo m_file_info;
@@ -49,7 +46,6 @@ private:
 public:
   ResourceMetadata() :
     m_info(),
-    m_locator(),
     m_source_type(),
     m_file_info(),
     m_url_info(),
@@ -63,16 +59,13 @@ public:
     return m_info;
   }
 
-  ResourceLocator get_locator() const { return m_locator; }
-
   SourceType get_source_type() const;
   URLInfo    get_url_info() const;
   FileInfo   get_file_info() const;
 
+  ResourceType get_type() const;
   ImageInfo    get_image_info() const;
   ArchiveInfo  get_archive_info() const;
-
-  ResourceType get_type() const;
 
   std::vector<ResourceName> get_children() const;
 

@@ -76,6 +76,8 @@ public:
   void stop_thread();
   void abort_thread();
 
+  void request_resource_metadata();
+
   void request_image_info(const ResourceInfo& resource, const std::function<void (const boost::optional<ImageInfo>&)>& callback);
   void store_image_info(const ImageInfo& image_info,
                        const std::function<void (const Failable<ImageInfo>&)>& callback);

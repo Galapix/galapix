@@ -54,6 +54,7 @@
 #include "plugins/xcf.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/resource_manager.hpp"
+#include "resource/resource_metadata.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"
@@ -149,14 +150,14 @@ Galapix::info(const Options& opts)
   auto files = std::vector<std::string>(opts.rest.begin() + 1, opts.rest.end());
   for(const auto& filename : files)
   {
-    auto callback = [&count, filename](const Failable<ResourceInfo>& data)
+    auto callback = [&count, filename](const Failable<ResourceMetadata>& data)
       {
+#if 0
         try
         {
           auto resource_info = data.get();
           std::cout << filename << ":\n";
 
-#if 0
           if (resource_info.get_source_type() == SourceType::File)
           {
             auto file_info = resource_info.get_file_info();
@@ -172,17 +173,17 @@ Galapix::info(const Options& opts)
           {
             std::cout << "--URL--" << std::endl;
           }
-#endif
         }
         catch(const std::exception& err)
         {
           std::cout << "error: " << err.what() << std::endl;
         }
+#endif
         count -= 1;
       };
 
     ResourceLocator locator = ResourceLocator::from_string(filename);
-    resource_mgr.request_resource_info(locator, callback);
+    resource_mgr.request_resource_metadata(locator, callback);
 
     count += 1;
   }
