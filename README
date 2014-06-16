@@ -70,6 +70,7 @@ Required Libraries and Tools:
 On Ubuntu 14.04 one can install all required libraries with this call:
 
   sudo apt-get install \
+    libboost1.55-dev \
     libsqlite3-dev \
     libglew1.5-dev \
     libjpeg8-dev \
