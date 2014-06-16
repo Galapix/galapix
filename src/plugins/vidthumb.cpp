@@ -56,7 +56,8 @@ VidThumb::load_from_file(const std::string& filename)
 
   if (vidthumb.exec() == 0)
   {
-    BlobPtr blob = Blob::copy(&*vidthumb.get_stdout().begin(), vidthumb.get_stdout().size());
+    std::cout.write(vidthumb.get_stdout().data(),
+                    vidthumb.get_stdout().size());
     SoftwareSurfacePtr surface = PNG::load_from_file(out.str());
     remove(out.str().c_str());
     return surface;
