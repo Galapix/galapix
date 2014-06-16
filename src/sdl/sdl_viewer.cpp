@@ -44,34 +44,16 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
   m_viewer(viewer),
   m_quit(false),
   m_spnav_allow_rotate(false),
-  m_joysticks()
+  m_gamecontrollers()
 {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
-  {
-    log_error << "Unable to initialize SDL: " << SDL_GetError() << std::endl;
-    exit(1);
-  }
-  atexit(SDL_Quit); 
-
-  int num_joysticks = SDL_NumJoysticks();
-  for(int i = 0; i < num_joysticks; ++i)
-  {
-    SDL_Joystick* joy = SDL_JoystickOpen(i);
-    if (joy)
-    {
-      m_joysticks.push_back(joy);
-    }
-  }
 }
 
 SDLViewer::~SDLViewer()
 {
-  for(auto joy: m_joysticks)
+  for(auto gamecontroller: m_gamecontrollers)
   {
-    SDL_JoystickClose(joy);
+    SDL_GameControllerClose(gamecontroller);
   }
-
-  SDL_Quit();
 }
 
 void
@@ -94,7 +76,7 @@ SDLViewer::process_event(const SDL_Event& event)
           case SPNAV_EVENT_MOTION:
             {
               if (0)
-                log_debug << "MotionEvent: " 
+                log_debug << "MotionEvent: "
                           << "("
                           << spnav_ev->motion.x << ", "
                           << spnav_ev->motion.y << ", "
@@ -103,7 +85,7 @@ SDLViewer::process_event(const SDL_Event& event)
                           << spnav_ev->motion.rx << ", "
                           << spnav_ev->motion.ry << ", "
                           << spnav_ev->motion.rz
-                          << std::endl;              
+                          << std::endl;
 
               float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
 
@@ -119,7 +101,7 @@ SDLViewer::process_event(const SDL_Event& event)
                 m_viewer.get_state().rotate(static_cast<float>(spnav_ev->motion.ry) / 200.0f);
             }
             break;
-            
+
           case SPNAV_EVENT_BUTTON:
             if (0)
               std::cout << "ButtonEvent: " << spnav_ev->button.press << spnav_ev->button.bnum << std::endl;
@@ -159,6 +141,29 @@ SDLViewer::process_event(const SDL_Event& event)
     case SDL_JOYBUTTONUP:
       break;
 
+    case SDL_CONTROLLERAXISMOTION:
+      break;
+
+    case SDL_CONTROLLERBUTTONDOWN:
+      break;
+
+    case SDL_CONTROLLERBUTTONUP:
+      break;
+
+    case SDL_CONTROLLERDEVICEADDED:
+      printf("SDL_CONTROLLERDEVICEADDED which:%d\n", event.cdevice.which);
+      add_gamecontroller(event.cdevice.which);
+      break;
+
+    case SDL_CONTROLLERDEVICEREMOVED:
+      printf("SDL_CONTROLLERDEVICEREMOVED which:%d\n",  event.cdevice.which);
+      remove_gamecontroller(event.cdevice.which);
+      break;
+
+    case SDL_CONTROLLERDEVICEREMAPPED:
+      printf("SDL_CONTROLLERDEVICEREMAPPED which:%d\n", event.cdevice.which);
+      break;
+
     case SDL_QUIT:
       std::cout << "Viewer: SDL_QUIT received" << std::endl;
       m_quit = true;
@@ -168,7 +173,7 @@ SDLViewer::process_event(const SDL_Event& event)
       //break;
 
     case SDL_WINDOWEVENT:
-      switch (event.window.event) 
+      switch (event.window.event)
       {
         case SDL_WINDOWEVENT_RESIZED:
           Framebuffer::reshape(Size(event.window.data1, event.window.data2));
@@ -219,7 +224,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_ESCAPE:
           m_quit = true;
           break;
-              
+
         case SDLK_d:
           m_viewer.zoom_to_selection();
           break;
@@ -259,7 +264,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_k:
           m_viewer.cleanup_cache();
           break;
-        
+
         case SDLK_z:
           m_viewer.set_zoom_tool();
           break;
@@ -302,7 +307,7 @@ SDLViewer::process_event(const SDL_Event& event)
               }
             }
           }
-          break;              
+          break;
 
         case SDLK_i:
           m_viewer.isolate_selection();
@@ -322,15 +327,15 @@ SDLViewer::process_event(const SDL_Event& event)
 
         case SDLK_F7:
           m_viewer.decrease_brightness();
-          break;        
+          break;
 
         case SDLK_F8:
           m_viewer.increase_contrast();
-          break;        
+          break;
 
         case SDLK_F9:
           m_viewer.decrease_contrast();
-          break;        
+          break;
 
         case SDLK_F10:
           m_viewer.reset_gamma();
@@ -387,7 +392,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_F3:
           m_viewer.save();
           break;
-                
+
         case SDLK_c:
           m_viewer.clear_cache();
           break;
@@ -395,7 +400,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_F5:
           m_viewer.refresh_selection();
           break;
-          
+
         case SDLK_t:
           m_viewer.toggle_trackball_mode();
           break;
@@ -427,7 +432,7 @@ SDLViewer::process_event(const SDL_Event& event)
         case SDLK_SPACE:
           m_viewer.print_images();
           break;
-              
+
         case SDLK_l:
           m_viewer.print_state();
           break;
@@ -444,79 +449,112 @@ SDLViewer::process_event(const SDL_Event& event)
 
     case SDL_KEYUP:
       m_viewer.on_key_up(event.key.keysym.sym);
-      break;                
+      break;
 
     default:
       break;
   }
 }
 
-float
-SDLViewer::get_axis(SDL_Joystick* joy, int axis) const
+float deadzone(float value, float threshold)
 {
-  int value = SDL_JoystickGetAxis(joy, axis);
+  if (fabsf(value) < threshold)
+  {
+    return 0.0f;
+  }
+  else if (value < 0)
+  {
+    return (value + threshold) / (1.0f - threshold);
+  }
+  else
+  {
+    return (value - threshold) / (1.0f - threshold);
+  }
+}
+
+float
+SDLViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const
+{
+  int value = SDL_GameControllerGetAxis(gamecontroller, axis);
   if (value == 0)
   {
     return 0.0f;
   }
   else if (value > 0)
   {
-    return static_cast<float>(value) / 32767.0f;  
+    return deadzone(static_cast<float>(value) / 32767.0f, 0.25f);
   }
   else // if (value < 0)
   {
-    return static_cast<float>(value) / 32768.0f;  
+    return deadzone(static_cast<float>(value) / 32768.0f, 0.25f);
   }
 }
 
 void
-SDLViewer::update_joysticks(float delta)
+SDLViewer::add_gamecontroller(int id)
 {
-  const int move_x_axis = 0;
-  const int move_y_axis = 1;
-  const int zoom_axis   = 3;
-  const int rotate_left_axis = 4;
-  const int rotate_right_axis = 5;
-
-  for(auto joy: m_window.m_joysticks)
+  SDL_GameController* gamecontroller = SDL_GameControllerOpen(id);
+  if (gamecontroller)
   {
-    { // zoom
-      float value = get_axis(joy, zoom_axis);
-      
-      value *= 4.0f;
+    m_gamecontrollers.push_back(gamecontroller);
+  }
+}
 
-      if (value < 0.0f)
+void
+SDLViewer::remove_gamecontroller(int id)
+{
+  //SDL_GameControllerClose(id);
+}
+
+void
+SDLViewer::update_gamecontrollers(float delta)
+{
+  const auto move_x_axis = SDL_CONTROLLER_AXIS_LEFTX;
+  const auto move_y_axis = SDL_CONTROLLER_AXIS_LEFTY;
+  const auto zoom_axis   = SDL_CONTROLLER_AXIS_RIGHTY;
+  const auto rotate_left_axis = SDL_CONTROLLER_AXIS_TRIGGERRIGHT;
+  const auto rotate_right_axis = SDL_CONTROLLER_AXIS_TRIGGERLEFT;
+
+  for(auto gamecontroller: m_gamecontrollers)
+  {
+    float zoom_value = get_axis(gamecontroller, zoom_axis);
+    float x_value = get_axis(gamecontroller, move_x_axis);
+    float y_value = get_axis(gamecontroller, move_y_axis);
+    float rotate_left_value = (get_axis(gamecontroller, rotate_left_axis) + 1.0f) / 2.0f * 180.0f;
+    float rotate_right_value = (get_axis(gamecontroller, rotate_right_axis) + 1.0f) / 2.0f * 180.0f;
+
+    { // zoom
+      zoom_value *= 4.0f;
+
+      if (zoom_value < 0.0f)
       {
-        m_viewer.get_state().zoom(1.0f + (-value * delta));
+        m_viewer.get_state().zoom(1.0f + (-zoom_value * delta));
       }
-      else if (value > 0.0f)
+      else if (zoom_value > 0.0f)
       {
-        m_viewer.get_state().zoom(1.0f / (1.0f + (value * delta)));
+        m_viewer.get_state().zoom(1.0f / (1.0f + (zoom_value * delta)));
       }
     }
 
     { // move
-      float x_value = get_axis(joy, move_x_axis);
-      float y_value = get_axis(joy, move_y_axis);
-
       x_value *= 2048.0f;
       y_value *= 2048.0f;
 
       if (x_value != 0.0f || y_value != 0.0f)
       {
-        m_viewer.get_state().move(Vector2f(x_value * delta, 
+        m_viewer.get_state().move(Vector2f(x_value * delta,
                                            y_value * delta));
       }
     }
 
     { // rotate left
-      float value = (get_axis(joy, rotate_left_axis) + 1.0f) / 2.0f * 180.0f;
-      m_viewer.get_state().rotate(value * delta);
+      rotate_left_value *= 2.0f;
+      m_viewer.get_state().rotate(rotate_left_value * delta);
     }
 
     { // rotate right
-      float value = (get_axis(joy, rotate_right_axis) + 1.0f) / 2.0f * 180.0f;
-      m_viewer.get_state().rotate(-value * delta);
+      rotate_right_value *= 2.0f;
+      m_viewer.get_state().rotate(-rotate_right_value * delta);
     }
   }
 }
@@ -532,7 +570,7 @@ SDLViewer::run()
 #endif
 
   while(!m_quit)
-  {     
+  {
     if (m_viewer.is_active() || true) // FIXME: hack for joystick support
     {
       SDL_Event event;
@@ -545,7 +583,7 @@ SDLViewer::run()
       float delta = static_cast<float>(cticks - ticks) / 1000.0f;
       ticks = cticks;
 
-      update_joysticks(delta);
+      update_gamecontrollers(delta);
 
       m_viewer.update(delta);
       m_viewer.draw();
@@ -561,7 +599,7 @@ SDLViewer::run()
 
       // FIXME: We should try to detect if we need a redraw and
       // only draw then, else we will redraw on each mouse motion
-      m_viewer.draw();          
+      m_viewer.draw();
       ticks = SDL_GetTicks();
     }
 
