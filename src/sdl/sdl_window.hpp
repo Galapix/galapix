@@ -34,9 +34,6 @@ protected:
   bool m_fullscreen;
   int  m_anti_aliasing;
 
-public: // FIXME: joysticks don't belong here
-  std::vector<SDL_Joystick*> m_joysticks;
-
 public:
   SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing);
   virtual ~SDLWindow();

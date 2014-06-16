@@ -29,27 +29,15 @@ SDLWindow::SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing) 
   m_gl_context(0),
   m_geometry(geometry),
   m_fullscreen(fullscreen),
-  m_anti_aliasing(anti_aliasing),
-  m_joysticks()
+  m_anti_aliasing(anti_aliasing)
 {
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) != 0)
   {
     throw std::runtime_error("unable to initialize SDL: " + std::string(SDL_GetError()));
   }
   else
   {
     atexit(SDL_Quit); 
-
-    int num_joysticks = SDL_NumJoysticks();
-    for(int i = 0; i < num_joysticks; ++i)
-    {
-      SDL_Joystick* joy = SDL_JoystickOpen(i);
-      if (joy)
-      {
-        m_joysticks.push_back(joy);
-      }
-    }
-
     set_video_mode(geometry, fullscreen, anti_aliasing);
   }
 }
@@ -57,11 +45,6 @@ SDLWindow::SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing) 
 SDLWindow::~SDLWindow()
 {
   SDL_DestroyWindow(m_window);
-
-  for(auto joy: m_joysticks)
-  {
-    SDL_JoystickClose(joy);
-  }
 }
 
 void
