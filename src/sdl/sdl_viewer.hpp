@@ -39,6 +39,8 @@ private:
   bool m_quit;
   bool m_spnav_allow_rotate;
 
+  std::vector<SDL_GameController*> m_gamecontrollers;
+
 public:
   SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
             Viewer& viewer);
@@ -48,9 +50,12 @@ public:
 
 private:
   void process_event(const SDL_Event& event);
-  void update_joysticks(float delta);
+  void update_gamecontrollers(float delta);
 
-  float get_axis(SDL_Joystick* joy, int axis) const;
+  void add_gamecontroller(int idx);
+  void remove_gamecontroller(int idx);
+
+  float get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const;
 
 private:
   SDLViewer (const SDLViewer&);

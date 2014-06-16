@@ -43,12 +43,17 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
   m_window(geometry, fullscreen, anti_aliasing),
   m_viewer(viewer),
   m_quit(false),
-  m_spnav_allow_rotate(false)
+  m_spnav_allow_rotate(false),
+  m_gamecontrollers()
 {
 }
 
 SDLViewer::~SDLViewer()
 {
+  for(auto gamecontroller: m_gamecontrollers)
+  {
+    SDL_GameControllerClose(gamecontroller);
+  }
 }
 
 void
@@ -133,6 +138,29 @@ SDLViewer::process_event(const SDL_Event& event)
       break;
 
     case SDL_JOYBUTTONUP:
+      break;
+
+    case SDL_CONTROLLERAXISMOTION:
+      break;
+
+    case SDL_CONTROLLERBUTTONDOWN:
+      break;
+
+    case SDL_CONTROLLERBUTTONUP:
+      break;
+
+    case SDL_CONTROLLERDEVICEADDED:
+      printf("SDL_CONTROLLERDEVICEADDED which:%d\n", event.cdevice.which);
+      add_gamecontroller(event.cdevice.which);
+      break;
+
+    case SDL_CONTROLLERDEVICEREMOVED:
+      printf("SDL_CONTROLLERDEVICEREMOVED which:%d\n",  event.cdevice.which);
+      remove_gamecontroller(event.cdevice.which);
+      break;
+
+    case SDL_CONTROLLERDEVICEREMAPPED:
+      printf("SDL_CONTROLLERDEVICEREMAPPED which:%d\n", event.cdevice.which);
       break;
 
     case SDL_QUIT:
@@ -427,54 +455,87 @@ SDLViewer::process_event(const SDL_Event& event)
   }
 }
 
-float
-SDLViewer::get_axis(SDL_Joystick* joy, int axis) const
+float deadzone(float value, float threshold)
 {
-  int value = SDL_JoystickGetAxis(joy, axis);
+  if (fabsf(value) < threshold)
+  {
+    return 0.0f;
+  }
+  else if (value < 0)
+  {
+    return (value + threshold) / (1.0f - threshold);
+  }
+  else
+  {
+    return (value - threshold) / (1.0f - threshold);
+  }
+}
+
+float
+SDLViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const
+{
+  int value = SDL_GameControllerGetAxis(gamecontroller, axis);
   if (value == 0)
   {
     return 0.0f;
   }
   else if (value > 0)
   {
-    return static_cast<float>(value) / 32767.0f;
+    return deadzone(static_cast<float>(value) / 32767.0f, 0.25f);
   }
   else // if (value < 0)
   {
-    return static_cast<float>(value) / 32768.0f;
+    return deadzone(static_cast<float>(value) / 32768.0f, 0.25f);
   }
 }
 
 void
-SDLViewer::update_joysticks(float delta)
+SDLViewer::add_gamecontroller(int id)
 {
-  const int move_x_axis = 0;
-  const int move_y_axis = 1;
-  const int zoom_axis   = 3;
-  const int rotate_left_axis = 4;
-  const int rotate_right_axis = 5;
-
-  for(auto joy: m_window.m_joysticks)
+  SDL_GameController* gamecontroller = SDL_GameControllerOpen(id);
+  if (gamecontroller)
   {
+    m_gamecontrollers.push_back(gamecontroller);
+  }
+}
+
+void
+SDLViewer::remove_gamecontroller(int id)
+{
+  //SDL_GameControllerClose(id);
+}
+
+void
+SDLViewer::update_gamecontrollers(float delta)
+{
+  const auto move_x_axis = SDL_CONTROLLER_AXIS_LEFTX;
+  const auto move_y_axis = SDL_CONTROLLER_AXIS_LEFTY;
+  const auto zoom_axis   = SDL_CONTROLLER_AXIS_RIGHTY;
+  const auto rotate_left_axis = SDL_CONTROLLER_AXIS_TRIGGERRIGHT;
+  const auto rotate_right_axis = SDL_CONTROLLER_AXIS_TRIGGERLEFT;
+
+  for(auto gamecontroller: m_gamecontrollers)
+  {
+    float zoom_value = get_axis(gamecontroller, zoom_axis);
+    float x_value = get_axis(gamecontroller, move_x_axis);
+    float y_value = get_axis(gamecontroller, move_y_axis);
+    float rotate_left_value = (get_axis(gamecontroller, rotate_left_axis) + 1.0f) / 2.0f * 180.0f;
+    float rotate_right_value = (get_axis(gamecontroller, rotate_right_axis) + 1.0f) / 2.0f * 180.0f;
+
     { // zoom
-      float value = get_axis(joy, zoom_axis);
+      zoom_value *= 4.0f;
 
-      value *= 4.0f;
-
-      if (value < 0.0f)
+      if (zoom_value < 0.0f)
       {
-        m_viewer.get_state().zoom(1.0f + (-value * delta));
+        m_viewer.get_state().zoom(1.0f + (-zoom_value * delta));
       }
-      else if (value > 0.0f)
+      else if (zoom_value > 0.0f)
       {
-        m_viewer.get_state().zoom(1.0f / (1.0f + (value * delta)));
+        m_viewer.get_state().zoom(1.0f / (1.0f + (zoom_value * delta)));
       }
     }
 
     { // move
-      float x_value = get_axis(joy, move_x_axis);
-      float y_value = get_axis(joy, move_y_axis);
-
       x_value *= 2048.0f;
       y_value *= 2048.0f;
 
@@ -486,13 +547,13 @@ SDLViewer::update_joysticks(float delta)
     }
 
     { // rotate left
-      float value = (get_axis(joy, rotate_left_axis) + 1.0f) / 2.0f * 180.0f;
-      m_viewer.get_state().rotate(value * delta);
+      rotate_left_value *= 2.0f;
+      m_viewer.get_state().rotate(rotate_left_value * delta);
     }
 
     { // rotate right
-      float value = (get_axis(joy, rotate_right_axis) + 1.0f) / 2.0f * 180.0f;
-      m_viewer.get_state().rotate(-value * delta);
+      rotate_right_value *= 2.0f;
+      m_viewer.get_state().rotate(-rotate_right_value * delta);
     }
   }
 }
@@ -521,7 +582,7 @@ SDLViewer::run()
       float delta = static_cast<float>(cticks - ticks) / 1000.0f;
       ticks = cticks;
 
-      update_joysticks(delta);
+      update_gamecontrollers(delta);
 
       m_viewer.update(delta);
       m_viewer.draw();
