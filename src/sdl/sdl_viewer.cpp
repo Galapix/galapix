@@ -490,9 +490,9 @@ SDLViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis a
 }
 
 void
-SDLViewer::add_gamecontroller(int id)
+SDLViewer::add_gamecontroller(int joy_id)
 {
-  SDL_GameController* gamecontroller = SDL_GameControllerOpen(id);
+  SDL_GameController* gamecontroller = SDL_GameControllerOpen(joy_id);
   if (gamecontroller)
   {
     m_gamecontrollers.push_back(gamecontroller);
@@ -500,9 +500,17 @@ SDLViewer::add_gamecontroller(int id)
 }
 
 void
-SDLViewer::remove_gamecontroller(int id)
+SDLViewer::remove_gamecontroller(int joy_id)
 {
-  //SDL_GameControllerClose(id);
+  auto gamecontroller_it = std::find_if(m_gamecontrollers.begin(), m_gamecontrollers.end(),
+                                        [joy_id](SDL_GameController* gamecontroller)
+                                        {
+                                          SDL_Joystick* joy = SDL_GameControllerGetJoystick(gamecontroller);
+                                          return (joy_id == SDL_JoystickInstanceID(joy));
+                                        });
+  assert(gamecontroller_it != m_gamecontrollers.end());
+  SDL_GameControllerClose(*gamecontroller_it);
+  m_gamecontrollers.erase(gamecontroller_it);
 }
 
 void
