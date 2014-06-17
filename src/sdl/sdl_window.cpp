@@ -37,7 +37,7 @@ SDLWindow::SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing) 
   }
   else
   {
-    atexit(SDL_Quit); 
+    atexit(SDL_Quit);
     set_video_mode(geometry, fullscreen, anti_aliasing);
   }
 }
@@ -62,7 +62,7 @@ SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, anti_aliasing);
   }
-  
+
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   //SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, 1); // vsync
 
@@ -76,7 +76,7 @@ SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
   {
     m_fullscreen = false;
   }
-  
+
   m_window = SDL_CreateWindow("Galapix 0.2.2",
                               SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               size.width, size.height,
@@ -136,10 +136,10 @@ SDLWindow::apply_gamma_ramp(float contrast, float brightness, float gamma)
     c = c + brightness;
     c = (c * contrast) - 0.5f * (contrast - 1.0f);
     c = powf(c, 1.0f/gamma);
-      
+
     tbl[i] = static_cast<Uint16>(Math::clamp(0, (int)(c*65535.0f), 65535));
   }
-  
+
   SDL_SetGammaRamp(tbl, tbl, tbl);
 #endif
 }
