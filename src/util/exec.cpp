@@ -75,6 +75,8 @@ Exec::exec()
   pid_t pid = fork();
   if (pid < 0)
   { // error
+    int errnum = errno;
+
     // Cleanup
     close(stdout_fd[0]);
     close(stdout_fd[1]);
@@ -83,7 +85,7 @@ Exec::exec()
     close(stdin_fd[0]);
     close(stdin_fd[1]);
 
-    raise_runtime_error("Exec::exec(): fork failed");
+    raise_runtime_error("Exec::exec(): fork failed: " << strerror(errno));
   }
   else if (pid == 0)
   { // child
