@@ -18,10 +18,11 @@
 
 #include "jobs/file_entry_generation_job.hpp"
 
+#include <logmich/log.hpp>
+
 #include "jobs/tile_generator.hpp"
 #include "plugins/jpeg.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/software_surface_factory.hpp"
 
 FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url) :
@@ -94,8 +95,8 @@ FileEntryGenerationJob::run()
   }
   catch(const std::exception& err)
   {
-    log_error("Error while processing " << m_url);
-    log_error("  Exception: " << err.what());
+    log_error("Error while processing %1%", m_url);
+    log_error("  Exception: %1%", err.what());
   }
 }
 

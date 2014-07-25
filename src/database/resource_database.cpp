@@ -19,6 +19,7 @@
 #include "database/resource_database.hpp"
 
 #include <iostream>
+#include <logmich/log.hpp>
 
 #include "database/database.hpp"
 #include "database/entries/old_file_entry.hpp"
@@ -32,7 +33,6 @@
 #include "database/statements/url_info_get.hpp"
 #include "database/statements/url_info_store.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 

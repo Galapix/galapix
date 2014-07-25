@@ -18,8 +18,9 @@
 
 #include "archive/directory_extraction.hpp"
 
+#include <logmich/log.hpp>
+
 #include "util/blob.hpp"
-#include "util/log.hpp"
 
 namespace {
 

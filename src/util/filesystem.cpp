@@ -29,6 +29,7 @@
 #include <utime.h>
 #include <sstream>
 #include <algorithm>
+#include <logmich/log.hpp>
 
 #include "archive/rar.hpp"
 #include "archive/seven_zip.hpp"
@@ -37,7 +38,6 @@
 #include "archive/archive_manager.hpp"
 #include "archive/archive_loader.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
@@ -391,7 +391,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
       }
       catch(const std::exception& err)
       {
-        log_warn("Warning: " << err.what());
+        log_warn("Warning: %1%", err.what());
       }
     }
   }

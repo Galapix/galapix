@@ -17,8 +17,7 @@
 */
 
 #include "archive/archive_thread.hpp"
-
-#include "util/log.hpp"
+#include <logmich/log.hpp>
 
 ArchiveThread::ArchiveThread(const std::string& tmpdir) :
   m_archive_mgr(tmpdir),
@@ -64,12 +63,12 @@ ArchiveThread::request_extraction(const std::string& archive_filename,
          ExtractionEntry& entry = get_and_lock_extraction_entry(archive_filename, extraction_lock);
          if (entry.extraction)
          {
-           log_debug("request_extraction: from_cache: " << archive_filename);
+           log_debug("request_extraction: from_cache: %1%", archive_filename);
            callback(entry.extraction);
          }
          else
          {
-           log_debug("request_extraction: generating: " << archive_filename);
+           log_debug("request_extraction: generating: %1%", archive_filename);
            entry.extraction = m_archive_mgr.get_extraction(archive_filename);
            callback(entry.extraction);
          }

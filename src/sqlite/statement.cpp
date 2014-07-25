@@ -18,6 +18,7 @@
 
 #include <sstream>
 #include <assert.h>
+#include <logmich/log.hpp>
 
 #include "sqlite/error.hpp"
 #include "util/raise_exception.hpp"

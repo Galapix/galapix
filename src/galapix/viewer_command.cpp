@@ -86,7 +86,7 @@ ViewerCommand::run(const std::vector<URL>& urls)
       ImageEntry image_entry;
       if (!m_database.get_resources().get_image_entry(*i, image_entry))
       {
-        log_warn("no ImageEntry for " << i->get_url());
+        log_warn("no ImageEntry for %1%", i->get_url());
       }
       else
       {
@@ -146,7 +146,7 @@ ViewerCommand::run(const std::vector<URL>& urls)
         ImageEntry image_entry;
         if (!m_database.get_resources().get_image_entry(file_entry, image_entry))
         {
-          log_warn("no ImageEntry for " << *i);
+          log_warn("no ImageEntry for %1%", *i);
         }
         else
         {

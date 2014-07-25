@@ -18,7 +18,7 @@
 
 #include "util/async_messenger.hpp"
 
-#include "util/log.hpp"
+#include <logmich/log.hpp>
 
 AsyncMessenger::AsyncMessenger() :
   m_quit(false),

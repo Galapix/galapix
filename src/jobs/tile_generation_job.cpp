@@ -18,9 +18,10 @@
 
 #include "jobs/tile_generation_job.hpp"
 
+#include <logmich/log.hpp>
+
 #include "math/rect.hpp"
 #include "plugins/jpeg.hpp"
-#include "util/log.hpp"
 #include "util/software_surface_factory.hpp"
 #include "jobs/tile_generator.hpp"
 #include "database/entries/tile_entry.hpp"
@@ -192,10 +193,10 @@ TileGenerationJob::run()
       // catch weird database inconsisntencies
       if (m_min_scale == -1 || m_max_scale == -1)
       {
-        log_error << "[DEBUG] Database inconsisntencies: [" << m_min_scale << ".." << m_max_scale << "]" << std::endl;
+        log_error("[DEBUG] Database inconsisntencies: [%1%..%2%]", m_min_scale, m_max_scale);
         for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
         {
-          log_error << "[DEBUG] TileRequest: scale=" << i->scale << std::endl;
+          log_error("[DEBUG] TileRequest: scale=%1%", i->scale);
         }
 
         m_min_scale = 0;
@@ -212,8 +213,8 @@ TileGenerationJob::run()
   }
   catch(const std::exception& err)
   {
-    log_error << "Error while processing " << m_file_entry << std::endl;
-    log_error << "  Exception: " << err.what() << std::endl;
+    log_error("Error while processing %1%", m_file_entry);
+    log_error("  Exception: %1%", err.what());
   }
 
   {

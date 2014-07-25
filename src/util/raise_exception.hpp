@@ -22,11 +22,9 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "log.hpp"
-
 #define raise_exception(type, expr) do {  \
   std::ostringstream b42465a70169; \
-  b42465a70169 << log_pretty_print(__PRETTY_FUNCTION__) << ": " << expr; \
+  b42465a70169 << __FILE__ << ":" << __LINE__ << ":" << expr;       \
   throw type(b42465a70169.str()); \
 } while(false)
 

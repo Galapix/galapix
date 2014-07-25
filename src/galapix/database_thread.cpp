@@ -19,6 +19,10 @@
 #include "galapix/database_thread.hpp"
 
 #include <typeinfo>
+#include <logmich/log.hpp>
+
+#define GLM_FORCE_RADIANS
+#include <glm/gtx/io.hpp>
 
 #include "database/database.hpp"
 #include "job/job_manager.hpp"
@@ -28,7 +32,6 @@
 #include "resource/file_info.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/url_info.hpp"
-#include "util/log.hpp"
 
 DatabaseThread* DatabaseThread::current_ = 0;
 
@@ -166,7 +169,7 @@ JobHandle
 DatabaseThread::request_tile(const OldFileEntry& file_entry, int tilescale, const Vector2i& pos,
                              const std::function<void (Tile)>& callback)
 {
-  log_info(file_entry << " " << tilescale << " " << pos);
+  log_info("%1% %2% %3%", file_entry, tilescale, pos);
 
   JobHandle job_handle_ = JobHandle::create();
 
@@ -240,7 +243,7 @@ JobHandle
 DatabaseThread::request_file(const URL& url,
                              const std::function<void (OldFileEntry)>& file_callback)
 {
-  log_info(url);
+  log_info("%1%", url);
 
   JobHandle job_handle_ = JobHandle::create();
 
@@ -301,7 +304,7 @@ DatabaseThread::request_files_by_pattern(const std::function<void (OldFileEntry)
 void
 DatabaseThread::receive_tile(const RowId& fileid, const Tile& tile)
 {
-  log_info(fileid << " " << "Tile(" << tile.get_scale() << ", " << tile.get_pos() << ")");
+  log_info("%s Tile(%s, %s)", fileid, tile.get_scale(), tile.get_pos());
 
   m_receive_queue.wait_and_push([this, fileid, tile](){
       // FIXME: Make some better error checking in case of loading failure
@@ -463,7 +466,6 @@ void
 DatabaseThread::generate_file_entry(const JobHandle& job_handle, const URL& url,
                                     const std::function<void (OldFileEntry)>& file_callback)
 {
-  //log_info << " << url << " " << job_handle << std::endl;
   std::shared_ptr<FileEntryGenerationJob> job_ptr(new FileEntryGenerationJob(job_handle, url));
 
   if (file_callback)

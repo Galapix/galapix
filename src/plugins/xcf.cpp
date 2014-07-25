@@ -22,12 +22,12 @@
 #include <iostream>
 #include <stdexcept>
 #include <stdio.h>
+#include <logmich/log.hpp>
 
 #include "math/size.hpp"
 #include "plugins/png.hpp"
 #include "util/exec.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/url.hpp"
 #include "util/raise_exception.hpp"
 
@@ -84,7 +84,7 @@ XCF::is_available()
   {
     std::string xcfinfo_exe = Filesystem::find_exe("xcfinfo");
     std::string xcf2png_exe = Filesystem::find_exe("xcf2png");
-    log_info("found " << xcfinfo_exe << ", " << xcf2png_exe);
+    log_info("found %1%, %2%", xcfinfo_exe, xcf2png_exe);
     return true;
   }
   catch(std::exception& err)

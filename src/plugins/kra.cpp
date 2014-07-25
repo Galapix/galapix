@@ -18,10 +18,11 @@
 
 #include "plugins/kra.hpp"
 
+#include <logmich/log.hpp>
+
 #include "plugins/png.hpp"
 #include "util/exec.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 
 bool
 KRA::is_available()
@@ -29,7 +30,7 @@ KRA::is_available()
   try
   {
     std::string exe = Filesystem::find_exe("koconverter");
-    log_info("found " << exe);
+    log_info("found %1%", exe);
     return true;
   }
   catch(std::exception& err)

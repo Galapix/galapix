@@ -18,7 +18,7 @@
 
 #include "network/download_cache.hpp"
 
-#include "util/log.hpp"
+#include <logmich/log.hpp>
 
 DownloadCache::DownloadCache(const std::string& cache_directory) :
   m_cache_directory(cache_directory)
@@ -47,7 +47,7 @@ DownloadCache::get(const std::string& url)
 void
 DownloadCache::store(const std::string& url, const DownloadResult& result)
 {
-  log_error("not implemented: " << url);
+  log_error("not implemented: %1%", url);
 }
 
 /* EOF */

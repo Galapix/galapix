@@ -23,8 +23,8 @@
 #include <iostream>
 #include <spnav.h>
 #include <unistd.h>
+#include <logmich/log.hpp>
 
-#include "util/log.hpp"
 #include "util/select.hpp"
 
 SpaceNavigator::SpaceNavigator() :

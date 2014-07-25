@@ -21,8 +21,8 @@
 #include <assert.h>
 #include <png.h>
 #include <stdexcept>
+#include <logmich/log.hpp>
 
-#include "util/log.hpp"
 #include "util/raise_exception.hpp"
 
 struct PNGReadMemory
@@ -98,7 +98,7 @@ PNG::get_size(const std::string& filename, Size& size)
     if (setjmp(png_jmpbuf(png_ptr)))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-      log_warn("PNG::get_size: setjmp: Couldn't load " << filename);
+      log_warn("PNG::get_size: setjmp: Couldn't load %1%", filename);
       return false;
     }
     else

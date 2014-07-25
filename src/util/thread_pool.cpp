@@ -19,8 +19,7 @@
 #include "util/thread_pool.hpp"
 
 #include <assert.h>
-
-#include "util/log.hpp"
+#include <logmich/log.hpp>
 
 ThreadPool::ThreadPool(int num_threads, ShutdownPolicy shutdown_policy) :
   m_shutdown_policy(shutdown_policy),
@@ -82,7 +81,7 @@ ThreadPool::run()
     }
     catch(const std::exception& err)
     {
-      log_error("exception while executing task: " << err.what());
+      log_error("exception while executing task: %1%", err.what());
     }
     catch(...)
     {

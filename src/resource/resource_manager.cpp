@@ -19,6 +19,7 @@
 #include "resource/resource_manager.hpp"
 
 #include <future>
+#include <logmich/log.hpp>
 
 #include "galapix/database_thread.hpp"
 #include "generator/generator.hpp"
@@ -34,7 +35,6 @@
 #include "resource/tile_info.hpp"
 #include "resource/url_info.hpp"
 #include "util/format.hpp"
-#include "util/log.hpp"
 
 ResourceManager::ResourceManager(DatabaseThread& database,
                                  Generator& generator,

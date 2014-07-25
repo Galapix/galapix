@@ -18,6 +18,8 @@
 
 #include "generator/generator.hpp"
 
+#include <logmich/log.hpp>
+
 #include "archive/archive_manager.hpp"
 #include "archive/extraction.hpp"
 #include "galapix/tile.hpp"
@@ -27,7 +29,6 @@
 #include "resource/image_info.hpp"
 #include "resource/resource_cache_state.hpp"
 #include "resource/resource_status.hpp"
-#include "util/log.hpp"
 #include "util/software_surface_factory.hpp"
 #include "util/software_surface_loader.hpp"
 
@@ -146,7 +147,7 @@ Generator::process_archive_resource(const ResourceLocator& locator,
 {
   try
   {
-    log_debug("-- process_archive_resource: " << locator.str());
+    log_debug("-- process_archive_resource: %1%", locator.str());
     ExtractionPtr extraction = m_archive_mgr.get_extraction(blob_accessor->get_stdio_name());
 
     log_debug("-- process_archive_resource: got extraction");
@@ -154,7 +155,7 @@ Generator::process_archive_resource(const ResourceLocator& locator,
     std::vector<ArchiveFileInfo> files;
     for(const auto& filename : extraction->get_filenames())
     {
-      log_debug("-- process_archive_resource: file: " << filename);
+      log_debug("-- process_archive_resource: file: %1%", filename);
       BlobAccessorPtr child_blob = std::make_shared<BlobAccessor>(extraction->get_file(filename));
       BlobInfo child_blob_info = child_blob->get_blob_info();
       files.emplace_back(filename, child_blob_info);
@@ -163,12 +164,12 @@ Generator::process_archive_resource(const ResourceLocator& locator,
       handler.push_back(ResourceHandler("archive", extraction->get_type(), filename));
       ResourceLocator child_locator(locator.get_url(), std::move(handler));
 
-      log_debug("-- process_archive_resource: child: " << child_locator.str());
+      log_debug("-- process_archive_resource: child: %1%", child_locator.str());
 
       GeneratorCallbacksPtr child_callbacks = callbacks->on_child_resource(child_locator);
       if (!child_callbacks)
       {
-        log_warn("callback is null, not processing child resource: " << child_locator.str());
+        log_warn("callback is null, not processing child resource: %1%", child_locator.str());
       }
       else
       {

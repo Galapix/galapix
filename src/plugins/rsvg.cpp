@@ -19,11 +19,11 @@
 #include "plugins/rsvg.hpp"
 
 #include <stdexcept>
+#include <logmich/log.hpp>
 
 #include "plugins/png.hpp"
 #include "util/exec.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/url.hpp"
 #include "util/raise_exception.hpp"
 
@@ -33,7 +33,7 @@ RSVG::is_available()
   try
   {
     std::string exe = Filesystem::find_exe("rsvg");
-    log_info("found " << exe);
+    log_info("found %1%", exe);
     return true;
   }
   catch(std::exception& err)

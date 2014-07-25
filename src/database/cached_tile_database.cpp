@@ -137,7 +137,7 @@ CachedTileDatabase::delete_tiles(const RowId& image_id)
 void
 CachedTileDatabase::flush_cache()
 {
-  log_debug("CachedTileDatabase::flush_cache(): " << m_tile_cache->size());
+  log_debug("CachedTileDatabase::flush_cache(): %1%", m_tile_cache->size());
   m_tile_cache->flush(*m_tile_database);
 }
 

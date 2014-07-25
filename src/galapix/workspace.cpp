@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <logmich/log.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "galapix/database_thread.hpp"
@@ -28,7 +29,6 @@
 #include "galapix/layouter/spiral_layouter.hpp"
 #include "galapix/layouter/tight_layouter.hpp"
 #include "util/file_reader.hpp"
-#include "util/log.hpp"
 #include "util/string_util.hpp"
 
 Workspace::Workspace() :

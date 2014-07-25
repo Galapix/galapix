@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <logmich/log.hpp>
 
 #include "galapix/options.hpp"
 #include "util/raise_exception.hpp"
@@ -87,12 +88,12 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
       else if (strcmp(argv[i], "-D") == 0 ||
                strcmp(argv[i], "--debug") == 0)
       {
-        g_logger.set_log_level(Logger::kDebug);
+        logmich::set_log_level(logmich::kDebug);
       }
       else if (strcmp(argv[i], "-v") == 0 ||
                strcmp(argv[i], "--verbose") == 0)
       {
-        g_logger.set_log_level(Logger::kInfo);
+        logmich::set_log_level(logmich::kInfo);
       }
       else if (strcmp(argv[i], "-t") == 0 ||
                strcmp(argv[i], "--threads") == 0)

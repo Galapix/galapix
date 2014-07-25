@@ -20,10 +20,10 @@
 #define HEADER_GALAPIX_GALAPIX_DATABASE_TILE_PROVIDER_HPP
 
 #include <assert.h>
+#include <logmich/log.hpp>
 
 #include "galapix/tile_provider.hpp"
 #include "database/entries/image_entry.hpp"
-#include "util/log.hpp"
 
 class DatabaseTileProvider : public TileProvider
 {

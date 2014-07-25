@@ -21,6 +21,7 @@
 #include <string.h>
 #include <stdexcept>
 #include <boost/filesystem.hpp>
+#include <logmich/log.hpp>
 
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
@@ -207,7 +208,7 @@ std::string
 ArchiveManager::create_extraction_directory() const
 {
   boost::filesystem::path directory = m_tmpdir / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
-  log_info("creating directory: " << directory);
+  log_info("creating directory: %1%", directory);
   boost::filesystem::create_directory(directory);
   return directory.string();
 }

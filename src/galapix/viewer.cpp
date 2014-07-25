@@ -17,8 +17,12 @@
 */
 
 #include <SDL.h>
-#include <fstream>
 #include <boost/format.hpp>
+#include <fstream>
+#include <logmich/log.hpp>
+
+#define GLM_FORCE_RADIANS
+#include <glm/gtx/io.hpp>
 
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
@@ -36,7 +40,6 @@
 #include "tools/zoom_rect_tool.hpp"
 #include "tools/zoom_tool.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/software_surface.hpp"
 
 Viewer* Viewer::current_ = 0;
@@ -380,7 +383,7 @@ Viewer::increase_contrast()
 {
   //contrast += 0.1f;
   m_contrast *= 1.1f;
-  log_info("Contrast: " << m_contrast);
+  log_info("Contrast: %f", m_contrast);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -389,7 +392,7 @@ Viewer::decrease_contrast()
 {
   //contrast -= 0.1f;
   m_contrast /= 1.1f;
-  log_info("Contrast: " << m_contrast);
+  log_info("Contrast: %f", m_contrast);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -397,7 +400,7 @@ void
 Viewer::increase_brightness()
 {
   m_brightness += 0.03f;
-  log_info("Brightness: " << m_brightness);
+  log_info("Brightness: %f", m_brightness);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -405,7 +408,7 @@ void
 Viewer::decrease_brightness()
 {
   m_brightness -= 0.03f;
-  log_info("Brightness: " << m_brightness);
+  log_info("Brightness: %f", m_brightness);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -413,7 +416,7 @@ void
 Viewer::increase_gamma()
 {
   m_gamma *= 1.1f;
-  log_info("Gamma: " << m_gamma);
+  log_info("Gamma: %f", m_gamma);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -421,7 +424,7 @@ void
 Viewer::decrease_gamma()
 {
   m_gamma /= 1.1f;
-  log_info("Gamma: " << m_gamma);
+  log_info("Gamma: %f", m_gamma);
   Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
@@ -438,7 +441,7 @@ void
 Viewer::toggle_grid()
 {
   m_draw_grid = !m_draw_grid;
-  log_info("Draw Grid: " << m_draw_grid);
+  log_info("Draw Grid: %s", m_draw_grid);
 }
 
 void
@@ -483,7 +486,7 @@ void
 Viewer::toggle_pinned_grid()
 {
   m_pin_grid = !m_pin_grid;
-  log_info("Pin Grid: " << m_pin_grid);
+  log_info("Pin Grid: %s", m_pin_grid);
   if (!m_pin_grid)
   {
     m_grid_offset = m_grid_offset * m_state.get_scale() + m_state.get_offset();
@@ -668,7 +671,7 @@ Viewer::print_info()
 void
 Viewer::print_state()
 {
-  log_info(m_state.get_offset() << " " << m_state.get_scale());
+  log_info("%1% %1%", m_state.get_offset(), m_state.get_scale());
 }
 
 /* EOF */

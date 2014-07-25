@@ -20,11 +20,11 @@
 
 #include <stdexcept>
 #include <sstream>
+#include <logmich/log.hpp>
 
 #include "plugins/png.hpp"
 #include "util/exec.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/raise_exception.hpp"
 
 bool
@@ -33,7 +33,7 @@ VidThumb::is_available()
   try
   {
     std::string exe = Filesystem::find_exe("vidthumb");
-    log_info("found " << exe);
+    log_info("found %1%", exe);
     return true;
   }
   catch(std::exception& err)

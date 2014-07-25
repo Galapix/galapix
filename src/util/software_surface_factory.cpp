@@ -20,9 +20,9 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <logmich/log.hpp>
 
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 #include "util/raise_exception.hpp"
 #include "util/software_surface_loader.hpp"
 #include "util/url.hpp"
@@ -225,7 +225,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
       auto new_loader = find_loader_by_magic(magic);
       if (new_loader && new_loader != loader)
       {
-        log_warn(filename << ": file extension error, file is a " << new_loader->get_name());
+        log_warn("%1%: file extension error, file is a %2%", filename, new_loader->get_name());
         return from_file(filename, new_loader);
       }
       else
@@ -239,7 +239,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
 SoftwareSurfacePtr
 SoftwareSurfaceFactory::from_url(const URL& url) const
 {
-  log_debug(url);
+  log_debug("%1%", url);
 
   if (url.has_stdio_name())
   {

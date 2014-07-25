@@ -22,7 +22,7 @@
 #include <iostream>
 #include <memory>
 
-#include "util/log.hpp"
+#include <logmich/log.hpp>
 
 /**
  *  WeakFunctor allows you to create functors from objects that are

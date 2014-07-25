@@ -20,8 +20,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
-
-#include "util/log.hpp"
+#include <logmich/log.hpp>
 
 ResourceLocator
 ResourceLocator::from_string(const std::string& locator)

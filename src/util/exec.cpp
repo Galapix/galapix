@@ -28,8 +28,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <logmich/log.hpp>
 
-#include "util/log.hpp"
 #include "util/raise_exception.hpp"
 
 Exec::Exec(const std::string& program, bool absolute_path) :
@@ -114,7 +114,7 @@ Exec::exec()
       if (chdir(m_working_directory->c_str()) != 0)
       {
         int errnum = errno;
-        log_error(*m_working_directory << ": failed change to directory: " << strerror(errnum));
+        log_error("%1%: failed change to directory: %2%", *m_working_directory, strerror(errnum));
         _exit(EXIT_FAILURE);
       }
     }
@@ -134,7 +134,7 @@ Exec::exec()
     // FIXME: this ain't proper, need to exit(1) on failure and signal error to parent somehow
 
     // execvp() only returns on failure
-    log_error(m_program << ": " << strerror(error_code));
+    log_error("%1%: %2%", m_program, strerror(error_code));
     _exit(EXIT_FAILURE);
   }
   else // if (pid > 0)

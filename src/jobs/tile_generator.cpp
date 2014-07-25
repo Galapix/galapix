@@ -20,12 +20,12 @@
 
 #include <iostream>
 #include <sstream>
+#include <logmich/log.hpp>
 
 #include "galapix/tile.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 #include "plugins/jpeg.hpp"
-#include "util/log.hpp"
 #include "util/software_surface.hpp"
 
 void
@@ -55,8 +55,8 @@ TileGenerator::generate_old(const URL& url,
 
   if (0)
   {
-    log_info("TileGeneratorThread: processing scales "
-             << min_scale << "-" << max_scale << ": " << url << ": done");
+    log_info("TileGeneratorThread: processing scales %1%-%2%: %3%: done",
+             min_scale, max_scale, url);
   }
 }
 
@@ -119,13 +119,13 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
     if (0 <= x_miss && x_miss <= 1 &&
         0 <= y_miss && y_miss <= 1)
     {
-      log_debug("image doesn't match target size, ignoring as it is close enough: target="
-                << target_size << " vs surface=" << surface->get_size());
+      log_debug("image doesn't match target size, ignoring as it is close enough: target=%1% vs surface=%2%",
+                target_size, surface->get_size());
     }
     else
     {
-      log_debug("image doesn't match target size, doing scaling: target="
-                << target_size << " vs surface=" << surface->get_size());
+      log_debug("image doesn't match target size, doing scaling: target=%1% vs surface=%2%",
+                target_size, surface->get_size());
       surface = surface->scale(target_size);
     }
   }

@@ -21,6 +21,7 @@
 #include <iostream>
 #include <thread>
 #include <boost/format.hpp>
+#include <logmich/log.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"
@@ -32,7 +33,6 @@
 #include "plugins/png.hpp"
 #include "spnav/space_navigator.hpp"
 #include "util/filesystem.hpp"
-#include "util/log.hpp"
 
 #ifdef HAVE_SPACE_NAVIGATOR
 #  include <spnav.h>
@@ -76,15 +76,14 @@ SDLViewer::process_event(const SDL_Event& event)
           case SPNAV_EVENT_MOTION:
             {
               if (0)
-                log_debug("MotionEvent: "
-                          << "("
-                          << spnav_ev->motion.x << ", "
-                          << spnav_ev->motion.y << ", "
-                          << spnav_ev->motion.z
-                          << ") ("
-                          << spnav_ev->motion.rx << ", "
-                          << spnav_ev->motion.ry << ", "
-                          << spnav_ev->motion.rz);
+                log_debug("MotionEvent: (%s, %s, %s) (%s, %s, %s)",
+                          spnav_ev->motion.x,
+                          spnav_ev->motion.y,
+                          spnav_ev->motion.z,
+                          
+                          spnav_ev->motion.rx,
+                          spnav_ev->motion.ry,
+                          spnav_ev->motion.rz);
 
               float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
 

@@ -18,12 +18,13 @@
 
 #include "resource/resource_generator_callbacks.hpp"
 
+#include <logmich/log.hpp>
+
 #include "generator/image_data.hpp"
 #include "resource/archive_info.hpp"
 #include "resource/blob_info.hpp"
 #include "resource/resource_info.hpp"
 #include "resource/resource_locator.hpp"
-#include "util/log.hpp"
 
 ResourceGeneratorCallbacks::ResourceGeneratorCallbacks(const ResourceLocator& locator) :
   m_locator(locator)
@@ -56,15 +57,16 @@ ResourceGeneratorCallbacks::on_resource_name(const ResourceName& resource_name)
 void
 ResourceGeneratorCallbacks::on_archive_data(const ArchiveInfo& archive_info)
 {
-  log_info(archive_info.get_files().size());
+  log_info("%1%", archive_info.get_files().size());
 }
 
 void
 ResourceGeneratorCallbacks::on_image_data(const ImageData& image_data)
 {
-  log_info(image_data.get_image_tiles().size() << " "
-           << image_data.get_image_info().get_width() << "x"
-           << image_data.get_image_info().get_height());
+  log_info("%1% %2%x%3%", 
+           image_data.get_image_tiles().size(),
+           image_data.get_image_info().get_width(),
+           image_data.get_image_info().get_height());
 }
 
 void

@@ -20,7 +20,8 @@
 #define HEADER_GALAPIX_DATABASE_IMAGE_ENTRY_GET_STATEMENT_HPP
 
 #include "database/entries/image_entry.hpp"
-#include "util/log.hpp"
+
+#include <logmich/log.hpp>
 
 class ImageEntryGet final
 {
@@ -36,7 +37,7 @@ public:
 
   bool operator()(const RowId& image_id, ImageEntry& image_out)
   {
-    log_debug("looking up: " << image_id);
+    log_debug("looking up: %d", image_id);
     m_stmt.bind_int64(1, image_id.get_id());
 
     SQLiteReader reader = m_stmt.execute_query();
