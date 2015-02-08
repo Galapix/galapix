@@ -145,7 +145,7 @@ class Project:
                                    LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals', 'boost_filesystem'] + self.optional_libs)
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libpng  | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
-        self.libgalapix_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
+        self.libgalapix_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         
         self.libgalapix_util = self.libgalapix_env.StaticLibrary('galapix_util',
@@ -171,7 +171,7 @@ class Project:
                        OBJPREFIX="sdl.")
         sdl_env.ParseConfig('pkg-config --cflags --libs libpng | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
-        sdl_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
+        sdl_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         sdl_env.Program('galapix.sdl', 
                         self.sdl_sources + \
@@ -187,7 +187,7 @@ class Project:
                        OBJPREFIX="gtk.")
         gtk_env.ParseConfig('pkg-config --cflags --libs libpng | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
-        gtk_env.ParseConfig('Magick++-config --libs --cppflags | sed "s/-I/-isystem/g"')
+        gtk_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2 | sed "s/-I/-isystem/g"')
         gtk_env.Program('galapix.gtk', 
