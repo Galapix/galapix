@@ -22,6 +22,7 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <glm/glm.hpp>
 
 #include "math/size.hpp"
 #include "util/software_surface.hpp"
@@ -48,7 +49,9 @@ private:
 public:
   static GLuint s_texured_prg;
   static GLuint s_flatcolor_prg;
-  
+  static glm::mat4 s_projection;
+  static glm::mat4 s_modelview;
+
 public:
   static void init();
   static void reshape(const Size& size);
@@ -61,6 +64,11 @@ public:
   static void fill_rect(const Rectf& rect, const RGB& rgb);
   static void draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rgba);
 
+  static void set_modelview(const glm::mat4& modelview);
+
+  static void begin_render();
+  static void end_render();
+  
   static SoftwareSurfacePtr screenshot();
   static void apply_gamma_ramp(float contrast, float brightness, float gamma);
 };

@@ -23,6 +23,10 @@
 #include <stdexcept>
 #include <math.h>
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
 #include "display/shader.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
@@ -31,7 +35,8 @@
 Size Framebuffer::size;
 GLuint Framebuffer::s_texured_prg = 0;
 GLuint Framebuffer::s_flatcolor_prg = 0;
-
+glm::mat4 Framebuffer::s_projection;
+glm::mat4 Framebuffer::s_modelview;
 
 #ifndef assert_gl
 void assert_gl(const char* message)
@@ -89,17 +94,31 @@ Framebuffer::init()
 }
 
 void
+Framebuffer::begin_render()
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadMatrixf(glm::value_ptr(s_projection));
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadMatrixf(glm::value_ptr(s_modelview));
+}
+
+void
+Framebuffer::end_render()
+{
+
+}
+
+void
 Framebuffer::reshape(const Size& size_)
 {
   size = size_;
 
   glViewport(0, 0, size.width, size.height);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0.0, size.width, size.height, 0.0, 1000.0, -1000.0);
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
+  s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
+                            static_cast<float>(size.height), 0.0f,
+                            1000.0f, -1000.0f);
 }
 
 void
@@ -250,6 +269,12 @@ Framebuffer::screenshot()
   glReadPixels(0, 0, surface->get_width(), surface->get_height(),
                GL_RGB, GL_UNSIGNED_BYTE, surface->get_data());
   return surface->vflip();
+}
+
+void
+Framebuffer::set_modelview(const glm::mat4& modelview)
+{
+  s_modelview = modelview;
 }
 
 void
