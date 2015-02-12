@@ -100,11 +100,14 @@ Framebuffer::begin_render()
                             static_cast<float>(size.height), 0.0f,
                             1000.0f, -1000.0f);
 
-  glMatrixMode(GL_PROJECTION);
-  glLoadMatrixf(glm::value_ptr(s_projection));
+  if (false)
+  {
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(glm::value_ptr(s_projection));
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadMatrixf(glm::value_ptr(s_modelview));
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(glm::value_ptr(s_modelview));
+  }
 }
 
 void
