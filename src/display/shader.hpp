@@ -16,8 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <GL/glew.h>
 #include <string>
+
+#include "util/opengl.hpp"
 
 GLuint create_program(const std::string& vert_shader_filename,
                       const std::string& frag_shader_filename);

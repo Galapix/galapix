@@ -2,6 +2,7 @@
 
 import glob
 import os
+import platform
 
 # CacheDir('cache')
 
@@ -36,6 +37,11 @@ preset_linkflags = {
     'debug':   [],
     'development': []
     }
+
+
+def use_opengles2():
+    return platform.machine() == 'armv6l'
+
 
 class Project:
     def __init__(self):
@@ -97,13 +103,14 @@ class Project:
             print "Error: libjpeg is missing"
             Exit(1)
 
-        if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", autoadd=0):
-            print "Error: libGL is missing"
-            Exit(1)
-
-        if not conf.CheckLibWithHeader("GLEW", "GL/glew.h", "c++", autoadd=0):
-            print "Error: libGLEW is missing"
-            Exit(1)
+        if not use_opengles2():
+            if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", autoadd=0):
+                print "Error: libGL is missing"
+                Exit(1)
+            
+            if not conf.CheckLibWithHeader("GLEW", "GL/glew.h", "c++", autoadd=0):
+                print "Error: libGLEW is missing"
+                Exit(1)
 
         self.env = conf.Finish()
 
@@ -142,7 +149,15 @@ class Project:
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
         self.libgalapix_env.Append(CPPDEFINES = self.optional_defines,
-                                   LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals', 'boost_filesystem'] + self.optional_libs)
+                                   LIBS = ['sqlite3', 'jpeg', 'exif', 'boost_signals', 'boost_filesystem'] + self.optional_libs)
+
+        if use_opengles2():
+            self.libgalapix_env.Append(LIBS = ['GLESv2'])
+            self.libgalapix_env.Append(LIBPATH=["/opt/vc/lib"])
+            self.libgalapix_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
+        else:
+            self.libgalapix_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
+            
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libpng  | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
@@ -167,8 +182,16 @@ class Project:
         sdl_env = self.env.Clone()
         sdl_env.Append(CPPDEFINES = ['GALAPIX_SDL'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif'] + self.optional_libs,
+                               'sqlite3', 'jpeg', 'exif'] + self.optional_libs,
                        OBJPREFIX="sdl.")
+
+        if use_opengles2():
+            sdl_env.Append(LIBS = ['GLESv2'])
+            sdl_env.Append(LIBPATH=["/opt/vc/lib"])
+            sdl_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
+        else:
+            sdl_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
+
         sdl_env.ParseConfig('pkg-config --cflags --libs libpng | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
@@ -183,8 +206,16 @@ class Project:
         gtk_env = self.env.Clone()
         gtk_env.Append(CPPDEFINES = ['GALAPIX_GTK'] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util,
-                               'GL', 'GLEW', 'sqlite3', 'jpeg', 'exif'] + self.optional_libs,
+                               'sqlite3', 'jpeg', 'exif'] + self.optional_libs,
                        OBJPREFIX="gtk.")
+
+        if use_opengles2():
+            gtk_env.Append(LIBS = ['GLESv2'])
+            gtk_env.Append(LIBPATH=["/opt/vc/lib"])
+            gtk_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
+        else:
+            gtk_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
+
         gtk_env.ParseConfig('pkg-config --cflags --libs libpng | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')

@@ -19,27 +19,19 @@
 #ifndef HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
 #define HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include <glm/glm.hpp>
 
 #include "math/size.hpp"
+#include "util/opengl.hpp"
 #include "util/software_surface.hpp"
-
+
 class RGB;
 class RGBA;
 class Size;
 class Sizef;
 class Vector2f;
 class Rectf;
-
-#ifdef NDEBUG
-void assert_gl(const char* message);
-#else
-#  define assert_gl(x)
-#endif
-
+
 /** Generic OpenGL helper functions */
 class Framebuffer
 {

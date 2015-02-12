@@ -38,19 +38,6 @@ GLuint Framebuffer::s_flatcolor_prg = 0;
 glm::mat4 Framebuffer::s_projection;
 glm::mat4 Framebuffer::s_modelview;
 
-#ifndef assert_gl
-void assert_gl(const char* message)
-{
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "assert_gl(): OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
-  }
-}
-#endif
-
 namespace {
 
 void print_gl_string(const char* prefix, GLenum name)
@@ -71,6 +58,7 @@ void print_gl_string(const char* prefix, GLenum name)
 void
 Framebuffer::init()
 {
+#ifndef HAVE_OPENGLES2
   // Init Glew
   GLenum err = glewInit();
   if (GLEW_OK != err)
@@ -79,7 +67,8 @@ Framebuffer::init()
     str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
     throw std::runtime_error(str.str());
   }
-
+#endif
+  
   print_gl_string("GL_VENDOR", GL_VENDOR);
   print_gl_string("GL_RENDERER", GL_RENDERER);
   print_gl_string("GL_VERSION", GL_VERSION);
@@ -91,6 +80,11 @@ Framebuffer::init()
                                  "src/shader/textured.frag");
   s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
                                    "src/shader/flatcolor.frag");
+
+  // FIXME: Dirty!
+  //GLuint vao;
+  //glGenVertexArrays(1, &vao);
+  //glBindVertexArray(vao);
 }
 
 void

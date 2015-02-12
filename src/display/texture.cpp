@@ -18,10 +18,9 @@
 
 #include "display/texture.hpp"
 
-#include <GL/glew.h>
-
-#include "math/rect.hpp"
 #include "display/framebuffer.hpp"
+#include "math/rect.hpp"
+#include "util/opengl.hpp"
 
 class TextureImpl
 {

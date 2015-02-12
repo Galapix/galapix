@@ -24,19 +24,6 @@
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
 
-#ifndef assert_gl
-void assert_gl(const char* message)
-{
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "assert_gl(): OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
-  }
-}
-#endif
-
 class SurfaceImpl
 {
 public:
@@ -238,5 +225,5 @@ Surface::get_size() const
   else
     return Size();
 }
-
+
 /* EOF */
