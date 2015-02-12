@@ -104,13 +104,6 @@ SExprFileWriter::write_string(const char* name, const std::string& value)
 }
 
 void
-SExprFileWriter::write_vector(const char* name, const Vector3f& value)
-{
-  (*out) << "\n" << indent() << "(" << name << " "
-         << value.x << " " << value.y << " " << value.z << ")";
-}
-
-void
 SExprFileWriter::write_size(const char* name, const Size& size)
 {
   (*out) << "\n" << indent() << "(" << name << " " << size.width << " " << size.height << ")";

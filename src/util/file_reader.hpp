@@ -24,7 +24,6 @@
 
 class RGBA;
 class Size;
-class Vector3f;
 class Vector2i;
 class Vector2f;
 class Rect;
@@ -50,7 +49,6 @@ public:
   bool read_bool  (const char* name, bool&)          const;
   bool read_string(const char* name, std::string&)   const;
   bool read_url   (const char* name, URL&)           const;
-  bool read_vector(const char* name, Vector3f&)      const;
   bool read_vector2i(const char* name, Vector2i&)    const;
   bool read_vector2f(const char* name, Vector2f&)    const;
   bool read_rect(const char* name, Rect&)    const;

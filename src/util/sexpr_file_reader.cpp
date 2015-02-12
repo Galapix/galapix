@@ -20,7 +20,6 @@
 
 #include <string.h>
 
-#include "math/vector3f.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
 #include "util/file_reader_impl.hpp"
@@ -122,19 +121,6 @@ public:
       }
       return true;
     }
-    return false;
-  }
-
-  bool read_vector(const char* name, Vector3f& v) const
-  {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
-    if (sub && sub->get_list_size() == 4)
-    {
-      v = Vector3f(sub->get_list_elem(1)->get_float(),
-                   sub->get_list_elem(2)->get_float(),
-                   sub->get_list_elem(3)->get_float());
-      return true;
-    }    
     return false;
   }
 

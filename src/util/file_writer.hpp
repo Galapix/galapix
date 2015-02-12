@@ -21,7 +21,6 @@
 
 #include <string>
 
-class Vector3f;
 class Size;
 
 /** Interface to write out name/value pairs out of some kind of file or
@@ -40,7 +39,6 @@ public:
   //virtual void write_color  (const char* name, const Color&) =0;
   virtual void write_bool   (const char* name, bool) =0;
   virtual void write_string (const char* name, const std::string&) =0;
-  virtual void write_vector (const char* name, const Vector3f&) =0;
   virtual void write_size   (const char* name, const Size&) = 0;
 };
 
