@@ -18,6 +18,8 @@
 
 #include "display/surface.hpp"
 
+#include <iostream>
+
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
 
@@ -27,14 +29,6 @@ public:
   TexturePtr texture;
   Rectf   uv;
   Size    size;
-  
-  SurfaceImpl(const TexturePtr& texture_, const Rectf& uv_, const Size& size_)
-    : texture(texture_),
-      uv(uv_),
-      size(size_)
-  {
-    //std::cout << uv << std::endl;
-  }
 
   SurfaceImpl(const SoftwareSurfacePtr& src, const Rect& srcrect) :
     texture(),
@@ -44,12 +38,12 @@ public:
     assert(src);
 
     texture = Texture::create(src, srcrect);
-    
-    uv = Rectf(Vector2f(0, 0), srcrect.get_size());
+
+    uv = Rectf(Vector2f(0, 0), Sizef(1.0f, 1.0f));
 
     size = Size(srcrect.get_size());
   }
-  
+
   ~SurfaceImpl()
   {
   }
@@ -60,23 +54,28 @@ public:
     {
       texture->bind();
       glEnable(GL_BLEND);
-      glEnable(GL_TEXTURE_RECTANGLE_ARB);
-      glColor3f(1.0f, 1.0f, 1.0f);       
+      glEnable(GL_TEXTURE_2D);
+      glColor3f(1.0f, 1.0f, 1.0f);
+
+      const float left = srcrect.left / texture->get_width();
+      const float top = srcrect.top / texture->get_height();
+      const float right = srcrect.right / texture->get_width();
+      const float bottom = srcrect.bottom / texture->get_height();
 
       glBegin(GL_QUADS);
-      glTexCoord2f(srcrect.left, srcrect.top);
+      glTexCoord2f(left, top);
       glVertex2f(dstrect.left, dstrect.top);
 
-      glTexCoord2f(srcrect.right, srcrect.top);
+      glTexCoord2f(right, top);
       glVertex2f(dstrect.right, dstrect.top);
 
-      glTexCoord2f(srcrect.right, srcrect.bottom);
+      glTexCoord2f(right, bottom);
       glVertex2f(dstrect.right, dstrect.bottom);
 
-      glTexCoord2f(srcrect.left, srcrect.bottom);
+      glTexCoord2f(left, bottom);
       glVertex2f(dstrect.left, dstrect.bottom);
       glEnd();
-    }    
+    }
   }
 
   void draw(const Rectf& rect)
@@ -85,9 +84,9 @@ public:
     {
       texture->bind();
       glEnable(GL_BLEND);
+      glEnable(GL_TEXTURE_2D);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_TEXTURE_RECTANGLE_ARB);
-      glColor3f(1.0f, 1.0f, 1.0f);       
+      glColor3f(1.0f, 1.0f, 1.0f);
 
       glBegin(GL_QUADS);
       glTexCoord2f(uv.left, uv.top);
@@ -144,7 +143,7 @@ void
 Surface::draw(const Rectf& srcrect, const Rectf& dstrect)
 {
   if (impl.get())
-    impl->draw(srcrect, dstrect);  
+    impl->draw(srcrect, dstrect);
 }
 
 void
@@ -155,10 +154,10 @@ Surface::draw(const Rectf& rect)
 }
 
 int
-Surface::get_width() const 
+Surface::get_width() const
 {
   if (impl.get())
-    return impl->size.width; 
+    return impl->size.width;
   else
     return 0;
 }
@@ -167,7 +166,7 @@ int
 Surface::get_height() const
 {
   if (impl.get())
-    return impl->size.height; 
+    return impl->size.height;
   else
     return 0;
 }

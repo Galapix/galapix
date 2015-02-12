@@ -53,11 +53,6 @@ Framebuffer::init()
     str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
     throw std::runtime_error(str.str());
   }
-  
-  if (!GLEW_ARB_texture_rectangle)
-  {
-    throw std::runtime_error("Framebuffer::init(): OpenGL ARB_texture_rectangle extension not found, but required");
-  }
 }
 
 void
@@ -93,8 +88,6 @@ Framebuffer::clear(const RGBA& rgba)
 void
 Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
-    
   glColor3ub(rgb.r, rgb.g, rgb.b);
 
   glBegin(GL_LINE_LOOP);
@@ -108,8 +101,6 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 void
 Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 {
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
-
   glColor3ub(rgb.r, rgb.g, rgb.b);
   glBegin(GL_QUADS);
   glVertex2f(rect.left,  rect.top);
@@ -122,8 +113,6 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 void
 Framebuffer::draw_grid(int num_cells)
 {
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
- 
   glBegin(GL_LINES);
   //  if (grid_color)
   glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
@@ -150,8 +139,6 @@ Framebuffer::draw_grid(int num_cells)
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
 {
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
- 
   glBegin(GL_LINES);
   glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
 
