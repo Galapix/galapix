@@ -18,9 +18,24 @@
 
 #include "display/surface.hpp"
 
+#include <glm/ext.hpp>
+
 #include "display/shader.hpp"
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
+
+#ifndef assert_gl
+void assert_gl(const char* message)
+{
+  GLenum error = glGetError();
+  if(error != GL_NO_ERROR) {
+    std::ostringstream msg;
+    msg << "assert_gl(): OpenGLError while '" << message << "': "
+        << gluErrorString(error);
+    throw std::runtime_error(msg.str());
+  }
+}
+#endif
 
 class SurfaceImpl
 {
@@ -56,14 +71,14 @@ public:
       const float right = srcrect.right / texture->get_width();
       const float bottom = srcrect.bottom / texture->get_height();
 
-      std::array<float, 2*4> uvs = {
+      std::array<float, 2*4> texcoords = {
         left, top,
         right, top,
         right, bottom,
         left, bottom,
       };
 
-      std::array<float, 2*4> coords = {
+      std::array<float, 2*4> positions = {
         dstrect.left, dstrect.top,
         dstrect.right, dstrect.top,
         dstrect.right, dstrect.bottom,
@@ -77,16 +92,30 @@ public:
         glUseProgram(Framebuffer::s_texured_prg);
         glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
 
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "projection"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "modelview"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
+        GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+        GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
+
+        glEnableVertexAttribArray(texcoord_loc);
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
+
+        glEnableVertexAttribArray(position_loc);
+        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
-        glVertexPointer(2, GL_FLOAT, 0, coords.data());
+        glVertexPointer(2, GL_FLOAT, 0, positions.data());
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glDisableVertexAttribArray(texcoord_loc);
+        glDisableVertexAttribArray(position_loc);
 
         glUseProgram(0);
       }
@@ -98,8 +127,8 @@ public:
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
-        glVertexPointer(2, GL_FLOAT, 0, coords.data());
+        glTexCoordPointer(2, GL_FLOAT, 0, texcoords.data());
+        glVertexPointer(2, GL_FLOAT, 0, positions.data());
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -114,14 +143,14 @@ public:
   {
     if (texture)
     {
-      const std::array<float, 2*4> uvs = {
+      const std::array<float, 2*4> texcoords = {
         uv.left, uv.top,
         uv.right, uv.top,
         uv.right, uv.bottom,
         uv.left, uv.bottom,
       };
 
-      const std::array<float, 2*4> coords = {
+      const std::array<float, 2*4> positions = {
         rect.left, rect.top,
         rect.right, rect.top,
         rect.right, rect.bottom,
@@ -135,17 +164,30 @@ public:
         glUseProgram(Framebuffer::s_texured_prg);
         glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
 
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "projection"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "modelview"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
+        GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+        GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
+
+        glEnableVertexAttribArray(texcoord_loc);
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
+
+        glEnableVertexAttribArray(position_loc);
+        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
-        glVertexPointer(2, GL_FLOAT, 0, coords.data());
+        glVertexPointer(2, GL_FLOAT, 0, positions.data());
 
-        glColor3f(1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glDisableVertexAttribArray(texcoord_loc);
+        glDisableVertexAttribArray(position_loc);
 
         glUseProgram(0);
       }
@@ -157,8 +199,8 @@ public:
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glEnableClientState(GL_VERTEX_ARRAY);
 
-        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
-        glVertexPointer(2, GL_FLOAT, 0, coords.data());
+        glTexCoordPointer(2, GL_FLOAT, 0, texcoords.data());
+        glVertexPointer(2, GL_FLOAT, 0, positions.data());
 
         glColor3f(1.0f, 1.0f, 1.0f);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);

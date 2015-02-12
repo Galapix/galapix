@@ -1,7 +1,11 @@
-uniform sampler2D tex;
+#version 330
 
-void main(void) {
-  gl_FragColor = texture2D(tex, gl_TexCoord[0].st);
+uniform sampler2D tex;
+varying vec2 texcoord_v;
+
+void main(void)
+{
+  gl_FragColor = texture2D(tex, texcoord_v);
 }
 
 /* EOF */

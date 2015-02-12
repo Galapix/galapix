@@ -96,6 +96,10 @@ Framebuffer::init()
 void
 Framebuffer::begin_render()
 {
+  s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
+                            static_cast<float>(size.height), 0.0f,
+                            1000.0f, -1000.0f);
+
   glMatrixMode(GL_PROJECTION);
   glLoadMatrixf(glm::value_ptr(s_projection));
 
@@ -148,6 +152,11 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     glUseProgram(s_flatcolor_prg);
     glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
 
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, coords.data());
     glDrawArrays(GL_LINE_LOOP, 0, 4);
@@ -180,6 +189,11 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
     glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
+
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, coords.data());
@@ -230,6 +244,12 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
+
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
     glUniform4f(color_loc, rgba.r/255.0f, rgba.g/255.0f, rgba.b/255.0f, rgba.a/255.0f);
 
     glEnableClientState(GL_VERTEX_ARRAY);

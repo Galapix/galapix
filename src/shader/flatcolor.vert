@@ -1,9 +1,11 @@
-//attribute vec4 coord;
- 
+#version 330
+
+uniform mat4 projection;
+uniform mat4 modelview;
+
 void main(void)
 {
-  //gl_Position = coord;
-  gl_Position = ftransform();
+  gl_Position = projection * modelview * gl_Vertex;
 }
 
 /* EOF */
