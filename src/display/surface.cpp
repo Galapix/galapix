@@ -18,6 +18,7 @@
 
 #include "display/surface.hpp"
 
+#include "display/shader.hpp"
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
 
@@ -61,31 +62,51 @@ public:
         right, bottom,
         left, bottom,
       };
-      
+
       std::array<float, 2*4> coords = {
         dstrect.left, dstrect.top,
         dstrect.right, dstrect.top,
         dstrect.right, dstrect.bottom,
         dstrect.left, dstrect.bottom,
-      };     
-      
-      texture->bind();
+      };
 
-      glEnable(GL_BLEND);
-      glEnable(GL_TEXTURE_2D);
-      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-      glEnableClientState(GL_VERTEX_ARRAY);
+      if (true)
+      {
+        texture->bind();
 
-      glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
-      glVertexPointer(2, GL_FLOAT, 0, coords.data());
+        glUseProgram(Framebuffer::s_texured_prg);
+        glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
 
-      glColor3f(1.0f, 1.0f, 1.0f);
-      glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
 
-      glDisableClientState(GL_VERTEX_ARRAY);
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-      glDisable(GL_TEXTURE_2D);
-      glDisable(GL_BLEND);
+        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
+        glVertexPointer(2, GL_FLOAT, 0, coords.data());
+
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glUseProgram(0);
+      }
+      else
+      {
+        texture->bind();
+
+        glEnable(GL_TEXTURE_2D);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
+        glVertexPointer(2, GL_FLOAT, 0, coords.data());
+
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glDisable(GL_TEXTURE_2D);
+      }
     }
   }
 
@@ -99,33 +120,54 @@ public:
         uv.right, uv.bottom,
         uv.left, uv.bottom,
       };
-      
+
       const std::array<float, 2*4> coords = {
         rect.left, rect.top,
         rect.right, rect.top,
         rect.right, rect.bottom,
-        rect.left, rect.bottom,  
+        rect.left, rect.bottom,
       };
 
-      texture->bind();
-      glEnable(GL_BLEND);
-      glEnable(GL_TEXTURE_2D);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      if (true)
+      {
+        texture->bind();
 
-      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-      glEnableClientState(GL_VERTEX_ARRAY);
-      
-      glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
-      glVertexPointer(2, GL_FLOAT, 0, coords.data());
+        glUseProgram(Framebuffer::s_texured_prg);
+        glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
 
-      glColor3f(1.0f, 1.0f, 1.0f);
-      glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
 
-      glDisableClientState(GL_VERTEX_ARRAY);
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
+        glVertexPointer(2, GL_FLOAT, 0, coords.data());
 
-      glDisable(GL_TEXTURE_2D);
-      glDisable(GL_BLEND);
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glUseProgram(0);
+      }
+      else
+      {
+        texture->bind();
+        glEnable(GL_TEXTURE_2D);
+
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+
+        glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
+        glVertexPointer(2, GL_FLOAT, 0, coords.data());
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glDisableClientState(GL_VERTEX_ARRAY);
+        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+        glDisable(GL_TEXTURE_2D);
+      }
     }
   }
 
