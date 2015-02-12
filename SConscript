@@ -141,6 +141,7 @@ class Project:
 
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
+        self.libgalapix_env.Append(CPPPATH=["external/glm-0.9.6.1/"])
         self.libgalapix_env.Append(CPPDEFINES = self.optional_defines,
                                    LIBS = ['GL', 'GLEW', 'sqlite3', 'jpeg', 'exif', 'boost_signals', 'boost_filesystem'] + self.optional_libs)
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libpng  | sed "s/-I/-isystem/g"')
