@@ -108,8 +108,7 @@ class Project:
         self.env = conf.Finish()
 
     def build(self):
-        self.env = Environment(ENV = {'PATH' : os.environ['PATH'],
-                                      'HOME' : os.environ['HOME']},
+        self.env = Environment(ENV = os.environ,
                                CPPPATH=['src'])
 
         opts = Variables(['custom.py'], ARGUMENTS)
