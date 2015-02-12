@@ -46,6 +46,10 @@ private:
   static Size size;
 
 public:
+  static GLuint s_texured_prg;
+  static GLuint s_flatcolor_prg;
+  
+public:
   static void init();
   static void reshape(const Size& size);
   static int  get_width();

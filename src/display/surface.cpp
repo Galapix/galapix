@@ -50,11 +50,6 @@ public:
   {
     if (texture)
     {
-      texture->bind();
-      glEnable(GL_BLEND);
-      glEnable(GL_TEXTURE_2D);
-      glColor3f(1.0f, 1.0f, 1.0f);
-
       const float left = srcrect.left / texture->get_width();
       const float top = srcrect.top / texture->get_height();
       const float right = srcrect.right / texture->get_width();
@@ -73,17 +68,24 @@ public:
         dstrect.right, dstrect.bottom,
         dstrect.left, dstrect.bottom,
       };     
+      
+      texture->bind();
 
+      glEnable(GL_BLEND);
+      glEnable(GL_TEXTURE_2D);
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glEnableClientState(GL_VERTEX_ARRAY);
-      
+
       glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
       glVertexPointer(2, GL_FLOAT, 0, coords.data());
 
+      glColor3f(1.0f, 1.0f, 1.0f);
       glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      glDisable(GL_TEXTURE_2D);
+      glDisable(GL_BLEND);
     }
   }
 
@@ -91,12 +93,6 @@ public:
   {
     if (texture)
     {
-      texture->bind();
-      glEnable(GL_BLEND);
-      glEnable(GL_TEXTURE_2D);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glColor3f(1.0f, 1.0f, 1.0f);
-
       const std::array<float, 2*4> uvs = {
         uv.left, uv.top,
         uv.right, uv.top,
@@ -110,17 +106,26 @@ public:
         rect.right, rect.bottom,
         rect.left, rect.bottom,  
       };
-      
+
+      texture->bind();
+      glEnable(GL_BLEND);
+      glEnable(GL_TEXTURE_2D);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
       glEnableClientState(GL_TEXTURE_COORD_ARRAY);
       glEnableClientState(GL_VERTEX_ARRAY);
       
       glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
       glVertexPointer(2, GL_FLOAT, 0, coords.data());
 
+      glColor3f(1.0f, 1.0f, 1.0f);
       glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
       glDisableClientState(GL_VERTEX_ARRAY);
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+      glDisable(GL_TEXTURE_2D);
+      glDisable(GL_BLEND);
     }
   }
 

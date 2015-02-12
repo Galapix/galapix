@@ -23,11 +23,15 @@
 #include <stdexcept>
 #include <math.h>
 
+#include "display/shader.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
 
 Size Framebuffer::size;
+GLuint Framebuffer::s_texured_prg = 0;
+GLuint Framebuffer::s_flatcolor_prg = 0;
+
 
 #ifndef assert_gl
 void assert_gl(const char* message)
@@ -41,11 +45,28 @@ void assert_gl(const char* message)
   }
 }
 #endif
+
+namespace {
+
+void print_gl_string(const char* prefix, GLenum name)
+{
+  const GLubyte* ret = glGetString(name);
+  if (ret == 0)
+  {
+    std::cerr << "error getting string: " << prefix << std::endl;
+  }
+  else
+  {
+    std::cerr << prefix << ": " << ret << std::endl;
+  }
+}
+
+} // namespace
 
-void 
+void
 Framebuffer::init()
 {
-  // Init Glew 
+  // Init Glew
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
@@ -53,11 +74,23 @@ Framebuffer::init()
     str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
     throw std::runtime_error(str.str());
   }
+
+  print_gl_string("GL_VENDOR", GL_VENDOR);
+  print_gl_string("GL_RENDERER", GL_RENDERER);
+  print_gl_string("GL_VERSION", GL_VERSION);
+  print_gl_string("GL_SHADING_LANGUAGE_VERSION", GL_SHADING_LANGUAGE_VERSION);
+  // print_gl_string("GL_EXTENSIONS", GL_EXTENSIONS);
+
+  // FIXME: dirty, those never get deleted or anything
+  s_texured_prg = create_program("src/shader/textured.vert",
+                                 "src/shader/textured.frag");
+  s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
+                                   "src/shader/flatcolor.frag");
 }
 
 void
 Framebuffer::reshape(const Size& size_)
-{ 
+{
   size = size_;
 
   glViewport(0, 0, size.width, size.height);
@@ -67,12 +100,6 @@ Framebuffer::reshape(const Size& size_)
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  
-  // Magic Voodoo to get pixel perfect graphics, see:
-  //   http://www.opengl.org/resources/faq/technical/transformations.htm
-  // On Nvidia this seems to break things, instead of fixing them, so
-  // we don't use it, since the results are already perfect even without it.
-  // glTranslated(0.375, 0.375, 0.0);
 }
 
 void
@@ -88,44 +115,77 @@ Framebuffer::clear(const RGBA& rgba)
 void
 Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
-  glColor3ub(rgb.r, rgb.g, rgb.b);
-    
   const std::array<float, 2*4> coords = {
     rect.left, rect.top,
     rect.right, rect.top,
     rect.right, rect.bottom,
-    rect.left, rect.bottom,  
+    rect.left, rect.bottom,
   };
-      
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(2, GL_FLOAT, 0, coords.data());
-  glDrawArrays(GL_LINE_LOOP, 0, 4);
-  glDisableClientState(GL_VERTEX_ARRAY);
+
+  if (true)
+  {
+    GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
+
+    glUseProgram(s_flatcolor_prg);
+    glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glUseProgram(0);
+  }
+  else
+  {
+    glColor3ub(rgb.r, rgb.g, rgb.b);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+  }
 }
 
 void
 Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 {
-  glColor3ub(rgb.r, rgb.g, rgb.b);
-  
   std::array<float, 2*4> coords = {
     rect.left, rect.top,
     rect.right, rect.top,
     rect.right, rect.bottom,
     rect.left, rect.bottom,
   };
-      
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(2, GL_FLOAT, 0, coords.data());
-  glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-  glDisableClientState(GL_VERTEX_ARRAY);
+
+  if (true)
+  {
+    GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
+    glUseProgram(s_flatcolor_prg);
+    glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glUseProgram(0);
+  }
+  else
+  {
+    glEnableClientState(GL_VERTEX_ARRAY);
+
+    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glColor3ub(rgb.r, rgb.g, rgb.b);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+  }
 }
 
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
-{ 
+{
   std::vector<float> coords;
-  
+
   float start_x = fmodf(offset.x, size_.width);
   float start_y = fmodf(offset.y, size_.height);
 
@@ -133,7 +193,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
   {
     coords.push_back(x);
     coords.push_back(0);
-    
+
     coords.push_back(x);
     coords.push_back(static_cast<float>(Framebuffer::get_height()));
   }
@@ -142,16 +202,32 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
   {
     coords.push_back(0);
     coords.push_back(y);
-    
+
     coords.push_back(static_cast<float>(Framebuffer::get_width()));
     coords.push_back(y);
   }
 
-  glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glVertexPointer(2, GL_FLOAT, 0, coords.data());
-  glDrawArrays(GL_LINES, 0, coords.size()/2);
-  glDisableClientState(GL_VERTEX_ARRAY);
+  if (true)
+  {
+    GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
+    glUseProgram(s_flatcolor_prg);
+    glUniform4f(color_loc, rgba.r/255.0f, rgba.g/255.0f, rgba.b/255.0f, rgba.a/255.0f);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glDrawArrays(GL_LINES, 0, coords.size()/2);
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glUseProgram(0);
+  }
+  else
+  {
+    glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glDrawArrays(GL_LINES, 0, coords.size()/2);
+    glDisableClientState(GL_VERTEX_ARRAY);
+  }
 }
 
 int
