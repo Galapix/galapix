@@ -85,7 +85,6 @@ public:
         dstrect.left, dstrect.bottom,
       };
 
-      if (true)
       {
         texture->bind();
 
@@ -113,23 +112,6 @@ public:
 
         glUseProgram(0);
       }
-      else
-      {
-        texture->bind();
-
-        glEnable(GL_TEXTURE_2D);
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        glTexCoordPointer(2, GL_FLOAT, 0, texcoords.data());
-        glVertexPointer(2, GL_FLOAT, 0, positions.data());
-
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-        glDisable(GL_TEXTURE_2D);
-      }
     }
   }
 
@@ -151,7 +133,6 @@ public:
         rect.left, rect.bottom,
       };
 
-      if (true)
       {
         texture->bind();
 
@@ -178,25 +159,6 @@ public:
         glDisableVertexAttribArray(texcoord_loc);
 
         glUseProgram(0);
-      }
-      else
-      {
-        texture->bind();
-        glEnable(GL_TEXTURE_2D);
-
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        glTexCoordPointer(2, GL_FLOAT, 0, texcoords.data());
-        glVertexPointer(2, GL_FLOAT, 0, positions.data());
-
-        glColor3f(1.0f, 1.0f, 1.0f);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-        glDisableClientState(GL_VERTEX_ARRAY);
-        glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-        glDisable(GL_TEXTURE_2D);
       }
     }
   }

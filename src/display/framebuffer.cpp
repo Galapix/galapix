@@ -99,15 +99,6 @@ Framebuffer::begin_render()
   s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
                             static_cast<float>(size.height), 0.0f,
                             1000.0f, -1000.0f);
-
-  if (false)
-  {
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(s_projection));
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(glm::value_ptr(s_modelview));
-  }
 }
 
 void
@@ -148,7 +139,6 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     rect.left, rect.bottom,
   };
 
-  if (true)
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
 
@@ -170,15 +160,6 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     
     glUseProgram(0);
   }
-  else
-  {
-    glColor3ub(rgb.r, rgb.g, rgb.b);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, positions.data());
-    glDrawArrays(GL_LINE_LOOP, 0, 4);
-    glDisableClientState(GL_VERTEX_ARRAY);
-  }
 }
 
 void
@@ -191,7 +172,6 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
     rect.left, rect.bottom,
   };
 
-  if (true)
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
@@ -211,16 +191,6 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
     glDisableVertexAttribArray(position_loc);
     
     glUseProgram(0);
-  }
-  else
-  {
-    glEnableClientState(GL_VERTEX_ARRAY);
-
-    glVertexPointer(2, GL_FLOAT, 0, positions.data());
-    glColor3ub(rgb.r, rgb.g, rgb.b);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
   }
 }
 
@@ -250,7 +220,6 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     positions.push_back(y);
   }
 
-  if (true)
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
@@ -271,14 +240,6 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     glDisableVertexAttribArray(position_loc);
     
     glUseProgram(0);
-  }
-  else
-  {
-    glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, positions.data());
-    glDrawArrays(GL_LINES, 0, positions.size()/2);
-    glDisableClientState(GL_VERTEX_ARRAY);
   }
 }
 
