@@ -138,7 +138,7 @@ Framebuffer::clear(const RGBA& rgba)
 void
 Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
-  const std::array<float, 2*4> coords = {
+  const std::array<float, 2*4> positions = {
     rect.left, rect.top,
     rect.right, rect.top,
     rect.right, rect.bottom,
@@ -157,10 +157,14 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    glEnableVertexAttribArray(position_loc);
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
     glDrawArrays(GL_LINE_LOOP, 0, 4);
-    glDisableClientState(GL_VERTEX_ARRAY);
+
+    glDisableVertexAttribArray(position_loc);
+    
     glUseProgram(0);
   }
   else
@@ -168,7 +172,7 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     glColor3ub(rgb.r, rgb.g, rgb.b);
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glVertexPointer(2, GL_FLOAT, 0, positions.data());
     glDrawArrays(GL_LINE_LOOP, 0, 4);
     glDisableClientState(GL_VERTEX_ARRAY);
   }
@@ -177,7 +181,7 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 void
 Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 {
-  std::array<float, 2*4> coords = {
+  std::array<float, 2*4> positions = {
     rect.left, rect.top,
     rect.right, rect.top,
     rect.right, rect.bottom,
@@ -195,18 +199,21 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    glEnableVertexAttribArray(position_loc);
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+            
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    glDisableClientState(GL_VERTEX_ARRAY);
 
+    glDisableVertexAttribArray(position_loc);
+    
     glUseProgram(0);
   }
   else
   {
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    glVertexPointer(2, GL_FLOAT, 0, coords.data());
+    glVertexPointer(2, GL_FLOAT, 0, positions.data());
     glColor3ub(rgb.r, rgb.g, rgb.b);
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -217,27 +224,27 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
 {
-  std::vector<float> coords;
+  std::vector<float> positions;
 
   float start_x = fmodf(offset.x, size_.width);
   float start_y = fmodf(offset.y, size_.height);
 
   for(float x = start_x; x < Framebuffer::get_width(); x += size_.width)
   {
-    coords.push_back(x);
-    coords.push_back(0);
+    positions.push_back(x);
+    positions.push_back(0);
 
-    coords.push_back(x);
-    coords.push_back(static_cast<float>(Framebuffer::get_height()));
+    positions.push_back(x);
+    positions.push_back(static_cast<float>(Framebuffer::get_height()));
   }
 
   for(float y = start_y; y < Framebuffer::get_height(); y += size_.height)
   {
-    coords.push_back(0);
-    coords.push_back(y);
+    positions.push_back(0);
+    positions.push_back(y);
 
-    coords.push_back(static_cast<float>(Framebuffer::get_width()));
-    coords.push_back(y);
+    positions.push_back(static_cast<float>(Framebuffer::get_width()));
+    positions.push_back(y);
   }
 
   if (true)
@@ -252,19 +259,22 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 
     glUniform4f(color_loc, rgba.r/255.0f, rgba.g/255.0f, rgba.b/255.0f, rgba.a/255.0f);
 
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, coords.data());
-    glDrawArrays(GL_LINES, 0, coords.size()/2);
-    glDisableClientState(GL_VERTEX_ARRAY);
+    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    glEnableVertexAttribArray(position_loc);
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
 
+    glDrawArrays(GL_LINES, 0, positions.size()/2);
+
+    glDisableVertexAttribArray(position_loc);
+    
     glUseProgram(0);
   }
   else
   {
     glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(2, GL_FLOAT, 0, coords.data());
-    glDrawArrays(GL_LINES, 0, coords.size()/2);
+    glVertexPointer(2, GL_FLOAT, 0, positions.data());
+    glDrawArrays(GL_LINES, 0, positions.size()/2);
     glDisableClientState(GL_VERTEX_ARRAY);
   }
 }

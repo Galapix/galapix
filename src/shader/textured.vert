@@ -1,4 +1,4 @@
-#version 330
+#version 330 core
 
 uniform mat4 projection;
 uniform mat4 modelview;
@@ -10,9 +10,8 @@ varying vec2 texcoord_v;
 
 void main(void)
 {
-  texcoord_v = texcoord + position*0.00001;
-  //gl_Position = projection * modelview * (gl_Vertex*0.00001 + (vec4(position, 0, 0)));
-  gl_Position = projection * modelview * gl_Vertex;
+  texcoord_v = texcoord;
+  gl_Position = projection * modelview * vec4(position, 0, 1);
 }
 
 /* EOF */

@@ -101,21 +101,15 @@ public:
         GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
 
         glEnableVertexAttribArray(texcoord_loc);
-        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
-
         glEnableVertexAttribArray(position_loc);
+
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
         glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        glVertexPointer(2, GL_FLOAT, 0, positions.data());
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-        glDisableClientState(GL_VERTEX_ARRAY);
-
-        glDisableVertexAttribArray(texcoord_loc);
         glDisableVertexAttribArray(position_loc);
+        glDisableVertexAttribArray(texcoord_loc);
 
         glUseProgram(0);
       }
@@ -173,21 +167,15 @@ public:
         GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
 
         glEnableVertexAttribArray(texcoord_loc);
-        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
-
         glEnableVertexAttribArray(position_loc);
+        
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
         glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
-
-        glEnableClientState(GL_VERTEX_ARRAY);
-
-        glVertexPointer(2, GL_FLOAT, 0, positions.data());
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-        glDisableClientState(GL_VERTEX_ARRAY);
-
-        glDisableVertexAttribArray(texcoord_loc);
         glDisableVertexAttribArray(position_loc);
+        glDisableVertexAttribArray(texcoord_loc);
 
         glUseProgram(0);
       }
