@@ -36,9 +36,6 @@ public:
 
     glGenTextures(1, &handle); 
     glBindTexture(GL_TEXTURE_2D, handle);
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
     
     int gl_format = GL_RGB;
     switch(src->get_format())
@@ -54,6 +51,31 @@ public:
       default:
         assert(!"Texture: Not supposed to be reached");
     }
+    
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
+    
+#ifndef HAVE_OPENGLES2
+    glTexImage2D(GL_TEXTURE_2D, 0, gl_format,
+                 size.width, size.height,
+                 0, /* border */
+                 gl_format,
+                 GL_UNSIGNED_BYTE,
+                 nullptr);
+
+    for(int y = 0; y < srcrect.get_height(); ++y)
+    {
+      uint8_t* line_start = src->get_data() +
+        (src->get_pitch() * (srcrect.top + y)) +
+        (srcrect.left * src->get_bytes_per_pixel());
+      
+      glTexSubImage2D(GL_TEXTURE_2D, 0,
+                      0, y, // offset
+                      srcrect.get_width(), 1, // width, height
+                      gl_format, GL_UNSIGNED_BYTE,
+                      line_start);
+    }
+#else
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
 
     glTexImage2D(GL_TEXTURE_2D, 0, gl_format,
                  size.width, size.height,
@@ -61,7 +83,8 @@ public:
                  gl_format,
                  GL_UNSIGNED_BYTE,
                  src->get_data() + (src->get_pitch() * srcrect.top) + (srcrect.left * src->get_bytes_per_pixel()));
-
+#endif
+    
     assert_gl("packing image texture");
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
