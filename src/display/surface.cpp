@@ -18,8 +18,6 @@
 
 #include "display/surface.hpp"
 
-#include <iostream>
-
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
 
@@ -62,19 +60,30 @@ public:
       const float right = srcrect.right / texture->get_width();
       const float bottom = srcrect.bottom / texture->get_height();
 
-      glBegin(GL_QUADS);
-      glTexCoord2f(left, top);
-      glVertex2f(dstrect.left, dstrect.top);
+      std::array<float, 2*4> uvs = {
+        left, top,
+        right, top,
+        right, bottom,
+        left, bottom,
+      };
+      
+      std::array<float, 2*4> coords = {
+        dstrect.left, dstrect.top,
+        dstrect.right, dstrect.top,
+        dstrect.right, dstrect.bottom,
+        dstrect.left, dstrect.bottom,
+      };     
 
-      glTexCoord2f(right, top);
-      glVertex2f(dstrect.right, dstrect.top);
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      
+      glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
+      glVertexPointer(2, GL_FLOAT, 0, coords.data());
 
-      glTexCoord2f(right, bottom);
-      glVertex2f(dstrect.right, dstrect.bottom);
+      glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-      glTexCoord2f(left, bottom);
-      glVertex2f(dstrect.left, dstrect.bottom);
-      glEnd();
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      glDisableClientState(GL_VERTEX_ARRAY);
     }
   }
 
@@ -88,19 +97,30 @@ public:
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glColor3f(1.0f, 1.0f, 1.0f);
 
-      glBegin(GL_QUADS);
-      glTexCoord2f(uv.left, uv.top);
-      glVertex2f(rect.left, rect.top);
+      const std::array<float, 2*4> uvs = {
+        uv.left, uv.top,
+        uv.right, uv.top,
+        uv.right, uv.bottom,
+        uv.left, uv.bottom,
+      };
+      
+      const std::array<float, 2*4> coords = {
+        rect.left, rect.top,
+        rect.right, rect.top,
+        rect.right, rect.bottom,
+        rect.left, rect.bottom,  
+      };
+      
+      glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+      glEnableClientState(GL_VERTEX_ARRAY);
+      
+      glTexCoordPointer(2, GL_FLOAT, 0, uvs.data());
+      glVertexPointer(2, GL_FLOAT, 0, coords.data());
 
-      glTexCoord2f(uv.right, uv.top);
-      glVertex2f(rect.right, rect.top);
+      glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-      glTexCoord2f(uv.right, uv.bottom);
-      glVertex2f(rect.right, rect.bottom);
-
-      glTexCoord2f(uv.left, uv.bottom);
-      glVertex2f(rect.left, rect.bottom);
-      glEnd();
+      glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+      glDisableClientState(GL_VERTEX_ARRAY);
     }
   }
 

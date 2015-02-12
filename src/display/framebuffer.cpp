@@ -89,75 +89,69 @@ void
 Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
   glColor3ub(rgb.r, rgb.g, rgb.b);
-
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(rect.left,  rect.top);
-  glVertex2f(rect.right, rect.top);
-  glVertex2f(rect.right, rect.bottom);
-  glVertex2f(rect.left,  rect.bottom);
-  glEnd();
+    
+  const std::array<float, 2*4> coords = {
+    rect.left, rect.top,
+    rect.right, rect.top,
+    rect.right, rect.bottom,
+    rect.left, rect.bottom,  
+  };
+      
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(2, GL_FLOAT, 0, coords.data());
+  glDrawArrays(GL_LINE_LOOP, 0, 4);
+  glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void
 Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 {
   glColor3ub(rgb.r, rgb.g, rgb.b);
-  glBegin(GL_QUADS);
-  glVertex2f(rect.left,  rect.top);
-  glVertex2f(rect.right, rect.top);
-  glVertex2f(rect.right, rect.bottom);
-  glVertex2f(rect.left,  rect.bottom);
-  glEnd();
-}
-
-void
-Framebuffer::draw_grid(int num_cells)
-{
-  glBegin(GL_LINES);
-  //  if (grid_color)
-  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-  //else
-  //  glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-
-  int cell_width = Framebuffer::get_width()/num_cells;
-  for(int x = 1; x < num_cells; ++x)
-  {
-    glVertex2i(x*cell_width, 0);
-    glVertex2i(x*cell_width, Framebuffer::get_height());
-  }
-
-  int cell_height = Framebuffer::get_height()/num_cells;
-  for(int y = 1; y < num_cells; ++y)
-  {
-    glVertex2i(0, y*cell_height);
-    glVertex2i(Framebuffer::get_width(), y*cell_height);
-  }
-
-  glEnd();
+  
+  std::array<float, 2*4> coords = {
+    rect.left, rect.top,
+    rect.right, rect.top,
+    rect.right, rect.bottom,
+    rect.left, rect.bottom,
+  };
+      
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(2, GL_FLOAT, 0, coords.data());
+  glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+  glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
-{
-  glBegin(GL_LINES);
-  glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
-
+{ 
+  std::vector<float> coords;
+  
   float start_x = fmodf(offset.x, size_.width);
   float start_y = fmodf(offset.y, size_.height);
 
   for(float x = start_x; x < Framebuffer::get_width(); x += size_.width)
   {
-    glVertex2f(x, 0);
-    glVertex2f(x, static_cast<float>(Framebuffer::get_height()));
+    coords.push_back(x);
+    coords.push_back(0);
+    
+    coords.push_back(x);
+    coords.push_back(static_cast<float>(Framebuffer::get_height()));
   }
 
   for(float y = start_y; y < Framebuffer::get_height(); y += size_.height)
   {
-    glVertex2f(0, y);
-    glVertex2f(static_cast<float>(Framebuffer::get_width()), y);
+    coords.push_back(0);
+    coords.push_back(y);
+    
+    coords.push_back(static_cast<float>(Framebuffer::get_width()));
+    coords.push_back(y);
   }
 
-  glEnd();  
+  glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glVertexPointer(2, GL_FLOAT, 0, coords.data());
+  glDrawArrays(GL_LINES, 0, coords.size()/2);
+  glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 int

@@ -55,7 +55,6 @@ public:
   static void clear(const RGBA& rgba);
   static void draw_rect(const Rectf& rect, const RGB& rgb);
   static void fill_rect(const Rectf& rect, const RGB& rgb);
-  static void draw_grid(int num_cells);
   static void draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rgba);
 
   static SoftwareSurfacePtr screenshot();
