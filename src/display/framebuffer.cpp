@@ -68,7 +68,7 @@ Framebuffer::init()
     throw std::runtime_error(str.str());
   }
 #endif
-  
+
   print_gl_string("GL_VENDOR", GL_VENDOR);
   print_gl_string("GL_RENDERER", GL_RENDERER);
   print_gl_string("GL_VERSION", GL_VERSION);
@@ -93,12 +93,13 @@ Framebuffer::begin_render()
   s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
                             static_cast<float>(size.height), 0.0f,
                             1000.0f, -1000.0f);
+  assert_gl("Framebuffer::begin_render");
 }
 
 void
 Framebuffer::end_render()
 {
-
+  assert_gl("Framebuffer::end_render");
 }
 
 void
@@ -126,6 +127,8 @@ Framebuffer::clear(const RGBA& rgba)
 void
 Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
+  assert_gl("Framebuffer::draw_rect enter");
+
   const std::array<float, 2*4> positions = {
     rect.left, rect.top,
     rect.right, rect.top,
@@ -151,14 +154,18 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     glDrawArrays(GL_LINE_LOOP, 0, 4);
 
     glDisableVertexAttribArray(position_loc);
-    
+
     glUseProgram(0);
   }
+
+  assert_gl("Framebuffer::draw_rect leave");
 }
 
 void
 Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 {
+  assert_gl("Framebuffer::fill_rect enter");
+
   std::array<float, 2*4> positions = {
     rect.left, rect.top,
     rect.right, rect.top,
@@ -179,18 +186,22 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
     GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
     glEnableVertexAttribArray(position_loc);
     glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
-            
+
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
     glDisableVertexAttribArray(position_loc);
-    
+
     glUseProgram(0);
   }
+
+  assert_gl("Framebuffer::fill_rect leave");
 }
 
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
 {
+  assert_gl("Framebuffer::draw_grid enter");
+
   std::vector<float> positions;
 
   float start_x = fmodf(offset.x, size_.width);
@@ -232,9 +243,11 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     glDrawArrays(GL_LINES, 0, positions.size()/2);
 
     glDisableVertexAttribArray(position_loc);
-    
+
     glUseProgram(0);
   }
+
+  assert_gl("Framebuffer::draw_grid leave");
 }
 
 int

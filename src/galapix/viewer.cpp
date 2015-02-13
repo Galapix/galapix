@@ -141,7 +141,6 @@ void
 Viewer::draw()
 {
   m_mark_for_redraw = false;
-  Framebuffer::clear(m_background_colors[m_background_color]);
 
   bool clip_debug = false;
 
@@ -186,6 +185,8 @@ Viewer::draw()
 
   Framebuffer::set_modelview(modelview);
   Framebuffer::begin_render();
+  Framebuffer::clear(m_background_colors[m_background_color]);
+
   if (clip_debug)
   {
     Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));

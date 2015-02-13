@@ -51,6 +51,8 @@ public:
 
   void draw(const Rectf& srcrect, const Rectf& dstrect)
   {
+    assert_gl("SurfaceImpl::draw enter");
+
     if (texture)
     {
       const float left = srcrect.left / texture->get_width();
@@ -100,10 +102,14 @@ public:
         glUseProgram(0);
       }
     }
+
+    assert_gl("SurfaceImpl::draw leave");
   }
 
   void draw(const Rectf& rect)
   {
+    assert_gl("SurfaceImpl::draw enter");
+
     if (texture)
     {
       const std::array<float, 2*4> texcoords = {
@@ -136,7 +142,7 @@ public:
 
         glEnableVertexAttribArray(texcoord_loc);
         glEnableVertexAttribArray(position_loc);
-        
+
         glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
         glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
 
@@ -148,6 +154,8 @@ public:
         glUseProgram(0);
       }
     }
+
+    assert_gl("SurfaceImpl::draw leave");
   }
 
   void draw(const Vector2f& pos)

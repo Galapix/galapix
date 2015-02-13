@@ -34,6 +34,8 @@ public:
   {
     assert(src);
 
+    assert_gl("TextureImpl enter");
+
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_2D, handle);
 
