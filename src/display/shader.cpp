@@ -82,6 +82,12 @@ std::string read_text_file(const std::string& filename)
 GLuint compile_shader(GLenum shader_type, const std::string& filename)
 {
   std::string source = read_text_file(filename);
+
+#ifdef HAVE_OPENGLES2
+  source = "#version 100\n" + source;
+#else
+  source = "#version 330 core\n" + source;
+#endif
   
   std::cout << ">>> compiling '" << filename << "':\n" << source << std::endl;
   
