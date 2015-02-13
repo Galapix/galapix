@@ -118,8 +118,9 @@ class Project:
 
     def build(self):
         self.env = Environment(ENV = os.environ,
-                               CPPPATH=["src", "external/logmich/include/"])
-        self.env.Append(CPPPATH=["external/glm-0.9.6.1/"])
+                               CPPPATH=["src",
+                                        "external/logmich/include/",
+                                        "external/glm-0.9.6.1/"])
 
         opts = Variables(["custom.py"], ARGUMENTS)
         opts.Add("CXX", "C++ Compiler")
@@ -150,7 +151,7 @@ class Project:
     def build_liblogmich(self):
         self.liblogmich_env = self.env.Clone()
         self.liblogmich = self.liblogmich_env.StaticLibrary("logmich", ["external/logmich/src/log.cpp",
-                                                                   "external/logmich/src/logger.cpp"])
+                                                                        "external/logmich/src/logger.cpp"])
 
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
@@ -159,6 +160,7 @@ class Project:
         if use_opengles2():
             self.libgalapix_env.Append(LIBS = ['GLESv2'])
             self.libgalapix_env.Append(LIBPATH=["/opt/vc/lib"])
+            self.libgalapix_env.Append(CPPPATH=["/opt/vc/include"])
             self.libgalapix_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
         else:
             self.libgalapix_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
@@ -199,6 +201,7 @@ class Project:
         if use_opengles2():
             sdl_env.Append(LIBS = ['GLESv2'])
             sdl_env.Append(LIBPATH=["/opt/vc/lib"])
+            sdl_env.Append(CPPPATH=["/opt/vc/include"])
             sdl_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
         else:
             sdl_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
@@ -225,6 +228,7 @@ class Project:
         if use_opengles2():
             gtk_env.Append(LIBS = ['GLESv2'])
             gtk_env.Append(LIBPATH=["/opt/vc/lib"])
+            gtk_env.Append(CPPPATH=["/opt/vc/include"])
             gtk_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
         else:
             gtk_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
@@ -249,7 +253,14 @@ class Project:
         libgtest = gtest_env.StaticLibrary("gtest", "external/gtest-1.7.0/src/gtest-all.cc")
         libgtest_main = gtest_env.StaticLibrary("gtest_main", "external/gtest-1.7.0/src/gtest_main.cc")
 
-        gtest_env.Append(LIBS=[self.libgalapix_sdl, self.libgalapix, self.libgalapix_util, "mhash"])
+        gtest_env.Append(LIBS=[self.libgalapix_sdl, self.libgalapix, self.libgalapix_util, self.liblogmich,
+                               "boost_system", "boost_filesystem", "jpeg"])
+        gtest_env.ParseConfig("pkg-config --cflags --libs libexif | sed 's/-I/-isystem/g'")
+        gtest_env.ParseConfig("pkg-config --cflags --libs sqlite3 | sed 's/-I/-isystem/g'")
+        gtest_env.ParseConfig("pkg-config --cflags --libs mhash | sed 's/-I/-isystem/g'")
+        gtest_env.ParseConfig("pkg-config --cflags --libs libcurl | sed 's/-I/-isystem/g'")
+        gtest_env.ParseConfig("pkg-config --cflags --libs Magick++ | sed 's/-I/-isystem/g'")
+        gtest_env.ParseConfig("pkg-config --cflags --libs libpng  | sed 's/-I/-isystem/g'")
         prog = gtest_env.Program("test_galapix",
                                  Glob("test/*_test.cpp")
                                  + libgtest_main
@@ -271,7 +282,9 @@ class Project:
 
     def build_extra_apps(self):
         libgalapix_extra_apps_env = self.libgalapix_env.Clone()
-        libgalapix_extra_apps_env.Prepend(LIBS=[self.libgalapix_util, self.libgalapix, "mhash"])
+        libgalapix_extra_apps_env.Prepend(LIBS=[self.libgalapix_util, self.libgalapix, self.liblogmich])
+        libgalapix_extra_apps_env.ParseConfig("pkg-config --cflags --libs sqlite3 | sed 's/-I/-isystem/g'")
+        libgalapix_extra_apps_env.ParseConfig("pkg-config --cflags --libs mhash | sed 's/-I/-isystem/g'")
         for filename in Glob("extra/*.cpp", strings=True):
             Alias("extra", libgalapix_extra_apps_env.Program(filename[:-4], filename))
 
