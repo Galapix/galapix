@@ -19,31 +19,30 @@
 #ifndef HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
 #define HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <glm/glm.hpp>
 
 #include "math/size.hpp"
+#include "util/opengl.hpp"
 #include "util/software_surface.hpp"
-
+
 class RGB;
 class RGBA;
 class Size;
 class Sizef;
 class Vector2f;
 class Rectf;
-
-#ifdef NDEBUG
-void assert_gl(const char* message);
-#else
-#  define assert_gl(x)
-#endif
-
+
 /** Generic OpenGL helper functions */
 class Framebuffer
 {
 private:
   static Size size;
+
+public:
+  static GLuint s_texured_prg;
+  static GLuint s_flatcolor_prg;
+  static glm::mat4 s_projection;
+  static glm::mat4 s_modelview;
 
 public:
   static void init();
@@ -55,9 +54,13 @@ public:
   static void clear(const RGBA& rgba);
   static void draw_rect(const Rectf& rect, const RGB& rgb);
   static void fill_rect(const Rectf& rect, const RGB& rgb);
-  static void draw_grid(int num_cells);
   static void draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rgba);
 
+  static void set_modelview(const glm::mat4& modelview);
+
+  static void begin_render();
+  static void end_render();
+  
   static SoftwareSurfacePtr screenshot();
   static void apply_gamma_ramp(float contrast, float brightness, float gamma);
 };

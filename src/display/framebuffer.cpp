@@ -23,29 +23,43 @@
 #include <stdexcept>
 #include <math.h>
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
+#include "display/shader.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
 
 Size Framebuffer::size;
+GLuint Framebuffer::s_texured_prg = 0;
+GLuint Framebuffer::s_flatcolor_prg = 0;
+glm::mat4 Framebuffer::s_projection;
+glm::mat4 Framebuffer::s_modelview;
 
-#ifndef assert_gl
-void assert_gl(const char* message)
+namespace {
+
+void print_gl_string(const char* prefix, GLenum name)
 {
-  GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << "assert_gl(): OpenGLError while '" << message << "': "
-        << gluErrorString(error);
-    throw std::runtime_error(msg.str());
+  const GLubyte* ret = glGetString(name);
+  if (ret == 0)
+  {
+    std::cerr << "error getting string: " << prefix << std::endl;
+  }
+  else
+  {
+    std::cerr << prefix << ": " << ret << std::endl;
   }
 }
-#endif
+
+} // namespace
 
-void 
+void
 Framebuffer::init()
 {
-  // Init Glew 
+#ifndef HAVE_OPENGLES2
+  // Init Glew
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
@@ -53,31 +67,51 @@ Framebuffer::init()
     str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
     throw std::runtime_error(str.str());
   }
-  
-  if (!GLEW_ARB_texture_rectangle)
-  {
-    throw std::runtime_error("Framebuffer::init(): OpenGL ARB_texture_rectangle extension not found, but required");
-  }
+#endif
+
+  print_gl_string("GL_VENDOR", GL_VENDOR);
+  print_gl_string("GL_RENDERER", GL_RENDERER);
+  print_gl_string("GL_VERSION", GL_VERSION);
+  print_gl_string("GL_SHADING_LANGUAGE_VERSION", GL_SHADING_LANGUAGE_VERSION);
+  // print_gl_string("GL_EXTENSIONS", GL_EXTENSIONS);
+
+  // FIXME: dirty, those never get deleted or anything
+  s_texured_prg = create_program("src/shader/textured.vert",
+                                 "src/shader/textured.frag");
+  s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
+                                   "src/shader/flatcolor.frag");
+
+  // FIXME: Dirty!
+  //GLuint vao;
+  //glGenVertexArrays(1, &vao);
+  //glBindVertexArray(vao);
+}
+
+void
+Framebuffer::begin_render()
+{
+  s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
+                            static_cast<float>(size.height), 0.0f,
+                            1000.0f, -1000.0f);
+  assert_gl("Framebuffer::begin_render");
+}
+
+void
+Framebuffer::end_render()
+{
+  assert_gl("Framebuffer::end_render");
 }
 
 void
 Framebuffer::reshape(const Size& size_)
-{ 
+{
   size = size_;
 
   glViewport(0, 0, size.width, size.height);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glOrtho(0.0, size.width, size.height, 0.0, 1000.0, -1000.0);
 
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  
-  // Magic Voodoo to get pixel perfect graphics, see:
-  //   http://www.opengl.org/resources/faq/technical/transformations.htm
-  // On Nvidia this seems to break things, instead of fixing them, so
-  // we don't use it, since the results are already perfect even without it.
-  // glTranslated(0.375, 0.375, 0.0);
+  s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
+                            static_cast<float>(size.height), 0.0f,
+                            1000.0f, -1000.0f);
 }
 
 void
@@ -93,84 +127,127 @@ Framebuffer::clear(const RGBA& rgba)
 void
 Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
-    
-  glColor3ub(rgb.r, rgb.g, rgb.b);
+  assert_gl("Framebuffer::draw_rect enter");
 
-  glBegin(GL_LINE_LOOP);
-  glVertex2f(rect.left,  rect.top);
-  glVertex2f(rect.right, rect.top);
-  glVertex2f(rect.right, rect.bottom);
-  glVertex2f(rect.left,  rect.bottom);
-  glEnd();
+  const std::array<float, 2*4> positions = {
+    rect.left, rect.top,
+    rect.right, rect.top,
+    rect.right, rect.bottom,
+    rect.left, rect.bottom,
+  };
+
+  {
+    GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
+
+    glUseProgram(s_flatcolor_prg);
+    glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
+
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
+    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    glEnableVertexAttribArray(position_loc);
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
+    glDrawArrays(GL_LINE_LOOP, 0, 4);
+
+    glDisableVertexAttribArray(position_loc);
+
+    glUseProgram(0);
+  }
+
+  assert_gl("Framebuffer::draw_rect leave");
 }
 
 void
 Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 {
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
+  assert_gl("Framebuffer::fill_rect enter");
 
-  glColor3ub(rgb.r, rgb.g, rgb.b);
-  glBegin(GL_QUADS);
-  glVertex2f(rect.left,  rect.top);
-  glVertex2f(rect.right, rect.top);
-  glVertex2f(rect.right, rect.bottom);
-  glVertex2f(rect.left,  rect.bottom);
-  glEnd();
-}
+  std::array<float, 2*4> positions = {
+    rect.left, rect.top,
+    rect.right, rect.top,
+    rect.right, rect.bottom,
+    rect.left, rect.bottom,
+  };
 
-void
-Framebuffer::draw_grid(int num_cells)
-{
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
- 
-  glBegin(GL_LINES);
-  //  if (grid_color)
-  glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
-  //else
-  //  glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
-
-  int cell_width = Framebuffer::get_width()/num_cells;
-  for(int x = 1; x < num_cells; ++x)
   {
-    glVertex2i(x*cell_width, 0);
-    glVertex2i(x*cell_width, Framebuffer::get_height());
+    GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
+    glUseProgram(s_flatcolor_prg);
+    glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
+
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
+    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    glEnableVertexAttribArray(position_loc);
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glDisableVertexAttribArray(position_loc);
+
+    glUseProgram(0);
   }
 
-  int cell_height = Framebuffer::get_height()/num_cells;
-  for(int y = 1; y < num_cells; ++y)
-  {
-    glVertex2i(0, y*cell_height);
-    glVertex2i(Framebuffer::get_width(), y*cell_height);
-  }
-
-  glEnd();
+  assert_gl("Framebuffer::fill_rect leave");
 }
 
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
 {
-  glDisable(GL_TEXTURE_RECTANGLE_ARB);
- 
-  glBegin(GL_LINES);
-  glColor4ub(rgba.r, rgba.g, rgba.b, rgba.a);
+  assert_gl("Framebuffer::draw_grid enter");
+
+  std::vector<float> positions;
 
   float start_x = fmodf(offset.x, size_.width);
   float start_y = fmodf(offset.y, size_.height);
 
   for(float x = start_x; x < Framebuffer::get_width(); x += size_.width)
   {
-    glVertex2f(x, 0);
-    glVertex2f(x, static_cast<float>(Framebuffer::get_height()));
+    positions.push_back(x);
+    positions.push_back(0);
+
+    positions.push_back(x);
+    positions.push_back(static_cast<float>(Framebuffer::get_height()));
   }
 
   for(float y = start_y; y < Framebuffer::get_height(); y += size_.height)
   {
-    glVertex2f(0, y);
-    glVertex2f(static_cast<float>(Framebuffer::get_width()), y);
+    positions.push_back(0);
+    positions.push_back(y);
+
+    positions.push_back(static_cast<float>(Framebuffer::get_width()));
+    positions.push_back(y);
   }
 
-  glEnd();  
+  {
+    GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
+    glUseProgram(s_flatcolor_prg);
+
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+    glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
+                       1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
+    glUniform4f(color_loc, rgba.r/255.0f, rgba.g/255.0f, rgba.b/255.0f, rgba.a/255.0f);
+
+    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    glEnableVertexAttribArray(position_loc);
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
+    glDrawArrays(GL_LINES, 0, positions.size()/2);
+
+    glDisableVertexAttribArray(position_loc);
+
+    glUseProgram(0);
+  }
+
+  assert_gl("Framebuffer::draw_grid leave");
 }
 
 int
@@ -193,6 +270,12 @@ Framebuffer::screenshot()
   glReadPixels(0, 0, surface->get_width(), surface->get_height(),
                GL_RGB, GL_UNSIGNED_BYTE, surface->get_data());
   return surface->vflip();
+}
+
+void
+Framebuffer::set_modelview(const glm::mat4& modelview)
+{
+  s_modelview = modelview;
 }
 
 void

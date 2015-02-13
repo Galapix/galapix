@@ -99,15 +99,6 @@ FileReader::read_url(const char* name, URL& value) const
 }
 
 bool
-FileReader::read_vector(const char* name, Vector3f& value) const
-{
-  if (impl.get())
-    return impl->read_vector(name, value);
-  else
-    return false;
-}
-
-bool
 FileReader::read_rgba(const char* name, RGBA& value) const
 {
   if (impl.get())

@@ -23,7 +23,6 @@
 
 #include "util/file_writer.hpp"
 #include "math/rgba.hpp"
-#include "math/vector3f.hpp"
 #include "math/size.hpp"
 
 class SExprFileWriter : public FileWriter
@@ -46,7 +45,6 @@ public:
   virtual void write_rgba(const char* name, const RGBA&);
   virtual void write_bool(const char* name, bool);
   virtual void write_string(const char* name, const std::string&);
-  virtual void write_vector(const char* name, const Vector3f&);
   virtual void write_size(const char* name, const Size&);
 
   template<class E, class F>

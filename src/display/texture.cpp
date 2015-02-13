@@ -18,10 +18,9 @@
 
 #include "display/texture.hpp"
 
-#include <GL/glew.h>
-
-#include "math/rect.hpp"
 #include "display/framebuffer.hpp"
+#include "math/rect.hpp"
+#include "util/opengl.hpp"
 
 class TextureImpl
 {
@@ -35,13 +34,11 @@ public:
   {
     assert(src);
 
-    glGenTextures(1, &handle); 
-    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, handle);
-    glEnable(GL_TEXTURE_RECTANGLE_ARB);
+    assert_gl("TextureImpl enter");
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
-    
+    glGenTextures(1, &handle);
+    glBindTexture(GL_TEXTURE_2D, handle);
+
     int gl_format = GL_RGB;
     switch(src->get_format())
     {
@@ -57,26 +54,41 @@ public:
         assert(!"Texture: Not supposed to be reached");
     }
 
-    glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, gl_format,
+    glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
+
+#ifdef HAVE_OPENGLES2
+    SoftwareSurfacePtr subsurf = src->crop(srcrect);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, gl_format,
+                 size.width, size.height,
+                 0, /* border */
+                 gl_format,
+                 GL_UNSIGNED_BYTE,
+                 subsurf->get_data());
+#else
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
+
+    glTexImage2D(GL_TEXTURE_2D, 0, gl_format,
                  size.width, size.height,
                  0, /* border */
                  gl_format,
                  GL_UNSIGNED_BYTE,
                  src->get_data() + (src->get_pitch() * srcrect.top) + (srcrect.left * src->get_bytes_per_pixel()));
+#endif
 
     assert_gl("packing image texture");
-    
-    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_S,     GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_WRAP_T,     GL_CLAMP_TO_EDGE);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     assert_gl("setting texture parameters");
   }
 
   ~TextureImpl()
   {
-    glDeleteTextures(1, &handle);    
+    glDeleteTextures(1, &handle);
   }
 };
 
@@ -94,7 +106,7 @@ Texture::Texture(const SoftwareSurfacePtr& src, const Rect& srcrect) :
 void
 Texture::bind()
 {
-  glBindTexture(GL_TEXTURE_RECTANGLE_ARB, impl->handle);
+  glBindTexture(GL_TEXTURE_2D, impl->handle);
 }
 
 int

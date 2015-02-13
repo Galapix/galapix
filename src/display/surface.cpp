@@ -18,23 +18,18 @@
 
 #include "display/surface.hpp"
 
+#include <glm/ext.hpp>
+
+#include "display/shader.hpp"
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
-
+
 class SurfaceImpl
 {
 public:
   TexturePtr texture;
   Rectf   uv;
   Size    size;
-  
-  SurfaceImpl(const TexturePtr& texture_, const Rectf& uv_, const Size& size_)
-    : texture(texture_),
-      uv(uv_),
-      size(size_)
-  {
-    //std::cout << uv << std::endl;
-  }
 
   SurfaceImpl(const SoftwareSurfacePtr& src, const Rect& srcrect) :
     texture(),
@@ -44,65 +39,123 @@ public:
     assert(src);
 
     texture = Texture::create(src, srcrect);
-    
-    uv = Rectf(Vector2f(0, 0), srcrect.get_size());
+
+    uv = Rectf(Vector2f(0, 0), Sizef(1.0f, 1.0f));
 
     size = Size(srcrect.get_size());
   }
-  
+
   ~SurfaceImpl()
   {
   }
 
   void draw(const Rectf& srcrect, const Rectf& dstrect)
   {
+    assert_gl("SurfaceImpl::draw enter");
+
     if (texture)
     {
-      texture->bind();
-      glEnable(GL_BLEND);
-      glEnable(GL_TEXTURE_RECTANGLE_ARB);
-      glColor3f(1.0f, 1.0f, 1.0f);       
+      const float left = srcrect.left / texture->get_width();
+      const float top = srcrect.top / texture->get_height();
+      const float right = srcrect.right / texture->get_width();
+      const float bottom = srcrect.bottom / texture->get_height();
 
-      glBegin(GL_QUADS);
-      glTexCoord2f(srcrect.left, srcrect.top);
-      glVertex2f(dstrect.left, dstrect.top);
+      std::array<float, 2*4> texcoords = {
+        left, top,
+        right, top,
+        right, bottom,
+        left, bottom,
+      };
 
-      glTexCoord2f(srcrect.right, srcrect.top);
-      glVertex2f(dstrect.right, dstrect.top);
+      std::array<float, 2*4> positions = {
+        dstrect.left, dstrect.top,
+        dstrect.right, dstrect.top,
+        dstrect.right, dstrect.bottom,
+        dstrect.left, dstrect.bottom,
+      };
 
-      glTexCoord2f(srcrect.right, srcrect.bottom);
-      glVertex2f(dstrect.right, dstrect.bottom);
+      {
+        texture->bind();
 
-      glTexCoord2f(srcrect.left, srcrect.bottom);
-      glVertex2f(dstrect.left, dstrect.bottom);
-      glEnd();
-    }    
+        glUseProgram(Framebuffer::s_texured_prg);
+        glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
+
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "projection"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "modelview"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
+        GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+        GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
+
+        glEnableVertexAttribArray(texcoord_loc);
+        glEnableVertexAttribArray(position_loc);
+
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
+        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glDisableVertexAttribArray(position_loc);
+        glDisableVertexAttribArray(texcoord_loc);
+
+        glUseProgram(0);
+      }
+    }
+
+    assert_gl("SurfaceImpl::draw leave");
   }
 
   void draw(const Rectf& rect)
   {
+    assert_gl("SurfaceImpl::draw enter");
+
     if (texture)
     {
-      texture->bind();
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glEnable(GL_TEXTURE_RECTANGLE_ARB);
-      glColor3f(1.0f, 1.0f, 1.0f);       
+      const std::array<float, 2*4> texcoords = {
+        uv.left, uv.top,
+        uv.right, uv.top,
+        uv.right, uv.bottom,
+        uv.left, uv.bottom,
+      };
 
-      glBegin(GL_QUADS);
-      glTexCoord2f(uv.left, uv.top);
-      glVertex2f(rect.left, rect.top);
+      const std::array<float, 2*4> positions = {
+        rect.left, rect.top,
+        rect.right, rect.top,
+        rect.right, rect.bottom,
+        rect.left, rect.bottom,
+      };
 
-      glTexCoord2f(uv.right, uv.top);
-      glVertex2f(rect.right, rect.top);
+      {
+        texture->bind();
 
-      glTexCoord2f(uv.right, uv.bottom);
-      glVertex2f(rect.right, rect.bottom);
+        glUseProgram(Framebuffer::s_texured_prg);
+        glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
 
-      glTexCoord2f(uv.left, uv.bottom);
-      glVertex2f(rect.left, rect.bottom);
-      glEnd();
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "projection"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "modelview"),
+                           1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
+
+        GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+        GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
+
+        glEnableVertexAttribArray(texcoord_loc);
+        glEnableVertexAttribArray(position_loc);
+
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
+        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glDisableVertexAttribArray(position_loc);
+        glDisableVertexAttribArray(texcoord_loc);
+
+        glUseProgram(0);
+      }
     }
+
+    assert_gl("SurfaceImpl::draw leave");
   }
 
   void draw(const Vector2f& pos)
@@ -144,7 +197,7 @@ void
 Surface::draw(const Rectf& srcrect, const Rectf& dstrect)
 {
   if (impl.get())
-    impl->draw(srcrect, dstrect);  
+    impl->draw(srcrect, dstrect);
 }
 
 void
@@ -155,10 +208,10 @@ Surface::draw(const Rectf& rect)
 }
 
 int
-Surface::get_width() const 
+Surface::get_width() const
 {
   if (impl.get())
-    return impl->size.width; 
+    return impl->size.width;
   else
     return 0;
 }
@@ -167,7 +220,7 @@ int
 Surface::get_height() const
 {
   if (impl.get())
-    return impl->size.height; 
+    return impl->size.height;
   else
     return 0;
 }
@@ -180,5 +233,5 @@ Surface::get_size() const
   else
     return Size();
 }
-
+
 /* EOF */
