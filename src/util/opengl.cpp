@@ -23,10 +23,10 @@
 
 namespace {
 
-const GLubyte* gl_error_string(GLenum err)
+const char* gl_error_string(GLenum err)
 {
 #ifndef HAVE_OPENGLES2
-  return gluErrorString(err);
+  return reinterpret_cast<const char*>(gluErrorString(err));
 #else
   switch(err)
   {
