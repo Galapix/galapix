@@ -75,7 +75,8 @@ SDLViewer::process_event(const SDL_Event& event)
         {
           case SPNAV_EVENT_MOTION:
             {
-              if (0)
+              if (false)
+              {
                 log_debug("MotionEvent: (%s, %s, %s) (%s, %s, %s)",
                           spnav_ev->motion.x,
                           spnav_ev->motion.y,
@@ -84,7 +85,8 @@ SDLViewer::process_event(const SDL_Event& event)
                           spnav_ev->motion.rx,
                           spnav_ev->motion.ry,
                           spnav_ev->motion.rz);
-
+              }
+              
               float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
 
               if (spnav_ev->motion.y > 0)
@@ -101,8 +103,10 @@ SDLViewer::process_event(const SDL_Event& event)
             break;
 
           case SPNAV_EVENT_BUTTON:
-            if (0)
+            if (false)
+            {
               std::cout << "ButtonEvent: " << spnav_ev->button.press << spnav_ev->button.bnum << std::endl;
+            }
 
             if (spnav_ev->button.bnum == 0 && spnav_ev->button.press)
               m_viewer.get_state().set_angle(0.0f);

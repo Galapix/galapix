@@ -42,6 +42,7 @@ public:
   ~ImageCollection();
 
   void add(WorkspaceItemPtr image);
+  void remove(WorkspaceItemPtr image);
 
   void clear() { m_images.clear(); }
 

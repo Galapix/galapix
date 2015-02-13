@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_JOBS_FILE_ENTRY_GENERATION_JOB_HPP
 
 #include <functional>
-#include <boost/signals2.hpp>
+#include <boost/signals2/signal.hpp>
 
 #include "util/url.hpp"
 #include "job/job.hpp"

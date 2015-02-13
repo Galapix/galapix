@@ -1,6 +1,9 @@
 *~
-.sconf_temp/
-.sconsign.dblite
-build/
-cache/
-config.log
+/.sconf_temp/
+/.sconsign.dblite
+/build/
+/build/
+/cache/
+/cache/
+/config.log
+

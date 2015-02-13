@@ -24,6 +24,10 @@
 #define GLM_FORCE_RADIANS
 #include <glm/gtx/io.hpp>
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
@@ -140,26 +144,33 @@ void
 Viewer::draw()
 {
   m_mark_for_redraw = false;
-  Framebuffer::clear(m_background_colors[m_background_color]);
 
   bool clip_debug = false;
 
-  glPushMatrix();
+  glm::mat4 modelview;
 
   if (clip_debug)
   {
-    glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
-    glScalef(0.5f, 0.5f, 1.0f);
-    glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
+    modelview *= glm::translate(glm::vec3(static_cast<float>(Framebuffer::get_width())/2.0f,
+                                          static_cast<float>(Framebuffer::get_height())/2.0f,
+                                          0.0f));
+    modelview *= glm::scale(glm::vec3(0.5f, 0.5f, 1.0f));
+    modelview *= glm::translate(glm::vec3(-static_cast<float>(Framebuffer::get_width())/2.0f,
+                                          -static_cast<float>(Framebuffer::get_height())/2.0f,
+                                          0.0f));
   }
 
   Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
 
   if (m_state.get_angle() != 0.0f)
   {
-    glTranslatef(static_cast<float>(Framebuffer::get_width())/2.0f, static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
-    glRotatef(m_state.get_angle(), 0.0f, 0.0f, 1.0f); // Rotates around 0.0
-    glTranslatef(-static_cast<float>(Framebuffer::get_width())/2.0f, -static_cast<float>(Framebuffer::get_height())/2.0f, 0.0f);
+    modelview *= glm::translate(glm::vec3(static_cast<float>(Framebuffer::get_width())/2.0f,
+                                          static_cast<float>(Framebuffer::get_height())/2.0f,
+                                          0.0f));
+    modelview *= glm::rotate(glm::radians(m_state.get_angle()), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotates around 0.0
+    modelview *= glm::translate(glm::vec3(-static_cast<float>(Framebuffer::get_width())/2.0f,
+                                          -static_cast<float>(Framebuffer::get_height())/2.0f,
+                                          0.0f));
 
     // FIXME: We enlarge the cliprect so much that we can rotate
     // freely, however this enlargement creates a cliprect that
@@ -172,21 +183,28 @@ Viewer::draw()
     cliprect.bottom = center.y + diagonal;
   }
 
-  glTranslatef(m_state.get_offset().x, m_state.get_offset().y, 0.0f);
-  glScalef(m_state.get_scale(), m_state.get_scale(), 1.0f);
+  modelview *= glm::translate(glm::vec3(m_state.get_offset().x, m_state.get_offset().y, 0.0f));
+  modelview *= glm::scale(glm::vec3(m_state.get_scale(), m_state.get_scale(), 1.0f));
+
+  Framebuffer::set_modelview(modelview);
+  Framebuffer::begin_render();
+  Framebuffer::clear(m_background_colors[m_background_color]);
 
   if (clip_debug)
+  {
     Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));
+  }
 
   m_workspace->draw(cliprect,
-                  m_state.get_scale());
+                    m_state.get_scale());
 
   left_tool->draw();
   middle_tool->draw();
   right_tool->draw();
-
-  glPopMatrix();
-
+  Framebuffer::end_render();
+  
+  Framebuffer::set_modelview(glm::mat4());
+  Framebuffer::begin_render();
   if (m_draw_grid)
   {
     if (m_pin_grid)
@@ -200,6 +218,7 @@ Viewer::draw()
       Framebuffer::draw_grid(m_grid_offset, m_grid_size, m_grid_color);
     }
   }
+  Framebuffer::end_render();
 }
 
 void

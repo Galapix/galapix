@@ -40,7 +40,7 @@ Selection::add_images(const ImageCollection& images)
 void
 Selection::remove_image(const WorkspaceItemPtr& image)
 {
-  m_images.add(image);
+  m_images.remove(image);
 }
 
 void

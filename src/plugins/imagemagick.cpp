@@ -101,7 +101,6 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
   int width  = image.columns();
   int height = image.rows();
-
   int shift;
 
   // FIXME: QuantumRange is a macro that needs the type Quantum, but

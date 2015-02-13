@@ -2,6 +2,7 @@
 
 import glob
 import os
+import platform
 
 # CacheDir("cache")
 
@@ -36,6 +37,11 @@ preset_linkflags = {
     "debug":   [],
     "development": []
     }
+
+
+def use_opengles2():
+    return platform.machine() == 'armv6l'
+
 
 class Project:
     def __init__(self):
@@ -99,20 +105,21 @@ class Project:
             print "Error: libjpeg is missing"
             Exit(1)
 
-        if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", autoadd=0):
-            print "Error: libGL is missing"
-            Exit(1)
-
-        if not conf.CheckLibWithHeader("GLEW", "GL/glew.h", "c++", autoadd=0):
-            print "Error: libGLEW is missing"
-            Exit(1)
+        if not use_opengles2():
+            if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", autoadd=0):
+                print "Error: libGL is missing"
+                Exit(1)
+            
+            if not conf.CheckLibWithHeader("GLEW", "GL/glew.h", "c++", autoadd=0):
+                print "Error: libGLEW is missing"
+                Exit(1)
 
         self.env = conf.Finish()
 
     def build(self):
-        self.env = Environment(ENV = {"PATH" : os.environ["PATH"],
-                                      "HOME" : os.environ["HOME"]},
+        self.env = Environment(ENV = os.environ,
                                CPPPATH=["src", "external/logmich/include/"])
+        self.env.Append(CPPPATH=["external/glm-0.9.6.1/"])
 
         opts = Variables(["custom.py"], ARGUMENTS)
         opts.Add("CXX", "C++ Compiler")
@@ -148,10 +155,17 @@ class Project:
     def build_libgalapix(self):
         self.libgalapix_env = self.env.Clone()
         self.libgalapix_env.Append(CPPDEFINES = self.optional_defines,
-                                   LIBS = ["GL", "GLEW", "sqlite3", "jpeg", "exif", "boost_system", "boost_filesystem"] + self.optional_libs)
+                                   LIBS = ["sqlite3", "jpeg", "exif", "boost_system", "boost_filesystem"] + self.optional_libs)
+        if use_opengles2():
+            self.libgalapix_env.Append(LIBS = ['GLESv2'])
+            self.libgalapix_env.Append(LIBPATH=["/opt/vc/lib"])
+            self.libgalapix_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
+        else:
+            self.libgalapix_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
+        
         self.libgalapix_env.ParseConfig("pkg-config --cflags --libs libpng  | sed 's/-I/-isystem/g'")
         self.libgalapix_env.ParseConfig("pkg-config --cflags --libs sdl2 | sed 's/-I/-isystem/g'")
-        self.libgalapix_env.ParseConfig("Magick++-config --libs --cppflags | sed 's/-I/-isystem/g'")
+        self.libgalapix_env.ParseConfig("pkg-config --cflags --libs Magick++ | sed 's/-I/-isystem/g'")
         self.libgalapix_env.ParseConfig("pkg-config --cflags --libs libcurl | sed 's/-I/-isystem/g'")
 
         self.libgalapix_util = self.libgalapix_env.StaticLibrary("galapix_util",
@@ -180,11 +194,18 @@ class Project:
         sdl_env = self.env.Clone()
         sdl_env.Append(CPPDEFINES = ["GALAPIX_SDL"] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util, self.liblogmich,
-                               "GL", "GLEW", "sqlite3", "jpeg", "exif", "mhash", "boost_system", "boost_filesystem"] + self.optional_libs,
+                               "sqlite3", "jpeg", "exif", "mhash", "boost_system", "boost_filesystem"] + self.optional_libs,
                        OBJPREFIX="sdl.")
+        if use_opengles2():
+            sdl_env.Append(LIBS = ['GLESv2'])
+            sdl_env.Append(LIBPATH=["/opt/vc/lib"])
+            sdl_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
+        else:
+            sdl_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
+        
         sdl_env.ParseConfig("pkg-config --cflags --libs libpng | sed 's/-I/-isystem/g'")
         sdl_env.ParseConfig("pkg-config --cflags --libs sdl2 | sed 's/-I/-isystem/g'")
-        sdl_env.ParseConfig("Magick++-config --libs --cppflags | sed 's/-I/-isystem/g'")
+        sdl_env.ParseConfig("pkg-config --cflags --libs Magick++ | sed 's/-I/-isystem/g'")
         sdl_env.ParseConfig("pkg-config --cflags --libs libcurl | sed 's/-I/-isystem/g'")
 
         self.libgalapix_sdl = sdl_env.StaticLibrary("galapix_sdl", self.sdl_sources)
@@ -194,16 +215,23 @@ class Project:
                                 self.libgalapix_sdl))
         Alias("all", "galapix.sdl")
 
-
     def build_galapix_gtk(self):
         gtk_env = self.env.Clone()
         gtk_env.Append(CPPDEFINES = ["GALAPIX_GTK"] + self.optional_defines,
                        LIBS = [self.libgalapix, self.libgalapix_util, self.liblogmich,
-                               "GL", "GLEW", "sqlite3", "jpeg", "exif", "mhash", "boost_system", "boost_filesystem"] + self.optional_libs,
+                               "sqlite3", "jpeg", "exif", "mhash", "boost_system", "boost_filesystem"] + self.optional_libs,
                        OBJPREFIX="gtk.")
+
+        if use_opengles2():
+            gtk_env.Append(LIBS = ['GLESv2'])
+            gtk_env.Append(LIBPATH=["/opt/vc/lib"])
+            gtk_env.Append(CPPDEFINES = [('HAVE_OPENGLES2')])
+        else:
+            gtk_env.Append(LIBS = ['GL', 'GLU', 'GLEW'])
+        
         gtk_env.ParseConfig("pkg-config --cflags --libs libpng | sed 's/-I/-isystem/g'")
         gtk_env.ParseConfig("pkg-config --cflags --libs sdl2 | sed 's/-I/-isystem/g'")
-        gtk_env.ParseConfig("Magick++-config --libs --cppflags | sed 's/-I/-isystem/g'")
+        gtk_env.ParseConfig("pkg-config --cflags --libs Magick++ | sed 's/-I/-isystem/g'")
         gtk_env.ParseConfig("pkg-config --cflags --libs libcurl | sed 's/-I/-isystem/g'")
         gtk_env.ParseConfig("pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2 | sed 's/-I/-isystem/g'")
         gtk_env.Program("galapix.gtk",
@@ -252,6 +280,7 @@ class Project:
             Default("extra")
 
 Alias("all", ["extra", "test"] + DEFAULT_TARGETS)
+
 project = Project()
 project.build()
 

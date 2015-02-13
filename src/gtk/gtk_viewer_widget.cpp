@@ -16,12 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-
 #include <gtkmm.h>
 
+#include "util/opengl.hpp"
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"

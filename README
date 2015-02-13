@@ -69,7 +69,7 @@ Required Libraries and Tools:
   * librsvg  - http://librsvg.sourceforge.net/
   * libexif  - http://libexif.sourceforge.net/
 
-On Ubuntu 14.04 one can install all required libraries with this call:
+On Ubuntu 15.04 one can install all required libraries with this call:
 
   sudo apt-get install \
     libboost1.55-dev \

@@ -164,6 +164,7 @@ Workspace::sort()
             [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
               return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
+  relayout();
 }
 
 void

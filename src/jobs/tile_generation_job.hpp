@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_JOBS_TILE_GENERATION_JOB_HPP
 
 #include <functional>
-#include <boost/signals2.hpp>
+#include <boost/signals2/signal.hpp>
 #include <mutex>
 
 #include "database/entries/old_file_entry.hpp"

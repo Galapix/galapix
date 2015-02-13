@@ -18,6 +18,8 @@
 
 #include "galapix/image_collection.hpp"
 
+#include <algorithm>
+
 ImageCollection::ImageCollection() :
   m_images()
 {
@@ -31,6 +33,13 @@ void
 ImageCollection::add(WorkspaceItemPtr image)
 {
   m_images.push_back(image);
+}
+
+void
+ImageCollection::remove(WorkspaceItemPtr image)
+{
+  m_images.erase(std::remove(m_images.begin(), m_images.end(), image),
+                 m_images.end());
 }
 
 ImageCollection::iterator
