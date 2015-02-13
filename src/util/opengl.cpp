@@ -20,6 +20,8 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <stdlib.h>
+#include <iostream>
 
 namespace {
 
@@ -65,11 +67,11 @@ const char* gl_error_string(GLenum err)
 void assert_gl_helper(const char* filename, int line, const char* message)
 {
   GLenum error = glGetError();
-  if(error != GL_NO_ERROR) {
-    std::ostringstream msg;
-    msg << filename << ":" << line << ": assert_gl(): OpenGLError while '" << message << "': "
-        << gl_error_string(error);
-    throw std::runtime_error(msg.str());
+  if(error != GL_NO_ERROR)
+  {
+    std::cerr << filename << ":" << line << ": assert_gl(): OpenGLError while '" << message << "': "
+              << gl_error_string(error) << std::endl;
+    abort();
   }
 }
 
