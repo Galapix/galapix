@@ -2,8 +2,9 @@
 /.sconf_temp/
 /.sconsign.dblite
 /build/
-/build/
+/build.waf/
 /cache/
 /cache/
 /config.log
-
+/.waf-*
+/.lock-waf_linux2_build
