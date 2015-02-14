@@ -17,13 +17,13 @@
 */
 
 #include <iostream>
+#include <logmich/log.hpp>
 
 #include "archive/archive_thread.hpp"
-#include "util/log.hpp"
 
 int main(int argc, char** argv)
 {
-  g_logger.set_log_level(Logger::kDebug);
+  logmich::set_log_level(logmich::kDebug);
 
   ArchiveThread m_archive("/tmp/foobar");
 

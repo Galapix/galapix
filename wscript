@@ -60,6 +60,8 @@ def options(opt):
     gr = opt.add_option_group('Galapix options')
     gr.add_option('--build-galapix.gtk', action='store_true', default=False, help='Build galapix.gtk')
     gr.add_option('--build-galapix.sdl', action='store_true', default=True, help='Build galapix.sdl')
+    gr.add_option('--build-tests', action='store_true', default=True, help='Build tests')
+    gr.add_option('--build-extra', action='store_true', default=True, help='Build extra')
 
 def configure(conf):
     conf.load('g++')
@@ -83,9 +85,10 @@ def configure(conf):
     conf.check_cfg(package='Magick++', args=['--cflags', '--libs'], uselib_store="MAGICKXX")
     conf.check_cfg(package='libpng', args=['--cflags', '--libs'])
     conf.check_cxx(lib='jpeg')
-    conf.check_cfg(package='gtkmm-2.4', args=['--cflags', '--libs'], uselib_store='GTKMM')
-    conf.check_cfg(package='libglademm-2.4', args=['--cflags', '--libs'], uselib_store='GLADEMM')
-    conf.check_cfg(package='gtkglextmm-1.2', args=['--cflags', '--libs'], uselib_store='GTKGLEXTMM')
+    if conf.check_cfg(package='gtkmm-2.4', args=['--cflags', '--libs'], uselib_store='GTKMM', mandatory=False) and \
+       conf.check_cfg(package='libglademm-2.4', args=['--cflags', '--libs'], uselib_store='GLADEMM', mandatory=False) and \
+       conf.check_cfg(package='gtkglextmm-1.2', args=['--cflags', '--libs'], uselib_store='GTKGLEXTMM', mandatory=False):
+        conf.env["HAVE_GTKMM"] = 1
 
     if use_opengles2():
         conf.env["OPENGL_LIBS"] = ['GLESv2']
@@ -93,14 +96,21 @@ def configure(conf):
         conf.env["OPENGL_INCLUDES"] = ["/opt/vc/include"]
         conf.env["OPENGL_DEFINES"] = ['HAVE_OPENGLES2']
     else:
-        conf.check_cfg(package='glew', args=['--cflags', '--libs'])
         conf.check_cfg(package='gl', args=['--cflags', '--libs'])
+        conf.check_cfg(package='glew', args=['--cflags', '--libs'])
 
+        # build OPENGL uselib from GL and GLEW
+        for lib in ["GL", "GLEW"]:
+            for t in ["LIB", "LIBPATH", "INCLUDES", "DEFINES"]:
+                conf.env.append_value(t + "_" + "OPENGL", conf.env[t + "_" + lib])
+
+    print conf.env
+                
     if conf.check_cxx(lib="spnav", header_name="spnav.h", uselib_store="SPNAV", mandatory=False):
         conf.env["HAVE_SPNAV"] = 1
 
     # fudge around to turn -I flags into -isystem flags
-    for l in ['BOOST', 'GL', 'GLEW', 'LIBEXIF','LIBPNG', 'MAGICKXX', 'SDL2']:
+    for l in ['BOOST', 'OPENGL', 'LIBEXIF','LIBPNG', 'MAGICKXX', 'SDL2']:
         if type(conf.env['INCLUDES_' + l]) == str:
             conf.env['INCLUDES_' + l] = [conf.env['INCLUDES_' + l]]
         cxxflags = [i for sublist in [('-isystem', p) for p in conf.env['INCLUDES_' + l]] for i in sublist]
@@ -112,14 +122,11 @@ def configure(conf):
     conf.env["CXXFLAGS_pthread"] = ["-pthread"]
     conf.env["LINKFLAGS_pthread"] = ["-pthread"]
 
-    # print(conf.env)
     conf.env.append_value("CXXFLAGS", ["-std=c++1y"])
 
     # conf.write_config_header('config.h')
 
 def build(bld):
-    # print(bld.env)
-
     galapix_sources = [
         "src/galapix/galapix.cpp",
         "src/galapix/viewer.cpp",
@@ -163,16 +170,6 @@ def build(bld):
 
     libgalapix_sources = [p for p in libgalapix_sources if p not in galapix_sources]
 
-    # build gtest
-    bld.stlib(target="gtest",
-              source=["external/gtest-1.7.0/src/gtest-all.cc"],
-              includes=["external/gtest-1.7.0/include/",
-                        "external/gtest-1.7.0/"])
-    bld.stlib(target="gtest_main",
-              source=["external/gtest-1.7.0/src/gtest_main.cc"],
-              includes=["external/gtest-1.7.0/include/",
-                        "external/gtest-1.7.0/"])
-
     # build glm
     bld(name='glm',
         export_includes="external/glm-0.9.6.1/")
@@ -196,16 +193,60 @@ def build(bld):
                 source=galapix_sources + sdl_sources + optional_sources,
                 defines=["GALAPIX_SDL"],
                 includes=["src/"],
-                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                     "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "GL", "GLEW", "BOOST"])
+                use=["galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                     "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
-    bld.program(target="galapix.gtk",
-                source=galapix_sources + gtk_sources + optional_sources,
-                defines=["GALAPIX_GTK"],
-                includes=["src/"],
-                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                     "GTKMM", "GLADEMM", "GTKGLEXTMM",
-                     "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "GL", "GLEW", "BOOST"])
+    if bld.env["HAVE_GTKMM"]:
+        bld.program(target="galapix.gtk",
+                    source=galapix_sources + gtk_sources + optional_sources,
+                    defines=["GALAPIX_GTK"],
+                    includes=["src/"],
+                    use=["galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                         "GTKMM", "GLADEMM", "GTKGLEXTMM",
+                         "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+
+    if bld.options.build_extra:
+        for filename in glob("extra/*.cpp"):
+            bld.program(target=filename[:-4],
+                        source=filename,
+                        includes=["src/"],
+                        use=["galapix_sdl", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                             "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+        bld.program(target="extra/imagescaler/imagescaler",
+                    source="extra/imagescaler/imagescaler.cpp",
+                    includes=["src/"],
+                    use=["galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                         "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+
+    if bld.options.build_tests:
+        # build gtest
+        bld.stlib(target="gtest",
+                  source=["external/gtest-1.7.0/src/gtest-all.cc"],
+                  includes=["external/gtest-1.7.0/include/",
+                            "external/gtest-1.7.0/"],
+                  export_includes=["external/gtest-1.7.0/include/"])
+        bld.stlib(target="gtest_main",
+                  source=["external/gtest-1.7.0/src/gtest_main.cc"],
+                  includes=["external/gtest-1.7.0/include/",
+                            "external/gtest-1.7.0/"],
+                  export_includes=["external/gtest-1.7.0/include/"])
+        
+        # build automatic tests
+        bld.program(target="test_galapix",
+                    source=glob("test/*_test.cpp"),
+                    includes=["src/"],
+                    use=["gtest", "gtest_main",
+                         "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                         "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+
+        # build interactive tests
+        for filename in glob("uitest/*_test.cpp"):
+            bld.program(target=filename[:-4],
+                        source=[filename],
+                        includes=["src/"],
+                        use=["galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                             "SDL2",
+                             "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
 # from waflib.Build import BuildContext, CleanContext, InstallContext, UninstallContext
 # for x in ['debug', 'release', 'profile']:

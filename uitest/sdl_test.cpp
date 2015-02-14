@@ -25,6 +25,7 @@
 
 int main(int argc, char** argv)
 {
+#if 0
   SoftwareSurfaceFactory factory;
 
   SDLWindow window(Size(800, 600), false, 0);
@@ -40,7 +41,7 @@ int main(int argc, char** argv)
     window.flip();
   }
   SDL_Delay(1000);
-  
+#endif
   return 0;
 }
 

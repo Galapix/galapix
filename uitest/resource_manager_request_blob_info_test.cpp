@@ -17,6 +17,7 @@
 */
 
 #include <thread>
+#include <logmich/log.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
@@ -31,7 +32,7 @@
 
 int main(int argc, char** argv)
 {
-  g_logger.set_log_level(Logger::kDebug);
+  logmich::set_log_level(logmich::kDebug);
 
   Database db("/tmp/resource_manager_test");
   JobManager job_manager(4);
@@ -51,6 +52,7 @@ int main(int argc, char** argv)
   int count = 0;
   for(int i = 1; i < argc; ++i)
   {
+#if 0
     ResourceLocator locator = ResourceLocator::from_string(argv[i]);
 
     resource_mgr.request_blob_info
@@ -70,6 +72,7 @@ int main(int argc, char** argv)
         count -= 1;
       });
     count += 1;
+#endif
   }
 
   log_debug("going into loop");

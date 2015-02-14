@@ -21,11 +21,11 @@
 
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
-#include "util/log.hpp"
+#include <logmich/log.hpp>
 
 int main(int argc, char** argv)
 {
-  g_logger.set_log_level(Logger::kDebug);
+  logmich::set_log_level(logmich::kDebug);
   DownloadManager downloader;
 
   for(int i = 1; i < argc; ++i)

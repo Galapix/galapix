@@ -31,7 +31,7 @@
 
 int main(int argc, char** argv)
 {
-  g_logger.set_log_level(Logger::kDebug);
+  logmich::set_log_level(logmich::kDebug);
 
   Database db("/tmp/resource_manager_test");
   JobManager job_manager(4);
@@ -47,10 +47,11 @@ int main(int argc, char** argv)
   database.start_thread();
 
   ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
-  
+
   int count = 0;
   for(int i = 1; i < argc; ++i)
   {
+#if 0
     ResourceLocator locator = ResourceLocator::from_string(argv[i]);
 
     resource_mgr.request_resource_info
@@ -73,11 +74,12 @@ int main(int argc, char** argv)
          count -= 1;
        });
     count += 1;
+#endif
   }
 
   log_debug("going into loop");
-  while(count > 0) 
-  { 
+  while(count > 0)
+  {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   log_debug("going out of loop");

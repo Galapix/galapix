@@ -23,14 +23,15 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/string_generator.hpp>
 
+#include <logmich/log.hpp>
+
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
-#include "util/log.hpp"
 
 int main(int argc, char** argv)
 {
-  g_logger.set_log_level(Logger::kDebug);
-
+  logmich::set_log_level(logmich::kDebug);
+  
   DownloadManager downloader;
 
   std::cout << "Commands: get, post, cancel, cancel_all" << std::endl;

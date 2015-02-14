@@ -18,6 +18,8 @@
 
 #include <iostream>
 
+#include <logmich/log.hpp>
+
 #include "archive/archive_manager.hpp"
 #include "generator/generator.hpp"
 #include "generator/generator_callbacks.hpp"
@@ -26,7 +28,6 @@
 #include "resource/archive_info.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/resource_info.hpp"
-#include "util/log.hpp"
 #include "util/software_surface_factory.hpp"
 
 class TestGeneratorCallbacks final : public GeneratorCallbacks
@@ -108,7 +109,7 @@ public:
 
 int main(int argc, char** argv)
 {
-  g_logger.set_log_level(Logger::kDebug);
+  logmich::set_log_level(logmich::kDebug);
 
   SoftwareSurfaceFactory surface_factory;
   DownloadManager download_mgr;
