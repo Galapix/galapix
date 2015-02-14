@@ -1,3 +1,6 @@
+#! /usr/bin/env python
+# -*- coding: utf-8 -*-
+
 # Galapix - an image viewer for large image collections
 # Copyright (C) 2015 Ingo Ruhnke <grumbel@gmx.de>
 #
@@ -16,12 +19,20 @@
 
 def options(opt):
     opt.load('compiler_cxx')
-    opt.add_option('--gtk', action='store', default=False, help='Build galapix.gtk')
-    opt.add_option('--sdl', action='store', default=True, help='Build galapix.sdl')
     opt.load('compiler_cxx boost')
+
+    gr = opt.add_option_group('Galapix options')
+    gr.add_option('--build-galapix.gtk', action='store_true', default=False, help='Build galapix.gtk')
+    gr.add_option('--build-galapix.sdl', action='store_true', default=True, help='Build galapix.sdl')
 
 def configure(conf):
     conf.load('g++')
+
+    conf.env.append_value("CXXFLAGS", ["-std=c++1y", "-O3", "-s", "-pthread"])
+    conf.env.append_value("INCLUDES", [
+        "src/"
+    ])
+
     conf.load('compiler_cxx boost')
     conf.check_boost(lib='system filesystem')
     conf.check_cfg(atleast_pkgconfig_version='0.0.0')
@@ -35,7 +46,9 @@ def configure(conf):
     conf.check_cfg(package='glew', args=['--cflags', '--libs'])
     conf.check_cfg(package='gl', args=['--cflags', '--libs'])
     conf.check_cxx(lib='jpeg')
-                
+
+    # conf.write_config_header('config.h')
+
     # conf.link_add_flags("-pthread")
 
     #if conf.CheckLibWithHeader("spnav", "spnav.h", "c++"):
@@ -43,10 +56,12 @@ def configure(conf):
     #    self.optional_defines += [("HAVE_SPACE_NAVIGATOR", 1)]
     #    self.optional_libs    += ["spnav"]
 
-    print(conf.env)
+    # print(conf.env)
 
 def build(bld):
     glob = bld.path.ant_glob
+
+    # print(bld.env)
 
     galapix_sources = [
         "src/display/framebuffer.cpp",
@@ -63,71 +78,61 @@ def build(bld):
 
     optional_sources = []
 
-    libgalapix_util_sources = \
-        glob("src/archive/*.cpp") + \
-        glob("src/network/*.cpp") + \
-        glob("src/generator/*.cpp") + \
-        glob("src/util/*.cpp") + \
-        glob("src/plugins/*.cpp") + \
-        glob("src/lisp/*.cpp") + \
-        glob("src/jobs/*.cpp") + \
-        glob("src/resource/*.cpp") + \
-        glob("src/math/*.cpp")
-
     libgalapix_sources = \
+        glob("src/archive/*.cpp") + \
         glob("src/database/*.cpp") + \
         glob("src/database/entries/*.cpp") + \
         glob("src/database/tables/*.cpp") + \
         glob("src/display/*.cpp") + \
         glob("src/galapix/*.cpp") + \
         glob("src/galapix/layouter/*.cpp") + \
+        glob("src/generator/*.cpp") + \
         glob("src/job/*.cpp") + \
+        glob("src/jobs/*.cpp") + \
+        glob("src/lisp/*.cpp") + \
+        glob("src/math/*.cpp") + \
+        glob("src/network/*.cpp") + \
+        glob("src/plugins/*.cpp") + \
+        glob("src/resource/*.cpp") + \
         glob("src/sqlite/*.cpp") + \
-        glob("src/tools/*.cpp")
-        # optional_sources
+        glob("src/tools/*.cpp") + \
+        glob("src/util/*.cpp")
 
-    liblogmich_sources = [
-        "external/logmich/src/log.cpp",
-        "external/logmich/src/logger.cpp"
-    ]
-        
-    extra_includes = [
-        "src/",
-        "external/logmich/include/",
-        "external/glm-0.9.6.1/"
-    ]
+    # build gtest
+    bld.stlib(target="gtest",
+              source=["external/gtest-1.7.0/src/gtest-all.cc"],
+              includes=["external/gtest-1.7.0/include/",
+                        "external/gtest-1.7.0/"])
+    bld.stlib(target="gtest_main",
+              source=["external/gtest-1.7.0/src/gtest_main.cc"],
+              includes=["external/gtest-1.7.0/include/",
+                        "external/gtest-1.7.0/"])
 
-    extra_cxxflags = ["-std=c++1y", "-O3", "-s", "-pthread"]
+    # build glm
+    bld(name='glm',
+        export_includes="external/glm-0.9.6.1/")
 
+    # build logmich
     bld.stlib(target="logmich",
-              source=liblogmich_sources,
-              cxxflags=extra_cxxflags,
-              includes=extra_includes)
-    
-    bld.stlib(target="galapix_util",
-              source=libgalapix_util_sources,
-              cxxflags=extra_cxxflags,
-              includes=extra_includes,
-              # uselibs are uppercase '-' is replaced with '_'
-              use=["SDL2", "LIBEXIF", "MAGICKXX"])
+              source=["external/logmich/src/log.cpp",
+                      "external/logmich/src/logger.cpp"],
+              includes="external/logmich/include/",
+              export_includes="external/logmich/include/")
 
+    # build galapix libraries
     bld.stlib(target="galapix",
               source=libgalapix_sources,
-              cxxflags=extra_cxxflags,
-              includes=extra_includes,
               # uselibs are uppercase '-' is replaced with '_'
-              use=["SDL2", "LIBEXIF", "MAGICKXX"])
+              use=["logmich", "glm",
+                   "SDL2", "LIBEXIF", "MAGICKXX"])
 
-    print(bld.env)
-    
     bld.program(target="galapix.sdl",
                 source=galapix_sources + optional_sources,
-                cxxflags=extra_cxxflags,
                 linkflags=["-pthread"],
-                includes=extra_includes,
-                use=["galapix_sdl", "galapix", "galapix_util", "logmich",
+                defines=["GALAPIX_SDL"],
+                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm",
                      "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "GL", "GLEW", "BOOST"])
 
-    print(bld.env)
+    # print(bld.env)
 
 # EOF #
