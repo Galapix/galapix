@@ -18,6 +18,40 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from glob import glob
+import platform
+
+APPNAME = 'galapix'
+VERSION = '0.3.0'
+
+profile_cxxflags = [ "-std=c++1y", "-O2", "-g3", "-pg" ]
+profile_linkflags = [ "-pg" ]
+
+debug_cxxflags = [ "-O0", "-g3" ]
+
+release_cxxflags = [ "-O3", "-s" ]
+
+warning_cxxflags = [
+    # "-ansi",
+    "-pedantic",
+    "-Wall",
+    "-Wextra",
+    "-Wno-c++0x-compat",
+    "-Wnon-virtual-dtor",
+    "-Weffc++",
+    "-Wconversion",
+    "-Werror",
+    "-Wshadow",
+    "-Wcast-qual",
+    "-Winit-self", # only works with >= -O1
+    "-Wno-unused-parameter",
+    # "-Winline",
+    # "-Wfloat-equal",
+    # "-Wunreachable-code",
+]
+
+def use_opengles2():
+    # check if it's a Raspberry Pi
+    return platform.machine() == 'armv6l'
 
 def options(opt):
     opt.load('compiler_cxx')
@@ -30,11 +64,6 @@ def options(opt):
 def configure(conf):
     conf.load('g++')
 
-    conf.env.append_value("CXXFLAGS", ["-std=c++1y", "-O3", "-s", "-pthread"])
-    conf.env.append_value("INCLUDES", [
-        "src/"
-    ])
-
     conf.load('compiler_cxx boost')
     conf.check_boost(lib='system filesystem')
     conf.check_cfg(atleast_pkgconfig_version='0.0.0')
@@ -45,20 +74,40 @@ def configure(conf):
     conf.check_cfg(package='libcurl', args=['--cflags', '--libs'])
     conf.check_cfg(package='Magick++', args=['--cflags', '--libs'], uselib_store="MAGICKXX")
     conf.check_cfg(package='libpng', args=['--cflags', '--libs'])
-    conf.check_cfg(package='glew', args=['--cflags', '--libs'])
-    conf.check_cfg(package='gl', args=['--cflags', '--libs'])
     conf.check_cxx(lib='jpeg')
+    conf.check_cfg(package='gtkmm-2.4', args=['--cflags', '--libs'], uselib_store='GTKMM')
+    conf.check_cfg(package='libglademm-2.4', args=['--cflags', '--libs'], uselib_store='GLADEMM')
+    conf.check_cfg(package='gtkglextmm-1.2', args=['--cflags', '--libs'], uselib_store='GTKGLEXTMM')
 
-    # conf.write_config_header('config.h')
+    if use_opengles2():
+        conf.env["OPENGL_LIBS"] = ['GLESv2']
+        conf.env["OPENGL_LIBPATH"] = ["/opt/vc/lib"]
+        conf.env["OPENGL_INCLUDES"] = ["/opt/vc/include"]
+        conf.env["OPENGL_DEFINES"] = ['HAVE_OPENGLES2']
+    else:
+        conf.check_cfg(package='glew', args=['--cflags', '--libs'])
+        conf.check_cfg(package='gl', args=['--cflags', '--libs'])
 
-    # conf.link_add_flags("-pthread")
+    if conf.check_cxx(lib="spnav", header_name="spnav.h", uselib_store="SPNAV", mandatory=False):
+        conf.env["HAVE_SPNAV"] = 1
 
-    #if conf.CheckLibWithHeader("spnav", "spnav.h", "c++"):
-    #    self.optional_sources += ["src/spnav/space_navigator.cpp"]
-    #    self.optional_defines += [("HAVE_SPACE_NAVIGATOR", 1)]
-    #    self.optional_libs    += ["spnav"]
+    # fudge around to turn -I flags into -isystem flags
+    for l in ['BOOST', 'GL', 'GLEW', 'LIBEXIF','LIBPNG', 'MAGICKXX', 'SDL2']:
+        if type(conf.env['INCLUDES_' + l]) == str:
+            conf.env['INCLUDES_' + l] = [conf.env['INCLUDES_' + l]]
+        cxxflags = [i for sublist in [('-isystem', p) for p in conf.env['INCLUDES_' + l]] for i in sublist]
+        conf.env.append_value('CXXFLAGS_' + l, cxxflags)
+        del conf.env['INCLUDES_' + l]
+
+    # pthread pseudo use-package
+    conf.env["CFLAGS_pthread"] = ["-pthread"]
+    conf.env["CXXFLAGS_pthread"] = ["-pthread"]
+    conf.env["LINKFLAGS_pthread"] = ["-pthread"]
 
     # print(conf.env)
+    conf.env.append_value("CXXFLAGS", ["-std=c++1y"])
+
+    # conf.write_config_header('config.h')
 
 def build(bld):
     # print(bld.env)
@@ -75,7 +124,14 @@ def build(bld):
         "src/sdl/sdl_viewer.cpp"
     ]
 
+    gtk_sources = [
+        "src/gtk/gtk_viewer.cpp",
+        "src/gtk/gtk_viewer_widget.cpp"
+    ]
+
     optional_sources = []
+    if bld.env['HAVE_SPNAV']:
+        optional_sources += ["src/spnav/space_navigator.cpp"]
 
     libgalapix_sources = \
         glob("src/archive/*.cpp") + \
@@ -124,16 +180,31 @@ def build(bld):
     bld.stlib(target="galapix",
               source=libgalapix_sources,
               # uselibs are uppercase '-' is replaced with '_'
+              includes=["src/"],
               use=["logmich", "glm",
                    "SDL2", "LIBEXIF", "MAGICKXX"])
 
     bld.program(target="galapix.sdl",
                 source=galapix_sources + sdl_sources + optional_sources,
-                linkflags=["-pthread"],
                 defines=["GALAPIX_SDL"],
-                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm",
+                includes=["src/"],
+                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV",
                      "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "GL", "GLEW", "BOOST"])
 
-    # print(bld.env)
+    bld.program(target="galapix.gtk",
+                source=galapix_sources + gtk_sources + optional_sources,
+                defines=["GALAPIX_GTK"],
+                includes=["src/"],
+                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV",
+                     "GTKMM", "GLADEMM", "GTKGLEXTMM",
+                     "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "GL", "GLEW", "BOOST"])
+
+# from waflib.Build import BuildContext, CleanContext, InstallContext, UninstallContext
+# for x in ['debug', 'release', 'profile']:
+#     for y in (BuildContext, CleanContext, InstallContext, UninstallContext):
+#         name = y.__name__.replace('Context','').lower()
+#         class tmp(y):
+#             cmd = name + '_' + x
+#             variant = x
 
 # EOF #
