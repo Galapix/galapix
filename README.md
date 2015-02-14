@@ -17,8 +17,8 @@ galapix supports a wide varity of image formats including JPEG, PNG,
 XCF (Gimp), KRA (Krita) and all stuff supported by ImageMagick.
 
 
-Portability:
-============
+Portability
+-----------
 
 galapix is written with GNU/Linux in mind, calls to external
 application, which are used to handle all kinds of file formats might
@@ -27,73 +27,73 @@ little details that will make portability to non-POSIX OSs problematic
 (thread and directory handling).
 
 
-Features:
-=========
+Features
+--------
 
-  * support for large image collections of tens of thousands of images
+* support for large image collections of tens of thousands of images
 
-  * support for extremely large images (gigapixel range)
+* support for extremely large images (gigapixel range)
 
-  * support for a wide varity of image formats (png, jpeg, xcf, kra,
-    svg and everything supported by ImageMagick)
+* support for a wide varity of image formats (png, jpeg, xcf, kra,
+  svg and everything supported by ImageMagick)
 
-  * support for a wide varity of archive formats (rar, zip, tar)
+* support for a wide varity of archive formats (rar, zip, tar)
 
-  * very fast once the cache is generated
+* very fast once the cache is generated
 
-  * flexible layouting functions
+* flexible layouting functions
 
-  * abiltiy to move images around and resize them on the workspace
+* abiltiy to move images around and resize them on the workspace
 
-  * very responsive, loading happens completly in the background and
-    never blocks interactivity
+* very responsive, loading happens completly in the background and
+  never blocks interactivity
 
-  * workspace layout can be saved and loaded 
+* workspace layout can be saved and loaded 
 
-  * Space Navigator is fully supported
+* Space Navigator is fully supported
 
 
 Required Libraries and Tools:
-=============================
+-----------------------------
 
-  * gtkmm    - http://www.gtkmm.org/en/
-  * SDL2     - https://libsdl.org/
-  * OpenGL   - http://www.opengl.org 
-  * SQlite3  - http://www.sqlite.org/
-  * libjpeg  - http://www.ijg.org/
-  * libpng   - http://www.libpng.org/pub/png/
-  * scons    - http://www.scons.org/ 
-  * GLEW     - http://glew.sourceforge.net/
-  * Magick++ - http://www.imagemagick.org/Magick%2B%2B/
-  * boost    - http://www.boost.org/
-  * librsvg  - http://librsvg.sourceforge.net/
-  * libexif  - http://libexif.sourceforge.net/
+* [gtkmm](http://www.gtkmm.org/en/)
+* [SDL2](https://libsdl.org/)
+* [OpenGL](http://www.opengl.org/)
+* [SQlite3](http://www.sqlite.org/)
+* [libjpeg](http://www.ijg.org/)
+* [libpng](http://www.libpng.org/pub/png/)
+* [scons](http://www.scons.org/)
+* [GLEW](http://glew.sourceforge.net/)
+* [Magick++](http://www.imagemagick.org/Magick%2B%2B/)
+* [boost](http://www.boost.org/)
+* [librsvg](http://librsvg.sourceforge.net/)
+* [libexif](http://libexif.sourceforge.net/)
 
 On Ubuntu 15.04 one can install all required libraries with this call:
 
-  sudo apt-get install \
-    libboost1.55-dev \
-    libcurl4-gnutls-dev \
-    libexif-dev \
-    libglademm-2.4-dev \
-    libglew1.5-dev \
-    libgtkglextmm-x11-1.2-dev \
-    libjpeg8-dev \
-    libmagick++-dev \
-    libpng12-dev \
-    libsdl2-dev \
-    libspnav-dev \
-    libsqlite3-dev \
-    scons
-
+    sudo apt-get install \
+      libboost1.55-dev \
+      libcurl4-gnutls-dev \
+      libexif-dev \
+      libglademm-2.4-dev \
+      libglew1.5-dev \
+      libgtkglextmm-x11-1.2-dev \
+      libjpeg8-dev \
+      libmagick++-dev \
+      libpng12-dev \
+      libsdl2-dev \
+      libspnav-dev \
+      libsqlite3-dev \
+      scons
+    
 The following packages are optional and used to handle some more
 exotic image formats:
 
-  sudo apt-get install \
-    librsvg2-bin \
-    ufraw \
-    krita \
-    xcftools
+    sudo apt-get install \
+      librsvg2-bin \
+      ufraw \
+      krita \
+      xcftools
 
 OpenGL is required as well, but not listed here, since installation
 might differ depending on the brand of graphics card. For other
@@ -102,32 +102,32 @@ required libraries should be part of most distributions.
 
 
 Compilation:
-============
+------------
 
 The easiest way to compile is to type:
 
-  scons
+    scons
 
 The rest should happen automatically.
 
 If you want to customize compiler options or other stuff you can do that
 by running:
   
-  scons CXX=g++-4.2 BUILD=debug ...
+    scons CXX=g++-4.2 BUILD=debug ...
 
 To get a list of available variables use:
 
-  scons -h
+    scons -h
 
 If the scons script fails to configure properly you can get additional
 information from "config.log".
 
 
 Running:
-========
+--------
 
-Galapix comes in two versions, one is galapix.sdl, a GUI-less SDL
-based version and galapix.gtk a GUI version. The Gtk version is at
+Galapix comes in two versions, one is `galapix.sdl`, a GUI-less SDL
+based version and `galapix.gtk` a GUI version. The Gtk version is at
 this point very incomplete and hasn't been tested much, but it might
 be easier to use then figuring out the keybinding used by the SDL
 version.
@@ -135,45 +135,45 @@ version.
 Galapix comes with a number of sub commands, allowing the user to either
 view images or pre-generate thumbnails. The most basic command is:
 
-  build/galapix.gtk view [FILES]...
+    build/galapix.gtk view [FILES]...
 
 Which displays the given files. To pregenerate only the small
 thumbnails you use:
 
-  build/galapix.gtk thumbgen [FILES]...
+    build/galapix.gtk thumbgen [FILES]...
 
 To generate not only the small thumbnails, but all tiles you use:
 
-  build/galapix.gtk prepare [FILES]...
+    build/galapix.gtk prepare [FILES]...
 
 The other available commands are mostly for debugging and have little
 actualy use.
 
-Via the -d flag you can specifiy a database, so that you can have
+Via the `-d` flag you can specifiy a database, so that you can have
 different databases for different files. If you give an empty string
--d "", no database file will be created, the database will resist in
+`-d ""`, no database file will be created, the database will resist in
 memory only.
 
 As a special gimmick you can run:
 
-  build/galapix.gtk view buildin://mandelbrot
+    build/galapix.gtk view buildin://mandelbrot
 
 To get a classic Mandelbrot set.
 
 
-Keyboard Commands for Galapix SDL:
-==================================
+Keyboard Commands for Galapix SDL
+---------------------------------
 
 Key       | Function
-----------+------------------------------
+----------|------------------------------
 F11       | toggle fullscreen
 t         | toggle trackball mode (mouse is grabbed and cursor hidden)
-1 	  | regular image layout
-2 	  | tight image layout
-3 	  | random image layout
+1         | regular image layout
+2         | tight image layout
+3         | random image layout
 4         | relayout images in a non-overlapping form
 5         | layout images in a tight fashion
-g 	  | toggle grid
+g         | toggle grid
 h         | reset zoom and scroll
 m         | switch to move/resize tools
 p         | switch pan/zoom tools
@@ -195,31 +195,30 @@ up        | reset view rotation to 0 degree
 escape    | exit galapix
 
 
-SpaceNavigator Support:
-=======================
+SpaceNavigator Support
+----------------------
 
 galapix supports the Space Navigator via the Open Source spacenavd daemon:
 
-  * http://spacenav.sourceforge.net
+  * [http://spacenav.sourceforge.net](http://spacenav.sourceforge.net)
 
 The 3Dconnexion's official 3dxsrv daemon is not supported, neither is
-directly reading from /dev/input/eventX.
+directly reading from `/dev/input/eventX`.
 
 
-Issues:
-=======
+Issues
+------
 
-  * Galapix is very picky about I/O, so if you have updatedb running in
-    the background or other indexing software, it can get very slow.
+Galapix is very picky about I/O, so if you have updatedb running in
+the background or other indexing software, it can get very slow.
 
-  * Incremental loading is not fully optimized, so you see more
-    artifacts then you should.
+Incremental loading is not fully optimized, so you see more artifacts
+then you should.
 
-  * Running multiple instances of galapix at once can lead to:
+Running multiple instances of galapix at once can lead to:
 
-terminate called after throwing an instance of 'SQLiteError'
-  what():  SQLiteStatement::~SQLiteStatement: column filename is not unique
-Aborted
+    terminate called after throwing an instance of 'SQLiteError'
+      what():  SQLiteStatement::~SQLiteStatement: column filename is not unique
+    Aborted
 
 
-# EOF #
