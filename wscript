@@ -65,7 +65,15 @@ def configure(conf):
     conf.load('g++')
 
     conf.load('compiler_cxx boost')
-    conf.check_boost(lib='system filesystem')
+
+    # this one fails to find the libraries on Raspberry Pi
+    # conf.check_boost(lib='system filesystem')
+
+    conf.check_cxx(lib=["boost_system", "boost_filesystem"],
+                   header_name="boost/filesystem.hpp",
+                   uselib_store="BOOST_FILESYSTEM")
+    conf.check_cxx(header_name="boost/signals2.hpp", uselib_store="BOOST_SIGNAL2")
+
     conf.check_cfg(atleast_pkgconfig_version='0.0.0')
     conf.check_cfg(package='sdl2', args=['--cflags', '--libs'])
     conf.check_cfg(package='libexif', args=['--cflags', '--libs'])
@@ -188,14 +196,14 @@ def build(bld):
                 source=galapix_sources + sdl_sources + optional_sources,
                 defines=["GALAPIX_SDL"],
                 includes=["src/"],
-                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV",
+                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                      "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "GL", "GLEW", "BOOST"])
 
     bld.program(target="galapix.gtk",
                 source=galapix_sources + gtk_sources + optional_sources,
                 defines=["GALAPIX_GTK"],
                 includes=["src/"],
-                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV",
+                use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                      "GTKMM", "GLADEMM", "GTKGLEXTMM",
                      "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "GL", "GLEW", "BOOST"])
 
