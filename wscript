@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from glob import glob
+
 def options(opt):
     opt.load('compiler_cxx')
     opt.load('compiler_cxx boost')
@@ -59,12 +61,9 @@ def configure(conf):
     # print(conf.env)
 
 def build(bld):
-    glob = bld.path.ant_glob
-
     # print(bld.env)
 
     galapix_sources = [
-        "src/display/framebuffer.cpp",
         "src/galapix/galapix.cpp",
         "src/galapix/viewer.cpp",
         "src/galapix/thumbnail_generator.cpp",
@@ -98,6 +97,8 @@ def build(bld):
         glob("src/tools/*.cpp") + \
         glob("src/util/*.cpp")
 
+    libgalapix_sources = [p for p in libgalapix_sources if p not in galapix_sources]
+
     # build gtest
     bld.stlib(target="gtest",
               source=["external/gtest-1.7.0/src/gtest-all.cc"],
@@ -127,7 +128,7 @@ def build(bld):
                    "SDL2", "LIBEXIF", "MAGICKXX"])
 
     bld.program(target="galapix.sdl",
-                source=galapix_sources + optional_sources,
+                source=galapix_sources + sdl_sources + optional_sources,
                 linkflags=["-pthread"],
                 defines=["GALAPIX_SDL"],
                 use=["galapix_sdl", "galapix", "galapix_util", "logmich", "glm",

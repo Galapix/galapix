@@ -164,18 +164,18 @@ ViewerCommand::run(const std::vector<URL>& urls)
 
   log_info("launching viewer");
 
-#ifdef GALAPIX_SDL
+#if defined(GALAPIX_SDL)
   Viewer viewer(&workspace);
   SDLViewer sdl_viewer(m_opts.geometry, m_opts.fullscreen, m_opts.anti_aliasing, viewer);
   viewer.layout_tight();
   viewer.zoom_to_selection();
   sdl_viewer.run();
-#endif
-
-#ifdef GALAPIX_GTK
+#elif defined(GALAPIX_GTK)
   GtkViewer gtk_viewer;
   gtk_viewer.set_workspace(&workspace);
   gtk_viewer.run();
+#else
+  #error "Neither GALAPIX_GTK not GALAPIX_SDL are defined"
 #endif
 
   log_info("viewer done");

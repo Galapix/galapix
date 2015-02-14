@@ -27,6 +27,8 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <logmich/log.hpp>
+
 #include "display/shader.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
@@ -281,10 +283,7 @@ Framebuffer::set_modelview(const glm::mat4& modelview)
 void
 Framebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
 {
-#ifdef GALAPIX_SDL
-  assert(!"not implemented");
-  //SDLFramebuffer::apply_gamma_ramp(contrast, brightness, gamma);
-#endif
+  log_error("not implemented: %1% %2% %3%", contrast, brightness, gamma);
 }
 
 /* EOF */
