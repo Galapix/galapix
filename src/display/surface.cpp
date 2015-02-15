@@ -77,16 +77,16 @@ public:
       {
         texture->bind();
 
-        glUseProgram(Framebuffer::s_texured_prg);
-        glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
+        glUseProgram(Framebuffer::s_textured_prg);
+        glUniform1i(get_uniform_location(Framebuffer::s_textured_prg, "tex"), 0);
 
-        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "projection"),
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_textured_prg, "projection"),
                            1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
-        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "modelview"),
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_textured_prg, "modelview"),
                            1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-        GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
-        GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
+        GLint position_loc = get_attrib_location(Framebuffer::s_textured_prg, "position");
+        GLint texcoord_loc = get_attrib_location(Framebuffer::s_textured_prg, "texcoord");
 
         glEnableVertexAttribArray(texcoord_loc);
         glEnableVertexAttribArray(position_loc);
@@ -129,16 +129,16 @@ public:
       {
         texture->bind();
 
-        glUseProgram(Framebuffer::s_texured_prg);
-        glUniform1i(get_uniform_location(Framebuffer::s_texured_prg, "tex"), 0);
+        glUseProgram(Framebuffer::s_textured_prg);
+        glUniform1i(get_uniform_location(Framebuffer::s_textured_prg, "tex"), 0);
 
-        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "projection"),
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_textured_prg, "projection"),
                            1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
-        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_texured_prg, "modelview"),
+        glUniformMatrix4fv(get_uniform_location(Framebuffer::s_textured_prg, "modelview"),
                            1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-        GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
-        GLint texcoord_loc = get_attrib_location(Framebuffer::s_texured_prg, "texcoord");
+        GLint position_loc = get_attrib_location(Framebuffer::s_textured_prg, "position");
+        GLint texcoord_loc = get_attrib_location(Framebuffer::s_textured_prg, "texcoord");
 
         glEnableVertexAttribArray(texcoord_loc);
         glEnableVertexAttribArray(position_loc);
