@@ -112,7 +112,7 @@ def configure(conf):
     conf.start_msg('Checking for Raspberry Pi')
     if use_opengles2():
         conf.end_msg("yes")
-        conf.env["LIBS_OPENGL"] = ['GLESv2']
+        conf.env["LIB_OPENGL"] = ['GLESv2']
         conf.env["LIBPATH_OPENGL"] = ["/opt/vc/lib"]
         conf.env["INCLUDES_OPENGL"] = ["/opt/vc/include"]
         conf.env["DEFINES_OPENGL"] = ['HAVE_OPENGLES2']
