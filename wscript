@@ -76,8 +76,8 @@ def options(opt):
     gr = opt.add_option_group('Galapix options')
     gr.add_option('--build-galapix-gtk', action='store_true', default=False, help='Build galapix.gtk')
     gr.add_option('--build-galapix-sdl', action='store_true', default=True, help='Build galapix.sdl')
-    gr.add_option('--build-tests', action='store_true', default=True, help='Build tests')
-    gr.add_option('--build-extra', action='store_true', default=True, help='Build extra')
+    gr.add_option('--build-tests', action='store_true', default=False, help='Build tests')
+    gr.add_option('--build-extra', action='store_true', default=False, help='Build extra')
     gr.add_option('--developer', action='store_true', default=False, help='Switch on extra warnings and verbosity')
 
 
@@ -134,7 +134,7 @@ def configure(conf):
     conf.env["LINKFLAGS_pthread"] = ["-pthread"]
 
     # glm pseudo uselib
-    conf.env["CXXFLAGS_glm"] = ["-isystem", "external/glm-0.9.6.1/"]
+    conf.env["CXXFLAGS_glm"] = ["-isystem", conf.path.find_dir("external/glm-0.9.6.1/").abspath()]
 
     includes_to_isystem(conf)
     conf.env.append_value("CXXFLAGS", ["-std=c++1y"])
