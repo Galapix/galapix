@@ -15,3 +15,6 @@ To update the ./waf script get the [latest sources](https://code.google.com/p/wa
 
     ./waf-light --tools=boost
 
+Compiling a single target with waf:
+
+    ./waf  -v --targets uitest/sdl_test
