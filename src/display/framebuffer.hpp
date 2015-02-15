@@ -38,7 +38,7 @@ private:
   static Size size;
 
 public:
-  static GLuint s_texured_prg;
+  static GLuint s_textured_prg;
   static GLuint s_flatcolor_prg;
   static glm::mat4 s_projection;
   static glm::mat4 s_modelview;

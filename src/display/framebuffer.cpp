@@ -36,7 +36,7 @@
 #include "util/raise_exception.hpp"
 
 Size Framebuffer::size;
-GLuint Framebuffer::s_texured_prg = 0;
+GLuint Framebuffer::s_textured_prg = 0;
 GLuint Framebuffer::s_flatcolor_prg = 0;
 glm::mat4 Framebuffer::s_projection;
 glm::mat4 Framebuffer::s_modelview;
@@ -79,7 +79,7 @@ Framebuffer::init()
   // print_gl_string("GL_EXTENSIONS", GL_EXTENSIONS);
 
   // FIXME: dirty, those never get deleted or anything
-  s_texured_prg = create_program("src/shader/textured.vert",
+  s_textured_prg = create_program("src/shader/textured.vert",
                                  "src/shader/textured.frag");
   s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
                                    "src/shader/flatcolor.frag");
@@ -149,7 +149,7 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);
     glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
 
@@ -185,7 +185,7 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);
     glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
 
@@ -238,7 +238,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 
     glUniform4f(color_loc, rgba.r/255.0f, rgba.g/255.0f, rgba.b/255.0f, rgba.a/255.0f);
 
-    GLint position_loc = get_attrib_location(Framebuffer::s_texured_prg, "position");
+    GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);
     glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
 
