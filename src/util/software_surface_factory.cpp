@@ -178,7 +178,7 @@ SoftwareSurfaceFactory::find_loader_by_magic(const std::string& data) const
 const SoftwareSurfaceLoader*
 SoftwareSurfaceFactory::find_loader_by_magic(const BlobPtr& data) const
 {
-  int size = std::min(1024, data->size());
+  size_t size = std::min(static_cast<size_t>(1024), data->size());
   return find_loader_by_magic(std::string(reinterpret_cast<const char*>(data->get_data()), size));
 }
 

@@ -37,11 +37,11 @@ private:
 
 private:
   Blob(std::vector<uint8_t> data);
-  Blob(const void* data, int len);
-  Blob(int len);
+  Blob(const void* data, size_t len);
+  Blob(size_t len);
 
 public:
-  int size() const;
+  size_t size() const;
   const uint8_t* get_data() const;
 
   std::string str() const;
@@ -54,7 +54,7 @@ public:
   static BlobPtr from_file(const std::string& filename);
 
   /** Copy the given data into a Blob object */
-  static BlobPtr copy(const void* data, int len);
+  static BlobPtr copy(const void* data, size_t len);
   static BlobPtr copy(std::vector<uint8_t> data);
 };
 

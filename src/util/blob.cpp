@@ -30,18 +30,18 @@ Blob::Blob(std::vector<uint8_t> data) :
 {
 }
 
-Blob::Blob(const void* data, int len) :
+Blob::Blob(const void* data, size_t len) :
   m_data(len)
 {
   memcpy(m_data.data(), data, m_data.size());
 }
 
-Blob::Blob(int len) :
+Blob::Blob(size_t len) :
   m_data(len)
 {
 }
 
-int
+size_t
 Blob::size() const
 {
   return m_data.size();
@@ -97,7 +97,7 @@ Blob::from_file(const std::string& filename)
 }
 
 BlobPtr
-Blob::copy(const void* data, int len)
+Blob::copy(const void* data, size_t len)
 {
   return BlobPtr(new Blob(data, len));
 }
