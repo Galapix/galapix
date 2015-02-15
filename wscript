@@ -109,12 +109,15 @@ def configure(conf):
         conf.check_cfg(package='libglademm-2.4', args=['--cflags', '--libs'], uselib_store='GLADEMM')
         conf.check_cfg(package='gtkglextmm-1.2', args=['--cflags', '--libs'], uselib_store='GTKGLEXTMM')
 
+    conf.start_msg('Checking for Raspberry Pi')
     if use_opengles2():
-        conf.env["OPENGL_LIBS"] = ['GLESv2']
-        conf.env["OPENGL_LIBPATH"] = ["/opt/vc/lib"]
-        conf.env["OPENGL_INCLUDES"] = ["/opt/vc/include"]
-        conf.env["OPENGL_DEFINES"] = ['HAVE_OPENGLES2']
+        conf.end_msg("yes")
+        conf.env["LIBS_OPENGL"] = ['GLESv2']
+        conf.env["LIBPATH_OPENGL"] = ["/opt/vc/lib"]
+        conf.env["INCLUDES_OPENGL"] = ["/opt/vc/include"]
+        conf.env["DEFINES_OPENGL"] = ['HAVE_OPENGLES2']
     else:
+        conf.end_msg("no")
         conf.check_cfg(package='gl', args=['--cflags', '--libs'])
         conf.check_cfg(package='glew', args=['--cflags', '--libs'])
 
@@ -147,7 +150,7 @@ def configure(conf):
     conf.env.build_tests = conf.options.build_tests
     conf.env.build_extra = conf.options.build_extra
     conf.env.developer = conf.options.developer
-        
+
     print
     print "Build Galapix.SDL:", conf.env.build_galapix_sdl
     print "Build Galapix.Gtk:", conf.env.build_galapix_gtk
@@ -156,12 +159,6 @@ def configure(conf):
     print "Developer Mode:   ", conf.env.developer
 
 def build(bld):
-    print "Build Galapix.SDL:", bld.env.build_galapix_sdl
-    print "Build Galapix.Gtk:", bld.env.build_galapix_gtk
-    print "Build Tests:      ", bld.env.build_tests
-    print "Build Extra:      ", bld.env.build_extra
-    print "Developer Mode:   ", bld.env.developer
-
     galapix_sources = [
         "src/galapix/galapix.cpp",
         "src/galapix/viewer.cpp",
@@ -217,13 +214,13 @@ def build(bld):
               source=libgalapix_sdl_sources,
               includes=["src/"],
               use=["WARNINGS", "logmich", "glm",
-                   "SDL2", "LIBEXIF", "MAGICKXX"])
+                   "SDL2", "LIBEXIF", "MAGICKXX", "OPENGL"])
 
     bld.stlib(target="galapix",
               source=libgalapix_sources,
               includes=["src/"],
               use=["WARNINGS", "logmich", "glm",
-                   "SDL2", "LIBEXIF", "MAGICKXX"])
+                   "SDL2", "LIBEXIF", "MAGICKXX", "OPENGL"])
 
     bld.program(target="galapix.sdl",
                 source=galapix_sources + optional_sources,
