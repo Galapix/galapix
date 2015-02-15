@@ -18,7 +18,10 @@
 
 #include <iostream>
 
+#include "display/framebuffer.hpp"
 #include "display/surface.hpp"
+#include "math/rgb.hpp"
+#include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "sdl/sdl_window.hpp"
 #include "util/software_surface_factory.hpp"
@@ -29,7 +32,7 @@ int main(int argc, char** argv)
 
   SDLWindow window(Size(800, 600), false, 0);
 
-  for(int step = 0; step < 10000; ++step)
+  for(int step = 0; step < 1000; ++step)
   {
     for(int i = 1; i < argc; ++i)
     {
@@ -37,6 +40,17 @@ int main(int argc, char** argv)
       surface->draw(Vector2f(static_cast<float>(rand()%800),
                              static_cast<float>(rand()%600)));
     }
+
+    Framebuffer::draw_rect(Rectf(Vector2f(static_cast<float>(rand()%800),
+                                          static_cast<float>(rand()%600)),
+                                 Sizef(64, 64)),
+                           RGB(rand()%256, rand()%256, rand()%256));
+
+    Framebuffer::fill_rect(Rectf(Vector2f(static_cast<float>(rand()%800),
+                                          static_cast<float>(rand()%600)),
+                                 Sizef(64, 64)),
+                           RGB(rand()%256, rand()%256, rand()%256));
+
     window.flip();
   }
   SDL_Delay(1000);
