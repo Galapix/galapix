@@ -142,15 +142,26 @@ def configure(conf):
     if conf.options.developer:
         conf.env["CXXFLAGS_WARNINGS"] = warning_cxxflags
 
+    conf.env.build_galapix_gtk = conf.options.build_galapix_gtk
+    conf.env.build_galapix_sdl = conf.options.build_galapix_sdl
+    conf.env.build_tests = conf.options.build_tests
+    conf.env.build_extra = conf.options.build_extra
+    conf.env.developer = conf.options.developer
+        
     print
-
-    print "Build Galapix.SDL:", conf.options.build_galapix_sdl
-    print "Build Galapix.Gtk:", conf.options.build_galapix_gtk
-    print "Build Tests:      ", conf.options.build_tests
-    print "Build Extra:      ", conf.options.build_extra
-    print "Developer Mode:   ", conf.options.developer
+    print "Build Galapix.SDL:", conf.env.build_galapix_sdl
+    print "Build Galapix.Gtk:", conf.env.build_galapix_gtk
+    print "Build Tests:      ", conf.env.build_tests
+    print "Build Extra:      ", conf.env.build_extra
+    print "Developer Mode:   ", conf.env.developer
 
 def build(bld):
+    print "Build Galapix.SDL:", bld.env.build_galapix_sdl
+    print "Build Galapix.Gtk:", bld.env.build_galapix_gtk
+    print "Build Tests:      ", bld.env.build_tests
+    print "Build Extra:      ", bld.env.build_extra
+    print "Developer Mode:   ", bld.env.developer
+
     galapix_sources = [
         "src/galapix/galapix.cpp",
         "src/galapix/viewer.cpp",
@@ -221,23 +232,22 @@ def build(bld):
                 use=["WARNINGS", "galapix", "galapix_sdl", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                      "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
-    if bld.options.build_galapix_gtk:
+    if bld.env.build_galapix_gtk:
         bld.stlib(target="galapix_gtk",
                   source=libgalapix_gtk_sources,
                   includes=["src/"],
-                  use=["WARNINGS", "logmich", "glm",
-                       "GTKMM", "GLADEMM", "GTKGLEXTMM",
-                       "SDL2", "LIBEXIF", "MAGICKXX"])
+                  use=["WARNINGS", "logmich",
+                       "GTKMM", "GLADEMM", "GTKGLEXTMM"])
 
         bld.program(target="galapix.gtk",
-                    source=galapix_sources + "galapix_gtk" + optional_sources,
+                    source=galapix_sources + optional_sources,
                     defines=["GALAPIX_GTK"],
                     includes=["src/"],
                     use=["WARNINGS", "galapix", "galapix_gtk", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                          "GTKMM", "GLADEMM", "GTKGLEXTMM",
                          "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
-    if bld.options.build_extra:
+    if bld.env.build_extra:
         for filename in glob("extra/*.cpp"):
             bld.program(target=filename[:-4],
                         source=filename,
@@ -250,7 +260,7 @@ def build(bld):
                     use=["WARNINGS", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                          "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
-    if bld.options.build_tests:
+    if bld.env.build_tests:
         # build gtest
         bld.stlib(target="gtest",
                   source=["external/gtest-1.7.0/src/gtest-all.cc"],
