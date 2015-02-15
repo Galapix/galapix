@@ -78,7 +78,7 @@ def options(opt):
     gr.add_option('--build-galapix-sdl', action='store_true', default=True, help='Build galapix.sdl')
     gr.add_option('--build-tests', action='store_true', default=True, help='Build tests')
     gr.add_option('--build-extra', action='store_true', default=True, help='Build extra')
-    gr.add_option('--developer', action='store_true', default=True, help='Switch on extra warnings and verbosity')
+    gr.add_option('--developer', action='store_true', default=False, help='Switch on extra warnings and verbosity')
 
 
 def configure(conf):
@@ -142,6 +142,14 @@ def configure(conf):
     if conf.options.developer:
         conf.env["CXXFLAGS_WARNINGS"] = warning_cxxflags
 
+    print
+
+    print "Build Galapix.SDL:", conf.options.build_galapix_sdl
+    print "Build Galapix.Gtk:", conf.options.build_galapix_gtk
+    print "Build Tests:      ", conf.options.build_tests
+    print "Build Extra:      ", conf.options.build_extra
+    print "Developer Mode:   ", conf.options.developer
+
 def build(bld):
     galapix_sources = [
         "src/galapix/galapix.cpp",
@@ -150,12 +158,12 @@ def build(bld):
         "src/galapix/viewer_command.cpp"
     ]
 
-    sdl_sources = [
+    libgalapix_sdl_sources = [
         "src/sdl/sdl_window.cpp",
         "src/sdl/sdl_viewer.cpp"
     ]
 
-    gtk_sources = [
+    libgalapix_gtk_sources = [
         "src/gtk/gtk_viewer.cpp",
         "src/gtk/gtk_viewer_widget.cpp"
     ]
@@ -194,26 +202,38 @@ def build(bld):
               export_includes="external/logmich/include/")
 
     # build galapix libraries
+    bld.stlib(target="galapix_sdl",
+              source=libgalapix_sdl_sources,
+              includes=["src/"],
+              use=["WARNINGS", "logmich", "glm",
+                   "SDL2", "LIBEXIF", "MAGICKXX"])
+
     bld.stlib(target="galapix",
               source=libgalapix_sources,
-              # uselibs are uppercase '-' is replaced with '_'
               includes=["src/"],
               use=["WARNINGS", "logmich", "glm",
                    "SDL2", "LIBEXIF", "MAGICKXX"])
 
     bld.program(target="galapix.sdl",
-                source=galapix_sources + sdl_sources + optional_sources,
+                source=galapix_sources + optional_sources,
                 defines=["GALAPIX_SDL"],
                 includes=["src/"],
-                use=["WARNINGS", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                use=["WARNINGS", "galapix", "galapix_sdl", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                      "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
     if bld.options.build_galapix_gtk:
+        bld.stlib(target="galapix_gtk",
+                  source=libgalapix_gtk_sources,
+                  includes=["src/"],
+                  use=["WARNINGS", "logmich", "glm",
+                       "GTKMM", "GLADEMM", "GTKGLEXTMM",
+                       "SDL2", "LIBEXIF", "MAGICKXX"])
+
         bld.program(target="galapix.gtk",
-                    source=galapix_sources + gtk_sources + optional_sources,
+                    source=galapix_sources + "galapix_gtk" + optional_sources,
                     defines=["GALAPIX_GTK"],
                     includes=["src/"],
-                    use=["WARNINGS", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                    use=["WARNINGS", "galapix", "galapix_gtk", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                          "GTKMM", "GLADEMM", "GTKGLEXTMM",
                          "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
@@ -248,7 +268,7 @@ def build(bld):
                     source=glob("test/*_test.cpp"),
                     includes=["src/"],
                     use=["gtest", "gtest_main",
-                         "WARNINGS", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                         "WARNINGS", "galapix", "galapix_sdl", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                          "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
         # build interactive tests
@@ -256,7 +276,7 @@ def build(bld):
             bld.program(target=filename[:-4],
                         source=[filename],
                         includes=["src/"],
-                        use=["WARNINGS", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
+                        use=["WARNINGS", "galapix", "galapix_sdl", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
                              "SDL2",
                              "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
 
