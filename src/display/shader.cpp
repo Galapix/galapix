@@ -24,6 +24,8 @@
 #include <string.h>
 #include <sstream>
 
+#include <logmich/log.hpp>
+
 namespace {
 
 void check_gl_error()
@@ -69,7 +71,7 @@ std::string read_text_file(const std::string& filename)
     int err = errno;
     std::cerr << "failed to open: " << filename << std::endl;
     std::cerr << strerror(err) << std::endl;
-    exit(EXIT_FAILURE);
+    abort();
   }
   else
   {
@@ -89,7 +91,7 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
   source = "#version 330 core\n" + source;
 #endif
   
-  std::cout << ">>> compiling '" << filename << "':\n" << source << std::endl;
+  log_info("compiling shader '%1%'", filename);
   
   GLuint shader = glCreateShader(shader_type);
   check_gl_error();
@@ -110,11 +112,11 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
     glGetShaderInfoLog(shader, sizeof(infolog), &len, infolog);
     std::cerr << "Compile error in '" << filename << "': status = " << status << std::endl;
     std::cerr.write(infolog, len);
-    exit(EXIT_FAILURE);
+    abort();
   }
   else
   {
-    std::cout << ">>> compiling ok: status = " << status << std::endl;
+    log_info("compiling shader ok: status = %1%", status);
     return shader;
   }
 }
@@ -147,11 +149,11 @@ GLuint create_program(const std::string& vert_shader_filename,
     glGetProgramInfoLog(program, sizeof(infolog), &len, infolog);
     std::cerr << "Link error: status = " << link_status << std::endl;
     std::cerr.write(infolog, len);
-    exit(EXIT_FAILURE);
+    abort();
   }
   else
   {
-    std::cout << "link ok: status = " << link_status << std::endl;
+    log_info("link ok: status = %1%", link_status);
   }
   
   return program;
@@ -163,7 +165,7 @@ GLint get_uniform_location(GLuint program, const char* name)
   if (loc == -1)
   {
     std::cerr << "Could not get uniform location '" << name << "'" << std::endl;
-    exit(EXIT_FAILURE);
+    abort();
   }
   else
   {
@@ -177,7 +179,7 @@ GLint get_attrib_location(GLuint program, const char* name)
   if (loc == -1)
   {
     std::cerr << "Could not get attrib location '" << name << "'" << std::endl;
-    exit(EXIT_FAILURE);
+    abort();
   }
   else
   {
