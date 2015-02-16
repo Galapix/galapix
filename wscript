@@ -202,6 +202,13 @@ def build(bld):
 
     libgalapix_sources = [p for p in libgalapix_sources if p not in galapix_sources]
 
+    galapix_deps = ["WARNINGS",
+                    "pthread", "glm", "logmich", "SPNAV",
+                    "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH",
+                    "SQLITE3", "OPENGL", "BOOST_FILESYSTEM"]
+    galapix_gtk_deps = ["GTKMM", "GLADEMM", "GTKGLEXTMM"]
+    galapix_sdl_deps = ["SDL2"]
+
     # build logmich
     bld.stlib(target="logmich",
               source=["external/logmich/src/log.cpp",
@@ -210,52 +217,45 @@ def build(bld):
               export_includes="external/logmich/include/")
 
     # build galapix libraries
-    bld.stlib(target="galapix_sdl",
-              source=libgalapix_sdl_sources,
-              includes=["src/"],
-              use=["WARNINGS", "logmich", "glm",
-                   "SDL2", "LIBEXIF", "MAGICKXX", "OPENGL"])
-
     bld.stlib(target="galapix",
               source=libgalapix_sources,
               includes=["src/"],
-              use=["WARNINGS", "logmich", "glm",
-                   "SDL2", "LIBEXIF", "MAGICKXX", "OPENGL"])
+              use=galapix_deps)
 
-    bld.program(target="galapix.sdl",
-                source=galapix_sources + optional_sources,
-                defines=["GALAPIX_SDL"],
-                includes=["src/"],
-                use=["WARNINGS", "galapix", "galapix_sdl", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                     "MAGICKXX", "SDL2", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+    if bld.env.build_galapix_sdl:
+        bld.stlib(target="galapix_sdl",
+                  source=libgalapix_sdl_sources,
+                  includes=["src/"],
+                  use=(galapix_sdl_deps + galapix_deps))
+
+        bld.program(target="galapix.sdl",
+                    source=galapix_sources + optional_sources,
+                    defines=["GALAPIX_SDL"],
+                    includes=["src/"],
+                    use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
 
     if bld.env.build_galapix_gtk:
         bld.stlib(target="galapix_gtk",
                   source=libgalapix_gtk_sources,
                   includes=["src/"],
-                  use=["WARNINGS", "logmich",
-                       "GTKMM", "GLADEMM", "GTKGLEXTMM"])
+                  use=(galapix_gtk_deps + galapix_deps))
 
         bld.program(target="galapix.gtk",
                     source=galapix_sources + optional_sources,
                     defines=["GALAPIX_GTK"],
                     includes=["src/"],
-                    use=["WARNINGS", "galapix", "galapix_gtk", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                         "GTKMM", "GLADEMM", "GTKGLEXTMM",
-                         "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+                    use=(["galapix", "galapix_gtk"] + galapix_gtk_deps + galapix_deps))
 
     if bld.env.build_extra:
         for filename in glob("extra/*.cpp"):
             bld.program(target=filename[:-4],
                         source=filename,
                         includes=["src/"],
-                        use=["WARNINGS", "galapix_sdl", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                             "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+                        use=(["galapix_sdl", "galapix"] + galapix_sdl_deps + galapix_deps))
         bld.program(target="extra/imagescaler/imagescaler",
                     source="extra/imagescaler/imagescaler.cpp",
                     includes=["src/"],
-                    use=["WARNINGS", "galapix", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                         "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+                    use=(["galapix"] + galapix_deps))
 
     if bld.env.build_tests:
         # build gtest
@@ -274,25 +274,14 @@ def build(bld):
         bld.program(target="test_galapix",
                     source=glob("test/*_test.cpp"),
                     includes=["src/"],
-                    use=["gtest", "gtest_main",
-                         "WARNINGS", "galapix", "galapix_sdl", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                         "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
+                    use=(["gtest", "gtest_main"] + 
+                         ["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
 
         # build interactive tests
         for filename in glob("uitest/*_test.cpp"):
             bld.program(target=filename[:-4],
                         source=[filename],
                         includes=["src/"],
-                        use=["WARNINGS", "galapix", "galapix_sdl", "logmich", "glm", "pthread", "SPNAV", "BOOST_FILESYSTEM",
-                             "SDL2",
-                             "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH", "SQLITE3", "OPENGL"])
-
-# from waflib.Build import BuildContext, CleanContext, InstallContext, UninstallContext
-# for x in ['debug', 'release', 'profile']:
-#     for y in (BuildContext, CleanContext, InstallContext, UninstallContext):
-#         name = y.__name__.replace('Context','').lower()
-#         class tmp(y):
-#             cmd = name + '_' + x
-#             variant = x
+                        use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
 
 # EOF #
