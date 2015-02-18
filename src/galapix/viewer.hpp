@@ -46,6 +46,11 @@ enum class MouseButton
   LEFT=1, MIDDLE=2, RIGHT=3
 };
 
+enum class Key
+{
+  NO_KEY, ZOOM_IN, ZOOM_OUT, ROTATE
+};
+
 class Viewer
 {
 private:
@@ -95,7 +100,7 @@ private:
 public:
   Viewer(System& system, Workspace* workspace);
   ~Viewer();
-  
+
   void draw();
   void update(float delta);
 
@@ -104,8 +109,8 @@ public:
   ViewerState& get_state() { return m_state; }
   Workspace*   get_workspace() { return m_workspace; }
 
-  void on_key_up(int key);
-  void on_key_down(int key);
+  void on_key_up(Key key);
+  void on_key_down(Key key);
 
   void on_mouse_motion(const Vector2i& pos, const Vector2i& rel);
   void on_mouse_button_down(const Vector2i& pos, MouseButton btn);

@@ -22,6 +22,7 @@
 #include <thread>
 #include <boost/format.hpp>
 #include <logmich/log.hpp>
+#include <SDL_keycode.h>
 
 #include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"
@@ -37,7 +38,30 @@
 #ifdef HAVE_SPACE_NAVIGATOR
 #  include <spnav.h>
 #endif
-
+
+namespace {
+
+Key sdlkey2viewer(SDL_Keycode key)
+{
+  switch(key)
+  {
+    case SDLK_END:
+      return Key::ZOOM_OUT;
+
+    case SDLK_HOME:
+      return Key::ZOOM_IN;
+
+    case SDLK_RSHIFT:
+    case SDLK_LSHIFT:
+      return Key::ROTATE;
+
+    default:
+      return Key::NO_KEY;
+  }
+}
+
+} // namespace
+
 SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
   m_window(geometry, fullscreen, anti_aliasing),
@@ -55,7 +79,7 @@ SDLViewer::~SDLViewer()
     SDL_GameControllerClose(gamecontroller);
   }
 }
-
+
 void
 SDLViewer::process_event(const SDL_Event& event)
 {
@@ -81,12 +105,12 @@ SDLViewer::process_event(const SDL_Event& event)
                           spnav_ev->motion.x,
                           spnav_ev->motion.y,
                           spnav_ev->motion.z,
-                          
+
                           spnav_ev->motion.rx,
                           spnav_ev->motion.ry,
                           spnav_ev->motion.rz);
               }
-              
+
               float factor = static_cast<float>(-abs(spnav_ev->motion.y))/10000.0f;
 
               if (spnav_ev->motion.y > 0)
@@ -444,13 +468,13 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         default:
-          m_viewer.on_key_down(event.key.keysym.sym);
+          m_viewer.on_key_down(sdlkey2viewer(event.key.keysym.sym));
           break;
       }
       break;
 
     case SDL_KEYUP:
-      m_viewer.on_key_up(event.key.keysym.sym);
+      m_viewer.on_key_up(sdlkey2viewer(event.key.keysym.sym));
       break;
 
     default:
@@ -629,5 +653,5 @@ SDLViewer::run()
 
   log_info("done");
 }
-
+
 /* EOF */

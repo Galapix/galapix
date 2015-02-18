@@ -198,7 +198,7 @@ Viewer::draw()
   middle_tool->draw();
   right_tool->draw();
   Framebuffer::end_render();
-  
+
   Framebuffer::set_modelview(glm::mat4());
   Framebuffer::begin_render();
   if (m_draw_grid)
@@ -284,47 +284,41 @@ Viewer::on_mouse_button_up(const Vector2i& pos, MouseButton btn)
 }
 
 void
-Viewer::on_key_up(int key)
+Viewer::on_key_up(Key key)
 {
-#if 0
   switch(key)
   {
-    case SDLK_END:
+    case Key::ZOOM_OUT:
       keyboard_zoom_out_tool->up(m_mouse_pos);
       break;
 
-    case SDLK_HOME:
+    case Key::ZOOM_IN:
       keyboard_zoom_in_tool->up(m_mouse_pos);
       break;
 
-    case SDLK_RSHIFT:
-    case SDLK_LSHIFT:
+    case Key::ROTATE:
       keyboard_view_rotate_tool->up(m_mouse_pos);
       break;
   }
-#endif
 }
 
 void
-Viewer::on_key_down(int key)
+Viewer::on_key_down(Key key)
 {
-#if 0
   switch(key)
   {
-    case SDLK_END:
+    case Key::ZOOM_OUT:
       keyboard_zoom_out_tool->down(m_mouse_pos);
       break;
 
-    case SDLK_HOME:
+    case Key::ZOOM_IN:
       keyboard_zoom_in_tool->down(m_mouse_pos);
       break;
 
-    case SDLK_RSHIFT:
-    case SDLK_LSHIFT:
+    case Key::ROTATE:
       keyboard_view_rotate_tool->down(m_mouse_pos);
       break;
   }
-#endif
 }
 
 bool
