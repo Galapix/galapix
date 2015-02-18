@@ -26,6 +26,8 @@
 
 #include <logmich/log.hpp>
 
+#include "display/shader_vfs.hpp"
+
 namespace {
 
 void check_gl_error()
@@ -69,12 +71,26 @@ std::string read_text_file(const std::string& filename)
   if (!fin)
   {
     int err = errno;
+
+    // try buildin file
+    size_t file_count = sizeof(shader_vfs::file_table) / sizeof(shader_vfs::FileEntry);
+    for(size_t i = 0; i < file_count; ++i)
+    {
+      if (shader_vfs::file_table[i].name == filename)
+      {
+        log_info("using buildin file: %s", filename);
+        return std::string(shader_vfs::file_table[i].data,
+                           shader_vfs::file_table[i].size);
+      }
+    }
+
     std::cerr << "failed to open: " << filename << std::endl;
     std::cerr << strerror(err) << std::endl;
     abort();
   }
   else
   {
+    log_info("using external file: %s", filename);
     std::ostringstream buffer;
     buffer << fin.rdbuf();
     return buffer.str();
