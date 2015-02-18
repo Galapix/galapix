@@ -25,9 +25,12 @@
 
 #include "galapix/options.hpp"
 
+class System;
+
 class ViewerCommand
 {
 private:
+  System& m_system;
   Options m_opts;
 
   Database   m_database;
@@ -36,7 +39,7 @@ private:
   std::vector<std::string> m_patterns;
 
 public:
-  ViewerCommand(const Options& options);
+  ViewerCommand(System& system, const Options& options);
   ~ViewerCommand();
 
   void run(const std::vector<URL>& urls);

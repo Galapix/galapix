@@ -20,17 +20,13 @@
 
 #include "galapix/database_tile_provider.hpp"
 #include "galapix/mandelbrot_tile_provider.hpp"
+#include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
-#ifdef GALAPIX_SDL
-#  include "sdl/sdl_viewer.hpp"
-#endif
-#ifdef GALAPIX_GTK
-#  include "gtk/gtk_viewer.hpp"
-#endif
 
-ViewerCommand::ViewerCommand(const Options& opts) :
+ViewerCommand::ViewerCommand(System& system, const Options& opts) :
+  m_system(system),
   m_opts(opts),
   m_database(opts.database),
   m_job_manager(opts.threads),
@@ -163,21 +159,7 @@ ViewerCommand::run(const std::vector<URL>& urls)
   }
 
   log_info("launching viewer");
-
-#if defined(GALAPIX_SDL)
-  Viewer viewer(&workspace);
-  SDLViewer sdl_viewer(m_opts.geometry, m_opts.fullscreen, m_opts.anti_aliasing, viewer);
-  viewer.layout_tight();
-  viewer.zoom_to_selection();
-  sdl_viewer.run();
-#elif defined(GALAPIX_GTK)
-  GtkViewer gtk_viewer;
-  gtk_viewer.set_workspace(&workspace);
-  gtk_viewer.run();
-#else
-  #error "Neither GALAPIX_GTK not GALAPIX_SDL are defined"
-#endif
-
+  m_system.launch_viewer(workspace, m_opts);
   log_info("viewer done");
 }
 

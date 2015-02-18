@@ -35,6 +35,7 @@
 #include "galapix/arg_parser.hpp"
 #include "galapix/database_thread.hpp"
 #include "galapix/options.hpp"
+#include "galapix/system.hpp"
 #include "galapix/thumbnail_generator.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_command.hpp"
@@ -61,7 +62,8 @@
 #include "util/software_surface_factory.hpp"
 #include "util/string_util.hpp"
 
-Galapix::Galapix()
+Galapix::Galapix(System& system) :
+  m_system(system)
 {
   Filesystem::init();
 }
@@ -264,12 +266,15 @@ Galapix::run(const Options& opts)
 
   if (opts.rest.empty())
   {
-#ifdef GALAPIX_SDL
-    ArgParser::print_usage();
-#else
-    ViewerCommand viewer(opts);
-    viewer.run(std::vector<URL>());
-#endif
+    if (m_system.requires_command_line_args())
+    {
+      ArgParser::print_usage();
+    }
+    else
+    {
+      ViewerCommand viewer(m_system, opts);
+      viewer.run(std::vector<URL>());
+    }
   }
   else
   {
@@ -304,7 +309,7 @@ Galapix::run(const Options& opts)
       }
       else
       {
-        ViewerCommand viewer(opts);
+        ViewerCommand viewer(m_system, opts);
         viewer.run(urls);
       }
     }

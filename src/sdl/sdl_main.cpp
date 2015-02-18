@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2011 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2014 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,14 +16,13 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <unistd.h>
-#include <iostream>
-
 #include "galapix/galapix.hpp"
+#include "sdl/sdl_system.hpp"
 
 int main(int argc, char** argv)
 {
-  Galapix app;
+  SDLSystem sdl_system;
+  Galapix app(sdl_system);
   return app.main(argc, argv);
 }
 

@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,36 +16,28 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
-#define HEADER_GALAPIX_GALAPIX_GALAPIX_HPP
+#ifndef HEADER_GALAPIX_SDL_SDL_SYSTEM_HPP
+#define HEADER_GALAPIX_SDL_SDL_SYSTEM_HPP
 
-#include <vector>
-#include <string>
+#include "galapix/system.hpp"
 
-#include "util/url.hpp"
-#include "math/size.hpp"
-
-class Options;
-class System;
-
-class Galapix final
+class SDLSystem : public System
 {
 private:
-  System& m_system;
-    
 public:
-  Galapix(System& system);
-  ~Galapix();
+  SDLSystem();
+  ~SDLSystem();
 
-  void run(const Options& opts);
-  int  main(int argc, char** argv);
-
-  void cleanup(const std::string& database);
-  void list(const Options& opts);
-  void info(const Options& opts);
-  void export_images(const std::string& database, const std::vector<URL>& urls);
+  void launch_viewer(Workspace& workspace, Options& options) override;
+  bool requires_command_line_args() override;
+  void trigger_redraw() override;
+  void set_trackball_mode(bool active) override;
+  
+private:
+  SDLSystem(const SDLSystem&) = delete;
+  SDLSystem& operator=(const SDLSystem&) = delete;
 };
-
+
 #endif
 
 /* EOF */

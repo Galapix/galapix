@@ -29,17 +29,23 @@
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"
 
-class Tool;
-class PanTool;
+class GridTool;
 class MoveTool;
-class ZoomTool;
+class PanTool;
 class ResizeTool;
 class RotateTool;
+class System;
+class Tool;
 class ViewRotateTool;
-class ZoomRectTool;
 class Workspace;
-class GridTool;
+class ZoomRectTool;
+class ZoomTool;
 
+enum class MouseButton
+{
+  LEFT=1, MIDDLE=2, RIGHT=3
+};
+
 class Viewer
 {
 private:
@@ -49,6 +55,7 @@ public:
   static Viewer* current() { return current_; }
 
 private:
+  System& m_system;
   Workspace* m_workspace;
   bool  m_mark_for_redraw;
   bool  m_draw_grid;
@@ -86,7 +93,7 @@ private:
   RGBA     m_grid_color;
 
 public:
-  Viewer(Workspace* workspace);
+  Viewer(System& system, Workspace* workspace);
 
   void draw();
   void update(float delta);
@@ -100,8 +107,8 @@ public:
   void on_key_down(int key);
 
   void on_mouse_motion(const Vector2i& pos, const Vector2i& rel);
-  void on_mouse_button_down(const Vector2i& pos, int btn);
-  void on_mouse_button_up(const Vector2i& pos, int btn);
+  void on_mouse_button_down(const Vector2i& pos, MouseButton btn);
+  void on_mouse_button_up(const Vector2i& pos, MouseButton btn);
 
   bool is_active() const;
 

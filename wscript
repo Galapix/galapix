@@ -209,22 +209,8 @@ def configure(conf):
 
 
 def build(bld):
-    galapix_sources = [
-        "src/galapix/galapix.cpp",
-        "src/galapix/viewer.cpp",
-        "src/galapix/thumbnail_generator.cpp",
-        "src/galapix/viewer_command.cpp"
-    ]
-
-    libgalapix_sdl_sources = [
-        "src/sdl/sdl_window.cpp",
-        "src/sdl/sdl_viewer.cpp"
-    ]
-
-    libgalapix_gtk_sources = [
-        "src/gtk/gtk_viewer.cpp",
-        "src/gtk/gtk_viewer_widget.cpp"
-    ]
+    galapix_sdl_sources = glob("src/sdl/*.cpp")
+    galapix_gtk_sources = glob("src/gtk/*.cpp")
 
     optional_sources = []
     if bld.env['HAVE_SPNAV']:
@@ -249,8 +235,6 @@ def build(bld):
         glob("src/sqlite/*.cpp") + \
         glob("src/tools/*.cpp") + \
         glob("src/util/*.cpp")
-
-    libgalapix_sources = [p for p in libgalapix_sources if p not in galapix_sources]
 
     galapix_deps = ["WARNINGS",
                     "pthread", "glm", "logmich", "SPNAV",
@@ -282,25 +266,15 @@ def build(bld):
               use=galapix_deps)
 
     if bld.env.build_galapix_sdl:
-        bld.stlib(target="galapix_sdl",
-                  source=libgalapix_sdl_sources,
-                  includes=["src/"],
-                  use=(galapix_sdl_deps + galapix_deps))
-
         bld.program(target="galapix.sdl",
-                    source=galapix_sources + optional_sources,
+                    source=galapix_sdl_sources + optional_sources,
                     defines=["GALAPIX_SDL"],
                     includes=["src/"],
-                    use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
+                    use=(["galapix"] + galapix_sdl_deps + galapix_deps))
 
     if bld.env.build_galapix_gtk:
-        bld.stlib(target="galapix_gtk",
-                  source=libgalapix_gtk_sources,
-                  includes=["src/"],
-                  use=(galapix_gtk_deps + galapix_deps))
-
         bld.program(target="galapix.gtk",
-                    source=galapix_sources + optional_sources,
+                    source=galapix_gtk_sources + optional_sources,
                     defines=["GALAPIX_GTK"],
                     includes=["src/"],
                     use=(["galapix", "galapix_gtk"] + galapix_gtk_deps + galapix_deps))
@@ -334,13 +308,13 @@ def build(bld):
                     source=glob("test/*_test.cpp"),
                     includes=["src/"],
                     use=(["gtest", "gtest_main"] +
-                         ["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
+                         ["galapix"] + galapix_deps))
 
         # build interactive tests
         for filename in glob("uitest/*_test.cpp"):
             bld.program(target=filename[:-4],
                         source=[filename],
                         includes=["src/"],
-                        use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
+                        use=(["galapix"] + galapix_deps))
 
 # EOF #

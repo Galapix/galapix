@@ -161,7 +161,8 @@ GtkViewerWidget::mouse_down(GdkEventButton* ev)
 {
   grab_focus();
   //std::cout << "Button Press: " << ev->x << ", " << ev->y << " - " << ev->button << std::endl;
-  viewer->on_mouse_button_down(Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)), ev->button);
+  viewer->on_mouse_button_down(Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)),
+                               static_cast<MouseButton>(ev->button));
   return false;
 }
 
@@ -183,7 +184,8 @@ bool
 GtkViewerWidget::mouse_up(GdkEventButton* ev)
 {
   //std::cout << "Button Release: " << ev->x << ", " << ev->y << " - " << ev->button << std::endl;
-  viewer->on_mouse_button_up(Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)), ev->button);
+  viewer->on_mouse_button_up(Vector2i(static_cast<int>(ev->x), static_cast<int>(ev->y)),
+                             static_cast<MouseButton>(ev->button));
   return false;
 }
 

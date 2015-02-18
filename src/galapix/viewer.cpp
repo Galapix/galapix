@@ -16,7 +16,6 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <SDL.h>
 #include <boost/format.hpp>
 #include <fstream>
 #include <logmich/log.hpp>
@@ -29,6 +28,7 @@
 #include <glm/ext.hpp>
 
 #include "display/framebuffer.hpp"
+#include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "math/rect.hpp"
@@ -48,7 +48,8 @@
 
 Viewer* Viewer::current_ = 0;
 
-Viewer::Viewer(Workspace* workspace_) :
+Viewer::Viewer(System& system, Workspace* workspace_) :
+  m_system(system),
   m_workspace(workspace_),
   m_mark_for_redraw(false),
   m_draw_grid(false),
@@ -127,16 +128,7 @@ Viewer::redraw()
   if (!m_mark_for_redraw)
   {
     m_mark_for_redraw = true;
-
-#ifdef GALAPIX_SDL
-    SDL_Event event;
-    event.type = SDL_USEREVENT;
-    event.user.code  = 1;
-    event.user.data1 = 0;
-    event.user.data2 = 0;
-
-    while (SDL_PushEvent(&event) != 1) {}
-#endif
+    m_system.trigger_redraw();
   }
 }
 
@@ -246,42 +238,42 @@ Viewer::on_mouse_motion(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-Viewer::on_mouse_button_down(const Vector2i& pos, int btn)
+Viewer::on_mouse_button_down(const Vector2i& pos, MouseButton btn)
 {
   m_mouse_pos = pos;
 
   switch(btn)
   {
-    case SDL_BUTTON_LEFT:
+    case MouseButton::LEFT:
       left_tool->down(pos);
       break;
 
-    case SDL_BUTTON_RIGHT:
+    case MouseButton::RIGHT:
       right_tool->down(pos);
       break;
 
-    case SDL_BUTTON_MIDDLE:
+    case MouseButton::MIDDLE:
       middle_tool->down(pos);
       break;
   }
 }
 
 void
-Viewer::on_mouse_button_up(const Vector2i& pos, int btn)
+Viewer::on_mouse_button_up(const Vector2i& pos, MouseButton btn)
 {
   m_mouse_pos = pos;
 
   switch(btn)
   {
-    case SDL_BUTTON_LEFT:
+    case MouseButton::LEFT:
       left_tool->up(pos);
       break;
 
-    case SDL_BUTTON_RIGHT:
+    case MouseButton::RIGHT:
       right_tool->up(pos);
       break;
 
-    case SDL_BUTTON_MIDDLE:
+    case MouseButton::MIDDLE:
       middle_tool->up(pos);
       break;
   }
@@ -290,6 +282,7 @@ Viewer::on_mouse_button_up(const Vector2i& pos, int btn)
 void
 Viewer::on_key_up(int key)
 {
+#if 0
   switch(key)
   {
     case SDLK_END:
@@ -305,11 +298,13 @@ Viewer::on_key_up(int key)
       keyboard_view_rotate_tool->up(m_mouse_pos);
       break;
   }
+#endif
 }
 
 void
 Viewer::on_key_down(int key)
 {
+#if 0
   switch(key)
   {
     case SDLK_END:
@@ -325,6 +320,7 @@ Viewer::on_key_down(int key)
       keyboard_view_rotate_tool->down(m_mouse_pos);
       break;
   }
+#endif
 }
 
 bool
@@ -590,12 +586,12 @@ Viewer::toggle_trackball_mode()
   if (pan_tool->get_trackball_mode())
   {
     log_info("Trackball mode active, press 't' to leave");
-    SDL_SetRelativeMouseMode(SDL_TRUE);
+    m_system.set_trackball_mode(true);
   }
   else
   {
     log_info("Trackball mode deactivated");
-    SDL_SetRelativeMouseMode(SDL_FALSE);
+    m_system.set_trackball_mode(false);
   }
 }
 

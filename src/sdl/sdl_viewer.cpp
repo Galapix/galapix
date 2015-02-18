@@ -195,7 +195,7 @@ SDLViewer::process_event(const SDL_Event& event)
       // the mouse buttons when a grab is active!
     case SDL_MOUSEBUTTONDOWN:
       m_viewer.on_mouse_button_down(Vector2i(event.button.x, event.button.y),
-                                    event.button.button);
+                                    static_cast<MouseButton>(event.button.button));
       break;
 
     case SDL_MOUSEBUTTONUP:
@@ -203,7 +203,7 @@ SDLViewer::process_event(const SDL_Event& event)
       {
         default:
           m_viewer.on_mouse_button_up(Vector2i(event.button.x, event.button.y),
-                                      event.button.button);
+                                      static_cast<MouseButton>(event.button.button));
           break;
       }
       break;
