@@ -81,20 +81,20 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
 {
   current_ = this;
 
-  pan_tool       = std::make_shared<PanTool>(this);
-  move_tool      = std::make_shared<MoveTool>(this);
-  zoom_rect_tool = std::make_shared<ZoomRectTool>(this);
-  resize_tool    = std::make_shared<ResizeTool>(this);
-  rotate_tool    = std::make_shared<RotateTool>(this);
-  grid_tool      = std::make_shared<GridTool>(this);
+  pan_tool       = std::make_unique<PanTool>(this);
+  move_tool      = std::make_unique<MoveTool>(this);
+  zoom_rect_tool = std::make_unique<ZoomRectTool>(this);
+  resize_tool    = std::make_unique<ResizeTool>(this);
+  rotate_tool    = std::make_unique<RotateTool>(this);
+  grid_tool      = std::make_unique<GridTool>(this);
 
-  zoom_in_tool  = std::make_shared<ZoomTool>(this, -4.0f);
-  zoom_out_tool = std::make_shared<ZoomTool>(this,  4.0f);
+  zoom_in_tool  = std::make_unique<ZoomTool>(this, -4.0f);
+  zoom_out_tool = std::make_unique<ZoomTool>(this,  4.0f);
 
-  keyboard_zoom_in_tool  = std::make_shared<ZoomTool>(this, -4.0f);
-  keyboard_zoom_out_tool = std::make_shared<ZoomTool>(this,  4.0f);
+  keyboard_zoom_in_tool  = std::make_unique<ZoomTool>(this, -4.0f);
+  keyboard_zoom_out_tool = std::make_unique<ZoomTool>(this,  4.0f);
 
-  keyboard_view_rotate_tool = std::make_shared<ViewRotateTool>(this);
+  keyboard_view_rotate_tool = std::make_unique<ViewRotateTool>(this);
 
   left_tool   = zoom_in_tool.get();
   middle_tool = pan_tool.get();
@@ -120,6 +120,10 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
   m_background_colors.push_back(RGBA(  0, 128,   0));
   m_background_colors.push_back(RGBA(  0, 128, 128));
   m_background_colors.push_back(RGBA(  0,   0, 128));
+}
+
+Viewer::~Viewer()
+{
 }
 
 void

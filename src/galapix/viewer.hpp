@@ -66,18 +66,18 @@ private:
 
   ViewerState m_state;
 
-  std::shared_ptr<ZoomTool>   keyboard_zoom_in_tool;
-  std::shared_ptr<ZoomTool>   keyboard_zoom_out_tool;
-  std::shared_ptr<ViewRotateTool> keyboard_view_rotate_tool;
+  std::unique_ptr<ZoomTool>   keyboard_zoom_in_tool;
+  std::unique_ptr<ZoomTool>   keyboard_zoom_out_tool;
+  std::unique_ptr<ViewRotateTool> keyboard_view_rotate_tool;
 
-  std::shared_ptr<PanTool>      pan_tool;
-  std::shared_ptr<MoveTool>     move_tool;
-  std::shared_ptr<ZoomRectTool> zoom_rect_tool;
-  std::shared_ptr<ZoomTool>     zoom_in_tool;
-  std::shared_ptr<ZoomTool>     zoom_out_tool;
-  std::shared_ptr<ResizeTool>   resize_tool;
-  std::shared_ptr<RotateTool>   rotate_tool;
-  std::shared_ptr<GridTool>     grid_tool;
+  std::unique_ptr<PanTool>      pan_tool;
+  std::unique_ptr<MoveTool>     move_tool;
+  std::unique_ptr<ZoomRectTool> zoom_rect_tool;
+  std::unique_ptr<ZoomTool>     zoom_in_tool;
+  std::unique_ptr<ZoomTool>     zoom_out_tool;
+  std::unique_ptr<ResizeTool>   resize_tool;
+  std::unique_ptr<RotateTool>   rotate_tool;
+  std::unique_ptr<GridTool>     grid_tool;
 
   Tool* left_tool;
   Tool* middle_tool;
@@ -94,7 +94,8 @@ private:
 
 public:
   Viewer(System& system, Workspace* workspace);
-
+  ~Viewer();
+  
   void draw();
   void update(float delta);
 
