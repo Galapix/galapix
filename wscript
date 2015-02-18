@@ -266,15 +266,20 @@ def build(bld):
               use=galapix_deps)
 
     if bld.env.build_galapix_sdl:
+        bld.stlib(target="galapix_sdl",
+                  source=galapix_sdl_sources,
+                  includes=["src/"],
+                  use=galapix_sdl_deps + galapix_deps)
+
         bld.program(target="galapix.sdl",
-                    source=galapix_sdl_sources + optional_sources,
+                    source=["src/main/sdl_main.cpp"] + optional_sources,
                     defines=["GALAPIX_SDL"],
                     includes=["src/"],
-                    use=(["galapix"] + galapix_sdl_deps + galapix_deps))
+                    use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
 
     if bld.env.build_galapix_gtk:
         bld.program(target="galapix.gtk",
-                    source=galapix_gtk_sources + optional_sources,
+                    source=["src/main/gtk_main.cpp"] + galapix_gtk_sources + optional_sources,
                     defines=["GALAPIX_GTK"],
                     includes=["src/"],
                     use=(["galapix", "galapix_gtk"] + galapix_gtk_deps + galapix_deps))
@@ -284,7 +289,7 @@ def build(bld):
             bld.program(target=filename[:-4],
                         source=filename,
                         includes=["src/"],
-                        use=(["galapix_sdl", "galapix"] + galapix_sdl_deps + galapix_deps))
+                        use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
         bld.program(target="extra/imagescaler/imagescaler",
                     source="extra/imagescaler/imagescaler.cpp",
                     includes=["src/"],
@@ -316,5 +321,12 @@ def build(bld):
                         source=[filename],
                         includes=["src/"],
                         use=(["galapix"] + galapix_deps))
+
+        if bld.env.build_galapix_sdl:
+            for filename in glob("uitest/sdl/*_test.cpp"):
+                bld.program(target=filename[:-4],
+                            source=[filename],
+                            includes=["src/"],
+                            use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
 
 # EOF #
