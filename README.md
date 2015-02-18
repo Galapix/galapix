@@ -62,7 +62,6 @@ Required Libraries and Tools:
 * [SQlite3](http://www.sqlite.org/)
 * [libjpeg](http://www.ijg.org/)
 * [libpng](http://www.libpng.org/pub/png/)
-* [scons](http://www.scons.org/)
 * [GLEW](http://glew.sourceforge.net/)
 * [Magick++](http://www.imagemagick.org/Magick%2B%2B/)
 * [boost](http://www.boost.org/)
@@ -83,8 +82,7 @@ On Ubuntu 15.04 one can install all required libraries with this call:
       libpng12-dev \
       libsdl2-dev \
       libspnav-dev \
-      libsqlite3-dev \
-      scons
+      libsqlite3-dev
     
 The following packages are optional and used to handle some more
 exotic image formats:
@@ -104,23 +102,14 @@ required libraries should be part of most distributions.
 Compilation:
 ------------
 
-The easiest way to compile is to type:
+To compile galapix:
 
-    scons
+    ./waf configure
+    ./waf 
 
-The rest should happen automatically.
+To get a list of available options use:
 
-If you want to customize compiler options or other stuff you can do that
-by running:
-  
-    scons CXX=g++-4.2 BUILD=debug ...
-
-To get a list of available variables use:
-
-    scons -h
-
-If the scons script fails to configure properly you can get additional
-information from "config.log".
+    ./waf --help
 
 
 Running:
