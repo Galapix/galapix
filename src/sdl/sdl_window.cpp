@@ -22,6 +22,7 @@
 #include <stdexcept>
 
 #include "display/framebuffer.hpp"
+#include "math/math.hpp"
 #include "util/raise_exception.hpp"
 
 SDLWindow::SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing) :
@@ -140,8 +141,6 @@ SDLWindow::toggle_fullscreen()
 void
 SDLWindow::apply_gamma_ramp(float contrast, float brightness, float gamma)
 {
-  assert(!"not implemented");
-#if 0
   Uint16 tbl[256];
   for(int i = 0; i < 256; ++i)
   {
@@ -153,8 +152,7 @@ SDLWindow::apply_gamma_ramp(float contrast, float brightness, float gamma)
     tbl[i] = static_cast<Uint16>(Math::clamp(0, (int)(c*65535.0f), 65535));
   }
 
-  SDL_SetGammaRamp(tbl, tbl, tbl);
-#endif
+  SDL_SetWindowGammaRamp(m_window, tbl, tbl, tbl);
 }
 
 /* EOF */
