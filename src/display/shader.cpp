@@ -79,17 +79,15 @@ std::string read_text_file(const std::string& filename)
   }
 }
 
-GLuint compile_shader(GLenum shader_type, const std::string& filename)
+GLuint compile_shader(GLenum shader_type, const std::string& source_)
 {
-  std::string source = read_text_file(filename);
-
 #ifdef HAVE_OPENGLES2
-  source = "#version 100\n" + source;
+  std::string source = "#version 100\n" + source_;
 #else
-  source = "#version 330 core\n" + source;
+  std::string source = "#version 330 core\n" + source_;
 #endif
   
-  std::cout << ">>> compiling '" << filename << "':\n" << source << std::endl;
+  //std::cout << ">>> compiling '" << filename << "':\n" << source << std::endl;
   
   GLuint shader = glCreateShader(shader_type);
   check_gl_error();
@@ -108,7 +106,7 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
     GLchar infolog[4096];
     GLsizei len;
     glGetShaderInfoLog(shader, sizeof(infolog), &len, infolog);
-    std::cerr << "Compile error in '" << filename << "': status = " << status << std::endl;
+    std::cerr << "Compile error in '" << source << "': status = " << status << std::endl;
     std::cerr.write(infolog, len);
     exit(EXIT_FAILURE);
   }
@@ -121,11 +119,11 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
 
 } // namespace
 
-GLuint create_program(const std::string& vert_shader_filename,
-                      const std::string& frag_shader_filename)
+GLuint create_program(const std::string& vert_shader_source,
+                      const std::string& frag_shader_source)
 {
-  GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, vert_shader_filename);
-  GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_filename);
+  GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, vert_shader_source);
+  GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_source);
 
   GLuint program = glCreateProgram();
 

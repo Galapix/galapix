@@ -76,10 +76,44 @@ Framebuffer::init()
   // print_gl_string("GL_EXTENSIONS", GL_EXTENSIONS);
 
   // FIXME: dirty, those never get deleted or anything
-  s_textured_prg = create_program("src/shader/textured.vert",
-                                 "src/shader/textured.frag");
-  s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
-                                   "src/shader/flatcolor.frag");
+  s_textured_prg = create_program(
+    "uniform mat4 projection;"
+    "uniform mat4 modelview;"
+    ""
+    "attribute vec2 position;"
+    "attribute vec2 texcoord;"
+    ""
+    "varying vec2 texcoord_v;"
+    ""
+    "void main(void)"
+    "{"
+    "  texcoord_v = texcoord;"
+    "  gl_Position = projection * modelview * vec4(position, 0, 1);"
+    "}",
+    "uniform sampler2D tex;"
+    "varying vec2 texcoord_v;"
+    ""
+    "void main(void)"
+    "{"
+    "  gl_FragColor = texture2D(tex, texcoord_v);"
+    "}");
+
+  s_flatcolor_prg = create_program(
+    "uniform mat4 projection;"
+    "uniform mat4 modelview;"
+    ""
+    "attribute vec2 position;"
+    ""
+    "void main(void)"
+    "{"
+    "  gl_Position = projection * modelview * vec4(position, 0, 1);"
+    "}",
+
+    "uniform vec4 color;"
+    ""
+    "void main(void) {"
+    "  gl_FragColor = color;"
+    "}");
 
   // FIXME: Dirty!
   //GLuint vao;
