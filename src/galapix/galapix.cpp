@@ -40,7 +40,7 @@
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_command.hpp"
 #include "galapix/workspace.hpp"
-#include "generator/generator.cpp"
+#include "generator/generator.hpp"
 #include "job/job_handle_group.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/test_job.hpp"
