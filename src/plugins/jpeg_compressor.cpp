@@ -50,8 +50,7 @@ JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
 
   jpeg_start_compress(&m_cinfo, TRUE);
 
-  auto row_pointer = std::make_unique<JSAMPROW[]>(surface->get_height());
-
+  std::vector<JSAMPROW> row_pointer(surface->get_height());
   for(int y = 0; y < surface->get_height(); ++y)
   {
     row_pointer[y] = static_cast<JSAMPLE*>(surface->get_row_data(y));

@@ -194,11 +194,11 @@ PNG::load_from_file(const std::string& filename)
       {
         surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
-        auto row_pointers = std::make_unique<png_bytep[]>(height);
+        std::vector<png_bytep> row_pointers(height);
         for (int y = 0; y < height; ++y)
           row_pointers[y] = surface->get_row_data(y);
 
-        png_read_image(png_ptr, row_pointers.get());
+        png_read_image(png_ptr, row_pointers.data());
       }
       break;
 
@@ -206,11 +206,11 @@ PNG::load_from_file(const std::string& filename)
       {
         surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
-        auto row_pointers = std::make_unique<png_bytep[]>(height);
+        std::vector<png_bytep> row_pointers(height);
         for (int y = 0; y < height; ++y)
           row_pointers[y] = surface->get_row_data(y);
 
-        png_read_image(png_ptr, row_pointers.get());
+        png_read_image(png_ptr, row_pointers.data());
       }
       break;
     }
@@ -268,11 +268,11 @@ PNG::load_from_mem(const uint8_t* data, int len)
     {
       surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
-      auto row_pointers = std::make_unique<png_bytep[]>(height);
+      std::vector<png_bytep> row_pointers(height);
       for (int y = 0; y < height; ++y)
         row_pointers[y] = surface->get_row_data(y);
 
-      png_read_image(png_ptr, row_pointers.get());
+      png_read_image(png_ptr, row_pointers.data());
     }
     break;
 
@@ -280,11 +280,11 @@ PNG::load_from_mem(const uint8_t* data, int len)
     {
       surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
-      auto row_pointers = std::make_unique<png_bytep[]>(height);
+      std::vector<png_bytep> row_pointers(height);
       for (int y = 0; y < height; ++y)
         row_pointers[y] = surface->get_row_data(y);
 
-      png_read_image(png_ptr, row_pointers.get());
+      png_read_image(png_ptr, row_pointers.data());
     }
     break;
   }
