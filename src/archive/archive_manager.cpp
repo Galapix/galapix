@@ -55,10 +55,10 @@ ArchiveManager::ArchiveManager(const std::string& tmpdir) :
   m_loader_by_file_exts(),
   m_loader_by_magic()
 {
-  m_loader.push_back(std::unique_ptr<ArchiveLoader>(new RarArchiveLoader));
-  m_loader.push_back(std::unique_ptr<ArchiveLoader>(new ZipArchiveLoader));
-  m_loader.push_back(std::unique_ptr<ArchiveLoader>(new TarArchiveLoader));
-  m_loader.push_back(std::unique_ptr<ArchiveLoader>(new SevenZipArchiveLoader));
+  m_loader.push_back(std::make_unique<RarArchiveLoader>());
+  m_loader.push_back(std::make_unique<ZipArchiveLoader>());
+  m_loader.push_back(std::make_unique<TarArchiveLoader>());
+  m_loader.push_back(std::make_unique<SevenZipArchiveLoader>());
 
   for(auto& loader: m_loader)
   {

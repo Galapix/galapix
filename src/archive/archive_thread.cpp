@@ -89,7 +89,7 @@ ArchiveThread::get_and_lock_extraction_entry(const std::string& archive_filename
   auto it = m_extractions.find(archive_filename);
   if (it == m_extractions.end())
   {
-    std::unique_ptr<ExtractionEntry> entry_uptr(new ExtractionEntry);
+    auto entry_uptr = std::make_unique<ExtractionEntry>();
 
     ExtractionEntry& entry = *entry_uptr;
     m_extractions[archive_filename] = std::move(entry_uptr);

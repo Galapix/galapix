@@ -285,8 +285,8 @@ DownloadManager::request_get(const std::string& url,
       else
       {
         log_info("downloading: %1%", url);
-        std::unique_ptr<DownloadTransfer> transfer(new DownloadTransfer(uuid, url, boost::optional<std::string>(),
-                                                                        callback, progress_callback));
+        auto transfer = std::make_unique<DownloadTransfer>(uuid, url, boost::optional<std::string>(),
+                                                           callback, progress_callback);
         curl_multi_add_handle(m_multi_handle, transfer->handle);
         m_transfers.push_back(std::move(transfer));
       }
@@ -308,8 +308,8 @@ DownloadManager::request_post(const std::string& url,
   m_queue.wait_and_push(
     [=]{
       log_info("downloading: %1%", url);
-      std::unique_ptr<DownloadTransfer> transfer(new DownloadTransfer(uuid, url, post_data,
-                                                                      callback, progress_callback));
+      auto transfer = std::make_unique<DownloadTransfer>(uuid, url, post_data,
+                                                         callback, progress_callback);
       curl_multi_add_handle(m_multi_handle, transfer->handle);
       m_transfers.push_back(std::move(transfer));
     });
