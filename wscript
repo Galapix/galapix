@@ -325,7 +325,7 @@ def build(bld):
         if bld.env.build_galapix_sdl:
             for filename in glob("uitest/sdl/*_test.cpp"):
                 bld.program(target=filename[:-4],
-                            source=[filename],
+                            source=[filename] + optional_sources,
                             includes=["src/"],
                             use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
 
