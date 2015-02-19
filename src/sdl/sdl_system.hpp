@@ -32,7 +32,7 @@ public:
   bool requires_command_line_args() override;
   void trigger_redraw() override;
   void set_trackball_mode(bool active) override;
-  
+
 private:
   SDLSystem(const SDLSystem&) = delete;
   SDLSystem& operator=(const SDLSystem&) = delete;

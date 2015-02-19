@@ -18,7 +18,7 @@
 
 #include "archive/zip.hpp"
 
-// g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp zip.cpp -o myzip -D__TEST_ZIP__  
+// g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp zip.cpp -o myzip -D__TEST_ZIP__
 #include <iostream>
 
 int main(int argc, char** argv)
@@ -39,13 +39,13 @@ int main(int argc, char** argv)
       blob->write_to_file("/tmp/out.file");
       std::cout << "Writting /tmp/out.file" << std::endl;
     }
-    else 
+    else
     {
       std::cout << "Usage: " << argv[0] << " ZIPFILE" << std::endl;
       std::cout << "       " << argv[0] << " ZIPFILE FILETOEXTRACT" << std::endl;
     }
   }
-  catch(std::exception& err) 
+  catch(std::exception& err)
   {
     std::cout << "Error: " << err.what() << std::endl;
   }

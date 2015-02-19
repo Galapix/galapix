@@ -41,7 +41,7 @@ int main(int argc, char** argv)
          catch(const std::exception& err)
          {
            std::cout << "error: " << err.what() << std::endl;
-         }      
+         }
        });
   }
 

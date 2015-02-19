@@ -18,7 +18,7 @@
 
 #include "archive/rar.hpp"
 
-// g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp rar.cpp -o myrar -D__TEST_RAR__  
+// g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp rar.cpp -o myrar -D__TEST_RAR__
 
 #include <iostream>
 
@@ -40,13 +40,13 @@ int main(int argc, char** argv)
       blob->write_to_file("/tmp/out.file");
       std::cout << "Writting /tmp/out.file" << std::endl;
     }
-    else 
+    else
     {
       std::cout << "Usage: " << argv[0] << " RARFILE" << std::endl;
       std::cout << "       " << argv[0] << " RARFILE FILETOEXTRACT" << std::endl;
     }
   }
-  catch(std::exception& err) 
+  catch(std::exception& err)
   {
     std::cout << "Error: " << err.what() << std::endl;
   }

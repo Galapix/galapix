@@ -22,7 +22,7 @@
 
 int main()
 {
-  ResourceStatus status = ResourceStatus::AccessError; 
+  ResourceStatus status = ResourceStatus::AccessError;
   assert(status == ResourceStatus::AccessError);
   std::cout << to_string(status) << std::endl;
 

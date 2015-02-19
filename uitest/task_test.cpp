@@ -24,7 +24,7 @@
 
 int main()
 {
-  Task<int> task{[]{ 
+  Task<int> task{[]{
       std::cout << "doing a thing" << std::endl;
       throw std::runtime_error("broken");
       return 5;

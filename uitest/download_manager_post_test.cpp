@@ -31,7 +31,7 @@ int main(int argc, char** argv)
   for(int i = 1; i < argc; ++i)
   {
     std::cout << "sending request: " << argv[i] << std::endl;
-    downloader.request_post(argv[i], 
+    downloader.request_post(argv[i],
                             "Hello World",
                             [=](const DownloadResult& result) {
                               std::cout << "got " << result.get_response_code() << " for " << " " << argv[i] << std::endl;
@@ -50,7 +50,7 @@ int main(int argc, char** argv)
                               return false;
                             });
   }
-  
+
   return 0;
 }
 

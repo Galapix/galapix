@@ -63,7 +63,7 @@ ResourceGeneratorCallbacks::on_archive_data(const ArchiveInfo& archive_info)
 void
 ResourceGeneratorCallbacks::on_image_data(const ImageData& image_data)
 {
-  log_info("%1% %2%x%3%", 
+  log_info("%1% %2%x%3%",
            image_data.get_image_tiles().size(),
            image_data.get_image_info().get_width(),
            image_data.get_image_info().get_height());

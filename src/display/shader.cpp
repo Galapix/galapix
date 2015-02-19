@@ -106,9 +106,9 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
 #else
   source = "#version 330 core\n" + source;
 #endif
-  
+
   log_info("compiling shader '%1%'", filename);
-  
+
   GLuint shader = glCreateShader(shader_type);
   check_gl_error();
   const GLchar* source_lst[] = { source.c_str() };
@@ -117,7 +117,7 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
   check_gl_error();
   glCompileShader(shader);
   check_gl_error();
-  
+
   GLint status = 45454545;
   glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
   check_gl_error();
@@ -154,7 +154,7 @@ GLuint create_program(const std::string& vert_shader_filename,
 
   glDeleteShader(frag_shader);
   glDeleteShader(vert_shader);
-  
+
   GLint link_status = 45454545;
   glGetProgramiv(program, GL_LINK_STATUS, &link_status);
   check_gl_error();
@@ -171,7 +171,7 @@ GLuint create_program(const std::string& vert_shader_filename,
   {
     log_info("link ok: status = %1%", link_status);
   }
-  
+
   return program;
 }
 

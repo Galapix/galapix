@@ -43,7 +43,7 @@ int main()
     foo.reset(Foo());
     //foo.set_exception();
   }
-  try 
+  try
   {
     std::cout << "Failable::get(): " << foo.get() << std::endl;
   }

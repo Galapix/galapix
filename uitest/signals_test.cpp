@@ -48,7 +48,7 @@ int main()
   //foobar.reset();
   //callback(1323);
   callback2();
-  
+
   return 0;
 }
 

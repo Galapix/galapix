@@ -32,7 +32,7 @@ int main(int argc, char** argv)
     PNG::save(surface, output_filename.str());
     std::cout << argv[i] << " -> " << output_filename.str() << std::endl;
   }
-  
+
   return 0;
 }
 

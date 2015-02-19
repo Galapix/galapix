@@ -70,7 +70,7 @@ SDLSystem::set_trackball_mode(bool active)
   }
   else
   {
-    SDL_SetRelativeMouseMode(SDL_FALSE); 
+    SDL_SetRelativeMouseMode(SDL_FALSE);
   }
 }
 

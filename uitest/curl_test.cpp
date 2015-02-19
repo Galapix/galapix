@@ -24,7 +24,7 @@
 
 int main(int argc, char** argv)
 {
-  try 
+  try
     {
       /*
       if (curl_global_init(CURL_GLOBAL_ALL) != 0)
@@ -40,8 +40,8 @@ int main(int argc, char** argv)
           CURLHandler::get_data(argv[i], &mime_type)->write_to_file("/tmp/out");
           std::cout << "Got: " << argv[i] << " -> '" << mime_type << "'" << std::endl;
         }
-  
-      //curl_global_cleanup(); 
+
+      //curl_global_cleanup();
     }
   catch(std::exception& err)
     {

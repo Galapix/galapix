@@ -28,7 +28,7 @@ int main(int argc, char** argv)
   {
     ZipArchiveLoader loader;
     IncrementalExtraction extraction(loader, argv[1]);
-    
+
     for(auto& filename : extraction.get_filenames())
     {
       std::cout << filename << std::endl;

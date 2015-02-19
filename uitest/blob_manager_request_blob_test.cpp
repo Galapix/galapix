@@ -11,14 +11,14 @@ int main(int argc, char** argv)
   ArchiveManager  archive_mgr;
 
   BlobManager blob_mgr(download_mgr, archive_mgr);
-  
+
   int count = 0;
   for(int i = 1; i < argc; ++i)
   {
     ResourceLocator locator = ResourceLocator::from_string(argv[i]);
     std::cout << "requesting " << locator.str() << std::endl;
     blob_mgr.request_blob
-      (locator, 
+      (locator,
        [&count](const Failable<BlobAccessorPtr>& data)
        {
          try
@@ -34,8 +34,8 @@ int main(int argc, char** argv)
     count += 1;
   }
 
-  while(count > 0) 
-  { 
+  while(count > 0)
+  {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 

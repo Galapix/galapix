@@ -32,7 +32,7 @@ class Galapix final
 {
 private:
   System& m_system;
-    
+
 public:
   Galapix(System& system);
   ~Galapix();

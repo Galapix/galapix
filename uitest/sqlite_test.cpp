@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   else
   {
     while(true)
-      try 
+      try
       {
         SQLiteConnection db(argv[1]);
 
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
                 std::cout << "(unknown)";
                 break;
             }
-        
+
             std::cout << " | ";
           }
           std::cout << std::endl;

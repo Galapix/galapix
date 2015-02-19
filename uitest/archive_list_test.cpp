@@ -38,7 +38,7 @@ int main(int argc, char** argv)
       try
       {
         auto lst = archiver.get_filenames(argv[i]);
-  
+
         for(const auto& filename: lst)
         {
           std::cout << "  " << filename << std::endl;

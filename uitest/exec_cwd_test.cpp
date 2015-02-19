@@ -22,7 +22,7 @@
 
 int main(int argc, char** argv)
 {
-  try 
+  try
   {
     if (argc < 3)
     {

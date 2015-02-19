@@ -40,7 +40,7 @@ public:
     database.start_thread();
 
     ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
-  
+
     int count = 0;
     for(int i = 1; i < argc; ++i)
     {
@@ -48,7 +48,7 @@ public:
 
       resource_mgr.request_sha1
         (locator,
-         [&count, locator](const Failable<SHA1>& data) 
+         [&count, locator](const Failable<SHA1>& data)
          {
            try
            {
@@ -67,7 +67,7 @@ public:
     ~ResourceManagerTestHelper()
     {
       log_debug("going into loop");
-      while(count > 0) 
+      while(count > 0)
       {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }

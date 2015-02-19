@@ -221,7 +221,7 @@ public:
   // DDSD_MIPMAPCOUNT in this case.
   uint32_t dwMipMapCount;
 
-  // Unused	
+  // Unused
   uint32_t dwReserved1[11];
 
   // 32-byte value that specifies the pixel format structure.

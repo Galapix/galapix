@@ -24,7 +24,7 @@ int main(int argc, char** argv)
 {
   std::string url_str = "file://Test Foo/bla/boing";
   URL url = URL::from_string(url_str);
-  
+
   std::cout << "'" << url_str << "'" << std::endl;
   std::cout << "'" << url.get_protocol() << "'" << std::endl;
 

@@ -122,7 +122,7 @@ DDSSurface::read_data(std::istream& in)
           std::ostringstream str;
           str << "Format unknown: " << pixel_format.dwFourCC << " " << std::string((char*)&pixel_format.dwFourCC, 4);
           raise_runtime_error(str.str());
-        }	
+        }
     }
   }
   else

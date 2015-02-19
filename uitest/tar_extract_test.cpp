@@ -28,12 +28,12 @@ int main(int argc, char** argv)
     {
       Tar::extract(argv[1], argv[2]);
     }
-    else 
+    else
     {
       std::cout << "Usage: " << argv[0] << " TARFILE TARGETDIR" << std::endl;
     }
   }
-  catch(std::exception& err) 
+  catch(std::exception& err)
   {
     std::cout << "Error: " << err.what() << std::endl;
   }

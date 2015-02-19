@@ -25,5 +25,5 @@ GLuint create_program(const std::string& vert_shader_filename,
 
 GLint get_uniform_location(GLuint program, const char* name);
 GLint get_attrib_location(GLuint program, const char* name);
-  
+
 /* EOF */

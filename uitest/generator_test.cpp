@@ -44,7 +44,7 @@ public:
   {
   }
 
-  virtual ~TestGeneratorCallbacks() 
+  virtual ~TestGeneratorCallbacks()
   {
   }
 
@@ -79,10 +79,10 @@ public:
               << image_data.get_image_info().get_width() << "x" << image_data.get_image_info().get_height()
               << " tiles: " << image_data.get_image_tiles().size()
               << std::endl;
-    
+
     for(const auto& tile : image_data.get_image_tiles())
     {
-      std::cout << "  " << tile.get_pos() << " " << tile.get_scale() << " " 
+      std::cout << "  " << tile.get_pos() << " " << tile.get_scale() << " "
                 << tile.get_surface()->get_width() << "x"
                 << tile.get_surface()->get_height()
                 << std::endl;
@@ -92,7 +92,7 @@ public:
   void on_status(ResourceStatus status) override
   {
     std::cout << m_locator.str() << " on_status: " << to_string(status) << std::endl;
-    if (m_done_function) 
+    if (m_done_function)
     {
       m_done_function();
     }
@@ -123,8 +123,8 @@ int main(int argc, char** argv)
     ResourceLocator locator = ResourceLocator::from_string(argv[i]);
     std::cout << "requesting: " << locator.str() << std::endl;
     count += 1;
-    generator.request_resource_processing(locator, 
-                                          std::make_shared<TestGeneratorCallbacks>(locator, 
+    generator.request_resource_processing(locator,
+                                          std::make_shared<TestGeneratorCallbacks>(locator,
                                                                                    [&count]{
                                                                                      count -= 1;
                                                                                    }));
@@ -134,7 +134,7 @@ int main(int argc, char** argv)
   // else things will crash as callbacks are thrown around when the
   // Generator is destructing itself
   while(count > 0)
-  { 
+  {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 

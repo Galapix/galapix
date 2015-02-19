@@ -48,7 +48,7 @@ int main(int argc, char** argv)
   database.start_thread();
 
   ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
-  
+
   int count = 0;
   for(int i = 1; i < argc; ++i)
   {
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 
     resource_mgr.request_blob_info
       (locator,
-       [&count, locator](const Failable<BlobInfo>& data) 
+       [&count, locator](const Failable<BlobInfo>& data)
        {
         try
         {
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
   }
 
   log_debug("going into loop");
-  while(count > 0) 
+  while(count > 0)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }

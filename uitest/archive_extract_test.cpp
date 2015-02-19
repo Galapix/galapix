@@ -37,7 +37,7 @@ int main(int argc, char** argv)
 
     BlobPtr blob = archiver.get_file(archive, filename);
     blob->write_to_file(outfile);
-    
+
     return 0;
   }
 }

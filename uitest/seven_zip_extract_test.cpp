@@ -28,12 +28,12 @@ int main(int argc, char** argv)
     {
       SevenZip::extract(argv[1], argv[2]);
     }
-    else 
+    else
     {
       std::cout << "Usage: " << argv[0] << " ZIPFILE TARGETDIR" << std::endl;
     }
   }
-  catch(std::exception& err) 
+  catch(std::exception& err)
   {
     std::cout << "Error: " << err.what() << std::endl;
   }

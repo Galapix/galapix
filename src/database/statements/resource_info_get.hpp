@@ -54,7 +54,7 @@ public:
     if (reader.next())
     {
       ResourceInfo info(RowId(reader.get_int64(0)),
-                        ResourceName(BlobInfo(), 
+                        ResourceName(BlobInfo(),
                                      ResourceHandler(reader.get_text(1),
                                                      reader.get_text(2),
                                                      reader.get_text(3))),

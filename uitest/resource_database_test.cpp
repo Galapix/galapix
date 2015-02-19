@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     res_db.get_file_entries(entries);
     std::cout << "got " << entries.size() << " entries" << std::endl;
   }
-  
+
   return 0;
 }
 

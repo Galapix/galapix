@@ -31,7 +31,7 @@
 int main(int argc, char** argv)
 {
   logmich::set_log_level(logmich::kDebug);
-  
+
   DownloadManager downloader;
 
   std::cout << "Commands: get, post, cancel, cancel_all" << std::endl;
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
         else
         {
           auto handle =
-            downloader.request_get(args[1], 
+            downloader.request_get(args[1],
                                    [=](const DownloadResult& result) {
 
                                      std::cout << "results for " << args[1] << std::endl;
@@ -86,7 +86,7 @@ int main(int argc, char** argv)
         else
         {
           auto handle =
-            downloader.request_post(args[1], 
+            downloader.request_post(args[1],
                                     args[2],
                                     [=](const DownloadResult& result) {
                                       std::cout << "got " << result.get_response_code() << " for " << " " << args[1] << std::endl;

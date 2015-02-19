@@ -38,13 +38,13 @@ int main(int argc, char** argv)
       blob->write_to_file("/tmp/out.file");
       std::cout << "Writting /tmp/out.file" << std::endl;
     }
-    else 
+    else
     {
       std::cout << "Usage: " << argv[0] << " ZIPFILE" << std::endl;
       std::cout << "       " << argv[0] << " ZIPFILE FILETOEXTRACT" << std::endl;
     }
   }
-  catch(std::exception& err) 
+  catch(std::exception& err)
   {
     std::cout << "Error: " << err.what() << std::endl;
   }
