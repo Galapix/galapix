@@ -63,27 +63,27 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
 {
   // order matters, first come, first serve, later registrations for
   // an already registered type will be ignored
-  add_loader(new JPEGSoftwareSurfaceLoader);
-  add_loader(new PNGSoftwareSurfaceLoader);
+  add_loader(std::make_unique<JPEGSoftwareSurfaceLoader>());
+  add_loader(std::make_unique<PNGSoftwareSurfaceLoader>());
 
   if (XCF::is_available())
-    add_loader(new XCFSoftwareSurfaceLoader);
+    add_loader(std::make_unique<XCFSoftwareSurfaceLoader>());
 
   if (UFRaw::is_available())
-    add_loader(new UFRawSoftwareSurfaceLoader);
+    add_loader(std::make_unique<UFRawSoftwareSurfaceLoader>());
 
   if (RSVG::is_available())
-    add_loader(new RSVGSoftwareSurfaceLoader);
+    add_loader(std::make_unique<RSVGSoftwareSurfaceLoader>());
 
   if (VidThumb::is_available())
-    add_loader(new VidThumbSoftwareSurfaceLoader);
+    add_loader(std::make_unique<VidThumbSoftwareSurfaceLoader>());
 
   if (KRA::is_available())
-    add_loader(new KRASoftwareSurfaceLoader);
+    add_loader(std::make_unique<KRASoftwareSurfaceLoader>());
 
-  add_loader(new DDSSoftwareSurfaceLoader);
+  add_loader(std::make_unique<DDSSoftwareSurfaceLoader>());
 
-  add_loader(new ImagemagickSoftwareSurfaceLoader);
+  add_loader(std::make_unique<ImagemagickSoftwareSurfaceLoader>());
 }
 
 SoftwareSurfaceFactory::~SoftwareSurfaceFactory()
@@ -91,10 +91,10 @@ SoftwareSurfaceFactory::~SoftwareSurfaceFactory()
 }
 
 void
-SoftwareSurfaceFactory::add_loader(SoftwareSurfaceLoader* loader)
+SoftwareSurfaceFactory::add_loader(std::unique_ptr<SoftwareSurfaceLoader> loader)
 {
-  m_loader.push_back(std::unique_ptr<SoftwareSurfaceLoader>(loader));
-  loader->register_loader(*this);
+  m_loader.push_back(std::move(loader));
+  m_loader.back()->register_loader(*this);
 }
 
 bool

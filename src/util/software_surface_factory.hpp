@@ -45,7 +45,7 @@ public:
   SoftwareSurfaceFactory();
   ~SoftwareSurfaceFactory();
 
-  void add_loader(SoftwareSurfaceLoader* loader);
+  void add_loader(std::unique_ptr<SoftwareSurfaceLoader> loader);
   bool has_supported_extension(const URL& url);
 
   /** Files are handled in the order of mime-type, extension, magic,
