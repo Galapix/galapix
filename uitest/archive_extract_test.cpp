@@ -25,6 +25,7 @@ int main(int argc, char** argv)
   if (argc != 4)
   {
     std::cout << "Usage: " << argv[0] << " ARCHIVENAME FILENAME OUTFILE" << std::endl;
+    std::cout << "Extract a single file out of an archive" << std::endl;
     return 1;
   }
   else

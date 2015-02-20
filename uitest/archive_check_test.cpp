@@ -25,6 +25,7 @@ int main(int argc, char** argv)
   if (argc == 1)
   {
     std::cout << "Usage: " << argv[0] << " ARCHIVENAME..." << std::endl;
+    std::cout << "Check if the given filename is an archive or not" << std::endl;
     return 1;
   }
   else
