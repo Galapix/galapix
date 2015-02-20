@@ -20,7 +20,6 @@
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
-#include "galapix/database_thread.hpp"
 #include "generator/generator.hpp"
 #include "job/job_manager.hpp"
 #include "network/download_manager.hpp"
@@ -28,6 +27,7 @@
 #include "resource/file_info.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/resource_manager.hpp"
+#include "server/database_thread.hpp"
 
 int main(int argc, char** argv)
 {

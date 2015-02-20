@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_GALAPIX_VIEWER_COMMAND_HPP
 
 #include "database/database.hpp"
-#include "galapix/database_thread.hpp"
+#include "server/database_thread.hpp"
 #include "job/job_manager.hpp"
 
 #include "galapix/options.hpp"

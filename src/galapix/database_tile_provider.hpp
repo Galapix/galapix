@@ -22,8 +22,9 @@
 #include <assert.h>
 #include <logmich/log.hpp>
 
-#include "galapix/tile_provider.hpp"
 #include "database/entries/image_entry.hpp"
+#include "galapix/tile_provider.hpp"
+#include "server/database_thread.hpp"
 
 class DatabaseTileProvider : public TileProvider
 {

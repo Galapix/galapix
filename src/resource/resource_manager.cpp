@@ -21,7 +21,6 @@
 #include <future>
 #include <logmich/log.hpp>
 
-#include "galapix/database_thread.hpp"
 #include "generator/generator.hpp"
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
@@ -34,6 +33,7 @@
 #include "resource/resource_url.hpp"
 #include "resource/tile_info.hpp"
 #include "resource/url_info.hpp"
+#include "server/database_thread.hpp"
 #include "util/format.hpp"
 
 ResourceManager::ResourceManager(DatabaseThread& database,

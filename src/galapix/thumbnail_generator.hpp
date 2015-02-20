@@ -20,8 +20,8 @@
 #define HEADER_GALAPIX_GALAPIX_THUMBNAIL_GENERATOR_HPP
 
 #include "database/database.hpp"
-#include "galapix/database_thread.hpp"
 #include "job/job_manager.hpp"
+#include "server/database_thread.hpp"
 
 class Options;
 

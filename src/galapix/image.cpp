@@ -23,12 +23,12 @@
 
 #include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"
-#include "galapix/database_thread.hpp"
 #include "galapix/database_tile_provider.hpp"
 #include "galapix/image_renderer.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer.hpp"
 #include "math/rgb.hpp"
+#include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
 
 Image::Image(const URL& url, TileProviderPtr provider) :

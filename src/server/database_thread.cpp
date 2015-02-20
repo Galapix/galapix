@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "galapix/database_thread.hpp"
+#include "server/database_thread.hpp"
 
 #include <typeinfo>
 #include <logmich/log.hpp>
@@ -51,7 +51,10 @@ DatabaseThread::DatabaseThread(Database& database,
 
 DatabaseThread::~DatabaseThread()
 {
-  assert(m_quit);
+  if (!m_quit)
+  {
+    log_error("m_quit not set while executing ~DatabaseThread()");
+  }
 }
 
 void

@@ -20,10 +20,10 @@
 
 #include <assert.h>
 
-#include "util/weak_functor.hpp"
-#include "math/math.hpp"
 #include "galapix/viewer.hpp"
-#include "galapix/database_thread.hpp"
+#include "math/math.hpp"
+#include "server/database_thread.hpp"
+#include "util/weak_functor.hpp"
 
 ImageTileCache::ImageTileCache(TileProviderPtr tile_provider) :
   m_cache(),

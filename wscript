@@ -224,6 +224,7 @@ def build(bld):
         glob("src/display/*.cpp") + \
         glob("src/galapix/*.cpp") + \
         glob("src/galapix/layouter/*.cpp") + \
+        glob("src/server/*.cpp") + \
         glob("src/generator/*.cpp") + \
         glob("src/job/*.cpp") + \
         glob("src/jobs/*.cpp") + \

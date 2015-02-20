@@ -23,11 +23,11 @@
 #include <logmich/log.hpp>
 
 #include "database/entries/old_file_entry.hpp"
-#include "galapix/database_thread.hpp"
 #include "galapix/layouter/random_layouter.hpp"
 #include "galapix/layouter/regular_layouter.hpp"
 #include "galapix/layouter/spiral_layouter.hpp"
 #include "galapix/layouter/tight_layouter.hpp"
+#include "server/database_thread.hpp"
 #include "util/file_reader.hpp"
 #include "util/string_util.hpp"
 
