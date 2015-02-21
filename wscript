@@ -33,7 +33,7 @@ debug_cxxflags = [ "-O0", "-g3" ]
 
 release_cxxflags = [ "-O3", "-s" ]
 
-warning_cxxflags = [
+developer_cxxflags = [
     # "-ansi",
     "-pedantic",
     "-Wall",
@@ -127,7 +127,9 @@ def options(opt):
     gr.add_option('--build-galapix-sdl', action='store_true', default=True, help='Build galapix.sdl')
     gr.add_option('--build-tests', action='store_true', default=False, help='Build tests')
     gr.add_option('--build-extra', action='store_true', default=False, help='Build extra')
-    gr.add_option('--developer', action='store_true', default=False, help='Switch on extra warnings and verbosity')
+    gr.add_option('--developer', action='store_true', default=False, help='Switch on extra debug info, warnings and verbosity')
+    gr.add_option('--debug', action='store_true', default=False, help='Switch on extra debug info')
+    gr.add_option('--release', action='store_true', default=False, help='Switch on optimizations')
 
 
 def configure(conf):
@@ -192,21 +194,28 @@ def configure(conf):
     conf.env.append_value("CXXFLAGS", ["-std=c++1y"])
 
     if conf.options.developer:
-        conf.env["CXXFLAGS_WARNINGS"] = warning_cxxflags
+        conf.env["CXXFLAGS_WARNINGS"] = developer_cxxflags
+    elif conf.options.debug:
+        conf.env["CXXFLAGS_WARNINGS"] = debug_cxxflags
+    else:
+        conf.env["CXXFLAGS_WARNINGS"] = release_cxxflags
 
     conf.env.build_galapix_gtk = conf.options.build_galapix_gtk
     conf.env.build_galapix_sdl = conf.options.build_galapix_sdl
     conf.env.build_tests = conf.options.build_tests
     conf.env.build_extra = conf.options.build_extra
-    conf.env.developer = conf.options.developer
 
     print
     print "Build Galapix.SDL:", conf.env.build_galapix_sdl
     print "Build Galapix.Gtk:", conf.env.build_galapix_gtk
     print "Build Tests:      ", conf.env.build_tests
     print "Build Extra:      ", conf.env.build_extra
-    print "Developer Mode:   ", conf.env.developer
-
+    if conf.options.developer:
+        print "Mode:             developer"
+    elif conf.options.debug:
+        print "Mode:             debug"
+    else:
+        print "Mode:             release"
 
 def build(bld):
     galapix_sdl_sources = glob("src/sdl/*.cpp")
