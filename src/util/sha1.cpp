@@ -38,7 +38,7 @@ SHA1::from_mem(const uint8_t* data, size_t len)
   }
   else
   {
-    mhash(td, data, len);
+    mhash(td, data, static_cast<mutils_word32>(len));
 
     SHA1 sha1;
     mhash_deinit(td, sha1.m_data.data());
@@ -75,7 +75,7 @@ SHA1::from_file(const std::string& filename)
       while(!in.eof())
       {
         in.read(buf, buf_size);
-        mhash(td, buf, in.gcount());
+        mhash(td, buf, static_cast<mutils_word32>(in.gcount()));
       }
 
       in.close();

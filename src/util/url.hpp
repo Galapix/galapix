@@ -65,8 +65,8 @@ public:
       doesn't have a normal system filename */
   BlobPtr  get_blob(std::string* mime_type = NULL) const;
 
-  int         get_mtime() const;
-  int         get_size() const;
+  time_t get_mtime() const;
+  size_t get_size() const;
 
   /** Return true when the URL is only accessible via a very slow
       connection */

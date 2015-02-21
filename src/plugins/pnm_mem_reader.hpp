@@ -25,7 +25,7 @@ class PNMMemReader
 {
 private:
   const char* m_data;
-  const int m_len;
+  const size_t m_len;
   const char* m_ptr;
   int m_token_count;
 
@@ -35,7 +35,7 @@ private:
   const char* m_pixel_data;
 
 public:
-  PNMMemReader(const char* data, int len) :
+  PNMMemReader(const char* data, size_t len) :
     m_data(data),
     m_len(len),
     m_ptr(data),

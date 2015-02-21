@@ -160,7 +160,7 @@ URL::get_blob(std::string* mime_type) const
   }
 }
 
-int
+time_t
 URL::get_mtime() const
 {
   if (has_stdio_name())
@@ -173,7 +173,7 @@ URL::get_mtime() const
   }
 }
 
-int
+size_t
 URL::get_size() const
 {
   if (has_stdio_name())

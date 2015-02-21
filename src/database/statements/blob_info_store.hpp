@@ -34,7 +34,7 @@ public:
   RowId operator()(const BlobInfo& blob_info)
   {
     m_stmt.bind_text(1, blob_info.get_sha1().str());
-    m_stmt.bind_int(2,  blob_info.get_size());
+    m_stmt.bind_int64(2, blob_info.get_size());
     m_stmt.execute();
 
     return RowId{sqlite3_last_insert_rowid(m_db.get_db())};

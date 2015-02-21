@@ -53,8 +53,8 @@ public:
   /** read the first 512 bytes of the archive for magic detection */
   static std::string  get_magic(const std::string& filename);
 
-  static unsigned int get_mtime(const std::string& filename);
-  static unsigned int get_size(const std::string& filename);
+  static time_t get_mtime(const std::string& filename);
+  static size_t get_size(const std::string& filename);
 
   /** Generate a recursive list of all images in pathname */
   static void generate_image_file_list(const std::string& pathname, std::vector<URL>& file_list);

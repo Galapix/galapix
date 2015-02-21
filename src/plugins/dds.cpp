@@ -65,7 +65,7 @@ DDS::load_from_file(const std::string& filename)
     SoftwareSurfacePtr surface
       = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(dds.get_width(), dds.get_height()));
 
-    if (dds.get_length() != surface->get_width() * surface->get_height() * 4)
+    if (static_cast<int>(dds.get_length()) != surface->get_width() * surface->get_height() * 4)
     {
       std::ostringstream out;
       out << "DDS::load_from_file(): length missmatch " << dds.get_length()

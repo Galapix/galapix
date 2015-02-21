@@ -28,12 +28,12 @@ public:
   XCFSoftwareSurfaceLoader()
   {}
 
-  std::string get_name() const
+  std::string get_name() const override
   {
     return "xcf";
   }
 
-  void register_loader(SoftwareSurfaceFactory& factory) const
+  void register_loader(SoftwareSurfaceFactory& factory) const override
   {
     factory.register_by_extension(this, "xcf");
     factory.register_by_extension(this, "xcf.bz2");
@@ -44,15 +44,15 @@ public:
     factory.register_by_magic(this, "gimp xcf");
   }
 
-  bool supports_from_file() const { return true; }
-  bool supports_from_mem()  const { return true; }
+  bool supports_from_file() const override { return true; }
+  bool supports_from_mem()  const override { return true; }
 
-  SoftwareSurfacePtr from_file(const std::string& filename) const
+  SoftwareSurfacePtr from_file(const std::string& filename) const override
   {
     return XCF::load_from_file(filename);
   }
 
-  SoftwareSurfacePtr from_mem(const uint8_t* data, int len) const
+  SoftwareSurfacePtr from_mem(const uint8_t* data, size_t len) const override
   {
     return XCF::load_from_mem(data, len);
   }

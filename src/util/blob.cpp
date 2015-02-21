@@ -87,8 +87,8 @@ Blob::from_file(const std::string& filename)
     uint8_t buffer[4096];
     while(!in.eof())
     {
-      int len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
-      std::copy(buffer, buffer+len, std::back_inserter(data));
+      size_t len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
+      std::copy(buffer, buffer + len, std::back_inserter(data));
     }
 
     // FIXME: useless copy, should read directly into the blob

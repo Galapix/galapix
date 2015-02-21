@@ -53,7 +53,7 @@ public:
 
       @return reference counted pointer to a SoftwareSurface object
    */
-  static SoftwareSurfacePtr load_from_mem(const uint8_t* data, int len, int scale = 1, Size* size = NULL);
+  static SoftwareSurfacePtr load_from_mem(const uint8_t* data, size_t len, int scale = 1, Size* size = NULL);
 
   static void save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename);
   static BlobPtr save(const SoftwareSurfacePtr& surface, int quality);

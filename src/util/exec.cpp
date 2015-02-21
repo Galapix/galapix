@@ -85,7 +85,7 @@ Exec::exec()
     close(stdin_fd[0]);
     close(stdin_fd[1]);
 
-    raise_runtime_error("Exec::exec(): fork failed: " << strerror(errno));
+    raise_runtime_error("Exec::exec(): fork failed: " << strerror(errnum));
   }
   else if (pid == 0)
   { // child

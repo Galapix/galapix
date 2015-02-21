@@ -27,24 +27,24 @@ class KRASoftwareSurfaceLoader : public SoftwareSurfaceLoader
 public:
   KRASoftwareSurfaceLoader() {}
 
-  std::string get_name() const { return "kra"; }
+  std::string get_name() const override { return "kra"; }
 
-  void register_loader(SoftwareSurfaceFactory& factory) const
+  void register_loader(SoftwareSurfaceFactory& factory) const override
   {
     factory.register_by_extension(this, "kra");
 
     factory.register_by_mime_type(this, "application/x-krita");
   }
 
-  bool supports_from_file() const { return true; }
-  bool supports_from_mem()  const { return false; }
+  bool supports_from_file() const override { return true; }
+  bool supports_from_mem()  const override { return false; }
 
-  SoftwareSurfacePtr from_file(const std::string& filename) const
+  SoftwareSurfacePtr from_file(const std::string& filename) const override
   {
     return KRA::load_from_file(filename);
   }
 
-  SoftwareSurfacePtr from_mem(const uint8_t* data, int len) const
+  SoftwareSurfacePtr from_mem(const uint8_t* data, size_t len) const override
   {
     assert(!"not implemented");
   }

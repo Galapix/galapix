@@ -272,7 +272,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 
     glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-    glDrawArrays(GL_LINES, 0, positions.size()/2);
+    glDrawArrays(GL_LINES, 0, static_cast<int>(positions.size()) / 2);
 
     glDisableVertexAttribArray(position_loc);
 

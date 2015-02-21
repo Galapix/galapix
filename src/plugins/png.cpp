@@ -72,8 +72,8 @@ PNG::get_size(void* data, int len, Size& size)
 
     png_read_info(png_ptr, info_ptr);
 
-    size.width  = png_get_image_width(png_ptr, info_ptr);
-    size.height = png_get_image_height(png_ptr, info_ptr);
+    size.width  = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
+    size.height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
 
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
@@ -107,8 +107,8 @@ PNG::get_size(const std::string& filename, Size& size)
 
       png_read_info(png_ptr, info_ptr);
 
-      size.width  = png_get_image_width(png_ptr, info_ptr);
-      size.height = png_get_image_height(png_ptr, info_ptr);
+      size.width = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
+      size.height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
 
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
@@ -182,8 +182,8 @@ PNG::load_from_file(const std::string& filename)
 
     png_read_update_info(png_ptr, info_ptr);
 
-    int width  = png_get_image_width(png_ptr, info_ptr);
-    int height = png_get_image_height(png_ptr, info_ptr);
+    int width  = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
+    int height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
     //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
     SoftwareSurfacePtr surface;
@@ -224,7 +224,7 @@ PNG::load_from_file(const std::string& filename)
 }
 
 SoftwareSurfacePtr
-PNG::load_from_mem(const uint8_t* data, int len)
+PNG::load_from_mem(const uint8_t* data, size_t len)
 {
   // FIXME: Merge this with load_from_file
   png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -256,8 +256,8 @@ PNG::load_from_mem(const uint8_t* data, int len)
 
   png_read_update_info(png_ptr, info_ptr);
 
-  int width  = png_get_image_width(png_ptr, info_ptr);
-  int height = png_get_image_height(png_ptr, info_ptr);
+  int width = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
+  int height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
   //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
   SoftwareSurfacePtr surface;

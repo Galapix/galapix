@@ -44,7 +44,7 @@ public:
   bool has_blob() const;
   BlobPtr get_blob() const;
 
-  int size() const;
+  size_t size() const;
   const uint8_t* get_data() const;
 
   BlobInfo get_blob_info() const;

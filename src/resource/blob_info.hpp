@@ -34,7 +34,7 @@ class BlobInfo
 private:
   RowId m_id;
   SHA1 m_sha1;
-  int  m_size;
+  size_t  m_size;
 
 public:
   static BlobInfo from_blob(BlobPtr blob);
@@ -49,22 +49,22 @@ public:
 
   BlobInfo(const RowId& id,
            const SHA1& sha1,
-           int size) :
+           size_t size) :
     m_id(id),
     m_sha1(sha1),
     m_size(size)
   {}
 
   BlobInfo(const SHA1& sha1,
-           int size) :
+           size_t size) :
     m_id(),
     m_sha1(sha1),
     m_size(size)
   {}
 
   RowId get_id() const { return m_id; }
-  SHA1  get_sha1() const { return m_sha1; }
-  int   get_size() const { return m_size; }
+  SHA1 get_sha1() const { return m_sha1; }
+  size_t get_size() const { return m_size; }
 };
 
 #endif

@@ -103,7 +103,7 @@ SQLiteStatement::bind_int64(int n, int64_t i)
 SQLiteStatement&
 SQLiteStatement::bind_text(int n, const std::string& text)
 {
-  if (sqlite3_bind_text(m_stmt, n, text.c_str(), text.size(), SQLITE_TRANSIENT) != SQLITE_OK)
+  if (sqlite3_bind_text(m_stmt, n, text.c_str(), static_cast<int>(text.size()), SQLITE_TRANSIENT) != SQLITE_OK)
   {
     raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
@@ -125,7 +125,7 @@ SQLiteStatement::bind_null(int n)
 SQLiteStatement&
 SQLiteStatement::bind_blob(int n, const BlobPtr& blob)
 {
-  if (sqlite3_bind_blob(m_stmt, n, blob->get_data(), blob->size(), SQLITE_TRANSIENT) != SQLITE_OK)
+  if (sqlite3_bind_blob(m_stmt, n, blob->get_data(), static_cast<int>(blob->size()), SQLITE_TRANSIENT) != SQLITE_OK)
   {
     raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }
@@ -135,7 +135,7 @@ SQLiteStatement::bind_blob(int n, const BlobPtr& blob)
 SQLiteStatement&
 SQLiteStatement::bind_blob(int n, const uint8_t* data, size_t len)
 {
-  if (sqlite3_bind_blob(m_stmt, n, data, len, SQLITE_TRANSIENT) != SQLITE_OK)
+  if (sqlite3_bind_blob(m_stmt, n, data, static_cast<int>(len), SQLITE_TRANSIENT) != SQLITE_OK)
   {
     raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }

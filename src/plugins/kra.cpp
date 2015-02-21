@@ -54,7 +54,7 @@ KRA::load_from_file(const std::string& filename)
 }
 
 // SoftwareSurface
-// KRA::load_from_mem(const uint8_t* data, int len)
+// KRA::load_from_mem(const uint8_t* data, size_t len)
 // {
 //   Exec koconverter("koconverter");
 //   koconverter.arg("--batch").arg("--mimetype").arg("image/png");

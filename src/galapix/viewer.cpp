@@ -299,6 +299,9 @@ Viewer::on_key_up(Key key)
     case Key::ROTATE:
       keyboard_view_rotate_tool->up(m_mouse_pos);
       break;
+
+    default:
+      break;
   }
 }
 
@@ -317,6 +320,9 @@ Viewer::on_key_down(Key key)
 
     case Key::ROTATE:
       keyboard_view_rotate_tool->down(m_mouse_pos);
+      break;
+
+    default:
       break;
   }
 }

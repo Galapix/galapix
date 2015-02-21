@@ -56,10 +56,10 @@ public:
 
     if (texture)
     {
-      const float left = srcrect.left / texture->get_width();
-      const float top = srcrect.top / texture->get_height();
-      const float right = srcrect.right / texture->get_width();
-      const float bottom = srcrect.bottom / texture->get_height();
+      const float left = srcrect.left / static_cast<float>(texture->get_width());
+      const float top = srcrect.top / static_cast<float>(texture->get_height());
+      const float right = srcrect.right / static_cast<float>(texture->get_width());
+      const float bottom = srcrect.bottom / static_cast<float>(texture->get_height());
 
       std::array<float, 2*4> texcoords = {
         left, top,

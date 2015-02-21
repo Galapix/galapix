@@ -61,7 +61,7 @@ DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
 
     if (post_data_)
     {
-      post_data = curl_easy_escape(handle, post_data_->c_str(), post_data_->size());
+      post_data = curl_easy_escape(handle, post_data_->c_str(), static_cast<int>(post_data_->size()));
       curl_easy_setopt(handle, CURLOPT_POST, 1);
       curl_easy_setopt(handle, CURLOPT_POSTFIELDS, post_data);
       curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, -1);

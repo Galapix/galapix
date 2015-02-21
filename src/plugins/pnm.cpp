@@ -26,7 +26,7 @@
 #include "util/raise_exception.hpp"
 
 SoftwareSurfacePtr
-PNM::load_from_mem(const char* data, int len)
+PNM::load_from_mem(const char* data, size_t len)
 {
   PNMMemReader pnm(data, len);
 
@@ -36,7 +36,7 @@ PNM::load_from_mem(const char* data, int len)
   //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;
   assert(pnm.get_maxval() == 255);
 
-  const int pixel_data_len = ((reinterpret_cast<const uint8_t*>(data) + len) - src_pixels);
+  const int pixel_data_len = static_cast<int>((reinterpret_cast<const uint8_t*>(data) + len) - src_pixels);
 
   if (pnm.get_magic() == "P6") // RGB
   {

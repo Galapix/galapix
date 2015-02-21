@@ -180,7 +180,7 @@ XCF::load_from_file(const std::string& filename)
 }
 
 SoftwareSurfacePtr
-XCF::load_from_mem(const void* data, int len)
+XCF::load_from_mem(const void* data, size_t len)
 {
   Exec xcf2png("xcf2png");
   xcf2png.arg("-"); // Read from stdin

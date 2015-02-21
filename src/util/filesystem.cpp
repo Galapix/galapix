@@ -276,7 +276,7 @@ Filesystem::get_magic(const std::string& filename)
   }
 }
 
-unsigned int
+size_t
 Filesystem::get_size(const std::string& filename)
 {
   struct stat stat_buf;
@@ -287,7 +287,7 @@ Filesystem::get_size(const std::string& filename)
   return stat_buf.st_size; // Is this reliable? or should be use fopen() and ftell()?
 }
 
-unsigned int
+time_t
 Filesystem::get_mtime(const std::string& filename)
 {
   struct stat stat_buf;

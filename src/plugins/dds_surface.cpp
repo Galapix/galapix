@@ -71,7 +71,7 @@ DDSSurface::get_height() const
   return height;
 }
 
-int
+size_t
 DDSSurface::get_length() const
 {
   return data.size();

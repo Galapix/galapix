@@ -35,8 +35,8 @@ Imagemagick::get_size(const std::string& filename, Size& size)
   {
     Magick::Image image(filename);
 
-    size.width  = image.columns();
-    size.height = image.rows();
+    size.width = static_cast<int>(image.columns());
+    size.height = static_cast<int>(image.rows());
 
     return true;
   }
@@ -99,8 +99,8 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 {
   SoftwareSurfacePtr surface;
 
-  int width  = image.columns();
-  int height = image.rows();
+  int width  = static_cast<int>(image.columns());
+  int height = static_cast<int>(image.rows());
   int shift;
 
   // FIXME: QuantumRange is a macro that needs the type Quantum, but
@@ -155,7 +155,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 }
 
 SoftwareSurfacePtr
-Imagemagick::load_from_mem(const void* data, int len)
+Imagemagick::load_from_mem(const void* data, size_t len)
 {
   // FIXME: Magick::Blob creates an unneeded copy of the data
   return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len)));

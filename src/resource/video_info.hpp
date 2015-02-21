@@ -28,7 +28,12 @@ private:
   float m_aspect_ratio;
 
 public:
-  VideoInfo() {}
+  VideoInfo() :
+    m_width(),
+    m_height(),
+    m_duration(),
+    m_aspect_ratio()
+  {}
 
   int get_width() const { return m_width; }
   int get_height() const { return m_height; }

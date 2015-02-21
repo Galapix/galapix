@@ -89,8 +89,8 @@ ViewerCommand::run(const std::vector<URL>& urls)
         workspace.add_image(std::make_shared<Image>(i->get_url(), std::make_shared<DatabaseTileProvider>(*i, image_entry)));
 
         // print progress
-        int n = (i - file_entries.begin())+1;
-        int total = file_entries.size();
+        size_t n = (i - file_entries.begin()) + 1;
+        size_t total = file_entries.size();
         std::cout << "Getting tiles: " << n << "/" << total << " - "
                   << (100 * n / total) << '%'
                   << '\r' << std::flush;
@@ -106,8 +106,8 @@ ViewerCommand::run(const std::vector<URL>& urls)
   // process regular URLs
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
   {
-    int n = (i - urls.begin())+1;
-    int total = urls.size();
+    size_t n = (i - urls.begin())+1;
+    size_t total = urls.size();
     std::cout << "Processing URLs: " << n << "/" << total << " - " << (100 * n / total) << "%\r" << std::flush;
 
     if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))

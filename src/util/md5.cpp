@@ -37,7 +37,7 @@ MD5::from_string(const std::string& str)
   }
   else
   {
-    mhash(td, str.c_str(), str.length());
+    mhash(td, str.c_str(), static_cast<mutils_word32>(str.length()));
 
     mhash_deinit(td, hash);
 
@@ -74,7 +74,7 @@ MD5::from_file(const std::string& filename)
       while(!in.eof())
       {
         in.read(buf, buf_size);
-        mhash(td, buf, in.gcount());
+        mhash(td, buf, static_cast<mutils_word32>(in.gcount()));
       }
 
       in.close();

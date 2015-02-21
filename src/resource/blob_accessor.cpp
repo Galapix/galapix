@@ -110,7 +110,7 @@ BlobAccessor::get_blob_info() const
   }
 }
 
-int
+size_t
 BlobAccessor::size() const
 {
   // TODO: rewrite this to handle stdio

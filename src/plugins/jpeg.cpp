@@ -104,7 +104,7 @@ JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
 
 
 SoftwareSurfacePtr
-JPEG::load_from_mem(const uint8_t* data, int len, int scale, Size* image_size)
+JPEG::load_from_mem(const uint8_t* data, size_t len, int scale, Size* image_size)
 {
   MemJPEGDecompressor loader(data, len);
   SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
