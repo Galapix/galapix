@@ -26,21 +26,22 @@
 #include "gtk/gtk_viewer_widget.hpp"
 #include "gtk/gtk_viewer.hpp"
 
-GtkViewer::GtkViewer()
-  : workspace(),
-    pan_tool_button(),
-    zoom_tool_button(),
-    grid_tool_button(),
-    move_tool_button(),
-    zoom_in_button(),
-    zoom_out_button(),
-    zoom_home_button(),
-    grid_toggle(),
-    grid_pin_toggle(),
-    layout_regular_button(),
-    layout_tight_button(),
-    layout_random_button(),
-    viewer()
+GtkViewer::GtkViewer(System& system) :
+  m_system(system),
+  workspace(),
+  pan_tool_button(),
+  zoom_tool_button(),
+  grid_tool_button(),
+  move_tool_button(),
+  zoom_in_button(),
+  zoom_out_button(),
+  zoom_home_button(),
+  grid_toggle(),
+  grid_pin_toggle(),
+  layout_regular_button(),
+  layout_tight_button(),
+  layout_random_button(),
+  viewer()
 {
 }
 
@@ -69,7 +70,7 @@ GtkViewer::run()
 
   Gtk::ScrolledWindow& hbox = dynamic_cast<Gtk::ScrolledWindow&>(*xml->get_widget("scrolledwindow1"));
 
-  viewer.reset(new Viewer(workspace));
+  viewer = std::make_unique<Viewer>(m_system, workspace);
 
   viewer->set_grid(Vector2f(0,0), Sizef(256.0f, 256.0f));
   //viewer->toggle_grid();

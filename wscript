@@ -250,7 +250,7 @@ def build(bld):
                     "pthread", "glm", "logmich", "SPNAV",
                     "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH",
                     "SQLITE3", "OPENGL", "BOOST_FILESYSTEM"]
-    galapix_gtk_deps = ["GTKMM", "GLADEMM", "GTKGLEXTMM"]
+    galapix_gtk_deps = ["GTKMM", "GLADEMM", "GTKGLEXTMM", "SDL2"]
     galapix_sdl_deps = ["SDL2"]
 
     # build 'galapix_vfs.hpp'

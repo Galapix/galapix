@@ -21,7 +21,7 @@
 
 #include "galapix/system.hpp"
 
-class GtkSystem
+class GtkSystem : public System
 {
 private:
 public:

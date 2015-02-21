@@ -21,12 +21,14 @@
 
 #include <gtkmm.h>
 
+class System;
 class Viewer;
 class Workspace;
 
 class GtkViewer
 {
 private:
+  System& m_system;
   Workspace* workspace;
 
   Gtk::RadioToolButton* pan_tool_button;
@@ -48,7 +50,7 @@ private:
   std::unique_ptr<Viewer> viewer;
 
 public:
-  GtkViewer();
+  GtkViewer(System& system);
   ~GtkViewer();
 
   void run();

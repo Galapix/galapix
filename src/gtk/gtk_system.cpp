@@ -18,6 +18,8 @@
 
 #include "gtk/gtk_system.hpp"
 
+#include "gtk/gtk_viewer.hpp"
+
 GtkSystem::GtkSystem()
 {
 }
@@ -27,9 +29,9 @@ GtkSystem::~GtkSystem()
 }
 
 void
-GtkSystem::launch_viewer()
+GtkSystem::launch_viewer(Workspace& workspace, Options& options)
 {
-    GtkViewer gtk_viewer;
+  GtkViewer gtk_viewer(*this);
   gtk_viewer.set_workspace(&workspace);
   gtk_viewer.run();
 }
