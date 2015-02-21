@@ -46,12 +46,16 @@ int main(int argc, char** argv)
     Framebuffer::draw_rect(Rectf(Vector2f(static_cast<float>(rand()%800),
                                           static_cast<float>(rand()%600)),
                                  Sizef(64, 64)),
-                           RGB(rand()%256, rand()%256, rand()%256));
+                           RGB(static_cast<uint8_t>(rand()%256),
+                               static_cast<uint8_t>(rand()%256),
+                               static_cast<uint8_t>(rand()%256)));
 
     Framebuffer::fill_rect(Rectf(Vector2f(static_cast<float>(rand()%800),
                                           static_cast<float>(rand()%600)),
                                  Sizef(64, 64)),
-                           RGB(rand()%256, rand()%256, rand()%256));
+                           RGB(static_cast<uint8_t>(rand()%256),
+                               static_cast<uint8_t>(rand()%256),
+                               static_cast<uint8_t>(rand()%256)));
 
     window.flip();
   }

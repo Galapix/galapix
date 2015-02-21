@@ -310,18 +310,18 @@ def build(bld):
         bld.stlib(target="gtest",
                   source=["external/gtest-1.7.0/src/gtest-all.cc"],
                   includes=["external/gtest-1.7.0/include/",
-                            "external/gtest-1.7.0/"],
-                  export_includes=["external/gtest-1.7.0/include/"])
+                            "external/gtest-1.7.0/"])
+
         bld.stlib(target="gtest_main",
                   source=["external/gtest-1.7.0/src/gtest_main.cc"],
                   includes=["external/gtest-1.7.0/include/",
-                            "external/gtest-1.7.0/"],
-                  export_includes=["external/gtest-1.7.0/include/"])
+                            "external/gtest-1.7.0/"])
 
         # build automatic tests
         bld.program(target="test_galapix",
                     source=glob("test/*_test.cpp"),
                     includes=["src/"],
+                    cxxflags=["-isystem", bld.path.find_dir("external/gtest-1.7.0/include/").abspath()],
                     use=(["gtest", "gtest_main"] +
                          ["galapix"] + galapix_deps))
 
