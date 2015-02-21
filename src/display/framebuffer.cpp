@@ -78,16 +78,18 @@ Framebuffer::init()
   print_gl_string("GL_SHADING_LANGUAGE_VERSION", GL_SHADING_LANGUAGE_VERSION);
   // print_gl_string("GL_EXTENSIONS", GL_EXTENSIONS);
 
+  assert_gl("Framebuffer::init()");
+
   // FIXME: dirty, those never get deleted or anything
   s_textured_prg = create_program("src/shader/textured.vert",
-                                 "src/shader/textured.frag");
+                                  "src/shader/textured.frag");
   s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
                                    "src/shader/flatcolor.frag");
 
   // FIXME: Dirty!
-  //GLuint vao;
-  //glGenVertexArrays(1, &vao);
-  //glBindVertexArray(vao);
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
 }
 
 void
@@ -138,6 +140,11 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     rect.left, rect.bottom,
   };
 
+  GLuint positions_vbo;
+  glGenBuffers(1, &positions_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, positions_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
+
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
 
@@ -151,7 +158,7 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 
     GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);
-    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glDrawArrays(GL_LINE_LOOP, 0, 4);
 
@@ -159,6 +166,8 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 
     glUseProgram(0);
   }
+
+  glDeleteBuffers(1, &positions_vbo);
 
   assert_gl("Framebuffer::draw_rect leave");
 }
@@ -175,11 +184,15 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
     rect.left, rect.bottom,
   };
 
+  GLuint positions_vbo;
+  glGenBuffers(1, &positions_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, positions_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
+
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
     glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
-
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
@@ -187,7 +200,7 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 
     GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);
-    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -195,6 +208,9 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 
     glUseProgram(0);
   }
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &positions_vbo);
 
   assert_gl("Framebuffer::fill_rect leave");
 }
@@ -227,6 +243,12 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     positions.push_back(y);
   }
 
+
+  GLuint positions_vbo;
+  glGenBuffers(1, &positions_vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, positions_vbo);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
+
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
@@ -240,7 +262,8 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 
     GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);
-    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+
+    glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
     glDrawArrays(GL_LINES, 0, positions.size()/2);
 
@@ -248,6 +271,8 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 
     glUseProgram(0);
   }
+
+  glDeleteBuffers(1, &positions_vbo);
 
   assert_gl("Framebuffer::draw_grid leave");
 }

@@ -20,9 +20,10 @@
 
 #include <glm/ext.hpp>
 
-#include "display/shader.hpp"
 #include "display/framebuffer.hpp"
+#include "display/shader.hpp"
 #include "math/rect.hpp"
+#include "util/opengl.hpp"
 
 class SurfaceImpl
 {
@@ -74,6 +75,16 @@ public:
         dstrect.left, dstrect.bottom,
       };
 
+      GLuint texcoords_vbo;
+      glGenBuffers(1, &texcoords_vbo);
+      glBindBuffer(GL_ARRAY_BUFFER, texcoords_vbo);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(float) * texcoords.size(), texcoords.data(), GL_STATIC_DRAW);
+
+      GLuint positions_vbo;
+      glGenBuffers(1, &positions_vbo);
+      glBindBuffer(GL_ARRAY_BUFFER, positions_vbo);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
+
       {
         texture->bind();
 
@@ -91,8 +102,10 @@ public:
         glEnableVertexAttribArray(texcoord_loc);
         glEnableVertexAttribArray(position_loc);
 
-        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
-        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+        glBindBuffer(GL_ARRAY_BUFFER, texcoords_vbo);
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+        glBindBuffer(GL_ARRAY_BUFFER, positions_vbo);
+        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -101,6 +114,9 @@ public:
 
         glUseProgram(0);
       }
+
+      glDeleteBuffers(1, &texcoords_vbo);
+      glDeleteBuffers(1, &positions_vbo);
     }
 
     assert_gl("SurfaceImpl::draw leave");
@@ -126,6 +142,16 @@ public:
         rect.left, rect.bottom,
       };
 
+      GLuint texcoords_vbo;
+      glGenBuffers(1, &texcoords_vbo);
+      glBindBuffer(GL_ARRAY_BUFFER, texcoords_vbo);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(float) * texcoords.size(), texcoords.data(), GL_STATIC_DRAW);
+
+      GLuint positions_vbo;
+      glGenBuffers(1, &positions_vbo);
+      glBindBuffer(GL_ARRAY_BUFFER, positions_vbo);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
+
       {
         texture->bind();
 
@@ -143,8 +169,10 @@ public:
         glEnableVertexAttribArray(texcoord_loc);
         glEnableVertexAttribArray(position_loc);
 
-        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, texcoords.data());
-        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, positions.data());
+        glBindBuffer(GL_ARRAY_BUFFER, texcoords_vbo);
+        glVertexAttribPointer(texcoord_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+        glBindBuffer(GL_ARRAY_BUFFER, positions_vbo);
+        glVertexAttribPointer(position_loc, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
 
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
@@ -153,6 +181,9 @@ public:
 
         glUseProgram(0);
       }
+
+      glDeleteBuffers(1, &texcoords_vbo);
+      glDeleteBuffers(1, &positions_vbo);
     }
 
     assert_gl("SurfaceImpl::draw leave");

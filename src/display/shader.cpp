@@ -30,7 +30,7 @@
 
 namespace {
 
-void check_gl_error()
+void check_gl_error(const char* msg = nullptr)
 {
   GLenum err = glGetError();
   switch(err)
@@ -41,26 +41,38 @@ void check_gl_error()
 
     case GL_INVALID_ENUM :
       std::cerr << "OpenGL error: GL_INVALID_ENUM" << std::endl;
+      if (msg) std::cerr << msg << std::endl;
+      abort();
       break;
 
     case GL_INVALID_VALUE :
       std::cerr << "OpenGL error: GL_INVALID_VALUE" << std::endl;
+      if (msg) std::cerr << msg << std::endl;
+      abort();
       break;
 
     case GL_INVALID_OPERATION :
       std::cerr << "OpenGL error: GL_INVALID_OPERATION" << std::endl;
+      if (msg) std::cerr << msg << std::endl;
+      abort();
       break;
 
     case GL_INVALID_FRAMEBUFFER_OPERATION :
       std::cerr << "OpenGL error: GL_INVALID_FRAMEBUFFER_OPERATION" << std::endl;
+      if (msg) std::cerr << msg << std::endl;
+      abort();
       break;
 
     case GL_OUT_OF_MEMORY :
       std::cerr << "OpenGL error: GL_OUT_OF_MEMORY" << std::endl;
+      if (msg) std::cerr << msg << std::endl;
+      abort();
       break;
 
     default:
       std::cerr << "unknown OpenGL error" << std::endl;
+      if (msg) std::cerr << msg << std::endl;
+      abort();
       break;
   };
 }
@@ -109,6 +121,7 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
 
   log_info("compiling shader '%1%'", filename);
 
+  check_gl_error();
   GLuint shader = glCreateShader(shader_type);
   check_gl_error();
   const GLchar* source_lst[] = { source.c_str() };
@@ -142,6 +155,7 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
 GLuint create_program(const std::string& vert_shader_filename,
                       const std::string& frag_shader_filename)
 {
+  check_gl_error("create_program entry");
   GLuint vert_shader = compile_shader(GL_VERTEX_SHADER, vert_shader_filename);
   GLuint frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_filename);
 
