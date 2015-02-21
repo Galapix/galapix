@@ -91,10 +91,12 @@ Framebuffer::init()
   s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
                                    "src/shader/flatcolor.frag");
 
+#ifndef HAVE_OPENGLES2
   // FIXME: Dirty!
   GLuint vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
+#endif
 }
 
 void
