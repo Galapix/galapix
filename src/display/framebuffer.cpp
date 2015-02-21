@@ -62,7 +62,10 @@ void
 Framebuffer::init()
 {
 #ifndef HAVE_OPENGLES2
-  // Init Glew
+  // GLEW has issues with OpenGL3.3Core, thus we set
+  // glewExperimental=true and eat an error wih glGetError()
+  // see https://www.opengl.org/wiki/OpenGL_Loading_Library
+  glewExperimental = true;
   GLenum err = glewInit();
   if (GLEW_OK != err)
   {
@@ -70,6 +73,8 @@ Framebuffer::init()
     str << "Framebuffer::init(): " << glewGetErrorString(err) << std::endl;
     raise_runtime_error(str.str());
   }
+  // eat up an "invalid enum" error produced by GLEW
+  glGetError();
 #endif
 
   print_gl_string("GL_VENDOR", GL_VENDOR);
