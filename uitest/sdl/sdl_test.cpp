@@ -21,6 +21,7 @@
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
 #include "math/rgb.hpp"
+#include "math/rgba.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "sdl/sdl_window.hpp"
@@ -32,6 +33,7 @@ int main(int argc, char** argv)
 
   SDLWindow window(Size(800, 600), false, 0);
 
+  Framebuffer::clear(RGBA(0, 0, 0, 255));
   for(int step = 0; step < 1000; ++step)
   {
     for(int i = 1; i < argc; ++i)
