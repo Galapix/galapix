@@ -1,4 +1,4 @@
-galapix - A Zoomable Image Viewer zoomview 
+galapix - A Zoomable Image Viewer zoomview
 ==========================================
 
 galapix is an image viewer that allows you to directly zoom into large
@@ -48,7 +48,7 @@ Features
 * very responsive, loading happens completly in the background and
   never blocks interactivity
 
-* workspace layout can be saved and loaded 
+* workspace layout can be saved and loaded
 
 * Space Navigator is fully supported
 
@@ -67,11 +67,13 @@ Required Libraries and Tools:
 * [boost](http://www.boost.org/)
 * [librsvg](http://librsvg.sourceforge.net/)
 * [libexif](http://libexif.sourceforge.net/)
+* [libmhash](http://mhash.sourceforge.net/)
 
 On Ubuntu 15.04 one can install all required libraries with this call:
 
     sudo apt-get install \
       libboost1.55-dev \
+      libboost-filesystem1.55-dev \
       libcurl4-gnutls-dev \
       libexif-dev \
       libglademm-2.4-dev \
@@ -82,8 +84,9 @@ On Ubuntu 15.04 one can install all required libraries with this call:
       libpng12-dev \
       libsdl2-dev \
       libspnav-dev \
-      libsqlite3-dev
-    
+      libsqlite3-dev \
+      libmhash-dev
+
 The following packages are optional and used to handle some more
 exotic image formats:
 
@@ -105,7 +108,7 @@ Compilation:
 To compile galapix:
 
     ./waf configure
-    ./waf 
+    ./waf
 
 To get a list of available options use:
 
@@ -173,7 +176,7 @@ s         | sort images alphabetically
 shift+s   | sort images alphabetically in reverse order
 page up   | increase gamma
 page down | increase gamma
-space     | print the currently visible images to stdout 
+space     | print the currently visible images to stdout
 delete    | remove selected images from workspace
 home      | zoom in
 end       | zoom out
@@ -209,5 +212,3 @@ Running multiple instances of galapix at once can lead to:
     terminate called after throwing an instance of 'SQLiteError'
       what():  SQLiteStatement::~SQLiteStatement: column filename is not unique
     Aborted
-
-
