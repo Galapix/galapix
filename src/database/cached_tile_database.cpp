@@ -27,7 +27,7 @@ std::unique_ptr<MemoryTileDatabase> m_tile_cache;
 std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
 CachedTileDatabase::CachedTileDatabase(std::unique_ptr<TileDatabaseInterface> tile_database) :
-  m_tile_cache(new MemoryTileDatabase),
+  m_tile_cache(std::make_unique<MemoryTileDatabase>()),
   m_tile_database(std::move(tile_database))
 {
 }

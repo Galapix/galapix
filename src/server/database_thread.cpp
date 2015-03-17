@@ -454,7 +454,7 @@ DatabaseThread::generate_tile(const JobHandle& job_handle,
       }
     }
 
-    std::shared_ptr<TileGenerationJob> job_ptr(new TileGenerationJob(file_entry, min_scale_in_db, max_scale_in_db));
+    auto job_ptr = std::make_shared<TileGenerationJob>(file_entry, min_scale_in_db, max_scale_in_db);
     job_ptr->sig_tile_callback().connect(std::bind(&DatabaseThread::receive_tile, this, std::placeholders::_1, std::placeholders::_2));
 
     job_ptr->request_tile(job_handle, tilescale, pos, callback);

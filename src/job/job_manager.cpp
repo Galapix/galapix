@@ -32,7 +32,7 @@ JobManager::JobManager(int num_threads) :
 
   for(int i = 0; i < num_threads; ++i)
   {
-    threads.push_back(JobWorkerThreadPtr(new JobWorkerThread()));
+    threads.push_back(std::make_shared<JobWorkerThread>());
   }
 }
 

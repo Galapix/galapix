@@ -47,8 +47,8 @@ JobHandle::create()
   return JobHandle();
 }
 
-JobHandle::JobHandle()
-  : impl(new JobHandleImpl())
+JobHandle::JobHandle() :
+  impl(std::make_unique<JobHandleImpl>())
 {
 }
 

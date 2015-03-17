@@ -89,28 +89,28 @@ Workspace::layout_vertical()
 void
 Workspace::layout_aspect(float aspect_w, float aspect_h)
 {
-  m_layouter.reset(new RegularLayouter(aspect_w, aspect_h));
+  m_layouter = std::make_unique<RegularLayouter>(aspect_w, aspect_h);
   relayout();
 }
 
 void
 Workspace::layout_spiral()
 {
-  m_layouter.reset(new SpiralLayouter());
+  m_layouter = std::make_unique<SpiralLayouter>();
   relayout();
 }
 
 void
 Workspace::layout_tight(float aspect_w, float aspect_h)
 {
-  m_layouter.reset(new TightLayouter(aspect_w, aspect_h));
+  m_layouter = std::make_unique<TightLayouter>(aspect_w, aspect_h);
   relayout();
 }
 
 void
 Workspace::layout_random()
 {
-  m_layouter.reset(new RandomLayouter);
+  m_layouter = std::make_unique<RandomLayouter>();
   relayout();
 }
 
@@ -384,10 +384,10 @@ Workspace::load(const std::string& filename)
 
         std::cout << url << " " << pos << " " << scale << std::endl;
 
-        WorkspaceItemPtr image(new Image(url));
+        WorkspaceItemPtr image = std::make_shared<Image>(url);
         image->set_pos(pos);
         image->set_scale(scale);
-        add_image(WorkspaceItemPtr(new Image(url)));
+        add_image(std::make_shared<Image>(url));
       }
     }
   }

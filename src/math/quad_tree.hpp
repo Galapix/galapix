@@ -88,8 +88,8 @@ public:
         {
           if (!m_nw.get())
           {
-            m_nw.reset(new QuadTreeNode(m_depth+1, Rectf(m_bounding_rect.left, m_bounding_rect.top,
-                                                         m_center.x, m_center.y)));
+            m_nw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left, m_bounding_rect.top,
+                                                                   m_center.x, m_center.y));
           }
           m_nw->add(rect, c);
         }
@@ -97,8 +97,8 @@ public:
         {
           if (!m_sw.get())
           {
-            m_sw.reset(new QuadTreeNode(m_depth+1, Rectf(m_bounding_rect.left, m_center.y,
-                                                         m_center.x, m_bounding_rect.bottom)));
+            m_sw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left, m_center.y,
+                                                                   m_center.x, m_bounding_rect.bottom));
           }
           m_sw->add(rect, c);
         }
@@ -116,8 +116,8 @@ public:
         {
           if (!m_ne.get())
           {
-            m_ne.reset(new QuadTreeNode(m_depth+1, Rectf(m_center.x, m_bounding_rect.top,
-                                                         m_bounding_rect.right, m_center.y)));
+            m_ne = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x, m_bounding_rect.top,
+                                                                   m_bounding_rect.right, m_center.y));
           }
           m_ne->add(rect, c);
         }
@@ -125,8 +125,8 @@ public:
         {
           if (!m_se.get())
           {
-            m_se.reset(new QuadTreeNode(m_depth+1, Rectf(m_center.x, m_center.y,
-                                                         m_bounding_rect.right, m_bounding_rect.bottom)));
+            m_se = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x, m_center.y,
+                                                                   m_bounding_rect.right, m_bounding_rect.bottom));
           }
           m_se->add(rect, c);
         }

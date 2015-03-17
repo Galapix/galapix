@@ -31,20 +31,18 @@ Database::Database(const std::string& prefix) :
 {
   Filesystem::mkdir(prefix);
 
-  m_db.reset(new SQLiteConnection(prefix + "/cache4.sqlite3"));
-  m_tile_db.reset(new SQLiteConnection(prefix + "/cache4_tiles.sqlite3"));
+  m_db = std::make_unique<SQLiteConnection>(prefix + "/cache4.sqlite3");
+  m_tile_db = std::make_unique<SQLiteConnection>(prefix + "/cache4_tiles.sqlite3");
 
-  m_resources.reset(new ResourceDatabase(*m_db));
+  m_resources = std::make_unique<ResourceDatabase>(*m_db);
 
   if (true)
   {
-    m_tiles.reset(new CachedTileDatabase(std::unique_ptr<TileDatabaseInterface>(
-                                           new SQLiteTileDatabase(*m_tile_db, *m_resources))));
+    m_tiles = std::make_unique<CachedTileDatabase>(std::make_unique<SQLiteTileDatabase>(*m_tile_db, *m_resources));
   }
   else
   {
-    m_tiles.reset(new CachedTileDatabase(std::unique_ptr<TileDatabaseInterface>(
-                                           new FileTileDatabase(prefix + "/tiles"))));
+    m_tiles = std::make_unique<CachedTileDatabase>(std::make_unique<FileTileDatabase>(prefix + "/tiles"));
   }
 }
 
