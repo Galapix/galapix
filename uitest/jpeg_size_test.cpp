@@ -17,32 +17,24 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "math/size.hpp"
 #include "plugins/jpeg.hpp"
 
-int main(int argc, char** argv)
+UITEST(JPEG, get_size, "FILE...")
 {
-  if (argc == 1)
+  for(const auto& arg : args)
   {
-    std::cout << "Usage: " << argv[0] << " FILE..." << std::endl;
-    return 1;
-  }
-  else
-  {
-    for (int i = 1; i < argc; ++i)
+    try
     {
-      try
-      {
-        Size size = JPEG::get_size(argv[i]);
-        std::cout << "JPEG::get_size(\"" << argv[i] << "\", " << size << ")" << std::endl;
-      }
-      catch(std::exception& err)
-      {
-        std::cout << err.what() << std::endl;
-      }
+      Size size = JPEG::get_size(arg);
+      std::cout << "JPEG::get_size(\"" << arg << "\", " << size << ")" << std::endl;
     }
-    return 0;
+    catch(std::exception& err)
+    {
+      std::cout << err.what() << std::endl;
+    }
   }
 }
 

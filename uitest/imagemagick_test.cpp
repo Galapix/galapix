@@ -17,10 +17,12 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "plugins/imagemagick.hpp"
 
-int main(int argc, char** argv)
+UITEST(ImageMagick, list_ext, "",
+       "List supported extensions")
 {
   std::vector<std::string> lst = Imagemagick::get_supported_extensions();
 
@@ -28,8 +30,6 @@ int main(int argc, char** argv)
   {
     std::cout << *i << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

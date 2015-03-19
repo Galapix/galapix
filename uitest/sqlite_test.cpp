@@ -17,82 +17,76 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "sqlite/connection.hpp"
 #include "sqlite/statement.hpp"
 
-int main(int argc, char** argv)
+UITEST(SQLite, test, "SQLITEDATABASE TABLE")
 {
-  if (argc != 3)
+  while(true)
   {
-    std::cerr << "Usage: " << argv[0] << " SQLITEDATABASE TABLE" << std::endl;
-  }
-  else
-  {
-    while(true)
-      try
+    try
+    {
+      SQLiteConnection db(args[0]);
+
+      SQLiteStatement stmt(db, std::string("select * from ") + args[1] + ";"); // FIXME: totaly not safe
+      SQLiteReader reader = stmt.execute_query();
+
+      const int columns = reader.get_column_count();
+      for(int i = 0; i < columns; ++i)
       {
-        SQLiteConnection db(argv[1]);
+        std::cout << "column: " << i << ": " << reader.get_column_name(i) << std::endl;
+      }
 
-        SQLiteStatement stmt(db, std::string("select * from ") + argv[2] + ";"); // FIXME: totaly not safe
-        SQLiteReader reader = stmt.execute_query();
-
-        const int columns = reader.get_column_count();
+      int rows = 0;
+      while(reader.next())
+      {
+        std::cout << "row: " << rows << " ";
         for(int i = 0; i < columns; ++i)
         {
-          std::cout << "column: " << i << ": " << reader.get_column_name(i) << std::endl;
-        }
-
-        int rows = 0;
-        while(reader.next())
-        {
-          std::cout << "row: " << rows << " ";
-          for(int i = 0; i < columns; ++i)
+          switch(reader.get_type(i))
           {
-            switch(reader.get_type(i))
-            {
-              case SQLITE_INTEGER:
-                std::cout << reader.get_int(i);
-                break;
+            case SQLITE_INTEGER:
+              std::cout << reader.get_int(i);
+              break;
 
-              case SQLITE_FLOAT:
-                std::cout << reader.get_float(i);
-                break;
+            case SQLITE_FLOAT:
+              std::cout << reader.get_float(i);
+              break;
 
-              case SQLITE_BLOB:
-                {
-                  auto blob = reader.get_blob(i);
-                  std::cout << "blob:" << blob->size();
-                }
-                break;
+            case SQLITE_BLOB:
+              {
+                auto blob = reader.get_blob(i);
+                std::cout << "blob:" << blob->size();
+              }
+              break;
 
-              case SQLITE_NULL:
-                std::cout << "(null)";
-                break;
+            case SQLITE_NULL:
+              std::cout << "(null)";
+              break;
 
-              case SQLITE_TEXT:
-                std::cout << reader.get_text(i);
-                break;
+            case SQLITE_TEXT:
+              std::cout << reader.get_text(i);
+              break;
 
-              default:
-                std::cout << "(unknown)";
-                break;
-            }
-
-            std::cout << " | ";
+            default:
+              std::cout << "(unknown)";
+              break;
           }
-          std::cout << std::endl;
-          rows += 1;
-        }
-        std::cout << "rows: " << rows << std::endl;
-      }
-      catch(const std::exception& err)
-      {
-        std::cerr << "error: " << err.what() << std::endl;
-      }
-  }
 
-  return 0;
+          std::cout << " | ";
+        }
+        std::cout << std::endl;
+        rows += 1;
+      }
+      std::cout << "rows: " << rows << std::endl;
+    }
+    catch(const std::exception& err)
+    {
+      std::cerr << "error: " << err.what() << std::endl;
+    }
+  }
 }
 
 /* EOF */

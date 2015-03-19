@@ -17,46 +17,32 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "util/exec.hpp"
 
-int main(int argc, char** argv)
+UITEST(Exec, cwd, "WORKINGDIR PROGRAM [ARGUMENTS]...")
 {
-  try
-  {
-    if (argc < 3)
-    {
-      std::cout << "Usage: " << argv[0] << " WORKINGDIR PROGRAM [ARGUMENTS]..." << std::endl;
-    }
-    else
-    {
-      Exec prgn(argv[2]);
+  Exec prgn(args[1]);
 
-      prgn.set_working_directory(argv[1]);
+  prgn.set_working_directory(args[0]);
 
-      std::string stdin_data = "-- Stdin Test Data --\n";
-      prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
-      for(int i = 3; i < argc; ++i)
-        prgn.arg(argv[i]);
-      std::cout << "ExitCode: " << prgn.exec() << std::endl;
+  std::string stdin_data = "-- Stdin Test Data --\n";
+  prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
+  for(size_t i = 2; i < args.size(); ++i)
+    prgn.arg(args[i]);
+  std::cout << "ExitCode: " << prgn.exec() << std::endl;
 
-      std::cout << "### STDOUT BEGIN" << std::endl;
-      std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
-      std::cout << "### STDOUT END" << std::endl;
-      std::cout << std::endl;
-      std::cout << "### STERR BEGIN: " << std::endl;
-      std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
-      std::cout << "### STDERR END" << std::endl;
+  std::cout << "### STDOUT BEGIN" << std::endl;
+  std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
+  std::cout << "### STDOUT END" << std::endl;
+  std::cout << std::endl;
+  std::cout << "### STERR BEGIN: " << std::endl;
+  std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
+  std::cout << "### STDERR END" << std::endl;
 
-      std::cout << "stdout size: " << prgn.get_stdout().size() << std::endl;
-      std::cout << "stderr size: " << prgn.get_stderr().size() << std::endl;
-    }
-  }
-  catch(std::exception& err)
-  {
-    std::cout << "Exception: " << err.what() << std::endl;
-  }
-  return 0;
+  std::cout << "stdout size: " << prgn.get_stdout().size() << std::endl;
+  std::cout << "stderr size: " << prgn.get_stderr().size() << std::endl;
 }
 
 /* EOF */

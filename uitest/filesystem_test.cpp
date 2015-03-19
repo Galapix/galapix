@@ -17,17 +17,32 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "util/filesystem.hpp"
 
-int main(int argc, char** argv)
+UITEST(Filesystem, test, "FILE...")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    std::string extension = Filesystem::get_extension(argv[i]);
-    std::cout << "'" << extension << "' - " << argv[i] << std::endl;
+    std::string extension = Filesystem::get_extension(arg);
+    std::cout << "'" << extension << "' - " << arg << std::endl;
   }
-  return 0;
+}
+
+UITEST(Filesystem, get_magic, "FILE...",
+       "Filesystem::get_magic()")
+{
+  for(const auto& arg : args)
+  {
+    std::string magic = Filesystem::get_magic(arg);
+    std::cout << arg << ": { ";
+    for(auto it = magic.begin(); it != magic.end(); ++it)
+    {
+      std::cout << std::setfill('0') << std::hex << std::setw(2) << static_cast<int>(*it) << " ";
+    }
+    std::cout << "}" << std::endl;
+  }
 }
 
 /* EOF */

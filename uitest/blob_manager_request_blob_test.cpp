@@ -1,11 +1,13 @@
 #include <thread>
+#include <uitest/uitest.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "network/download_manager.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/resource_locator.hpp"
 
-int main(int argc, char** argv)
+UITEST(BlobManager, request_blob, "BLOB...",
+       "Request a blob")
 {
   DownloadManager download_mgr;
   ArchiveManager  archive_mgr;
@@ -13,9 +15,9 @@ int main(int argc, char** argv)
   BlobManager blob_mgr(download_mgr, archive_mgr);
 
   int count = 0;
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    ResourceLocator locator = ResourceLocator::from_string(argv[i]);
+    ResourceLocator locator = ResourceLocator::from_string(arg);
     std::cout << "requesting " << locator.str() << std::endl;
     blob_mgr.request_blob
       (locator,
@@ -38,8 +40,6 @@ int main(int argc, char** argv)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
-
-  return 0;
 }
 
 /* EOF */

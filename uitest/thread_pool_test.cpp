@@ -17,10 +17,11 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "util/thread_pool.hpp"
 
-int main()
+UITEST(ThreadPool, test, "")
 {
   {
     std::cout << "TEST: ThreadPool::~ThreadPool()" << std::endl;

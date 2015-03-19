@@ -17,43 +17,29 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "util/exec.hpp"
 
-int main(int argc, char** argv)
+UITEST(Exec, test, "PROGRAM [ARGUMENT]...")
 {
-  try
-  {
-    if (argc < 2)
-    {
-      std::cout << "Usage: " << argv[0] << " PROGRAM [ARGUMENTS]..." << std::endl;
-    }
-    else
-    {
-      Exec prgn(argv[1]);
-      std::string stdin_data = "-- Stdin Test Data --\n";
-      prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
-      for(int i = 2; i < argc; ++i)
-        prgn.arg(argv[i]);
-      std::cout << "ExitCode: " << prgn.exec() << std::endl;
+  Exec prgn(args[0]);
+  std::string stdin_data = "-- Stdin Test Data --\n";
+  prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
+  for(const auto& arg : args) // FIXME: wrong, should use rest
+    prgn.arg(arg);
+  std::cout << "ExitCode: " << prgn.exec() << std::endl;
 
-      std::cout << "### STDOUT BEGIN" << std::endl;
-      std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
-      std::cout << "### STDOUT END" << std::endl;
-      std::cout << std::endl;
-      std::cout << "### STERR BEGIN: " << std::endl;
-      std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
-      std::cout << "### STDERR END" << std::endl;
+  std::cout << "### STDOUT BEGIN" << std::endl;
+  std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
+  std::cout << "### STDOUT END" << std::endl;
+  std::cout << std::endl;
+  std::cout << "### STERR BEGIN: " << std::endl;
+  std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
+  std::cout << "### STDERR END" << std::endl;
 
-      std::cout << "stdout size: " << prgn.get_stdout().size() << std::endl;
-      std::cout << "stderr size: " << prgn.get_stderr().size() << std::endl;
-    }
-  }
-  catch(std::exception& err)
-  {
-    std::cout << "Exception: " << err.what() << std::endl;
-  }
-  return 0;
+  std::cout << "stdout size: " << prgn.get_stdout().size() << std::endl;
+  std::cout << "stderr size: " << prgn.get_stderr().size() << std::endl;
 }
 
 /* EOF */

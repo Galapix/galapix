@@ -18,15 +18,14 @@
 
 #include "resource/resource_status.hpp"
 
+#include <uitest/uitest.hpp>
 #include <iostream>
 
-int main()
+UITEST(ResourceStatus, test, "")
 {
   ResourceStatus status = ResourceStatus::AccessError;
   assert(status == ResourceStatus::AccessError);
   std::cout << to_string(status) << std::endl;
-
-  return 0;
 }
 
 /* EOF */

@@ -18,6 +18,7 @@
 
 #include <thread>
 #include <logmich/log.hpp>
+#include <uitest/uitest.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
@@ -30,7 +31,8 @@
 #include "resource/resource_manager.hpp"
 #include "server/database_thread.hpp"
 
-int main(int argc, char** argv)
+UITEST(ResourceManager, request_blob, "ARG...",
+       "")
 {
   logmich::set_log_level(logmich::kDebug);
 
@@ -50,10 +52,10 @@ int main(int argc, char** argv)
   ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
 
   int count = 0;
-  for(int i = 1; i < argc; ++i)
+  //for(const auto& arg : args)
   {
 #if 0
-    ResourceLocator locator = ResourceLocator::from_string(argv[i]);
+    ResourceLocator locator = ResourceLocator::from_string(arg);
 
     resource_mgr.request_blob_info
       (locator,
@@ -87,8 +89,6 @@ int main(int argc, char** argv)
 
   job_manager.stop_thread();
   job_manager.join_thread();
-
-  return 0;
 }
 
 /* EOF */

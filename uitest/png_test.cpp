@@ -17,17 +17,18 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "plugins/png.hpp"
 
-int main(int argc, char** argv)
+UITEST(PNG, test, "FILE...",
+       "Load .png")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    //PNG::get_size(argv[i]);
-    PNG::load_from_file(argv[i]);
+    //PNG::get_size(args[i]);
+    PNG::load_from_file(arg);
   }
-  return 0;
 }
 
 /* EOF */

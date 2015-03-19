@@ -17,16 +17,14 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "resource/resource_name.hpp"
 
-int main(int argc, char** argv)
+UITEST(ResourceName, test, "")
 {
   ResourceName res_name(BlobInfo(SHA1::from_mem(nullptr, 0), 0), ResourceHandler("archive", "rar", ""));
-
   std::cout << res_name.str() << std::endl;
-
-  return 0;
 }
 
 /* EOF */

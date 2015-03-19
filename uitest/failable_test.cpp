@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <uitest/uitest.hpp>
 
 #include "util/failable.hpp"
 
@@ -35,7 +36,7 @@ std::ostream& operator<<(std::ostream& os, const Foo& foo)
   return os << "<Foo()>";
 }
 
-int main()
+UITEST(Failable, test, "")
 {
   Failable<Foo> foo = Failable<Foo>::from_exception(std::runtime_error("My Exception"));
   if(false){
@@ -51,8 +52,6 @@ int main()
   {
     std::cout << "caught: " << err.what() << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

@@ -21,8 +21,9 @@
 #include <stdexcept>
 #include <functional>
 #include <iostream>
+#include <uitest/uitest.hpp>
 
-int main()
+UITEST(Task, test, "")
 {
   Task<int> task{[]{
       std::cout << "doing a thing" << std::endl;
@@ -40,8 +41,6 @@ int main()
   {
     std::cout << "catched error" << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

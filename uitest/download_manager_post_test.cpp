@@ -18,23 +18,25 @@
 
 #include <iostream>
 #include <thread>
+#include <uitest/uitest.hpp>
 
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
 #include <logmich/log.hpp>
 
-int main(int argc, char** argv)
+UITEST(DownloadManager, post, "URL...",
+       "Post to an URL")
 {
   logmich::set_log_level(logmich::kDebug);
   DownloadManager downloader;
 
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    std::cout << "sending request: " << argv[i] << std::endl;
-    downloader.request_post(argv[i],
+    std::cout << "sending request: " << arg << std::endl;
+    downloader.request_post(arg,
                             "Hello World",
                             [=](const DownloadResult& result) {
-                              std::cout << "got " << result.get_response_code() << " for " << " " << argv[i] << std::endl;
+                              std::cout << "got " << result.get_response_code() << " for " << " " << arg << std::endl;
                               if (result.success())
                               {
                                 std::cout.write(reinterpret_cast<const char*>(result.get_blob()->get_data()),
@@ -46,12 +48,10 @@ int main(int argc, char** argv)
                               }
                             },
                             [=](double dltotal, double dlnow, double ultotal, double ulnow) -> bool {
-                              std::cout << argv[i] << ": " << dlnow/1000 << " / " << dltotal/1000 << std::endl;
+                              std::cout << arg << ": " << dlnow/1000 << " / " << dltotal/1000 << std::endl;
                               return false;
                             });
   }
-
-  return 0;
 }
 
 /* EOF */

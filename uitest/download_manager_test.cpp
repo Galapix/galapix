@@ -24,14 +24,13 @@
 #include <boost/uuid/string_generator.hpp>
 
 #include <logmich/log.hpp>
+#include <uitest/uitest.hpp>
 
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
 
-int main(int argc, char** argv)
+void run_repl()
 {
-  logmich::set_log_level(logmich::kDebug);
-
   DownloadManager downloader;
 
   std::cout << "Commands: get, post, cancel, cancel_all" << std::endl;
@@ -129,7 +128,13 @@ int main(int argc, char** argv)
     }
   }
 
-  return 0;
+}
+
+UITEST(DownloadManager, test, "",
+       "Run interactive download shell")
+{
+  logmich::set_log_level(logmich::kDebug);
+  run_repl();
 }
 
 /* EOF */

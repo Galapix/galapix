@@ -18,30 +18,25 @@
 
 #include <iostream>
 #include <sstream>
+#include <uitest/uitest.hpp>
 
 #include "util/blob.hpp"
 #include "plugins/pnm.hpp"
 #include "plugins/png.hpp"
 
-int main(int argc, char** argv)
+UITEST(PNM, test, "FILE...",
+       "Load .pnm file")
 {
-  if (argc < 2)
+  for(size_t i = 0; i < args.size(); ++i)
   {
-    std::cout << "Usage: " << argv[0] << " [PNMFiles]..." << std::endl;
-  }
-  else
-  {
-    for(int i = 1; i < argc; ++i)
-    {
-      BlobPtr blob = Blob::from_file(argv[i]);
+    BlobPtr blob = Blob::from_file(args[i]);
 
-      SoftwareSurfacePtr surface = PNM::load_from_mem(reinterpret_cast<const char*>(blob->get_data()), blob->size());
+    SoftwareSurfacePtr surface = PNM::load_from_mem(reinterpret_cast<const char*>(blob->get_data()), blob->size());
 
-      std::ostringstream output_filename;
-      output_filename << "/tmp/pnm_test" << i << ".png";
-      PNG::save(surface, output_filename.str());
-      std::cout << argv[i] << " -> " << output_filename.str() << std::endl;
-    }
+    std::ostringstream output_filename;
+    output_filename << "/tmp/pnm_test" << i << ".png";
+    PNG::save(surface, output_filename.str());
+    std::cout << args[i] << " -> " << output_filename.str() << std::endl;
   }
 }
 

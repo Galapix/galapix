@@ -18,30 +18,21 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <uitest/uitest.hpp>
 
 #include "plugins/kra.hpp"
 #include "plugins/png.hpp"
 
-int main(int argc, char** argv)
+UITEST(KRA, test, "INFILE OUTFILE")
 {
-  if (argc != 3)
-  {
-    std::cout << "Usage: " << argv[0] << " INFILE OUTFILE" << std::endl;
-    return EXIT_FAILURE;
-  }
-  else
-  {
-    std::string infile  = argv[1];
-    std::string outfile = argv[2];
+  std::string infile  = args[0];
+  std::string outfile = args[1];
 
-    std::cout << "Trying to load  " << infile << std::endl;
-    SoftwareSurfacePtr surface = KRA::load_from_file(infile);
+  std::cout << "Trying to load  " << infile << std::endl;
+  SoftwareSurfacePtr surface = KRA::load_from_file(infile);
 
-    std::cout << "Trying to save  " << outfile << std::endl;
-    PNG::save(surface, outfile);
-
-    return EXIT_SUCCESS;
-  }
+  std::cout << "Trying to save  " << outfile << std::endl;
+  PNG::save(surface, outfile);
 }
 
 /* EOF */

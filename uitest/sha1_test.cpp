@@ -17,17 +17,16 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "util/sha1.hpp"
 
-int main(int argc, char** argv)
+UITEST(SHA1, test, "FILE...")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    std::cout << SHA1::from_file(argv[i]).str() << "  " << argv[i] << std::endl;
+    std::cout << SHA1::from_file(arg).str() << "  " << arg << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

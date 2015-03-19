@@ -17,6 +17,7 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "sqlite/connection.hpp"
 #include "database/tables/file_table.hpp"
@@ -26,7 +27,8 @@
 #include "database/statements/file_entry_get_by_file_id.hpp"
 #include "database/statements/file_entry_get_by_pattern.hpp"
 
-int main(int argc, char** argv)
+UITEST(FileTable, test, "",
+       "FileTable test")
 {
   SQLiteConnection db("");
   FileTable file_table(db);
@@ -93,8 +95,6 @@ int main(int argc, char** argv)
     }
     std::cout << "---- snip ----" << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

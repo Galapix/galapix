@@ -326,11 +326,17 @@ def build(bld):
                          ["galapix"] + galapix_deps))
 
         # build interactive tests
-        for filename in glob("uitest/*_test.cpp"):
-            bld.program(target=filename[:-4],
-                        source=[filename],
-                        includes=["src/"],
-                        use=(["galapix"] + galapix_deps))
+        # build gtest
+        bld.stlib(target="uitest",
+                  source=["external/uitest/src/uitest.cpp",
+                          "external/uitest/src/uitest_main.cpp"],
+                  includes=["external/uitest/include/"],
+                  export_includes=["external/uitest/include/"])
+
+        bld.program(target="uitest_galapix",
+                    source=glob("uitest/*_test.cpp"),
+                    includes=["src/"],
+                    use=(["uitest", "galapix"] + galapix_deps))
 
         if bld.env.build_galapix_sdl:
             for filename in glob("uitest/sdl/*_test.cpp"):

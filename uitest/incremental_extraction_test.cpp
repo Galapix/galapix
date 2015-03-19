@@ -17,37 +17,29 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "archive/zip.hpp"
 #include "archive/incremental_extraction.hpp"
 #include "archive/zip_archive_loader.hpp"
 
-int main(int argc, char** argv)
+UITEST(IncrementalExtraction, test, "ARCHIVE")
 {
-  if (argc == 2)
-  {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
+  ZipArchiveLoader loader;
+  IncrementalExtraction extraction(loader, args[0]);
 
-    for(auto& filename : extraction.get_filenames())
-    {
-      std::cout << filename << std::endl;
-    }
-    return 0;
-  }
-  else if (argc == 3)
+  for(auto& filename : extraction.get_filenames())
   {
-    ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[1]);
-    std::string path = extraction.get_file_as_path(argv[2]);
-    std::cout << path << std::endl;
-    return 0;
+    std::cout << filename << std::endl;
   }
-  else
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVE [FILENAME]" << std::endl;
-    return 1;
-  }
+}
+
+UITEST(IncrementalExtraction, extract, "ARCHIVE FILE")
+{
+  ZipArchiveLoader loader;
+  IncrementalExtraction extraction(loader, args[0]);
+  std::string path = extraction.get_file_as_path(args[1]);
+  std::cout << path << std::endl;
 }
 
 /* EOF */

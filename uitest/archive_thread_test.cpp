@@ -18,50 +18,41 @@
 
 #include <iostream>
 #include <logmich/log.hpp>
+#include <uitest/uitest.hpp>
 
 #include "archive/archive_thread.hpp"
 
-int main(int argc, char** argv)
+UITEST(Archive, thread, "ARCHIVENAME...",
+       "Produce an Extraction object")
 {
-  if (argc < 2)
-  {
-    std::cout << "Usage: " << argv[0] << " ARCHIVENAME..." << std::endl;
-    std::cout << "Produce an Extraction object" << std::endl;
-    return 1;
-  }
-  else
-  {
-    logmich::set_log_level(logmich::kDebug);
+  logmich::set_log_level(logmich::kDebug);
 
-    ArchiveThread m_archive("/tmp/foobar");
+  ArchiveThread m_archive("/tmp/foobar");
 
-    for(int i = 1; i < argc; ++i)
-    {
-      std::cout << "requesting: " << argv[i] << std::endl;
-      m_archive.request_extraction
-        (argv[i],
-         [](Failable<ExtractionPtr> fail_or_extraction)
+  for(const auto& arg : args)
+  {
+    std::cout << "requesting: " << arg << std::endl;
+    m_archive.request_extraction
+      (arg,
+       [](Failable<ExtractionPtr> fail_or_extraction)
+       {
+         try
          {
-           try
+           ExtractionPtr extraction = fail_or_extraction.get();
+           std::cout << "extraction received: " << extraction->get_type() << std::endl;
+           for(auto&& f : extraction.get()->get_filenames())
            {
-             ExtractionPtr extraction = fail_or_extraction.get();
-             std::cout << "extraction received: " << extraction->get_type() << std::endl;
-             for(auto&& f : extraction.get()->get_filenames())
-             {
-               std::cout << f << std::endl;
-             }
+             std::cout << f << std::endl;
            }
-           catch(const std::exception& err)
-           {
-             std::cout << "error: " << err.what() << std::endl;
-           }
-         });
-    }
-
-    std::cout << "shutdown" << std::endl;
-
-    return 0;
+         }
+         catch(const std::exception& err)
+         {
+           std::cout << "error: " << err.what() << std::endl;
+         }
+       });
   }
+
+  std::cout << "shutdown" << std::endl;
 }
 
 /* EOF */

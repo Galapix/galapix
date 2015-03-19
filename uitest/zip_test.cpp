@@ -16,40 +16,27 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <iostream>
+#include <uitest/uitest.hpp>
+
 #include "archive/zip.hpp"
 
-// g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp zip.cpp -o myzip -D__TEST_ZIP__
-#include <iostream>
-
-int main(int argc, char** argv)
+UITEST(ZipTest, list, "ZIPFILE",
+       "List files in a .zip")
 {
-  try
+  const std::vector<std::string>& files = Zip::get_filenames(args[0]);
+  for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
   {
-    if (argc == 2)
-    {
-      const std::vector<std::string>& files = Zip::get_filenames(argv[1]);
-      for(std::vector<std::string>::const_iterator i = files.begin(); i != files.end(); ++i)
-      {
-        std::cout << "File: '" << *i << "'" << std::endl;
-      }
-    }
-    else if (argc == 3)
-    {
-      BlobPtr blob = Zip::get_file(argv[1], argv[2]);
-      blob->write_to_file("/tmp/out.file");
-      std::cout << "Writting /tmp/out.file" << std::endl;
-    }
-    else
-    {
-      std::cout << "Usage: " << argv[0] << " ZIPFILE" << std::endl;
-      std::cout << "       " << argv[0] << " ZIPFILE FILETOEXTRACT" << std::endl;
-    }
+    std::cout << "File: '" << *i << "'" << std::endl;
   }
-  catch(std::exception& err)
-  {
-    std::cout << "Error: " << err.what() << std::endl;
-  }
-  return 0;
+}
+
+UITEST(ZipTest, extract, "ZIPFILE FILETOEXTRACT",
+       "Extract a file from a .zip")
+{
+  BlobPtr blob = Zip::get_file(args[0], args[1]);
+  blob->write_to_file("/tmp/out.file");
+  std::cout << "Writting /tmp/out.file" << std::endl;
 }
 
 /* EOF */

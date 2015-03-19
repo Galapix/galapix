@@ -17,13 +17,14 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "sqlite/connection.hpp"
 #include "database/resource_database.hpp"
 #include "util/filesystem.hpp"
 #include "util/sha1.hpp"
 
-int main(int argc, char** argv)
+UITEST(ResourceDatabase, test, "")
 {
   SQLiteConnection db(""); //("/tmp/resource_database_test.sqlite3");
   ResourceDatabase res_db(db);
@@ -60,8 +61,6 @@ int main(int argc, char** argv)
     res_db.get_file_entries(entries);
     std::cout << "got " << entries.size() << " entries" << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

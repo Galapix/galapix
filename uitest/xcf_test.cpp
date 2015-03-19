@@ -18,22 +18,21 @@
 
 #include <sstream>
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "plugins/xcf.hpp"
 #include "plugins/png.hpp"
 
-int main(int argc, char** argv)
+UITEST(XCF, test, "FILE...")
 {
-  for(int i = 1; i < argc; ++i)
+  for(size_t i = 0; i < args.size(); ++i)
   {
-    SoftwareSurfacePtr surface = XCF::load_from_file(argv[i]);
+    SoftwareSurfacePtr surface = XCF::load_from_file(args[i]);
     std::ostringstream output_filename;
     output_filename << "/tmp/xcf_test" << i << ".png";
     PNG::save(surface, output_filename.str());
-    std::cout << argv[i] << " -> " << output_filename.str() << std::endl;
+    std::cout << args[i] << " -> " << output_filename.str() << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include <logmich/log.hpp>
+#include <uitest/uitest.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "generator/generator.hpp"
@@ -107,7 +108,7 @@ public:
 
 
 
-int main(int argc, char** argv)
+UITEST(Generator, test, "FILE...")
 {
   logmich::set_log_level(logmich::kDebug);
 
@@ -118,9 +119,9 @@ int main(int argc, char** argv)
   Generator   generator(blob_mgr, archive_mgr);
 
   int count = 0;
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    ResourceLocator locator = ResourceLocator::from_string(argv[i]);
+    ResourceLocator locator = ResourceLocator::from_string(arg);
     std::cout << "requesting: " << locator.str() << std::endl;
     count += 1;
     generator.request_resource_processing(locator,
@@ -139,8 +140,6 @@ int main(int argc, char** argv)
   }
 
   std::cout << "shutting down" << std::endl;
-
-  return 0;
 }
 
 /* EOF */

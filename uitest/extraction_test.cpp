@@ -17,25 +17,24 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "archive/zip.hpp"
 #include "archive/incremental_extraction.hpp"
 #include "archive/zip_archive_loader.hpp"
 
-int main(int argc, char** argv)
+UITEST(Extraction, test, "FILE...")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
     ZipArchiveLoader loader;
-    IncrementalExtraction extraction(loader, argv[i]);
+    IncrementalExtraction extraction(loader, arg);
 
     for(auto& filename : extraction.get_filenames())
     {
       std::cout << filename << std::endl;
     }
   }
-
-  return 0;
 }
 
 /* EOF */

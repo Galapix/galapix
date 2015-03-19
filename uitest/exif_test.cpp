@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <libexif/exif-data.h>
+#include <uitest/uitest.hpp>
 
 /*
   Default       =   1
@@ -43,16 +44,15 @@ get_orientation (ExifData *exif_data)
   return 0;
 }
 
-int main(int argc, char** argv)
+UITEST(Exif, test, "FILE...")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    ExifData* ed = exif_data_new_from_file(argv[i]);
+    ExifData* ed = exif_data_new_from_file(arg.c_str());
 
     if (!ed)
     {
-      printf("File not readable or no EXIF data in file %s\n", argv[i]);
-      return EXIT_FAILURE;
+      printf("File not readable or no EXIF data in file %s\n", arg.c_str());
     }
     else
     {
@@ -80,7 +80,6 @@ int main(int argc, char** argv)
       }
     }
   }
-  return EXIT_SUCCESS;
 }
 
 /* EOF */

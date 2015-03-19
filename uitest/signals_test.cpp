@@ -19,6 +19,7 @@
 #include <iostream>
 #include <memory>
 #include <functional>
+#include <uitest/uitest.hpp>
 
 #include "util/weak_functor.hpp"
 
@@ -36,7 +37,7 @@ public:
   }
 };
 
-int main()
+UITEST(Signals, test, "")
 {
   std::shared_ptr<Foobar> foobar(new Foobar);
 
@@ -48,8 +49,6 @@ int main()
   //foobar.reset();
   //callback(1323);
   callback2();
-
-  return 0;
 }
 
 /* EOF */

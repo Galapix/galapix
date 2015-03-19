@@ -17,23 +17,23 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "archive/zip.hpp"
 #include "archive/directory_extraction.hpp"
 
-int main(int argc, char** argv)
+UITEST(DirectoryExtraction, test, "FILE...",
+       "List content of directory")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    DirectoryExtraction extraction(argv[i], "directory");
+    DirectoryExtraction extraction(arg, "directory");
 
     for(auto& filename : extraction.get_filenames())
     {
       std::cout << filename << std::endl;
     }
   }
-
-  return 0;
 }
 
 /* EOF */

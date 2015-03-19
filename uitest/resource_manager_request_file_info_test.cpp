@@ -1,4 +1,5 @@
 #include <thread>
+#include <uitest/uitest.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
@@ -11,7 +12,7 @@
 #include "resource/resource_manager.hpp"
 #include "server/database_thread.hpp"
 
-int main(int argc, char** argv)
+UITEST(ResourceManager, request_file_info, "FILE...")
 {
   logmich::set_log_level(logmich::kDebug);
 
@@ -31,10 +32,10 @@ int main(int argc, char** argv)
   ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
 
   int count = 0;
-  for(int i = 1; i < argc; ++i)
+  //for(const auto& arg : args)
   {
 #if 0
-    resource_mgr.request_file_info(argv[i], [&count](const Failable<FileInfo>& data){
+    resource_mgr.request_file_info(arg, [&count](const Failable<FileInfo>& data){
         try
         {
           FileInfo info = data.get();
@@ -67,8 +68,6 @@ int main(int argc, char** argv)
 
   job_manager.stop_thread();
   job_manager.join_thread();
-
-  return 0;
 }
 
 /* EOF */

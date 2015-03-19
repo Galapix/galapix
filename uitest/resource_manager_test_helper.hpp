@@ -42,9 +42,9 @@ public:
     ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
 
     int count = 0;
-    for(int i = 1; i < argc; ++i)
+    for(const auto& arg : args)
     {
-      ResourceLocator locator = ResourceLocator::from_string(argv[i]);
+      ResourceLocator locator = ResourceLocator::from_string(arg);
 
       resource_mgr.request_sha1
         (locator,

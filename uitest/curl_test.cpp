@@ -19,36 +19,36 @@
 // g++ -Wall -Werror -ansi -pedantic curl.cpp blob.cpp -o mycurl -D__CURL_TEST__  `pkg-config --libs --cflags libcurl`
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "network/curl.hpp"
 
-int main(int argc, char** argv)
+UITEST(CURL, test, "URL...",
+       "Download a URL")
 {
   try
-    {
-      /*
+  {
+    /*
       if (curl_global_init(CURL_GLOBAL_ALL) != 0)
-        {
-          throw std::runtime_error("Couldn't init cURL");
-        }
-      */
+      {
+      throw std::runtime_error("Couldn't init cURL");
+      }
+    */
 
-      for(int i = 1; i < argc; ++i)
-        {
-          std::cout << "Trying to get: " << argv[i] << std::endl;
-          std::string mime_type;
-          CURLHandler::get_data(argv[i], &mime_type)->write_to_file("/tmp/out");
-          std::cout << "Got: " << argv[i] << " -> '" << mime_type << "'" << std::endl;
-        }
-
-      //curl_global_cleanup();
-    }
-  catch(std::exception& err)
+    for(const auto& arg : args)
     {
-      std::cout << "Error: " << err.what() << std::endl;
+      std::cout << "Trying to get: " << arg << std::endl;
+      std::string mime_type;
+      CURLHandler::get_data(arg, &mime_type)->write_to_file("/tmp/out");
+      std::cout << "Got: " << arg << " -> '" << mime_type << "'" << std::endl;
     }
 
-  return 0;
+    //curl_global_cleanup();
+  }
+  catch(std::exception& err)
+  {
+    std::cout << "Error: " << err.what() << std::endl;
+  }
 }
 
 /* EOF */

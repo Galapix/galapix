@@ -19,25 +19,11 @@
 #include "archive/seven_zip.hpp"
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
-int main(int argc, char** argv)
+UITEST(SevenZip2, extract, "ZIPFILE TARGETDIR")
 {
-  try
-  {
-    if (argc == 3)
-    {
-      SevenZip::extract(argv[1], argv[2]);
-    }
-    else
-    {
-      std::cout << "Usage: " << argv[0] << " ZIPFILE TARGETDIR" << std::endl;
-    }
-  }
-  catch(std::exception& err)
-  {
-    std::cout << "Error: " << err.what() << std::endl;
-  }
-  return 0;
+  SevenZip::extract(args[0], args[1]);
 }
 
 /* EOF */

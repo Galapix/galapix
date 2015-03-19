@@ -17,18 +17,17 @@
 */
 
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "resource/file_info.hpp"
 
-int main(int argc, char** argv)
+UITEST(FileInfo, test, "FILE...")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    FileInfo info = FileInfo::from_file(argv[i]);
-    std::cout << info.get_mtime() << " " << info.get_sha1().str() << " " << argv[i] << std::endl;
+    FileInfo info = FileInfo::from_file(arg);
+    std::cout << info.get_mtime() << " " << info.get_sha1().str() << " " << arg << std::endl;
   }
-
-  return 0;
 }
 
 /* EOF */

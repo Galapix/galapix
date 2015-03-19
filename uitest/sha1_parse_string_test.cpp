@@ -1,17 +1,18 @@
 #include <assert.h>
 #include <iostream>
+#include <uitest/uitest.hpp>
 
 #include "util/sha1.hpp"
 
-int main(int argc, char** argv)
+UITEST(SHA1, parse_string, "TEXT...")
 {
-  for(int i = 1; i < argc; ++i)
+  for(const auto& arg : args)
   {
-    std::string in  = argv[i];
+    std::string in  = arg;
     std::string out = SHA1::from_string(in).str();
     std::cout <<  in << "  " << out << std::endl;
     assert(in == out);
   }
-
-  return 0;
 }
+
+/* EOF */
