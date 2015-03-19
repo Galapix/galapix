@@ -16,12 +16,20 @@
 
 #include <uitest/uitest.hpp>
 #include <iostream>
+#include <stdexcept>
 
-UITEST(ExampleTest, download, "URL",
-       "Try to download the given URL")
+UITEST(ExampleTest, download, "HOST URL...",
+       "Try to download the given URLs")
 {
-  std::string url = args[0];
-  std::cout << "Downloading from URL: " << url << std::endl;
+  for(const auto& arg : args)
+  {
+    std::cout << "HOST: " << arg << std::endl;
+  }
+
+  for(const auto& arg : rest)
+  {
+    std::cout << "Downloading from URL: " << arg << std::endl;
+  }
 }
 
 UITEST(ExampleTest, other_test, "FILE",
@@ -37,6 +45,12 @@ UITEST(ExampleTest, arg_cat, "ARG1 ARG2",
   std::string arg1 = args[0];
   std::string arg2 = args[1];
   std::cout << "Result: " << arg1 + arg2 << std::endl;
+}
+
+UITEST(ExampleTest, throw_exception, "MESSAGE",
+       "Throw exception with MESSAGE")
+{
+  throw std::runtime_error(args[0]);
 }
 
 /* EOF */

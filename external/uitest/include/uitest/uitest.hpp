@@ -24,6 +24,8 @@
 #include <string>
 #include <vector>
 
+#include <uitest/arg_info.hpp>
+
 namespace uitesting {
 
 class UITest
@@ -31,7 +33,8 @@ class UITest
 public:
   UITest() {}
   virtual ~UITest() {}
-  virtual void TestBody(const std::vector<std::string>& args) = 0;
+  virtual void TestBody(const std::vector<std::string>& args,
+                        const std::vector<std::string>& rest) = 0;
 };
 
 class TestInfo
@@ -40,8 +43,7 @@ public:
   std::string m_name;
   std::string m_class;
   std::string m_function;
-  std::string m_args_str;
-  std::vector<std::string> m_args;
+  ArgInfo m_args;
   std::string m_doc;
   std::function<std::unique_ptr<UITest> ()> m_factory;
 };
@@ -63,7 +65,8 @@ find_testcase(const std::string& testcase);
   {                                                                     \
   public:                                                               \
     static ::uitesting::TestInfo* const info __attribute__ ((unused));  \
-    void TestBody(const std::vector<std::string>& args) override;       \
+    void TestBody(const std::vector<std::string>& args,                 \
+                  const std::vector<std::string>& rest) override;       \
   };                                                                    \
   ::uitesting::TestInfo* const _class##_##_func::info                   \
   = ::uitesting::register_test(#_class, #_func,                         \
@@ -71,7 +74,8 @@ find_testcase(const std::string& testcase);
                     return std::make_unique<_class##_##_func>();        \
                   },                                                    \
                   __VA_ARGS__);                                         \
-  void _class##_##_func::TestBody(const std::vector<std::string>& args)
+  void _class##_##_func::TestBody(const std::vector<std::string>& args, \
+                                  const std::vector<std::string>& rest)
 
 #endif
 

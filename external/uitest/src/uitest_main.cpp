@@ -24,7 +24,7 @@ int main(int argc, char** argv)
               << "\nTest Cases:\n";
     for(const auto& testinfo : ::uitesting::g_tests())
     {
-      std::cout << "  " << testinfo->m_class << "." << testinfo->m_function << " " << testinfo->m_args_str << std::endl;
+      std::cout << "  " << testinfo->m_class << "." << testinfo->m_function << " " << testinfo->m_args.str() << std::endl;
     }
     return 0;
   }
@@ -39,17 +39,21 @@ int main(int argc, char** argv)
     }
     else
     {
+      std::vector<std::string> raw_args(argv+2, argv + argc);
+      std::vector<std::string> args;
+      std::vector<std::string> rest;
+
       auto testobj = testinfo->m_factory();
-      if (static_cast<int>(testinfo->m_args.size()) != argc - 2)
+      if (!testinfo->m_args.parse_args(raw_args, args, rest))
       {
-        std::cerr << "error: incorrect number of arguments, expected " << testinfo->m_args.size() << " got " << (argc-2) << "\n"
+        std::cerr << "error: incorrect number of arguments\n\n"
                   << "Usage: " << argv[0] << " " << testinfo->m_name
-                  << " " << testinfo->m_args_str << '\n'
+                  << " " << testinfo->m_args.str() << '\n'
                   << "  " << testinfo->m_doc << std::endl;
       }
       else
       {
-        testobj->TestBody(std::vector<std::string>(argv+2, argv + argc));
+        testobj->TestBody(args, rest);
       }
       return 0;
     }

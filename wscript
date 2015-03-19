@@ -328,8 +328,7 @@ def build(bld):
         # build interactive tests
         # build gtest
         bld.stlib(target="uitest",
-                  source=["external/uitest/src/uitest.cpp",
-                          "external/uitest/src/uitest_main.cpp"],
+                  source=glob("external/uitest/src/*.cpp"),
                   includes=["external/uitest/include/"],
                   export_includes=["external/uitest/include/"])
 

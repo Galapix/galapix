@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <uitest/uitest.hpp>
+#include <stdexcept>
 
 namespace uitesting {
 
@@ -29,11 +30,11 @@ register_test(const std::string& _class, const std::string& _func,
               const std::function<std::unique_ptr<UITest> ()>& factory,
               const std::string& args_str, const std::string& doc)
 {
-  boost::tokenizer<> tok(args_str);
-  std::vector<std::string> args(std::begin(tok), std::end(tok));
+  ArgInfo args = ArgInfo::from_string(args_str);
+
   g_tests().push_back(
     std::unique_ptr<TestInfo>(
-      new TestInfo{_class + "." + _func, _class, _func, args_str, args, doc, factory}));
+      new TestInfo{_class + "." + _func, _class, _func, args, doc, factory}));
 
   return g_tests().back().get();
 }
