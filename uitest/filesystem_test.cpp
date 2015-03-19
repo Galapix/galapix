@@ -17,6 +17,7 @@
 */
 
 #include <iostream>
+#include <iomanip>
 #include <uitest/uitest.hpp>
 
 #include "util/filesystem.hpp"

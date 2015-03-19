@@ -37,4 +37,9 @@ UITEST(SevenZip, extract, "ARCHIVE FILENAME")
   std::cout << "Writting /tmp/out.file" << std::endl;
 }
 
+UITEST(SevenZip, fullextract, "ZIPFILE TARGETDIR")
+{
+  SevenZip::extract(args[0], args[1]);
+}
+
 /* EOF */
