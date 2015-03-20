@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_TILE_INFO_HPP
-#define HEADER_GALAPIX_GALAPIX_TILE_INFO_HPP
+#ifndef HEADER_GALAPIX_RESOURCE_TILE_INFO_HPP
+#define HEADER_GALAPIX_RESOURCE_TILE_INFO_HPP
 
 class TileInfo
 {

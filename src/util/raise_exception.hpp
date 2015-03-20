@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_RAISE_EXCEPTION_HPP
-#define HEADER_XBOXDRV_RAISE_EXCEPTION_HPP
+#ifndef HEADER_GALAPIX_UTIL_RAISE_EXCEPTION_HPP
+#define HEADER_GALAPIX_UTIL_RAISE_EXCEPTION_HPP
 
 #include <sstream>
 #include <stdexcept>

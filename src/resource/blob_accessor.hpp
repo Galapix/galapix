@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GENERATOR_BLOB_ACCESSOR_HPP
-#define HEADER_GALAPIX_GENERATOR_BLOB_ACCESSOR_HPP
+#ifndef HEADER_GALAPIX_RESOURCE_BLOB_ACCESSOR_HPP
+#define HEADER_GALAPIX_RESOURCE_BLOB_ACCESSOR_HPP
 
 #include <string>
 #include <mutex>

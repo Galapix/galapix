@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_IMAGE_ENTRY_GET_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_IMAGE_ENTRY_GET_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_IMAGE_ENTRY_GET_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_IMAGE_ENTRY_GET_HPP
 
 #include "database/entries/image_entry.hpp"
 

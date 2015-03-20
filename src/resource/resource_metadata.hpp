@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_RESOURCE_RESOURCE_DATA_HPP
-#define HEADER_GALAPIX_RESOURCE_RESOURCE_DATA_HPP
+#ifndef HEADER_GALAPIX_RESOURCE_RESOURCE_METADATA_HPP
+#define HEADER_GALAPIX_RESOURCE_RESOURCE_METADATA_HPP
 
 #include "resource/archive_info.hpp"
 #include "resource/blob_info.hpp"

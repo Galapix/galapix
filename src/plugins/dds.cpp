@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_PLUGINS_DDS_HPP
-#define HEADER_GALAPIX_PLUGINS_DDS_HPP
+#ifndef HEADER_GALAPIX_PLUGINS_DDS_CPP
+#define HEADER_GALAPIX_PLUGINS_DDS_CPP
 
 #include "plugins/dds.hpp"
 

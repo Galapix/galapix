@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_OLD_FILE_ENTRY_HPP
-#define HEADER_GALAPIX_DATABASE_OLD_FILE_ENTRY_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ENTRIES_OLD_FILE_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_ENTRIES_OLD_FILE_ENTRY_HPP
 
 #include <memory>
 #include <assert.h>

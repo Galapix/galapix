@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
-#define HEADER_GALAPIX_GALAPIX_DATABASE_THREAD_HPP
+#ifndef HEADER_GALAPIX_SERVER_DATABASE_THREAD_HPP
+#define HEADER_GALAPIX_SERVER_DATABASE_THREAD_HPP
 
 #include <list>
 #include <boost/optional.hpp>

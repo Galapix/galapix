@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_ARCHIVE_EXTRACTION_HANDLE_HPP
-#define HEADER_GALAPIX_ARCHIVE_EXTRACTION_HANDLE_HPP
+#ifndef HEADER_GALAPIX_ARCHIVE_EXTRACTION_HPP
+#define HEADER_GALAPIX_ARCHIVE_EXTRACTION_HPP
 
 #include <memory>
 #include <vector>

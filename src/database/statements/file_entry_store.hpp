@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_ENTRY_STORE_STATEMENT_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_ENTRY_STORE_STATEMENT_HPP
+#ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_STORE_HPP
+#define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_STORE_HPP
 
 #include <iostream>
 #include <assert.h>

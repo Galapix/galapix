@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_FILE_TABLE_HPP
-#define HEADER_GALAPIX_DATABASE_FILE_TABLE_HPP
+#ifndef HEADER_GALAPIX_DATABASE_TABLES_FILE_TABLE_HPP
+#define HEADER_GALAPIX_DATABASE_TABLES_FILE_TABLE_HPP
 
 class SQLiteConnection;
 

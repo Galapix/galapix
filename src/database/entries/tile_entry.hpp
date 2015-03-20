@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_TILE_ENTRY_HPP
-#define HEADER_GALAPIX_DATABASE_TILE_ENTRY_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ENTRIES_TILE_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_ENTRIES_TILE_ENTRY_HPP
 
 #include "math/vector2i.hpp"
 #include "util/software_surface.hpp"

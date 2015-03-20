@@ -1,5 +1,5 @@
-#ifndef HEADER_FORMAT_HPP
-#define HEADER_FORMAT_HPP
+#ifndef HEADER_GALAPIX_UTIL_FORMAT_HPP
+#define HEADER_GALAPIX_UTIL_FORMAT_HPP
 
 #include <boost/format.hpp>
 #include <ostream>

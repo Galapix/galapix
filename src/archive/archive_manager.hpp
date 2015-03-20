@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_UTIL_ARCHIVE_MANAGER_HPP
-#define HEADER_GALAPIX_UTIL_ARCHIVE_MANAGER_HPP
+#ifndef HEADER_GALAPIX_ARCHIVE_ARCHIVE_MANAGER_HPP
+#define HEADER_GALAPIX_ARCHIVE_ARCHIVE_MANAGER_HPP
 
 #include <memory>
 #include <map>

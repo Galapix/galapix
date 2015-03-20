@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_MATH_RGBF_HPP
-#define HEADER_GALAPIX_MATH_RGBF_HPP
+#ifndef HEADER_GALAPIX_MATH_RGBAF_HPP
+#define HEADER_GALAPIX_MATH_RGBAF_HPP
 
 #include "math/rgba.hpp"
 #include "math/rgb.hpp"

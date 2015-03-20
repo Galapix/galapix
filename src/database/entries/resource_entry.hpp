@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_DATABASE_RESOURCE_ENTRY_HPP
-#define HEADER_GALAPIX_DATABASE_RESOURCE_ENTRY_HPP
+#ifndef HEADER_GALAPIX_DATABASE_ENTRIES_RESOURCE_ENTRY_HPP
+#define HEADER_GALAPIX_DATABASE_ENTRIES_RESOURCE_ENTRY_HPP
 
 #include "database/row_id.hpp"
 

@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_XBOXDRV_SELECT_HPP
-#define HEADER_XBOXDRV_SELECT_HPP
+#ifndef HEADER_GALAPIX_UTIL_SELECT_HPP
+#define HEADER_GALAPIX_UTIL_SELECT_HPP
 
 #include <sys/select.h>
 

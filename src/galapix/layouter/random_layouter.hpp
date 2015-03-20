@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_RANDOM_LAYOUTER_HPP
-#define HEADER_GALAPIX_GALAPIX_RANDOM_LAYOUTER_HPP
+#ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_RANDOM_LAYOUTER_HPP
+#define HEADER_GALAPIX_GALAPIX_LAYOUTER_RANDOM_LAYOUTER_HPP
 
 #include "galapix/layouter/layouter.hpp"
 

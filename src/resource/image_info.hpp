@@ -16,8 +16,8 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_GALAPIX_IMAGE_INFO_HPP
-#define HEADER_GALAPIX_GALAPIX_IMAGE_INFO_HPP
+#ifndef HEADER_GALAPIX_RESOURCE_IMAGE_INFO_HPP
+#define HEADER_GALAPIX_RESOURCE_IMAGE_INFO_HPP
 
 #include "database/row_id.hpp"
 
