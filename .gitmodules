@@ -4,3 +4,6 @@
 [submodule "external/logmich"]
 	path = external/logmich
 	url = https://github.com/Grumbel/logmich.git
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm.git
