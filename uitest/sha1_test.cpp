@@ -21,23 +21,17 @@
 
 #include "util/sha1.hpp"
 
-UITEST(SHA1, test, "FILE...")
+UITEST_S(SHA1, test, "FILE", "")
 {
-  for(const auto& arg : args)
-  {
-    std::cout << SHA1::from_file(arg).str() << "  " << arg << std::endl;
-  }
+  std::cout << SHA1::from_file(arg).str() << "  " << arg << std::endl;
 }
 
-UITEST(SHA1, parse_string, "TEXT...")
+UITEST_S(SHA1, parse_string, "TEXT", "")
 {
-  for(const auto& arg : args)
-  {
-    std::string in  = arg;
-    std::string out = SHA1::from_string(in).str();
-    std::cout <<  in << "  " << out << std::endl;
-    assert(in == out);
-  }
+  std::string in = arg;
+  std::string out = SHA1::from_string(in).str();
+  std::cout <<  in << "  " << out << std::endl;
+  assert(in == out);
 }
 
 /* EOF */
