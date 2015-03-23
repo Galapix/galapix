@@ -3,7 +3,7 @@
 	url = https://github.com/Grumbel/uitest.git
 [submodule "external/logmich"]
 	path = external/logmich
-	url = https://github.com/Grumbel/logmich.git
+	url = https://github.com/logmich/logmich.git
 [submodule "external/glm"]
 	path = external/glm
 	url = https://github.com/g-truc/glm.git
