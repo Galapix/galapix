@@ -17,8 +17,17 @@
 cmake_minimum_required(VERSION 3.0)
 project(galapix VERSION 0.3.0)
 
-include(FindOpenGL)
-include(FindGLEW)
+# TODO:
+# * put developer warnings back in
+# * fix spnav compilation/OPTIONAL_SOURCES
+# * cleanup
+
+# gr.add_option('--developer', action='store_true', default=False, help='Switch on extra debug info, warnings and verbosity')
+# gr.add_option('--debug', action='store_true', default=False, help='Switch on extra debug info')
+# gr.add_option('--release', action='store_true', default=False, help='Switch on optimizations')
+
+include(CheckIncludeFile)
+
 include(FindPkgConfig)
 include(FindBoost)
 
@@ -34,36 +43,41 @@ pkg_search_module(PNG REQUIRED libpng)
 find_library(JPEG_LIBRARIES NAMES jpeg)
 
 set(BUILD_GALAPIX_SDL 1 CACHE BOOL "Build galapix.sdl")
-set(BUILD_GALAPIX_GTK 0 CACHE BOOL "Build galapix.gtk")
+set(BUILD_GALAPIX_GTK 1 CACHE BOOL "Build galapix.gtk")
+set(BUILD_TESTS 1 CACHE BOOL "Build tests")
+set(BUILD_EXTRA 1 CACHE BOOL "Build extra apps")
 
 if(BUILD_GALAPIX_GTK)
   pkg_search_module(GTKMM REQUIRED gtkmm-2.4)
   pkg_search_module(GLADEMM REQUIRED libglademm-2.4)
   pkg_search_module(GTKGLEXTMM REQUIRED gtkglextmm-1.2)
+
+  set(GALAPIX_GTK_DEPS_INCLUDE_DIRS
+    ${GTKMM_INCLUDE_DIRS}
+    ${GLADEMM_INCLUDE_DIRS}
+    ${GTKGLEXTMM_INCLUDE_DIRS})
+
+  set(GALAPIX_GTK_DEPS_LIBRARIES
+    ${GTKMM_LIBRARIES}
+    ${GLADEMM_LIBRARIES}
+    ${GTKGLEXTMM_LIBRARIES})
 endif()
 
 find_library(SPNAV spnav)
 if(SPNAV)
-  # conf.check_cxx(header_name="spnav.h", mandatory=False):
-  # conf.env["DEFINES_SPNAV"] = ['HAVE_SPACE_NAVIGATOR=1']
-  # conf.env["HAVE_SPNAV"] = 1
+  CHECK_INCLUDE_FILE(spnav.h HAVE_SPNAV)
+  set(SPNAV_CFLAGS_OTHER -DHAVE_SPACE_NAVIGATOR)
 endif()
 
-if(USE_OPENGLES2)
-  # conf.end_msg("yes")
-  # conf.env["LIB_OPENGL"] = ['GLESv2']
-  # conf.env["LIBPATH_OPENGL"] = ["/opt/vc/lib"]
-  # conf.env["INCLUDES_OPENGL"] = ["/opt/vc/include"]
-  # conf.env["DEFINES_OPENGL"] = ['HAVE_OPENGLES2']
+CHECK_INCLUDE_FILE(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
+if(USE_OPENGLES2 OR HAVE_BCMHOST)
+  set(OPENGL_LIBPATH /opt/vc/lib)
+  set(OPENGL_INCLUDE_DIR /opt/vc/include)
+  set(OPENGL_LIBRARIES GLESv2)
+  set(OPENGL_CFLAGS_OTHER -DHAVE_OPENGLES2)
 else()
-  # conf.end_msg("no")
-  # conf.check_cfg(package='gl', args=['--cflags', '--libs'])
-  # conf.check_cfg(package='glew', args=['--cflags', '--libs'])
-
-  # # build OPENGL uselib from GL and GLEW
-  # for lib in ["GL", "GLEW"]:
-  #     for t in ["LIB", "LIBPATH", "INCLUDES", "DEFINES"]:
-  #         conf.env.append_value(t + "_" + "OPENGL", conf.env[t + "_" + lib])
+  include(FindOpenGL)
+  include(FindGLEW)
 endif()
 
 set(PROFILE_CXXFLAGS "-std=c++1y -O2 -g3 -pg")
@@ -79,18 +93,6 @@ set(DEVELOPER_CXXFLAGS "\
 # -Winline
 # -Wfloat-equal
 # -Wunreachable-code
-
-# gr.add_option('--build-galapix-gtk', action='store_true', default=False, help='Build galapix.gtk')
-# gr.add_option('--build-galapix-sdl', action='store_true', default=True, help='Build galapix.sdl')
-# gr.add_option('--build-tests', action='store_true', default=False, help='Build tests')
-# gr.add_option('--build-extra', action='store_true', default=False, help='Build extra')
-# gr.add_option('--developer', action='store_true', default=False, help='Switch on extra debug info, warnings and verbosity')
-# gr.add_option('--debug', action='store_true', default=False, help='Switch on extra debug info')
-# gr.add_option('--release', action='store_true', default=False, help='Switch on optimizations')
-
-# def use_opengles2():
-#     # check if it's a Raspberry Pi
-#     return platform.machine() == 'armv6l'
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
 
@@ -138,22 +140,23 @@ file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/display/shader_vfs.hpp)
 list(APPEND LIBGALAPIX_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp)
 
-# galapix_deps = ["WARNINGS",
-# "pthread", "glm", "logmich", "SPNAV",
-# "MAGICKXX", "LIBPNG", "LIBEXIF", "JPEG", "LIBCURL", "MHASH",
-# "SQLITE3", "OPENGL", "BOOST_FILESYSTEM"]
-
-# galapix_gtk_deps = ["GTKMM", "GLADEMM", "GTKGLEXTMM", "SDL2"]
-# galapix_sdl_deps = ["SDL2"]
-
-# # build 'galapix_vfs.hpp'
-# def vfs_builder(task):
-#   build_bin2h(task.outputs, task.inputs, "shader_vfs")
-#   return None  # success
-
-# bld(target="src/display/shader_vfs.hpp",
-#     source=glob("src/shader/*.frag") + glob("src/shader/*.vert"),
-#     rule=vfs_builder)
+set(GALAPIX_DEPS_LIBRARIES
+  libgalapix
+  libgalapix_sdl
+  logmich
+  ${OPENGL_LIBRARIES}
+  ${GLEW_LIBRARIES}
+  ${SQLITE3_LIBRARIES}
+  ${PNG_LIBRARIES}
+  ${JPEG_LIBRARIES}
+  ${EXIF_LIBRARIES}
+  ${CURL_LIBRARIES}
+  ${MAGICKXX_LIBRARIES}
+  ${MHASH_LIBRARIES}
+  ${Boost_SYSTEM_LIBRARY}
+  ${Boost_FILESYSTEM_LIBRARY}
+  ${Boost_SIGNALS_LIBRARY}
+  ${CMAKE_THREAD_LIBS_INIT})
 
 include_directories(src/)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
@@ -161,10 +164,12 @@ include_directories(SYSTEM external/logmich/include/)
 include_directories(SYSTEM external/glm-0.9.6.1/)
 include_directories(SYSTEM ${MAGICKXX_INCLUDE_DIRS})
 
- get_cmake_property(_variableNames VARIABLES)
- foreach (_variableName ${_variableNames})
-   message(STATUS "${_variableName}=${${_variableName}}")
- endforeach()
+get_cmake_property(_variableNames VARIABLES)
+message(STATUS "------------------------------------------------------------------")
+foreach (_variableName ${_variableNames})
+  message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
+message(STATUS "------------------------------------------------------------------")
 
 file(GLOB LOGMICH_CXX_SOURCES
   external/logmich/src/log.cpp
@@ -188,80 +193,84 @@ if(BUILD_GALAPIX_SDL)
   add_executable(galapix.sdl src/main/sdl_main.cpp)
   target_compile_definitions(galapix.sdl PUBLIC -DGALAPIX_SDL)
   target_link_libraries(galapix.sdl
-    libgalapix
     libgalapix_sdl
-    logmich
-    ${OPENGL_LIBRARIES}
-    ${GLEW_LIBRARIES}
-    ${SQLITE3_LIBRARIES}
-    ${PNG_LIBRARIES}
-    ${JPEG_LIBRARIES}
-    ${EXIF_LIBRARIES}
-    ${CURL_LIBRARIES}
-    ${MAGICKXX_LIBRARIES}
-    ${MHASH_LIBRARIES}
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_FILESYSTEM_LIBRARY}
-    ${Boost_SIGNALS_LIBRARY}
-    ${CMAKE_THREAD_LIBS_INIT})
+    ${GALAPIX_DEPS_LIBRARIES})
 endif()
 
 if(BUILD_GALAPIX_GTK)
   add_library(libgalapix_gtk STATIC ${LIBGALAPIX_GTK_SOURCES})
+  target_compile_definitions(libgalapix_gtk PUBLIC -DGALAPIX_GTK)
+  target_include_directories(libgalapix_gtk SYSTEM PUBLIC
+    ${GALAPIX_GTK_DEPS_INCLUDE_DIRS})
+  target_link_libraries(libgalapix_gtk
+    ${GALAPIX_DEPS_LIBRARIES}
+    ${GALAPIX_GTK_DEPS_LIBRARIES})
 
   add_executable(galapix.gtk src/main/gtk_main.cpp)
-  target_compile_definitions(galapix.gtk -DGALAPIX_GTK)
-  target_link_libraries(galapix.gtk libgalapix_gtk)
+  target_compile_definitions(galapix.gtk PUBLIC -DGALAPIX_GTK)
+  target_include_directories(galapix.gtk SYSTEM PUBLIC
+    ${GALAPIX_GTK_DEPS_INCLUDE_DIRS})
+  target_link_libraries(galapix.gtk
+    libgalapix_gtk
+    ${GALAPIX_DEPS_LIBRARIES}
+    ${GALAPIX_GTK_DEPS_LIBRARIES})
 endif()
 
-# if bld.env.build_extra:
-#     for filename in glob("extra/*.cpp"):
-#         bld.program(target=filename[:-4],
-#                     source=filename,
-#                     includes=["src/"],
-#                     use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
-#     bld.program(target="extra/imagescaler/imagescaler",
-#                 source="extra/imagescaler/imagescaler.cpp",
-#                 includes=["src/"],
-#                 use=(["galapix"] + galapix_deps))
+if(BUILD_EXTRA)
+  file(GLOB EXTRA_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+    extra/*.cpp)
 
-# if bld.env.build_tests:
-#     # build gtest
-#     bld.stlib(target="gtest",
-#               source=["external/googletest/src/gtest-all.cc"],
-#               includes=["external/googletest/include/",
-#                         "external/googletest/"])
+  foreach(SRC ${EXTRA_SOURCES})
+    get_filename_component(SRC_BASENAME ${SRC} NAME_WE)
+    add_executable("${SRC_BASENAME}" ${SRC})
+    # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
+    target_link_libraries(${SRC_BASENAME} ${GALAPIX_DEPS_LIBRARIES})
+  endforeach(SRC)
 
-#     bld.stlib(target="gtest_main",
-#               source=["external/googletest/src/gtest_main.cc"],
-#               includes=["external/googletest/include/",
-#                         "external/googletest/"])
+  add_executable(imagescaler ${CMAKE_CURRENT_SOURCE_DIR}/extra/imagescaler/imagescaler.cpp)
+  target_link_libraries(imagescaler ${GALAPIX_DEPS_LIBRARIES})
+endif()
 
-#     # build automatic tests
-#     bld.program(target="test_galapix",
-#                 source=glob("test/*_test.cpp"),
-#                 includes=["src/"],
-#                 cxxflags=["-isystem", bld.path.find_dir("external/googletest/include/").abspath()],
-#                 use=(["gtest", "gtest_main"] +
-#                      ["galapix"] + galapix_deps))
+if(BUILD_TESTS)
+  # build gtest
+  add_library(gtest STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/src/gtest-all.cc)
+  target_include_directories(gtest SYSTEM PUBLIC external/googletest/include/ external/googletest/)
 
-#     # build interactive tests
-#     # build gtest
-#     bld.stlib(target="uitest",
-#               source=glob("external/uitest/src/*.cpp"),
-#               includes=["external/uitest/include/"],
-#               export_includes=["external/uitest/include/"])
+  add_library(gtest_main STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/src/gtest_main.cc)
+  target_include_directories(gtest_main SYSTEM PUBLIC external/googletest/include/ external/googletest/)
 
-#     bld.program(target="uitest_galapix",
-#                 source=glob("uitest/*_test.cpp"),
-#                 includes=["src/"],
-#                 use=(["uitest", "galapix"] + galapix_deps))
+  # build automatic tests
+  file(GLOB TEST_GALAPIX_SOURCES test/*_test.cpp)
+  add_executable(test_galapix ${TEST_GALAPIX_SOURCES})
+  target_include_directories(test_galapix SYSTEM PUBLIC
+    external/googletest/include/ external/googletest/)
+  target_link_libraries(test_galapix
+    gtest gtest_main
+    ${GALAPIX_DEPS_LIBRARIES})
 
-#     if bld.env.build_galapix_sdl:
-#         for filename in glob("uitest/sdl/*_test.cpp"):
-#             bld.program(target=filename[:-4],
-#                         source=[filename] + optional_sources,
-#                         includes=["src/"],
-#                         use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
+  # build interactive tests
+  file(GLOB UITEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} external/uitest/src/*.cpp)
+  add_library(uitest STATIC ${UITEST_SOURCES})
+  target_include_directories(uitest SYSTEM PUBLIC
+    external/uitest/include/)
+
+  file(GLOB UITEST_GALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} uitest/*_test.cpp)
+  add_executable(uitest_galapix ${UITEST_GALAPIX_SOURCES})
+  target_include_directories(uitest_galapix PUBLIC src/)
+  target_include_directories(uitest_galapix SYSTEM PUBLIC
+    external/uitest/include/)
+  target_link_libraries(uitest_galapix uitest ${GALAPIX_DEPS_LIBRARIES})
+
+  if(BUILD_GALAPIX_SDL)
+    file(GLOB TEST_GALAPIX_SDL_SOURCES test/sdl/*_test.cpp)
+    foreach(SRC ${TEST_GALAPIX_SDL_SOURCES})
+      get_filename_component(SRC_BASENAME ${SRC} NAME_WE)
+      add_executable(${SRC_BASENAME} ${SRC})
+      set_target_properties(${SRC_BASENAME} PROPERTIES OUTPUT_NAME "extra/${SRC_BASENAME}")
+      target_link_libraries(${SRC_BASENAME} ${GALAPIX_DEPS_LIBRARIES})
+      # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
+    endforeach()
+  endif()
+endif()
 
 # EOF #
