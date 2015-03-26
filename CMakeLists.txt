@@ -28,24 +28,24 @@ project(galapix VERSION 0.3.0)
 
 include(CheckIncludeFile)
 
-include(FindPkgConfig)
-include(FindBoost)
-
 find_package(Threads)
 find_package(Boost COMPONENTS system filesystem signals REQUIRED)
-pkg_search_module(SDL2 REQUIRED sdl2)
-pkg_search_module(EXIF REQUIRED libexif)
+find_package(CURL)
+find_package(JPEG)
+find_package(PNG)
+
+find_package(PkgConfig REQUIRED)
 pkg_search_module(SQLITE3 REQUIRED sqlite3)
 pkg_search_module(MHASH REQUIRED mhash)
-pkg_search_module(CURL REQUIRED libcurl)
 pkg_search_module(MAGICKXX REQUIRED Magick++)
-pkg_search_module(PNG REQUIRED libpng)
-find_library(JPEG_LIBRARIES NAMES jpeg)
+pkg_search_module(SDL2 REQUIRED sdl2)
+pkg_search_module(EXIF REQUIRED libexif)
 
 set(BUILD_GALAPIX_SDL 1 CACHE BOOL "Build galapix.sdl")
 set(BUILD_GALAPIX_GTK 1 CACHE BOOL "Build galapix.gtk")
 set(BUILD_TESTS 1 CACHE BOOL "Build tests")
 set(BUILD_EXTRA 1 CACHE BOOL "Build extra apps")
+set(USE_OPENGLES2 0 CACHE BOOL "Use OpenGLES2 instead of OpenGL")
 
 if(BUILD_GALAPIX_GTK)
   pkg_search_module(GTKMM REQUIRED gtkmm-2.4)
