@@ -98,7 +98,7 @@ def film_countdown(width, height, second, frame, frames):
     progress = (frame+1) / frames
     radius = width
     cr.move_to(width / 2, height / 2)
-    cr.arc(width / 2, height / 2, radius, 
+    cr.arc(width / 2, height / 2, radius,
            0 - math.pi/2, 2*math.pi * progress - math.pi/2)
     cr.close_path()
 
@@ -120,7 +120,7 @@ def film_countdown(width, height, second, frame, frames):
 
     # two white circles
     radius = height / 2 * 0.9
-    cr.arc(width / 2, height / 2, radius, 
+    cr.arc(width / 2, height / 2, radius,
            0, 2*math.pi)
     cr.new_sub_path()
     cr.arc(width / 2, height / 2, radius * 0.8,
@@ -168,7 +168,7 @@ def make_test_images(directory):
             outfile = os.path.join(directory, "countdown%02d-%03d.png" % (second, frame))
             surface.write_to_png(outfile)
             print("wrote %s" % outfile)
-        
+
 
 def main(args):
     for directory in args:
