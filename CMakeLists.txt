@@ -31,7 +31,7 @@ if(WARNINGS)
   # -Winline -Wfloat-equal -Wunreachable-code
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1y")
+add_compile_options(-std=c++1y)
 
 include(CheckIncludeFile)
 
@@ -62,8 +62,8 @@ if(USE_OPENGLES2 OR HAVE_BCMHOST)
   set(OPENGL_LIBRARIES GLESv2)
   set(OPENGL_CFLAGS_OTHER -DHAVE_OPENGLES2)
 else()
-  include(FindOpenGL)
-  include(FindGLEW)
+  find_package(OpenGL REQUIRED)
+  find_package(GLEW REQUIRED)
 endif()
 
 set(PROFILE_CXXFLAGS "-std=c++1y -O2 -g3 -pg")
