@@ -17,18 +17,24 @@
 cmake_minimum_required(VERSION 3.0)
 project(galapix VERSION 0.3.0)
 
-set(BUILD_GALAPIX_SDL 0 CACHE BOOL "Build galapix.sdl")
-set(BUILD_GALAPIX_GTK 1 CACHE BOOL "Build galapix.gtk")
-set(BUILD_TESTS 0 CACHE BOOL "Build tests")
-set(BUILD_EXTRA 0 CACHE BOOL "Build extra apps")
-set(USE_OPENGLES2 0 CACHE BOOL "Use OpenGLES2 instead of OpenGL")
-set(WARNINGS 0 CACHE BOOL "Switch on extra warnings")
+set(BUILD_GALAPIX_SDL ON CACHE BOOL "Build galapix.sdl")
+set(BUILD_GALAPIX_GTK OFF CACHE BOOL "Build galapix.gtk")
+set(BUILD_TESTS OFF CACHE BOOL "Build tests")
+set(BUILD_EXTRA OFF CACHE BOOL "Build extra apps")
+set(USE_OPENGLES2 OFF CACHE BOOL "Use OpenGLES2 instead of OpenGL")
+set(WARNINGS OFF CACHE BOOL "Switch on extra warnings")
+set(WERROR OFF CACHE BOOL "Treat all warnings as errors")
 
 if(WARNINGS)
-  set(WARNINGS_CXX_FLAGS
+  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
     -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
-    -Wconversion -Werror -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
+    -Wconversion -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
   # -Winline -Wfloat-equal -Wunreachable-code
+endif()
+
+if(WERROR)
+  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
+    -Werror)
 endif()
 
 add_compile_options(-std=c++1y)
