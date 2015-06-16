@@ -43,7 +43,17 @@ find_package(PNG REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(SQLITE3 REQUIRED sqlite3)
-pkg_search_module(MHASH REQUIRED mhash)
+
+# older versions don't have a mhash.pc
+pkg_search_module(MHASH mhash)
+if(NOT MHASH_FOUND)
+  find_library(MHASH_LIBRARIES mhash)
+  message(STATUS "Found mhash: ${MHASH_LIBRARIES}")
+  if(MHASH_LIBRARIES-NOTFOUND)
+    message(FATAL_ERROR "required library mhash not found")
+  endif()
+endif()
+
 pkg_search_module(MAGICKXX REQUIRED Magick++)
 pkg_search_module(EXIF REQUIRED libexif)
 
