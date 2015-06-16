@@ -9,4 +9,4 @@
 	url = https://github.com/g-truc/glm.git
 [submodule "external/googletest"]
 	path = external/googletest
-	url = http://git.chromium.org/external/googletest.git
+	url = https://chromium.googlesource.com/external/googletest
