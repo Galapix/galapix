@@ -40,7 +40,7 @@ env:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install build-essential libglew-dev libopenal-dev libsqlite3-dev libjsoncpp-dev libgl1-mesa-dev libcurl4-openssl-dev libpng12-dev libjpeg8-dev libmagick++-dev libexif-dev libglademm-2.4-dev libgtkglextmm-x11-1.2-dev libgtkmm-2.4-dev libmhash-dev libglm-dev
+  - sudo apt-get install build-essential libglew-dev libopenal-dev libsqlite3-dev libjsoncpp-dev libgl1-mesa-dev libcurl4-openssl-dev libpng12-dev libjpeg8-dev libmagick++-dev libexif-dev libglademm-2.4-dev libgtkglextmm-x11-1.2-dev libgtkmm-2.4-dev libmhash-dev
 
   # Current gcc that supports C++ 11 features
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -56,6 +56,11 @@ before_install:
   # CMake
   - wget http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
   - (cd cmake-$CMAKE_VERSION && cmake . && make -j3 && sudo make install)
+
+  # build glm
+  - wget http://downloads.sourceforge.net/project/ogl-math/glm-0.9.6.3/glm-0.9.6.3.zip
+  - unzip glm-0.9.6.3.zip
+  - (cd glm && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/usr && make && sudo make install)
 
   # SDL dependencies
   - wget http://libsdl.org/release/SDL2-$SDL2_VERSION.tar.gz -O - | tar xz
