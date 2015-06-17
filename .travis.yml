@@ -41,7 +41,7 @@ env:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install build-essential libglew-dev libopenal-dev libsqlite3-dev libjsoncpp-dev libgl1-mesa-dev libcurl4-openssl-dev libpng12-dev libjpeg8-dev libmagick++-dev libexif-dev libglademm-2.4-dev libgtkglextmm-x11-1.2-dev libgtkmm-2.4-dev
+  - sudo apt-get install build-essential libglew-dev libopenal-dev libsqlite3-dev libjsoncpp-dev libgl1-mesa-dev libcurl4-openssl-dev libpng12-dev libjpeg8-dev libmagick++-dev libexif-dev libglademm-2.4-dev libgtkglextmm-x11-1.2-dev libgtkmm-2.4-dev libmhash-dev
 
   # Current gcc that supports C++ 11 features
   - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
