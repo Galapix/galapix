@@ -112,7 +112,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
   else if (QuantumRange == 255)
     shift = 0;
   else
-    assert(!"Imagemagick: Unknown QuantumRange");
+    assert(false && "Imagemagick: Unknown QuantumRange");
 
   if (image.matte())
   {

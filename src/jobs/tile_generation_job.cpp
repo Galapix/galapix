@@ -108,7 +108,7 @@ TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Ve
       }
 
     default:
-      assert(!"Never reached");
+      assert(false && "Never reached");
       return false;
   }
 }

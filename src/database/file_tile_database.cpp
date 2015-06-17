@@ -166,7 +166,7 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
       break;
 
     default:
-      assert(!"Never reached");
+      assert(false && "Never reached");
   }
 }
 

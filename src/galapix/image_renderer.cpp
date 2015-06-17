@@ -93,7 +93,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
         switch (sstruct.status)
         {
           case ImageTileCache::SurfaceStruct::SURFACE_SUCCEEDED:
-            //assert(!"should never happen");
+            //assert(false && "should never happen");
             break;
 
           case ImageTileCache::SurfaceStruct::SURFACE_REQUESTED:
@@ -103,7 +103,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
             break;
 
           default:
-            assert(!"should never happen either");
+            assert(false && "should never happen either");
             break;
         }
       }

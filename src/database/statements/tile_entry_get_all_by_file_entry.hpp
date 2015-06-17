@@ -68,7 +68,7 @@ public:
             break;
 
           default:
-            assert(!"never reached");
+            assert(false && "never reached");
         }
 
         tiles.push_back(tile);

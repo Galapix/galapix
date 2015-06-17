@@ -388,7 +388,7 @@ DatabaseThread::generate_tiles(const JobHandle& job_handle, const OldFileEntry& 
 {
   // FIXME: We are ignoring the callback, but shouldn't so assert in
   // case somebody tries to use one
-  assert(!callback);
+  assert(false && callback);
 
   int min_scale_in_db = -1;
   int max_scale_in_db = -1;

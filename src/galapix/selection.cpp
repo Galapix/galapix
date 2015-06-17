@@ -154,7 +154,7 @@ Selection::get_bounding_rect() const
           isnan(rect.bottom))
       {
         //std::cout << i->get_url() << " " << i->get_pos() << " " << image_rect << std::endl;
-        assert(!"NAN Rect encountered");
+        assert(false && "NAN Rect encountered");
       }
     }
 

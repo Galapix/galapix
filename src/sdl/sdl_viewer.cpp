@@ -91,7 +91,7 @@ SDLViewer::process_event(const SDL_Event& event)
       if (event.user.code == 0)
       {
 #ifndef HAVE_SPACE_NAVIGATOR
-        assert(!"Broken build, this code should be unreachable");
+        assert(false && "Broken build, this code should be unreachable");
 #else
         spnav_event* spnav_ev = static_cast<spnav_event*>(event.user.data1);
 
@@ -140,7 +140,7 @@ SDLViewer::process_event(const SDL_Event& event)
             break;
 
           default:
-            assert(!"SpaceNavigator: Unhandled event");
+            assert(false && "SpaceNavigator: Unhandled event");
         }
 
         delete spnav_ev;

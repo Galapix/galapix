@@ -52,7 +52,7 @@ public:
     }
     else
     {
-      assert(!"TileEntryGetMinMaxScale: never reached");
+      assert(false && "TileEntryGetMinMaxScale: never reached");
       return false;
     }
   }

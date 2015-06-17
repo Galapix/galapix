@@ -80,7 +80,7 @@ public:
         break;
 
       default:
-        assert(!"SoftwareSurfaceImpl: Unknown color format");
+        assert(false && "SoftwareSurfaceImpl: Unknown color format");
     }
   }
 };
@@ -213,7 +213,7 @@ SoftwareSurface::halve()
       break;
 
     default:
-      assert(!"Not reachable");
+      assert(false && "Not reachable");
       break;
   }
 
@@ -264,7 +264,7 @@ SoftwareSurface::scale(const Size& size)
       break;
 
       default:
-        assert(!"SoftwareSurface::scale: Unknown format");
+        assert(false && "SoftwareSurface::scale: Unknown format");
         break;
     }
 
@@ -312,7 +312,7 @@ SoftwareSurface::transform(Modifier mod)
       return rotate270()->vflip();
 
     default:
-      assert(!"never reached");
+      assert(false && "never reached");
       return clone();
   }
 }
@@ -584,7 +584,7 @@ SoftwareSurface::to_rgb()
     }
 
     default:
-      assert(!"SoftwareSurface::to_rgb: Unknown format");
+      assert(false && "SoftwareSurface::to_rgb: Unknown format");
       return SoftwareSurfacePtr();
   }
 }
@@ -601,7 +601,7 @@ SoftwareSurface::get_bytes_per_pixel() const
       return 4;
 
     default:
-      assert(!"SoftwareSurface::get_bytes_per_pixel(): Unknown format");
+      assert(false && "SoftwareSurface::get_bytes_per_pixel(): Unknown format");
       return 0;
   }
 }
@@ -663,7 +663,7 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
   }
   else
   {
-    assert(!"Not implemented");
+    assert(false && "Not implemented");
   }
 }
 

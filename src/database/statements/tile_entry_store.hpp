@@ -59,7 +59,7 @@ public:
           break;
 
         default:
-          assert(!"TileDatabase::store_tile: Unhandled format");
+          assert(false && "TileDatabase::store_tile: Unhandled format");
           break;
       }
     }

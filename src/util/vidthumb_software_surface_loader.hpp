@@ -54,7 +54,7 @@ public:
 
   SoftwareSurfacePtr from_mem(const uint8_t* data, size_t len) const override
   {
-    assert(!"not implemented");
+    assert(false && "not implemented");
   }
 
 private:

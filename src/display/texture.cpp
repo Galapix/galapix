@@ -51,7 +51,7 @@ public:
         break;
 
       default:
-        assert(!"Texture: Not supposed to be reached");
+        assert(false && "Texture: Not supposed to be reached");
     }
 
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
