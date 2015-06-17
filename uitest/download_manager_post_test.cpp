@@ -40,7 +40,7 @@ UITEST(DownloadManager, post, "URL...",
                               if (result.success())
                               {
                                 std::cout.write(reinterpret_cast<const char*>(result.get_blob()->get_data()),
-                                                result.get_blob()->size());
+                                                static_cast<std::streamsize>(result.get_blob()->size()));
                               }
                               else
                               {

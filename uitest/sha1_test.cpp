@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <uitest/uitest.hpp>
+#include <assert.h>
 
 #include "util/sha1.hpp"
 

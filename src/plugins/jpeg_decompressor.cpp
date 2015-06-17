@@ -65,8 +65,8 @@ JPEGDecompressor::read_size()
   {
     jpeg_read_header(&m_cinfo, /*require_image*/ FALSE);
 
-    return Size(m_cinfo.image_width,
-                m_cinfo.image_height);
+    return Size(static_cast<int>(m_cinfo.image_width),
+                static_cast<int>(m_cinfo.image_height));
   }
 }
 

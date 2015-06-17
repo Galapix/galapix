@@ -271,7 +271,7 @@ Filesystem::get_magic(const std::string& filename)
     }
     else
     {
-      return std::string(buf, in.gcount());
+      return std::string(buf, static_cast<size_t>(in.gcount()));
     }
   }
 }
@@ -284,7 +284,7 @@ Filesystem::get_size(const std::string& filename)
   {
     raise_runtime_error("Filesystem::get_size(): " + filename + ": " + strerror(errno));
   }
-  return stat_buf.st_size; // Is this reliable? or should be use fopen() and ftell()?
+  return static_cast<size_t>(stat_buf.st_size);
 }
 
 time_t
