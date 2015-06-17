@@ -62,13 +62,13 @@ DDSSurface::DDSSurface(std::istream& in) :
 int
 DDSSurface::get_width() const
 {
-  return width;
+  return static_cast<int>(width);
 }
 
 int
 DDSSurface::get_height() const
 {
-  return height;
+  return static_cast<int>(height);
 }
 
 size_t

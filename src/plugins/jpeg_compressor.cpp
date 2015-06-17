@@ -39,8 +39,8 @@ JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
 {
   SoftwareSurfacePtr surface = surface_in->to_rgb();
 
-  m_cinfo.image_width  = surface->get_width();
-  m_cinfo.image_height = surface->get_height();
+  m_cinfo.image_width = static_cast<JDIMENSION>(surface->get_width());
+  m_cinfo.image_height = static_cast<JDIMENSION>(surface->get_height());
 
   m_cinfo.input_components = 3;         /* # of color components per pixel */
   m_cinfo.in_color_space   = JCS_RGB;   /* colorspace of input image */
@@ -50,7 +50,7 @@ JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
 
   jpeg_start_compress(&m_cinfo, TRUE);
 
-  std::vector<JSAMPROW> row_pointer(surface->get_height());
+  std::vector<JSAMPROW> row_pointer(static_cast<size_t>(surface->get_height()));
   for(int y = 0; y < surface->get_height(); ++y)
   {
     row_pointer[y] = static_cast<JSAMPLE*>(surface->get_row_data(y));

@@ -61,19 +61,19 @@ public:
       const float right = srcrect.right / static_cast<float>(texture->get_width());
       const float bottom = srcrect.bottom / static_cast<float>(texture->get_height());
 
-      std::array<float, 2*4> texcoords = {
-        left, top,
-        right, top,
-        right, bottom,
-        left, bottom,
-      };
+      std::array<float, 2*4> texcoords = {{
+          left, top,
+          right, top,
+          right, bottom,
+          left, bottom,
+        }};
 
-      std::array<float, 2*4> positions = {
-        dstrect.left, dstrect.top,
-        dstrect.right, dstrect.top,
-        dstrect.right, dstrect.bottom,
-        dstrect.left, dstrect.bottom,
-      };
+      std::array<float, 2*4> positions = {{
+          dstrect.left, dstrect.top,
+          dstrect.right, dstrect.top,
+          dstrect.right, dstrect.bottom,
+          dstrect.left, dstrect.bottom,
+        }};
 
       GLuint texcoords_vbo;
       glGenBuffers(1, &texcoords_vbo);
@@ -128,19 +128,19 @@ public:
 
     if (texture)
     {
-      const std::array<float, 2*4> texcoords = {
-        uv.left, uv.top,
-        uv.right, uv.top,
-        uv.right, uv.bottom,
-        uv.left, uv.bottom,
-      };
+      const std::array<float, 2*4> texcoords = {{
+          uv.left, uv.top,
+          uv.right, uv.top,
+          uv.right, uv.bottom,
+          uv.left, uv.bottom,
+        }};
 
-      const std::array<float, 2*4> positions = {
-        rect.left, rect.top,
-        rect.right, rect.top,
-        rect.right, rect.bottom,
-        rect.left, rect.bottom,
-      };
+      const std::array<float, 2*4> positions = {{
+          rect.left, rect.top,
+          rect.right, rect.top,
+          rect.right, rect.bottom,
+          rect.left, rect.bottom,
+        }};
 
       GLuint texcoords_vbo;
       glGenBuffers(1, &texcoords_vbo);
