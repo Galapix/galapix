@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_GTK_GTK_VIEWER_HPP
 
 #include <gtkmm.h>
+#include <memory>
 
 class System;
 class Viewer;
