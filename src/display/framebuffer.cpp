@@ -140,12 +140,12 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 {
   assert_gl("Framebuffer::draw_rect enter");
 
-  const std::array<float, 2*4> positions = {
-    rect.left, rect.top,
-    rect.right, rect.top,
-    rect.right, rect.bottom,
-    rect.left, rect.bottom,
-  };
+  const std::array<float, 2*4> positions = {{
+      rect.left, rect.top,
+      rect.right, rect.top,
+      rect.right, rect.bottom,
+      rect.left, rect.bottom,
+    }};
 
   GLuint positions_vbo;
   glGenBuffers(1, &positions_vbo);
@@ -184,12 +184,12 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 {
   assert_gl("Framebuffer::fill_rect enter");
 
-  std::array<float, 2*4> positions = {
-    rect.left, rect.top,
-    rect.right, rect.top,
-    rect.right, rect.bottom,
-    rect.left, rect.bottom,
-  };
+  std::array<float, 2*4> positions = {{
+      rect.left, rect.top,
+      rect.right, rect.top,
+      rect.right, rect.bottom,
+      rect.left, rect.bottom,
+    }};
 
   GLuint positions_vbo;
   glGenBuffers(1, &positions_vbo);
