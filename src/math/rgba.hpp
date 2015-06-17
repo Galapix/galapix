@@ -45,7 +45,10 @@ public:
   {}
 
   uint32_t get_uint32() const {
-    return ((r << 0) | (g << 8) | (b << 16) | (a << 24));
+    return ((static_cast<uint32_t>(r) << 0) |
+            (static_cast<uint32_t>(g) << 8) |
+            (static_cast<uint32_t>(b) << 16) |
+            (static_cast<uint32_t>(a) << 24));
   }
 };
 
