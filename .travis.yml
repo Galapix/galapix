@@ -34,6 +34,9 @@ matrix:
 env:
   global:
     - CMAKE_VERSION=3.2.1 SDL2_VERSION=2.0.3 SDL2IMAGE_VERSION=2.0.0 SDL2MIXER_VERSION=2.0.0
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "avCYzv34u0qw4gaPvxHk5mcCFdO8HdSkGzH+9VJ6g3FJaV1y8BMU+KE3CnsgNtrmOS3KL+O10N4bhJEvamid9mfNpv5Mtk4bumU8Q0sCe1guKtEU0FEO8ZAKKz3ooh1f61fBlrNv7ZMOHIhWxpZKH8XBKtpzAcTkG535Zii3rkA="
   matrix:
     - BUILD_TYPE="Debug"
     - BUILD_TYPE="Release"
@@ -79,5 +82,15 @@ script:
   - cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DWARNINGS=ON -DWERROR=OFF -DBUILD_TESTS=ON -DBUILD_EXTRA=ON -DBUILD_GALAPIX_SDL=ON -DBUILD_GALAPIX_GTK=ON
   - make VERBOSE=1
   - (cd .. && build-${BUILD_TYPE}/test_galapix)
+
+addons:
+  coverity_scan:
+    project:
+      name: "Galapix/galapix"
+      description: "Build submitted via Travis CI"
+    notification_email: grumbel@gmail.com
+    build_command_prepend: "cmake . && make clean"
+    build_command: "make"
+    branch_pattern: coverity_scan
 
 # EOF #
