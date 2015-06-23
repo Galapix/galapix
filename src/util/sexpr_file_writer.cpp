@@ -33,7 +33,7 @@ SExprFileWriter::~SExprFileWriter()
 std::string
 SExprFileWriter::indent()
 {
-  return std::string(level*2, ' ');
+  return std::string(static_cast<size_t>(level * 2), ' ');
 }
 
 void

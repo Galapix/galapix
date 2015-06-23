@@ -51,7 +51,7 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
     struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
 
     cinfo->src->next_input_byte = mgr->data;
-    cinfo->src->bytes_in_buffer = mgr->len;
+    cinfo->src->bytes_in_buffer = static_cast<size_t>(mgr->len);
 
     return TRUE;
   }
@@ -59,8 +59,8 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
 
 void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 {
-  cinfo->src->next_input_byte = cinfo->src->next_input_byte + num_bytes;
-  cinfo->src->bytes_in_buffer = cinfo->src->bytes_in_buffer - num_bytes;
+  cinfo->src->next_input_byte = cinfo->src->next_input_byte + static_cast<unsigned long>(num_bytes);
+  cinfo->src->bytes_in_buffer = cinfo->src->bytes_in_buffer - static_cast<unsigned long>(num_bytes);
 
   struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
 

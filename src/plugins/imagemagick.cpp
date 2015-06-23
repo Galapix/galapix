@@ -121,7 +121,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
     for(int y = 0; y < height; ++y)
     {
-      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
+      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, static_cast<size_t>(width), 1);
       uint8_t* dst_pixels = surface->get_row_data(y);
 
       for(int x = 0; x < width; ++x)
@@ -140,7 +140,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
     for(int y = 0; y < height; ++y)
     {
       uint8_t* dst_pixels = surface->get_row_data(y);
-      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
+      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, static_cast<size_t>(width), 1);
 
       for(int x = 0; x < width; ++x)
       {

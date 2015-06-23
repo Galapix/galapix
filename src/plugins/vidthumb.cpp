@@ -58,7 +58,7 @@ VidThumb::load_from_file(const std::string& filename)
   if (vidthumb.exec() == 0)
   {
     std::cout.write(vidthumb.get_stdout().data(),
-                    vidthumb.get_stdout().size());
+                    static_cast<std::streamsize>(vidthumb.get_stdout().size()));
     SoftwareSurfacePtr surface = PNG::load_from_file(out.str());
     remove(out.str().c_str());
     return surface;

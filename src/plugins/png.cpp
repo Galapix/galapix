@@ -65,8 +65,8 @@ PNG::get_size(void* data, int len, Size& size)
   {
     PNGReadMemory png_memory;
     png_memory.data = (png_bytep)data;
-    png_memory.len  = len;
-    png_memory.pos  = 0;
+    png_memory.len = static_cast<png_size_t>(len);
+    png_memory.pos = 0;
 
     png_set_read_fn(png_ptr, &png_memory, &readPNGMemory);
 
@@ -194,9 +194,9 @@ PNG::load_from_file(const std::string& filename)
       {
         surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
-        std::vector<png_bytep> row_pointers(height);
+        std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
         for (int y = 0; y < height; ++y)
-          row_pointers[y] = surface->get_row_data(y);
+          row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
 
         png_read_image(png_ptr, row_pointers.data());
       }
@@ -206,9 +206,9 @@ PNG::load_from_file(const std::string& filename)
       {
         surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
-        std::vector<png_bytep> row_pointers(height);
+        std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
         for (int y = 0; y < height; ++y)
-          row_pointers[y] = surface->get_row_data(y);
+          row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
 
         png_read_image(png_ptr, row_pointers.data());
       }
@@ -268,9 +268,9 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
     {
       surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
 
-      std::vector<png_bytep> row_pointers(height);
+      std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
       for (int y = 0; y < height; ++y)
-        row_pointers[y] = surface->get_row_data(y);
+        row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
 
       png_read_image(png_ptr, row_pointers.data());
     }
@@ -280,9 +280,9 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
     {
       surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
 
-      std::vector<png_bytep> row_pointers(height);
+      std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
       for (int y = 0; y < height; ++y)
-        row_pointers[y] = surface->get_row_data(y);
+        row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
 
       png_read_image(png_ptr, row_pointers.data());
     }
@@ -320,7 +320,9 @@ PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
     png_init_io(png_ptr, out);
 
     png_set_IHDR(png_ptr, info_ptr,
-                 surface->get_width(), surface->get_height(), 8,
+                 static_cast<png_uint_32>(surface->get_width()),
+                 static_cast<png_uint_32>(surface->get_height()),
+                 8,
                  (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
                  PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT,
@@ -373,7 +375,9 @@ PNG::save(const SoftwareSurfacePtr& surface)
   png_set_write_fn(png_ptr, &mem, &writePNGMemory, NULL);
 
   png_set_IHDR(png_ptr, info_ptr,
-               surface->get_width(), surface->get_height(), 8,
+               static_cast<png_uint_32>(surface->get_width()),
+               static_cast<png_uint_32>(surface->get_height()),
+               8,
                (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
                PNG_INTERLACE_NONE,
                PNG_COMPRESSION_TYPE_DEFAULT,

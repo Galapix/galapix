@@ -31,11 +31,13 @@ UITEST(Exec, test, "PROGRAM [ARGUMENT]...")
   std::cout << "ExitCode: " << prgn.exec() << std::endl;
 
   std::cout << "### STDOUT BEGIN" << std::endl;
-  std::cout.write(&*prgn.get_stdout().begin(), prgn.get_stdout().size());
+  std::cout.write(&*prgn.get_stdout().begin(),
+                  static_cast<std::streamsize>(prgn.get_stdout().size()));
   std::cout << "### STDOUT END" << std::endl;
   std::cout << std::endl;
   std::cout << "### STERR BEGIN: " << std::endl;
-  std::cout.write(&*prgn.get_stderr().begin(), prgn.get_stderr().size());
+  std::cout.write(&*prgn.get_stderr().begin(),
+                  static_cast<std::streamsize>(prgn.get_stderr().size()));
   std::cout << "### STDERR END" << std::endl;
 
   std::cout << "stdout size: " << prgn.get_stdout().size() << std::endl;

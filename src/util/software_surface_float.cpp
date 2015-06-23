@@ -28,7 +28,7 @@ SoftwareSurfaceFloat::create(const Size& size)
 
 SoftwareSurfaceFloat::SoftwareSurfaceFloat(const Size& size) :
   m_size(size),
-  m_pixels(size.get_area() * 4)
+  m_pixels(static_cast<size_t>(size.get_area() * 4))
 {
 }
 
@@ -94,19 +94,19 @@ SoftwareSurfaceFloat::get_pitch() const
 void
 SoftwareSurfaceFloat::put_pixel(int x, int y, const RGBAf& rgba)
 {
-  m_pixels[get_pitch() * y + 4*x + 0] = rgba.r;
-  m_pixels[get_pitch() * y + 4*x + 1] = rgba.g;
-  m_pixels[get_pitch() * y + 4*x + 2] = rgba.b;
-  m_pixels[get_pitch() * y + 4*x + 3] = rgba.a;
+  m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 0)] = rgba.r;
+  m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 1)] = rgba.g;
+  m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 2)] = rgba.b;
+  m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 3)] = rgba.a;
 }
 
 void
 SoftwareSurfaceFloat::get_pixel(int x, int y, RGBAf& rgba) const
 {
-  rgba.r = m_pixels[get_pitch() * y + 4*x + 0];
-  rgba.g = m_pixels[get_pitch() * y + 4*x + 1];
-  rgba.b = m_pixels[get_pitch() * y + 4*x + 2];
-  rgba.a = m_pixels[get_pitch() * y + 4*x + 3];
+  rgba.r = m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 0)];
+  rgba.g = m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 1)];
+  rgba.b = m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 2)];
+  rgba.a = m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 3)];
 }
 
 SoftwareSurfacePtr

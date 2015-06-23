@@ -71,12 +71,12 @@ public:
     {
       case SoftwareSurface::RGB_FORMAT:
         pitch  = size.width * 3;
-        pixels.reset(new uint8_t[pitch * size.height]);
+        pixels.reset(new uint8_t[static_cast<size_t>(pitch * size.height)]);
         break;
 
       case SoftwareSurface::RGBA_FORMAT:
         pitch  = size.width * 4;
-        pixels.reset(new uint8_t[pitch * size.height]);
+        pixels.reset(new uint8_t[static_cast<size_t>(pitch * size.height)]);
         break;
 
       default:
@@ -105,16 +105,16 @@ SoftwareSurface::put_pixel(int x, int y, const RGBA& rgba)
   switch(impl->format)
   {
     case RGBA_FORMAT:
-      impl->pixels[y * impl->pitch + x*4 + 0] = rgba.r;
-      impl->pixels[y * impl->pitch + x*4 + 1] = rgba.g;
-      impl->pixels[y * impl->pitch + x*4 + 2] = rgba.b;
-      impl->pixels[y * impl->pitch + x*4 + 3] = rgba.a;
+      impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 0)] = rgba.r;
+      impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 1)] = rgba.g;
+      impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 2)] = rgba.b;
+      impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 3)] = rgba.a;
       break;
 
     case RGB_FORMAT:
-      impl->pixels[y * impl->pitch + x*3 + 0] = rgba.r;
-      impl->pixels[y * impl->pitch + x*3 + 1] = rgba.g;
-      impl->pixels[y * impl->pitch + x*3 + 2] = rgba.b;
+      impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 0)] = rgba.r;
+      impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 1)] = rgba.g;
+      impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 2)] = rgba.b;
       break;
   }
 }
@@ -128,16 +128,16 @@ SoftwareSurface::get_pixel(int x, int y, RGBA& rgb) const
   switch(impl->format)
   {
     case RGBA_FORMAT:
-      rgb.r = impl->pixels[y * impl->pitch + x*4 + 0];
-      rgb.g = impl->pixels[y * impl->pitch + x*4 + 1];
-      rgb.b = impl->pixels[y * impl->pitch + x*4 + 2];
-      rgb.a = impl->pixels[y * impl->pitch + x*4 + 3];
+      rgb.r = impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 0)];
+      rgb.g = impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 1)];
+      rgb.b = impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 2)];
+      rgb.a = impl->pixels[static_cast<size_t>(y * impl->pitch + x*4 + 3)];
       break;
 
     case RGB_FORMAT:
-      rgb.r = impl->pixels[y * impl->pitch + x*3 + 0];
-      rgb.g = impl->pixels[y * impl->pitch + x*3 + 1];
-      rgb.b = impl->pixels[y * impl->pitch + x*3 + 2];
+      rgb.r = impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 0)];
+      rgb.g = impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 1)];
+      rgb.b = impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 2)];
       rgb.a = 255;
       break;
   }
@@ -150,9 +150,9 @@ SoftwareSurface::put_pixel(int x, int y, const RGB& rgb)
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
 
-  impl->pixels[y * impl->pitch + x*3 + 0] = rgb.r;
-  impl->pixels[y * impl->pitch + x*3 + 1] = rgb.g;
-  impl->pixels[y * impl->pitch + x*3 + 2] = rgb.b;
+  impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 0)] = rgb.r;
+  impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 1)] = rgb.g;
+  impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 2)] = rgb.b;
 }
 
 void
@@ -162,9 +162,9 @@ SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
   assert(x >= 0 && x < impl->size.width &&
          y >= 0 && y < impl->size.height);
 
-  rgb.r = impl->pixels[y * impl->pitch + x*3 + 0];
-  rgb.g = impl->pixels[y * impl->pitch + x*3 + 1];
-  rgb.b = impl->pixels[y * impl->pitch + x*3 + 2];
+  rgb.r = impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 0)];
+  rgb.g = impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 1)];
+  rgb.b = impl->pixels[static_cast<size_t>(y * impl->pitch + x*3 + 2)];
 }
 
 SoftwareSurfacePtr
@@ -276,7 +276,9 @@ SoftwareSurfacePtr
 SoftwareSurface::clone()
 {
   SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
-  memcpy(out->impl->pixels.get(), impl->pixels.get(), impl->pitch * impl->size.height);
+  memcpy(out->impl->pixels.get(),
+         impl->pixels.get(),
+         static_cast<size_t>(impl->pitch * impl->size.height));
   return out;
 }
 
@@ -448,7 +450,9 @@ SoftwareSurface::vflip()
 
   for(int y = 0; y < impl->size.height; ++y)
   {
-    memcpy(out->get_row_data(impl->size.height - y - 1), get_row_data(y), impl->pitch);
+    memcpy(out->get_row_data(impl->size.height - y - 1),
+           get_row_data(y),
+           static_cast<size_t>(impl->pitch));
   }
 
   return out;
@@ -474,7 +478,7 @@ SoftwareSurface::crop(const Rect& rect_in)
   {
     memcpy(surface->get_row_data(y - rect.top),
            get_row_data(y) + rect.left * get_bytes_per_pixel(),
-           rect.get_width() * get_bytes_per_pixel());
+           static_cast<size_t>(rect.get_width() * get_bytes_per_pixel()));
   }
 
   return surface;
@@ -508,7 +512,8 @@ BlobPtr
 SoftwareSurface::get_raw_data() const
 {
   assert(impl->pitch != impl->size.width*3);
-  return Blob::copy(impl->pixels.get(), impl->size.height * impl->pitch);
+  return Blob::copy(impl->pixels.get(),
+                    static_cast<size_t>(impl->size.height * impl->pitch));
 }
 
 uint8_t*
@@ -551,7 +556,7 @@ SoftwareSurface::get_average_color() const
       b += rgb.b;
     }
 
-  int num_pixels = get_width() * get_height();
+  unsigned int num_pixels = static_cast<unsigned int>(get_width() * get_height());
   return RGB(static_cast<uint8_t>(r / num_pixels),
              static_cast<uint8_t>(g / num_pixels),
              static_cast<uint8_t>(b / num_pixels));
@@ -620,14 +625,14 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
     for(int y = start_y; y < end_y; ++y)
       memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*3,
              get_row_data(y) + start_x*3,
-             (end_x - start_x)*3);
+             static_cast<size_t>((end_x - start_x) * 3));
   }
   else if (dst->impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
       memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*4,
              get_row_data(y) + start_x*4,
-             (end_x - start_x)*4);
+             static_cast<size_t>((end_x - start_x) * 4));
   }
   else if (dst->impl->format == RGBA_FORMAT && impl->format == RGB_FORMAT)
   {

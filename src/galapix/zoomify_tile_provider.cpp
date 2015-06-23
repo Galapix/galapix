@@ -53,7 +53,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
   m_tilesize(tilesize),
   m_basedir(basedir),
   m_max_scale(::get_max_scale(size, tilesize)),
-  m_info(m_max_scale+1),
+  m_info(static_cast<size_t>(m_max_scale + 1)),
   m_job_manager(job_manager)
 {
   for(int i = m_max_scale; i >= 0; --i)
@@ -61,7 +61,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
     int previous_tiles_count = 0;
     for(int j = i; j <= m_max_scale; ++j)
     {
-      previous_tiles_count += m_info[j].m_size.get_area();
+      previous_tiles_count += m_info[static_cast<size_t>(j)].m_size.get_area();
     }
 
     Size size_in_tiles((m_size.width  / Math::pow2(i) - 1) / get_tilesize() + 1,
@@ -69,7 +69,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
 
     //std::cout << i << " " << previous_tiles_count << " " << size_in_tiles << " - " << size_in_tiles.get_area() << std::endl;
 
-    m_info[i] = Info(size_in_tiles, previous_tiles_count);
+    m_info[static_cast<size_t>(i)] = Info(size_in_tiles, previous_tiles_count);
   }
 
   std::cout << "ZoomifyTileProvider: " << basedir << " " << m_size << " " << m_tilesize << " " << m_max_scale << std::endl;
@@ -104,7 +104,8 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
 int
 ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 {
-  int tilenum = (m_info[scale].m_size.width * pos.y + pos.x) + m_info[scale].m_previous_tiles_count;
+  int tilenum = (m_info[static_cast<size_t>(scale)].m_size.width * pos.y + pos.x) +
+    m_info[static_cast<size_t>(scale)].m_previous_tiles_count;
   // a tilegroup has 256 tiles
   return tilenum / 256;
 }

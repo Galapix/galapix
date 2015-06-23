@@ -75,9 +75,9 @@ JPEG::get_size(const std::string& filename)
 Size
 JPEG::get_size(const uint8_t* data, int len)
 {
-  MemJPEGDecompressor loader(data, len);
+  MemJPEGDecompressor loader(data, static_cast<size_t>(len));
   Size size = loader.read_size();
-  return apply_orientation(EXIF::get_orientation(data, len), size);
+  return apply_orientation(EXIF::get_orientation(data, static_cast<size_t>(len)), size);
 }
 
 

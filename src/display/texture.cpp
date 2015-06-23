@@ -39,7 +39,7 @@ public:
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_2D, handle);
 
-    int gl_format = GL_RGB;
+    GLenum gl_format = GL_RGB;
     switch(src->get_format())
     {
       case SoftwareSurface::RGB_FORMAT:
@@ -59,7 +59,7 @@ public:
 #ifdef HAVE_OPENGLES2
     SoftwareSurfacePtr subsurf = src->crop(srcrect);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, gl_format,
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
                  size.width, size.height,
                  0, /* border */
                  gl_format,
@@ -68,7 +68,7 @@ public:
 #else
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
 
-    glTexImage2D(GL_TEXTURE_2D, 0, gl_format,
+    glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
                  size.width, size.height,
                  0, /* border */
                  gl_format,

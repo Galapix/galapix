@@ -63,14 +63,14 @@ void
 Blob::write_to_file(const std::string& filename)
 {
   std::ofstream out(filename.c_str(), std::ios::binary);
-  out.write(reinterpret_cast<const char*>(m_data.data()), m_data.size());
+  out.write(reinterpret_cast<const char*>(m_data.data()), static_cast<std::streamsize>(m_data.size()));
 }
 
 
 BlobPtr
 Blob::create(int len)
 {
-  return BlobPtr(new Blob(len));
+  return BlobPtr(new Blob(static_cast<size_t>(len)));
 }
 
 BlobPtr
@@ -87,7 +87,7 @@ Blob::from_file(const std::string& filename)
     uint8_t buffer[4096];
     while(!in.eof())
     {
-      size_t len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
+      std::streamsize len = in.read(reinterpret_cast<char*>(buffer), 4096).gcount();
       std::copy(buffer, buffer + len, std::back_inserter(data));
     }
 

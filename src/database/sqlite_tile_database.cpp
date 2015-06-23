@@ -29,7 +29,7 @@
 
 SQLiteTileDatabase::SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files) :
   m_db(db),
-  m_files(files),
+  //m_files(files),
   m_tile_table(m_db),
   m_tile_entry_store(m_db),
   m_tile_entry_get_all_by_fileid(m_db),

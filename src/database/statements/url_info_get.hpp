@@ -48,7 +48,7 @@ public:
                 reader.get_int(1),
                 reader.get_text(2),
                 BlobInfo(SHA1::from_string(reader.get_text(3)),
-                         reader.get_int(4)))
+                         static_cast<size_t>(reader.get_int(4))))
         );
     }
     else

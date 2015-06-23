@@ -53,7 +53,7 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
   while(start != end)
   {
     std::vector<char>::const_iterator line_end = std::find(start, end, '\n');
-    std::string line(&*start, line_end - start);
+    std::string line(&*start, static_cast<size_t>(line_end - start));
     start = line_end+1;
 
     char visible;
@@ -158,7 +158,8 @@ XCF::get_size(const std::string& filename, Size& size)
   }
   else
   {
-    std::cout.write(&*xcfinfo.get_stderr().begin(), xcfinfo.get_stderr().size());
+    std::cout.write(&*xcfinfo.get_stderr().begin(),
+                    static_cast<std::streamsize>(xcfinfo.get_stderr().size()));
     return false;
   }
 }

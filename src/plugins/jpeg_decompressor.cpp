@@ -97,15 +97,15 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
 
     if (image_size)
     {
-      image_size->width  = m_cinfo.image_width;
-      image_size->height = m_cinfo.image_height;
+      image_size->width = static_cast<int>(m_cinfo.image_width);
+      image_size->height = static_cast<int>(m_cinfo.image_height);
     }
 
     if (scale != 1) // scale the image down by \a scale
     {
       // by default all those values below are on 1
-      m_cinfo.scale_num           = 1;
-      m_cinfo.scale_denom         = scale;
+      m_cinfo.scale_num = 1;
+      m_cinfo.scale_denom = static_cast<unsigned int>(scale);
 
       m_cinfo.do_fancy_upsampling = FALSE; /* TRUE=apply fancy upsampling */
       m_cinfo.do_block_smoothing  = FALSE; /* TRUE=apply interblock smoothing */
@@ -113,15 +113,16 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
 
     jpeg_start_decompress(&m_cinfo);
 
-    SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(m_cinfo.output_width,
-                                                                                           m_cinfo.output_height));
+    SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
+                                                         Size(static_cast<int>(m_cinfo.output_width),
+                                                              static_cast<int>(m_cinfo.output_height)));
 
     if (m_cinfo.output_components == 3) // RGB Image
     {
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(y);
+        scanlines[y] = surface->get_row_data(static_cast<int>(y));
 
       while (m_cinfo.output_scanline < m_cinfo.output_height)
       {
@@ -134,7 +135,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(y);
+        scanlines[y] = surface->get_row_data(static_cast<int>(y));
 
       while (m_cinfo.output_scanline < m_cinfo.output_height)
       {

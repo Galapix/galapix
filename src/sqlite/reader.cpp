@@ -102,7 +102,7 @@ SQLiteReader::get_text(int column)
 {
   const void* data = sqlite3_column_text(m_stmt.get_stmt(), column);
   int len = sqlite3_column_bytes(m_stmt.get_stmt(), column);
-  return std::string(static_cast<const char*>(data), len);
+  return std::string(static_cast<const char*>(data), static_cast<size_t>(len));
 }
 
 BlobPtr
@@ -110,7 +110,7 @@ SQLiteReader::get_blob(int column)
 {
   const void* data = sqlite3_column_blob(m_stmt.get_stmt(), column);
   int len = sqlite3_column_bytes(m_stmt.get_stmt(), column);
-  return Blob::copy(data, len);
+  return Blob::copy(data, static_cast<size_t>(len));
 }
 
 std::string

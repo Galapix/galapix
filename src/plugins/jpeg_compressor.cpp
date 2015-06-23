@@ -53,13 +53,13 @@ JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
   std::vector<JSAMPROW> row_pointer(static_cast<size_t>(surface->get_height()));
   for(int y = 0; y < surface->get_height(); ++y)
   {
-    row_pointer[y] = static_cast<JSAMPLE*>(surface->get_row_data(y));
+    row_pointer[static_cast<size_t>(y)] = static_cast<JSAMPLE*>(surface->get_row_data(y));
   }
 
   while(m_cinfo.next_scanline < m_cinfo.image_height)
   {
     jpeg_write_scanlines(&m_cinfo, &row_pointer[m_cinfo.next_scanline],
-                         surface->get_height() - m_cinfo.next_scanline);
+                         static_cast<unsigned int>(surface->get_height()) - m_cinfo.next_scanline);
   }
 
   jpeg_finish_compress(&m_cinfo);

@@ -184,7 +184,7 @@ Viewer::draw()
 
   Framebuffer::set_modelview(modelview);
   Framebuffer::begin_render();
-  Framebuffer::clear(m_background_colors[m_background_color]);
+  Framebuffer::clear(m_background_colors[static_cast<size_t>(m_background_color)]);
 
   if (clip_debug)
   {

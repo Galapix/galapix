@@ -47,7 +47,7 @@ public:
         reader.get_text(1),
         reader.get_int(2),
         SHA1::from_string(reader.get_text(3)),
-        reader.get_int(4)
+        static_cast<size_t>(reader.get_int(4))
         );
     }
     else

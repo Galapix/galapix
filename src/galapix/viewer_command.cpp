@@ -89,7 +89,7 @@ ViewerCommand::run(const std::vector<URL>& urls)
         workspace.add_image(std::make_shared<Image>(i->get_url(), std::make_shared<DatabaseTileProvider>(*i, image_entry)));
 
         // print progress
-        size_t n = (i - file_entries.begin()) + 1;
+        size_t n = static_cast<size_t>(i - file_entries.begin()) + 1;
         size_t total = file_entries.size();
         std::cout << "Getting tiles: " << n << "/" << total << " - "
                   << (100 * n / total) << '%'
@@ -106,7 +106,7 @@ ViewerCommand::run(const std::vector<URL>& urls)
   // process regular URLs
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)
   {
-    size_t n = (i - urls.begin())+1;
+    size_t n = static_cast<size_t>(i - urls.begin()) + 1;
     size_t total = urls.size();
     std::cout << "Processing URLs: " << n << "/" << total << " - " << (100 * n / total) << "%\r" << std::flush;
 

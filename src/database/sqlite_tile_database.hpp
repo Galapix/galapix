@@ -43,7 +43,7 @@ class SQLiteTileDatabase : public TileDatabaseInterface
 {
 private:
   SQLiteConnection& m_db;
-  ResourceDatabase& m_files;
+  //ResourceDatabase& m_files;
 
   TileTable m_tile_table;
   TileEntryStore             m_tile_entry_store;
