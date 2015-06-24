@@ -605,7 +605,7 @@ SDLViewer::run()
 
   while(!m_quit)
   {
-    if (m_viewer.is_active() || true) // FIXME: hack for joystick support
+    if (m_viewer.is_active() || (true)) // FIXME: hack for joystick support
     {
       SDL_Event event;
       while (SDL_PollEvent(&event))

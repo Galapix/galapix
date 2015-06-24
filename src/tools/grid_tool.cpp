@@ -66,7 +66,7 @@ GridTool::draw()
 {
   if (drag_active)
   {
-    if (1)
+    if ((true))
     {
       Rectf rect(viewer->get_state().screen2world(click_pos),
                  viewer->get_state().screen2world(mouse_pos));

@@ -36,7 +36,7 @@ Database::Database(const std::string& prefix) :
 
   m_resources = std::make_unique<ResourceDatabase>(*m_db);
 
-  if (true)
+  if ((true))
   {
     m_tiles = std::make_unique<CachedTileDatabase>(std::make_unique<SQLiteTileDatabase>(*m_tile_db, *m_resources));
   }

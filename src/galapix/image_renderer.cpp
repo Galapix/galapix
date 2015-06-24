@@ -54,7 +54,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
     sstruct.surface->draw(Rectf(get_vertex(x,   y,   zoom),
                                 get_vertex(x+1, y+1, zoom)));
 
-    if (0)
+    if ((false))
     { // draw debug rectangle that shows tiles
       Framebuffer::draw_rect(Rectf(get_vertex(x,   y,   zoom) + Vector2f(zoom, zoom)*8.0f,
                                    get_vertex(x+1, y+1, zoom) - Vector2f(zoom, zoom)*8.0f),

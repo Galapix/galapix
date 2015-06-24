@@ -28,8 +28,8 @@ set(WERROR OFF CACHE BOOL "Treat all warnings as errors")
 if(WARNINGS)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
     -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
-    -Wconversion -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter)
-  # -Winline -Wfloat-equal -Wunreachable-code
+    -Wconversion -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter -Wunreachable-code)
+  # -Winline -Wfloat-equal
 endif()
 
 if(WERROR)

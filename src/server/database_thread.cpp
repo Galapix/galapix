@@ -195,13 +195,15 @@ DatabaseThread::request_tile(const OldFileEntry& file_entry, int tilescale, cons
          else
          {
            // Tile hasn't been found, so we need to generate it
-           if (0)
+           if ((false))
+           {
              std::cout << "Error: Couldn't get tile: "
                        << file_entry.get_id() << " "
                        << pos.x << " "
                        << pos.y << " "
                        << tilescale
                        << std::endl;
+           }
 
            {
              DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);

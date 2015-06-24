@@ -50,7 +50,7 @@ Imagemagick::get_size(const std::string& filename, Size& size)
 std::vector<std::string>
 Imagemagick::get_supported_extensions()
 {
-  if (false)
+  if ((false)) // FIXME: disabled for reasons
   {
     /* Generating the list automatic doesn't work, as there ends up to
        be to much weird stuff in it (txt, avi, mpeg, etc.) that causes
@@ -107,12 +107,18 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
   // Magick++ puts it inside a namespace.
   using Quantum = MagickCore::Quantum;
 
-  if (QuantumRange == 65535)
+  if (QuantumRange == (65535))
+  {
     shift = 8;
-  else if (QuantumRange == 255)
+  }
+  else if (QuantumRange == (255))
+  {
     shift = 0;
+  }
   else
+  {
     assert(false && "Imagemagick: Unknown QuantumRange");
+  }
 
   if (image.matte())
   {
