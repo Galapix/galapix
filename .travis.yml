@@ -33,7 +33,7 @@ matrix:
 
 env:
   global:
-    - CMAKE_VERSION=3.2.1 SDL2_VERSION=2.0.3 SDL2IMAGE_VERSION=2.0.0 SDL2MIXER_VERSION=2.0.0
+    - CMAKE_VERSION=3.2.1 SDL2_VERSION=2.0.3
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "avCYzv34u0qw4gaPvxHk5mcCFdO8HdSkGzH+9VJ6g3FJaV1y8BMU+KE3CnsgNtrmOS3KL+O10N4bhJEvamid9mfNpv5Mtk4bumU8Q0sCe1guKtEU0FEO8ZAKKz3ooh1f61fBlrNv7ZMOHIhWxpZKH8XBKtpzAcTkG535Zii3rkA="
@@ -68,10 +68,6 @@ before_install:
   # SDL dependencies
   - wget http://libsdl.org/release/SDL2-$SDL2_VERSION.tar.gz -O - | tar xz
   - (cd SDL2-$SDL2_VERSION && ./configure --prefix=/usr && make -j3 && sudo make install)
-  - wget http://www.libsdl.org/projects/SDL_image/release/SDL2_image-$SDL2IMAGE_VERSION.tar.gz -O - | tar xz
-  - (cd SDL2_image-$SDL2IMAGE_VERSION && ./configure --prefix=/usr && make -j3 && sudo make install)
-  - wget http://www.libsdl.org/projects/SDL_mixer/release/SDL2_mixer-$SDL2MIXER_VERSION.tar.gz -O - | tar xz
-  - (cd SDL2_mixer-$SDL2MIXER_VERSION && ./configure --prefix=/usr && make -j3 && sudo make install)
 
 script:
   # Clean from previous Travis build
