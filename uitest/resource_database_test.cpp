@@ -51,7 +51,7 @@ UITEST(ResourceDatabase, test, "")
   }
 
 
-  if (false)
+  if ((false))
   {
     res_db.store_file_entry("/tmp/foo/bar.txt", 23445);
     res_db.store_file_entry("/tmp/foo/bam.txt", 2989);
