@@ -71,6 +71,9 @@ before_install:
       g++-4.9 \
       clang-3.7
 
+  # patch for mhash, see https://bugs.launchpad.net/ubuntu/+source/mhash/+bug/1465562
+  - sudo sed -i "s/_Bool/bool/" /usr/include/mutils/mutils.h
+
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.7"; fi
 
