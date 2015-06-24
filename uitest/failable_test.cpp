@@ -39,7 +39,8 @@ std::ostream& operator<<(std::ostream& os, const Foo& foo)
 UITEST(Failable, test, "")
 {
   Failable<Foo> foo = Failable<Foo>::from_exception(std::runtime_error("My Exception"));
-  if(false){
+  if ((false))
+  {
     foo.reset(Foo());
     foo.reset(Foo());
     //foo.set_exception();
