@@ -131,7 +131,7 @@ set(GALAPIX_DEPS_LIBRARIES
 include_directories(src/)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
 include_directories(SYSTEM external/logmich/include/)
-include_directories(SYSTEM external/glm-0.9.6.1/)
+include_directories(SYSTEM external/glm/)
 include_directories(SYSTEM external/googletest/include/)
 include_directories(SYSTEM ${MAGICKXX_INCLUDE_DIRS})
 
