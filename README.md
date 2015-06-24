@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/Galapix/galapix.svg?branch=develop)](https://travis-ci.org/Galapix/galapix)
+[![Coverity Status](https://scan.coverity.com/projects/5576/badge.svg)](https://scan.coverity.com/projects/5576)
 
 galapix - A Zoomable Image Viewer zoomview
 ==========================================
