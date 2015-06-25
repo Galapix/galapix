@@ -1,8 +1,8 @@
-[[ Galapix ToDo ]]
-_______________________________________________________________________________
+Galapix ToDo
+============
 
-Release procedure:
-==================
+Release procedure
+-----------------
 
 * test that Galapix works with and without SpaceNavigator libraries
 
@@ -22,9 +22,9 @@ Release procedure:
 
 * svn export http://galapix.googlecode.com/svn/tags/galapix-0.1.2
 
-
-Galapix 0.2.0 Release ToDo:
----------------------------
+
+Galapix 0.2.0 Release ToDo
+--------------------------
 
 * check with sqlite3_table_column_metadata() that the table has the
   right format
@@ -42,7 +42,7 @@ Galapix 0.2.0 Release ToDo:
 
 * galapix-thumbgen
    -m, --minsize X      Generate tiles till this size
-   -d, --database FILE  
+   -d, --database FILE
 
 * galapix-db [info|list|merge|cleanup|delete]
    -d, --database FILE
@@ -50,9 +50,10 @@ Galapix 0.2.0 Release ToDo:
   galapix-db merge -d outdatabase.sqlite indatabase1.sqlite indatabase2.sqlite ...
   galapix-db cleanup
   galapix-db delete -d database1.sqlite [PATTERN]...
-
+
+
 Bugs and Issues
-===============
+---------------
 
 * "libpng error: Not a PNG file" should not leak out of libpng, should
   be handled by proper logging functions
@@ -62,14 +63,15 @@ Bugs and Issues
 * mtime needs to be checked
 
 * images belonging to an archive/directory need to be groupable
-
+
 http://stackoverflow.com/questions/3151779/how-its-better-to-invoke-gdb-from-program-to-print-its-stacktrace/4611112#4611112
 
-Galapix 0.1.3 Release ToDo:
-===========================
 
-User Interface:
----------------
+Galapix 0.1.3 Release ToDo
+--------------------------
+
+User Interface
+--------------
 
 * add view-limiter that limits scrolling to the images on the screen
 
@@ -90,8 +92,8 @@ User Interface:
   the center of the picture, but to the mouse cursor
 
 
-Other Things:
--------------
+Other Things
+------------
 
 * always flush database completly in one go (whey do we get multi
   flushes in a row?)
@@ -133,9 +135,9 @@ Other Things:
 
 * need to find proper location to filter out Size(0,0) FileEntries
 
-
-General Problems:
-=================
+
+General Problems
+----------------
 
 * currently only out-of-screen cancels jobs, but zooming need to cancel jobs too
 
@@ -206,7 +208,7 @@ select count(*) from files;
 
 * separate animation from Image, maybe even position
 
-galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::request_tile(const JobHandle&, int, const Vector2i&, const boost::function<void(TileEntry)>&): Assertion `scale < m_min_scale_in_db || scale > m_max_scale_in_db' failed.
+    galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::request_tile(const JobHandle&, int, const Vector2i&, const boost::function<void(TileEntry)>&): Assertion `scale < m_min_scale_in_db || scale > m_max_scale_in_db' failed.
 
 * failed loading does not propagate to the image, need some kind of
   callback to report errors
@@ -246,9 +248,10 @@ galapix.sdl: src/jobs/tile_generation_job.cpp:54: bool TileGenerationJob::reques
 
 * use highres tiles when they are in cache when zooming out (currently
   only using one level of highres data)
-
+
+
 Graphical User Interface
-========================
+------------------------
 
 * implement auto-pilot that navigates images randomly or in sequence
   (i.e. slideshow with a bit of zooming)
@@ -273,16 +276,17 @@ Graphical User Interface
 
 * key stuck issues happens: SDL event queue getting filled up? and key-up events lost?
 
-* add raise/lower buttons 
+* add raise/lower buttons
 
 * make 'd' clone the current selection
 
 * add shift-click support to the MoveTool, also rename MoveTool to SelectTool
 
 * add button to flip the view
-
+
+
 File Plugins
-============
+------------
 
 * handle "Premature end of JPEG file" a little better, mark FileEntry
   as broken or so
@@ -302,7 +306,7 @@ File Plugins
 * add support for Imagemagick files that create multiple images (i.e. pdf)
 
 * figure out a way to handle multi-image files (multilayer-xcf)
- 
+
   XCF: parse xcfinfo output
 
   Images are accessed when their width/height is requested and when
@@ -311,10 +315,11 @@ File Plugins
 
 * check for xcf2pnm, xcfinfo and other tool binaries on startup
 
-* catch PNG read errors properly 
-
+* catch PNG read errors properly
+
+
 Database
-========
+--------
 
 * Cleanup higher zoom levels of jpg files (takes hours to run):
 
@@ -339,42 +344,41 @@ Database
 
  manual way to split the database:
 
-# Create the tables
-PRAGMA auto_vacuum = 1;
-CREATE TABLE files (fileid INTEGER PRIMARY KEY AUTOINCREMENT,url TEXT UNIQUE, size INTEGER, mtime INTEGER, width INTEGER, height INTEGER);
-CREATE UNIQUE INDEX files_index ON files ( url );
-CREATE TABLE tiles (fileid INTEGER, scale INTEGER, x INTEGER, y INTEGER, data BLOB, quality INTEGER, format INTEGER);
-CREATE INDEX tiles_index ON tiles ( fileid, x, y, scale );
+    # Create the tables
+    PRAGMA auto_vacuum = 1;
+    CREATE TABLE files (fileid INTEGER PRIMARY KEY AUTOINCREMENT,url TEXT UNIQUE, size INTEGER, mtime INTEGER, width INTEGER, height INTEGER);
+    CREATE UNIQUE INDEX files_index ON files ( url );
+    CREATE TABLE tiles (fileid INTEGER, scale INTEGER, x INTEGER, y INTEGER, data BLOB, quality INTEGER, format INTEGER);
+    CREATE INDEX tiles_index ON tiles ( fileid, x, y, scale );
 
-# Attach the orignal
-ATTACH "/home/ingo/.galapix/cache.sqlite" as galapix;
+    # Attach the orignal
+    ATTACH "/home/ingo/.galapix/cache.sqlite" as galapix;
 
-# Copy the data
-INSERT INTO files select * from galapix.files where url glob "*comics/*";
-INSERT INTO tiles select * from galapix.tiles where fileid in (select fileid from files);
+    # Copy the data
+    INSERT INTO files select * from galapix.files where url glob "*comics/*";
+    INSERT INTO tiles select * from galapix.tiles where fileid in (select fileid from files);
 
-* Table convert:
-  create table if not exists files_new (fileid INTEGER PRIMARY KEY  AUTOINCREMENT, url TEXT UNIQUE, size  INTEGER,  mtime     INTEGER, width INTEGER, height INTEGER);
-  insert into files_new (fileid, url, size, mtime, width, height) select fileid, filename, filesize, mtime, width, height from files;
-  alter table files rename to files_old
-  alter table files_new rename to files;
+    * Table convert:
+      create table if not exists files_new (fileid INTEGER PRIMARY KEY  AUTOINCREMENT, url TEXT UNIQUE, size  INTEGER,  mtime     INTEGER, width INTEGER, height INTEGER);
+      insert into files_new (fileid, url, size, mtime, width, height) select fileid, filename, filesize, mtime, width, height from files;
+      alter table files rename to files_old
+      alter table files_new rename to files;
 
-* delete tile duplicates via:
+    * delete tile duplicates via:
 
-DELETE FROM tiles WHERE rowid IN 
-(SELECT b.rowid 
- FROM tiles AS a, tiles AS b 
- WHERE a.fileid = b.fileid AND 
-            a.x = b.x      AND
-            a.y = b.y      AND 
-        a.scale = b.scale  AND 
-        a.rowid < b.rowid);
+    DELETE FROM tiles WHERE rowid IN
+    (SELECT b.rowid
+     FROM tiles AS a, tiles AS b
+     WHERE a.fileid = b.fileid AND
+                a.x = b.x      AND
+                a.y = b.y      AND
+            a.scale = b.scale  AND
+            a.rowid < b.rowid);
 
 Then shrink via (do this in a seperate step, since it requires plenty
 of diskspace, 2x(!) times what the database uses):
 
 VACUUM;
-
 
 * add --size option to 'galapix export'
 
@@ -414,13 +418,13 @@ VACUUM;
 
 * add tool to cut an image (simple rectangle or more complex polygonal shapes)
 
-* PRAGMA temp_store_directory = '/home/ingo/.galapix/tmp/'; 
+* PRAGMA temp_store_directory = '/home/ingo/.galapix/tmp/';
 
 * play around with attaching databases to copy stuff around for compability
 
 * is it worth to have a get_size(filename) command? or is it better to
   wait for a proper thumbnail to be there?
-  
+
   -> get_size() has not much benefit, only real benefit is that you
      can layout before a thumbnail is ready, but placeholder rects are
      not pretty and it only works for a few formats anyway, so drop
@@ -481,9 +485,10 @@ Aborted
 
 * support for additional image formats would be nice, via ImageMagicks
   "convert" as a fallback
-
-Galapix Video Demo:
--------------------
+
+
+Galapix Video Demo
+------------------
 
 http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 
@@ -502,12 +507,12 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 * use a wider range of pictures
 
 * use Big Buck Bunny
-
-// Get a list of all tiles for a given file
-// SELECT files.fileid,files.filename,tiles.scale,tiles.x,tiles.y 
-//   FROM files, tiles 
-//   WHERE files.filename = 'file:///tmp/ssc2008-11a14.jpg' AND files.fileid = tiles.fileid;
-// When no tiles are available nothing is returned, which makes this call kind of useless for the intended purpose
+
+    // Get a list of all tiles for a given file
+    // SELECT files.fileid,files.filename,tiles.scale,tiles.x,tiles.y
+    //   FROM files, tiles
+    //   WHERE files.filename = 'file:///tmp/ssc2008-11a14.jpg' AND files.fileid = tiles.fileid;
+    // When no tiles are available nothing is returned, which makes this call kind of useless for the intended purpose
 
 * added toggle for GL_LINEAR/GL_NEAREST
 
@@ -525,7 +530,6 @@ http://video.google.com/videoplay?docid=7578014083503114514&hl=en
 
 * Loading JPEG file can throw exception and that isn't handled
   - failure modes: file not found, data corrupt
-_______________________________________________________________________________
 
 * maybe limit the scrolling area, so that one can't scroll completly
   out of the picture: calculate the center of all images and let an
@@ -574,8 +578,8 @@ _______________________________________________________________________________
   worker thread?
 
 
-Database Stuff:
-===============
+Database Stuff
+--------------
 
 * There is no handling of tile collisions in the database, so one
   might end up with duplicate entries for the same tile. Tile
@@ -585,8 +589,8 @@ Database Stuff:
   database can be used/abused as image file
 
 
-Thread Stuff:
-=============
+Thread Stuff
+------------
 
 * Jobs are currently not prioritized properly so unimportant ones
   might be executed before important ones, not harmfull, but its
@@ -599,8 +603,8 @@ Thread Stuff:
   can run free with database stuff
 
 
-Possible Future Improvements:
-=============================
+Possible Future Improvements
+----------------------------
 
 * crazy stuff: extend Exec() so that stdout from one Exec() can be
   redirected into another Exec(), could be a bit tricky to get the
@@ -637,8 +641,8 @@ Possible Future Improvements:
 * support for greyscale in SoftwareSurface (not really important)
 
 
-Random Notes:
-=============
+Random Notes
+------------
 
 * jpegtran can't do crop of large scale JPEGs in small amount of
   space, so cropping with libjpeg likely won't work or get more
@@ -661,8 +665,3 @@ Random Notes:
 1000 thumbnails -> 1MB
 10'000 thumbnails -> 10MB
 100'000 thumbnails -> 100MB (graphic card gets full) -> Solution: smaller thumbnails, also unload from GFX card, but keep software backstore
-
-_______________________________________________________________________________
-
-
-# EOF #

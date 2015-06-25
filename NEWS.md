@@ -43,8 +43,8 @@ Galapix 0.1.0 (17. Oct 2009)
 * support for Gimp/XCF via xcftools
 * support for Krita/KRA via koconvert
 * support for RGBA tiles
-* support for zip archive files 
-* support for rar archive files 
+* support for zip archive files
+* support for rar archive files
 * support for http/ftp via libcurl
 
 
@@ -54,7 +54,7 @@ Galapix 0.0.3 (12. Sep 2008)
 * fixes for gcc 4.3
 * added random layout function
 * added random shuffle
-* added function to create non-overlapping layouts  
+* added function to create non-overlapping layouts
 * scale is smoothly handled on relayout
 * added MoveTool to move and scale images
 * fixed random halting of the application
@@ -65,5 +65,3 @@ Galapix 0.0.2 (4. Sep 2008)
 
 * initial release
 
-
-# EOF #

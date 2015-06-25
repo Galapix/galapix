@@ -215,3 +215,16 @@ Running multiple instances of galapix at once can lead to:
     terminate called after throwing an instance of 'SQLiteError'
       what():  SQLiteStatement::~SQLiteStatement: column filename is not unique
     Aborted
+
+
+Development
+-----------
+
+* `external/` contains several libraries included here for convenience
+and to avoid dependency boat.
+
+* `test/` contains automatic tests based on gtest, they can be run with `build/test_galapix`
+
+* `uitest/` contains interactive tests that have to be manually
+executed. Most of them accept command line parameter and provide a
+little help text when run.
