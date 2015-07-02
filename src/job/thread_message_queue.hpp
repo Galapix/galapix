@@ -72,7 +72,7 @@ public:
   C front()
   {
     std::unique_lock<std::mutex> lock(m_mutex);
-    assert(false && m_values.empty());
+    assert(!m_values.empty());
     C c(m_values.front());
     return c;
   }

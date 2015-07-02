@@ -115,7 +115,7 @@ SpaceNavigator::start_thread()
 void
 SpaceNavigator::stop_thread()
 {
-  assert(false && m_quit);
+  assert(!m_quit);
 
   m_quit = true;
 

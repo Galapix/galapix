@@ -34,14 +34,14 @@ private:
   static C* s_current;
 
 protected:
-  Currenton()  { assert(false && s_current); s_current = static_cast<C*>(this); }
-  virtual ~Currenton() { s_current = 0; }
+  Currenton()  { assert(!s_current); s_current = static_cast<C*>(this); }
+  virtual ~Currenton() { s_current = nullptr; }
 
 public:
   static C& current() { assert(s_current); return *s_current; }
 };
 
-template<class C> C* Currenton<C>::s_current = 0;
+template<class C> C* Currenton<C>::s_current = nullptr;
 
 #endif
 
