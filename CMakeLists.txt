@@ -17,6 +17,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(galapix VERSION 0.3.0)
 
+include(GNUInstallDirs)
+
 set(BUILD_GALAPIX_SDL ON CACHE BOOL "Build galapix.sdl")
 set(BUILD_GALAPIX_GTK OFF CACHE BOOL "Build galapix.gtk")
 set(BUILD_TESTS OFF CACHE BOOL "Build tests")
@@ -114,6 +116,7 @@ set(GALAPIX_DEPS_LIBRARIES
   libgalapix
   libgalapix_sdl
   logmich
+  ${SPNAV}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${SQLITE3_LIBRARIES}
@@ -177,16 +180,19 @@ file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/tools/*.cpp
   src/util/*.cpp)
 list(APPEND LIBGALAPIX_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp)
-add_library(libgalapix STATIC ${LIBGALAPIX_SOURCES})
+add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
 target_compile_options(libgalapix PRIVATE ${WARNINGS_CXX_FLAGS})
 set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "galapix")
 target_compile_options(libgalapix PRIVATE ${MAGICKXX_CFLAGS_OTHER})
+
+install(TARGETS libgalapix
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # compile galapix.sdl
 if(BUILD_GALAPIX_SDL)
   file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
   list(APPEND LIBGALAPIX_SDL_SOURCES ${SPNAV_SOURCES})
-  add_library(libgalapix_sdl STATIC ${LIBGALAPIX_SDL_SOURCES})
+  add_library(libgalapix_sdl SHARED ${LIBGALAPIX_SDL_SOURCES})
   target_compile_options(libgalapix_sdl PRIVATE ${WARNINGS_CXX_FLAGS})
   target_include_directories(libgalapix_sdl PRIVATE ${GALAPIX_SDL_DEPS_INCLUDE_DIRS})
   target_link_libraries(libgalapix_sdl ${GALAPIX_SDL_DEPS_LIBRARIES})
@@ -198,12 +204,16 @@ if(BUILD_GALAPIX_SDL)
   target_link_libraries(galapix.sdl
     libgalapix_sdl
     ${GALAPIX_DEPS_LIBRARIES})
+
+  install(TARGETS galapix.sdl
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 # compile galapix.gtk
 if(BUILD_GALAPIX_GTK)
   file(GLOB LIBGALAPIX_GTK_SOURCES src/gtk/*.cpp)
-  add_library(libgalapix_gtk STATIC ${LIBGALAPIX_GTK_SOURCES})
+  add_library(libgalapix_gtk SHARED ${LIBGALAPIX_GTK_SOURCES})
   target_compile_options(libgalapix_gtk PRIVATE ${WARNINGS_CXX_FLAGS})
   target_compile_definitions(libgalapix_gtk PRIVATE -DGALAPIX_GTK)
   target_include_directories(libgalapix_gtk SYSTEM PRIVATE
@@ -221,6 +231,10 @@ if(BUILD_GALAPIX_GTK)
     libgalapix_gtk
     ${GALAPIX_DEPS_LIBRARIES}
     ${GALAPIX_GTK_DEPS_LIBRARIES})
+
+  install(TARGETS libgalapix_gtk galapix.gtk
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
 # compile extra
