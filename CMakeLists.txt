@@ -40,6 +40,7 @@ if(WERROR)
 endif()
 
 add_compile_options(-std=c++1y)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CheckIncludeFile)
 
@@ -70,7 +71,11 @@ find_library(SPNAV spnav)
 if(SPNAV AND HAVE_SPNAV)
   message(STATUS "enabling Space Navigator support")
   set(SPNAV_CFLAGS_OTHER -DHAVE_SPACE_NAVIGATOR)
+  set(SPNAV_LIBRARIES ${SPNAV})
   file(GLOB SPNAV_SOURCES src/spnav/space_navigator.cpp)
+else()
+  set(SPNAV_LIBRARIES)
+  set(SPNAV_CFLAGS_OTHER)
 endif()
 
 check_include_file(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
@@ -116,7 +121,7 @@ set(GALAPIX_DEPS_LIBRARIES
   libgalapix
   libgalapix_sdl
   logmich
-  ${SPNAV}
+  ${SPNAV_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
   ${SQLITE3_LIBRARIES}
@@ -200,7 +205,7 @@ if(BUILD_GALAPIX_SDL)
 
   add_executable(galapix.sdl src/main/sdl_main.cpp)
   target_compile_options(galapix.sdl PRIVATE ${WARNINGS_CXX_FLAGS})
-  target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL)
+  target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL ${SPNAV_CFLAGS_OTHER})
   target_link_libraries(galapix.sdl
     libgalapix_sdl
     ${GALAPIX_DEPS_LIBRARIES})
