@@ -21,7 +21,7 @@
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 #include "math/rgb.hpp"
-
+
 GridTool::GridTool(Viewer* viewer_)
   : Tool(viewer_),
     mouse_pos(),
@@ -85,5 +85,5 @@ GridTool::draw()
     }
   }
 }
-
+
 /* EOF */

@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_SQLITE_STATEMENT_HPP
 
 #include "sqlite/reader.hpp"
-
+
 class SQLiteStatement
 {
 private:
@@ -56,7 +56,7 @@ private:
   SQLiteStatement(const SQLiteStatement&);
   SQLiteStatement& operator=(const SQLiteStatement&);
 };
-
+
 #endif
 
 /* EOF */

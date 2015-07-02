@@ -22,7 +22,7 @@
 #include "galapix/viewer.hpp"
 #include "display/framebuffer.hpp"
 #include "math/rgb.hpp"
-
+
 MoveTool::MoveTool(Viewer* viewer_)
   : Tool(viewer_),
     mouse_pos(),
@@ -103,5 +103,5 @@ MoveTool::draw()
     Framebuffer::draw_rect(rect, RGB(255, 255, 255));
   }
 }
-
+
 /* EOF */

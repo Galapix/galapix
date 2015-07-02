@@ -20,7 +20,7 @@
 #include <unistd.h>
 
 #include "jobs/test_job.hpp"
-
+
 TestJob::TestJob() :
   Job(JobHandle::create())
 {
@@ -35,5 +35,5 @@ TestJob::run()
     usleep(100000);
   }
 }
-
+
 /* EOF */

@@ -21,7 +21,7 @@
 
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
-
+
 class ViewerState
 {
 private:
@@ -61,7 +61,7 @@ public:
   float    get_scale()  const { return scale; }
   float    get_angle() const  { return angle; }
 };
-
+
 #endif
 
 /* EOF */

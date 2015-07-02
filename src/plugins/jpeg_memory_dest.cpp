@@ -19,7 +19,7 @@
 #include "plugins/jpeg_memory_dest.hpp"
 
 #define OUTPUT_BUF_SIZE 4096
-
+
 struct jpeg_memory_destination_mgr
 {
   struct jpeg_destination_mgr pub;
@@ -27,7 +27,7 @@ struct jpeg_memory_destination_mgr
   JOCTET buffer[OUTPUT_BUF_SIZE];
   std::vector<uint8_t>* data;
 };
-
+
 void jpeg_memory_init_destination(j_compress_ptr cinfo)
 {
   struct jpeg_memory_destination_mgr* mgr = (struct jpeg_memory_destination_mgr*)cinfo->dest;
@@ -63,7 +63,7 @@ void jpeg_memory_term_destination(j_compress_ptr cinfo)
     mgr->data->push_back(mgr->buffer[i]);
   }
 }
-
+
 void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data)
 {
   if (cinfo->dest == NULL)
@@ -80,5 +80,5 @@ void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data)
   struct jpeg_memory_destination_mgr* mgr = (struct jpeg_memory_destination_mgr*)cinfo->dest;
   mgr->data = data;
 }
-
+
 /* EOF */

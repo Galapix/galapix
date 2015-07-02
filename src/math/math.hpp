@@ -30,8 +30,8 @@
     @brief A collection of mathematical helper functions */
 namespace Math {
 
-const float pi   = 3.14159265358979323846f;	/* pi */
-const float pi_2 = 1.57079632679489661923f;	/* pi/2 */
+const float pi   = 3.14159265358979323846f;/* pi */
+const float pi_2 = 1.57079632679489661923f;/* pi/2 */
 const float tau  = 3.14159265358979323846f * 2.0f; /* 2*pi */
 
 // Win32 defines these are defines already, so we have to undef them

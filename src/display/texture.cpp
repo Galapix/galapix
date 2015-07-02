@@ -21,7 +21,7 @@
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
 #include "util/opengl.hpp"
-
+
 class TextureImpl
 {
 public:
@@ -91,13 +91,13 @@ public:
     glDeleteTextures(1, &handle);
   }
 };
-
+
 TexturePtr
 Texture::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
 {
   return TexturePtr(new Texture(src, srcrect));
 }
-
+
 Texture::Texture(const SoftwareSurfacePtr& src, const Rect& srcrect) :
   impl(new TextureImpl(src, srcrect))
 {
@@ -120,5 +120,5 @@ Texture::get_height() const
 {
   return impl->size.height;
 }
-
+
 /* EOF */

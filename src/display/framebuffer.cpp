@@ -40,7 +40,7 @@ GLuint Framebuffer::s_textured_prg = 0;
 GLuint Framebuffer::s_flatcolor_prg = 0;
 glm::mat4 Framebuffer::s_projection;
 glm::mat4 Framebuffer::s_modelview;
-
+
 namespace {
 
 void print_gl_string(const char* prefix, GLenum name)
@@ -57,7 +57,7 @@ void print_gl_string(const char* prefix, GLenum name)
 }
 
 } // namespace
-
+
 void
 Framebuffer::init()
 {
@@ -317,5 +317,5 @@ Framebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
 {
   log_error("not implemented: %1% %2% %3%", contrast, brightness, gamma);
 }
-
+
 /* EOF */

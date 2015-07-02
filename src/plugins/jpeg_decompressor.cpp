@@ -24,13 +24,13 @@
 #include <stdexcept>
 
 #include "util/raise_exception.hpp"
-
+
 void
 JPEGDecompressor::fatal_error_handler(j_common_ptr cinfo)
 {
   longjmp(reinterpret_cast<ErrorMgr*>(cinfo->err)->setjmp_buffer, 1);
 }
-
+
 JPEGDecompressor::JPEGDecompressor() :
   m_cinfo(),
   m_err()

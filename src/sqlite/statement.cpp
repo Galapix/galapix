@@ -24,7 +24,7 @@
 #include "util/raise_exception.hpp"
 
 #include "sqlite/statement.hpp"
-
+
 SQLiteStatement::SQLiteStatement(SQLiteConnection& db) :
   m_db(db),
   m_stmt(0),
@@ -177,5 +177,5 @@ SQLiteStatement::execute_query()
 {
   return SQLiteReader(m_db, *this);
 }
-
+
 /* EOF */

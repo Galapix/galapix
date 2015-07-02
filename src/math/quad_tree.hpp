@@ -23,7 +23,7 @@
 #include <memory>
 
 #include "math/rect.hpp"
-
+
 /**
     +----+----+
     | nw | ne |
@@ -189,7 +189,7 @@ public:
     }
   }
 };
-
+
 template<class C>
 class QuadTree
 {
@@ -214,7 +214,7 @@ public:
     return items;
   }
 };
-
+
 #endif
 
 /* EOF */

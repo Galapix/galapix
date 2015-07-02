@@ -23,7 +23,7 @@
 
 #include "math/size.hpp"
 #include "util/software_surface.hpp"
-
+
 class PNG
 {
 private:
@@ -39,7 +39,7 @@ public:
   static void save(const SoftwareSurfacePtr& surface, const std::string& filename);
   static BlobPtr save(const SoftwareSurfacePtr& surface);
 };
-
+
 #endif
 
 /* EOF */

@@ -27,7 +27,7 @@
 
 #include "util/url.hpp"
 #include "math/size.hpp"
-
+
 bool
 Imagemagick::get_size(const std::string& filename, Size& size)
 {
@@ -172,5 +172,5 @@ Imagemagick::load_from_file(const std::string& filename)
 {
   return MagickImage2SoftwareSurface(Magick::Image(filename));
 }
-
+
 /* EOF */

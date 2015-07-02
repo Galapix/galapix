@@ -25,7 +25,7 @@
 #include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
 #include "gtk/gtk_viewer.hpp"
-
+
 GtkViewer::GtkViewer(System& system) :
   m_system(system),
   workspace(),
@@ -238,5 +238,5 @@ GtkViewer::on_menu_file_new()
 {
 
 }
-
+
 /* EOF */

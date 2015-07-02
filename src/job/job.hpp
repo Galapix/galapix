@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_JOB_JOB_HPP
 
 #include "job/job_handle.hpp"
-
+
 class Job
 {
 private:
@@ -42,7 +42,7 @@ private:
 };
 
 typedef std::shared_ptr<Job> JobPtr;
-
+
 #endif
 
 /* EOF */

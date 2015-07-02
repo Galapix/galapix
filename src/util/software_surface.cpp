@@ -28,7 +28,7 @@
 
 // FIXME: Stuff in this file is currently written to just work, not to
 // be fast
-
+
 namespace {
 
 inline
@@ -84,13 +84,13 @@ public:
     }
   }
 };
-
+
 SoftwareSurfacePtr
 SoftwareSurface::create(Format format, const Size& size)
 {
   return SoftwareSurfacePtr(new SoftwareSurface(format, size));
 }
-
+
 SoftwareSurface::SoftwareSurface(Format format_, const Size& size_) :
   impl(new SoftwareSurfaceImpl(format_, size_))
 {
@@ -671,5 +671,5 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
     assert(false && "Not implemented");
   }
 }
-
+
 /* EOF */

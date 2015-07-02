@@ -19,7 +19,7 @@
 #include "tools/zoom_tool.hpp"
 
 #include "galapix/viewer.hpp"
-
+
 ZoomTool::ZoomTool(Viewer* viewer_, float zoom_factor_)
   : Tool(viewer_),
     zoom_active(false),
@@ -84,5 +84,5 @@ ZoomTool::is_active() const
 {
   return zoom_active;
 }
-
+
 /* EOF */

@@ -28,7 +28,7 @@
 #include "math/rgba.hpp"
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"
-
+
 class GridTool;
 class MoveTool;
 class PanTool;
@@ -40,7 +40,7 @@ class ViewRotateTool;
 class Workspace;
 class ZoomRectTool;
 class ZoomTool;
-
+
 enum class MouseButton
 {
   LEFT=1, MIDDLE=2, RIGHT=3
@@ -185,7 +185,7 @@ private:
   Viewer (const Viewer&);
   Viewer& operator= (const Viewer&);
 };
-
+
 #endif
 
 /* EOF */

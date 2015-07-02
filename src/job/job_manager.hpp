@@ -25,10 +25,10 @@
 #include <mutex>
 
 #include "job/job_handle.hpp"
-
+
 class JobWorkerThread;
 class Job;
-
+
 class JobManager
 {
 private:
@@ -53,7 +53,7 @@ public:
                     const std::function<void (std::shared_ptr<Job>, bool)>& callback
                     = std::function<void (std::shared_ptr<Job>, bool)>());
 };
-
+
 #endif
 
 /* EOF */

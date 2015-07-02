@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_JOBS_TEST_JOB_HPP
 
 #include "job/job.hpp"
-
+
 class TestJob : public Job
 {
 private:
@@ -33,7 +33,7 @@ private:
   TestJob (const TestJob&);
   TestJob& operator= (const TestJob&);
 };
-
+
 #endif
 
 /* EOF */

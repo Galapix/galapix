@@ -23,7 +23,7 @@
 
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
-
+
 RotateTool::RotateTool(Viewer* viewer_)
   : Tool(viewer_),
     rotate_active(false),
@@ -68,5 +68,5 @@ RotateTool::down(const Vector2i& pos)
   start_angle = atan2f(selection_center.y - mouse_pos.y,
                        selection_center.x - mouse_pos.x);
 }
-
+
 /* EOF */

@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_MATH_RGB_HPP
 
 #include <stdint.h>
-
+
 class RGB
 {
 public:
@@ -48,7 +48,7 @@ public:
             (static_cast<uint32_t>(b) << 16));
   }
 };
-
+
 #endif
 
 /* EOF */

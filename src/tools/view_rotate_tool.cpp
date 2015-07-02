@@ -20,7 +20,7 @@
 
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
-
+
 ViewRotateTool::ViewRotateTool(Viewer* viewer_)
   : Tool(viewer_),
     active(false),
@@ -61,5 +61,5 @@ ViewRotateTool::down(const Vector2i& pos)
   start_angle = atan2f(static_cast<float>(pos.y - center.y),
                        static_cast<float>(pos.x - center.x));
 }
-
+
 /* EOF */

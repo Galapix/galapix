@@ -30,10 +30,10 @@
 #include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
 #include "util/url.hpp"
-
+
 class Rectf;
 class Layouter;
-
+
 /** The Workspace houses all the images, the current selection and
     things like layouting of the image collection */
 class Workspace final
@@ -108,7 +108,7 @@ private:
   Workspace (const Workspace&) = delete;
   Workspace& operator= (const Workspace&) = delete;
 };
-
+
 #endif
 
 /* EOF */

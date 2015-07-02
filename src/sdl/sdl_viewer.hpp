@@ -25,12 +25,12 @@
 #include "math/size.hpp"
 #include "galapix/image.hpp"
 #include "sdl/sdl_window.hpp"
-
+
 class Viewer;
 class FileEntry;
 class Image;
 class Workspace;
-
+
 class SDLViewer
 {
 private:
@@ -62,7 +62,7 @@ private:
   SDLViewer (const SDLViewer&);
   SDLViewer& operator= (const SDLViewer&);
 };
-
+
 #endif
 
 /* EOF */

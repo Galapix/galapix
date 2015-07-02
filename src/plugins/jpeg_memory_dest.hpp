@@ -23,9 +23,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <jpeglib.h>
-
+
 void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data);
-
+
 #endif
 
 /* EOF */

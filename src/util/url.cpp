@@ -29,7 +29,7 @@
 #include "network/curl.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
-
+
 URL::URL() :
   m_protocol(),
   m_payload(),
@@ -210,7 +210,7 @@ URL::is_remote() const
 {
   return m_protocol != "file";
 }
-
+
 std::ostream& operator<<(std::ostream& out, const URL& url)
 {
   return out << "URL(\"" << url.str() << "\")";
@@ -228,5 +228,5 @@ bool operator==(const URL& lhs, const URL& rhs)
           lhs.m_plugin   == rhs.m_plugin   &&
           lhs.m_plugin_payload == rhs.m_plugin_payload);
 }
-
+
 /* EOF */

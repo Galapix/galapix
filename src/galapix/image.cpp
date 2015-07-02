@@ -30,7 +30,7 @@
 #include "math/rgb.hpp"
 #include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
-
+
 Image::Image(const URL& url, TileProviderPtr provider) :
   m_url(url),
   m_provider(provider),
@@ -158,5 +158,5 @@ Image::on_leave_screen()
   WorkspaceItem::on_leave_screen();
   cache_cleanup();
 }
-
+
 /* EOF */

@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_TOOLS_ZOOM_TOOL_HPP
 
 #include "galapix/tool.hpp"
-
+
 class ZoomTool : public Tool
 {
 private:
@@ -39,7 +39,7 @@ public:
 
   bool is_active() const;
 };
-
+
 #endif
 
 /* EOF */

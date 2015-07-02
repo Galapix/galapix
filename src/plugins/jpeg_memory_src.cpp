@@ -19,14 +19,14 @@
 #include "plugins/jpeg_memory_src.hpp"
 
 #include <jerror.h>
-
+
 struct jpeg_memory_source_mgr {
   struct jpeg_source_mgr pub;   /* public fields */
 
   const uint8_t* data;
   int      len;
 };
-
+
 void jpeg_memory_init_source(j_decompress_ptr cinfo)
 {
   cinfo->src->next_input_byte = NULL;
@@ -70,7 +70,7 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
     (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
   }
 }
-
+
 void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
 {
   if (cinfo->src == NULL)
@@ -93,5 +93,5 @@ void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
   mgr->data = data;
   mgr->len  = len;
 }
-
+
 /* EOF */

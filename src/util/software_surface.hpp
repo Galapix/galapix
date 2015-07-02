@@ -24,14 +24,14 @@
 
 #include "math/vector2i.hpp"
 #include "util/blob.hpp"
-
+
 class RGB;
 class RGBA;
 class Rect;
 class Size;
 class SoftwareSurfaceImpl;
 class SoftwareSurface;
-
+
 typedef std::shared_ptr<SoftwareSurface> SoftwareSurfacePtr;
 
 class SoftwareSurface
@@ -103,7 +103,7 @@ public:
 private:
   std::unique_ptr<SoftwareSurfaceImpl> impl;
 };
-
+
 #endif
 
 /* EOF */

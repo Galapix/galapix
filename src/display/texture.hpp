@@ -28,9 +28,9 @@ class Size;
 class SoftwareSurface;
 class TextureImpl;
 class Texture;
-
+
 typedef std::shared_ptr<Texture> TexturePtr;
-
+
 class Texture
 {
 private:
@@ -47,7 +47,7 @@ public:
 private:
   std::unique_ptr<TextureImpl> impl;
 };
-
+
 #endif
 
 /* EOF */

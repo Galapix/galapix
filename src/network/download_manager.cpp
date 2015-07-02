@@ -266,7 +266,7 @@ DownloadManager::generate_transfer_handle()
 {
   return m_next_transfer_handle.fetch_add(1);
 }
-
+
 DownloadManager::TransferHandle
 DownloadManager::request_get(const std::string& url,
                              const std::function<void (const DownloadResult&)>& callback,
@@ -318,5 +318,5 @@ DownloadManager::request_post(const std::string& url,
 
   return uuid;
 }
-
+
 /* EOF */

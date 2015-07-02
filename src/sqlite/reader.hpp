@@ -23,7 +23,7 @@
 #include "util/blob.hpp"
 
 class SQLiteStatement;
-
+
 class SQLiteReader
 {
 private:
@@ -56,7 +56,7 @@ public:
 private:
   SQLiteReader& operator=(const SQLiteReader&);
 };
-
+
 #endif
 
 /* EOF */

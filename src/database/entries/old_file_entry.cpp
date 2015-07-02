@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "sqlite/reader.hpp"
-
+
 OldFileEntry
 OldFileEntry::from_reader(SQLiteReader& reader)
 {
@@ -34,7 +34,7 @@ OldFileEntry::from_reader(SQLiteReader& reader)
                              SHA1(reader.get_blob(6)),
                              reader.get_int(7)));
 }
-
+
 std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry)
 {
   return os << "OldFileEntry(\n"
@@ -48,5 +48,5 @@ std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry)
             << "  blob_size: " << entry.get_blob_entry().get_size() << '\n'
             << ")";
 }
-
+
 /* EOF */

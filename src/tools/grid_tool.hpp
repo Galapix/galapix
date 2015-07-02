@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_TOOLS_GRID_TOOL_HPP
 
 #include "galapix/tool.hpp"
-
+
 /** */
 class GridTool : public Tool
 {
@@ -43,7 +43,7 @@ private:
   GridTool (const GridTool&);
   GridTool& operator= (const GridTool&);
 };
-
+
 #endif
 
 /* EOF */

@@ -28,7 +28,7 @@
 typedef glm::vec2 Vector2f;
 
 #if 0
-
+
 /** Simple two dimensional vector. */
 class Vector2f
 {
@@ -141,6 +141,6 @@ public:
 #endif
 
 std::ostream& operator<<(std::ostream& s, const Vector2f& v);
-
+
 #endif
 

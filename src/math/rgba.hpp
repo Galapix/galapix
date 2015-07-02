@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_MATH_RGBA_HPP
 
 #include <stdint.h>
-
+
 class RGBA
 {
 public:
@@ -51,7 +51,7 @@ public:
             (static_cast<uint32_t>(a) << 24));
   }
 };
-
+
 #endif
 
 /* EOF */

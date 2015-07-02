@@ -26,7 +26,7 @@
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "util/software_surface_factory.hpp"
-
+
 SQLiteTileDatabase::SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files) :
   m_db(db),
   //m_files(files),

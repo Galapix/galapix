@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_TOOLS_RESIZE_TOOL_HPP
 
 #include "galapix/tool.hpp"
-
+
 class ResizeTool : public Tool
 {
 private:
@@ -40,7 +40,7 @@ public:
   void update(const Vector2i& pos, float delta);
 
 };
-
+
 #endif
 
 /* EOF */

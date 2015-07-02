@@ -43,7 +43,7 @@
 #include "util/software_surface_factory.hpp"
 
 std::string Filesystem::home_directory;
-
+
 std::string
 Filesystem::find_exe(const std::string& name)
 {
@@ -73,7 +73,7 @@ Filesystem::find_exe(const std::string& name)
     raise_runtime_error("Filesystem::find_exe(): Couldn't get PATH environment variable");
   }
 }
-
+
 bool
 Filesystem::exist(const std::string& pathname)
 {
@@ -516,5 +516,5 @@ Filesystem::remove(const std::string& filename)
     raise_runtime_error(str.str());
   }
 }
-
+
 /* EOF */

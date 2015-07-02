@@ -20,7 +20,7 @@
 
 #include <assert.h>
 #include <iostream>
-
+
 Thread::Thread() :
   m_state(kNothing),
   m_thread()
@@ -65,5 +65,5 @@ Thread::run_wrap()
     assert(false && "Thread::run_wrap(): Unknown exception, should never happen");
   }
 }
-
+
 /* EOF */

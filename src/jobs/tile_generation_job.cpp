@@ -25,7 +25,7 @@
 #include "util/software_surface_factory.hpp"
 #include "jobs/tile_generator.hpp"
 #include "database/entries/tile_entry.hpp"
-
+
 TileGenerationJob::TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db) :
   Job(JobHandle::create()),
   m_state_mutex(),
@@ -239,5 +239,5 @@ TileGenerationJob::run()
   }
 #endif
 }
-
+
 /* EOF */

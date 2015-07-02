@@ -21,7 +21,7 @@
 
 #include <sqlite3.h>
 #include <string>
-
+
 class SQLiteConnection
 {
 private:
@@ -46,7 +46,7 @@ private:
   SQLiteConnection(const SQLiteConnection&);
   SQLiteConnection& operator=(const SQLiteConnection&);
 };
-
+
 #endif
 
 /* EOF */

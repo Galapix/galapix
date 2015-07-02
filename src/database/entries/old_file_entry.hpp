@@ -27,7 +27,7 @@
 #include "math/math.hpp"
 #include "math/size.hpp"
 #include "util/url.hpp"
-
+
 class SQLiteReader;
 
 class OldFileEntry final
@@ -106,7 +106,7 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry);
-
+
 #endif
 
 /* EOF */

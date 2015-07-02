@@ -25,7 +25,7 @@
 class System;
 class Viewer;
 class Workspace;
-
+
 class GtkViewer
 {
 private:
@@ -78,7 +78,7 @@ private:
   GtkViewer (const GtkViewer&);
   GtkViewer& operator= (const GtkViewer&);
 };
-
+
 #endif
 
 /* EOF */

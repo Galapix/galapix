@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_UTIL_FILESYSTEM_HPP
 
 #include "util/url.hpp"
-
+
 class Filesystem
 {
 private:
@@ -62,7 +62,7 @@ public:
   static void init();
   static void deinit();
 };
-
+
 #endif
 
 /* EOF */

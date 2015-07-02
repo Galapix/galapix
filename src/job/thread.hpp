@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_JOB_THREAD_HPP
 
 #include <thread>
-
+
 class Thread
 {
 private:
@@ -47,7 +47,7 @@ private:
   Thread (const Thread&);
   Thread& operator= (const Thread&);
 };
-
+
 #endif
 
 /* EOF */

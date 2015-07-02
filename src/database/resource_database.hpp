@@ -45,7 +45,7 @@
 #include "resource/image_info.hpp"
 #include "resource/resource_info.hpp"
 #include "resource/url_info.hpp"
-
+
 class BlobInfoStore;
 class Database;
 class FileInfoGetByPath;
@@ -65,7 +65,7 @@ class ImageInfoGet;
 class ImageInfoStore;
 class ResourceInfoGet;
 class ResourceInfoStore;
-
+
 /** The ResourceDatabase keeps a record of all files that have been
     viewed. It keeps information on the last modification time and
     filesize to detect a need to regenerate the tiles and also handles
@@ -160,7 +160,7 @@ private:
   ResourceDatabase (const ResourceDatabase&);
   ResourceDatabase& operator= (const ResourceDatabase&);
 };
-
+
 #endif
 
 /* EOF */

@@ -24,7 +24,7 @@
 #include <string.h>
 
 #include "util/raise_exception.hpp"
-
+
 Blob::Blob(std::vector<uint8_t> data) :
   m_data(std::move(data))
 {
@@ -66,7 +66,7 @@ Blob::write_to_file(const std::string& filename)
   out.write(reinterpret_cast<const char*>(m_data.data()), static_cast<std::streamsize>(m_data.size()));
 }
 
-
+
 BlobPtr
 Blob::create(int len)
 {
@@ -107,5 +107,5 @@ Blob::copy(std::vector<uint8_t> data)
 {
   return BlobPtr(new Blob(std::move(data)));
 }
-
+
 /* EOF */

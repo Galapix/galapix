@@ -23,7 +23,7 @@
 
 #include "galapix/image.hpp"
 #include "galapix/tool.hpp"
-
+
 class MoveTool : public Tool
 {
 private:
@@ -48,7 +48,7 @@ private:
   MoveTool (const MoveTool&);
   MoveTool& operator= (const MoveTool&);
 };
-
+
 #endif
 
 /* EOF */

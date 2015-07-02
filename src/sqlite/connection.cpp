@@ -22,14 +22,14 @@
 #include <unistd.h>
 
 #include "sqlite/error.hpp"
-
+
 static int busy_callback(void* , int)
 {
   // FIXME: Is this a good idea?
   usleep(1000*10);
   return 1;
 }
-
+
 SQLiteConnection::SQLiteConnection(const std::string& filename) :
   db(nullptr)
 {
@@ -86,5 +86,5 @@ SQLiteConnection::get_error_msg()
 {
   return sqlite3_errmsg(db);
 }
-
+
 /* EOF */

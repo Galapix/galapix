@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "util/blob.hpp"
-
+
 class Tar
 {
 public:
@@ -34,7 +34,7 @@ public:
       target_directory must exist prior to calling this function */
   static void extract(const std::string& archive, const std::string& target_directory);
 };
-
+
 #endif
 
 /* EOF */

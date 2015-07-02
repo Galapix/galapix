@@ -21,7 +21,7 @@
 #include <logmich/log.hpp>
 
 #include "util/blob.hpp"
-
+
 namespace {
 
 void
@@ -56,7 +56,7 @@ collect_files(const boost::filesystem::path& path,
 }
 
 } // namespace
-
+
 DirectoryExtraction::DirectoryExtraction(const std::string& path,
                                          const std::string& type) :
   m_path(path),

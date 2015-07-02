@@ -23,7 +23,7 @@
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 #include "math/rgb.hpp"
-
+
 ZoomRectTool::ZoomRectTool(Viewer* viewer_)
   : Tool(viewer_),
     mouse_pos(),
@@ -71,5 +71,5 @@ ZoomRectTool::draw()
     Framebuffer::draw_rect(rect, RGB(255, 255, 255));
   }
 }
-
+
 /* EOF */

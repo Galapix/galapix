@@ -22,7 +22,7 @@
 #include "database/sqlite_tile_database.hpp"
 #include "database/cached_tile_database.hpp"
 #include "util/filesystem.hpp"
-
+
 Database::Database(const std::string& prefix) :
   m_db(),
   m_tile_db(),
@@ -66,5 +66,5 @@ Database::cleanup()
 {
   m_db->vacuum();
 }
-
+
 /* EOF */

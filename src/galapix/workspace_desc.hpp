@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_GALAPIX_WORKSPACE_DESC_HPP
 
 #include <string>
-
+
 class ImageDesc
 {
 public:
@@ -36,7 +36,7 @@ public:
 
   void add_image(const std::string& filename);
 };
-
+
 #endif
 
 /* EOF */

@@ -32,9 +32,9 @@
 #include "resource/file_info.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/url_info.hpp"
-
+
 DatabaseThread* DatabaseThread::current_ = 0;
-
+
 DatabaseThread::DatabaseThread(Database& database,
                                JobManager& tile_job_manager) :
   m_database(database),
@@ -73,7 +73,7 @@ DatabaseThread::abort_thread()
   m_request_queue.wakeup();
   m_receive_queue.wakeup();
 }
-
+
 void
 DatabaseThread::request_image_info(const ResourceInfo& resource,
                                    const std::function<void (const boost::optional<ImageInfo>&)>& callback)
@@ -342,7 +342,7 @@ DatabaseThread::request_resource_entry(const RowId& blob_id,
       callback(m_database.get_resources().get_resource_entry(blob_id));
     });
 }
-
+
 void
 DatabaseThread::run()
 {
@@ -513,5 +513,5 @@ DatabaseThread::receive_file(const OldFileEntry& file_entry)
                                               file_entry.get_handler());
     });
 }
-
+
 /* EOF */

@@ -25,7 +25,7 @@
 
 class URL;
 class Size;
-
+
 class Imagemagick
 {
 public:
@@ -34,7 +34,7 @@ public:
   static SoftwareSurfacePtr load_from_mem(const void* data, size_t len);
   static std::vector<std::string> get_supported_extensions();
 };
-
+
 #endif
 
 /* EOF */

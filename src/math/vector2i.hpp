@@ -21,7 +21,7 @@
 #include <glm/glm.hpp>
 
 #include "math/vector2f.hpp"
-
+
 typedef glm::ivec2 Vector2i;
 
 #if 0
@@ -90,9 +90,9 @@ public:
 };
 
 #endif
-
+
 std::ostream& operator<<(std::ostream& s, const Vector2i& v);
-
+
 #endif
 
 /* EOF */

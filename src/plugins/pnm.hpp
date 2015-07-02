@@ -20,13 +20,13 @@
 #define HEADER_GALAPIX_PLUGINS_PNM_HPP
 
 #include "util/software_surface.hpp"
-
+
 class PNM
 {
 public:
   static SoftwareSurfacePtr load_from_mem(const char* data, size_t len);
 };
-
+
 #endif
 
 /* EOF */

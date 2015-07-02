@@ -18,7 +18,7 @@
 
 #include "math/rect.hpp"
 #include "galapix/selection.hpp"
-
+
 Selection::Selection() :
   m_images()
 {
@@ -161,5 +161,5 @@ Selection::get_bounding_rect() const
     return rect;
   }
 }
-
+
 /* EOF */

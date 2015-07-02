@@ -23,7 +23,7 @@
 #include "math/rgba.hpp"
 #include "math/rect.hpp"
 #include "util/file_reader_impl.hpp"
-
+
 class SExprFileReaderImpl: public FileReaderImpl
 {
 public:
@@ -250,5 +250,5 @@ SExprFileReader::SExprFileReader(std::shared_ptr<lisp::Lisp> lisp)
   : FileReader(std::shared_ptr<FileReaderImpl>(new SExprFileReaderImpl(lisp)))
 {
 }
-
+
 /* EOF */

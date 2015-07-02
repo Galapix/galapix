@@ -21,7 +21,7 @@
 
 #include <string>
 #include <stdexcept>
-
+
 class SQLiteError : public std::exception
 {
 private:
@@ -33,7 +33,7 @@ public:
 
   const char* what() const throw () { return err.c_str(); }
 };
-
+
 #endif
 
 /* EOF */

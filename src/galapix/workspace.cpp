@@ -30,7 +30,7 @@
 #include "server/database_thread.hpp"
 #include "util/file_reader.hpp"
 #include "util/string_util.hpp"
-
+
 Workspace::Workspace() :
   m_images(),
   m_selection(Selection::create()),
@@ -428,5 +428,5 @@ Workspace::get_bounding_rect() const
     return rect;
   }
 }
-
+
 /* EOF */

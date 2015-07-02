@@ -45,7 +45,7 @@
 #include "tools/zoom_tool.hpp"
 #include "util/filesystem.hpp"
 #include "util/software_surface.hpp"
-
+
 Viewer* Viewer::current_ = 0;
 
 Viewer::Viewer(System& system, Workspace* workspace_) :
@@ -692,5 +692,5 @@ Viewer::print_state()
 {
   log_info("%1% %1%", m_state.get_offset(), m_state.get_scale());
 }
-
+
 /* EOF */

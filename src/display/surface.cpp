@@ -194,7 +194,7 @@ public:
     draw(Rectf(pos, size));
   }
 };
-
+
 SurfacePtr
 Surface::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
 {
@@ -206,7 +206,7 @@ Surface::create(const SoftwareSurfacePtr& src)
 {
   return SurfacePtr(new Surface(src));
 }
-
+
 Surface::Surface(const SoftwareSurfacePtr& src) :
   impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src->get_size())))
 {

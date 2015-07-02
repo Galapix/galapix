@@ -24,7 +24,7 @@
 #include <logmich/log.hpp>
 
 #include "util/raise_exception.hpp"
-
+
 struct PNGReadMemory
 {
   const png_byte* data;
@@ -395,5 +395,5 @@ PNG::save(const SoftwareSurfacePtr& surface)
   return Blob::copy(mem.data);
 }
 
-
+
 /* EOF */

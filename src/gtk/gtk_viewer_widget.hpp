@@ -24,7 +24,7 @@
 #include <gtkmm/gl/widget.h>
 
 class Viewer;
-
+
 class GtkViewerWidget
   : public Gtk::DrawingArea,
     public Gtk::GL::Widget<GtkViewerWidget>
@@ -53,7 +53,7 @@ private:
   GtkViewerWidget (const GtkViewerWidget&);
   GtkViewerWidget& operator= (const GtkViewerWidget&);
 };
-
+
 #endif
 
 /* EOF */

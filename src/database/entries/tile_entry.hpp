@@ -22,7 +22,7 @@
 #include "math/vector2i.hpp"
 #include "util/software_surface.hpp"
 #include "database/entries/old_file_entry.hpp"
-
+
 class TileEntry
 {
 public:
@@ -86,7 +86,7 @@ public:
     return static_cast<bool>(m_image_id);
   }
 };
-
+
 #endif
 
 /* EOF */

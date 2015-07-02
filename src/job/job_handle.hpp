@@ -21,9 +21,9 @@
 
 #include <memory>
 #include <iosfwd>
-
+
 class JobHandleImpl;
-
+
 /** A JobHandle should be returend whenever one thread makes a request
     to another thread, the JobHandle allows the calling thread to
     cancel the job and the called thread to inform the calling one
@@ -59,7 +59,7 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
-
+
 #endif
 
 /* EOF */

@@ -24,7 +24,7 @@
 #include "database/memory_tile_database.hpp"
 #include "database/resource_database.hpp"
 #include "database/tile_database_interface.hpp"
-
+
 /** */
 class Database
 {
@@ -49,7 +49,7 @@ private:
   Database (const Database&);
   Database& operator= (const Database&);
 };
-
+
 #endif
 
 /* EOF */

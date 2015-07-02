@@ -77,7 +77,7 @@ DownloadTransfer::~DownloadTransfer()
   }
   curl_easy_cleanup(handle);
 }
-
+
 size_t
 DownloadTransfer::write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata)
 {

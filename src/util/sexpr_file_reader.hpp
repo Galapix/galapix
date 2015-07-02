@@ -21,13 +21,13 @@
 
 #include "util/file_reader.hpp"
 #include "lisp/lisp.hpp"
-
+
 class SExprFileReader : public FileReader
 {
 public:
   SExprFileReader(std::shared_ptr<lisp::Lisp> lisp);
 };
-
+
 #endif
 
 /* EOF */

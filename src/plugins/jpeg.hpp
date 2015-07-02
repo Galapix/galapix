@@ -24,7 +24,7 @@
 #include <functional>
 
 #include "util/software_surface.hpp"
-
+
 class JPEG
 {
 private:
@@ -58,7 +58,7 @@ public:
   static void save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename);
   static BlobPtr save(const SoftwareSurfacePtr& surface, int quality);
 };
-
+
 #endif
 
 /* EOF */

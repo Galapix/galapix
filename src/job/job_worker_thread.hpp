@@ -25,9 +25,9 @@
 #include "job/thread_message_queue2.hpp"
 #include "job/thread.hpp"
 #include "job/job_handle.hpp"
-
+
 class Job;
-
+
 class JobWorkerThread : public Thread
 {
 private:
@@ -66,7 +66,7 @@ private:
 };
 
 typedef std::shared_ptr<JobWorkerThread> JobWorkerThreadPtr;
-
+
 #endif
 
 /* EOF */

@@ -124,7 +124,7 @@ SHA1::from_string(const std::string& str)
     return SHA1(data);
   }
 }
-
+
 SHA1::SHA1() :
   m_data()
 {
@@ -176,7 +176,7 @@ SHA1::str() const
     out << std::setfill('0') << std::setw(2) << std::hex << int(m_data[i]);
   return out.str();
 }
-
+
 std::ostream& operator<<(std::ostream& os, const SHA1& sha1)
 {
   return os << sha1.str();

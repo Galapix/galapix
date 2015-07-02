@@ -26,7 +26,7 @@
 #include <logmich/log.hpp>
 
 #include "util/select.hpp"
-
+
 SpaceNavigator::SpaceNavigator() :
   m_quit{true},
   m_thread{},
@@ -125,5 +125,5 @@ SpaceNavigator::stop_thread()
 
   m_thread.join();
 }
-
+
 /* EOF */

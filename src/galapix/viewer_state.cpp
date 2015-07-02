@@ -22,7 +22,7 @@
 #include <glm/ext.hpp>
 
 #include "display/framebuffer.hpp"
-
+
 ViewerState::ViewerState() :
   scale{1.0f},
   angle{0.0f},
@@ -122,5 +122,5 @@ ViewerState::zoom_to(const Size& display_, const Rectf& rect)
     offset.y = -rect.top  * scale;
   }
 }
-
+
 /* EOF */

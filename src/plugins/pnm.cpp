@@ -24,7 +24,7 @@
 #include "plugins/pnm_mem_reader.hpp"
 #include "math/size.hpp"
 #include "util/raise_exception.hpp"
-
+
 SoftwareSurfacePtr
 PNM::load_from_mem(const char* data, size_t len)
 {
@@ -73,5 +73,5 @@ PNM::load_from_mem(const char* data, size_t len)
 
   return surface;
 }
-
+
 /* EOF */

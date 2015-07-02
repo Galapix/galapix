@@ -24,7 +24,7 @@
 #include <functional>
 #include <mutex>
 #include <queue>
-
+
 template<typename Data>
 class ThreadMessageQueue2
 {
@@ -184,7 +184,7 @@ private:
   ThreadMessageQueue2 (const ThreadMessageQueue2&);
   ThreadMessageQueue2& operator= (const ThreadMessageQueue2&);
 };
-
+
 #endif
 
 /* EOF */

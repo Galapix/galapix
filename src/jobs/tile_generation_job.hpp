@@ -28,7 +28,7 @@
 #include "job/job.hpp"
 #include "math/vector2i.hpp"
 #include "util/software_surface_factory.hpp"
-
+
 class TileGenerationJob : public Job
 {
 private:
@@ -101,7 +101,7 @@ public:
 private:
   void process_tile(const Tile& tile);
 };
-
+
 #endif
 
 /* EOF */

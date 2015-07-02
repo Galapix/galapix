@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_TOOLS_ROTATE_TOOL_HPP
 
 #include "galapix/tool.hpp"
-
+
 class RotateTool : public Tool
 {
 private:
@@ -38,7 +38,7 @@ public:
   void draw() {}
   void update(const Vector2i& pos, float delta);
 };
-
+
 #endif
 
 /* EOF */

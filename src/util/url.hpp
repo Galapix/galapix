@@ -22,7 +22,7 @@
 #include <string>
 
 #include "util/blob.hpp"
-
+
 /** Use Cases:
     - normal system filename
     - filename inside an archive file
@@ -79,7 +79,7 @@ public:
 std::ostream& operator<<(std::ostream& out, const URL& url);
 bool operator<(const URL& lhs, const URL& rhs);
 bool operator==(const URL& lhs, const URL& rhs);
-
+
 #endif
 
 /* EOF */

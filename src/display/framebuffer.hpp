@@ -63,7 +63,7 @@ public:
   static SoftwareSurfacePtr screenshot();
   static void apply_gamma_ramp(float contrast, float brightness, float gamma);
 };
-
+
 #endif
 
 /* EOF */

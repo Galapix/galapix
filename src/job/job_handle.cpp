@@ -21,7 +21,7 @@
 #include <ostream>
 
 #include "job/job_handle.hpp"
-
+
 class JobHandleImpl
 {
 public:
@@ -40,7 +40,7 @@ public:
   std::mutex     mutex;
   std::condition_variable cond;
 };
-
+
 JobHandle
 JobHandle::create()
 {
@@ -115,5 +115,5 @@ std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle)
             << ", aborted=" << job_handle.is_aborted()
             << ", done=" << job_handle.is_finished() << ")";
 }
-
+
 /* EOF */

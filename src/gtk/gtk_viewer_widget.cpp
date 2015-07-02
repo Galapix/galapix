@@ -23,7 +23,7 @@
 #include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
 #include "util/raise_exception.hpp"
-
+
 GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   : viewer(viewer_),
     mouse_pos()
@@ -229,5 +229,5 @@ GtkViewerWidget::key_release(GdkEventKey* ev)
   // ev->hardware_keycode
   return true;
 }
-
+
 /* EOF */

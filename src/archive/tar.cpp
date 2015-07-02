@@ -22,7 +22,7 @@
 
 #include "util/exec.hpp"
 #include "util/raise_exception.hpp"
-
+
 std::vector<std::string>
 Tar::get_filenames(const std::string& tar_filename)
 {
@@ -79,5 +79,5 @@ Tar::extract(const std::string& archive, const std::string& target_directory)
     raise_runtime_error(tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));
   }
 }
-
+
 /* EOF */

@@ -33,12 +33,12 @@
 #include "database/statements/tile_entry_store.hpp"
 #include "database/tables/tile_table.hpp"
 #include "galapix/tile.hpp"
-
+
 class Database;
 class ResourceDatabase;
 class FileEntry;
 class TileEntry;
-
+
 class SQLiteTileDatabase : public TileDatabaseInterface
 {
 private:
@@ -71,7 +71,7 @@ private:
   SQLiteTileDatabase (const SQLiteTileDatabase&) = delete;
   SQLiteTileDatabase& operator= (const SQLiteTileDatabase&) = delete;
 };
-
+
 #endif
 
 /* EOF */

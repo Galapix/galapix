@@ -24,7 +24,7 @@
 #include <boost/optional.hpp>
 
 #include "util/blob.hpp"
-
+
 /** The Exec class allows to call external applications in a
     conventient vasion. */
 class Exec
@@ -93,7 +93,7 @@ private:
   Exec (const Exec&);
   Exec& operator= (const Exec&);
 };
-
+
 #endif
 
 /* EOF */

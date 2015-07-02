@@ -23,7 +23,7 @@
 #include <string>
 
 #include "util/blob.hpp"
-
+
 class Rar
 {
 public:
@@ -31,7 +31,7 @@ public:
   static BlobPtr get_file(const std::string& rar_filename, const std::string& filename);
   static void extract(const std::string& archive, const std::string& target_directory);
 };
-
+
 #endif
 
 /* EOF */

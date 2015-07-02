@@ -20,9 +20,9 @@
 #define HEADER_GALAPIX_TOOLS_PAN_TOOL_HPP
 
 #include "galapix/tool.hpp"
-
+
 class Viewer;
-
+
 class PanTool : public Tool
 {
 private:
@@ -45,7 +45,7 @@ public:
   bool get_trackball_mode() const;
   void set_trackball_mode(bool mode);
 };
-
+
 #endif
 
 /* EOF */

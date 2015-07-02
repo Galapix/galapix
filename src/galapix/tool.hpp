@@ -22,7 +22,7 @@
 #include "math/vector2f.hpp"
 
 class Viewer;
-
+
 class Tool
 {
 protected:
@@ -42,7 +42,7 @@ private:
   Tool (const Tool&);
   Tool& operator= (const Tool&);
 };
-
+
 #endif
 
 /* EOF */

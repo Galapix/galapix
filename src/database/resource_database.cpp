@@ -35,7 +35,7 @@
 #include "util/filesystem.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
-
+
 ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_db(db),
 
@@ -214,5 +214,5 @@ ResourceDatabase::delete_old_file_entry(const RowId& file_id)
 {
   //m_file_entry_delete(file_id);
 }
-
+
 /* EOF */

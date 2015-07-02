@@ -19,7 +19,7 @@
 #include "tools/pan_tool.hpp"
 
 #include "galapix/viewer.hpp"
-
+
 PanTool::PanTool(Viewer* viewer_)
   : Tool(viewer_),
     trackball_mode(false),
@@ -74,5 +74,5 @@ PanTool::set_trackball_mode(bool mode)
 {
   trackball_mode = mode;
 }
-
+
 /* EOF */

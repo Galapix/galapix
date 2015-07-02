@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_TOOLS_ZOOM_RECT_TOOL_HPP
 
 #include "galapix/tool.hpp"
-
+
 /** */
 class ZoomRectTool : public Tool
 {
@@ -43,7 +43,7 @@ private:
   ZoomRectTool (const ZoomRectTool&);
   ZoomRectTool& operator= (const ZoomRectTool&);
 };
-
+
 #endif
 
 /* EOF */

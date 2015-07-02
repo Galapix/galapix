@@ -23,7 +23,7 @@
 #include "sqlite/error.hpp"
 #include "sqlite/statement.hpp"
 #include "util/raise_exception.hpp"
-
+
 SQLiteReader::SQLiteReader(SQLiteConnection& db, SQLiteStatement& stmt) :
   m_db(db),
   m_stmt(stmt)
@@ -124,5 +124,5 @@ SQLiteReader::get_column_count()
 {
   return sqlite3_column_count(m_stmt.get_stmt());
 }
-
+
 /* EOF */

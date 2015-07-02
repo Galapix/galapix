@@ -22,7 +22,7 @@
 #include <thread>
 
 class Viewer;
-
+
 class SpaceNavigator
 {
 private:
@@ -44,7 +44,7 @@ private:
   SpaceNavigator (const SpaceNavigator&);
   SpaceNavigator& operator= (const SpaceNavigator&);
 };
-
+
 #endif
 
 /* EOF */

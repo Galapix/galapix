@@ -30,7 +30,7 @@
 #include "job/thread.hpp"
 #include "job/thread_message_queue2.hpp"
 #include "util/failable.hpp"
-
+
 class BlobInfo;
 class Database;
 class DatabaseMessage;
@@ -43,7 +43,7 @@ class TileDatabaseMessage;
 class TileGenerationJob;
 class URL;
 class URLInfo;
-
+
 class DatabaseThread : public Thread
 {
 private:
@@ -156,7 +156,7 @@ private:
   DatabaseThread (const DatabaseThread&);
   DatabaseThread& operator= (const DatabaseThread&);
 };
-
+
 #endif
 
 /* EOF */

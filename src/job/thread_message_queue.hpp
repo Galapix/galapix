@@ -23,7 +23,7 @@
 #include <queue>
 #include <condition_variable>
 #include <mutex>
-
+
 template<class C>
 class ThreadMessageQueue
 {
@@ -110,7 +110,7 @@ private:
   ThreadMessageQueue (const ThreadMessageQueue&);
   ThreadMessageQueue& operator= (const ThreadMessageQueue&);
 };
-
+
 #endif
 
 /* EOF */

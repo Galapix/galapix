@@ -24,7 +24,7 @@
 
 #include "util/url.hpp"
 #include "math/size.hpp"
-
+
 class Options;
 class System;
 
@@ -45,7 +45,7 @@ public:
   void info(const Options& opts);
   void export_images(const std::string& database, const std::vector<URL>& urls);
 };
-
+
 #endif
 
 /* EOF */

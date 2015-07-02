@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "job/job.hpp"
-
+
 JobWorkerThread::JobWorkerThread()
   : m_queue(),
     m_quit(false),
@@ -104,5 +104,5 @@ JobWorkerThread::request(std::shared_ptr<Job> job, const std::function<void (std
 
   return handle;
 }
-
+
 /* EOF */
