@@ -7,7 +7,7 @@ class DatabaseTest : public testing::Test
 {
 protected:
   DatabaseTest() :
-    m_db("/tmp/database_test")
+    m_db(Database::create("/tmp/database_test"))
   {}
 
   Database m_db;

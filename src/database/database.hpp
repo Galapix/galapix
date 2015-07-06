@@ -35,7 +35,13 @@ private:
   std::unique_ptr<TileDatabaseInterface> m_tiles;
 
 public:
-  Database(const std::string& prefix);
+  static Database create(const std::string& prefix);
+
+public:
+  Database(std::unique_ptr<SQLiteConnection>&& db,
+           std::unique_ptr<SQLiteConnection>&& tile_db,
+           std::unique_ptr<ResourceDatabase>&& resources,
+           std::unique_ptr<TileDatabaseInterface>&& tiles);
   ~Database();
 
   ResourceDatabase& get_resources() { return *m_resources; }
@@ -45,9 +51,12 @@ public:
 
   void cleanup();
 
+public:
+  Database(Database&&) = default;
+
 private:
-  Database (const Database&);
-  Database& operator= (const Database&);
+  Database(const Database&) = delete;
+  Database& operator=(const Database&) = delete;
 };
 
 #endif

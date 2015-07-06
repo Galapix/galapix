@@ -28,7 +28,7 @@
 ViewerCommand::ViewerCommand(System& system, const Options& opts) :
   m_system(system),
   m_opts(opts),
-  m_database(opts.database),
+  m_database(Database::create(opts.database)),
   m_job_manager(opts.threads),
   m_database_thread(m_database, m_job_manager),
   m_patterns(opts.patterns)

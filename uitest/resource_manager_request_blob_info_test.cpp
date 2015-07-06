@@ -36,7 +36,7 @@ UITEST(ResourceManager, request_blob, "ARG...",
 {
   logmich::set_log_level(logmich::kDebug);
 
-  Database db("/tmp/resource_manager_test");
+  Database db = Database::create("/tmp/resource_manager_test");
   JobManager job_manager(4);
 
   job_manager.start_thread();

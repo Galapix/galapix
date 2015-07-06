@@ -22,7 +22,7 @@
 #include "job/job_handle_group.hpp"
 
 ThumbnailGenerator::ThumbnailGenerator(const Options& opts) :
-  m_database(opts.database),
+  m_database(Database::create(opts.database)),
   m_job_manager(opts.threads),
   m_database_thread(m_database, m_job_manager)
 {

@@ -123,7 +123,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 void
 Galapix::cleanup(const std::string& database)
 {
-  Database db(database);
+  Database db = Database::create(database);
   std::cout << "Running database cleanup routines, this process can take multiple minutes." << std::endl;
   std::cout << "You can interrupt it via Ctrl-c, which won't do harm, but will throw away all the cleanup work done till that point" << std::endl;
   db.cleanup();
@@ -133,7 +133,7 @@ Galapix::cleanup(const std::string& database)
 void
 Galapix::info(const Options& opts)
 {
-  Database db(opts.database);
+  Database db = Database::create(opts.database);
   JobManager job_manager(4);
 
   job_manager.start_thread();
@@ -207,7 +207,7 @@ Galapix::info(const Options& opts)
 void
 Galapix::list(const Options& opts)
 {
-  Database db(opts.database);
+  Database db = Database::create(opts.database);
 
   std::vector<OldFileEntry> entries;
   if (opts.patterns.empty())
