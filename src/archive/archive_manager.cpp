@@ -25,6 +25,7 @@
 
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
+#include "util/string_util.hpp"
 
 #include "archive/directory_extraction.hpp"
 #include "archive/incremental_extraction.hpp"
@@ -33,16 +34,6 @@
 #include "archive/tar_archive_loader.hpp"
 #include "archive/zip_archive_loader.hpp"
 #include "util/filesystem.hpp"
-
-namespace {
-bool has_prefix(const std::string& lhs, const std::string& rhs)
-{
-  if (lhs.length() < rhs.length())
-    return false;
-  else
-    return lhs.compare(0, rhs.length(), rhs) == 0;
-}
-} // namespace
 
 ArchiveManager::ArchiveManager() :
   ArchiveManager(boost::filesystem::temp_directory_path().string())
@@ -140,7 +131,7 @@ ArchiveManager::find_loader_by_magic(const std::string& filename) const
   // search for a loader that can handle the magic
   for(const auto& it: m_loader_by_magic)
   {
-    if (has_prefix(start_of_file, it.first))
+    if (StringUtil::has_prefix(start_of_file, it.first))
     {
       return it.second;
     }

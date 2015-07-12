@@ -32,6 +32,19 @@ StringUtil::has_suffix(const std::string& data, const std::string& suffix)
 }
 
 bool
+StringUtil::has_prefix(const std::string& lhs, const std::string& rhs)
+{
+  if (lhs.length() < rhs.length())
+  {
+    return false;
+  }
+  else
+  {
+    return lhs.compare(0, rhs.length(), rhs) == 0;
+  }
+}
+
+bool
 StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
 {
   std::string::size_type i = 0;
@@ -51,7 +64,7 @@ StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
 
       if (li == ri)
       {
-        // end is at the same point in both strings, so do a detaile
+        // end is at the same point in both strings, so do a detail
         // comparism of the numbers
         for(std::string::size_type j = i; j < li; ++j)
         {
@@ -68,6 +81,7 @@ StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
       {
         // numbers have different numbers of digits, so the number
         // with the least digits wins
+        // FIXME: this doesn't deal with leading zero, i.e. "01" > "2"
         return li < ri;
       }
     }

@@ -23,6 +23,7 @@ class StringUtil
 {
 public:
   static bool has_suffix(const std::string& data, const std::string& suffix);
+  static bool has_prefix(const std::string& lhs, const std::string& rhs);
 
   /** Compare two strings according to their numeric value, similar to
       what 'sort -n' does. */
