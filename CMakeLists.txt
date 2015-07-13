@@ -90,9 +90,6 @@ else()
   find_package(GLEW REQUIRED)
 endif()
 
-set(PROFILE_CXXFLAGS "-std=c++1y -O2 -g3 -pg")
-set(PROFILE_LINKFLAGS "-pg")
-
 if(BUILD_GALAPIX_SDL)
   pkg_search_module(SDL2 REQUIRED sdl2)
 
