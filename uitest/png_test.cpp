@@ -24,7 +24,7 @@
 UITEST(PNG, test, "FILE...",
        "Load .png")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     //PNG::get_size(args[i]);
     PNG::load_from_file(arg);

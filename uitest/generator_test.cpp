@@ -119,7 +119,7 @@ UITEST(Generator, test, "FILE...")
   Generator   generator(blob_mgr, archive_mgr);
 
   int count = 0;
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     ResourceLocator locator = ResourceLocator::from_string(arg);
     std::cout << "requesting: " << locator.str() << std::endl;

@@ -26,7 +26,7 @@ UITEST(Exec, test, "PROGRAM [ARGUMENT]...")
   Exec prgn(args[0]);
   std::string stdin_data = "-- Stdin Test Data --\n";
   prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
-  for(const auto& arg : args) // FIXME: wrong, should use rest
+  for(const auto& arg : rest)
     prgn.arg(arg);
   std::cout << "ExitCode: " << prgn.exec() << std::endl;
 

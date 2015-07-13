@@ -5,7 +5,7 @@
 
 UITEST(ResourceURL, test, "URL...")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     ResourceURL url = ResourceURL::from_string(arg);
     std::cout << "scheme    : '" << url.get_scheme() << "'\n";

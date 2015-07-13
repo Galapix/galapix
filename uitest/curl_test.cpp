@@ -35,7 +35,7 @@ UITEST(CURL, test, "URL...",
       }
     */
 
-    for(const auto& arg : args)
+    for(const auto& arg : rest)
     {
       std::cout << "Trying to get: " << arg << std::endl;
       std::string mime_type;

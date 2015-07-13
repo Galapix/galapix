@@ -29,7 +29,7 @@ UITEST(Archive, thread, "ARCHIVENAME...",
 
   ArchiveThread m_archive("/tmp/foobar");
 
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     std::cout << "requesting: " << arg << std::endl;
     m_archive.request_extraction

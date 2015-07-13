@@ -25,7 +25,7 @@
 
 UITEST(Extraction, test, "FILE...")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     ZipArchiveLoader loader;
     IncrementalExtraction extraction(loader, arg);

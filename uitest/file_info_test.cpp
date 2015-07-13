@@ -23,7 +23,7 @@
 
 UITEST(FileInfo, test, "FILE...")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     FileInfo info = FileInfo::from_file(arg);
     std::cout << info.get_mtime() << " " << info.get_sha1().str() << " " << arg << std::endl;

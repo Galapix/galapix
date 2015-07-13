@@ -50,7 +50,7 @@ UITEST(ResourceManager, request_resource_info, "FILENAME...")
   ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
 
   int count = 0;
-  //for(const auto& arg : args)
+  //for(const auto& arg : rest)
   {
 #if 0
     ResourceLocator locator = ResourceLocator::from_string(arg);

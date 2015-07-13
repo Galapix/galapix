@@ -25,7 +25,7 @@
 UITEST(DirectoryExtraction, test, "FILE...",
        "List content of directory")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     DirectoryExtraction extraction(arg, "directory");
 

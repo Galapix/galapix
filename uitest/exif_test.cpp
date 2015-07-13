@@ -46,7 +46,7 @@ get_orientation (ExifData *exif_data)
 
 UITEST(Exif, test, "FILE...")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     ExifData* ed = exif_data_new_from_file(arg.c_str());
 

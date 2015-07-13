@@ -30,7 +30,7 @@ UITEST(DownloadManager, post, "URL...",
   logmich::set_log_level(logmich::kDebug);
   DownloadManager downloader;
 
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     std::cout << "sending request: " << arg << std::endl;
     downloader.request_post(arg,

@@ -24,7 +24,7 @@
 
 UITEST(Filesystem, test, "FILE...")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     std::string extension = Filesystem::get_extension(arg);
     std::cout << "'" << extension << "' - " << arg << std::endl;
@@ -34,7 +34,7 @@ UITEST(Filesystem, test, "FILE...")
 UITEST(Filesystem, get_magic, "FILE...",
        "Filesystem::get_magic()")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     std::string magic = Filesystem::get_magic(arg);
     std::cout << arg << ": { ";

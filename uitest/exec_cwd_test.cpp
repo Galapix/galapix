@@ -29,8 +29,8 @@ UITEST(Exec, cwd, "WORKINGDIR PROGRAM [ARGUMENTS]...")
 
   std::string stdin_data = "-- Stdin Test Data --\n";
   prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
-  for(size_t i = 2; i < args.size(); ++i)
-    prgn.arg(args[i]);
+  for(auto const& arg : rest)
+    prgn.arg(arg);
   std::cout << "ExitCode: " << prgn.exec() << std::endl;
 
   std::cout << "### STDOUT BEGIN" << std::endl;

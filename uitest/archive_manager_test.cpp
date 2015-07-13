@@ -21,12 +21,12 @@
 
 #include "archive/archive_manager.hpp"
 
-UITEST(ArchiveManager, is_archive, "ARCHIVENAME",
+UITEST(ArchiveManager, is_archive, "ARCHIVENAME...",
        "Check if the given filename is an archive or not")
 {
   ArchiveManager archiver;
 
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     std::cout << "filename: " << arg << std::endl;
     std::cout << "is_archive(): " << archiver.is_archive(arg) << std::endl;
@@ -39,7 +39,7 @@ UITEST(ArchiveManager, list, "ARCHIVENAME...",
 {
   ArchiveManager archiver;
 
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     std::cout << "filename: " << arg << std::endl;
 

@@ -25,13 +25,13 @@
 
 UITEST(XCF, test, "FILE...")
 {
-  for(size_t i = 0; i < args.size(); ++i)
+  for(size_t i = 0; i < rest.size(); ++i)
   {
-    SoftwareSurfacePtr surface = XCF::load_from_file(args[i]);
+    SoftwareSurfacePtr surface = XCF::load_from_file(rest[i]);
     std::ostringstream output_filename;
     output_filename << "/tmp/xcf_test" << i << ".png";
     PNG::save(surface, output_filename.str());
-    std::cout << args[i] << " -> " << output_filename.str() << std::endl;
+    std::cout << rest[i] << " -> " << output_filename.str() << std::endl;
   }
 }
 

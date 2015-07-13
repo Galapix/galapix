@@ -24,7 +24,7 @@
 
 UITEST(JPEG, get_size, "FILE...")
 {
-  for(const auto& arg : args)
+  for(const auto& arg : rest)
   {
     try
     {
