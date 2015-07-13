@@ -302,6 +302,12 @@ if(BUILD_TESTS)
       # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
     endforeach()
   endif()
+
+  # add 'make test' target, use 'make test ARGS="-V"' or 'ctest -V' for verbose
+  enable_testing()
+  add_test(NAME test_galapix
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND test_galapix)
 endif()
 
 # EOF #
