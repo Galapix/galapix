@@ -19,13 +19,13 @@ project(galapix VERSION 0.3.0)
 
 include(GNUInstallDirs)
 
-set(BUILD_GALAPIX_SDL ON CACHE BOOL "Build galapix.sdl")
-set(BUILD_GALAPIX_GTK OFF CACHE BOOL "Build galapix.gtk")
-set(BUILD_TESTS OFF CACHE BOOL "Build tests")
-set(BUILD_EXTRA OFF CACHE BOOL "Build extra apps")
-set(USE_OPENGLES2 OFF CACHE BOOL "Use OpenGLES2 instead of OpenGL")
-set(WARNINGS OFF CACHE BOOL "Switch on extra warnings")
-set(WERROR OFF CACHE BOOL "Treat all warnings as errors")
+option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
+option(BUILD_GALAPIX_GTK "Build galapix.gtk" OFF)
+option(BUILD_TESTS "Build tests" OFF)
+option(BUILD_EXTRA "Build extra apps" OFF)
+option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
+option(WARNINGS "Switch on extra warnings" OFF)
+option(WERROR "Treat all warnings as errors" OFF)
 
 if(WARNINGS)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
