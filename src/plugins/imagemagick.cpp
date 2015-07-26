@@ -93,7 +93,8 @@ Imagemagick::get_supported_extensions()
   }
 }
 
-static
+namespace {
+
 SoftwareSurfacePtr
 MagickImage2SoftwareSurface(const Magick::Image& image)
 {
@@ -101,24 +102,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
   int width  = static_cast<int>(image.columns());
   int height = static_cast<int>(image.rows());
-  int shift;
-
-  // FIXME: QuantumRange is a macro that needs the type Quantum, but
-  // Magick++ puts it inside a namespace.
-  using Quantum = MagickCore::Quantum;
-
-  if (QuantumRange == (65535))
-  {
-    shift = 8;
-  }
-  else if (QuantumRange == (255))
-  {
-    shift = 0;
-  }
-  else
-  {
-    assert(false && "Imagemagick: Unknown QuantumRange");
-  }
+  int shift = QuantumDepth - 8;
 
   if (image.matte())
   {
@@ -159,6 +143,8 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
   return surface;
 }
+
+} // namespace
 
 SoftwareSurfacePtr
 Imagemagick::load_from_mem(const void* data, size_t len)
