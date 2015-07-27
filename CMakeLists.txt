@@ -63,7 +63,11 @@ if(NOT MHASH_FOUND)
   endif()
 endif()
 
-pkg_search_module(MAGICKXX REQUIRED Magick++)
+# Not using find_package(), see:
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=776832
+# find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
+pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++)
+
 pkg_search_module(EXIF REQUIRED libexif)
 
 check_include_file(spnav.h HAVE_SPNAV)
