@@ -24,9 +24,26 @@
 
 #include "util/blob.hpp"
 
+class RarHeader
+{
+private:
+  uint16_t m_head_flags;
+
+public:
+  RarHeader(uint16_t head_flags);
+
+  uint16_t get_flags() const;
+  bool is_first_volume() const;
+  bool is_multi_volume() const;
+  bool has_new_volume_naming() const;
+  bool is_encrypted() const;
+  bool has_recovery() const;
+};
+
 class Rar
 {
 public:
+  static RarHeader read_header(std::string const& rar_filename);
   static std::vector<std::string> get_filenames(const std::string& rar_filename);
   static BlobPtr get_file(const std::string& rar_filename, const std::string& filename);
   static void extract(const std::string& archive, const std::string& target_directory);

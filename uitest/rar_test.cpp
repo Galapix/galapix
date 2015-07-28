@@ -22,6 +22,19 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
+UITEST_S(Rar, info, "ARCHIVE")
+{
+  auto header = Rar::read_header(arg);
+  std::cout << arg << ":"
+            << " flags = " << header.get_flags()
+            << " is_encrypted = " << header.is_encrypted()
+            << " has_recovery = " << header.has_recovery()
+            << " is_multi_volume = " << header.is_multi_volume()
+            << " is_first_volume = " << header.is_first_volume()
+            << " has_new_volume_naming = " << header.has_new_volume_naming()
+            << std::endl;
+}
+
 UITEST(Rar, list, "ARCHIVE")
 {
   const std::vector<std::string>& files = Rar::get_filenames(args[0]);
