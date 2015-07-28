@@ -228,6 +228,27 @@ Galapix::list(const Options& opts)
   }
 }
 
+namespace {
+
+void print_exception(std::exception const& err, int level = 0)
+{
+  std::cout << std::string(level * 2, ' ') << "exception: " << err.what() << std::endl;
+  try
+  {
+    std::rethrow_if_nested(err);
+  }
+  catch(std::exception const& nested_err)
+  {
+    print_exception(nested_err, level + 1);
+  }
+  catch(...)
+  {
+    std::cout << "unknown exception\n";
+  }
+}
+
+} // namespace
+
 int
 Galapix::main(int argc, char** argv)
 {
@@ -254,7 +275,8 @@ Galapix::main(int argc, char** argv)
   }
   catch(const std::exception& err)
   {
-    std::cout << "Exception: " << err.what() << std::endl;
+    std::cout << "Exception:\n";
+    print_exception(err);
     return EXIT_FAILURE;
   }
 }
