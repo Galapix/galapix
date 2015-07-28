@@ -24,6 +24,8 @@
 #include <exception>
 #include <sstream>
 
+#include "util/input_stream.hpp"
+
 RarHeader
 RarHeader::from_file(std::string const& rar_filename)
 {
@@ -31,13 +33,11 @@ RarHeader::from_file(std::string const& rar_filename)
 
   try
   {
-    std::ifstream in;
-    in.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    in.open(rar_filename, std::ios::binary);
+    InputStream in = InputStream::from_file(rar_filename);
 
     uint8_t rar_magic[7] = { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x00 };
     uint8_t mark_head[7];
-    in.read(reinterpret_cast<char*>(mark_head), sizeof(mark_head));
+    in.read(mark_head, sizeof(mark_head));
 
     if (memcmp(rar_magic, mark_head, sizeof(rar_magic)) != 0)
     {
@@ -46,15 +46,10 @@ RarHeader::from_file(std::string const& rar_filename)
     else
     {
       // MAIN_HEAD
-      uint16_t head_crc;
-      uint8_t head_type;
-      uint16_t head_flags;
-      uint16_t head_size;
-
-      in.read(reinterpret_cast<char*>(&head_crc), sizeof(head_crc));
-      in.read(reinterpret_cast<char*>(&head_type), sizeof(head_type));
-      in.read(reinterpret_cast<char*>(&head_flags), sizeof(head_flags));
-      in.read(reinterpret_cast<char*>(&head_size), sizeof(head_size));
+      uint16_t head_crc __attribute__ ((unused)) = in.readULE16();
+      uint8_t head_type = in.readU8();
+      uint16_t head_flags = in.readULE16();
+      uint16_t head_size __attribute__ ((unused)) = in.readULE16();
 
       if (head_type != 0x73)
       {
