@@ -17,14 +17,14 @@
 */
 
 #include "archive/rar.hpp"
+#include "archive/rar_header.hpp"
 
-// g++ -Wall -Werror -ansi -pedantic blob.cpp exec.cpp rar.cpp -o myrar -D__TEST_RAR__
 #include <iostream>
 #include <uitest/uitest.hpp>
 
 UITEST_S(Rar, info, "ARCHIVE")
 {
-  auto header = Rar::read_header(arg);
+  auto header = RarHeader::from_file(arg);
   std::cout << arg << ":"
             << " flags = " << header.get_flags()
             << " is_encrypted = " << header.is_encrypted()

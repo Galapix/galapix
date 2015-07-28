@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmail.com>
+**  Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -16,20 +16,29 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_ARCHIVE_RAR_HPP
-#define HEADER_GALAPIX_ARCHIVE_RAR_HPP
+#ifndef HEADER_GALAPIX_ARCHIVE_RAR_HEADER_HPP
+#define HEADER_GALAPIX_ARCHIVE_RAR_HEADER_HPP
 
-#include <vector>
 #include <string>
+#include <stdint.h>
 
-#include "util/blob.hpp"
-
-class Rar
+class RarHeader
 {
 public:
-  static std::vector<std::string> get_filenames(const std::string& rar_filename);
-  static BlobPtr get_file(const std::string& rar_filename, const std::string& filename);
-  static void extract(const std::string& archive, const std::string& target_directory);
+  static RarHeader from_file(std::string const& rar_filename);
+
+private:
+  uint16_t m_head_flags;
+
+public:
+  RarHeader(uint16_t head_flags);
+
+  uint16_t get_flags() const;
+  bool is_first_volume() const;
+  bool is_multi_volume() const;
+  bool has_new_volume_naming() const;
+  bool is_encrypted() const;
+  bool has_recovery() const;
 };
 
 #endif
