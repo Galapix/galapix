@@ -117,7 +117,8 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
                                                          Size(static_cast<int>(m_cinfo.output_width),
                                                               static_cast<int>(m_cinfo.output_height)));
 
-    if (m_cinfo.output_components == 3) // RGB Image
+    if (m_cinfo.out_color_space == JCS_RGB &&
+        m_cinfo.output_components == 3)
     {
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
@@ -130,7 +131,8 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
     }
-    else if (m_cinfo.output_components == 1)  // Greyscale Image
+    else if (m_cinfo.out_color_space == JCS_GRAYSCALE &&
+             m_cinfo.output_components == 1)
     {
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
@@ -157,10 +159,46 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
         }
       }
     }
+    else if (m_cinfo.out_color_space == JCS_CMYK &&
+             m_cinfo.output_components == 4)
+    {
+      std::vector<JSAMPLE> output_data(m_cinfo.output_width * m_cinfo.output_height *
+                                       m_cinfo.output_components);
+      std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
+
+      for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
+      {
+        scanlines[y] = &output_data[y * m_cinfo.output_width * m_cinfo.output_components];
+      }
+
+      while (m_cinfo.output_scanline < m_cinfo.output_height)
+      {
+        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
+                            m_cinfo.output_height - m_cinfo.output_scanline);
+      }
+
+      for(int y = 0; y < surface->get_height(); ++y)
+      {
+        uint8_t* jpegptr = &output_data[y * m_cinfo.output_width * m_cinfo.output_components];
+        uint8_t* rowptr = surface->get_row_data(y);
+        for(int x = surface->get_width()-1; x >= 0; --x)
+        {
+          uint8_t const cmyk_c = jpegptr[4*x + 0];
+          uint8_t const cmyk_m = jpegptr[4*x + 1];
+          uint8_t const cmyk_y = jpegptr[4*x + 2];
+          uint8_t const cmyk_k = jpegptr[4*x + 3];
+
+          rowptr[3*x+0] = static_cast<uint8_t>((cmyk_c * cmyk_k) / 255);
+          rowptr[3*x+1] = static_cast<uint8_t>((cmyk_m * cmyk_k) / 255);
+          rowptr[3*x+2] = static_cast<uint8_t>((cmyk_y * cmyk_k) / 255);
+        }
+      }
+    }
     else
     {
       std::ostringstream str;
-      str << "JPEGDecompressor::read_image(): Unsupported color depth: " << m_cinfo.output_components;
+      str << "JPEGDecompressor::read_image(): Unsupported colorspace: "
+          << m_cinfo.out_color_space << " components: " << m_cinfo.output_components;
       raise_runtime_error(str.str());
     }
 
