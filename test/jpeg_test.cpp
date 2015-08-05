@@ -14,7 +14,7 @@ TEST(JPEGTest, load_from_file)
 {
   EXPECT_NO_THROW({ JPEG::load_from_file("test/data/images/rgb.jpg"); });
   EXPECT_NO_THROW({ JPEG::load_from_file("test/data/images/grayscale.jpg"); });
-  EXPECT_NO_THROW({ JPEG::load_from_file("test/data/images/cmyk.jpg"); }};
+  EXPECT_NO_THROW({ JPEG::load_from_file("test/data/images/cmyk.jpg"); });
 }
 
 /* EOF */
