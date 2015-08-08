@@ -50,8 +50,7 @@ public:
   /** \a job is processed and once finished \a callback is called, \a
       job will be deleted afterwards */
   JobHandle request(std::shared_ptr<Job> job,
-                    const std::function<void (std::shared_ptr<Job>, bool)>& callback
-                    = std::function<void (std::shared_ptr<Job>, bool)>());
+                    std::function<void (std::shared_ptr<Job>, bool)> const& callback = {});
 };
 
 #endif

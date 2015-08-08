@@ -41,7 +41,7 @@ class Rectf;
 class Image final : public WorkspaceItem
 {
 public:
-  Image(const URL& url, TileProviderPtr provider = TileProviderPtr());
+  Image(const URL& url, TileProviderPtr provider = {});
   virtual ~Image();
 
   void draw(const Rectf& cliprect, float zoom) override;
