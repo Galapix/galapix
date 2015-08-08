@@ -32,10 +32,10 @@ class Texture;
 class Texture
 {
 private:
-  Texture(const SoftwareSurfacePtr& src, const Rect& srcrect);
+  Texture(SoftwareSurface const& src, const Rect& srcrect);
 
 public:
-  static Texture create(const SoftwareSurfacePtr& src, const Rect& srcrect);
+  static Texture create(SoftwareSurface const& src, const Rect& srcrect);
 
   Texture();
 

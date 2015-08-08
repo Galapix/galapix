@@ -144,7 +144,7 @@ int main(int argc, char* argv[])
 
         SoftwareSurfacePtr closest_tile = find_closest_tile(tiledb, src_tile);
 
-        closest_tile->blit(out_surface, Vector2i(x*2, y*2));
+        closest_tile->blit(*out_surface, Vector2i(x*2, y*2));
       }
     }
 

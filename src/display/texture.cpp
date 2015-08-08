@@ -28,19 +28,17 @@ public:
   GLuint handle;
   Size   size;
 
-  TextureImpl(const SoftwareSurfacePtr& src, const Rect& srcrect) :
+  TextureImpl(SoftwareSurface const& src, Rect const& srcrect) :
     handle(),
     size(srcrect.get_size())
   {
-    assert(src);
-
     assert_gl("TextureImpl enter");
 
     glGenTextures(1, &handle);
     glBindTexture(GL_TEXTURE_2D, handle);
 
     GLenum gl_format = GL_RGB;
-    switch(src->get_format())
+    switch(src.get_format())
     {
       case SoftwareSurface::RGB_FORMAT:
         gl_format = GL_RGB;
@@ -57,7 +55,7 @@ public:
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
 
 #ifdef HAVE_OPENGLES2
-    SoftwareSurfacePtr subsurf = src->crop(srcrect);
+    SoftwareSurfacePtr subsurf = src.crop(srcrect);
 
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
                  size.width, size.height,
@@ -66,14 +64,14 @@ public:
                  GL_UNSIGNED_BYTE,
                  subsurf->get_data());
 #else
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, src->get_width());
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
 
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
                  size.width, size.height,
                  0, /* border */
                  gl_format,
                  GL_UNSIGNED_BYTE,
-                 src->get_data() + (src->get_pitch() * srcrect.top) + (srcrect.left * src->get_bytes_per_pixel()));
+                 src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * src.get_bytes_per_pixel()));
 #endif
 
     assert_gl("packing image texture");
@@ -93,7 +91,7 @@ public:
 };
 
 Texture
-Texture::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
+Texture::create(SoftwareSurface const& src, Rect const& srcrect)
 {
   return Texture(src, srcrect);
 }
@@ -103,7 +101,7 @@ Texture::Texture() :
 {
 }
 
-Texture::Texture(const SoftwareSurfacePtr& src, const Rect& srcrect) :
+Texture::Texture(SoftwareSurface const& src, Rect const& srcrect) :
   m_impl(std::make_shared<TextureImpl>(src, srcrect))
 {
 }

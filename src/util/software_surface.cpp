@@ -33,10 +33,10 @@ namespace {
 
 inline
 void copy_pixel_rgb(SoftwareSurface& dst, int dst_x, int dst_y,
-                    SoftwareSurface& src, int src_x, int src_y)
+                    SoftwareSurface const& src, int src_x, int src_y)
 {
   uint8_t* const d = dst.get_row_data(dst_y) + 3*dst_x;
-  uint8_t* const s = src.get_row_data(src_y) + 3*src_x;
+  uint8_t const* const s = src.get_row_data(src_y) + 3*src_x;
   d[0] = s[0];
   d[1] = s[1];
   d[2] = s[2];
@@ -44,10 +44,10 @@ void copy_pixel_rgb(SoftwareSurface& dst, int dst_x, int dst_y,
 
 inline
 void copy_pixel_rgba(SoftwareSurface& dst, int dst_x, int dst_y,
-                     SoftwareSurface& src, int src_x, int src_y)
+                     SoftwareSurface const& src, int src_x, int src_y)
 {
   uint32_t* const d = reinterpret_cast<uint32_t*>(dst.get_row_data(dst_y) + 4*dst_x);
-  uint32_t* const s = reinterpret_cast<uint32_t*>(src.get_row_data(src_y) + 4*src_x);
+  uint32_t const* const s = reinterpret_cast<uint32_t const*>(src.get_row_data(src_y) + 4*src_x);
   *d = *s;
 }
 
@@ -168,12 +168,12 @@ SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::halve()
+SoftwareSurface::halve() const
 {
   SoftwareSurfacePtr dstsrc = SoftwareSurface::create(impl->format, impl->size/2);
 
   uint8_t* dst = dstsrc->get_data();
-  uint8_t* src = get_data();
+  uint8_t const* src = get_data();
 
   //int src_w = get_width();
   //int src_h = get_height();
@@ -190,7 +190,7 @@ SoftwareSurface::halve()
         for(int x = 0; x < dst_w; ++x)
         {
           uint8_t* d = dst + (y*dst_p + 3*x);
-          uint8_t* s = src + (y*src_p + 3*x)*2;
+          uint8_t const* s = src + (y*src_p + 3*x)*2;
 
           d[0] = static_cast<uint8_t>((s[0] + s[0+3] + s[0+src_p] + s[0+src_p+3])/4);
           d[1] = static_cast<uint8_t>((s[1] + s[1+3] + s[1+src_p] + s[1+src_p+3])/4);
@@ -203,7 +203,7 @@ SoftwareSurface::halve()
         for(int x = 0; x < dst_w; ++x)
         {
           uint8_t* d = dst + (y*dst_p + 4*x);
-          uint8_t* s = src + (y*src_p + 4*x)*2;
+          uint8_t const* s = src + (y*src_p + 4*x)*2;
 
           d[0] = static_cast<uint8_t>((s[0] + s[0+4] + s[0+src_p] + s[0+src_p+4])/4);
           d[1] = static_cast<uint8_t>((s[1] + s[1+4] + s[1+src_p] + s[1+src_p+4])/4);
@@ -221,7 +221,7 @@ SoftwareSurface::halve()
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::scale(const Size& size)
+SoftwareSurface::scale(const Size& size) const
 {
   if (size == impl->size)
   {
@@ -273,7 +273,7 @@ SoftwareSurface::scale(const Size& size)
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::clone()
+SoftwareSurface::clone() const
 {
   SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
   memcpy(out->impl->pixels.get(),
@@ -283,7 +283,7 @@ SoftwareSurface::clone()
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::transform(Modifier mod)
+SoftwareSurface::transform(Modifier mod) const
 {
   switch(mod)
   {
@@ -320,7 +320,7 @@ SoftwareSurface::transform(Modifier mod)
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::rotate90()
+SoftwareSurface::rotate90() const
 {
   SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
 
@@ -351,7 +351,7 @@ SoftwareSurface::rotate90()
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::rotate180()
+SoftwareSurface::rotate180() const
 {
   SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
 
@@ -382,7 +382,7 @@ SoftwareSurface::rotate180()
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::rotate270()
+SoftwareSurface::rotate270() const
 {
   SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, Size(impl->size.height, impl->size.width));
 
@@ -413,7 +413,7 @@ SoftwareSurface::rotate270()
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::hflip()
+SoftwareSurface::hflip() const
 {
   SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
 
@@ -444,7 +444,7 @@ SoftwareSurface::hflip()
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::vflip()
+SoftwareSurface::vflip() const
 {
   SoftwareSurfacePtr out = SoftwareSurface::create(impl->format, impl->size);
 
@@ -459,7 +459,7 @@ SoftwareSurface::vflip()
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::crop(const Rect& rect_in)
+SoftwareSurface::crop(const Rect& rect_in) const
 {
   // FIXME: We could do a crop without copying content, simply
   // reference the old SoftwareSurfaceImpl and have a different pitch
@@ -508,22 +508,26 @@ SoftwareSurface::get_pitch()  const
   return impl->pitch;
 }
 
-Blob
-SoftwareSurface::get_raw_data() const
-{
-  assert(impl->pitch != impl->size.width*3);
-  return Blob::copy(impl->pixels.get(),
-                    static_cast<size_t>(impl->size.height * impl->pitch));
-}
-
-uint8_t*
+uint8_t const*
 SoftwareSurface::get_data() const
 {
   return impl->pixels.get();
 }
 
-uint8_t*
+uint8_t const*
 SoftwareSurface::get_row_data(int y) const
+{
+  return impl->pixels.get() + (y * impl->pitch);
+}
+
+uint8_t*
+SoftwareSurface::get_data()
+{
+  return impl->pixels.get();
+}
+
+uint8_t*
+SoftwareSurface::get_row_data(int y)
 {
   return impl->pixels.get() + (y * impl->pitch);
 }
@@ -563,7 +567,7 @@ SoftwareSurface::get_average_color() const
 }
 
 SoftwareSurfacePtr
-SoftwareSurface::to_rgb()
+SoftwareSurface::to_rgb() const
 {
   switch(impl->format)
   {
@@ -574,8 +578,8 @@ SoftwareSurface::to_rgb()
     {
       SoftwareSurfacePtr surface = SoftwareSurface::create(RGB_FORMAT, impl->size);
 
-      int num_pixels      = get_width() * get_height();
-      uint8_t* src_pixels = get_data();
+      int num_pixels = get_width() * get_height();
+      uint8_t const* src_pixels = get_data();
       uint8_t* dst_pixels = surface->get_data();
 
       for(int i = 0; i < num_pixels; ++i)
@@ -612,33 +616,33 @@ SoftwareSurface::get_bytes_per_pixel() const
 }
 
 void
-SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
+SoftwareSurface::blit(SoftwareSurface& dst, const Vector2i& pos)
 {
   int start_x = std::max(0, -pos.x);
   int start_y = std::max(0, -pos.y);
 
-  int end_x = std::min(impl->size.width,  dst->impl->size.width  - pos.x);
-  int end_y = std::min(impl->size.height, dst->impl->size.height - pos.y);
+  int end_x = std::min(impl->size.width,  dst.impl->size.width  - pos.x);
+  int end_y = std::min(impl->size.height, dst.impl->size.height - pos.y);
 
-  if (dst->impl->format == RGB_FORMAT && impl->format == RGB_FORMAT)
+  if (dst.impl->format == RGB_FORMAT && impl->format == RGB_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
-      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*3,
+      memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*3,
              get_row_data(y) + start_x*3,
              static_cast<size_t>((end_x - start_x) * 3));
   }
-  else if (dst->impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
+  else if (dst.impl->format == RGBA_FORMAT && impl->format == RGBA_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
-      memcpy(dst->get_row_data(y + pos.y) + (pos.x+start_x)*4,
+      memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*4,
              get_row_data(y) + start_x*4,
              static_cast<size_t>((end_x - start_x) * 4));
   }
-  else if (dst->impl->format == RGBA_FORMAT && impl->format == RGB_FORMAT)
+  else if (dst.impl->format == RGBA_FORMAT && impl->format == RGB_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
     {
-      uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*4;
+      uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*4;
       uint8_t* srcpx = get_row_data(y) + start_x*3;
 
       for(int x = 0; x < (end_x - start_x); ++x)
@@ -650,11 +654,11 @@ SoftwareSurface::blit(SoftwareSurfacePtr& dst, const Vector2i& pos)
       }
     }
   }
-  else if (dst->impl->format == RGB_FORMAT && impl->format == RGBA_FORMAT)
+  else if (dst.impl->format == RGB_FORMAT && impl->format == RGBA_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
     {
-      uint8_t* dstpx = dst->get_row_data(y + pos.y) + (pos.x+start_x)*3;
+      uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*3;
       uint8_t* srcpx = get_row_data(y) + start_x*4;
 
       for(int x = 0; x < (end_x - start_x); ++x)

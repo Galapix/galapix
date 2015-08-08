@@ -61,44 +61,45 @@ private:
 public:
   static SoftwareSurfacePtr create(Format format, const Size& size);
 
-  Size get_size()   const;
-  int  get_width()  const;
-  int  get_height() const;
-  int  get_pitch()  const;
+  Size get_size() const;
+  int get_width() const;
+  int get_height() const;
+  int get_pitch() const;
 
-  SoftwareSurfacePtr clone();
-  SoftwareSurfacePtr halve();
-  SoftwareSurfacePtr scale(const Size& size);
-  SoftwareSurfacePtr crop(const Rect& rect);
+  SoftwareSurfacePtr clone() const;
+  SoftwareSurfacePtr halve() const;
+  SoftwareSurfacePtr scale(const Size& size) const;
+  SoftwareSurfacePtr crop(const Rect& rect) const;
 
-  SoftwareSurfacePtr transform(Modifier mod);
-  SoftwareSurfacePtr rotate90();
-  SoftwareSurfacePtr rotate180();
-  SoftwareSurfacePtr rotate270();
-  SoftwareSurfacePtr vflip();
-  SoftwareSurfacePtr hflip();
+  SoftwareSurfacePtr transform(Modifier mod) const;
+  SoftwareSurfacePtr rotate90() const;
+  SoftwareSurfacePtr rotate180() const;
+  SoftwareSurfacePtr rotate270() const;
+  SoftwareSurfacePtr vflip() const;
+  SoftwareSurfacePtr hflip() const;
 
-  Blob get_raw_data()  const;
-
-  void put_pixel(int x, int y, const RGB& rgb);
   void get_pixel(int x, int y, RGB& rgb) const;
-
-  void put_pixel(int x, int y, const RGBA& rgb);
   void get_pixel(int x, int y, RGBA& rgb) const;
 
-  uint8_t* get_data() const;
-  uint8_t* get_row_data(int y) const;
+  uint8_t const* get_data() const;
+  uint8_t const* get_row_data(int y) const;
 
   RGB get_average_color() const;
 
   Format get_format() const;
 
-  SoftwareSurfacePtr to_rgb();
+  SoftwareSurfacePtr to_rgb() const;
 
   int get_bytes_per_pixel() const;
 
   /** Performs a simple copy from this to \a test, no blending is performed */
-  void blit(SoftwareSurfacePtr& dst, const Vector2i& pos);
+  void blit(SoftwareSurface& dst, const Vector2i& pos);
+
+  void put_pixel(int x, int y, const RGB& rgb);
+  void put_pixel(int x, int y, const RGBA& rgb);
+
+  uint8_t* get_data();
+  uint8_t* get_row_data(int y);
 
 private:
   std::unique_ptr<SoftwareSurfaceImpl> impl;

@@ -32,12 +32,12 @@ class Surface;
 class Surface
 {
 public:
-  static Surface create(const SoftwareSurfacePtr& src, const Rect& srcrect);
-  static Surface create(const SoftwareSurfacePtr& src);
+  static Surface create(SoftwareSurface const& src, Rect const& srcrect);
+  static Surface create(SoftwareSurface const& src);
 
 private:
-  explicit Surface(const SoftwareSurfacePtr& src, const Rect& srcrect);
-  explicit Surface(const SoftwareSurfacePtr& src);
+  explicit Surface(SoftwareSurface const& src, Rect const& srcrect);
+  explicit Surface(SoftwareSurface const& src);
 
 public:
   Surface();

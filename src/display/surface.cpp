@@ -32,13 +32,11 @@ public:
   Rectf   uv;
   Size    size;
 
-  SurfaceImpl(const SoftwareSurfacePtr& src, const Rect& srcrect) :
+  SurfaceImpl(SoftwareSurface const& src, Rect const& srcrect) :
     texture(),
     uv(),
     size()
   {
-    assert(src);
-
     texture = Texture::create(src, srcrect);
 
     uv = Rectf(Vector2f(0, 0), Sizef(1.0f, 1.0f));
@@ -196,13 +194,13 @@ public:
 };
 
 Surface
-Surface::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
+Surface::create(SoftwareSurface const& src, Rect const& srcrect)
 {
   return Surface(src, srcrect);
 }
 
 Surface
-Surface::create(const SoftwareSurfacePtr& src)
+Surface::create(SoftwareSurface const& src)
 {
   return Surface(src);
 }
@@ -212,12 +210,12 @@ Surface::Surface() :
 {
 }
 
-Surface::Surface(const SoftwareSurfacePtr& src) :
-  m_impl(std::make_shared<SurfaceImpl>(src, Rect(Vector2i(0, 0), src->get_size())))
+Surface::Surface(SoftwareSurface const& src) :
+  m_impl(std::make_shared<SurfaceImpl>(src, Rect(Vector2i(0, 0), src.get_size())))
 {
 }
 
-Surface::Surface(const SoftwareSurfacePtr& src, const Rect& srcrect)
+Surface::Surface(SoftwareSurface const& src, Rect const& srcrect)
   : m_impl(std::make_shared<SurfaceImpl>(src, srcrect))
 {
 }
