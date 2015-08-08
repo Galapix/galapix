@@ -56,6 +56,8 @@ public:
   int get_pitch() const { return m_pitch; }
   int get_bytes_per_pixel() const;
 
+  bool empty() const { return m_pixels.empty(); }
+
   void put_pixel(int x, int y, RGB const& rgb);
   void put_pixel(int x, int y, RGBA const& rgb);
 

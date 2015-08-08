@@ -114,9 +114,13 @@ SoftwareSurface::scale(Size const& size) const
 {
   PixelData const& src = *m_pixel_data;
 
-  if (size == src.get_size())
+  if (src.get_size() == size)
   {
     return *this;
+  }
+  else if (src.get_size() == Size(0, 0))
+  {
+    return SoftwareSurface(PixelData(m_pixel_data->get_format(), size));
   }
   else
   {
@@ -395,29 +399,42 @@ SoftwareSurface::get_average_color() const
 {
   PixelData const& src = *m_pixel_data;
 
-  assert(src.get_format() == PixelData::RGB_FORMAT);
-  // Only works for smaller surfaces, else we would run into integer overflows
-  assert(get_width() > 256 || get_height() > 256); // random limit, but should be enough for galapix
+  if (src.empty())
+  {
+    return {};
+  }
+  else
+  {
+    unsigned int total_r = 0;
+    unsigned int total_g = 0;
+    unsigned int total_b = 0;
 
-  unsigned int r = 0;
-  unsigned int g = 0;
-  unsigned int b = 0;
-
-  for(int y = 0; y < get_height(); ++y)
-    for(int x = 0; x < get_width(); ++x)
+    for(int y = 0; y < src.get_height(); ++y)
     {
-      RGB rgb;
-      src.get_pixel(x, y, rgb);
+      unsigned int row_r = 0;
+      unsigned int row_g = 0;
+      unsigned int row_b = 0;
 
-      r += rgb.r;
-      g += rgb.g;
-      b += rgb.b;
+      for(int x = 0; x < src.get_width(); ++x)
+      {
+        RGB rgb;
+        src.get_pixel(x, y, rgb);
+
+        row_r += rgb.r;
+        row_g += rgb.g;
+        row_b += rgb.b;
+      }
+
+      total_r += row_r / src.get_width();
+      total_g += row_g / src.get_width();
+      total_b += row_b / src.get_width();
     }
 
-  unsigned int num_pixels = static_cast<unsigned int>(get_width() * get_height());
-  return RGB(static_cast<uint8_t>(r / num_pixels),
-             static_cast<uint8_t>(g / num_pixels),
-             static_cast<uint8_t>(b / num_pixels));
+    unsigned int num_rows = static_cast<unsigned int>(src.get_height());
+    return RGB(static_cast<uint8_t>(total_r / num_rows),
+               static_cast<uint8_t>(total_g / num_rows),
+               static_cast<uint8_t>(total_b / num_rows));
+  }
 }
 
 SoftwareSurface
