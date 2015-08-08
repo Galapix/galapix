@@ -29,28 +29,31 @@ class Rect;
 class Rectf;
 class Surface;
 
-typedef std::shared_ptr<Surface> SurfacePtr;
-
 class Surface
 {
+public:
+  static Surface create(const SoftwareSurfacePtr& src, const Rect& srcrect);
+  static Surface create(const SoftwareSurfacePtr& src);
+
 private:
   explicit Surface(const SoftwareSurfacePtr& src, const Rect& srcrect);
   explicit Surface(const SoftwareSurfacePtr& src);
 
 public:
-  void draw(const Vector2f& pos);
-  void draw(const Rectf& dstrect);
-  void draw(const Rectf& srcrect, const Rectf& dstrect);
+  Surface();
+
+  void draw(const Vector2f& pos) const;
+  void draw(const Rectf& dstrect) const;
+  void draw(const Rectf& srcrect, const Rectf& dstrect) const;
 
   int  get_width()  const;
   int  get_height() const;
   Size get_size() const;
 
-  static SurfacePtr create(const SoftwareSurfacePtr& src, const Rect& srcrect);
-  static SurfacePtr create(const SoftwareSurfacePtr& src);
+  explicit operator bool() const { return m_impl != nullptr; }
 
 private:
-  std::unique_ptr<SurfaceImpl> impl;
+  std::shared_ptr<const SurfaceImpl> m_impl;
 };
 
 #endif

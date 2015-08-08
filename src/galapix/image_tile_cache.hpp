@@ -48,9 +48,9 @@ public:
       SURFACE_REQUESTED
     };
 
-    JobHandle  job_handle;
-    Status     status;
-    SurfacePtr surface;
+    JobHandle job_handle;
+    Status status;
+    Surface surface;
 
     SurfaceStruct() :
       job_handle(JobHandle::create()),
@@ -58,9 +58,9 @@ public:
       surface()
     {}
 
-    SurfaceStruct(JobHandle  job_handle_,
-                  Status     status_,
-                  SurfacePtr surface_) :
+    SurfaceStruct(JobHandle job_handle_,
+                  Status status_,
+                  Surface surface_) :
       job_handle(job_handle_),
       status(status_),
       surface(surface_)
@@ -87,8 +87,8 @@ public:
   ImageTileCache(TileProviderPtr tile_provider);
 
   SurfaceStruct request_tile(int x, int y, int scale);
-  SurfacePtr get_tile(int x, int y, int scale);
-  SurfacePtr find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
+  Surface get_tile(int x, int y, int scale);
+  Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
 
   void process_queue();
 

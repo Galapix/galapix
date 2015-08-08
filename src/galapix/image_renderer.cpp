@@ -51,7 +51,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
   ImageTileCache::SurfaceStruct sstruct = m_cache->request_tile(x, y, scale);
   if (sstruct.surface)
   {
-    sstruct.surface->draw(Rectf(get_vertex(x,   y,   zoom),
+    sstruct.surface.draw(Rectf(get_vertex(x,   y,   zoom),
                                 get_vertex(x+1, y+1, zoom)));
 
     if ((false))
@@ -64,16 +64,16 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
   else // tile not found, so find a replacement
   {
     // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
-    SurfacePtr nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
-    SurfacePtr ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
-    SurfacePtr sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
-    SurfacePtr se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
+    Surface nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
+    Surface ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
+    Surface sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
+    Surface se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
 
     if (!nw || !ne || !sw || !se)
     {
       // draw lower resolution tiles
       int downscale;
-      SurfacePtr surface = m_cache->find_smaller_tile(x, y, scale, downscale);
+      Surface surface = m_cache->find_smaller_tile(x, y, scale, downscale);
 
       if (surface)
       {
@@ -81,10 +81,10 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
                                   static_cast<float>(y % downscale * 256/downscale)),
                          Size(256 / downscale, 256 / downscale));
 
-        subsection.right  = std::min(subsection.right,  static_cast<float>(surface->get_width()));
-        subsection.bottom = std::min(subsection.bottom, static_cast<float>(surface->get_height()));
+        subsection.right  = std::min(subsection.right,  static_cast<float>(surface.get_width()));
+        subsection.bottom = std::min(subsection.bottom, static_cast<float>(surface.get_height()));
 
-        surface->draw(subsection,
+        surface.draw(subsection,
                       Rectf(get_vertex(x,   y,   zoom),
                             get_vertex(x+1, y+1, zoom)));
       }
@@ -110,10 +110,10 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
     }
 
     // draw higher resolution tiles
-    if (nw) nw->draw(Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f)));
-    if (ne) ne->draw(Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f)));
-    if (sw) sw->draw(Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f)));
-    if (se) se->draw(Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f)));
+    if (nw) nw.draw(Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f)));
+    if (ne) ne.draw(Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f)));
+    if (sw) sw.draw(Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f)));
+    if (se) se.draw(Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f)));
   }
 }
 

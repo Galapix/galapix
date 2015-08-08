@@ -50,7 +50,7 @@ public:
   {
   }
 
-  void draw(const Rectf& srcrect, const Rectf& dstrect)
+  void draw(const Rectf& srcrect, const Rectf& dstrect) const
   {
     assert_gl("SurfaceImpl::draw enter");
 
@@ -122,7 +122,7 @@ public:
     assert_gl("SurfaceImpl::draw leave");
   }
 
-  void draw(const Rectf& rect)
+  void draw(const Rectf& rect)  const
   {
     assert_gl("SurfaceImpl::draw enter");
 
@@ -189,80 +189,103 @@ public:
     assert_gl("SurfaceImpl::draw leave");
   }
 
-  void draw(const Vector2f& pos)
+  void draw(const Vector2f& pos) const
   {
     draw(Rectf(pos, size));
   }
 };
 
-SurfacePtr
+Surface
 Surface::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
 {
-  return SurfacePtr(new Surface(src, srcrect));
+  return Surface(src, srcrect);
 }
 
-SurfacePtr
+Surface
 Surface::create(const SoftwareSurfacePtr& src)
 {
-  return SurfacePtr(new Surface(src));
+  return Surface(src);
+}
+
+Surface::Surface() :
+  m_impl()
+{
 }
 
 Surface::Surface(const SoftwareSurfacePtr& src) :
-  impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src->get_size())))
+  m_impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src->get_size())))
 {
 }
 
 Surface::Surface(const SoftwareSurfacePtr& src, const Rect& srcrect)
-  : impl(new SurfaceImpl(src, srcrect))
+  : m_impl(new SurfaceImpl(src, srcrect))
 {
 }
 
 void
-Surface::draw(const Vector2f& pos)
+Surface::draw(const Vector2f& pos) const
 {
-  if (impl.get())
-    impl->draw(pos);
+  if (m_impl)
+  {
+    m_impl->draw(pos);
+  }
 }
 
 void
-Surface::draw(const Rectf& srcrect, const Rectf& dstrect)
+Surface::draw(const Rectf& srcrect, const Rectf& dstrect) const
 {
-  if (impl.get())
-    impl->draw(srcrect, dstrect);
+  if (m_impl)
+  {
+    m_impl->draw(srcrect, dstrect);
+  }
 }
 
 void
-Surface::draw(const Rectf& rect)
+Surface::draw(const Rectf& rect) const
 {
-  if (impl.get())
-    impl->draw(rect);
+  if (m_impl)
+  {
+    m_impl->draw(rect);
+  }
 }
 
 int
 Surface::get_width() const
 {
-  if (impl.get())
-    return impl->size.width;
+  if (m_impl)
+  {
+    return m_impl->size.width;
+  }
   else
+  {
     return 0;
+  }
 }
 
 int
 Surface::get_height() const
 {
-  if (impl.get())
-    return impl->size.height;
+  if (m_impl)
+  {
+    return m_impl->size.height;
+  }
   else
+  {
     return 0;
+  }
 }
 
 Size
 Surface::get_size() const
 {
-  if (impl.get())
-    return impl->size;
+  if (m_impl)
+  {
+    return m_impl->size;
+  }
   else
+  {
     return Size();
+  }
 }
 
 /* EOF */

@@ -34,12 +34,12 @@ ImageTileCache::ImageTileCache(TileProviderPtr tile_provider) :
 {
 }
 
-SurfacePtr
+Surface
 ImageTileCache::get_tile(int x, int y, int scale)
 {
   if (x < 0 || y < 0 || scale < 0)
   {
-    return SurfacePtr();
+    return {};
   }
   else
   {
@@ -52,7 +52,7 @@ ImageTileCache::get_tile(int x, int y, int scale)
     }
     else
     {
-      return SurfacePtr();
+      return {};
     }
   }
 }
@@ -80,7 +80,7 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
     SurfaceStruct surface_struct(job_handle,
                                  SurfaceStruct::SURFACE_REQUESTED,
-                                 SurfacePtr());
+                                 Surface());
     m_cache[cache_id] = surface_struct;
     return surface_struct;
   }
@@ -123,7 +123,7 @@ ImageTileCache::cleanup()
   }
 }
 
-SurfacePtr
+Surface
 ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
   int  downscale_factor = 1;
@@ -144,7 +144,7 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
     downscale_factor += 1;
   }
 
-  return SurfacePtr();
+  return {};
 }
 
 void
