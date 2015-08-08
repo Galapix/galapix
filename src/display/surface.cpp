@@ -28,7 +28,7 @@
 class SurfaceImpl
 {
 public:
-  TexturePtr texture;
+  Texture texture;
   Rectf   uv;
   Size    size;
 
@@ -56,10 +56,10 @@ public:
 
     if (texture)
     {
-      const float left = srcrect.left / static_cast<float>(texture->get_width());
-      const float top = srcrect.top / static_cast<float>(texture->get_height());
-      const float right = srcrect.right / static_cast<float>(texture->get_width());
-      const float bottom = srcrect.bottom / static_cast<float>(texture->get_height());
+      const float left = srcrect.left / static_cast<float>(texture.get_width());
+      const float top = srcrect.top / static_cast<float>(texture.get_height());
+      const float right = srcrect.right / static_cast<float>(texture.get_width());
+      const float bottom = srcrect.bottom / static_cast<float>(texture.get_height());
 
       std::array<float, 2*4> texcoords = {{
           left, top,
@@ -86,7 +86,7 @@ public:
       glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
 
       {
-        texture->bind();
+        texture.bind();
 
         glUseProgram(Framebuffer::s_textured_prg);
         glUniform1i(get_uniform_location(Framebuffer::s_textured_prg, "tex"), 0);
@@ -153,7 +153,7 @@ public:
       glBufferData(GL_ARRAY_BUFFER, sizeof(float) * positions.size(), positions.data(), GL_STATIC_DRAW);
 
       {
-        texture->bind();
+        texture.bind();
 
         glUseProgram(Framebuffer::s_textured_prg);
         glUniform1i(get_uniform_location(Framebuffer::s_textured_prg, "tex"), 0);

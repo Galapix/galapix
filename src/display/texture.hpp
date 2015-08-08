@@ -29,23 +29,25 @@ class SoftwareSurface;
 class TextureImpl;
 class Texture;
 
-typedef std::shared_ptr<Texture> TexturePtr;
-
 class Texture
 {
 private:
   Texture(const SoftwareSurfacePtr& src, const Rect& srcrect);
 
 public:
-  static TexturePtr create(const SoftwareSurfacePtr& src, const Rect& srcrect);
+  static Texture create(const SoftwareSurfacePtr& src, const Rect& srcrect);
+
+  Texture();
 
   int get_width() const;
   int get_height() const;
 
-  void bind();
+  void bind() const;
+
+  explicit operator bool() const { return m_impl != nullptr; }
 
 private:
-  std::unique_ptr<TextureImpl> impl;
+  std::shared_ptr<const TextureImpl> m_impl;
 };
 
 #endif

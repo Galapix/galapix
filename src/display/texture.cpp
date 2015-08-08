@@ -92,33 +92,55 @@ public:
   }
 };
 
-TexturePtr
+Texture
 Texture::create(const SoftwareSurfacePtr& src, const Rect& srcrect)
 {
-  return TexturePtr(new Texture(src, srcrect));
+  return Texture(src, srcrect);
+}
+
+Texture::Texture() :
+  m_impl()
+{
 }
 
 Texture::Texture(const SoftwareSurfacePtr& src, const Rect& srcrect) :
-  impl(new TextureImpl(src, srcrect))
+  m_impl(std::make_shared<TextureImpl>(src, srcrect))
 {
 }
 
 void
-Texture::bind()
+Texture::bind() const
 {
-  glBindTexture(GL_TEXTURE_2D, impl->handle);
+  if (m_impl)
+  {
+    glBindTexture(GL_TEXTURE_2D, m_impl->handle);
+  }
 }
 
 int
 Texture::get_width() const
 {
-  return impl->size.width;
+  if (!m_impl)
+  {
+    return 0;
+  }
+  else
+  {
+    return m_impl->size.width;
+  }
 }
 
 int
 Texture::get_height() const
 {
-  return impl->size.height;
+  if (!m_impl)
+  {
+    return 0;
+  }
+  else
+  {
+    return m_impl->size.height;
+  }
 }
 
 /* EOF */
