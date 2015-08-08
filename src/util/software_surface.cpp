@@ -131,9 +131,9 @@ SoftwareSurface::scale(Size const& size) const
         for(int y = 0; y < dst.get_height(); ++y)
           for(int x = 0; x < dst.get_width(); ++x)
           {
-            get_pixel(x * src.get_size().width  / dst.get_size().width,
-                      y * src.get_size().height / dst.get_size().height,
-                      rgb);
+            src.get_pixel(x * src.get_size().width  / dst.get_size().width,
+                          y * src.get_size().height / dst.get_size().height,
+                          rgb);
 
             dst.put_pixel(x, y, rgb);
           }
@@ -146,9 +146,9 @@ SoftwareSurface::scale(Size const& size) const
         for(int y = 0; y < dst.get_height(); ++y)
           for(int x = 0; x < dst.get_width(); ++x)
           {
-            get_pixel(x * src.get_size().width  / dst.get_size().width,
-                      y * src.get_size().height / dst.get_size().height,
-                      rgba);
+            src.get_pixel(x * src.get_size().width  / dst.get_size().width,
+                          y * src.get_size().height / dst.get_size().height,
+                          rgba);
 
             dst.put_pixel(x, y, rgba);
           }
@@ -365,8 +365,8 @@ SoftwareSurface::crop(Rect const& rect_in) const
   for(int y = rect.top; y < rect.bottom; ++y)
   {
     memcpy(dst.get_row_data(y - rect.top),
-           src.get_row_data(y) + rect.left * get_bytes_per_pixel(),
-           static_cast<size_t>(rect.get_width() * get_bytes_per_pixel()));
+           src.get_row_data(y) + rect.left * src.get_bytes_per_pixel(),
+           static_cast<size_t>(rect.get_width() * src.get_bytes_per_pixel()));
   }
 
   return SoftwareSurface(std::move(dst));
@@ -390,12 +390,6 @@ SoftwareSurface::get_height() const
   return m_pixel_data->get_height();
 }
 
-PixelData::Format
-SoftwareSurface::get_format() const
-{
-  return m_pixel_data->get_format();
-}
-
 RGB
 SoftwareSurface::get_average_color() const
 {
@@ -413,7 +407,7 @@ SoftwareSurface::get_average_color() const
     for(int x = 0; x < get_width(); ++x)
     {
       RGB rgb;
-      get_pixel(x, y, rgb);
+      src.get_pixel(x, y, rgb);
 
       r += rgb.r;
       g += rgb.g;
@@ -458,24 +452,6 @@ SoftwareSurface::to_rgb() const
       assert(false && "SoftwareSurface::to_rgb: Unknown format");
       return {};
   }
-}
-
-void
-SoftwareSurface::get_pixel(int x, int y, RGB& rgb) const
-{
-  m_pixel_data->get_pixel(x, y, rgb);
-}
-
-void
-SoftwareSurface::get_pixel(int x, int y, RGBA& rgb) const
-{
-  m_pixel_data->get_pixel(x, y, rgb);
-}
-
-int
-SoftwareSurface::get_bytes_per_pixel() const
-{
-  return m_pixel_data->get_bytes_per_pixel();
 }
 
 /* EOF */

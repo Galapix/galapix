@@ -155,14 +155,15 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 
   std::cout << "Saving to: " << filename << std::endl;
 
-  switch(tile.get_surface().get_format())
+  auto surface = tile.get_surface();
+  switch(surface.get_pixel_data().get_format())
   {
     case PixelData::RGB_FORMAT:
-      JPEG::save(tile.get_surface(), 75, filename);
+      JPEG::save(surface, 75, filename);
       break;
 
     case PixelData::RGBA_FORMAT:
-      PNG::save(tile.get_surface(), filename);
+      PNG::save(surface, filename);
       break;
 
     default:

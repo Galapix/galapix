@@ -38,7 +38,7 @@ public:
     glBindTexture(GL_TEXTURE_2D, handle);
 
     GLenum gl_format = GL_RGB;
-    switch(src.get_format())
+    switch(src.get_pixel_data().get_format())
     {
       case PixelData::RGB_FORMAT:
         gl_format = GL_RGB;

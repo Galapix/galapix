@@ -44,14 +44,15 @@ int main(int argc, char** argv)
       std::cout << "Loading: " << argv[i] << std::endl;
 
       SoftwareSurface image = factory.from_url(URL::from_string(argv[i]));
-      PixelData out = PixelData(PixelData::RGB_FORMAT, image.get_size());
+      PixelData const& src = image.get_pixel_data();
+      PixelData out = PixelData(PixelData::RGB_FORMAT, src.get_size());
 
       std::cout << "Processing image..." << std::endl;
       for(int y = 0; y < out.get_height(); ++y)
         for(int x = 0; x < out.get_width(); ++x)
         {
           RGB rgb;
-          image.get_pixel(x, y, rgb);
+          src.get_pixel(x, y, rgb);
 
           if (rgb.r & (1<<3))
             rgb.r = 0;

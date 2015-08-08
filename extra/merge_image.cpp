@@ -26,8 +26,10 @@
 #include "util/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
-void add(SoftwareSurfaceFloatPtr out, SoftwareSurface const& src)
+void add(SoftwareSurfaceFloatPtr out, SoftwareSurface const& surface)
 {
+  PixelData const& src = surface.get_pixel_data();
+
   for(int y = 0; y < out->get_height(); ++y)
     for(int x = 0; x < out->get_width(); ++x)
     {

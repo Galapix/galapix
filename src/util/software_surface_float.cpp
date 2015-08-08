@@ -35,13 +35,14 @@ SoftwareSurfaceFloat::SoftwareSurfaceFloat(const Size& size) :
 SoftwareSurfaceFloatPtr
 SoftwareSurfaceFloat::from_software_surface(SoftwareSurface const& surface)
 {
+  PixelData const& src = surface.get_pixel_data();
   SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::create(surface.get_size());
   for(int y = 0; y < surface.get_height(); ++y)
   {
     for(int x = 0; x < surface.get_width(); ++x)
     {
       RGBA rgba;
-      surface.get_pixel(x, y, rgba);
+      src.get_pixel(x, y, rgba);
 
       RGBAf rgbaf = RGBAf::from_rgba(rgba);
       surfacef->put_pixel(x, y, rgbaf);

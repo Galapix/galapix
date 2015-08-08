@@ -64,15 +64,17 @@ Pixel get_pixels(SoftwareSurface surface)
   assert(surface.get_width()  == 4);
   assert(surface.get_height() == 4);
 
+  PixelData const& src = surface.get_pixel_data();
+
   RGB tl;
   RGB tr;
   RGB bl;
   RGB br;
 
-  surface.get_pixel(0, 0, tl);
-  surface.get_pixel(1, 0, tr);
-  surface.get_pixel(0, 1, bl);
-  surface.get_pixel(1, 1, br);
+  src.get_pixel(0, 0, tl);
+  src.get_pixel(1, 0, tr);
+  src.get_pixel(0, 1, bl);
+  src.get_pixel(1, 1, br);
 
   return Pixel{tl.r, tr.r, bl.r, br.r};
 }

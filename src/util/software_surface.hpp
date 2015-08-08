@@ -65,19 +65,10 @@ public:
   SoftwareSurface rotate270() const;
   SoftwareSurface vflip() const;
   SoftwareSurface hflip() const;
-
-  void get_pixel(int x, int y, RGB& rgb) const;
-  void get_pixel(int x, int y, RGBA& rgb) const;
-
-  int get_bytes_per_pixel() const;
-
-  PixelData const& get_pixel_data() const { return *m_pixel_data; }
-
+  SoftwareSurface to_rgb() const;
   RGB get_average_color() const;
 
-  PixelData::Format get_format() const;
-
-  SoftwareSurface to_rgb() const;
+  PixelData const& get_pixel_data() const { return *m_pixel_data; }
 
   explicit operator bool() const { return m_pixel_data != nullptr; }
 

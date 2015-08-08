@@ -74,7 +74,7 @@ RGB blackfill_pixel(RGB p00, RGB p10, RGB p20,
   }
 }
 
-RGB get_pixel(SoftwareSurface const& img, int x, int y)
+RGB get_pixel(PixelData const& img, int x, int y)
 {
   RGB rgb;
   img.get_pixel(x, y, rgb);
