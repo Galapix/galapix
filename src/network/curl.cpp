@@ -85,7 +85,7 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
   else
   {
     raise_runtime_error("CURLHandler::get_data(): " + std::string(errbuf));
-    return BlobPtr();
+    return {};
   }
 }
 

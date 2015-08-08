@@ -63,7 +63,7 @@ Workspace::get_image(const Vector2f& pos) const
       return *i;
     }
   }
-  return WorkspaceItemPtr();
+  return {};
 }
 
 void
@@ -398,7 +398,7 @@ Workspace::get_bounding_rect() const
 {
   if (m_images.empty())
   {
-    return Rectf();
+    return {};
   }
   else
   {

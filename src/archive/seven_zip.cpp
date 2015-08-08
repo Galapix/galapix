@@ -96,7 +96,7 @@ SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
   else
   {
     raise_runtime_error(zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
-    return BlobPtr();
+    return {};
   }
 }
 

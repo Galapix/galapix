@@ -25,31 +25,31 @@ ResourceCacheState::ResourceCacheState()
 ResourceInfo
 ResourceCacheState::get_resource_info() const
 {
-  return ResourceInfo();
+  return {};
 }
 
 ImageInfo
 ResourceCacheState::get_image_info() const
 {
-  return ImageInfo();
+  return {};
 }
 
 VideoInfo
 ResourceCacheState::get_video_info() const
 {
-  return VideoInfo();
+  return {};
 }
 
 ArchiveInfo
 ResourceCacheState::get_archive_info() const
 {
-  return ArchiveInfo();
+  return {};
 }
 
 std::vector<ResourceCacheState>
 ResourceCacheState::get_children() const
 {
-  return std::vector<ResourceCacheState>();
+  return {};
 }
 
 /* EOF */

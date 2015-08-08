@@ -133,7 +133,7 @@ Selection::get_bounding_rect() const
 {
   if (m_images.empty())
   {
-    return Rectf();
+    return {};
   }
   else
   {

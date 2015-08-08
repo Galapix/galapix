@@ -44,7 +44,7 @@ public:
 JobHandle
 JobHandle::create()
 {
-  return JobHandle();
+  return {};
 }
 
 JobHandle::JobHandle() :

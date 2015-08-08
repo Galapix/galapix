@@ -590,7 +590,7 @@ SoftwareSurface::to_rgb()
 
     default:
       assert(false && "SoftwareSurface::to_rgb: Unknown format");
-      return SoftwareSurfacePtr();
+      return {};
   }
 }
 

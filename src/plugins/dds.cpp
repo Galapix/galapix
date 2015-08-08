@@ -56,7 +56,7 @@ DDS::load_from_file(const std::string& filename)
   if (!in)
   {
     // raise_runtime_error(strerror(errno));
-    return SoftwareSurfacePtr();
+    return {};
   }
   else
   {

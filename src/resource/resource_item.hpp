@@ -40,7 +40,7 @@ public:
 
   int get_original_width() const { return 0; }
   int get_original_height() const { return 0; }
-  URL get_url() const { return URL(); }
+  URL get_url() const { return {}; }
 
 private:
   void receive_resource_info(const ResourceInfo& resource_info);

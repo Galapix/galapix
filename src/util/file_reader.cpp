@@ -194,7 +194,7 @@ FileReader::parse(const std::string& filename)
   }
   else
   {
-    return FileReader();
+    return {};
   }
 }
 

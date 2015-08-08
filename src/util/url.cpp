@@ -156,7 +156,7 @@ URL::get_blob(std::string* mime_type) const
   else
   {
     raise_runtime_error("URL::get_blob(): Unhandled protocol: " + m_protocol);
-    return BlobPtr();
+    return {};
   }
 }
 

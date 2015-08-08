@@ -284,7 +284,7 @@ Surface::get_size() const
   }
   else
   {
-    return Size();
+    return {};
   }
 }
 

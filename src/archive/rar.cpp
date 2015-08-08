@@ -65,7 +65,7 @@ Rar::get_file(const std::string& archive, const std::string& filename)
   else
   {
     raise_runtime_error(rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
-    return BlobPtr();
+    return {};
   }
 }
 
