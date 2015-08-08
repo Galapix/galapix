@@ -32,23 +32,24 @@ int main(int argc, char** argv)
 
   for(int i = 1; i < argc; ++i)
   {
-    SoftwareSurfacePtr image = factory.from_file(argv[i]);
+    SoftwareSurface image = factory.from_file(argv[i]);
 
     std::string outfile = argv[i];
     outfile += "cyber.JPG";
 
-    image = image->halve();
+    image = image.halve();
 
-    SoftwareSurfacePtr out = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, image->get_size());
+    PixelData const& src = image.get_pixel_data();
+    PixelData out(PixelData::RGB_FORMAT, src.get_size());
 
-    for(int y = 0; y < image->get_height(); ++y)
+    for(int y = 0; y < src.get_height(); ++y)
     {
-      uint8_t* ipixels = image->get_row_data(y);
-      uint8_t* opixels = out->get_row_data(y);
+      uint8_t const* ipixels = src.get_row_data(y);
+      uint8_t* opixels = out.get_row_data(y);
 
       if (y % 2 == 0)
       {
-        for(int x = 0; x < image->get_width()*3; x += 3)
+        for(int x = 0; x < src.get_width()*3; x += 3)
         {
           opixels[x+0] = ipixels[x+0];
           opixels[x+1] = ipixels[x+0];
@@ -57,7 +58,7 @@ int main(int argc, char** argv)
       }
       else
       {
-        for(int x = 0; x < image->get_width()*3; x += 3)
+        for(int x = 0; x < src.get_width()*3; x += 3)
         {
           opixels[x+0] = 0;
           opixels[x+1] = ipixels[x+1];

@@ -70,7 +70,7 @@ JPEGDecompressor::read_size()
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 JPEGDecompressor::read_image(int scale, Size* image_size)
 {
   if (!(scale == 1 ||
@@ -113,9 +113,9 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
 
     jpeg_start_decompress(&m_cinfo);
 
-    SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
-                                                         Size(static_cast<int>(m_cinfo.output_width),
-                                                              static_cast<int>(m_cinfo.output_height)));
+    PixelData dst(PixelData::RGB_FORMAT,
+                      Size(static_cast<int>(m_cinfo.output_width),
+                           static_cast<int>(m_cinfo.output_height)));
 
     if (m_cinfo.out_color_space == JCS_RGB &&
         m_cinfo.output_components == 3)
@@ -123,7 +123,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(static_cast<int>(y));
+        scanlines[y] = dst.get_row_data(static_cast<int>(y));
 
       while (m_cinfo.output_scanline < m_cinfo.output_height)
       {
@@ -137,7 +137,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(static_cast<int>(y));
+        scanlines[y] = dst.get_row_data(static_cast<int>(y));
 
       while (m_cinfo.output_scanline < m_cinfo.output_height)
       {
@@ -148,10 +148,10 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
       // Expand the greyscale data to RGB
       // FIXME: Could be made faster if SoftwareSurface would support
       // other color formats
-      for(int y = 0; y < surface->get_height(); ++y)
+      for(int y = 0; y < dst.get_height(); ++y)
       {
-        uint8_t* rowptr = surface->get_row_data(y);
-        for(int x = surface->get_width()-1; x >= 0; --x)
+        uint8_t* rowptr = dst.get_row_data(y);
+        for(int x = dst.get_width()-1; x >= 0; --x)
         {
           rowptr[3*x+0] = rowptr[x];
           rowptr[3*x+1] = rowptr[x];
@@ -177,11 +177,11 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
 
-      for(int y = 0; y < surface->get_height(); ++y)
+      for(int y = 0; y < dst.get_height(); ++y)
       {
         uint8_t* jpegptr = &output_data[y * m_cinfo.output_width * m_cinfo.output_components];
-        uint8_t* rowptr = surface->get_row_data(y);
-        for(int x = surface->get_width()-1; x >= 0; --x)
+        uint8_t* rowptr = dst.get_row_data(y);
+        for(int x = dst.get_width()-1; x >= 0; --x)
         {
           uint8_t const cmyk_c = jpegptr[4*x + 0];
           uint8_t const cmyk_m = jpegptr[4*x + 1];
@@ -202,7 +202,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
       raise_runtime_error(str.str());
     }
 
-    return surface;
+    return SoftwareSurface(std::move(dst));
   }
 }
 

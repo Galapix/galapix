@@ -38,7 +38,7 @@ FileEntryGenerationJob::run()
   try
   {
 #if 0
-    SoftwareSurfacePtr surface;
+    SoftwareSurface surface;
     Size size;
     int min_scale;
     int max_scale;

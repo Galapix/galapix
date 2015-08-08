@@ -84,8 +84,8 @@ public:
     for(const auto& tile : image_data.get_image_tiles())
     {
       std::cout << "  " << tile.get_pos() << " " << tile.get_scale() << " "
-                << tile.get_surface()->get_width() << "x"
-                << tile.get_surface()->get_height()
+                << tile.get_surface().get_width() << "x"
+                << tile.get_surface().get_height()
                 << std::endl;
     }
   }

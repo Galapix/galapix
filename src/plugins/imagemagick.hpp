@@ -30,8 +30,8 @@ class Imagemagick
 {
 public:
   static bool get_size(const std::string& filename, Size& size);
-  static SoftwareSurfacePtr load_from_file(const std::string& filename);
-  static SoftwareSurfacePtr load_from_mem(const void* data, size_t len);
+  static SoftwareSurface load_from_file(const std::string& filename);
+  static SoftwareSurface load_from_mem(const void* data, size_t len);
   static std::vector<std::string> get_supported_extensions();
 };
 

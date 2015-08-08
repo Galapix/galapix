@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include "math/rgb.hpp"
+#include "util/pixel_data.hpp"
 
 MandelbrotTileJob::MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
                                      const std::function<void (Tile)>& callback) :
@@ -34,17 +35,17 @@ MandelbrotTileJob::MandelbrotTileJob(JobHandle job_handle, const Size& size, int
 void
 MandelbrotTileJob::run()
 {
-  SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(256, 256));
+  PixelData surface(PixelData::RGB_FORMAT, Size(256, 256));
 
   Size imagesize(m_size.width  / Math::pow2(m_scale),
                  m_size.height / Math::pow2(m_scale));
 
-  for(int py = 0; py < surface->get_height(); ++py)
+  for(int py = 0; py < surface.get_height(); ++py)
   {
     if (get_handle().is_aborted())
       return;
 
-    for(int px = 0; px < surface->get_width(); ++px)
+    for(int px = 0; px < surface.get_width(); ++px)
     {
       double x0 = static_cast<double>(256 * m_pos.x + px) / static_cast<double>(imagesize.width)  * 4.0f - 2.5f;
       double y0 = static_cast<double>(256 * m_pos.y + py) / static_cast<double>(imagesize.height) * 3.0f - 1.5f;
@@ -66,13 +67,13 @@ MandelbrotTileJob::run()
         ++iteration;
       }
 
-      surface->put_pixel(px, py, RGB(static_cast<uint8_t>(255 * iteration / max_iteration),
-                                     static_cast<uint8_t>(255 * iteration / max_iteration),
-                                     static_cast<uint8_t>(255 * iteration / max_iteration)));
+      surface.put_pixel(px, py, RGB(static_cast<uint8_t>(255 * iteration / max_iteration),
+                                    static_cast<uint8_t>(255 * iteration / max_iteration),
+                                    static_cast<uint8_t>(255 * iteration / max_iteration)));
     }
   }
 
-  m_callback(Tile(m_scale, m_pos, surface));
+  m_callback(Tile(m_scale, m_pos, SoftwareSurface(surface)));
   get_handle().set_finished();
 }
 

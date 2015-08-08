@@ -95,24 +95,21 @@ Imagemagick::get_supported_extensions()
 
 namespace {
 
-SoftwareSurfacePtr
+SoftwareSurface
 MagickImage2SoftwareSurface(const Magick::Image& image)
 {
-  SoftwareSurfacePtr surface;
-
   int width  = static_cast<int>(image.columns());
   int height = static_cast<int>(image.rows());
   int shift = QuantumDepth - 8;
 
   if (image.matte())
   {
-    surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT,
-                                      Size(width, height));
+    PixelData dst(PixelData::RGBA_FORMAT, Size(width, height));
 
     for(int y = 0; y < height; ++y)
     {
       const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, static_cast<size_t>(width), 1);
-      uint8_t* dst_pixels = surface->get_row_data(y);
+      uint8_t* dst_pixels = dst.get_row_data(y);
 
       for(int x = 0; x < width; ++x)
       {
@@ -122,14 +119,16 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
         dst_pixels[4*x + 3] = static_cast<uint8_t>(255 - (src_pixels[x].opacity >> shift));
       }
     }
+
+    return SoftwareSurface(std::move(dst));
   }
   else
   {
-    surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
-                                      Size(width, height));
+    PixelData dst(PixelData::RGB_FORMAT, Size(width, height));
+
     for(int y = 0; y < height; ++y)
     {
-      uint8_t* dst_pixels = surface->get_row_data(y);
+      uint8_t* dst_pixels = dst.get_row_data(y);
       const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, static_cast<size_t>(width), 1);
 
       for(int x = 0; x < width; ++x)
@@ -139,21 +138,21 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
         dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue  >> shift);
       }
     }
-  }
 
-  return surface;
+    return SoftwareSurface(std::move(dst));
+  }
 }
 
 } // namespace
 
-SoftwareSurfacePtr
+SoftwareSurface
 Imagemagick::load_from_mem(const void* data, size_t len)
 {
   // FIXME: Magick::Blob creates an unneeded copy of the data
   return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len)));
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 Imagemagick::load_from_file(const std::string& filename)
 {
   return MagickImage2SoftwareSurface(Magick::Image(filename));

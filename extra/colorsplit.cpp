@@ -29,10 +29,10 @@ void scanlines(SoftwareSurfaceFloatPtr surface)
     {
       RGBAf rgba;
       surface->get_pixel(x, y, rgba);
-      
+
       int v = (x+y%3) % 3;
       if (v % 6 == 0)
-      {      
+      {
         rgba.r = rgba.r * 3.0f;
         rgba.g = 0.0f;
         rgba.b = 0.0f;
@@ -51,7 +51,7 @@ void scanlines(SoftwareSurfaceFloatPtr surface)
       }
 
       rgba.clamp();
-      
+
       surface->put_pixel(x, y, rgba);
     }
   }
@@ -60,11 +60,11 @@ void scanlines(SoftwareSurfaceFloatPtr surface)
 int main(int argc, char** argv)
 {
   SoftwareSurfaceFactory software_surface_factory;
-  
+
   float gamma = 2.2f;
   for(int i = 1; i < argc; ++i)
   {
-    SoftwareSurfacePtr surface = software_surface_factory.from_file(argv[i]);
+    SoftwareSurface surface = software_surface_factory.from_file(argv[i]);
     SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::from_software_surface(surface);
 
     surfacef->apply_gamma(gamma);

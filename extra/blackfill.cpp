@@ -74,18 +74,18 @@ RGB blackfill_pixel(RGB p00, RGB p10, RGB p20,
   }
 }
 
-RGB get_pixel(SoftwareSurfacePtr img, int x, int y)
+RGB get_pixel(SoftwareSurface const& img, int x, int y)
 {
   RGB rgb;
-  img->get_pixel(x, y, rgb);
+  img.get_pixel(x, y, rgb);
   return rgb;
 }
 
-void blackfill(SoftwareSurfacePtr in, 
-               SoftwareSurfacePtr out)
+void blackfill(PixelData const& in,
+               PixelData& out)
 {
-  for(int y = 0; y < in->get_height()-2; ++y)
-    for(int x = 0; x < in->get_width()-2; ++x)
+  for(int y = 0; y < in.get_height()-2; ++y)
+    for(int x = 0; x < in.get_width()-2; ++x)
     {
       RGB p00 = get_pixel(in, x+0, y+0);
       RGB p10 = get_pixel(in, x+1, y+0);
@@ -94,15 +94,15 @@ void blackfill(SoftwareSurfacePtr in,
       RGB p01 = get_pixel(in, x+0, y+1);
       RGB p11 = get_pixel(in, x+1, y+1);
       RGB p21 = get_pixel(in, x+2, y+1);
-        
+
       RGB p02 = get_pixel(in, x+0, y+2);
       RGB p12 = get_pixel(in, x+1, y+2);
       RGB p22 = get_pixel(in, x+2, y+2);
 
-      out->put_pixel(x+1, y+1, 
-                     blackfill_pixel(p00, p10, p20,
-                                     p01, p11, p21,
-                                     p02, p12, p22));
+      out.put_pixel(x+1, y+1,
+                    blackfill_pixel(p00, p10, p20,
+                                    p01, p11, p21,
+                                    p02, p12, p22));
     }
 }
 
@@ -114,12 +114,13 @@ int main(int argc, char* argv[])
   for(int i = 1; i < argc; ++i)
   {
     std::cout << "Loading: " << argv[i] << std::endl;
-    SoftwareSurfacePtr in  = factory.from_url(URL::from_filename(argv[1]));
-    SoftwareSurfacePtr out = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, in->get_size());
+    SoftwareSurface in  = factory.from_url(URL::from_filename(argv[1]));
+    PixelData out(PixelData::RGB_FORMAT, in.get_size());
 
-    blackfill(in, out);
+    blackfill(in.get_pixel_data(), out);
+
     //PNG::save(out, argv[2]);
-    JPEG::save(out, 85, argv[2]);
+    JPEG::save(SoftwareSurface(out), 85, argv[2]);
   }
 
   return 0;

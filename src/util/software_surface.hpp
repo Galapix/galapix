@@ -24,25 +24,17 @@
 
 #include "math/vector2i.hpp"
 #include "util/blob.hpp"
+#include "util/pixel_data.hpp"
 
 class RGB;
 class RGBA;
 class Rect;
 class Size;
-class SoftwareSurfaceImpl;
-class SoftwareSurface;
 
-typedef std::shared_ptr<SoftwareSurface> SoftwareSurfacePtr;
-
+/** A non-mutable high-level SoftwareSurface with value semantics */
 class SoftwareSurface
 {
 public:
-  enum Format
-  {
-    RGB_FORMAT,
-    RGBA_FORMAT
-  };
-
   enum Modifier
   {
     kRot0,
@@ -55,54 +47,42 @@ public:
     kRot270Flip
   };
 
-private:
-  SoftwareSurface(Format format, const Size& size);
-
 public:
-  static SoftwareSurfacePtr create(Format format, const Size& size);
+  SoftwareSurface();
+  SoftwareSurface(PixelData data);
 
   Size get_size() const;
   int get_width() const;
   int get_height() const;
-  int get_pitch() const;
 
-  SoftwareSurfacePtr clone() const;
-  SoftwareSurfacePtr halve() const;
-  SoftwareSurfacePtr scale(const Size& size) const;
-  SoftwareSurfacePtr crop(const Rect& rect) const;
+  SoftwareSurface halve() const;
+  SoftwareSurface scale(Size const& size) const;
+  SoftwareSurface crop(Rect const& rect) const;
 
-  SoftwareSurfacePtr transform(Modifier mod) const;
-  SoftwareSurfacePtr rotate90() const;
-  SoftwareSurfacePtr rotate180() const;
-  SoftwareSurfacePtr rotate270() const;
-  SoftwareSurfacePtr vflip() const;
-  SoftwareSurfacePtr hflip() const;
+  SoftwareSurface transform(Modifier mod) const;
+  SoftwareSurface rotate90() const;
+  SoftwareSurface rotate180() const;
+  SoftwareSurface rotate270() const;
+  SoftwareSurface vflip() const;
+  SoftwareSurface hflip() const;
 
   void get_pixel(int x, int y, RGB& rgb) const;
   void get_pixel(int x, int y, RGBA& rgb) const;
 
-  uint8_t const* get_data() const;
-  uint8_t const* get_row_data(int y) const;
+  int get_bytes_per_pixel() const;
+
+  PixelData const& get_pixel_data() const { return *m_pixel_data; }
 
   RGB get_average_color() const;
 
-  Format get_format() const;
+  PixelData::Format get_format() const;
 
-  SoftwareSurfacePtr to_rgb() const;
+  SoftwareSurface to_rgb() const;
 
-  int get_bytes_per_pixel() const;
-
-  /** Performs a simple copy from this to \a test, no blending is performed */
-  void blit(SoftwareSurface& dst, const Vector2i& pos);
-
-  void put_pixel(int x, int y, const RGB& rgb);
-  void put_pixel(int x, int y, const RGBA& rgb);
-
-  uint8_t* get_data();
-  uint8_t* get_row_data(int y);
+  explicit operator bool() const { return m_pixel_data != nullptr; }
 
 private:
-  std::unique_ptr<SoftwareSurfaceImpl> impl;
+  std::shared_ptr<const PixelData> m_pixel_data;
 };
 
 #endif

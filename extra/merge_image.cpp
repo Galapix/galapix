@@ -26,13 +26,13 @@
 #include "util/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
-void add(SoftwareSurfaceFloatPtr out, SoftwareSurfacePtr in)
+void add(SoftwareSurfaceFloatPtr out, SoftwareSurface const& src)
 {
   for(int y = 0; y < out->get_height(); ++y)
     for(int x = 0; x < out->get_width(); ++x)
     {
-      RGB rgb; 
-      in->get_pixel(x, y, rgb);
+      RGB rgb;
+      src.get_pixel(x, y, rgb);
       RGBAf rgba;
       out->get_pixel(x, y, rgba);
 
@@ -44,10 +44,10 @@ void add(SoftwareSurfaceFloatPtr out, SoftwareSurfacePtr in)
     }
 }
 
-void tone_map(SoftwareSurfacePtr out, SoftwareSurfaceFloatPtr in, float factor)
+void tone_map(PixelData out, SoftwareSurfaceFloatPtr in, float factor)
 {
-  for(int y = 0; y < out->get_height(); ++y)
-    for(int x = 0; x < out->get_width(); ++x)
+  for(int y = 0; y < out.get_height(); ++y)
+    for(int x = 0; x < out.get_width(); ++x)
     {
       RGBAf rgba;
       in->get_pixel(x, y, rgba);
@@ -55,7 +55,7 @@ void tone_map(SoftwareSurfacePtr out, SoftwareSurfaceFloatPtr in, float factor)
       rgb.r = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.r / factor, 2.2f), 1.0f));
       rgb.g = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.g / factor, 2.2f), 1.0f));
       rgb.b = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.b / factor, 2.2f), 1.0f));
-      out->put_pixel(x, y, rgb);
+      out.put_pixel(x, y, rgb);
     }
 }
 
@@ -74,17 +74,17 @@ int main(int argc, char** argv)
     for(int i = 1; i < argc; ++i)
     {
       std::cout << "Loading: " << argv[i] << std::endl;
-      SoftwareSurfacePtr image = factory.from_url(URL::from_filename(argv[i]));
+      SoftwareSurface image = factory.from_url(URL::from_filename(argv[i]));
 
       if (!out)
       {
-        out = SoftwareSurfaceFloat::create(image->get_size());
+        out = SoftwareSurfaceFloat::create(image.get_size());
       }
 
       add(out, image);
     }
 
-    SoftwareSurfacePtr out_rgb = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, out->get_size());
+    PixelData out_rgb(PixelData::RGB_FORMAT, out->get_size());
     tone_map(out_rgb, out, static_cast<float>(argc - 1));
 
     std::string out_filename = "/tmp/out.jpg";

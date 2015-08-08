@@ -24,7 +24,7 @@
 class PNM
 {
 public:
-  static SoftwareSurfacePtr load_from_mem(const char* data, size_t len);
+  static SoftwareSurface load_from_mem(const char* data, size_t len);
 };
 
 #endif

@@ -25,14 +25,14 @@
 #include "math/size.hpp"
 #include "util/raise_exception.hpp"
 
-SoftwareSurfacePtr
+SoftwareSurface
 PNM::load_from_mem(const char* data, size_t len)
 {
   PNMMemReader pnm(data, len);
 
-  SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, pnm.get_size());
+  PixelData dst(PixelData::RGB_FORMAT, pnm.get_size());
   const uint8_t* src_pixels = reinterpret_cast<const uint8_t*>(pnm.get_pixel_data());
-  uint8_t* dst_pixels = surface->get_data();
+  uint8_t* dst_pixels = dst.get_data();
   //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;
   assert(pnm.get_maxval() == 255);
 
@@ -40,12 +40,12 @@ PNM::load_from_mem(const char* data, size_t len)
 
   if (pnm.get_magic() == "P6") // RGB
   {
-    if (surface->get_width() * surface->get_height() * 3 > pixel_data_len)
+    if (dst.get_width() * dst.get_height() * 3 > pixel_data_len)
     {
       raise_runtime_error("PNM::load_from_mem(): premature end of pixel data");
     }
 
-    for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
+    for(int i = 0; i < dst.get_width() * dst.get_height(); ++i)
     {
       dst_pixels[3*i+0] = src_pixels[3*i+0];
       dst_pixels[3*i+1] = src_pixels[3*i+1];
@@ -54,12 +54,12 @@ PNM::load_from_mem(const char* data, size_t len)
   }
   else if (pnm.get_magic() == "P5") // Grayscale
   {
-    if (surface->get_width() * surface->get_height()  > pixel_data_len)
+    if (dst.get_width() * dst.get_height()  > pixel_data_len)
     {
       raise_runtime_error("PNM::load_from_mem(): premature end of pixel data");
     }
 
-    for(int i = 0; i < surface->get_width() * surface->get_height(); ++i)
+    for(int i = 0; i < dst.get_width() * dst.get_height(); ++i)
     {
       dst_pixels[3*i+0] = src_pixels[i];
       dst_pixels[3*i+1] = src_pixels[i];
@@ -71,7 +71,7 @@ PNM::load_from_mem(const char* data, size_t len)
     raise_runtime_error("PNM::load_from_mem(): Unhandled PNM format: '" + pnm.get_magic() + "'");
   }
 
-  return surface;
+  return SoftwareSurface(std::move(dst));
 }
 
 /* EOF */

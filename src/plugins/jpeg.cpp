@@ -81,11 +81,11 @@ JPEG::get_size(const uint8_t* data, int len)
 }
 
 
-SoftwareSurfacePtr
+SoftwareSurface
 JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
 {
   FileJPEGDecompressor loader(filename);
-  SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
+  SoftwareSurface surface = loader.read_image(scale, image_size);
 
   SoftwareSurface::Modifier modifier = EXIF::get_orientation(filename);
 
@@ -98,16 +98,16 @@ JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
   }
   else
   {
-    return surface->transform(modifier);
+    return surface.transform(modifier);
   }
 }
 
 
-SoftwareSurfacePtr
+SoftwareSurface
 JPEG::load_from_mem(const uint8_t* data, size_t len, int scale, Size* image_size)
 {
   MemJPEGDecompressor loader(data, len);
-  SoftwareSurfacePtr surface = loader.read_image(scale, image_size);
+  SoftwareSurface surface = loader.read_image(scale, image_size);
 
   SoftwareSurface::Modifier modifier = EXIF::get_orientation(data, len);
 
@@ -120,13 +120,13 @@ JPEG::load_from_mem(const uint8_t* data, size_t len, int scale, Size* image_size
   }
   else
   {
-    return surface->transform(modifier);
+    return surface.transform(modifier);
   }
 }
 
 
 void
-JPEG::save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename)
+JPEG::save(SoftwareSurface const& surface, int quality, const std::string& filename)
 {
   FileJPEGCompressor compressor(filename);
   compressor.save(surface, quality);
@@ -134,7 +134,7 @@ JPEG::save(const SoftwareSurfacePtr& surface, int quality, const std::string& fi
 
 
 Blob
-JPEG::save(const SoftwareSurfacePtr& surface, int quality)
+JPEG::save(SoftwareSurface const& surface, int quality)
 {
   std::vector<uint8_t> data;
   MemJPEGCompressor compressor(data);

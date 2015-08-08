@@ -35,31 +35,32 @@ JPEGCompressor::~JPEGCompressor()
 }
 
 void
-JPEGCompressor::save(SoftwareSurfacePtr surface_in, int quality)
+JPEGCompressor::save(SoftwareSurface const& surface_in, int quality)
 {
-  SoftwareSurfacePtr surface = surface_in->to_rgb();
+  SoftwareSurface surface = surface_in.to_rgb();
+  PixelData const& pixel_data = surface.get_pixel_data();
 
-  m_cinfo.image_width = static_cast<JDIMENSION>(surface->get_width());
-  m_cinfo.image_height = static_cast<JDIMENSION>(surface->get_height());
+  m_cinfo.image_width = static_cast<JDIMENSION>(pixel_data.get_width());
+  m_cinfo.image_height = static_cast<JDIMENSION>(pixel_data.get_height());
 
-  m_cinfo.input_components = 3;         /* # of color components per pixel */
-  m_cinfo.in_color_space   = JCS_RGB;   /* colorspace of input image */
+  m_cinfo.input_components = 3; // # of color components per pixel
+  m_cinfo.in_color_space = JCS_RGB; // colorspace of input image
 
   jpeg_set_defaults(&m_cinfo);
   jpeg_set_quality(&m_cinfo, quality, TRUE /* limit to baseline-JPEG values */);
 
   jpeg_start_compress(&m_cinfo, TRUE);
 
-  std::vector<JSAMPROW> row_pointer(static_cast<size_t>(surface->get_height()));
-  for(int y = 0; y < surface->get_height(); ++y)
+  std::vector<JSAMPROW> row_pointer(static_cast<size_t>(pixel_data.get_height()));
+  for(int y = 0; y < pixel_data.get_height(); ++y)
   {
-    row_pointer[static_cast<size_t>(y)] = static_cast<JSAMPLE*>(surface->get_row_data(y));
+    row_pointer[static_cast<size_t>(y)] = const_cast<JSAMPLE*>(pixel_data.get_row_data(y));
   }
 
   while(m_cinfo.next_scanline < m_cinfo.image_height)
   {
     jpeg_write_scanlines(&m_cinfo, &row_pointer[m_cinfo.next_scanline],
-                         static_cast<unsigned int>(surface->get_height()) - m_cinfo.next_scanline);
+                         static_cast<unsigned int>(pixel_data.get_height()) - m_cinfo.next_scanline);
   }
 
   jpeg_finish_compress(&m_cinfo);

@@ -48,12 +48,12 @@ public:
   bool supports_from_file() const override { return true; }
   bool supports_from_mem() const override { return true; }
 
-  SoftwareSurfacePtr from_file(const std::string& filename) const override
+  SoftwareSurface from_file(const std::string& filename) const override
   {
     return Imagemagick::load_from_file(filename);
   }
 
-  SoftwareSurfacePtr from_mem(const uint8_t* data, size_t len) const override
+  SoftwareSurface from_mem(const uint8_t* data, size_t len) const override
   {
     return Imagemagick::load_from_mem(data, len);
   }

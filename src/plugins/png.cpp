@@ -148,7 +148,7 @@ PNG::is_png(const std::string& filename)
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 PNG::load_from_file(const std::string& filename)
 {
   FILE* in = fopen(filename.c_str(), "rb");
@@ -186,17 +186,17 @@ PNG::load_from_file(const std::string& filename)
     int height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
     //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
-    SoftwareSurfacePtr surface;
+    PixelData dst;
 
     switch(png_get_color_type(png_ptr, info_ptr))
     {
       case PNG_COLOR_TYPE_RGBA:
       {
-        surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
+        dst = PixelData(PixelData::RGBA_FORMAT, Size(width, height));
 
         std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
         for (int y = 0; y < height; ++y)
-          row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
+          row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
 
         png_read_image(png_ptr, row_pointers.data());
       }
@@ -204,11 +204,11 @@ PNG::load_from_file(const std::string& filename)
 
       case PNG_COLOR_TYPE_RGB:
       {
-        surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
+        dst = PixelData(PixelData::RGB_FORMAT, Size(width, height));
 
         std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
         for (int y = 0; y < height; ++y)
-          row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
+          row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
 
         png_read_image(png_ptr, row_pointers.data());
       }
@@ -219,11 +219,11 @@ PNG::load_from_file(const std::string& filename)
 
     fclose(in);
 
-    return surface;
+    return SoftwareSurface(std::move(dst));
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 PNG::load_from_mem(const uint8_t* data, size_t len)
 {
   // FIXME: Merge this with load_from_file
@@ -260,17 +260,17 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
   int height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
   //int pitch  = png_get_rowbytes(png_ptr, info_ptr);
 
-  SoftwareSurfacePtr surface;
+  PixelData dst;
 
   switch(png_get_color_type(png_ptr, info_ptr))
   {
     case PNG_COLOR_TYPE_RGBA:
     {
-      surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(width, height));
+      dst = PixelData(PixelData::RGBA_FORMAT, Size(width, height));
 
       std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
       for (int y = 0; y < height; ++y)
-        row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
+        row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
 
       png_read_image(png_ptr, row_pointers.data());
     }
@@ -278,11 +278,11 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
 
     case PNG_COLOR_TYPE_RGB:
     {
-      surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(width, height));
+      dst = PixelData(PixelData::RGB_FORMAT, Size(width, height));
 
       std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
       for (int y = 0; y < height; ++y)
-        row_pointers[static_cast<size_t>(y)] = surface->get_row_data(y);
+        row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
 
       png_read_image(png_ptr, row_pointers.data());
     }
@@ -291,12 +291,14 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
 
   png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 
-  return surface;
+  return SoftwareSurface(std::move(dst));
 }
 
 void
-PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
+PNG::save(SoftwareSurface const& surface, const std::string& filename)
 {
+  PixelData const& src = surface.get_pixel_data();
+
   FILE* out = fopen(filename.c_str(), "wb");
   if (!out)
   {
@@ -320,18 +322,20 @@ PNG::save(const SoftwareSurfacePtr& surface, const std::string& filename)
     png_init_io(png_ptr, out);
 
     png_set_IHDR(png_ptr, info_ptr,
-                 static_cast<png_uint_32>(surface->get_width()),
-                 static_cast<png_uint_32>(surface->get_height()),
+                 static_cast<png_uint_32>(src.get_width()),
+                 static_cast<png_uint_32>(src.get_height()),
                  8,
-                 (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
+                 (src.get_format() == PixelData::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
                  PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
     png_write_info(png_ptr, info_ptr);
 
-    for (int y = 0; y < surface->get_height(); ++y)
-      png_write_row(png_ptr, surface->get_row_data(y));
+    for (int y = 0; y < src.get_height(); ++y)
+    {
+      png_write_row(png_ptr, const_cast<const png_bytep>(src.get_row_data(y)));
+    }
 
     png_write_end(png_ptr, info_ptr);
 
@@ -358,8 +362,10 @@ void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
 }
 
 Blob
-PNG::save(const SoftwareSurfacePtr& surface)
+PNG::save(SoftwareSurface const& surface)
 {
+  PixelData const& src = surface.get_pixel_data();
+
   // FIXME: Merge this with the save to file function
   png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
   png_infop   info_ptr = png_create_info_struct(png_ptr);
@@ -375,18 +381,20 @@ PNG::save(const SoftwareSurfacePtr& surface)
   png_set_write_fn(png_ptr, &mem, &writePNGMemory, NULL);
 
   png_set_IHDR(png_ptr, info_ptr,
-               static_cast<png_uint_32>(surface->get_width()),
-               static_cast<png_uint_32>(surface->get_height()),
+               static_cast<png_uint_32>(src.get_width()),
+               static_cast<png_uint_32>(src.get_height()),
                8,
-               (surface->get_format() == SoftwareSurface::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
+               (src.get_format() == PixelData::RGB_FORMAT) ? PNG_COLOR_TYPE_RGB : PNG_COLOR_TYPE_RGBA,
                PNG_INTERLACE_NONE,
                PNG_COMPRESSION_TYPE_DEFAULT,
                PNG_FILTER_TYPE_DEFAULT);
 
   png_write_info(png_ptr, info_ptr);
 
-  for (int y = 0; y < surface->get_height(); ++y)
-    png_write_row(png_ptr, surface->get_row_data(y));
+  for (int y = 0; y < src.get_height(); ++y)
+  {
+    png_write_row(png_ptr, const_cast<png_bytep>(src.get_row_data(y)));
+  }
 
   png_write_end(png_ptr, info_ptr);
 

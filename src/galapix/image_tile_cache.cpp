@@ -165,12 +165,12 @@ ImageTileCache::process_queue()
       // std::cout << "ImageTileCache::process_queue(): received unrequested tile" << std::endl;
       m_cache[tile_id] = SurfaceStruct(JobHandle::create(),
                                        SurfaceStruct::SURFACE_SUCCEEDED,
-                                       Surface::create(*tile.get_surface()));
+                                       Surface::create(tile.get_surface()));
     }
     else
     {
-      i->second.surface = Surface::create(*tile.get_surface());
-      i->second.status  = SurfaceStruct::SURFACE_SUCCEEDED;
+      i->second.surface = Surface::create(tile.get_surface());
+      i->second.status = SurfaceStruct::SURFACE_SUCCEEDED;
     }
   }
 }

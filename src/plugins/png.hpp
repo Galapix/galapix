@@ -33,11 +33,11 @@ public:
 
   static bool is_png(const std::string& filename);
 
-  static SoftwareSurfacePtr load_from_file(const std::string& filename);
-  static SoftwareSurfacePtr load_from_mem(const uint8_t* data, size_t len);
+  static SoftwareSurface load_from_file(const std::string& filename);
+  static SoftwareSurface load_from_mem(const uint8_t* data, size_t len);
 
-  static void save(const SoftwareSurfacePtr& surface, const std::string& filename);
-  static Blob save(const SoftwareSurfacePtr& surface);
+  static void save(SoftwareSurface const& surface, const std::string& filename);
+  static Blob save(SoftwareSurface const& surface);
 };
 
 #endif

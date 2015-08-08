@@ -46,7 +46,7 @@ public:
   virtual ~JPEGDecompressor();
 
   Size read_size();
-  SoftwareSurfacePtr read_image(int scale, Size* image_size);
+  SoftwareSurface read_image(int scale, Size* image_size);
 
 private:
   static void fatal_error_handler(j_common_ptr cinfo);

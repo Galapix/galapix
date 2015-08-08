@@ -55,7 +55,7 @@ FileTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos
   std::string filename = get_complete_filename(image_id, pos, scale);
   if (Filesystem::exist(filename))
   {
-    SoftwareSurfacePtr surface;
+    SoftwareSurface surface;
     // FIXME: need another way to find out the format
     if (PNG::is_png(filename))
     {
@@ -94,7 +94,7 @@ FileTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles
     }
     else
     {
-      SoftwareSurfacePtr surface;
+      SoftwareSurface surface;
       if (PNG::is_png(directory + '/' + *i))
       {
         surface = PNG::load_from_file(directory + '/' + *i);
@@ -155,13 +155,13 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 
   std::cout << "Saving to: " << filename << std::endl;
 
-  switch(tile.get_surface()->get_format())
+  switch(tile.get_surface().get_format())
   {
-    case SoftwareSurface::RGB_FORMAT:
+    case PixelData::RGB_FORMAT:
       JPEG::save(tile.get_surface(), 75, filename);
       break;
 
-    case SoftwareSurface::RGBA_FORMAT:
+    case PixelData::RGBA_FORMAT:
       PNG::save(tile.get_surface(), filename);
       break;
 

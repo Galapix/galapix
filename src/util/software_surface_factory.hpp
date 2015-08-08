@@ -60,9 +60,9 @@ public:
   const SoftwareSurfaceLoader* find_loader_by_magic(const std::string& data) const;
   const SoftwareSurfaceLoader* find_loader_by_magic(Blob const& data) const;
 
-  SoftwareSurfacePtr from_url(const URL& url) const;
-  SoftwareSurfacePtr from_file(const std::string& filename) const;
-  SoftwareSurfacePtr from_file(const std::string& filename, const SoftwareSurfaceLoader* loader) const;
+  SoftwareSurface from_url(const URL& url) const;
+  SoftwareSurface from_file(const std::string& filename) const;
+  SoftwareSurface from_file(const std::string& filename, const SoftwareSurfaceLoader* loader) const;
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);

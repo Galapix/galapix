@@ -34,11 +34,11 @@ int main(int argc, char* argv[])
   //int left = atoi(argv[1]);
   std::string in_filename  = argv[2];
   std::string out_filename = argv[3];
-  
+
   std::cout << "Loading: " << in_filename << " - writing to " << out_filename << std::endl;
 
-  SoftwareSurfacePtr in  = factory.from_url(URL::from_filename(in_filename));
-  SoftwareSurfacePtr out = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, in->get_size());
+  SoftwareSurface in = factory.from_url(URL::from_filename(in_filename));
+  PixelData out(PixelData::RGB_FORMAT, in.get_size());
 
   //PNG::save(out, out_filename);
   JPEG::save(out, 85, out_filename);

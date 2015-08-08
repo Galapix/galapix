@@ -60,7 +60,7 @@ public:
   static void begin_render();
   static void end_render();
 
-  static SoftwareSurfacePtr screenshot();
+  static SoftwareSurface screenshot();
   static void apply_gamma_ramp(float contrast, float brightness, float gamma);
 };
 

@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     for(int i = 1; i < argc; ++i)
     {
       //SoftwareSurfacePtr surface = SoftwareSurfaceFactory::current().from_url(URL::from_string(argv[i]));
-      SoftwareSurfacePtr surface = JPEG::load_from_file(argv[i], 2);
+      SoftwareSurface surface = JPEG::load_from_file(argv[i], 2);
 
     }
   }

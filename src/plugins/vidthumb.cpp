@@ -43,7 +43,7 @@ VidThumb::is_available()
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 VidThumb::load_from_file(const std::string& filename)
 {
   Exec vidthumb("vidthumb");
@@ -59,7 +59,7 @@ VidThumb::load_from_file(const std::string& filename)
   {
     std::cout.write(vidthumb.get_stdout().data(),
                     static_cast<std::streamsize>(vidthumb.get_stdout().size()));
-    SoftwareSurfacePtr surface = PNG::load_from_file(out.str());
+    SoftwareSurface surface = PNG::load_from_file(out.str());
     remove(out.str().c_str());
     return surface;
   }

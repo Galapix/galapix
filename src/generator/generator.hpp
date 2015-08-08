@@ -60,7 +60,7 @@ private:
                               GeneratorCallbacksPtr callbacks);
   bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor,
                                 GeneratorCallbacksPtr callbacks);
-  void process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks);
+  void process_image_tiling(SoftwareSurface const&  surface, GeneratorCallbacksPtr callbacks);
 
 private:
   Generator(const Generator&) = delete;

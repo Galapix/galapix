@@ -43,7 +43,7 @@ UFRaw::is_available()
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 UFRaw::load_from_file(const std::string& filename)
 {
   Exec ufraw("ufraw-batch");

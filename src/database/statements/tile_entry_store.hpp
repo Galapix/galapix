@@ -46,14 +46,14 @@ public:
     {
       // Tile doesn't have a Blob, so we assume it has a surface and
       // we generate the Blob from that
-      switch(tile.get_surface()->get_format())
+      switch(tile.get_surface().get_format())
       {
-        case SoftwareSurface::RGB_FORMAT:
+        case PixelData::RGB_FORMAT:
           tile.set_blob(JPEG::save(tile.get_surface(), 75));
           tile.set_format(TileEntry::JPEG_FORMAT);
           break;
 
-        case SoftwareSurface::RGBA_FORMAT:
+        case PixelData::RGBA_FORMAT:
           tile.set_blob(PNG::save(tile.get_surface()));
           tile.set_format(TileEntry::PNG_FORMAT);
           break;

@@ -43,7 +43,7 @@ RSVG::is_available()
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 RSVG::load_from_file(const std::string& filename)
 {
   Exec rsvg("rsvg");
@@ -55,7 +55,7 @@ RSVG::load_from_file(const std::string& filename)
   if (rsvg.exec() == 0)
   {
     Blob blob = Blob::copy(&*rsvg.get_stdout().begin(), rsvg.get_stdout().size());
-    SoftwareSurfacePtr surface = PNG::load_from_mem(blob.get_data(), blob.size());
+    SoftwareSurface surface = PNG::load_from_mem(blob.get_data(), blob.size());
     return surface;
   }
   else

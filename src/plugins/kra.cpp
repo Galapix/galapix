@@ -40,7 +40,7 @@ KRA::is_available()
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 KRA::load_from_file(const std::string& filename)
 {
   // koconverter --batch --mimetype image/png sketch39.kra /dev/stdout  > /tmp/test.png

@@ -40,11 +40,11 @@ public:
     GLenum gl_format = GL_RGB;
     switch(src.get_format())
     {
-      case SoftwareSurface::RGB_FORMAT:
+      case PixelData::RGB_FORMAT:
         gl_format = GL_RGB;
         break;
 
-      case SoftwareSurface::RGBA_FORMAT:
+      case PixelData::RGBA_FORMAT:
         gl_format = GL_RGBA;
         break;
 
@@ -55,15 +55,17 @@ public:
     glPixelStorei(GL_UNPACK_ALIGNMENT,  1);
 
 #ifdef HAVE_OPENGLES2
-    SoftwareSurfacePtr subsurf = src.crop(srcrect);
+    SoftwareSurface subsurf = src.crop(srcrect);
 
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
                  size.width, size.height,
                  0, /* border */
                  gl_format,
                  GL_UNSIGNED_BYTE,
-                 subsurf->get_data());
+                 subsurf.get_pixel_data().get_data());
 #else
+    PixelData const& pixel_data = src.get_pixel_data();
+
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
 
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
@@ -71,7 +73,9 @@ public:
                  0, /* border */
                  gl_format,
                  GL_UNSIGNED_BYTE,
-                 src.get_data() + (src.get_pitch() * srcrect.top) + (srcrect.left * src.get_bytes_per_pixel()));
+                 pixel_data.get_data() +
+                 (pixel_data.get_pitch() * srcrect.top) +
+                 (srcrect.left * pixel_data.get_bytes_per_pixel()));
 #endif
 
     assert_gl("packing image texture");

@@ -33,15 +33,15 @@ SoftwareSurfaceFloat::SoftwareSurfaceFloat(const Size& size) :
 }
 
 SoftwareSurfaceFloatPtr
-SoftwareSurfaceFloat::from_software_surface(const SoftwareSurfacePtr& surface)
+SoftwareSurfaceFloat::from_software_surface(SoftwareSurface const& surface)
 {
-  SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::create(surface->get_size());
-  for(int y = 0; y < surface->get_height(); ++y)
+  SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::create(surface.get_size());
+  for(int y = 0; y < surface.get_height(); ++y)
   {
-    for(int x = 0; x < surface->get_width(); ++x)
+    for(int x = 0; x < surface.get_width(); ++x)
     {
       RGBA rgba;
-      surface->get_pixel(x, y, rgba);
+      surface.get_pixel(x, y, rgba);
 
       RGBAf rgbaf = RGBAf::from_rgba(rgba);
       surfacef->put_pixel(x, y, rgbaf);
@@ -109,10 +109,10 @@ SoftwareSurfaceFloat::get_pixel(int x, int y, RGBAf& rgba) const
   rgba.a = m_pixels[static_cast<size_t>(get_pitch() * y + 4*x + 3)];
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 SoftwareSurfaceFloat::to_software_surface() const
 {
-  SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, m_size);
+  PixelData dst(PixelData::RGBA_FORMAT, m_size);
   for(int y = 0; y < m_size.height; ++y)
   {
     for(int x = 0; x < m_size.width; ++x)
@@ -125,10 +125,10 @@ SoftwareSurfaceFloat::to_software_surface() const
       rgba.g = static_cast<uint8_t>(Math::clamp(0, static_cast<int>(rgbaf.g * 255.0f), 255));
       rgba.b = static_cast<uint8_t>(Math::clamp(0, static_cast<int>(rgbaf.b * 255.0f), 255));
       rgba.a = static_cast<uint8_t>(Math::clamp(0, static_cast<int>(rgbaf.a * 255.0f), 255));
-      surface->put_pixel(x, y, rgba);
+      dst.put_pixel(x, y, rgba);
     }
   }
-  return surface;
+  return SoftwareSurface(std::move(dst));
 }
 
 /* EOF */

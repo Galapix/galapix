@@ -38,8 +38,8 @@ struct Pixel
 struct TileDBEntry
 {
   Pixel pixels;
-  SoftwareSurfacePtr small;
-  SoftwareSurfacePtr original;
+  SoftwareSurface small;
+  SoftwareSurface original;
 };
 
 std::string gen_filename(uint32_t num)
@@ -59,30 +59,30 @@ int diff(const Pixel& lhs, const Pixel& rhs)
   return a*a + b*b + c*c + d*d;
 }
 
-Pixel get_pixels(SoftwareSurfacePtr surface)
+Pixel get_pixels(SoftwareSurface surface)
 {
-  assert(surface->get_width()  == 4);
-  assert(surface->get_height() == 4);
+  assert(surface.get_width()  == 4);
+  assert(surface.get_height() == 4);
 
   RGB tl;
   RGB tr;
   RGB bl;
   RGB br;
 
-  surface->get_pixel(0, 0, tl);
-  surface->get_pixel(1, 0, tr);
-  surface->get_pixel(0, 1, bl);
-  surface->get_pixel(1, 1, br);
+  surface.get_pixel(0, 0, tl);
+  surface.get_pixel(1, 0, tr);
+  surface.get_pixel(0, 1, bl);
+  surface.get_pixel(1, 1, br);
 
   return Pixel{tl.r, tr.r, bl.r, br.r};
 }
 
-SoftwareSurfacePtr find_closest_tile(std::vector<TileDBEntry>& tiledb,
-                                     SoftwareSurfacePtr input)
+SoftwareSurface find_closest_tile(std::vector<TileDBEntry>& tiledb,
+                                  SoftwareSurface const& input)
 {
   Pixel input_pixel = get_pixels(input);
 
-  SoftwareSurfacePtr best_match;
+  SoftwareSurface best_match;
   int min_dist = std::numeric_limits<int>::max();
 
   for(const auto& entry : tiledb)
@@ -109,16 +109,16 @@ int main(int argc, char* argv[])
   {
     std::cout << "Processing: " << argv[i] << std::endl;
 
-    SoftwareSurfacePtr surface = SoftwareSurfaceFactory::current().from_file(argv[i]);
+    SoftwareSurface surface = SoftwareSurfaceFactory::current().from_file(argv[i]);
     Size tile_size(8, 8);
 
-    for(int y = 0; y < surface->get_height() - tile_size.height; y += tile_size.height)
+    for(int y = 0; y < surface.get_height() - tile_size.height; y += tile_size.height)
     {
       std::cout << y << std::endl;
-      for(int x = 0; x < surface->get_width() - tile_size.width; x += tile_size.width)
+      for(int x = 0; x < surface.get_width() - tile_size.width; x += tile_size.width)
       {
-        SoftwareSurfacePtr src_tile = surface->crop(Rect(Vector2i(x, y), tile_size));
-        SoftwareSurfacePtr small = src_tile->halve();
+        SoftwareSurface src_tile = surface.crop(Rect(Vector2i(x, y), tile_size));
+        SoftwareSurface small = src_tile.halve();
         tiledb.push_back(TileDBEntry{get_pixels(small), small, src_tile});
       }
     }
@@ -130,21 +130,19 @@ int main(int argc, char* argv[])
   // use tiledb to scale the images
   for(int i = argc-1; i < argc; ++i)
   {
-    SoftwareSurfacePtr surface = SoftwareSurfaceFactory::current().from_file(argv[i]);
-    SoftwareSurfacePtr out_surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
-                                                             Size(surface->get_size() * 2));
+    SoftwareSurface surface = SoftwareSurfaceFactory::current().from_file(argv[i]);
+    PixelData out_surface(PixelData::RGB_FORMAT, Size(surface.get_size() * 2));
     Size tile_size(4, 4);
 
-    for(int y = 0; y < surface->get_height() - tile_size.height; y += tile_size.height)
+    for(int y = 0; y < surface.get_height() - tile_size.height; y += tile_size.height)
     {
       std::cout << y << std::endl;
-      for(int x = 0; x < surface->get_width() - tile_size.width; x += tile_size.width)
+      for(int x = 0; x < surface.get_width() - tile_size.width; x += tile_size.width)
       {
-        SoftwareSurfacePtr src_tile = surface->crop(Rect(Vector2i(x, y), tile_size));
+        SoftwareSurface src_tile = surface.crop(Rect(Vector2i(x, y), tile_size));
+        SoftwareSurface closest_tile = find_closest_tile(tiledb, src_tile);
 
-        SoftwareSurfacePtr closest_tile = find_closest_tile(tiledb, src_tile);
-
-        closest_tile->blit(*out_surface, Vector2i(x*2, y*2));
+        closest_tile.get_pixel_data().blit(out_surface, Vector2i(x*2, y*2));
       }
     }
 

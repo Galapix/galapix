@@ -43,7 +43,7 @@ public:
 
       @return reference counted pointer to a SoftwareSurface object
    */
-  static SoftwareSurfacePtr load_from_file(const std::string& filename, int scale = 1, Size* size = NULL);
+  static SoftwareSurface load_from_file(const std::string& filename, int scale = 1, Size* size = NULL);
 
   /** Load a JPEG from memory
 
@@ -53,10 +53,10 @@ public:
 
       @return reference counted pointer to a SoftwareSurface object
    */
-  static SoftwareSurfacePtr load_from_mem(const uint8_t* data, size_t len, int scale = 1, Size* size = NULL);
+  static SoftwareSurface load_from_mem(const uint8_t* data, size_t len, int scale = 1, Size* size = NULL);
 
-  static void save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename);
-  static Blob save(const SoftwareSurfacePtr& surface, int quality);
+  static void save(SoftwareSurface const& surface, int quality, const std::string& filename);
+  static Blob save(SoftwareSurface const& surface, int quality);
 };
 
 #endif

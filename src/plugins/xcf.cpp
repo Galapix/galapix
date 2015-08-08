@@ -164,7 +164,7 @@ XCF::get_size(const std::string& filename, Size& size)
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 XCF::load_from_file(const std::string& filename)
 {
   Exec xcf2png("xcf2png");
@@ -180,7 +180,7 @@ XCF::load_from_file(const std::string& filename)
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 XCF::load_from_mem(const void* data, size_t len)
 {
   Exec xcf2png("xcf2png");

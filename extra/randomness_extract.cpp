@@ -42,33 +42,33 @@ int main(int argc, char** argv)
     for(int i = 1; i < argc; ++i)
     {
       std::cout << "Loading: " << argv[i] << std::endl;
- 
-      SoftwareSurfacePtr image = factory.from_url(URL::from_string(argv[i]));
-      SoftwareSurfacePtr out = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, image->get_size());
-      
+
+      SoftwareSurface image = factory.from_url(URL::from_string(argv[i]));
+      PixelData out = PixelData(PixelData::RGB_FORMAT, image.get_size());
+
       std::cout << "Processing image..." << std::endl;
-      for(int y = 0; y < out->get_height(); ++y)
-        for(int x = 0; x < out->get_width(); ++x)
+      for(int y = 0; y < out.get_height(); ++y)
+        for(int x = 0; x < out.get_width(); ++x)
         {
           RGB rgb;
-          image->get_pixel(x, y, rgb);
+          image.get_pixel(x, y, rgb);
 
-          if (rgb.r & (1<<3)) 
+          if (rgb.r & (1<<3))
             rgb.r = 0;
           else
             rgb.r = 255;
 
-          if (rgb.g & (1<<3)) 
+          if (rgb.g & (1<<3))
             rgb.g = 0;
           else
             rgb.g = 255;
 
-          if (rgb.b & (1<<3)) 
+          if (rgb.b & (1<<3))
             rgb.b = 0;
           else
             rgb.b = 255;
 
-          out->put_pixel(x, y, rgb);
+          out.put_pixel(x, y, rgb);
         }
       std::cout << "Processing image... Done" << std::endl;
 

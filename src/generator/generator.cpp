@@ -221,7 +221,7 @@ Generator::process_image_resource(const ResourceLocator& locator,
 
     try
     {
-      SoftwareSurfacePtr surface;
+      SoftwareSurface surface;
 
       if (blob_accessor->has_stdio_name())
       {
@@ -260,21 +260,21 @@ inline int calc_max_scale(int width, int height)
 }
 
 void
-Generator::process_image_tiling(SoftwareSurfacePtr surface, GeneratorCallbacksPtr callbacks)
+Generator::process_image_tiling(SoftwareSurface const& surface, GeneratorCallbacksPtr callbacks)
 {
   std::vector<Tile> tiles;
 
   int min_scale = 0;
-  int max_scale = calc_max_scale(surface->get_width(), surface->get_height());
+  int max_scale = calc_max_scale(surface.get_width(), surface.get_height());
 
   TileGenerator::generate(surface, min_scale, max_scale,
-                          [&tiles](int x, int y, int scale, SoftwareSurfacePtr tile)
+                          [&tiles](int x, int y, int scale, SoftwareSurface tile)
                           {
                             tiles.emplace_back(Tile(scale, Vector2i(x, y), tile));
                           });
 
   // build ImageData
-  ImageData image_data(ImageInfo(surface->get_width(), surface->get_height()),
+  ImageData image_data(ImageInfo(surface.get_width(), surface.get_height()),
                        std::move(tiles));
   callbacks->on_image_data(image_data);
 }

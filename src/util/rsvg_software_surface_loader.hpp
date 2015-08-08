@@ -45,12 +45,12 @@ public:
   bool supports_from_file() const override { return true;  }
   bool supports_from_mem()  const override { return false; }
 
-  SoftwareSurfacePtr from_file(const std::string& filename) const override
+  SoftwareSurface from_file(const std::string& filename) const override
   {
     return RSVG::load_from_file(filename);
   }
 
-  SoftwareSurfacePtr from_mem(const uint8_t* data, size_t len) const override
+  SoftwareSurface from_mem(const uint8_t* data, size_t len) const override
   {
     assert(false && "not implemented");
   }

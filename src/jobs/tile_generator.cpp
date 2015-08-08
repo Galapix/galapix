@@ -66,11 +66,11 @@ TileGenerator::generate(const URL& url, int min_scale, int max_scale,
 {
   // Load the image, try to load an already downsized version if possible
   Size original_size;
-  SoftwareSurfacePtr surface = load_surface(url, min_scale, &original_size);
+  SoftwareSurface surface = load_surface(url, min_scale, &original_size);
   cut_into_tiles(surface, original_size, min_scale, max_scale, callback);
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
 {
   // Load the image
@@ -92,14 +92,14 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
   }
   else
   {
-    SoftwareSurfacePtr surface = SoftwareSurfaceFactory::current().from_url(url);
-    *size = surface->get_size();
+    SoftwareSurface surface = SoftwareSurfaceFactory::current().from_url(url);
+    *size = surface.get_size();
     return surface;
   }
 }
 
 void
-TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
+TileGenerator::cut_into_tiles(SoftwareSurface surface,
                               const Size& original_size,
                               int min_scale, int max_scale,
                               const std::function<void (Tile)>& callback)
@@ -109,24 +109,24 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
   Size target_size(original_size.width  / Math::pow2(min_scale),
                    original_size.height / Math::pow2(min_scale));
 
-  if (target_size != surface->get_size())
+  if (target_size != surface.get_size())
   {
     // JPEG that are downscaled on loading might not match target_size
     // exactly and be one pixel larger
-    int x_miss = surface->get_size().width  - target_size.width;
-    int y_miss = surface->get_size().height - target_size.height;
+    int x_miss = surface.get_size().width  - target_size.width;
+    int y_miss = surface.get_size().height - target_size.height;
 
     if (0 <= x_miss && x_miss <= 1 &&
         0 <= y_miss && y_miss <= 1)
     {
       log_debug("image doesn't match target size, ignoring as it is close enough: target=%1% vs surface=%2%",
-                target_size, surface->get_size());
+                target_size, surface.get_size());
     }
     else
     {
       log_debug("image doesn't match target size, doing scaling: target=%1% vs surface=%2%",
-                target_size, surface->get_size());
-      surface = surface->scale(target_size);
+                target_size, surface.get_size());
+      surface = surface.scale(target_size);
     }
   }
 
@@ -137,14 +137,14 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
   {
     if (scale != min_scale)
     {
-      surface = surface->halve();
+      surface = surface.halve();
     }
 
-    for(int y = 0; 256*y < surface->get_height(); ++y)
-      for(int x = 0; 256*x < surface->get_width(); ++x)
+    for(int y = 0; 256*y < surface.get_height(); ++y)
+      for(int x = 0; 256*x < surface.get_width(); ++x)
       {
-        SoftwareSurfacePtr croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
-                                                               Size(256, 256)));
+        SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
+                                                           Size(256, 256)));
 
         callback(Tile(scale, Vector2i(x, y), croped_surface));
       }
@@ -156,16 +156,16 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
 
 
 void
-TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
-                              const std::function<void (int x, int y, SoftwareSurfacePtr)>& callback)
+TileGenerator::cut_into_tiles(SoftwareSurface surface,
+                              const std::function<void (int x, int y, SoftwareSurface)>& callback)
 {
-  int tile_w = (surface->get_width()  + (TILE_WIDTH  - 1)) / TILE_WIDTH;
-  int tile_h = (surface->get_height() + (TILE_HEIGHT - 1)) / TILE_HEIGHT;
+  int tile_w = (surface.get_width()  + (TILE_WIDTH  - 1)) / TILE_WIDTH;
+  int tile_h = (surface.get_height() + (TILE_HEIGHT - 1)) / TILE_HEIGHT;
 
   for(int y = 0; y < tile_h; ++y)
     for(int x = 0; x < tile_w; ++x)
     {
-      SoftwareSurfacePtr croped_surface = surface->crop(Rect(Vector2i(x * 256, y * 256),
+      SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
                                                              Size(256, 256)));
 
       callback(x, y, croped_surface);
@@ -173,22 +173,22 @@ TileGenerator::cut_into_tiles(SoftwareSurfacePtr surface,
 }
 
 void
-TileGenerator::generate(SoftwareSurfacePtr surface, int min_scale, int max_scale,
-                        const std::function<void (int x, int y, int scale, SoftwareSurfacePtr)>& callback)
+TileGenerator::generate(SoftwareSurface surface, int min_scale, int max_scale,
+                        const std::function<void (int x, int y, int scale, SoftwareSurface)>& callback)
 {
-  Size target_size(surface->get_width()  / Math::pow2(min_scale),
-                   surface->get_height() / Math::pow2(min_scale));
-  surface = surface->scale(target_size);
+  Size target_size(surface.get_width()  / Math::pow2(min_scale),
+                   surface.get_height() / Math::pow2(min_scale));
+  surface = surface.scale(target_size);
 
   for(int scale = min_scale; scale < max_scale; ++scale)
   {
     if (scale != min_scale)
     {
-      surface = surface->halve();
+      surface = surface.halve();
     }
 
     cut_into_tiles(surface,
-                   [scale, callback](int x, int y, const SoftwareSurfacePtr& tile)
+                   [scale, callback](int x, int y, SoftwareSurface const& tile)
                    {
                      callback(x, y, scale, tile);
                    });

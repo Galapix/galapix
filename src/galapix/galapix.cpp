@@ -98,7 +98,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
         size /= 2;
       }
 
-      SoftwareSurfacePtr target = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, size);
+      SoftwareSurface target = SoftwareSurface::create(PixelData::RGB_FORMAT, size);
       for(int y = 0; y < (size.height+255)/256; ++y)
         for(int x = 0; x < (size.width+255)/256; ++x)
         {

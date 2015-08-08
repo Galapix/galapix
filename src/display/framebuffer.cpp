@@ -296,14 +296,14 @@ Framebuffer::get_height()
   return size.height;
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 Framebuffer::screenshot()
 {
-  SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, get_size());
+  PixelData dst(PixelData::RGB_FORMAT, get_size());
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
-  glReadPixels(0, 0, surface->get_width(), surface->get_height(),
-               GL_RGB, GL_UNSIGNED_BYTE, surface->get_data());
-  return surface->vflip();
+  glReadPixels(0, 0, dst.get_width(), dst.get_height(),
+               GL_RGB, GL_UNSIGNED_BYTE, dst.get_data());
+  return SoftwareSurface(std::move(dst)).vflip();
 }
 
 void

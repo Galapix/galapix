@@ -182,7 +182,7 @@ SoftwareSurfaceFactory::find_loader_by_magic(Blob const& data) const
   return find_loader_by_magic(std::string(reinterpret_cast<const char*>(data.get_data()), size));
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 SoftwareSurfaceFactory::from_file(const std::string& filename, const SoftwareSurfaceLoader* loader) const
 {
   assert(loader);
@@ -202,7 +202,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename, const SoftwareSur
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 SoftwareSurfaceFactory::from_file(const std::string& filename) const
 {
   const SoftwareSurfaceLoader* loader = find_loader_by_filename(filename);
@@ -236,7 +236,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 SoftwareSurfaceFactory::from_url(const URL& url) const
 {
   log_debug("%1%", url);

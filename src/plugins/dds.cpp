@@ -49,7 +49,7 @@ DDS::get_size(const std::string& filename, Size& size)
   }
 }
 
-SoftwareSurfacePtr
+SoftwareSurface
 DDS::load_from_file(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::binary);
@@ -62,20 +62,19 @@ DDS::load_from_file(const std::string& filename)
   {
     DDSSurface dds(in);
 
-    SoftwareSurfacePtr surface
-      = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, Size(dds.get_width(), dds.get_height()));
+    PixelData dst(PixelData::RGBA_FORMAT, Size(dds.get_width(), dds.get_height()));
 
-    if (static_cast<int>(dds.get_length()) != surface->get_width() * surface->get_height() * 4)
+    if (static_cast<int>(dds.get_length()) != dst.get_width() * dst.get_height() * 4)
     {
       std::ostringstream out;
       out << "DDS::load_from_file(): length missmatch " << dds.get_length()
-          << " - " << surface->get_width() << "x" << surface->get_height();
+          << " - " << dst.get_width() << "x" << dst.get_height();
       raise_runtime_error(out.str());
     }
 
-    memcpy(surface->get_data(), dds.get_data(), dds.get_length());
+    memcpy(dst.get_data(), dds.get_data(), dds.get_length());
 
-    return surface;
+    return SoftwareSurface(std::move(dst));
   }
 }
 

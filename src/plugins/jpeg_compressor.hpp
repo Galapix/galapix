@@ -36,7 +36,7 @@ protected:
 public:
   virtual ~JPEGCompressor();
 
-  void save(SoftwareSurfacePtr surface_in, int quality);
+  void save(SoftwareSurface const& surface_in, int quality);
 
 private:
   JPEGCompressor(const JPEGCompressor&);
