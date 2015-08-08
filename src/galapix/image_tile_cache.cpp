@@ -154,8 +154,6 @@ ImageTileCache::process_queue()
   Tile tile;
   while (m_tile_queue.try_pop(tile))
   {
-    assert(tile.get_surface());
-
     TileCacheId tile_id(tile.get_pos(), tile.get_scale());
 
     Cache::iterator i = m_cache.find(tile_id);

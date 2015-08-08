@@ -70,8 +70,6 @@ public:
 
   PixelData const& get_pixel_data() const { return *m_pixel_data; }
 
-  explicit operator bool() const { return m_pixel_data != nullptr; }
-
 private:
   std::shared_ptr<const PixelData> m_pixel_data;
 };

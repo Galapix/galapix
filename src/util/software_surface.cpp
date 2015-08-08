@@ -51,7 +51,7 @@ void copy_pixel_rgba(PixelData& dst, int dst_x, int dst_y,
 } // namespace
 
 SoftwareSurface::SoftwareSurface() :
-  m_pixel_data()
+  m_pixel_data(std::make_shared<PixelData>())
 {
 }
 
