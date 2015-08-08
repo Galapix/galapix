@@ -89,62 +89,110 @@ InputStream::read_exact(void* buffer, size_t len)
 
 int16_t swapSLE16(int16_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return value;
+#else
+  return __builtin_bswap16(value);
+#endif
 }
 
 uint16_t swapULE16(uint16_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return value;
+#else
+  return __builtin_bswap16(value);
+#endif
 }
 
 int32_t swapSLE32(int32_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return value;
+#else
+  return __builtin_bswap32(value);
+#endif
 }
 
 uint32_t swapULE32(uint32_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return value;
+#else
+  return __builtin_bswap32(value);
+#endif
 }
 
 int64_t swapSLE64(int64_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return value;
+#else
+  return __builtin_bswap64(value);
+#endif
 }
 
 uint64_t swapULE64(uint64_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return value;
+#else
+  return value;
+#endif
 }
 
 int16_t swapSBE16(int16_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return __builtin_bswap16(value);
+#else
+  return value;
+#endif
 }
 
 uint16_t swapUBE16(uint16_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return __builtin_bswap16(value);
+#else
+  return value;
+#endif
 }
 
 int32_t swapSBE32(int32_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return __builtin_bswap32(value);
+#else
+  return value;
+#endif
 }
 
 uint32_t swapUBE32(uint32_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return __builtin_bswap32(value);
+#else
+  return value;
+#endif
 }
 
 int64_t swapSBE64(int64_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return __builtin_bswap64(value);
+#else
+  return value;
+#endif
 }
 
 uint64_t swapUBE64(uint64_t value)
 {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return __builtin_bswap64(value);
+#else
+  return value;
+#endif
 }
 
 uint8_t
