@@ -21,10 +21,10 @@
 #include "resource/blob_accessor.hpp"
 
 BlobInfo
-BlobInfo::from_blob(BlobPtr blob)
+BlobInfo::from_blob(Blob blob)
 {
-  return BlobInfo(SHA1::from_mem(blob->get_data(), blob->size()),
-                  blob->size());
+  return BlobInfo(SHA1::from_mem(blob.get_data(), blob.size()),
+                  blob.size());
 }
 
 BlobInfo
@@ -37,9 +37,9 @@ BlobInfo::from_blob(const BlobAccessor& blob_accessor)
   }
   else
   {
-    const BlobPtr& blob = blob_accessor.get_blob();
-    return BlobInfo(SHA1::from_mem(blob->get_data(), blob->size()),
-                    blob->size());
+    Blob const& blob = blob_accessor.get_blob();
+    return BlobInfo(SHA1::from_mem(blob.get_data(), blob.size()),
+                    blob.size());
   }
 }
 

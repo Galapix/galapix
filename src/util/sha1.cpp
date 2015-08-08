@@ -130,10 +130,10 @@ SHA1::SHA1() :
 {
 }
 
-SHA1::SHA1(const BlobPtr& blob) :
+SHA1::SHA1(Blob const& blob) :
   m_data()
 {
-  std::copy_n(blob->get_data(), blob->size(), m_data.begin());
+  std::copy_n(blob.get_data(), blob.size(), m_data.begin());
 }
 
 SHA1::SHA1(const uint8_t sha1[20]) :

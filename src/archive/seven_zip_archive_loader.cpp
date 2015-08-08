@@ -45,7 +45,7 @@ SevenZipArchiveLoader::get_filenames(const std::string& zip_filename) const
   return SevenZip::get_filenames(zip_filename);
 }
 
-BlobPtr
+Blob
 SevenZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return SevenZip::get_file(zip_filename, filename);

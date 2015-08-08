@@ -56,7 +56,7 @@ public:
   static SoftwareSurfacePtr load_from_mem(const uint8_t* data, size_t len, int scale = 1, Size* size = NULL);
 
   static void save(const SoftwareSurfacePtr& surface, int quality, const std::string& filename);
-  static BlobPtr save(const SoftwareSurfacePtr& surface, int quality);
+  static Blob save(const SoftwareSurfacePtr& surface, int quality);
 };
 
 #endif

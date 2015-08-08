@@ -78,7 +78,7 @@ public:
   SoftwareSurfacePtr vflip();
   SoftwareSurfacePtr hflip();
 
-  BlobPtr get_raw_data()  const;
+  Blob get_raw_data()  const;
 
   void put_pixel(int x, int y, const RGB& rgb);
   void get_pixel(int x, int y, RGB& rgb) const;

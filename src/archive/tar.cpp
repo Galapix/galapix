@@ -50,7 +50,7 @@ Tar::get_filenames(const std::string& tar_filename)
   }
 }
 
-BlobPtr
+Blob
 Tar::get_file(const std::string& tar_filename, const std::string& filename)
 {
   Exec tar("tar");

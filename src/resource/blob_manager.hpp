@@ -36,7 +36,7 @@ class BlobRequest
 {
 public:
   ResourceLocator locator;
-  std::function<void (Failable<BlobPtr>)> callback;
+  std::function<void (Failable<Blob>)> callback;
 };
 
 class BlobManager

@@ -31,18 +31,18 @@ class BlobAccessor
 private:
   mutable std::mutex m_mutex;
   mutable std::string m_filename;
-  mutable BlobPtr m_blob;
+  mutable Blob m_blob;
   mutable boost::optional<BlobInfo> m_blob_info;
 
 public:
   BlobAccessor(const std::string& filename);
-  BlobAccessor(BlobPtr blob);
+  BlobAccessor(Blob blob);
 
   bool has_stdio_name() const;
   std::string get_stdio_name() const;
 
   bool has_blob() const;
-  BlobPtr get_blob() const;
+  Blob get_blob() const;
 
   size_t size() const;
   const uint8_t* get_data() const;

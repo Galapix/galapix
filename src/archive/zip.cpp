@@ -173,7 +173,7 @@ Zip::get_filenames(const std::string& archive)
   }
 }
 
-BlobPtr
+Blob
 Zip::get_file(const std::string& archive, const std::string& filename_in)
 {
   // unzip uses wildcard expressions, not raw filenames, thus we have

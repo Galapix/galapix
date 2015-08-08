@@ -28,7 +28,7 @@ BlobAccessor::BlobAccessor(const std::string& filename) :
 {
 }
 
-BlobAccessor::BlobAccessor(BlobPtr blob) :
+BlobAccessor::BlobAccessor(Blob blob) :
   m_mutex(),
   m_filename(),
   m_blob(blob),
@@ -57,7 +57,7 @@ BlobAccessor::get_stdio_name() const
   {
     boost::filesystem::path tmpfile = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
     m_filename = tmpfile.string();
-    m_blob->write_to_file(m_filename);
+    m_blob.write_to_file(m_filename);
     return m_filename;
   }
 }
@@ -70,7 +70,7 @@ BlobAccessor::has_blob() const
   return static_cast<bool>(m_blob);
 }
 
-BlobPtr
+Blob
 BlobAccessor::get_blob() const
 {
   std::lock_guard<std::mutex> lock(m_mutex);
@@ -103,8 +103,8 @@ BlobAccessor::get_blob_info() const
     }
     else
     {
-      m_blob_info.reset(BlobInfo(SHA1::from_mem(m_blob->get_data(), m_blob->size()),
-                                 m_blob->size()));
+      m_blob_info.reset(BlobInfo(SHA1::from_mem(m_blob.get_data(), m_blob.size()),
+                                 m_blob.size()));
     }
     return *m_blob_info;
   }
@@ -114,14 +114,14 @@ size_t
 BlobAccessor::size() const
 {
   // TODO: rewrite this to handle stdio
-  return get_blob()->size();
+  return get_blob().size();
 }
 
 const uint8_t*
 BlobAccessor::get_data() const
 {
   // TODO: rewrite this to handle stdio
-  return get_blob()->get_data();
+  return get_blob().get_data();
 }
 
 /* EOF */

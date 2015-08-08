@@ -105,7 +105,7 @@ SQLiteReader::get_text(int column)
   return std::string(static_cast<const char*>(data), static_cast<size_t>(len));
 }
 
-BlobPtr
+Blob
 SQLiteReader::get_blob(int column)
 {
   const void* data = sqlite3_column_blob(m_stmt.get_stmt(), column);

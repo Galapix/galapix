@@ -34,8 +34,8 @@ UITEST(ZipTest, list, "ZIPFILE",
 UITEST(ZipTest, extract, "ZIPFILE FILETOEXTRACT",
        "Extract a file from a .zip")
 {
-  BlobPtr blob = Zip::get_file(args[0], args[1]);
-  blob->write_to_file("/tmp/out.file");
+  Blob blob = Zip::get_file(args[0], args[1]);
+  blob.write_to_file("/tmp/out.file");
   std::cout << "Writting /tmp/out.file" << std::endl;
 }
 

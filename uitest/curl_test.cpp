@@ -39,7 +39,7 @@ UITEST(CURL, test, "URL...",
     {
       std::cout << "Trying to get: " << arg << std::endl;
       std::string mime_type;
-      CURLHandler::get_data(arg, &mime_type)->write_to_file("/tmp/out");
+      CURLHandler::get_data(arg, &mime_type).write_to_file("/tmp/out");
       std::cout << "Got: " << arg << " -> '" << mime_type << "'" << std::endl;
     }
 

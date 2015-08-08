@@ -133,7 +133,7 @@ JPEG::save(const SoftwareSurfacePtr& surface, int quality, const std::string& fi
 }
 
 
-BlobPtr
+Blob
 JPEG::save(const SoftwareSurfacePtr& surface, int quality)
 {
   std::vector<uint8_t> data;

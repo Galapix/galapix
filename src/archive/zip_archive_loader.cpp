@@ -48,7 +48,7 @@ ZipArchiveLoader::get_filenames(const std::string& zip_filename) const
   return Zip::get_filenames(zip_filename);
 }
 
-BlobPtr
+Blob
 ZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return Zip::get_file(zip_filename, filename);

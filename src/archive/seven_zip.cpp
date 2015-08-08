@@ -80,7 +80,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
   return lst;
 }
 
-BlobPtr
+Blob
 SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
 {
   Exec zip("7zr");

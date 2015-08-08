@@ -45,7 +45,7 @@ public:
   ~ArchiveManager();
 
   bool is_archive(const std::string& filename) const;
-  bool is_archive(const BlobPtr& blob) const;
+  bool is_archive(Blob const& blob) const;
 
   /**
      Returns the list of files contained in the archive, if \a loader
@@ -55,7 +55,7 @@ public:
   std::vector<std::string> get_filenames(const std::string& zip_filename,
                                          const ArchiveLoader** loader_out = nullptr) const;
 
-  BlobPtr get_file(const std::string& zip_filename, const std::string& filename) const;
+  Blob get_file(const std::string& zip_filename, const std::string& filename) const;
   BlobAccessorPtr get_file(const BlobAccessorPtr& archive, const std::string& type, const std::string& args) const;
 
   /**

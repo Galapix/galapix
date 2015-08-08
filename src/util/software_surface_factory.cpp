@@ -176,10 +176,10 @@ SoftwareSurfaceFactory::find_loader_by_magic(const std::string& data) const
 }
 
 const SoftwareSurfaceLoader*
-SoftwareSurfaceFactory::find_loader_by_magic(const BlobPtr& data) const
+SoftwareSurfaceFactory::find_loader_by_magic(Blob const& data) const
 {
-  size_t size = std::min(static_cast<size_t>(1024), data->size());
-  return find_loader_by_magic(std::string(reinterpret_cast<const char*>(data->get_data()), size));
+  size_t size = std::min(static_cast<size_t>(1024), data.size());
+  return find_loader_by_magic(std::string(reinterpret_cast<const char*>(data.get_data()), size));
 }
 
 SoftwareSurfacePtr
@@ -193,8 +193,8 @@ SoftwareSurfaceFactory::from_file(const std::string& filename, const SoftwareSur
   }
   else if (loader->supports_from_mem())
   {
-    BlobPtr blob = Blob::from_file(filename);
-    return loader->from_mem(blob->get_data(), blob->size());
+    Blob blob = Blob::from_file(filename);
+    return loader->from_mem(blob.get_data(), blob.size());
   }
   else
   {
@@ -248,7 +248,7 @@ SoftwareSurfaceFactory::from_url(const URL& url) const
   else
   {
     std::string mime_type;
-    BlobPtr blob = url.get_blob(&mime_type);
+    Blob blob = url.get_blob(&mime_type);
 
     const SoftwareSurfaceLoader* loader = nullptr;
 
@@ -284,7 +284,7 @@ SoftwareSurfaceFactory::from_url(const URL& url) const
     {
       if (loader->supports_from_mem())
       {
-        return loader->from_mem(blob->get_data(), blob->size());
+        return loader->from_mem(blob.get_data(), blob.size());
       }
       else
       {

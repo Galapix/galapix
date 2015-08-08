@@ -46,8 +46,8 @@ UITEST(Rar, list, "ARCHIVE")
 
 UITEST(Rar, extract, "ARCHIVE FILENAME")
 {
-  BlobPtr blob = Rar::get_file(args[0], args[1]);
-  blob->write_to_file("/tmp/out.file");
+  Blob blob = Rar::get_file(args[0], args[1]);
+  blob.write_to_file("/tmp/out.file");
   std::cout << "Writting /tmp/out.file" << std::endl;
 }
 

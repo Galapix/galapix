@@ -78,7 +78,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
 std::shared_ptr<ZoomifyTileProvider>
 ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
 {
-  std::string content = url.get_blob()->str();
+  std::string content = url.get_blob().str();
 
   std::string url_str = url.str();
   // FIXME: use basedir() like function instead of raw unchecked string cutting

@@ -69,8 +69,8 @@ UITEST(ArchiveManager, extract, "ARCHIVENAME FILENAME OUTFILE",
   std::string outfile  = args[2];
 
   ArchiveManager archiver;
-  BlobPtr blob = archiver.get_file(archive, filename);
-  blob->write_to_file(outfile);
+  Blob blob = archiver.get_file(archive, filename);
+  blob.write_to_file(outfile);
 }
 
 /* EOF */

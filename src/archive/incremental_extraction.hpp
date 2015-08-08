@@ -41,17 +41,17 @@ public:
     return m_loader.get_filenames(m_archive);
   }
 
-  BlobPtr get_file(const std::string& filename) const
+  Blob get_file(const std::string& filename) const
   {
     return m_loader.get_file(m_archive, filename);
   }
 
   std::string get_file_as_path(const std::string& filename) const
   {
-    BlobPtr blob = m_loader.get_file(m_archive, filename);
+    Blob blob = m_loader.get_file(m_archive, filename);
     boost::filesystem::path path = boost::filesystem::temp_directory_path() /
       boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
-    blob->write_to_file(path.string());
+    blob.write_to_file(path.string());
     return path.string();
   }
 

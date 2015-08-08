@@ -61,8 +61,8 @@ public:
       else
       {
         std::cout << "ZoomifyTileJob::run(): downloading " << m_url << std::endl;
-        BlobPtr blob = CURLHandler::get_data(m_url.str());
-        SoftwareSurfacePtr surface = JPEG::load_from_mem(blob->get_data(), blob->size());
+        Blob blob = CURLHandler::get_data(m_url.str());
+        SoftwareSurfacePtr surface = JPEG::load_from_mem(blob.get_data(), blob.size());
         m_callback(Tile(m_scale, m_pos, surface));
         get_handle().set_finished();
       }

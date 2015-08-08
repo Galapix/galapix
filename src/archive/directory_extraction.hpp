@@ -34,7 +34,7 @@ public:
                       const std::string& type);
 
   std::vector<std::string> get_filenames() const override;
-  BlobPtr get_file(const std::string& filename) const override;
+  Blob get_file(const std::string& filename) const override;
   std::string get_file_as_path(const std::string& filename) const override;
 
   std::string get_type() const override { return m_type; }

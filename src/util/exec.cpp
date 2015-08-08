@@ -56,7 +56,7 @@ Exec::set_working_directory(const std::string& path)
 }
 
 void
-Exec::set_stdin(const BlobPtr& blob)
+Exec::set_stdin(Blob const& blob)
 {
   m_stdin_data = blob;
 }
@@ -169,7 +169,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
   // write data to stdin
   if (m_stdin_data)
   {
-    if (write(stdin_fd, m_stdin_data->get_data(), m_stdin_data->size()) < 0)
+    if (write(stdin_fd, m_stdin_data.get_data(), m_stdin_data.size()) < 0)
     {
       close(stdin_fd);
       close(stdout_fd);

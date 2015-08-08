@@ -357,7 +357,7 @@ void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
   std::copy(data, data+length, std::back_inserter(mem->data));
 }
 
-BlobPtr
+Blob
 PNG::save(const SoftwareSurfacePtr& surface)
 {
   // FIXME: Merge this with the save to file function

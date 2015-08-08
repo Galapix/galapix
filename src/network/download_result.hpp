@@ -27,7 +27,7 @@
 class DownloadResult
 {
 public:
-  static DownloadResult from_curl(CURL* handle, BlobPtr blob);
+  static DownloadResult from_curl(CURL* handle, Blob blob);
 
 private:
   DownloadResult() :
@@ -40,7 +40,7 @@ private:
 public:
   std::string get_content_type() const { return m_content_type; }
   long get_mtime() const { return m_mtime; }
-  BlobPtr get_blob() const { return m_blob; }
+  Blob get_blob() const { return m_blob; }
   long get_response_code() const { return m_response_code; }
   bool success() const {
     return m_response_code / 100 == 2;
@@ -48,7 +48,7 @@ public:
 
 private:
   std::string m_content_type;
-  BlobPtr m_blob;
+  Blob m_blob;
   long m_mtime;
   long m_response_code;
 };

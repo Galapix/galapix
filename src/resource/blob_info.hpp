@@ -37,7 +37,7 @@ private:
   size_t  m_size;
 
 public:
-  static BlobInfo from_blob(BlobPtr blob);
+  static BlobInfo from_blob(Blob blob);
   static BlobInfo from_blob(const BlobAccessor& blob_accessor);
   static BlobInfo from_blob(const BlobAccessorPtr& blob_accessor);
 

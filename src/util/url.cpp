@@ -119,7 +119,7 @@ URL::get_payload() const
   return m_payload;
 }
 
-BlobPtr
+Blob
 URL::get_blob(std::string* mime_type) const
 {
   if (m_protocol == "file")

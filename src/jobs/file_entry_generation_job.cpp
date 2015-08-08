@@ -46,7 +46,7 @@ FileEntryGenerationJob::run()
     // FIXME: JPEG::filename_is_jpeg() is ugly
     if (!m_url.is_remote() && JPEG::filename_is_jpeg(m_url.str()))
     {
-      BlobPtr blob;
+      Blob blob;
 
       if (m_url.has_stdio_name())
       {
@@ -55,7 +55,7 @@ FileEntryGenerationJob::run()
       else
       {
         blob = m_url.get_blob();
-        size = JPEG::get_size(blob->get_data(), blob->size());
+        size = JPEG::get_size(blob.get_data(), blob.size());
       }
 
       // FIXME: On http:// transfer mtime and size must be got from the transfer itself, not afterwards
@@ -72,7 +72,7 @@ FileEntryGenerationJob::run()
       }
       else
       {
-        surface = JPEG::load_from_mem(blob->get_data(), blob->size(), Math::pow2(min_scale));
+        surface = JPEG::load_from_mem(blob.get_data(), blob.size(), Math::pow2(min_scale));
       }
     }
     else

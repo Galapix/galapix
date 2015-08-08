@@ -56,15 +56,15 @@ public:
                          reader.get_blob(4),
                          static_cast<TileEntry::Format>(reader.get_int(6)));
 
-        BlobPtr blob = tile.get_blob();
+        Blob blob = tile.get_blob();
         switch(tile.get_format())
         {
           case TileEntry::JPEG_FORMAT:
-            tile.set_surface(JPEG::load_from_mem(blob->get_data(), blob->size()));
+            tile.set_surface(JPEG::load_from_mem(blob.get_data(), blob.size()));
             break;
 
           case TileEntry::PNG_FORMAT:
-            tile.set_surface(PNG::load_from_mem(blob->get_data(), blob->size()));
+            tile.set_surface(PNG::load_from_mem(blob.get_data(), blob.size()));
             break;
 
           default:

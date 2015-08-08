@@ -38,7 +38,7 @@ private:
   std::vector<char> m_stdout_vec;
   std::vector<char> m_stderr_vec;
 
-  BlobPtr m_stdin_data;
+  Blob m_stdin_data;
 
 public:
   static const bool ABSOLUTE_PATH = true;
@@ -67,7 +67,7 @@ public:
 
       @param blob The data passed on stdin
    */
-  void set_stdin(const BlobPtr& blob);
+  void set_stdin(Blob const& blob);
 
   /** Start the external program
 

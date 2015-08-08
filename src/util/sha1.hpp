@@ -35,7 +35,7 @@ public:
 public:
   SHA1();
   SHA1(const uint8_t data[20]);
-  SHA1(const BlobPtr& blob);
+  SHA1(Blob const& blob);
 
   std::string str() const;
   const uint8_t* data() const { return m_data.data(); }

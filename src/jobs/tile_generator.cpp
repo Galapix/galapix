@@ -86,8 +86,8 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
     }
     else
     {
-      BlobPtr blob = url.get_blob();
-      return JPEG::load_from_mem(blob->get_data(), blob->size(), jpeg_scale, size);
+      Blob blob = url.get_blob();
+      return JPEG::load_from_mem(blob.get_data(), blob.size(), jpeg_scale, size);
     }
   }
   else

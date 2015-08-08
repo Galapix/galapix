@@ -61,8 +61,8 @@ void run_repl()
 
                                      if (result.success())
                                      {
-                                       std::cout.write(reinterpret_cast<const char*>(result.get_blob()->get_data()),
-                                                       static_cast<std::streamsize>(result.get_blob()->size()));
+                                       std::cout.write(reinterpret_cast<const char*>(result.get_blob().get_data()),
+                                                       static_cast<std::streamsize>(result.get_blob().size()));
                                      }
                                      else
                                      {
@@ -91,8 +91,8 @@ void run_repl()
                                       std::cout << "got " << result.get_response_code() << " for " << " " << args[1] << std::endl;
                                       if (result.success())
                                       {
-                                        std::cout.write(reinterpret_cast<const char*>(result.get_blob()->get_data()),
-                                                        static_cast<std::streamsize>(result.get_blob()->size()));
+                                        std::cout.write(reinterpret_cast<const char*>(result.get_blob().get_data()),
+                                                        static_cast<std::streamsize>(result.get_blob().size()));
                                       }
                                       else
                                       {

@@ -33,19 +33,19 @@ ArchiveThread::~ArchiveThread()
 
 void
 ArchiveThread::request_blob(const std::string archive_filename, const std::string& filename,
-                            const std::function<void (Failable<BlobPtr>)>& callback)
+                            const std::function<void (Failable<Blob>)>& callback)
 {
   m_pool.schedule
     ([this, archive_filename, filename, callback]
      {
        try
        {
-         BlobPtr blob = m_archive_mgr.get_file(archive_filename, filename);
+         Blob blob = m_archive_mgr.get_file(archive_filename, filename);
          callback(blob);
        }
        catch(...)
        {
-         callback(Failable<BlobPtr>(std::current_exception()));
+         callback(Failable<Blob>(std::current_exception()));
        }
      });
 }

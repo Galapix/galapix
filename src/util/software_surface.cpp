@@ -508,7 +508,7 @@ SoftwareSurface::get_pitch()  const
   return impl->pitch;
 }
 
-BlobPtr
+Blob
 SoftwareSurface::get_raw_data() const
 {
   assert(impl->pitch != impl->size.width*3);

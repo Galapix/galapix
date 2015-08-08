@@ -229,7 +229,7 @@ Generator::process_image_resource(const ResourceLocator& locator,
       }
       else
       {
-        surface = loader->from_mem(blob_accessor->get_blob()->get_data(), blob_accessor->get_blob()->size());
+        surface = loader->from_mem(blob_accessor->get_blob().get_data(), blob_accessor->get_blob().size());
       }
 
       //callbacks->on_image_info(ImageInfo(RowId(), surface->get_width(), surface->get_height()));

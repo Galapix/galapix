@@ -58,7 +58,7 @@ UITEST(SQLite, test, "SQLITEDATABASE TABLE")
             case SQLITE_BLOB:
               {
                 auto blob = reader.get_blob(i);
-                std::cout << "blob:" << blob->size();
+                std::cout << "blob:" << blob.size();
               }
               break;
 

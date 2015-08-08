@@ -32,8 +32,8 @@ UITEST(SevenZip, list, "FILENAME")
 
 UITEST(SevenZip, extract, "ARCHIVE FILENAME")
 {
-  BlobPtr blob = SevenZip::get_file(args[0], args[1]);
-  blob->write_to_file("/tmp/out.file");
+  Blob blob = SevenZip::get_file(args[0], args[1]);
+  blob.write_to_file("/tmp/out.file");
   std::cout << "Writting /tmp/out.file" << std::endl;
 }
 

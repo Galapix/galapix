@@ -23,39 +23,39 @@
 #include <vector>
 #include <stdint.h>
 
-class Blob;
-
-typedef std::shared_ptr<Blob> BlobPtr;
-
 /** A Blob a simple wrapper around an array holding raw binary data.
     It is ref counted and provides convinient functions to be read and
     written to a file */
 class Blob
 {
 private:
-  std::vector<uint8_t> m_data;
-
-private:
   Blob(std::vector<uint8_t> data);
-  Blob(const void* data, size_t len);
+  Blob(void const* data, size_t len);
   Blob(size_t len);
 
 public:
+  Blob();
+
   size_t size() const;
-  const uint8_t* get_data() const;
+  uint8_t const* get_data() const;
 
   std::string str() const;
 
-  void write_to_file(const std::string& filename);
+  void write_to_file(const std::string& filename) const;
 
 public:
-  static BlobPtr create(int len);
+  static Blob create(int len);
 
-  static BlobPtr from_file(const std::string& filename);
+  static Blob from_file(const std::string& filename);
 
   /** Copy the given data into a Blob object */
-  static BlobPtr copy(const void* data, size_t len);
-  static BlobPtr copy(std::vector<uint8_t> data);
+  static Blob copy(const void* data, size_t len);
+  static Blob copy(std::vector<uint8_t> data);
+
+  explicit operator bool() const { return m_data != nullptr; }
+
+private:
+  std::shared_ptr<const std::vector<uint8_t> > m_data;
 };
 
 #endif

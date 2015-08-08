@@ -52,7 +52,7 @@ Rar::get_filenames(const std::string& archive)
   }
 }
 
-BlobPtr
+Blob
 Rar::get_file(const std::string& archive, const std::string& filename)
 {
   Exec rar("rar");

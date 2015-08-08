@@ -46,7 +46,7 @@ public:
   int         get_int(int column);
   int64_t     get_int64(int column);
   std::string get_text(int column);
-  BlobPtr     get_blob(int column);
+  Blob     get_blob(int column);
 
   std::string get_column_name(int column);
   int get_column_count();

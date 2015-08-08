@@ -84,7 +84,7 @@ ArchiveManager::is_archive(const std::string& filename) const
 }
 
 bool
-ArchiveManager::is_archive(const BlobPtr& blob) const
+ArchiveManager::is_archive(Blob const& blob) const
 {
   log_error("not implemented");
   return false;
@@ -153,7 +153,7 @@ ArchiveManager::get_filenames(const std::string& zip_filename,
   return files;
 }
 
-BlobPtr
+Blob
 ArchiveManager::get_file(const std::string& archive, const std::string& filename) const
 {
   const auto& loader = get_loader(archive);

@@ -53,7 +53,7 @@ public:
   ~ArchiveThread();
 
   void request_blob(const std::string archive_filename, const std::string& filename,
-                    const std::function<void (Failable<BlobPtr>)>& callback);
+                    const std::function<void (Failable<Blob>)>& callback);
   void request_extraction(const std::string& archive_filename,
                           const std::function<void (Failable<ExtractionPtr>)>& callback);
 

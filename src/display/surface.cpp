@@ -213,12 +213,12 @@ Surface::Surface() :
 }
 
 Surface::Surface(const SoftwareSurfacePtr& src) :
-  m_impl(new SurfaceImpl(src, Rect(Vector2i(0, 0), src->get_size())))
+  m_impl(std::make_shared<SurfaceImpl>(src, Rect(Vector2i(0, 0), src->get_size())))
 {
 }
 
 Surface::Surface(const SoftwareSurfacePtr& src, const Rect& srcrect)
-  : m_impl(new SurfaceImpl(src, srcrect))
+  : m_impl(std::make_shared<SurfaceImpl>(src, srcrect))
 {
 }
 

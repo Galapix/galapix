@@ -63,7 +63,7 @@ public:
 
   /** Get the content of the file in the form of a Blob in case it
       doesn't have a normal system filename */
-  BlobPtr  get_blob(std::string* mime_type = NULL) const;
+  Blob  get_blob(std::string* mime_type = NULL) const;
 
   time_t get_mtime() const;
   size_t get_size() const;

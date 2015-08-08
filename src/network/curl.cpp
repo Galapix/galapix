@@ -31,7 +31,7 @@ static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void*
   return nmemb * size;
 }
 
-BlobPtr
+Blob
 CURLHandler::get_data(const std::string& url, std::string* mime_type)
 {
   std::unique_ptr<CURL, decltype(&curl_easy_cleanup)> handle{curl_easy_init(), &curl_easy_cleanup};

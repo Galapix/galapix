@@ -25,55 +25,90 @@
 
 #include "util/raise_exception.hpp"
 
-Blob::Blob(std::vector<uint8_t> data) :
-  m_data(std::move(data))
+Blob::Blob() :
+  m_data()
 {
 }
 
-Blob::Blob(const void* data, size_t len) :
-  m_data(len)
+Blob::Blob(std::vector<uint8_t> data) :
+  m_data(std::make_shared<std::vector<uint8_t> >(std::move(data)))
 {
-  memcpy(m_data.data(), data, m_data.size());
+}
+
+Blob::Blob(void const* data, size_t len) :
+  m_data(std::make_shared<std::vector<uint8_t> >(static_cast<uint8_t const*>(data), static_cast<uint8_t const*>(data) + len))
+{
 }
 
 Blob::Blob(size_t len) :
-  m_data(len)
+  m_data(std::make_shared<std::vector<uint8_t> >(len))
 {
 }
 
 size_t
 Blob::size() const
 {
-  return m_data.size();
+  if (!m_data)
+  {
+    return 0;
+  }
+  else
+  {
+    return m_data->size();
+  }
 }
 
 const uint8_t*
 Blob::get_data() const
 {
-  return m_data.data();
+  if (!m_data)
+  {
+    return nullptr;
+  }
+  else
+  {
+    return m_data->data();
+  }
 }
 
 std::string
 Blob::str() const
 {
-  return std::string(reinterpret_cast<const char*>(m_data.data()), m_data.size());
+  if (!m_data)
+  {
+    return {};
+  }
+  else
+  {
+    return std::string(reinterpret_cast<const char*>(m_data->data()), m_data->size());
+  }
 }
 
 void
-Blob::write_to_file(const std::string& filename)
+Blob::write_to_file(const std::string& filename) const
 {
   std::ofstream out(filename.c_str(), std::ios::binary);
-  out.write(reinterpret_cast<const char*>(m_data.data()), static_cast<std::streamsize>(m_data.size()));
+  if (!out)
+  {
+    raise_runtime_error("Blob::write_to_file(): Couldn't write to " + filename);
+  }
+  else
+  {
+    if (m_data)
+    {
+      out.write(reinterpret_cast<const char*>(m_data->data()),
+                static_cast<std::streamsize>(m_data->size()));
+    }
+  }
 }
 
-
-BlobPtr
+Blob
 Blob::create(int len)
 {
-  return BlobPtr(new Blob(static_cast<size_t>(len)));
+  return Blob(static_cast<size_t>(len));
 }
 
-BlobPtr
+Blob
 Blob::from_file(const std::string& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::binary);
@@ -91,21 +126,20 @@ Blob::from_file(const std::string& filename)
       std::copy(buffer, buffer + len, std::back_inserter(data));
     }
 
-    // FIXME: useless copy, should read directly into the blob
-    return Blob::copy(data);
+    return Blob::copy(std::move(data));
   }
 }
 
-BlobPtr
-Blob::copy(const void* data, size_t len)
+Blob
+Blob::copy(void const* data, size_t len)
 {
-  return BlobPtr(new Blob(data, len));
+  return Blob(data, len);
 }
 
-BlobPtr
+Blob
 Blob::copy(std::vector<uint8_t> data)
 {
-  return BlobPtr(new Blob(std::move(data)));
+  return Blob(std::move(data));
 }
 
 /* EOF */

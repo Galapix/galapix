@@ -19,7 +19,7 @@
 #include "network/download_result.hpp"
 
 DownloadResult
-DownloadResult::from_curl(CURL* handle, BlobPtr blob)
+DownloadResult::from_curl(CURL* handle, Blob blob)
 {
   DownloadResult result;
 

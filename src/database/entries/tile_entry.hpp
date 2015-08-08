@@ -37,7 +37,7 @@ private:
   RowId     m_image_id;
   int        m_scale;
   Vector2i   m_pos;
-  BlobPtr m_blob;
+  Blob m_blob;
   SoftwareSurfacePtr m_surface;
   Format     m_format;
 
@@ -60,7 +60,7 @@ public:
     m_format(UNKNOWN_FORMAT)
   {}
 
-  TileEntry(const RowId& image_id, int scale, const Vector2i& pos, const BlobPtr& blob, Format format) :
+  TileEntry(const RowId& image_id, int scale, const Vector2i& pos, Blob const& blob, Format format) :
     m_image_id(image_id),
     m_scale(scale),
     m_pos(pos),
@@ -70,7 +70,7 @@ public:
   {}
 
   SoftwareSurfacePtr get_surface() const { return m_surface; }
-  BlobPtr   get_blob()   const { return m_blob; }
+  Blob   get_blob()   const { return m_blob; }
   RowId     get_image_id() const { return m_image_id; }
   int       get_scale()  const { return m_scale; }
   Vector2i  get_pos()    const { return m_pos; }
@@ -78,7 +78,7 @@ public:
 
   void set_image_id(const RowId& image_id) { m_image_id = image_id; }
   void set_surface(SoftwareSurfacePtr surface)  { m_surface = surface; }
-  void set_blob(const BlobPtr& blob) { m_blob = blob; }
+  void set_blob(Blob const& blob) { m_blob = blob; }
   void set_format(Format format) { m_format = format; }
 
   explicit operator bool() const

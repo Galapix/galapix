@@ -31,7 +31,7 @@ public:
 
   /** FIXME: Not very practical as 7-Zip has to extract the whole
       archive to get to a single file */
-  static BlobPtr get_file(const std::string& zip_filename, const std::string& filename);
+  static Blob get_file(const std::string& zip_filename, const std::string& filename);
 
   /**
      Extract the content of \a archive to \a target_directory, \a

@@ -32,7 +32,7 @@ public:
   virtual ~Extraction();
 
   virtual std::vector<std::string> get_filenames() const = 0;
-  virtual BlobPtr get_file(const std::string& filename) const = 0;
+  virtual Blob get_file(const std::string& filename) const = 0;
   virtual std::string get_file_as_path(const std::string& filename) const = 0;
   virtual std::string get_type() const = 0;
 

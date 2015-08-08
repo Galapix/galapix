@@ -74,7 +74,7 @@ DirectoryExtraction::get_filenames() const
   return lst;
 }
 
-BlobPtr
+Blob
 DirectoryExtraction::get_file(const std::string& filename) const
 {
   return Blob::from_file((m_path / filename).string());

@@ -29,9 +29,9 @@ UITEST(PNM, test, "FILE...",
 {
   for(size_t i = 0; i < rest.size(); ++i)
   {
-    BlobPtr blob = Blob::from_file(rest[i]);
+    Blob blob = Blob::from_file(rest[i]);
 
-    SoftwareSurfacePtr surface = PNM::load_from_mem(reinterpret_cast<const char*>(blob->get_data()), blob->size());
+    SoftwareSurfacePtr surface = PNM::load_from_mem(reinterpret_cast<const char*>(blob.get_data()), blob.size());
 
     std::ostringstream output_filename;
     output_filename << "/tmp/pnm_test" << i << ".png";

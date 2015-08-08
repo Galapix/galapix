@@ -25,7 +25,7 @@ UITEST(BlobManager, request_blob, "BLOB...",
        {
          try
          {
-           std::cout << "data retrieved: " << data.get()->get_blob()->size() << std::endl;
+           std::cout << "data retrieved: " << data.get()->get_blob().size() << std::endl;
          }
          catch(const std::exception& err)
          {
