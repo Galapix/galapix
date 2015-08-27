@@ -23,15 +23,14 @@
 #include <vector>
 #include <stdint.h>
 
-/** A Blob a simple wrapper around an array holding raw binary data.
-    It is ref counted and provides convinient functions to be read and
-    written to a file */
-class Blob
+/** A Blob a simple wrapper around an read-only array holding raw
+    binary data. It is ref counted and provides convinient functions
+    to be read and written to a file */
+class Blob final
 {
 private:
   Blob(std::vector<uint8_t> data);
   Blob(void const* data, size_t len);
-  Blob(size_t len);
 
 public:
   Blob();
@@ -41,15 +40,13 @@ public:
 
   std::string str() const;
 
-  void write_to_file(const std::string& filename) const;
+  void write_to_file(std::string const& filename) const;
 
 public:
-  static Blob create(int len);
-
-  static Blob from_file(const std::string& filename);
+  static Blob from_file(std::string const& filename);
 
   /** Copy the given data into a Blob object */
-  static Blob copy(const void* data, size_t len);
+  static Blob copy(void const* data, size_t len);
   static Blob copy(std::vector<uint8_t> data);
 
   explicit operator bool() const { return m_data != nullptr; }

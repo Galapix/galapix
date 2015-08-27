@@ -36,12 +36,9 @@ Blob::Blob(std::vector<uint8_t> data) :
 }
 
 Blob::Blob(void const* data, size_t len) :
-  m_data(std::make_shared<std::vector<uint8_t> >(static_cast<uint8_t const*>(data), static_cast<uint8_t const*>(data) + len))
-{
-}
-
-Blob::Blob(size_t len) :
-  m_data(std::make_shared<std::vector<uint8_t> >(len))
+  m_data(std::make_shared<std::vector<uint8_t> >(
+           static_cast<uint8_t const*>(data),
+           static_cast<uint8_t const*>(data) + len))
 {
 }
 
@@ -100,12 +97,6 @@ Blob::write_to_file(const std::string& filename) const
                 static_cast<std::streamsize>(m_data->size()));
     }
   }
-}
-
-Blob
-Blob::create(int len)
-{
-  return Blob(static_cast<size_t>(len));
 }
 
 Blob
