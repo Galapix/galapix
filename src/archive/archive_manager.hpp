@@ -23,6 +23,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <boost/filesystem/path.hpp>
 
 #include "resource/blob_accessor.hpp"
 #include "util/blob.hpp"
@@ -34,7 +35,7 @@ class Extraction;
 class ArchiveManager : public Currenton<ArchiveManager>
 {
 private:
-  std::string m_tmpdir;
+  boost::filesystem::path m_tmpdir;
   std::vector<std::unique_ptr<ArchiveLoader> > m_loader;
   std::map<std::string, ArchiveLoader*> m_loader_by_file_exts;
   std::map<std::string, ArchiveLoader*> m_loader_by_magic;
@@ -69,6 +70,8 @@ public:
 private:
   /** Returns a path to an empty directory that can be used for extractions */
   std::string create_extraction_directory() const;
+
+  void add_loader(std::unique_ptr<ArchiveLoader> loader);
 
   const ArchiveLoader& get_loader(const std::string& filename) const;
   const ArchiveLoader* find_loader_by_filename(const std::string& filename) const;

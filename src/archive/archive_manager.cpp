@@ -46,27 +46,30 @@ ArchiveManager::ArchiveManager(const std::string& tmpdir) :
   m_loader_by_file_exts(),
   m_loader_by_magic()
 {
-  m_loader.push_back(std::make_unique<RarArchiveLoader>());
-  m_loader.push_back(std::make_unique<ZipArchiveLoader>());
-  m_loader.push_back(std::make_unique<TarArchiveLoader>());
-  m_loader.push_back(std::make_unique<SevenZipArchiveLoader>());
-
-  for(auto& loader: m_loader)
-  {
-    for(const auto& magic: loader->get_magics())
-    {
-      m_loader_by_magic[magic] = loader.get();
-    }
-
-    for(const auto& ext: loader->get_extensions())
-    {
-      m_loader_by_file_exts[ext] = loader.get();
-    }
-  }
+  add_loader(std::make_unique<RarArchiveLoader>());
+  add_loader(std::make_unique<ZipArchiveLoader>());
+  add_loader(std::make_unique<TarArchiveLoader>());
+  add_loader(std::make_unique<SevenZipArchiveLoader>());
 }
 
 ArchiveManager::~ArchiveManager()
 {
+}
+
+void
+ArchiveManager::add_loader(std::unique_ptr<ArchiveLoader> loader)
+{
+  for(auto const& magic: loader->get_magics())
+  {
+    m_loader_by_magic[magic] = loader.get();
+  }
+
+  for(auto const& ext: loader->get_extensions())
+  {
+    m_loader_by_file_exts[ext] = loader.get();
+  }
+
+  m_loader.push_back(std::move(loader));
 }
 
 bool
