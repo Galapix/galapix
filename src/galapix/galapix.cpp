@@ -252,16 +252,17 @@ void print_exception(std::exception const& err, int level = 0)
 int
 Galapix::main(int argc, char** argv)
 {
-  // FIXME: Function doesn't seem to be available in 3.4.2
-  // if (!sqlite3_threadsafe())
-  //  raise_runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
-
   try
   {
     Options opts;
     opts.threads  = 2;
     opts.database = Filesystem::get_home() + "/.galapix/cache4";
     ArgParser::parse_args(argc, argv, opts);
+
+    if (!sqlite3_threadsafe())
+    {
+      raise_runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
+    }
 
     Magick::InitializeMagick(*argv);
 
