@@ -141,7 +141,7 @@ include_directories(src/)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
 include_directories(SYSTEM external/logmich/include/)
 include_directories(SYSTEM external/glm/)
-include_directories(SYSTEM external/googletest/include/)
+include_directories(SYSTEM external/googletest/googletest/include/)
 include_directories(SYSTEM ${MAGICKXX_INCLUDE_DIRS})
 
 # turn shader soure in a .hpp file
@@ -264,11 +264,11 @@ endif()
 # compile tests
 if(BUILD_TESTS)
   # build gtest
-  add_library(gtest STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/src/gtest-all.cc)
-  target_include_directories(gtest SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/)
+  add_library(gtest STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/src/gtest-all.cc)
+  target_include_directories(gtest SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/)
 
   # build gtest_main
-  add_library(gtest_main STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/src/gtest_main.cc)
+  add_library(gtest_main STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/src/gtest_main.cc)
 
   # build automatic tests
   file(GLOB TEST_GALAPIX_SOURCES test/*_test.cpp)
