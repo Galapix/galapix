@@ -408,21 +408,10 @@ Workspace::get_bounding_rect() const
     {
       const Rectf& image_rect = (*i)->get_image_rect();
 
-      if (isnan(image_rect.left) ||
-          isnan(image_rect.right) ||
-          isnan(image_rect.top) ||
-          isnan(image_rect.bottom))
-      {
-        std::cout << "NAN ERROR: " << (*i)->get_url() << " " << (*i)->get_pos() << " " << image_rect << std::endl;
-        //assert(0);
-      }
-      else
-      {
-        rect.left   = Math::min(rect.left,   image_rect.left);
-        rect.right  = Math::max(rect.right,  image_rect.right);
-        rect.top    = Math::min(rect.top,    image_rect.top);
-        rect.bottom = Math::max(rect.bottom, image_rect.bottom);
-      }
+      rect.left   = Math::min(rect.left,   image_rect.left);
+      rect.right  = Math::max(rect.right,  image_rect.right);
+      rect.top    = Math::min(rect.top,    image_rect.top);
+      rect.bottom = Math::max(rect.bottom, image_rect.bottom);
     }
 
     return rect;
