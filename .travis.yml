@@ -78,7 +78,7 @@ before_install:
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.8"; fi
 
   # CMake
-  - wget http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
+  - wget --no-check-certificate http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
   - (cd cmake-$CMAKE_VERSION && cmake . && make -j3 && sudo make install)
 
   # SDL dependencies
