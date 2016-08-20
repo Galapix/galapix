@@ -54,6 +54,10 @@ uint32_t read_uint32(std::istream& in)
 {
   uint32_t v;
   in.read(reinterpret_cast<char*>(&v), sizeof(v));
+  if (in.gcount() != sizeof(v))
+  {
+    throw std::runtime_error("DDS: short read");
+  }
   return v;
 }
 
@@ -253,6 +257,10 @@ private:
   void decode_dxt1(unsigned char buf[8], unsigned char out[4*4*3]);
   void read_data_dxt1(std::istream& in);
   void read_data_dtx3(std::istream& in);
+
+private:
+  DDSSurface(const DDSSurface&) = delete;
+  DDSSurface& operator=(const DDSSurface&) = delete;
 };
 
 #endif

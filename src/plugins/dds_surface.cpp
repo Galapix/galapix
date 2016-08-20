@@ -176,6 +176,10 @@ DDSSurface::read_data_dxt1(std::istream& in)
     for(unsigned int x = 0; x < width; x += 4)
     {    
       in.read((char*)buf, 8);
+      if (in.gcount() != 8)
+      {
+        throw std::runtime_error("DDS: short read");
+      }
       decode_dxt1(buf, out);
 
       for(unsigned int y1 = 0; y1 < 4; y1 += 1)
@@ -200,10 +204,18 @@ DDSSurface::read_data_dtx3(std::istream& in)
     for(unsigned int x = 0; x < width; x += 4)
     {    
       in.read((char*)buf, 8);
+      if (in.gcount() != 8)
+      {
+        throw std::runtime_error("DDS: short read");
+      }
       decode_dxt1(buf, out);
 
       // Skip alpha information
       in.read((char*)buf, 8);
+      if (in.gcount() != 8)
+      {
+        throw std::runtime_error("DDS: short read");
+      }
 
       for(unsigned int y1 = 0; y1 < 4; y1 += 1)
         for(unsigned int x1 = 0; x1 < 4; x1 += 1)
