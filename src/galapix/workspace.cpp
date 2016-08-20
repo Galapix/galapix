@@ -18,6 +18,7 @@
 
 #include "galapix/workspace.hpp"
 
+#include <cmath>
 #include <algorithm>
 #include <iostream>
 
@@ -471,10 +472,10 @@ Workspace::get_bounding_rect() const
     {
       const Rectf& image_rect = (*i)->get_image_rect(); 
           
-      if (isnan(image_rect.left) ||
-          isnan(image_rect.right) ||
-          isnan(image_rect.top) ||
-          isnan(image_rect.bottom))
+      if (std::isnan(image_rect.left) ||
+          std::isnan(image_rect.right) ||
+          std::isnan(image_rect.top) ||
+          std::isnan(image_rect.bottom))
       {
         std::cout << "NAN ERROR: " << (*i)->get_url() << " " << (*i)->get_pos() << " " << image_rect << std::endl;
         //assert(0);
