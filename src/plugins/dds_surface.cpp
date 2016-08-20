@@ -200,8 +200,8 @@ DDSSurface::read_data_dtx3(std::istream& in)
   unsigned char out[4*4*3];
     
   data.resize(width * height * 4);
-  for(unsigned int y = 0; y < height; y += 4)
-    for(unsigned int x = 0; x < width; x += 4)
+  for(unsigned int y = 0; y < height - 3; y += 4)
+    for(unsigned int x = 0; x < width - 3; x += 4)
     {    
       in.read((char*)buf, 8);
       if (in.gcount() != 8)
