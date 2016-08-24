@@ -26,12 +26,18 @@ option(BUILD_EXTRA "Build extra apps" OFF)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Treat all warnings as errors" OFF)
+option(THREADSANITIZER "Thread Sanitizer" OFF)
 
 if(WARNINGS)
   set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
     -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
-    -Wconversion -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter -Wunreachable-code)
+    -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter -Wunreachable-code)
+  # clang: -Wconversion
   # -Winline -Wfloat-equal
+endif()
+
+if(THREADSANITIZER)
+  add_compile_options(-fsanitize=thread)
 endif()
 
 if(WERROR)
