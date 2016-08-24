@@ -82,9 +82,9 @@ addons:
     - libgtkglextmm-x11-1.2-dev
     - libgtkmm-2.4-dev
     - libmhash-dev
-    - libboost-filesystem1.55-dev
-    - libboost-signals1.55-dev
-    - libboost-system1.55-dev
+    - libboost-filesystem-dev
+    - libboost-signals-dev
+    - libboost-system-dev
     - g++-4.9
     - clang-4.0
 
