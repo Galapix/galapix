@@ -18,7 +18,15 @@
 
 #include "util/md5.hpp"
 
-#include <mhash.h>
+// clang doesn't define _Bool in C++ mode, but mhash needs it
+#ifndef _Bool
+#  define _Bool bool
+#  include <mhash.h>
+#  undef _Bool
+#else
+#  include <mhash.h>
+#endif
+
 #include <fstream>
 #include <iomanip>
 #include <sstream>
