@@ -1,5 +1,5 @@
 # Galapix - an image viewer for large image collections
-# Copyright (C) 2015 Ingo Ruhnke <grumbel@gmail.com>
+# Copyright (C) 2015,2016 Ingo Ruhnke <grumbel@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@
 # https://github.com/SuperTux/supertux/blob/master/.travis.yml
 
 language: cpp
+dist: trusty
+sudo: required
 
 compiler:
   - gcc
@@ -32,9 +34,11 @@ compiler:
 matrix:
   fast_finish: true
 
+os:
+  - linux
+
 env:
   global:
-    - CMAKE_VERSION=3.2.1 SDL2_VERSION=2.0.3
     # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
     #   via the "travis encrypt" command using the project repo's public key
     - secure: "avCYzv34u0qw4gaPvxHk5mcCFdO8HdSkGzH+9VJ6g3FJaV1y8BMU+KE3CnsgNtrmOS3KL+O10N4bhJEvamid9mfNpv5Mtk4bumU8Q0sCe1guKtEU0FEO8ZAKKz3ooh1f61fBlrNv7ZMOHIhWxpZKH8XBKtpzAcTkG535Zii3rkA="
@@ -43,47 +47,11 @@ env:
     - BUILD_TYPE="Release"
 
 before_install:
-  - sudo add-apt-repository -y "deb http://llvm.org/apt/precise/ llvm-toolchain-precise main"
-  - wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository -y ppa:boost-latest/ppa
-  - sudo apt-get update -qq
-  - >
-    sudo apt-get install \
-      build-essential \
-      libglew-dev \
-      libopenal-dev \
-      libsqlite3-dev \
-      libjsoncpp-dev \
-      libgl1-mesa-dev \
-      libcurl4-openssl-dev \
-      libpng12-dev \
-      libjpeg8-dev \
-      libmagick++-dev \
-      libexif-dev \
-      libglademm-2.4-dev \
-      libgtkglextmm-x11-1.2-dev \
-      libgtkmm-2.4-dev \
-      libmhash-dev \
-      libboost-filesystem1.55-dev \
-      libboost-signals1.55-dev \
-      libboost-system1.55-dev \
-      g++-4.9 \
-      clang-3.9
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
+  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-4.0"; fi
 
   # patch for mhash, see https://bugs.launchpad.net/ubuntu/+source/mhash/+bug/1465562
-  - sudo sed -i "s/_Bool/bool/" /usr/include/mutils/mutils.h
-
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.9"; fi
-
-  # CMake
-  - wget --no-check-certificate http://www.cmake.org/files/v3.2/cmake-$CMAKE_VERSION.tar.gz -O - | tar xz
-  - (cd cmake-$CMAKE_VERSION && cmake . && make -j3 && sudo make install)
-
-  # SDL dependencies
-  - wget http://libsdl.org/release/SDL2-$SDL2_VERSION.tar.gz -O - | tar xz
-  - (cd SDL2-$SDL2_VERSION && ./configure --prefix=/usr && make -j3 && sudo make install)
+  # - sudo sed -i "s/_Bool/bool/" /usr/include/mutils/mutils.h
 
 script:
   # Clean from previous Travis build
@@ -96,6 +64,32 @@ script:
   - (cd .. && build-${BUILD_TYPE}/test_galapix)
 
 addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise
+    packages:
+    - build-essential
+    - libglew-dev
+    - libopenal-dev
+    - libsqlite3-dev
+    - libjsoncpp-dev
+    - libgl1-mesa-dev
+    - libcurl4-openssl-dev
+    - libpng12-dev
+    - libjpeg8-dev
+    - libmagick++-dev
+    - libexif-dev
+    - libglademm-2.4-dev
+    - libgtkglextmm-x11-1.2-dev
+    - libgtkmm-2.4-dev
+    - libmhash-dev
+    - libboost-filesystem1.55-dev
+    - libboost-signals1.55-dev
+    - libboost-system1.55-dev
+    - g++-4.9
+    - clang-4.0
+
   coverity_scan:
     project:
       name: "Galapix/galapix"
