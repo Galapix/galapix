@@ -76,6 +76,7 @@ addons:
     - libjsoncpp-dev
     - libgl1-mesa-dev
     - libcurl4-openssl-dev
+    - libsdl2-dev
     - libpng12-dev
     - libjpeg8-dev
     - libmagick++-dev
