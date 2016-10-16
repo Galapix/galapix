@@ -317,4 +317,26 @@ if(BUILD_TESTS)
     COMMAND test_galapix)
 endif()
 
+if(BUILD_BENCHMARKS)
+  # build google-benchmark
+  include_directories(${PROJECT_SOURCE_DIR}/src)
+  file(GLOB BENCHMARK_SOURCES external/benchmark/src/*.cc)
+  add_library(benchmark ${BENCHMARK_SOURCES})
+  target_compile_definitions(benchmark PRIVATE -DHAVE_STD_REGEX)
+  target_compile_options(benchmark PRIVATE -std=c++1y)
+  target_include_directories(benchmark SYSTEM PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/benchmark/include)
+
+  # build benchmarks
+  file(GLOB BENCHMARKSOURCES benchmarks/*.cpp)
+  foreach(SOURCE ${BENCHMARKSOURCES})
+    get_filename_component(SOURCE_BASENAME ${SOURCE} NAME_WE)
+    add_executable(${SOURCE_BASENAME} ${SOURCE})
+    target_link_libraries(${SOURCE_BASENAME} benchmark ${GALAPIX_DEPS_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    set_target_properties(${SOURCE_BASENAME} PROPERTIES
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/benchmarks/")
+    target_compile_options(${SOURCE_BASENAME} PRIVATE -std=c++1y ${WARNINGS_CXX_FLAGS})
+  endforeach(SOURCE)
+endif()
+
 # EOF #
