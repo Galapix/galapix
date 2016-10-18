@@ -45,7 +45,7 @@ if(WERROR)
     -Werror)
 endif()
 
-add_compile_options(-std=c++1y)
+add_compile_options(-std=c++1z)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CheckIncludeFile)
