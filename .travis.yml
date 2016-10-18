@@ -47,7 +47,7 @@ env:
     - BUILD_TYPE="Release"
 
 before_install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-5" CC="gcc-5"; fi
   - if [ "$CXX" == "clang++" ]; then export CXX="clang++-4.0"; fi
 
 script:
@@ -85,7 +85,7 @@ addons:
     - libboost-filesystem-dev
     - libboost-signals-dev
     - libboost-system-dev
-    - g++-6
+    - g++-5
     - clang-4.0
 
   coverity_scan:
