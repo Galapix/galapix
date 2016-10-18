@@ -121,7 +121,10 @@ SpaceNavigator::stop_thread()
 
   // write some data to the pipe to wake up the select() call
   char data[]{0};
-  write(m_pipefd[1], data, 1);
+  if (write(m_pipefd[1], data, 1) < 0)
+  {
+    log_warn("wakeup pipe write() error: %1%", strerror(errno));
+  }
 
   m_thread.join();
 }

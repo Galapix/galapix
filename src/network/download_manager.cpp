@@ -143,7 +143,10 @@ DownloadManager::wait_for_curl_data()
     {
       // eat up the junk written to the wakeup pipe
       char buf[32];
-      read(m_pipefd[0], buf, 32);
+      if (read(m_pipefd[0], buf, sizeof(buf)) < 0)
+      {
+        log_warn("wakeup pipe read() error: %1%", strerror(errno));
+      }
     }
   }
 }
