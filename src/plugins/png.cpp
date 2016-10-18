@@ -18,6 +18,7 @@
 
 #include "plugins/png.hpp"
 
+#include <string.h>
 #include <assert.h>
 #include <png.h>
 #include <stdexcept>
