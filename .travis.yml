@@ -46,10 +46,6 @@ env:
     - BUILD_TYPE="Debug"
     - BUILD_TYPE="Release"
 
-before_install:
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-6" CC="gcc-6"; fi
-  - if [ "$CXX" == "clang++" ]; then export CXX="clang++-4.0"; fi
-
 script:
   # Clean from previous Travis build
   - git clean -f
@@ -85,9 +81,8 @@ addons:
     - libboost-filesystem-dev
     - libboost-signals-dev
     - libboost-system-dev
-    - g++-4.9
     - g++-6
-    - clang-4.0
+    - clang-5.0
 
   coverity_scan:
     project:
