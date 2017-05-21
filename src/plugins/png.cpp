@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <png.h>
 #include <stdexcept>
+#include <string.h>
 
 #include "util/log.hpp"
 
