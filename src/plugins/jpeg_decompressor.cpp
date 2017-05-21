@@ -1,6 +1,6 @@
 /*
 **  Galapix - an image viewer for large image collections
-**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmx.de>
+**  Copyright (C) 2008 Ingo Ruhnke <grumbel@gmail.com>
 **
 **  This program is free software: you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
@@ -22,13 +22,15 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-
+
+#include "util/raise_exception.hpp"
+
 void
 JPEGDecompressor::fatal_error_handler(j_common_ptr cinfo)
 {
   longjmp(reinterpret_cast<ErrorMgr*>(cinfo->err)->setjmp_buffer, 1);
 }
-
+
 JPEGDecompressor::JPEGDecompressor() :
   m_cinfo(),
   m_err()
@@ -57,14 +59,14 @@ JPEGDecompressor::read_size()
 
     std::ostringstream out;
     out << "JPEG::read_size(): " /*<< filename << ": "*/ << buffer;
-    throw std::runtime_error(out.str());
+    raise_exception(std::runtime_error, out.str());
   }
   else
   {
     jpeg_read_header(&m_cinfo, /*require_image*/ FALSE);
 
-    return Size(m_cinfo.image_width,
-                m_cinfo.image_height);
+    return Size(static_cast<int>(m_cinfo.image_width),
+                static_cast<int>(m_cinfo.image_height));
   }
 }
 
@@ -87,7 +89,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
 
     std::ostringstream out;
     out << "JPEG::read_image(): " /*<< filename << ": "*/ << buffer;
-    throw std::runtime_error(out.str());
+    raise_exception(std::runtime_error, out.str());
   }
   else
   {
@@ -95,48 +97,51 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
 
     if (image_size)
     {
-      image_size->width  = m_cinfo.image_width;
-      image_size->height = m_cinfo.image_height;
+      image_size->width = static_cast<int>(m_cinfo.image_width);
+      image_size->height = static_cast<int>(m_cinfo.image_height);
     }
 
     if (scale != 1) // scale the image down by \a scale
-    { 
+    {
       // by default all those values below are on 1
-      m_cinfo.scale_num           = 1;
-      m_cinfo.scale_denom         = scale;
-   
+      m_cinfo.scale_num = 1;
+      m_cinfo.scale_denom = static_cast<unsigned int>(scale);
+
       m_cinfo.do_fancy_upsampling = FALSE; /* TRUE=apply fancy upsampling */
       m_cinfo.do_block_smoothing  = FALSE; /* TRUE=apply interblock smoothing */
     }
 
     jpeg_start_decompress(&m_cinfo);
 
-    SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT, Size(m_cinfo.output_width,
-                                                                                           m_cinfo.output_height));
- 
-    if (m_cinfo.output_components == 3) // RGB Image
-    { 
-      std::unique_ptr<JSAMPLE*[]> scanlines(new JSAMPLE*[m_cinfo.output_height]);
+    SoftwareSurfacePtr surface = SoftwareSurface::create(SoftwareSurface::RGB_FORMAT,
+                                                         Size(static_cast<int>(m_cinfo.output_width),
+                                                              static_cast<int>(m_cinfo.output_height)));
+
+    if (m_cinfo.out_color_space == JCS_RGB &&
+        m_cinfo.output_components == 3)
+    {
+      std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(y);
+        scanlines[y] = surface->get_row_data(static_cast<int>(y));
 
-      while (m_cinfo.output_scanline < m_cinfo.output_height) 
+      while (m_cinfo.output_scanline < m_cinfo.output_height)
       {
-        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline], 
+        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
     }
-    else if (m_cinfo.output_components == 1)  // Greyscale Image
+    else if (m_cinfo.out_color_space == JCS_GRAYSCALE &&
+             m_cinfo.output_components == 1)
     {
-      std::unique_ptr<JSAMPLE*[]> scanlines(new JSAMPLE*[m_cinfo.output_height]);
+      std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
       for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
-        scanlines[y] = surface->get_row_data(y);
+        scanlines[y] = surface->get_row_data(static_cast<int>(y));
 
-      while (m_cinfo.output_scanline < m_cinfo.output_height) 
+      while (m_cinfo.output_scanline < m_cinfo.output_height)
       {
-        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline], 
+        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
 
@@ -154,11 +159,47 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
         }
       }
     }
+    else if (m_cinfo.out_color_space == JCS_CMYK &&
+             m_cinfo.output_components == 4)
+    {
+      std::vector<JSAMPLE> output_data(m_cinfo.output_width * m_cinfo.output_height *
+                                       m_cinfo.output_components);
+      std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
+
+      for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
+      {
+        scanlines[y] = &output_data[y * m_cinfo.output_width * m_cinfo.output_components];
+      }
+
+      while (m_cinfo.output_scanline < m_cinfo.output_height)
+      {
+        jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
+                            m_cinfo.output_height - m_cinfo.output_scanline);
+      }
+
+      for(int y = 0; y < surface->get_height(); ++y)
+      {
+        uint8_t* jpegptr = &output_data[y * m_cinfo.output_width * m_cinfo.output_components];
+        uint8_t* rowptr = surface->get_row_data(y);
+        for(int x = surface->get_width()-1; x >= 0; --x)
+        {
+          uint8_t const cmyk_c = jpegptr[4*x + 0];
+          uint8_t const cmyk_m = jpegptr[4*x + 1];
+          uint8_t const cmyk_y = jpegptr[4*x + 2];
+          uint8_t const cmyk_k = jpegptr[4*x + 3];
+
+          rowptr[3*x+0] = static_cast<uint8_t>((cmyk_c * cmyk_k) / 255);
+          rowptr[3*x+1] = static_cast<uint8_t>((cmyk_m * cmyk_k) / 255);
+          rowptr[3*x+2] = static_cast<uint8_t>((cmyk_y * cmyk_k) / 255);
+        }
+      }
+    }
     else
     {
       std::ostringstream str;
-      str << "JPEGDecompressor::read_image(): Unsupported color depth: " << m_cinfo.output_components;
-      throw std::runtime_error(str.str());
+      str << "JPEGDecompressor::read_image(): Unsupported colorspace: "
+          << m_cinfo.out_color_space << " components: " << m_cinfo.output_components;
+      raise_exception(std::runtime_error, str.str());
     }
 
     return surface;
