@@ -78,12 +78,20 @@ InputStream::read(void* buffer, size_t len)
 void
 InputStream::read_exact(void* buffer, size_t len)
 {
-  size_t ret = ::read(m_fd, buffer, len);
-  if (ret != len)
+  ssize_t ret = ::read(m_fd, buffer, len);
+  if (ret < 0)
+  {
+    throw std::system_error(errno, std::system_category());
+  }
+  else if (static_cast<size_t>(ret) != len)
   {
     std::ostringstream out;
     out << "short read(): " << len << " bytes requested, " << ret << " bytes retrieved";
     throw std::runtime_error(out.str());
+  }
+  else
+  {
+    // ok
   }
 }
 
@@ -280,19 +288,19 @@ InputStream::readSBE64()
 uint16_t
 InputStream::readUBE16()
 {
-  return swapUBE16(readUBE16());
+  return swapUBE16(readULE16());
 }
 
 uint32_t
 InputStream::readUBE32()
 {
-  return swapUBE32(readUBE32());
+  return swapUBE32(readULE32());
 }
 
 uint64_t
 InputStream::readUBE64()
 {
-  return swapUBE64(readUBE64());
+  return swapUBE64(readULE64());
 }
 
 /* EOF */
