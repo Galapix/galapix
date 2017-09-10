@@ -2,8 +2,20 @@
 
 #include "network/download_manager.hpp"
 
-TEST(DownloadManagerTest, creation) {
-  DownloadManager download_mgr;
+TEST(DownloadManagerTest, request_get) {
+  bool success = false;
+  {
+    DownloadManager downloader;
+    downloader.request_get("https://raw.githubusercontent.com/Galapix/galapix/master/test/jpeg_size_test.cpp",
+                           [&success](const DownloadResult& result){
+                             if (result.success())
+                             {
+                               result.get_blob();
+                               success = true;
+                             }
+                           });
+  }
+  ASSERT_TRUE(success);
 }
 
 /* EOF */
