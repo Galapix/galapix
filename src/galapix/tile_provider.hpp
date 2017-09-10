@@ -19,6 +19,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_TILE_PROVIDER_HPP
 #define HEADER_GALAPIX_GALAPIX_TILE_PROVIDER_HPP
 
+#include <functional>
 #include <memory>
 
 #include "galapix/tile.hpp"
