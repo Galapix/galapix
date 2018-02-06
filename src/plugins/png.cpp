@@ -335,7 +335,7 @@ PNG::save(SoftwareSurface const& surface, const std::string& filename)
 
     for (int y = 0; y < src.get_height(); ++y)
     {
-      png_write_row(png_ptr, const_cast<const png_bytep>(src.get_row_data(y)));
+      png_write_row(png_ptr, const_cast<png_bytep>(src.get_row_data(y)));
     }
 
     png_write_end(png_ptr, info_ptr);
