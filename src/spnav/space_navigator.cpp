@@ -23,6 +23,7 @@
 #include <iostream>
 #include <spnav.h>
 #include <unistd.h>
+#include <functional>
 
 #include "util/log.hpp"
 #include "util/select.hpp"
