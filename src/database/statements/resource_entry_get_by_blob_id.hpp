@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_ENTRY_GET_BY_BLOB_ID_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_ENTRY_GET_BY_BLOB_ID_HPP
 
-#include <boost/optional.hpp>
+#include <optional>
 
 class ResourceEntryGetByBlobId final
 {
@@ -37,19 +37,19 @@ public:
            "  resource.blob_id = ?1;")
   {}
 
-  boost::optional<ResourceEntry> operator()(RowId id)
+  std::optional<ResourceEntry> operator()(RowId id)
   {
     m_stmt.bind_int64(1, id.get_id());
 
     SQLiteReader reader = m_stmt.execute_query();
     if (reader.next())
     {
-      //return boost::optional<ResourceEntry>(reader.get_int(0),);
-      return boost::optional<ResourceEntry>();
+      //return std::optional<ResourceEntry>(reader.get_int(0),);
+      return std::optional<ResourceEntry>();
     }
     else
     {
-      return boost::optional<ResourceEntry>();
+      return std::optional<ResourceEntry>();
     }
   }
 

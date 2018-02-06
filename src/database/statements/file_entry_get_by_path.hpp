@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_GET_BY_PATH_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_GET_BY_PATH_HPP
 
-#include <boost/optional.hpp>
+#include <optional>
 
 #include "util/url.hpp"
 #include "database/entries/old_file_entry.hpp"
@@ -40,7 +40,7 @@ public:
            "  file.path = ?1;")
   {}
 
-  boost::optional<FileEntry> operator()(const std::string& path)
+  std::optional<FileEntry> operator()(const std::string& path)
   {
     m_stmt.bind_text(1, path);
     SQLiteReader reader = m_stmt.execute_query();
@@ -51,7 +51,7 @@ public:
     }
     else
     {
-      return boost::optional<FileEntry>();
+      return std::optional<FileEntry>();
     }
   }
 

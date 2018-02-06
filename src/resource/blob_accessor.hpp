@@ -21,7 +21,7 @@
 
 #include <string>
 #include <mutex>
-#include <boost/optional.hpp>
+#include <optional>
 
 #include "util/blob.hpp"
 #include "resource/blob_info.hpp"
@@ -32,7 +32,7 @@ private:
   mutable std::mutex m_mutex;
   mutable std::string m_filename;
   mutable Blob m_blob;
-  mutable boost::optional<BlobInfo> m_blob_info;
+  mutable std::optional<BlobInfo> m_blob_info;
 
 public:
   BlobAccessor(const std::string& filename);

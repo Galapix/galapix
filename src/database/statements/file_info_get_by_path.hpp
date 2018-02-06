@@ -35,7 +35,7 @@ public:
            "  file.path = ?1 AND blob.id = file.blob_id;")
   {}
 
-  boost::optional<FileInfo> operator()(const std::string& path)
+  std::optional<FileInfo> operator()(const std::string& path)
   {
     m_stmt.bind_text(1, path);
     SQLiteReader reader = m_stmt.execute_query();
@@ -52,7 +52,7 @@ public:
     }
     else
     {
-      return boost::optional<FileInfo>();
+      return std::optional<FileInfo>();
     }
   }
 

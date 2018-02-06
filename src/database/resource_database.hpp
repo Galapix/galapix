@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_DATABASE_RESOURCE_DATABASE_HPP
 
 #include <vector>
-#include <boost/optional.hpp>
+#include <optional>
 
 #include "database/entries/resource_entry.hpp"
 #include "database/statements/file_entry_delete.hpp"
@@ -114,20 +114,20 @@ public:
   ResourceDatabase(SQLiteConnection& db);
   ~ResourceDatabase();
 
-  boost::optional<ImageInfo> get_image_info(const ResourceInfo& resource);
+  std::optional<ImageInfo> get_image_info(const ResourceInfo& resource);
   RowId store_image_info(const ImageInfo& image_info);
 
-  boost::optional<ResourceInfo> get_resource_info(const ResourceLocator& locator, const BlobInfo& blob);
-  boost::optional<ResourceInfo> get_resource_info(const BlobInfo& blob);
+  std::optional<ResourceInfo> get_resource_info(const ResourceLocator& locator, const BlobInfo& blob);
+  std::optional<ResourceInfo> get_resource_info(const BlobInfo& blob);
   RowId store_resource_info(const ResourceInfo& resource_info);
 
-  boost::optional<FileInfo> get_file_info(const std::string& path);
+  std::optional<FileInfo> get_file_info(const std::string& path);
   RowId store_file_info(const FileInfo& file_info);
 
-  boost::optional<URLInfo> get_url_info(const std::string& url);
+  std::optional<URLInfo> get_url_info(const std::string& url);
   RowId store_url_info(const URLInfo& url_info);
 
-  boost::optional<FileEntry> get_file_entry(const std::string& path);
+  std::optional<FileEntry> get_file_entry(const std::string& path);
   void get_file_entries(std::vector<FileEntry>& entries_out);
   void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
   void store_file_entry(const std::string& path, int mtime);
@@ -144,7 +144,7 @@ public:
      @return true if lookup was successful, false otherwise, in which case entry stays untouched
   */
   bool get_old_file_entry(const URL& url, OldFileEntry& entry_out);
-  boost::optional<ResourceEntry> get_resource_entry(const RowId& blob_id);
+  std::optional<ResourceEntry> get_resource_entry(const RowId& blob_id);
   void get_old_file_entries(std::vector<OldFileEntry>& entries_out);
   void get_old_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out);
 

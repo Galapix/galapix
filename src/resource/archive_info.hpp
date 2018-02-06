@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_RESOURCE_ARCHIVE_INFO_HPP
 #define HEADER_GALAPIX_RESOURCE_ARCHIVE_INFO_HPP
 
-#include <boost/optional.hpp>
+#include <optional>
 
 #include "resource/archive_file_info.hpp"
 
@@ -27,7 +27,7 @@ class ArchiveInfo
 {
 private:
   std::vector<ArchiveFileInfo> m_files;
-  boost::optional<std::string> m_password;
+  std::optional<std::string> m_password;
 
 public:
   ArchiveInfo() :
@@ -36,13 +36,13 @@ public:
   {}
 
   ArchiveInfo(std::vector<ArchiveFileInfo> files,
-              const boost::optional<std::string>& password) :
+              const std::optional<std::string>& password) :
     m_files(std::move(files)),
     m_password(password)
   {}
 
   std::vector<ArchiveFileInfo> get_files() const { return m_files; }
-  boost::optional<std::string> get_password() const { return m_password; }
+  std::optional<std::string> get_password() const { return m_password; }
 };
 
 #endif

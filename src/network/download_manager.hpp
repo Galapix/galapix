@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_NETWORK_DOWNLOAD_MANAGER_HPP
 #define HEADER_GALAPIX_NETWORK_DOWNLOAD_MANAGER_HPP
 
-#include <boost/optional.hpp>
+#include <optional>
 #include <boost/uuid/uuid.hpp>
 #include <curl/curl.h>
 #include <thread>

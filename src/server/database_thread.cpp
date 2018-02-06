@@ -76,22 +76,22 @@ DatabaseThread::abort_thread()
 
 void
 DatabaseThread::request_image_info(const ResourceInfo& resource,
-                                   const std::function<void (const boost::optional<ImageInfo>&)>& callback)
+                                   const std::function<void (const std::optional<ImageInfo>&)>& callback)
 {
   m_request_queue.wait_and_push([this, resource, callback](){
-      boost::optional<ImageInfo> image_info = m_database.get_resources().get_image_info(resource);
+      std::optional<ImageInfo> image_info = m_database.get_resources().get_image_info(resource);
       callback(image_info);
     });
 }
 
 void
 DatabaseThread::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
-                                      const std::function<void (const boost::optional<ResourceInfo>&)>& callback)
+                                      const std::function<void (const std::optional<ResourceInfo>&)>& callback)
 {
   m_request_queue.wait_and_push
     ([this, callback, locator, blob]()
      {
-       boost::optional<ResourceInfo> result = m_database.get_resources().get_resource_info(locator, blob);
+       std::optional<ResourceInfo> result = m_database.get_resources().get_resource_info(locator, blob);
        callback(result);
      });
 }
@@ -122,12 +122,12 @@ DatabaseThread::store_image_info(const ImageInfo& image_info,
 
 void
 DatabaseThread::request_file_info(const std::string& path,
-                                  const std::function<void (const boost::optional<FileInfo>&)>& callback)
+                                  const std::function<void (const std::optional<FileInfo>&)>& callback)
 {
   m_request_queue.wait_and_push
     ([this, path, callback]()
      {
-      boost::optional<FileInfo> file_info = m_database.get_resources().get_file_info(path);
+      std::optional<FileInfo> file_info = m_database.get_resources().get_file_info(path);
       callback(file_info);
      });
 }
@@ -145,12 +145,12 @@ DatabaseThread::store_file_info(const FileInfo& file_info,
 }
 
 void
-DatabaseThread::request_url_info(const std::string& url, const std::function<void (const boost::optional<URLInfo>&)>& callback)
+DatabaseThread::request_url_info(const std::string& url, const std::function<void (const std::optional<URLInfo>&)>& callback)
 {
   m_receive_queue.wait_and_push
     ([this, url, callback]()
      {
-       boost::optional<URLInfo> url_info = m_database.get_resources().get_url_info(url);
+       std::optional<URLInfo> url_info = m_database.get_resources().get_url_info(url);
        callback(url_info);
      });
 }
@@ -336,7 +336,7 @@ DatabaseThread::delete_file_entry(const RowId& fileid)
 
 void
 DatabaseThread::request_resource_entry(const RowId& blob_id,
-                                       const std::function<void (const boost::optional<ResourceEntry>&)>& callback)
+                                       const std::function<void (const std::optional<ResourceEntry>&)>& callback)
 {
   m_request_queue.wait_and_push([=](){
       callback(m_database.get_resources().get_resource_entry(blob_id));

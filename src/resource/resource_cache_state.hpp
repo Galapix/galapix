@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_RESOURCE_RESOURCE_CACHE_STATE_HPP
 
 #include <vector>
-#include <boost/optional.hpp>
+#include <optional>
 
 #include "resource/resource_info.hpp"
 #include "resource/video_info.hpp"

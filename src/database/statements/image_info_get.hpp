@@ -35,7 +35,7 @@ public:
            "  image.resource_id = ?;")
   {}
 
-  boost::optional<ImageInfo> operator()(const ResourceInfo& resource_info)
+  std::optional<ImageInfo> operator()(const ResourceInfo& resource_info)
   {
     m_stmt.bind_int64(1, resource_info.get_id().get_id());
     SQLiteReader reader = m_stmt.execute_query();
@@ -49,7 +49,7 @@ public:
     }
     else
     {
-      return boost::optional<ImageInfo>();
+      return std::optional<ImageInfo>();
     }
   }
 

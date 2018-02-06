@@ -52,7 +52,7 @@ Exec::arg(const std::string& argument)
 void
 Exec::set_working_directory(const std::string& path)
 {
-  m_working_directory.reset(path);
+  m_working_directory = path;
 }
 
 void

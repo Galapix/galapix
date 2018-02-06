@@ -28,7 +28,7 @@ class DownloadTransfer
 public:
   DownloadTransfer(DownloadManager::TransferHandle id,
                    const std::string& url,
-                   const boost::optional<std::string>& post_data,
+                   const std::optional<std::string>& post_data,
                    const std::function<void (const DownloadResult&)>& callback,
                    const std::function<DownloadManager::ProgressFunc>& progress_callback);
   ~DownloadTransfer();

@@ -21,7 +21,7 @@
 
 DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
                                    const std::string& url_,
-                                   const boost::optional<std::string>& post_data_,
+                                   const std::optional<std::string>& post_data_,
                                    const std::function<void (const DownloadResult&)>& callback_,
                                    const std::function<DownloadManager::ProgressFunc>& progress_callback_) :
   id(id_),

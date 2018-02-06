@@ -35,7 +35,7 @@ public:
            "  resource.blob_id = blob.id AND blob.sha1 = ?;")
   {}
 
-  boost::optional<ResourceInfo> operator()(const SHA1& sha1)
+  std::optional<ResourceInfo> operator()(const SHA1& sha1)
   {
     m_stmt.bind_text(1, path);
     SQLiteReader reader = m_stmt.execute_query();
@@ -48,7 +48,7 @@ public:
     }
     else
     {
-      return boost::optional<ResourceInfo>();
+      return std::optional<ResourceInfo>();
     }
   }
 

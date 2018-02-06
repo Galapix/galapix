@@ -279,7 +279,7 @@ DownloadManager::request_get(const std::string& url,
 
   m_queue.wait_and_push(
     [=]{
-      boost::optional<DownloadResult> cached_result = m_cache.get(url);
+      std::optional<DownloadResult> cached_result = m_cache.get(url);
       if (cached_result)
       {
         log_info("downloading from cache: %1%", url);
@@ -288,7 +288,7 @@ DownloadManager::request_get(const std::string& url,
       else
       {
         log_info("downloading: %1%", url);
-        auto transfer = std::make_unique<DownloadTransfer>(uuid, url, boost::optional<std::string>(),
+        auto transfer = std::make_unique<DownloadTransfer>(uuid, url, std::optional<std::string>(),
                                                            callback, progress_callback);
         curl_multi_add_handle(m_multi_handle, transfer->handle);
         m_transfers.push_back(std::move(transfer));

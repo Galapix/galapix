@@ -20,7 +20,7 @@
 #define HEADER_GALAPIX_SERVER_DATABASE_THREAD_HPP
 
 #include <list>
-#include <boost/optional.hpp>
+#include <optional>
 
 #include "database/entries/tile_entry.hpp"
 #include "database/entries/resource_entry.hpp"
@@ -78,20 +78,20 @@ public:
 
   void request_resource_metadata();
 
-  void request_image_info(const ResourceInfo& resource, const std::function<void (const boost::optional<ImageInfo>&)>& callback);
+  void request_image_info(const ResourceInfo& resource, const std::function<void (const std::optional<ImageInfo>&)>& callback);
   void store_image_info(const ImageInfo& image_info,
                        const std::function<void (const Failable<ImageInfo>&)>& callback);
 
   void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
-                             const std::function<void (const boost::optional<ResourceInfo>&)>& callback);
+                             const std::function<void (const std::optional<ResourceInfo>&)>& callback);
   void store_resource_info(const ResourceInfo& resource_info,
                            const std::function<void (const Failable<ResourceInfo>&)>& callback);
 
-  void request_file_info(const std::string& path, const std::function<void (const boost::optional<FileInfo>&)>& callback);
+  void request_file_info(const std::string& path, const std::function<void (const std::optional<FileInfo>&)>& callback);
   void store_file_info(const FileInfo& file_info,
                        const std::function<void (const Failable<FileInfo>&)>& callback);
 
-  void request_url_info(const std::string& url, const std::function<void (const boost::optional<URLInfo>&)>& callback);
+  void request_url_info(const std::string& url, const std::function<void (const std::optional<URLInfo>&)>& callback);
   void store_url_info(const URLInfo& url_info,
                       const std::function<void (const Failable<URLInfo>&)>& callback);
 
@@ -127,7 +127,7 @@ public:
   /* @} */
 
   void request_resource_entry(const RowId& blob_id,
-                              const std::function<void (const boost::optional<ResourceEntry>&)>& callback);
+                              const std::function<void (const std::optional<ResourceEntry>&)>& callback);
 
 private:
   void remove_job(std::shared_ptr<Job> job);

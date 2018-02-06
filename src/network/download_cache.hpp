@@ -19,7 +19,7 @@
 #ifndef HEADER_GALAPIX_NETWORK_DOWNLOAD_CACHE_HPP
 #define HEADER_GALAPIX_NETWORK_DOWNLOAD_CACHE_HPP
 
-#include <boost/optional.hpp>
+#include <optional>
 #include <string>
 
 #include "network/download_result.hpp"
@@ -33,7 +33,7 @@ public:
   DownloadCache(const std::string& cache_directory);
   ~DownloadCache();
 
-  boost::optional<DownloadResult> get(const std::string& url);
+  std::optional<DownloadResult> get(const std::string& url);
   void store(const std::string& url, const DownloadResult& result);
 
 private:

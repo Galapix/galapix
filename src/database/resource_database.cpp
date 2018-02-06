@@ -71,7 +71,7 @@ ResourceDatabase::~ResourceDatabase()
 {
 }
 
-boost::optional<ImageInfo>
+std::optional<ImageInfo>
 ResourceDatabase::get_image_info(const ResourceInfo& resource)
 {
   return (*m_image_info_get)(resource);
@@ -83,13 +83,13 @@ ResourceDatabase::store_image_info(const ImageInfo& image_info)
   return (*m_image_info_store)(image_info);
 }
 
-boost::optional<ResourceInfo>
+std::optional<ResourceInfo>
 ResourceDatabase::get_resource_info(const ResourceLocator& locator, const BlobInfo& blob)
 {
   return (*m_resource_info_get)(locator, blob);
 }
 
-boost::optional<ResourceInfo>
+std::optional<ResourceInfo>
 ResourceDatabase::get_resource_info(const BlobInfo& blob)
 {
   return (*m_resource_info_get)(blob);
@@ -101,7 +101,7 @@ ResourceDatabase::store_resource_info(const ResourceInfo& info)
   return (*m_resource_info_store)(info);
 }
 
-boost::optional<URLInfo>
+std::optional<URLInfo>
 ResourceDatabase::get_url_info(const std::string& url)
 {
   return (*m_url_info_get)(url);
@@ -117,7 +117,7 @@ ResourceDatabase::store_url_info(const URLInfo& url_info)
   return (*m_url_info_store)(url_info);
 }
 
-boost::optional<FileInfo>
+std::optional<FileInfo>
 ResourceDatabase::get_file_info(const std::string& path)
 {
   return (*m_file_info_get_by_path)(path);
@@ -133,7 +133,7 @@ ResourceDatabase::store_file_info(const FileInfo& file_info)
   return (*m_file_info_store)(file_info);
 }
 
-boost::optional<FileEntry>
+std::optional<FileEntry>
 ResourceDatabase::get_file_entry(const std::string& path)
 {
   return m_file_entry_get_by_path(path);
@@ -202,11 +202,11 @@ ResourceDatabase::get_old_file_entries(std::vector<OldFileEntry>& entries_out)
   //m_file_entry_get_all(entries_out);
 }
 
-boost::optional<ResourceEntry>
+std::optional<ResourceEntry>
 ResourceDatabase::get_resource_entry(const RowId& blob_id)
 {
   //m_resource_entry_get_by_blob_id();
-  return boost::optional<ResourceEntry>();
+  return std::optional<ResourceEntry>();
 }
 
 void

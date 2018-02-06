@@ -46,7 +46,7 @@ public:
            "  resource.blob_id = ?1;")
   {}
 
-  boost::optional<ResourceInfo> operator()(const BlobInfo& blob)
+  std::optional<ResourceInfo> operator()(const BlobInfo& blob)
   {
     m_blob_stmt.bind_int64(1, blob.get_id().get_id());
 
@@ -68,7 +68,7 @@ public:
   }
 
   /** scan through all resource entries trying to find one that matches the given handler */
-  boost::optional<ResourceInfo> operator()(const ResourceLocator& locator, const BlobInfo& blob)
+  std::optional<ResourceInfo> operator()(const ResourceLocator& locator, const BlobInfo& blob)
   {
     m_stmt.bind_text(1, blob.get_sha1().str());
 
@@ -98,7 +98,7 @@ public:
       }
     }
 
-    return boost::optional<ResourceInfo>();
+    return std::optional<ResourceInfo>();
   }
 
 private:

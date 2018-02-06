@@ -58,7 +58,7 @@ ResourceManager::request_resource_metadata(const ResourceLocator& locator,
 {
   m_database.request_resource_info
     (locator, blob,
-     [this, locator, blob, callback](const boost::optional<ResourceInfo>& reply)
+     [this, locator, blob, callback](const std::optional<ResourceInfo>& reply)
      {
        if (reply)
        {
@@ -82,7 +82,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
 {
   m_database.request_resource_info
     (locator, blob,
-     [this, locator, blob, callback](const boost::optional<ResourceInfo>& reply)
+     [this, locator, blob, callback](const std::optional<ResourceInfo>& reply)
      {
        if (reply)
        {
@@ -154,7 +154,7 @@ ResourceManager::request_image_info(const ResourceInfo& resource,
 {
   m_database.request_image_info
     (resource,
-     [this, resource, callback](const boost::optional<ImageInfo>& image_info)
+     [this, resource, callback](const std::optional<ImageInfo>& image_info)
      {
        if (image_info)
        {
@@ -187,7 +187,7 @@ ResourceManager::request_tile_info(const ImageInfo& image, int scale, int x, int
 #if 0
   m_database.request_tile(
     image.get_rowid(), scale, x, y,
-    [this](const boost::optional<TileEntry>& tile_entry)
+    [this](const std::optional<TileEntry>& tile_entry)
     {
       if (!tile_entry)
       {
@@ -219,7 +219,7 @@ ResourceManager::generate_tiles()
       // once generation is complete, rerequest the tile
       m_database.request_tile(
         image.get_rowid(), scale, x, y,
-        [this](const boost::optional<TileEntry>& tile_entry)
+        [this](const std::optional<TileEntry>& tile_entry)
         {
           callback(TileInfo(tile_entry));
         });

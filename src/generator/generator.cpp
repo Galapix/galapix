@@ -177,7 +177,7 @@ Generator::process_archive_resource(const ResourceLocator& locator,
       }
     }
 
-    ArchiveInfo archive_info(std::move(files), boost::optional<std::string>());
+    ArchiveInfo archive_info(std::move(files), std::optional<std::string>());
     callbacks->on_archive_data(archive_info);
 
     return true;

@@ -35,7 +35,7 @@ public:
            "  url.url = ?1 AND blob.id = url.blob_id;")
   {}
 
-  boost::optional<URLInfo> operator()(const std::string& url)
+  std::optional<URLInfo> operator()(const std::string& url)
   {
     m_stmt.bind_text(1, url);
     SQLiteReader reader = m_stmt.execute_query();
@@ -53,7 +53,7 @@ public:
     }
     else
     {
-      return boost::optional<URLInfo>();
+      return std::optional<URLInfo>();
     }
   }
 

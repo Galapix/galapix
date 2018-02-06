@@ -31,7 +31,7 @@ DownloadCache::~DownloadCache()
 
 }
 
-boost::optional<DownloadResult>
+std::optional<DownloadResult>
 DownloadCache::get(const std::string& url)
 {
   // cache download results in SQLite
@@ -41,7 +41,7 @@ DownloadCache::get(const std::string& url)
   //
   // }
   log_error("not implemented");
-  return boost::optional<DownloadResult>();
+  return std::optional<DownloadResult>();
 }
 
 void

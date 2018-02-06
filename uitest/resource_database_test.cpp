@@ -35,7 +35,7 @@ UITEST(ResourceDatabase, test, "")
 
   for(auto& path : { "/tmp/foobar.txt", "/tmp/barfoo.txt", "/tmp/unknown.txt", "/tmp/hello_world.txt",  })
   {
-    boost::optional<FileInfo> file_info = res_db.get_file_info(path);
+    std::optional<FileInfo> file_info = res_db.get_file_info(path);
     if (file_info)
     {
       std::cout << file_info->get_path() << '\n'
