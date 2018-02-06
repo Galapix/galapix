@@ -82,7 +82,7 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
 {
   m_database.request_resource_info
     (locator, blob,
-     [this, locator, blob, callback](const std::optional<ResourceInfo>& reply)
+     [this, locator, callback](const std::optional<ResourceInfo>& reply)
      {
        if (reply)
        {
