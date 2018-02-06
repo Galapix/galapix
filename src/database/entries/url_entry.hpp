@@ -45,6 +45,13 @@ public:
     m_blob_id(blob_id)
   {}
 
+  RowId get_id() const { return m_id; }
+  std::string get_host() const { return m_host; }
+  std::string get_path() const { return m_path; }
+  std::string get_content_type() const { return m_content_type; }
+  long get_mtime() const { return m_mtime; }
+  RowId get_blob_id() const { return m_blob_id; }
+
 private:
   RowId m_id;
   std::string m_host;
