@@ -18,6 +18,7 @@
 
 #include "galapix/viewer_state.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #include <glm/ext.hpp>
 

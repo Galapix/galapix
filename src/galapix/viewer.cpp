@@ -20,6 +20,7 @@
 #include <fstream>
 #include <logmich/log.hpp>
 
+#define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_RADIANS
 #include <glm/gtx/io.hpp>
 
