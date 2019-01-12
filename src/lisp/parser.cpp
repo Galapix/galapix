@@ -43,10 +43,10 @@ public:
     string = msg.str();
   }
 
-  ~ParseError() throw()
+  ~ParseError() throw() override
   {}
 
-  const char* what() const throw()
+  const char* what() const throw() override
   {
     return string.c_str();
   }
@@ -57,7 +57,7 @@ private:
 
 Parser::Parser()
   : filename(),
-    lexer(0),
+    lexer(nullptr),
     token()
 {
 }

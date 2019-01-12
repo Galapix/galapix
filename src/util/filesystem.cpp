@@ -54,7 +54,7 @@ Filesystem::find_exe(const std::string& name)
     char* path = strdup(path_c);
     char* state;
 
-    for(char* p = strtok_r(path, delim, &state); p != NULL; p = strtok_r(NULL, delim, &state))
+    for(char* p = strtok_r(path, delim, &state); p != nullptr; p = strtok_r(nullptr, delim, &state))
     {
       std::ostringstream fullpath;
       fullpath << p << "/" << name;
@@ -93,14 +93,14 @@ Filesystem::open_directory_recursivly(const std::string& pathname, std::vector<s
 {
   DIR* dp = ::opendir(pathname.c_str());
 
-  if (dp == 0)
+  if (dp == nullptr)
   {
     std::cout << "System: Couldn't open: " << pathname << std::endl;
   }
   else
   {
-    dirent* de = 0;
-    while ((de = ::readdir(dp)) != 0)
+    dirent* de = nullptr;
+    while ((de = ::readdir(dp)) != nullptr)
     {
       if (strcmp(de->d_name, ".")  != 0 &&
           strcmp(de->d_name, "..") != 0 &&
@@ -135,18 +135,18 @@ Filesystem::open_directory(const std::string& pathname)
 {
   std::vector<std::string> dir_list;
 
-  DIR* dp    = 0;
-  dirent* de = 0;
+  DIR* dp    = nullptr;
+  dirent* de = nullptr;
 
   dp = ::opendir(pathname.c_str());
 
-  if (dp == 0)
+  if (dp == nullptr)
   {
     std::cout << "System: Couldn't open: " << pathname << std::endl;
   }
   else
   {
-    while ((de = ::readdir(dp)) != 0)
+    while ((de = ::readdir(dp)) != nullptr)
     {
       if (strcmp(de->d_name, ".")  != 0 &&
           strcmp(de->d_name, "..") != 0)
@@ -400,7 +400,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 std::string
 Filesystem::realpath_system(const std::string& pathname)
 {
-  char* result = ::realpath(pathname.c_str(), NULL);
+  char* result = ::realpath(pathname.c_str(), nullptr);
   std::string res = result;
   free(result);
 
@@ -427,7 +427,7 @@ Filesystem::realpath_fast(const std::string& pathname)
   else
   {
     char buf[PATH_MAX];
-    if (getcwd(buf, PATH_MAX) == 0)
+    if (getcwd(buf, PATH_MAX) == nullptr)
     {
       std::cout << "System::realpath: Error: couldn't getcwd()" << std::endl;
       return pathname;

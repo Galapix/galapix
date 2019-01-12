@@ -58,9 +58,9 @@ Select::wait()
 {
   int ret = select(m_nfds+1,
                    &m_readfds,
-                   NULL /* writefds */,
-                   NULL /* exceptfds */,
-                   NULL /* utimeout */);
+                   nullptr /* writefds */,
+                   nullptr /* exceptfds */,
+                   nullptr /* utimeout */);
 
   if (ret < 0)
   {

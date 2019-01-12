@@ -72,7 +72,7 @@ SpaceNavigator::run()
             event.type = SDL_USEREVENT;
             event.user.code  = 0;
             event.user.data1 = new spnav_event(spnav_ev);
-            event.user.data2 = 0;
+            event.user.data2 = nullptr;
 
             while (SDL_PushEvent(&event) != 1) {}
           }

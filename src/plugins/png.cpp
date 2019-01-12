@@ -52,13 +52,13 @@ bool
 PNG::get_size(void* data, int len, Size& size)
 {
   // FIXME: Could install error/warning handling functions here
-  png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_infop info_ptr  = png_create_info_struct(png_ptr);
 
   if (setjmp(png_jmpbuf(png_ptr)))
   {
     // FIXME: get a proper error message from libpng
-    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
     log_warn("PNG::get_size: setjmp: Couldn't load from memory");
     return false;
   }
@@ -76,7 +76,7 @@ PNG::get_size(void* data, int len, Size& size)
     size.width  = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
     size.height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
 
-    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
     return true;
   }
@@ -93,12 +93,12 @@ PNG::get_size(const std::string& filename, Size& size)
   else
   {
     // FIXME: Could install error/warning handling functions here
-    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     png_infop info_ptr  = png_create_info_struct(png_ptr);
 
     if (setjmp(png_jmpbuf(png_ptr)))
     {
-      png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+      png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
       log_warn("PNG::get_size: setjmp: Couldn't load %1%", filename);
       return false;
     }
@@ -111,7 +111,7 @@ PNG::get_size(const std::string& filename, Size& size)
       size.width = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
       size.height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
 
-      png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+      png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
       fclose(in);
 
@@ -159,12 +159,12 @@ PNG::load_from_file(const std::string& filename)
   }
   else
   {
-    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     png_infop info_ptr  = png_create_info_struct(png_ptr);
 
     if (setjmp(png_jmpbuf(png_ptr)))
     {
-      png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+      png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
       raise_runtime_error("PNG::load_from_mem(): setjmp: Couldn't load " + filename);
     }
 
@@ -216,7 +216,7 @@ PNG::load_from_file(const std::string& filename)
       break;
     }
 
-    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
     fclose(in);
 
@@ -228,7 +228,7 @@ SoftwareSurface
 PNG::load_from_mem(const uint8_t* data, size_t len)
 {
   // FIXME: Merge this with load_from_file
-  png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_infop info_ptr  = png_create_info_struct(png_ptr);
 
   PNGReadMemory png_memory;
@@ -238,7 +238,7 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
 
   if (setjmp(png_jmpbuf(png_ptr)))
   {
-    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+    png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
     raise_runtime_error("PNG::load_from_mem(): setjmp: Couldn't load from mem");
   }
 
@@ -290,7 +290,7 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
     break;
   }
 
-  png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+  png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
   return SoftwareSurface(std::move(dst));
 }
@@ -308,7 +308,7 @@ PNG::save(SoftwareSurface const& surface, const std::string& filename)
   }
   else
   {
-    png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
     png_infop   info_ptr = png_create_info_struct(png_ptr);
     assert(png_ptr && info_ptr);
 
@@ -368,7 +368,7 @@ PNG::save(SoftwareSurface const& surface)
   PixelData const& src = surface.get_pixel_data();
 
   // FIXME: Merge this with the save to file function
-  png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_structp png_ptr  = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_infop   info_ptr = png_create_info_struct(png_ptr);
   assert(png_ptr && info_ptr);
 
@@ -379,7 +379,7 @@ PNG::save(SoftwareSurface const& surface)
   }
 
   PNGWriteMemory mem;
-  png_set_write_fn(png_ptr, &mem, &writePNGMemory, NULL);
+  png_set_write_fn(png_ptr, &mem, &writePNGMemory, nullptr);
 
   png_set_IHDR(png_ptr, info_ptr,
                static_cast<png_uint_32>(src.get_width()),

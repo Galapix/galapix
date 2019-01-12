@@ -47,7 +47,7 @@
 #include "util/filesystem.hpp"
 #include "util/software_surface.hpp"
 
-Viewer* Viewer::current_ = 0;
+Viewer* Viewer::current_ = nullptr;
 
 Viewer::Viewer(System& system, Workspace* workspace_) :
   m_system(system),

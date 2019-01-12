@@ -55,8 +55,8 @@ SDLSystem::trigger_redraw()
   SDL_Event event;
   event.type = SDL_USEREVENT;
   event.user.code  = 1;
-  event.user.data1 = 0;
-  event.user.data2 = 0;
+  event.user.data1 = nullptr;
+  event.user.data2 = nullptr;
 
   while (SDL_PushEvent(&event) != 1) {}
 }

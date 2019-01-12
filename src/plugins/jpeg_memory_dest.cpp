@@ -66,7 +66,7 @@ void jpeg_memory_term_destination(j_compress_ptr cinfo)
 
 void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data)
 {
-  if (cinfo->dest == NULL)
+  if (cinfo->dest == nullptr)
   {     /* first time for this JPEG object? */
     cinfo->dest = (struct jpeg_destination_mgr*)
       (*cinfo->mem->alloc_small)((j_common_ptr) cinfo, JPOOL_PERMANENT,

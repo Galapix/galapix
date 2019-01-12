@@ -27,14 +27,14 @@
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection& db) :
   m_db(db),
-  m_stmt(0),
+  m_stmt(nullptr),
   m_stmt_str()
 {
 }
 
 SQLiteStatement::SQLiteStatement(SQLiteConnection& db, const std::string& sqlstmt) :
   m_db(db),
-  m_stmt(0),
+  m_stmt(nullptr),
   m_stmt_str()
 {
   prepare(sqlstmt);
@@ -61,7 +61,7 @@ SQLiteStatement::prepare(const std::string& sqlstmt)
 
   m_stmt_str = sqlstmt;
 
-  if (sqlite3_prepare_v2(m_db.get_db(), sqlstmt.c_str(), -1, &m_stmt,  0) != SQLITE_OK)
+  if (sqlite3_prepare_v2(m_db.get_db(), sqlstmt.c_str(), -1, &m_stmt,  nullptr) != SQLITE_OK)
   {
     raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }

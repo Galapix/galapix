@@ -34,7 +34,7 @@
 #include "resource/resource_locator.hpp"
 #include "resource/url_info.hpp"
 
-DatabaseThread* DatabaseThread::current_ = 0;
+DatabaseThread* DatabaseThread::current_ = nullptr;
 
 DatabaseThread::DatabaseThread(Database& database,
                                JobManager& tile_job_manager) :
@@ -46,7 +46,7 @@ DatabaseThread::DatabaseThread(Database& database,
   m_receive_queue(256), // FIXME: Make this configurable
   m_tile_generation_jobs()
 {
-  assert(current_ == 0);
+  assert(current_ == nullptr);
   current_ = this;
 }
 

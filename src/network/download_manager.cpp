@@ -137,7 +137,7 @@ DownloadManager::wait_for_curl_data()
     FD_SET(m_pipefd[0], &read_fd_set);
     max_fd = std::max(m_pipefd[0], max_fd);
 
-    select(max_fd+1, &read_fd_set, &write_fd_set, &exc_fd_set, NULL);
+    select(max_fd+1, &read_fd_set, &write_fd_set, &exc_fd_set, nullptr);
 
     if (FD_ISSET(m_pipefd[0], &read_fd_set))
     {

@@ -28,7 +28,7 @@ class CURLHandler
 public:
   /** Download the given \a url and return the result. If mime_type is
       provided, the returned mime_type is stored therein. */
-  static Blob get_data(const std::string& url, std::string* mime_type = NULL);
+  static Blob get_data(const std::string& url, std::string* mime_type = nullptr);
 };
 
 #endif

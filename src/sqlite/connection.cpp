@@ -40,7 +40,7 @@ SQLiteConnection::SQLiteConnection(const std::string& filename) :
     throw SQLiteError(str.str());
   }
 
-  sqlite3_busy_handler(db, busy_callback, 0);
+  sqlite3_busy_handler(db, busy_callback, nullptr);
 
   // FIXME: Kind of the complete wrong place for this
   exec("PRAGMA auto_vacuum = FULL");
@@ -57,7 +57,7 @@ SQLiteConnection::exec(const std::string& sqlstmt)
 {
   char* errmsg;
 
-  if (sqlite3_exec(db, sqlstmt.c_str(), 0, 0, &errmsg) != SQLITE_OK)
+  if (sqlite3_exec(db, sqlstmt.c_str(), nullptr, nullptr, &errmsg) != SQLITE_OK)
   {
     std::ostringstream out;
 
@@ -65,7 +65,7 @@ SQLiteConnection::exec(const std::string& sqlstmt)
         << "  " << sqlstmt << std::endl;
 
     sqlite3_free(errmsg);
-    errmsg = 0;
+    errmsg = nullptr;
 
     throw SQLiteError(out.str());
   }

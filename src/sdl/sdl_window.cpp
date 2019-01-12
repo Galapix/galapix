@@ -26,8 +26,8 @@
 #include "util/raise_exception.hpp"
 
 SDLWindow::SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing) :
-  m_window(0),
-  m_gl_context(0),
+  m_window(nullptr),
+  m_gl_context(nullptr),
   m_geometry(geometry),
   m_fullscreen(fullscreen),
   m_anti_aliasing(anti_aliasing)
@@ -52,7 +52,7 @@ SDLWindow::~SDLWindow()
 void
 SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
 {
-  assert(m_window == 0);
+  assert(m_window == nullptr);
 
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
   SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);

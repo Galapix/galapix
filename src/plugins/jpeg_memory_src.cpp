@@ -29,7 +29,7 @@ struct jpeg_memory_source_mgr {
 
 void jpeg_memory_init_source(j_decompress_ptr cinfo)
 {
-  cinfo->src->next_input_byte = NULL;
+  cinfo->src->next_input_byte = nullptr;
   cinfo->src->bytes_in_buffer = 0;
 }
 
@@ -40,7 +40,7 @@ void jpeg_memory_term_source(j_decompress_ptr)
 
 boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
 {
-  if (cinfo->src->next_input_byte != NULL)
+  if (cinfo->src->next_input_byte != nullptr)
   {
     (cinfo)->err->msg_code = JERR_INPUT_EOF;
     (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
@@ -73,7 +73,7 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 
 void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
 {
-  if (cinfo->src == NULL)
+  if (cinfo->src == nullptr)
   {
     cinfo->src = (struct jpeg_source_mgr*)((*cinfo->mem->alloc_small)((j_common_ptr)cinfo,
                                                                       JPOOL_PERMANENT,
@@ -87,7 +87,7 @@ void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
   cinfo->src->term_source       = jpeg_memory_term_source;
 
   cinfo->src->bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
-  cinfo->src->next_input_byte = NULL; /* until buffer loaded */
+  cinfo->src->next_input_byte = nullptr; /* until buffer loaded */
 
   struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
   mgr->data = data;

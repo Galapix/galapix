@@ -56,7 +56,7 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
   // get the mime-type
   if (mime_type)
   {
-    char* content_type = NULL;
+    char* content_type = nullptr;
     curl_easy_getinfo(handle.get(), CURLINFO_CONTENT_TYPE, &content_type);
 
     if (content_type)

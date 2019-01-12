@@ -46,7 +46,7 @@ namespace {
 void print_gl_string(const char* prefix, GLenum name)
 {
   const GLubyte* ret = glGetString(name);
-  if (ret == 0)
+  if (ret == nullptr)
   {
     std::cerr << "error getting string: " << prefix << std::endl;
   }

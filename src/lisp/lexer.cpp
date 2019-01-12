@@ -35,8 +35,8 @@ Lexer::Lexer(std::istream& newstream)
 {
   try {
     // trigger a refill of the buffer
-    c = 0;
-    bufend = 0;
+    c = nullptr;
+    bufend = nullptr;
     nextChar();
   } catch(EOFException&) {
   }

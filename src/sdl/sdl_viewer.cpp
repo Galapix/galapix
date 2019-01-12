@@ -83,7 +83,7 @@ SDLViewer::~SDLViewer()
 void
 SDLViewer::process_event(const SDL_Event& event)
 {
-  const Uint8* keystate = SDL_GetKeyboardState(0);
+  const Uint8* keystate = SDL_GetKeyboardState(nullptr);
 
   switch(event.type)
   {
@@ -623,7 +623,7 @@ SDLViewer::run()
     else
     {
       SDL_Event event;
-      SDL_WaitEvent(NULL);
+      SDL_WaitEvent(nullptr);
       while (SDL_PollEvent(&event))
       {
         process_event(event);

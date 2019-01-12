@@ -107,7 +107,7 @@ Exec::exec()
     c_arguments[0] = strdup(m_program.c_str());
     for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
       c_arguments[i+1] = strdup(m_arguments[i].c_str());
-    c_arguments[m_arguments.size()+1] = NULL;
+    c_arguments[m_arguments.size()+1] = nullptr;
 
     if (m_working_directory)
     {
@@ -204,7 +204,7 @@ Exec::process_io(int stdin_fd, int stdout_fd, int stderr_fd)
       nfds = std::max(nfds, stderr_fd);
     }
 
-    int retval = select(nfds+1, &rfds, NULL, NULL, NULL);
+    int retval = select(nfds+1, &rfds, nullptr, nullptr, nullptr);
 
     if (retval < 0)
     {
