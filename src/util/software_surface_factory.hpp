@@ -43,7 +43,7 @@ private:
 
 public:
   SoftwareSurfaceFactory();
-  ~SoftwareSurfaceFactory();
+  ~SoftwareSurfaceFactory() override;
 
   void add_loader(std::unique_ptr<SoftwareSurfaceLoader> loader);
   bool has_supported_extension(const URL& url);

@@ -26,7 +26,7 @@ class SDLSystem : public System
 private:
 public:
   SDLSystem();
-  ~SDLSystem();
+  ~SDLSystem() override;
 
   void launch_viewer(Workspace& workspace, Options& options) override;
   bool requires_command_line_args() override;

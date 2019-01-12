@@ -30,10 +30,10 @@ private:
 
 public:
   AsyncMessenger();
-  ~AsyncMessenger();
+  ~AsyncMessenger() override;
 
-  void run();
-  void stop_thread();
+  void run() override;
+  void stop_thread() override;
 
 protected:
   void queue(const std::function<void ()>&);

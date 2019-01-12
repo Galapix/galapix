@@ -40,27 +40,27 @@ public:
   {}
 
   JobHandle request_tile(int tilescale, const Vector2i& pos,
-                         const std::function<void (Tile)>& callback)
+                         const std::function<void (Tile)>& callback) override
   {
     return DatabaseThread::current()->request_tile(m_file_entry, tilescale, pos, callback);
   }
 
-  int get_max_scale() const
+  int get_max_scale() const override
   {
     return m_image_entry.get_max_scale();
   }
 
-  int get_tilesize() const
+  int get_tilesize() const override
   {
     return 256;
   }
 
-  Size get_size() const
+  Size get_size() const override
   {
     return m_image_entry.get_size();
   }
 
-  void refresh(const std::function<void (TileProviderPtr)>& callback)
+  void refresh(const std::function<void (TileProviderPtr)>& callback) override
   {
 #if 0
     DatabaseThread::current()->delete_file_entry(m_file_entry.get_fileid());

@@ -41,17 +41,17 @@ public:
     }
   }
 
-  ~SExprFileReaderImpl()
+  ~SExprFileReaderImpl() override
   {
     // FIXME: Do we have to free the lisp pointer here or outside of the code?
   }
 
-  std::string get_name() const
+  std::string get_name() const override
   {
     return sexpr->get_list_elem(0)->get_symbol();
   }
 
-  bool read_int   (const char* name, int& v) const
+  bool read_int   (const char* name, int& v) const override
   {
     std::shared_ptr<lisp::Lisp> item = get_subsection_item(name);
     if (item && item->get_type() == lisp::Lisp::TYPE_INT)
@@ -62,7 +62,7 @@ public:
     return false;
   }
 
-  bool read_float (const char* name, float& v) const
+  bool read_float (const char* name, float& v) const override
   {
     std::shared_ptr<lisp::Lisp> item = get_subsection_item(name);
     if (item)
@@ -85,7 +85,7 @@ public:
     return false;
   }
 
-  bool read_bool  (const char* name, bool& v) const
+  bool read_bool  (const char* name, bool& v) const override
   {
     std::shared_ptr<lisp::Lisp> item = get_subsection_item(name);
     if (item && item->get_type() == lisp::Lisp::TYPE_BOOL)
@@ -101,7 +101,7 @@ public:
     return false;
   }
 
-  bool read_string(const char* name, std::string& v) const
+  bool read_string(const char* name, std::string& v) const override
   {
     std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
     if (sub)
@@ -124,7 +124,7 @@ public:
     return false;
   }
 
-  bool read_size(const char* name, Size& v) const
+  bool read_size(const char* name, Size& v) const override
   {
     std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
     if (sub && sub->get_list_size() == 3)
@@ -136,7 +136,7 @@ public:
     return false;
   }
 
-  bool read_vector2i(const char* name, Vector2i& v) const
+  bool read_vector2i(const char* name, Vector2i& v) const override
   {
     std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
     if (sub && sub->get_list_size() == 3)
@@ -148,7 +148,7 @@ public:
     return false;
   }
 
-  bool read_vector2f(const char* name, Vector2f& v) const
+  bool read_vector2f(const char* name, Vector2f& v) const override
   {
     std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
     if (sub && sub->get_list_size() == 3)
@@ -160,7 +160,7 @@ public:
     return false;
   }
 
-  bool read_rect(const char* name, Rect& rect) const
+  bool read_rect(const char* name, Rect& rect) const override
   {
     std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
     if (sub && sub->get_list_size() == 5)
@@ -174,7 +174,7 @@ public:
     return false;
   }
 
-  bool read_rgba(const char* name, RGBA& v) const
+  bool read_rgba(const char* name, RGBA& v) const override
   {
     std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
     if (sub && sub->get_list_size() == 5)
@@ -188,7 +188,7 @@ public:
     return false;
   }
 
-  bool read_section(const char* name, FileReader& v) const
+  bool read_section(const char* name, FileReader& v) const override
   {
     std::shared_ptr<lisp::Lisp> cur = get_subsection(name);
     if (cur)
@@ -199,7 +199,7 @@ public:
     return false;
   }
 
-  std::vector<FileReader> get_sections() const
+  std::vector<FileReader> get_sections() const override
   {
     std::vector<FileReader> lst;
     for(size_t i = 1; i < sexpr->get_list_size(); ++i)
@@ -209,7 +209,7 @@ public:
     return lst;
   }
 
-  std::vector<std::string> get_section_names() const
+  std::vector<std::string> get_section_names() const override
   {
     std::vector<std::string> lst;
 

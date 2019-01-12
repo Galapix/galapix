@@ -32,7 +32,7 @@ private:
 public:
   RandomLayouter();
 
-  void layout(const ImageCollection& images);
+  void layout(const ImageCollection& images) override;
 
 private:
   RandomLayouter(const RandomLayouter&);

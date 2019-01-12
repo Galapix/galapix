@@ -37,10 +37,10 @@ public:
   GtkViewerWidget(Viewer* viewer);
   virtual ~GtkViewerWidget();
 
-  virtual void on_realize();
+  virtual void on_realize() override;
   virtual bool on_timeout();
-  virtual bool on_configure_event(GdkEventConfigure* event);
-  virtual bool on_expose_event(GdkEventExpose* event);
+  virtual bool on_configure_event(GdkEventConfigure* event) override;
+  virtual bool on_expose_event(GdkEventExpose* event) override;
 
   virtual bool mouse_move(GdkEventMotion* event);
   virtual bool mouse_down (GdkEventButton* event);

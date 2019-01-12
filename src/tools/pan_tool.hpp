@@ -33,13 +33,13 @@ private:
 
 public:
   PanTool(Viewer* viewer);
-  ~PanTool();
+  ~PanTool() override;
 
-  void move(const Vector2i& pos, const Vector2i& rel);
-  void up  (const Vector2i& pos);
-  void down(const Vector2i& pos);
+  void move(const Vector2i& pos, const Vector2i& rel) override;
+  void up  (const Vector2i& pos) override;
+  void down(const Vector2i& pos) override;
 
-  void draw() {}
+  void draw() override {}
   void update(const Vector2i& pos, float delta);
 
   bool get_trackball_mode() const;

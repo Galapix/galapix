@@ -53,7 +53,7 @@ public:
     m_callback(callback)
   {}
 
-  void run()
+  void run() override
   {
     if (m_min_scale_in_db != -1 &&
         m_max_scale_in_db != -1)

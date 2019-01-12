@@ -29,7 +29,7 @@ private:
 
 public:
   ResourceGeneratorCallbacks(const ResourceLocator& locator);
-  virtual ~ResourceGeneratorCallbacks();
+  ~ResourceGeneratorCallbacks() override;
 
   GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) override;
 

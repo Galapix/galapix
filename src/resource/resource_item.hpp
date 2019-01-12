@@ -31,16 +31,16 @@ private:
 
 public:
   ResourceItem(const ResourceLocator& locator);
-  ~ResourceItem();
+  ~ResourceItem() override;
 
-  void draw(const Rectf& cliprect, float zoom);
-  void draw_mark();
+  void draw(const Rectf& cliprect, float zoom) override;
+  void draw_mark() override;
 
   ResourceInfo get_resource_info() const;
 
-  int get_original_width() const { return 0; }
-  int get_original_height() const { return 0; }
-  URL get_url() const { return {}; }
+  int get_original_width() const override { return 0; }
+  int get_original_height() const override { return 0; }
+  URL get_url() const override { return {}; }
 
 private:
   void receive_resource_info(const ResourceInfo& resource_info);

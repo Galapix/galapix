@@ -59,7 +59,7 @@ public:
                   Generator& generator,
                   DownloadManager& download_mgr,
                   ArchiveManager& archive_mgr);
-  virtual ~ResourceManager();
+  ~ResourceManager() override;
 
   void request_resource_metadata(const ResourceLocator& locator,
                                  const std::function<void (const Failable<ResourceMetadata>&)>& callback);

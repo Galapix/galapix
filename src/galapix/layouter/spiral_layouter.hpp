@@ -43,7 +43,7 @@ private:
 public:
   SpiralLayouter();
 
-  void layout(const ImageCollection& images);
+  void layout(const ImageCollection& images) override;
   void reset();
   void layout(WorkspaceItem& item);
 

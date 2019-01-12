@@ -83,18 +83,18 @@ private:
 
 public:
   TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
-  ~TileGenerationJob();
+  ~TileGenerationJob() override;
 
   /** Request a tile to be generated, returns true if the request will
       be honored, false if the tile generation is already in progress
       and the request has to be discarded */
   bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
                     const std::function<void (Tile)>& callback);
-  void run();
+  void run() override;
 
   URL get_url() const { return m_url; }
 
-  bool is_aborted();
+  bool is_aborted() override;
 
   boost::signals2::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
 

@@ -43,7 +43,7 @@ private:
 public:
   ArchiveManager();
   ArchiveManager(const std::string& tmpdir);
-  ~ArchiveManager();
+  ~ArchiveManager() override;
 
   bool is_archive(const std::string& filename) const;
   bool is_archive(Blob const& blob) const;

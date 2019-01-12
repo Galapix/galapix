@@ -32,7 +32,7 @@ private:
 
 public:
   FileJPEGDecompressor(const std::string& filename);
-  ~FileJPEGDecompressor();
+  ~FileJPEGDecompressor() override;
 
 private:
   FileJPEGDecompressor(const FileJPEGDecompressor&);

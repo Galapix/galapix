@@ -36,17 +36,17 @@ public:
     m_archive(archive)
   {}
 
-  std::vector<std::string> get_filenames() const
+  std::vector<std::string> get_filenames() const override
   {
     return m_loader.get_filenames(m_archive);
   }
 
-  Blob get_file(const std::string& filename) const
+  Blob get_file(const std::string& filename) const override
   {
     return m_loader.get_file(m_archive, filename);
   }
 
-  std::string get_file_as_path(const std::string& filename) const
+  std::string get_file_as_path(const std::string& filename) const override
   {
     Blob blob = m_loader.get_file(m_archive, filename);
     boost::filesystem::path path = boost::filesystem::temp_directory_path() /
@@ -55,7 +55,7 @@ public:
     return path.string();
   }
 
-  std::string get_type() const
+  std::string get_type() const override
   {
     return m_loader.str();
   }

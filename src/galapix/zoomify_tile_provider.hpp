@@ -63,11 +63,11 @@ public:
   static std::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
 
   JobHandle request_tile(int scale, const Vector2i& pos,
-                         const std::function<void (Tile)>& callback);
+                         const std::function<void (Tile)>& callback) override;
 
-  int  get_max_scale() const { return m_max_scale; }
-  int  get_tilesize()  const { return m_tilesize; }
-  Size get_size()      const { return m_size; }
+  int  get_max_scale() const override { return m_max_scale; }
+  int  get_tilesize()  const override { return m_tilesize; }
+  Size get_size()      const override { return m_size; }
 
 private:
   int get_tile_group(int scale, const Vector2i& pos);

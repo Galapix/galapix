@@ -49,13 +49,13 @@ private:
 
 public:
   JobWorkerThread();
-  ~JobWorkerThread();
+  ~JobWorkerThread() override;
 
   JobHandle request(std::shared_ptr<Job> job, const std::function<void (std::shared_ptr<Job>, bool)>& callback);
 
-  void run();
+  void run() override;
 
-  void stop_thread();
+  void stop_thread() override;
   void abort_thread();
 
   bool empty() { return m_queue.empty(); }

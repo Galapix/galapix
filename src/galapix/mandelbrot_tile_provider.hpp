@@ -37,14 +37,14 @@ private:
 
 public:
   MandelbrotTileProvider(JobManager& job_manager);
-  ~MandelbrotTileProvider();
+  ~MandelbrotTileProvider() override;
 
   JobHandle request_tile(int tilescale, const Vector2i& pos,
-                                 const std::function<void (Tile)>& callback);
+                                 const std::function<void (Tile)>& callback) override;
 
-  int  get_max_scale() const;
-  int  get_tilesize() const;
-  Size get_size() const;
+  int  get_max_scale() const override;
+  int  get_tilesize() const override;
+  Size get_size() const override;
 
 private:
   MandelbrotTileProvider(const MandelbrotTileProvider&);

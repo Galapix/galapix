@@ -31,7 +31,7 @@ private:
 
 public:
   FileJPEGCompressor(const std::string& filename);
-  ~FileJPEGCompressor();
+  ~FileJPEGCompressor() override;
 
 private:
   FileJPEGCompressor(const FileJPEGCompressor&);

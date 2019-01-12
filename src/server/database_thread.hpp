@@ -66,14 +66,14 @@ private:
   std::list<std::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
 
 protected:
-  void run();
+  void run() override;
 
 public:
   DatabaseThread(Database& database,
                  JobManager& tile_job_manager);
-  virtual ~DatabaseThread();
+  ~DatabaseThread() override;
 
-  void stop_thread();
+  void stop_thread() override;
   void abort_thread();
 
   void request_resource_metadata();

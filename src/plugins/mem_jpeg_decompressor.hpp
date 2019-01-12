@@ -26,7 +26,7 @@ class MemJPEGDecompressor : public JPEGDecompressor
 private:
 public:
   MemJPEGDecompressor(const uint8_t* data, size_t len);
-  ~MemJPEGDecompressor();
+  ~MemJPEGDecompressor() override;
 
 private:
   MemJPEGDecompressor(const MemJPEGDecompressor&);

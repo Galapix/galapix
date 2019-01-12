@@ -27,15 +27,15 @@ private:
 public:
   TarArchiveLoader();
 
-  std::vector<std::string> get_magics() const;
-  std::vector<std::string> get_extensions() const;
+  std::vector<std::string> get_magics() const override;
+  std::vector<std::string> get_extensions() const override;
 
-  std::vector<std::string> get_filenames(const std::string& zip_filename) const;
-  Blob get_file(const std::string& zip_filename, const std::string& filename) const;
-  void extract(const std::string& archive, const std::string& target_directory) const;
-  bool is_seekable(const std::string& archive) const { return false; }
+  std::vector<std::string> get_filenames(const std::string& zip_filename) const override;
+  Blob get_file(const std::string& zip_filename, const std::string& filename) const override;
+  void extract(const std::string& archive, const std::string& target_directory) const override;
+  bool is_seekable(const std::string& archive) const override { return false; }
 
-  std::string str() const { return "tar"; }
+  std::string str() const override { return "tar"; }
 
 private:
   TarArchiveLoader(const TarArchiveLoader&);

@@ -42,7 +42,7 @@ class Image final : public WorkspaceItem
 {
 public:
   Image(const URL& url, TileProviderPtr provider = {});
-  virtual ~Image();
+  ~Image() override;
 
   void draw(const Rectf& cliprect, float zoom) override;
   void draw_mark() override;

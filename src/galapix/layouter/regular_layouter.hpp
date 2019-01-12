@@ -30,7 +30,7 @@ private:
 public:
   RegularLayouter(float aspect_w, float aspect_h);
 
-  void layout(const ImageCollection& images);
+  void layout(const ImageCollection& images) override;
 
 private:
   RegularLayouter(const RegularLayouter&);

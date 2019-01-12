@@ -29,7 +29,7 @@ class MemJPEGCompressor : public JPEGCompressor
 private:
 public:
   MemJPEGCompressor(std::vector<uint8_t>& data);
-  ~MemJPEGCompressor();
+  ~MemJPEGCompressor() override;
 
 
 private:

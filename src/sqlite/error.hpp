@@ -29,9 +29,9 @@ private:
 
 public:
   SQLiteError(const std::string& err);
-  virtual ~SQLiteError() throw () {}
+  ~SQLiteError() throw () override {}
 
-  const char* what() const throw () { return err.c_str(); }
+  const char* what() const throw () override { return err.c_str(); }
 };
 
 #endif

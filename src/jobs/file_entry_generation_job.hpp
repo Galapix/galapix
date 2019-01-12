@@ -37,7 +37,7 @@ private:
 public:
   FileEntryGenerationJob(const JobHandle& job_handle, const URL& url);
 
-  void run();
+  void run() override;
 
   boost::signals2::signal<void (OldFileEntry)>& sig_file_callback() { return m_sig_file_callback; }
 

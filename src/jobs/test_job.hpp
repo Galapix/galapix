@@ -27,7 +27,7 @@ private:
 public:
   TestJob();
 
-  void run();
+  void run() override;
 
 private:
   TestJob (const TestJob&);
