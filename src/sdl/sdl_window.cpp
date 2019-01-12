@@ -148,7 +148,7 @@ SDLWindow::apply_gamma_ramp(float contrast, float brightness, float gamma)
     c = (c * contrast) - 0.5f * (contrast - 1.0f);
     c = powf(c, 1.0f/gamma);
 
-    tbl[i] = static_cast<Uint16>(Math::clamp(0, (int)(c*65535.0f), 65535));
+    tbl[i] = static_cast<Uint16>(Math::clamp(0, static_cast<int>(c*65535.0f), 65535));
   }
 
   SDL_SetWindowGammaRamp(m_window, tbl, tbl, tbl);

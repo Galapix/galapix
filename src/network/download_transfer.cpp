@@ -82,7 +82,7 @@ size_t
 DownloadTransfer::write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   DownloadTransfer* transfer = static_cast<DownloadTransfer*>(userdata);
-  std::copy((uint8_t*)ptr, (uint8_t*)ptr + size*nmemb, std::back_inserter(transfer->data));
+  std::copy(static_cast<uint8_t*>(ptr), static_cast<uint8_t*>(ptr) + size*nmemb, std::back_inserter(transfer->data));
   return nmemb * size;
 }
 

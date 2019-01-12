@@ -27,7 +27,7 @@
 static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   std::vector<uint8_t>* data = static_cast<std::vector<uint8_t>*>(userdata);
-  std::copy((uint8_t*)ptr, (uint8_t*)ptr + size*nmemb, std::back_inserter(*data));
+  std::copy(static_cast<uint8_t*>(ptr), static_cast<uint8_t*>(ptr) + size*nmemb, std::back_inserter(*data));
   return nmemb * size;
 }
 

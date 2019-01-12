@@ -45,12 +45,12 @@ boolean jpeg_memory_fill_input_buffer(j_decompress_ptr cinfo)
   if (cinfo->src->next_input_byte != nullptr)
   {
     (cinfo)->err->msg_code = JERR_INPUT_EOF;
-    (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
+    (*(cinfo)->err->error_exit)(reinterpret_cast<j_common_ptr>(cinfo));
     return FALSE;
   }
   else
   {
-    struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
+    struct jpeg_memory_source_mgr* mgr = reinterpret_cast<struct jpeg_memory_source_mgr*>(cinfo->src);
 
     cinfo->src->next_input_byte = mgr->data;
     cinfo->src->bytes_in_buffer = static_cast<size_t>(mgr->len);
@@ -64,12 +64,12 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
   cinfo->src->next_input_byte = cinfo->src->next_input_byte + static_cast<unsigned long>(num_bytes);
   cinfo->src->bytes_in_buffer = cinfo->src->bytes_in_buffer - static_cast<unsigned long>(num_bytes);
 
-  struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
+  struct jpeg_memory_source_mgr* mgr = reinterpret_cast<struct jpeg_memory_source_mgr*>(cinfo->src);
 
   if (cinfo->src->next_input_byte >= &mgr->data[mgr->len])
   {
     (cinfo)->err->msg_code = JERR_INPUT_EOF;
-    (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
+    (*(cinfo)->err->error_exit)(reinterpret_cast<j_common_ptr>(cinfo));
   }
 }
 
@@ -79,7 +79,7 @@ void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
 {
   if (cinfo->src == nullptr)
   {
-    cinfo->src = (struct jpeg_source_mgr*)((*cinfo->mem->alloc_small)((j_common_ptr)cinfo,
+    cinfo->src = static_cast<struct jpeg_source_mgr*>((*cinfo->mem->alloc_small)(reinterpret_cast<j_common_ptr>(cinfo),
                                                                       JPOOL_PERMANENT,
                                                                       sizeof(struct jpeg_memory_source_mgr)));
   }
@@ -93,7 +93,7 @@ void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
   cinfo->src->bytes_in_buffer = 0; /* forces fill_input_buffer on first read */
   cinfo->src->next_input_byte = nullptr; /* until buffer loaded */
 
-  struct jpeg_memory_source_mgr* mgr = (struct jpeg_memory_source_mgr*)(cinfo->src);
+  struct jpeg_memory_source_mgr* mgr = reinterpret_cast<struct jpeg_memory_source_mgr*>(cinfo->src);
   mgr->data = data;
   mgr->len  = len;
 }

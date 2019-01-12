@@ -85,7 +85,7 @@ PNG::get_size(void* data, int len, Size& size)
   else
   {
     PNGReadMemory png_memory;
-    png_memory.data = (png_bytep)data;
+    png_memory.data = static_cast<png_bytep>(data);
     png_memory.len = static_cast<png_size_t>(len);
     png_memory.pos = 0;
 
