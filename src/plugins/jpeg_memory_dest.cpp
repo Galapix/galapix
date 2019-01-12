@@ -20,6 +20,8 @@
 
 #define OUTPUT_BUF_SIZE 4096
 
+namespace {
+
 struct jpeg_memory_destination_mgr
 {
   struct jpeg_destination_mgr pub;
@@ -63,6 +65,8 @@ void jpeg_memory_term_destination(j_compress_ptr cinfo)
     mgr->data->push_back(mgr->buffer[i]);
   }
 }
+
+} // namespace
 
 void jpeg_memory_dest(j_compress_ptr cinfo, std::vector<uint8_t>* data)
 {

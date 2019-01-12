@@ -60,6 +60,22 @@ Key sdlkey2viewer(SDL_Keycode key)
   }
 }
 
+float deadzone(float value, float threshold)
+{
+  if (fabsf(value) < threshold)
+  {
+    return 0.0f;
+  }
+  else if (value < 0)
+  {
+    return (value + threshold) / (1.0f - threshold);
+  }
+  else
+  {
+    return (value - threshold) / (1.0f - threshold);
+  }
+}
+
 } // namespace
 
 SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
@@ -477,22 +493,6 @@ SDLViewer::process_event(const SDL_Event& event)
 
     default:
       break;
-  }
-}
-
-float deadzone(float value, float threshold)
-{
-  if (fabsf(value) < threshold)
-  {
-    return 0.0f;
-  }
-  else if (value < 0)
-  {
-    return (value + threshold) / (1.0f - threshold);
-  }
-  else
-  {
-    return (value - threshold) / (1.0f - threshold);
   }
 }
 

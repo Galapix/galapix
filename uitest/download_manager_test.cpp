@@ -29,6 +29,8 @@
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
 
+namespace {
+
 void run_repl()
 {
   DownloadManager downloader;
@@ -129,6 +131,8 @@ void run_repl()
   }
 
 }
+
+} // namespace
 
 UITEST(DownloadManager, test, "",
        "Run interactive download shell")

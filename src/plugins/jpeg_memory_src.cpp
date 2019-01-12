@@ -20,6 +20,8 @@
 
 #include <jerror.h>
 
+namespace {
+
 struct jpeg_memory_source_mgr {
   struct jpeg_source_mgr pub;   /* public fields */
 
@@ -70,6 +72,8 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
     (*(cinfo)->err->error_exit)((j_common_ptr) (cinfo));
   }
 }
+
+} // namespace
 
 void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
 {

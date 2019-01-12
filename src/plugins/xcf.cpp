@@ -45,6 +45,8 @@
 // - 760x705+21+32 Indexed-alpha Normal Pasted Layer#1
 // - 800x800+0+0 Indexed-alpha Normal Pasted Layer
 
+namespace {
+
 std::vector<std::string>
 xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end)
 {
@@ -76,6 +78,8 @@ xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::co
 
   return layer_names;
 }
+
+} // namespace
 
 bool
 XCF::is_available()

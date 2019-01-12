@@ -95,6 +95,10 @@ InputStream::read_exact(void* buffer, size_t len)
   }
 }
 
+namespace {
+
+#if 0
+
 int16_t swapSLE16(int16_t value)
 {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -149,6 +153,8 @@ uint64_t swapULE64(uint64_t value)
 #endif
 }
 
+#endif
+
 int16_t swapSBE16(int16_t value)
 {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
@@ -202,6 +208,8 @@ uint64_t swapUBE64(uint64_t value)
   return value;
 #endif
 }
+
+} // namespace
 
 uint8_t
 InputStream::readU8()

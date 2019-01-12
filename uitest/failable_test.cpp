@@ -22,6 +22,8 @@
 
 #include "util/failable.hpp"
 
+namespace {
+
 class Foo
 {
 public:
@@ -35,6 +37,8 @@ std::ostream& operator<<(std::ostream& os, const Foo& foo)
 {
   return os << "<Foo()>";
 }
+
+} // namespace
 
 UITEST(Failable, test, "")
 {

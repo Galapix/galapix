@@ -26,6 +26,8 @@
 
 #include "util/raise_exception.hpp"
 
+namespace {
+
 struct PNGReadMemory
 {
   const png_byte* data;
@@ -47,6 +49,24 @@ void readPNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
     mem->pos += length;
   }
 }
+
+class PNGWriteMemory
+{
+public:
+  std::vector<uint8_t> data;
+
+  PNGWriteMemory() :
+    data()
+  {}
+};
+
+void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
+{
+  PNGWriteMemory* mem = static_cast<PNGWriteMemory*>(png_get_io_ptr(png_ptr));
+  std::copy(data, data+length, std::back_inserter(mem->data));
+}
+
+} // namespace
 
 bool
 PNG::get_size(void* data, int len, Size& size)
@@ -344,22 +364,6 @@ PNG::save(SoftwareSurface const& surface, const std::string& filename)
 
     fclose(out);
   }
-}
-
-class PNGWriteMemory
-{
-public:
-  std::vector<uint8_t> data;
-
-  PNGWriteMemory() :
-    data()
-  {}
-};
-
-void writePNGMemory(png_structp png_ptr, png_bytep data, png_size_t length)
-{
-  PNGWriteMemory* mem = static_cast<PNGWriteMemory*>(png_get_io_ptr(png_ptr));
-  std::copy(data, data+length, std::back_inserter(mem->data));
 }
 
 Blob

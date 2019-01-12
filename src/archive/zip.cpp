@@ -24,6 +24,8 @@
 #include "util/exec.hpp"
 #include "util/raise_exception.hpp"
 
+namespace {
+
 std::string zip_error_to_string(int err)
 {
   // codes are taken from the unzip manpage
@@ -150,6 +152,8 @@ void unzip_parse_output(std::vector<char>::const_iterator start, std::vector<cha
     }
   }
 }
+
+} // namespace
 
 std::vector<std::string>
 Zip::get_filenames(const std::string& archive)

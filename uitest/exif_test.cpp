@@ -3,6 +3,8 @@
 #include <libexif/exif-data.h>
 #include <uitest/uitest.hpp>
 
+namespace {
+
 /*
   Default       =   1
   1  = The 0th row is at the visual top    of the image, and the 0th column is the visual left-hand side.
@@ -43,6 +45,8 @@ get_orientation (ExifData *exif_data)
     }
   return 0;
 }
+
+} // namespace
 
 UITEST(Exif, test, "FILE...")
 {
