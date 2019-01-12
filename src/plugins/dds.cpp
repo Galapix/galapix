@@ -16,9 +16,6 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef HEADER_GALAPIX_PLUGINS_DDS_CPP
-#define HEADER_GALAPIX_PLUGINS_DDS_CPP
-
 #include "plugins/dds.hpp"
 
 #include <errno.h>
@@ -77,7 +74,5 @@ DDS::load_from_file(const std::string& filename)
     return SoftwareSurface(std::move(dst));
   }
 }
-
-#endif
 
 /* EOF */

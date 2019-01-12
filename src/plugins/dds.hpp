@@ -16,6 +16,9 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef HEADER_GALAPIX_PLUGINS_DDS_HPP
+#define HEADER_GALAPIX_PLUGINS_DDS_HPP
+
 #include <string>
 
 #include "util/software_surface.hpp"
@@ -27,5 +30,7 @@ public:
   static bool get_size(const std::string& filename, Size& size);
   static SoftwareSurface load_from_file(const std::string& filename);
 };
+
+#endif
 
 /* EOF */
