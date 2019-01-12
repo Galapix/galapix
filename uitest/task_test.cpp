@@ -25,10 +25,9 @@
 
 UITEST(Task, test, "")
 {
-  Task<int> task{[]{
+  Task<int> task{[]() -> int {
       std::cout << "doing a thing" << std::endl;
       throw std::runtime_error("broken");
-      return 5;
     }};
 
   task();
