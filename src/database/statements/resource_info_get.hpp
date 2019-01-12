@@ -53,13 +53,13 @@ public:
     SQLiteReader reader = m_blob_stmt.execute_query();
     if (reader.next())
     {
-      ResourceInfo info(RowId(reader.get_int64(0)),
-                        ResourceName(BlobInfo(),
-                                     ResourceHandler(reader.get_text(1),
-                                                     reader.get_text(2),
-                                                     reader.get_text(3))),
-                        static_cast<ResourceStatus>(reader.get_int(4)));
-      return info;
+      return std::make_optional<ResourceInfo>(
+        RowId(reader.get_int64(0)),
+        ResourceName(BlobInfo(),
+                     ResourceHandler(reader.get_text(1),
+                                     reader.get_text(2),
+                                     reader.get_text(3))),
+        static_cast<ResourceStatus>(reader.get_int(4)));
     }
     else
     {
