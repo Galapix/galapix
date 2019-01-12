@@ -3,7 +3,7 @@
 /.sconf_temp/
 /.sconsign.dblite
 /.waf-*
-/build.waf/
+/build.*/
 /build/
 /cache/
 /cache/
