@@ -17,6 +17,9 @@
 cmake_minimum_required(VERSION 3.0)
 project(galapix VERSION 0.3.0)
 
+# FindOpenGL prefers GLVND by default when available
+cmake_policy(SET CMP0072 NEW)
+
 include(GNUInstallDirs)
 
 option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
