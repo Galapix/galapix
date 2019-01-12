@@ -32,11 +32,85 @@ option(WERROR "Treat all warnings as errors" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 
 if(WARNINGS)
-  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
-    -pedantic -Wall -Wextra -Wno-c++0x-compat -Wnon-virtual-dtor -Weffc++
-    -Wshadow -Wcast-qual -Winit-self -Wno-unused-parameter -Wunreachable-code)
-  # clang: -Wconversion
+  list(APPEND -Wall -Wextra)
   # -Winline -Wfloat-equal
+
+  # temporarily disabled:
+  #   -Wsign-conversion -Wfloat-equal -Wundef -Wswitch-default
+  #   -Wswitch-enum -Wsign-promo -Woverloaded-virtual -Wmissing-format-attribute
+  #   -Wpadded -Winline -Wunsafe-loop-optimizations -Wstrict-overflow=5
+  # fails on MinGW:
+  #   -ansi
+  if(CMAKE_COMPILER_IS_GNUCXX)
+    list(APPEND WARNINGS_CXX_FLAGS
+      -fdiagnostics-show-option
+      -pedantic
+      -Wno-long-long
+      -Wcast-align
+      -Wdisabled-optimization
+      -Winit-self
+      -Winvalid-pch
+      -Wmissing-include-dirs
+      -Wmissing-noreturn
+      -Wpacked -Wredundant-decls
+      -Wformat=2
+      -Weffc++
+      -Wctor-dtor-privacy
+      -Wno-unused-parameter
+      -Wshadow
+      -Wnon-virtual-dtor
+      -Wcast-qual
+      -Wold-style-cast
+      -Wzero-as-null-pointer-constant
+      # -Wconversion
+      -Wlogical-op
+      -Wstrict-null-sentinel
+      -Wsuggest-override
+      -Wno-suggest-attribute=noreturn
+      -Wno-unused-parameter
+      -Wunreachable-code
+      )
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8)
+      list(APPEND WARNINGS_CXX_FLAGS -Wint-in-bool-context)
+    endif()
+    if(Boost_VERSION LESS 106500)
+      list(APPEND WARNINGS_CXX_FLAGS
+        -Wno-implicit-fallthrough
+        )
+    endif()
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    list(APPEND WARNINGS_CXX_FLAGS
+      -Weverything
+
+      # flags that we deliberately ignore
+     -Wno-c++98-compat
+     -Wno-c++98-compat-pedantic
+     -Wno-float-equal
+     -Wno-padded
+     -Wno-weak-vtables
+     -Wno-disabled-macro-expansion
+     -Wno-documentation
+     -Wno-reserved-id-macro
+     -Wno-sign-conversion
+
+      # warnings that should probably be fixed in code
+     -Wno-documentation-unknown-command
+     -Wno-inconsistent-missing-destructor-override
+     -Wno-deprecated-dynamic-exception-spec
+     -Wno-deprecated
+     -Wno-switch-enum
+     -Wno-covered-switch-default
+     -Wno-exit-time-destructors
+     -Wno-global-constructors
+     -Wno-duplicate-enum
+     -Wno-unused-parameter
+     -Wno-old-style-cast
+     -Wno-unreachable-code-break
+     -Wno-double-promotion
+     -Wno-unused-private-field
+     -Wno-unused-exception-parameter
+      )
+  endif()
 endif()
 
 if(THREADSANITIZER)
