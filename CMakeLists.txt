@@ -62,7 +62,7 @@ if(WARNINGS)
       -Wcast-qual
       -Wold-style-cast
       -Wzero-as-null-pointer-constant
-      # -Wconversion
+      -Wconversion
       -Wlogical-op
       -Wstrict-null-sentinel
       -Wsuggest-override
