@@ -46,10 +46,10 @@ Database::create(const std::string& prefix)
   return Database(std::move(db), std::move(tile_db), std::move(resources), std::move(tiles));
 }
 
-Database::Database(std::unique_ptr<SQLiteConnection>&& db,
-                   std::unique_ptr<SQLiteConnection>&& tile_db,
-                   std::unique_ptr<ResourceDatabase>&& resources,
-                   std::unique_ptr<TileDatabaseInterface>&& tiles) :
+Database::Database(std::unique_ptr<SQLiteConnection> db,
+                   std::unique_ptr<SQLiteConnection> tile_db,
+                   std::unique_ptr<ResourceDatabase> resources,
+                   std::unique_ptr<TileDatabaseInterface> tiles) :
   m_db(std::move(db)),
   m_tile_db(std::move(tile_db)),
   m_resources(std::move(resources)),

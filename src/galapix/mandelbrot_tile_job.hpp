@@ -29,7 +29,7 @@
 class MandelbrotTileJob final : public Job
 {
 public:
-  MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
+  MandelbrotTileJob(JobHandle const& job_handle, const Size& size, int scale, const Vector2i& pos,
                     const std::function<void (Tile)>& callback);
 
   void run() override;

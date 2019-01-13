@@ -85,8 +85,8 @@ JobManager::join_thread()
 }
 
 JobHandle
-JobManager::request(std::shared_ptr<Job> job,
-                    const std::function<void (std::shared_ptr<Job>, bool)>& callback)
+JobManager::request(std::shared_ptr<Job> const& job,
+                    std::function<void (std::shared_ptr<Job>, bool)> const& callback)
 {
   std::unique_lock<std::mutex> lock(mutex);
 

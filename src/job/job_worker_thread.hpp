@@ -46,7 +46,7 @@ public:
   JobWorkerThread();
   ~JobWorkerThread() override;
 
-  JobHandle request(std::shared_ptr<Job> job, const std::function<void (std::shared_ptr<Job>, bool)>& callback);
+  JobHandle request(std::shared_ptr<Job> const& job, const std::function<void (std::shared_ptr<Job>, bool)>& callback);
 
   void run() override;
 

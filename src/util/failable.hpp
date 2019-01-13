@@ -103,7 +103,7 @@ public:
 
   const T&  get() const
   {
-    if (m_eptr != std::exception_ptr())
+    if (m_eptr != nullptr)
     {
       std::rethrow_exception(m_eptr);
     }
@@ -115,7 +115,7 @@ public:
 
   T& get()
   {
-    if (m_eptr != std::exception_ptr())
+    if (m_eptr != nullptr)
     {
       std::rethrow_exception(m_eptr);
     }

@@ -42,7 +42,7 @@ public:
 
   /** \a job is processed and once finished \a callback is called, \a
       job will be deleted afterwards */
-  JobHandle request(std::shared_ptr<Job> job,
+  JobHandle request(std::shared_ptr<Job> const& job,
                     std::function<void (std::shared_ptr<Job>, bool)> const& callback = {});
 
 private:

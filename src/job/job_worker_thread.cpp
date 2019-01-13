@@ -93,7 +93,7 @@ JobWorkerThread::stop_thread()
 }
 
 JobHandle
-JobWorkerThread::request(std::shared_ptr<Job> job, const std::function<void (std::shared_ptr<Job>, bool)>& callback)
+JobWorkerThread::request(std::shared_ptr<Job> const& job, const std::function<void (std::shared_ptr<Job>, bool)>& callback)
 {
   JobHandle handle = job->get_handle();
 

@@ -58,7 +58,7 @@ public:
       surface()
     {}
 
-    SurfaceStruct(JobHandle job_handle_,
+    SurfaceStruct(JobHandle const& job_handle_,
                   Status status_,
                   Surface surface_) :
       job_handle(job_handle_),
@@ -71,7 +71,7 @@ private:
   typedef std::map<TileCacheId, SurfaceStruct> Cache;
 
 public:
-  ImageTileCache(TileProviderPtr tile_provider);
+  ImageTileCache(TileProviderPtr const& tile_provider);
 
   SurfaceStruct request_tile(int x, int y, int scale);
   Surface get_tile(int x, int y, int scale);

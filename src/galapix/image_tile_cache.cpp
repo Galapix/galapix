@@ -25,7 +25,7 @@
 #include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
 
-ImageTileCache::ImageTileCache(TileProviderPtr tile_provider) :
+ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_cache(),
   m_tile_queue(),
   m_tile_provider(tile_provider),

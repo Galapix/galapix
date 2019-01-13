@@ -29,11 +29,11 @@ public:
   typedef std::vector<JobHandle> JobHandles;
 
 public:
-  JobHandleGroup()
-    : m_job_handles()
+  JobHandleGroup() :
+    m_job_handles()
   {}
 
-  void add(JobHandle job_handle)
+  void add(JobHandle const& job_handle)
   {
     m_job_handles.push_back(job_handle);
   }

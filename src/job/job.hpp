@@ -24,7 +24,7 @@
 class Job
 {
 public:
-  Job(JobHandle handle) : m_handle(handle) {}
+  Job(JobHandle const& handle) : m_handle(handle) {}
   virtual ~Job() {}
 
   virtual void run() =0;
