@@ -24,16 +24,6 @@
 
 class ViewerState
 {
-private:
-  /** scale 1.0f is neutral */
-  float    scale;
-
-  /** angle in degree, not rad */
-  float    angle;
-
-  /** top right of the view in scaled inverse world co! (-offset/scale -> WO) */
-  Vector2f offset;
-
 public:
   ViewerState();
 
@@ -60,6 +50,16 @@ public:
   Vector2f get_offset() const { return offset; }
   float    get_scale()  const { return scale; }
   float    get_angle() const  { return angle; }
+
+private:
+  /** scale 1.0f is neutral */
+  float    scale;
+
+  /** angle in degree, not rad */
+  float    angle;
+
+  /** top right of the view in scaled inverse world co! (-offset/scale -> WO) */
+  Vector2f offset;
 };
 
 #endif

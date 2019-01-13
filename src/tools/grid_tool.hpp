@@ -21,14 +21,8 @@
 
 #include "galapix/tool.hpp"
 
-/** */
 class GridTool : public Tool
 {
-private:
-  Vector2i mouse_pos;
-  bool     drag_active;
-  Vector2i click_pos;
-
 public:
   GridTool(Viewer* viewer);
 
@@ -38,6 +32,11 @@ public:
 
   void draw() override;
   void update(const Vector2i& pos, float delta);
+
+private:
+  Vector2i mouse_pos;
+  bool drag_active;
+  Vector2i click_pos;
 
 private:
   GridTool (const GridTool&);

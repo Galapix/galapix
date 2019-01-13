@@ -26,15 +26,15 @@
 
 class DownloadCache
 {
-private:
-  std::string m_cache_directory;
-
 public:
   DownloadCache(const std::string& cache_directory);
   ~DownloadCache();
 
   std::optional<DownloadResult> get(const std::string& url);
   void store(const std::string& url, const DownloadResult& result);
+
+private:
+  std::string m_cache_directory;
 
 private:
   DownloadCache(const DownloadCache&);

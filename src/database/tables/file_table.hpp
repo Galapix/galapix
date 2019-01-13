@@ -23,11 +23,11 @@ class SQLiteConnection;
 
 class FileTable
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   FileTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   FileTable(const FileTable&);

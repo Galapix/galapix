@@ -25,10 +25,6 @@
     supported right nowx */
 class Select
 {
-private:
-  int m_nfds;
-  fd_set m_readfds;
-
 public:
   Select();
 
@@ -37,6 +33,10 @@ public:
   bool is_ready(int fd) const;
 
   int wait();
+
+private:
+  int m_nfds;
+  fd_set m_readfds;
 
 private:
   Select(const Select&);

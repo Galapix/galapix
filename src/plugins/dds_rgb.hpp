@@ -26,10 +26,7 @@ struct DDSRGB
 public:
   typedef uint32_t dds_int_t;
 
-  dds_int_t r;
-  dds_int_t g;
-  dds_int_t b;
-
+public:
   DDSRGB() : r(0), g(0), b(0) {}
 
   DDSRGB(unsigned short color) :
@@ -47,6 +44,11 @@ public:
 
     return *this;
   }
+
+public:
+  dds_int_t r;
+  dds_int_t g;
+  dds_int_t b;
 };
 
 inline DDSRGB operator*(unsigned int s, const DDSRGB& a)

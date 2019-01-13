@@ -27,7 +27,6 @@ class Size;
     structure */
 class FileWriter
 {
-private:
 public:
   virtual ~FileWriter() {}
 

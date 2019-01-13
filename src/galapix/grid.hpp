@@ -33,10 +33,6 @@ private:
   typedef std::vector<T> Columns;
   typedef std::vector<Columns> Rows;
 
-  int width;
-  int height;
-  Rows rows;
-
 public:
   Grid(int w, int h)
     : width(w),
@@ -80,6 +76,11 @@ public:
     width  = w;
     height = h;
   }
+
+private:
+  int width;
+  int height;
+  Rows rows;
 };
 
 #endif

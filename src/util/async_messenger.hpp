@@ -24,10 +24,6 @@
 
 class AsyncMessenger : public Thread
 {
-private:
-  bool m_quit;
-  ThreadMessageQueue2<std::function<void ()> > m_queue;
-
 public:
   AsyncMessenger();
   ~AsyncMessenger() override;
@@ -37,6 +33,10 @@ public:
 
 protected:
   void queue(const std::function<void ()>&);
+
+private:
+  bool m_quit;
+  ThreadMessageQueue2<std::function<void ()> > m_queue;
 
 private:
   AsyncMessenger(const AsyncMessenger&);

@@ -25,16 +25,6 @@
 
 class ImageEntry final
 {
-private:
-  RowId m_id;
-
-  RowId m_resource_id;
-
-  /** The size of the image in pixels */
-  Size m_size;
-
-  int m_max_scale;
-
 public:
   ImageEntry() :
     m_id(),
@@ -63,6 +53,16 @@ public:
   int    get_height()  const { return m_size.height; }
   Size   get_size()    const { return m_size; }
   int    get_max_scale() const { return m_max_scale; }
+
+private:
+  RowId m_id;
+
+  RowId m_resource_id;
+
+  /** The size of the image in pixels */
+  Size m_size;
+
+  int m_max_scale;
 };
 
 #endif

@@ -30,10 +30,6 @@ class Rectf;
 
 class ImageRenderer
 {
-private:
-  Image& m_image;
-  std::shared_ptr<ImageTileCache> m_cache;
-
 public:
   ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> cache);
 
@@ -45,6 +41,10 @@ private:
   Vector2f get_vertex(int x, int y, float zoom) const;
   void draw_tile(int x, int y, int tiledb_scale, float zoom);
   void draw_tiles(const Rect& rect, int tiledb_scale, float zoom);
+
+private:
+  Image& m_image;
+  std::shared_ptr<ImageTileCache> m_cache;
 
 private:
   ImageRenderer(const ImageRenderer&);

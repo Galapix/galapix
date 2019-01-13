@@ -23,12 +23,6 @@
 
 class ImageInfo
 {
-private:
-  RowId m_id;
-  RowId m_resource_id;
-  int m_width;
-  int m_height;
-
 public:
   ImageInfo() :
     m_id(),
@@ -62,6 +56,12 @@ public:
   RowId get_resource_id() const { return m_resource_id; }
   int get_width() const { return m_width; }
   int get_height() const { return m_height; }
+
+private:
+  RowId m_id;
+  RowId m_resource_id;
+  int m_width;
+  int m_height;
 };
 
 #endif

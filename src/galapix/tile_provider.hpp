@@ -33,7 +33,6 @@ typedef std::shared_ptr<TileProvider> TileProviderPtr;
     tiles */
 class TileProvider
 {
-private:
 public:
   TileProvider() {}
   virtual ~TileProvider() {}
@@ -41,8 +40,8 @@ public:
   virtual JobHandle request_tile(int tilescale, const Vector2i& pos,
                                  const std::function<void (Tile)>& callback) =0;
 
-  virtual int  get_max_scale() const =0;
-  virtual int  get_tilesize() const =0;
+  virtual int get_max_scale() const =0;
+  virtual int get_tilesize() const =0;
   virtual Size get_size() const =0;
 
   virtual void refresh(const std::function<void (TileProviderPtr)>& callback) {}

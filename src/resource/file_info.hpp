@@ -27,12 +27,6 @@
 
 class FileInfo
 {
-private:
-  RowId m_id;
-  std::string m_path;
-  time_t m_mtime;
-  BlobInfo m_blob_info;
-
 public:
   static FileInfo from_file(const std::string& filename);
 
@@ -71,6 +65,12 @@ public:
 
   SHA1 get_sha1() const { return m_blob_info.get_sha1(); }
   size_t get_size() const { return m_blob_info.get_size(); }
+
+private:
+  RowId m_id;
+  std::string m_path;
+  time_t m_mtime;
+  BlobInfo m_blob_info;
 };
 
 #endif

@@ -28,12 +28,6 @@
 
 class BlobAccessor
 {
-private:
-  mutable std::mutex m_mutex;
-  mutable std::string m_filename;
-  mutable Blob m_blob;
-  mutable std::optional<BlobInfo> m_blob_info;
-
 public:
   BlobAccessor(const std::string& filename);
   BlobAccessor(Blob blob);
@@ -48,6 +42,12 @@ public:
   const uint8_t* get_data() const;
 
   BlobInfo get_blob_info() const;
+
+private:
+  mutable std::mutex m_mutex;
+  mutable std::string m_filename;
+  mutable Blob m_blob;
+  mutable std::optional<BlobInfo> m_blob_info;
 
 private:
   BlobAccessor(const BlobAccessor&);

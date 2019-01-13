@@ -26,11 +26,6 @@
 
 class ArchiveFileInfo
 {
-private:
-  RowId m_id;
-  std::string m_path;
-  BlobInfo m_blob_info;
-
 public:
   ArchiveFileInfo() :
     m_id(),
@@ -47,6 +42,11 @@ public:
   RowId get_id() const { return m_id; }
   std::string get_path() const { return m_path; }
   BlobInfo get_blob_info() const { return m_blob_info; }
+
+private:
+  RowId m_id;
+  std::string m_path;
+  BlobInfo m_blob_info;
 };
 
 #endif

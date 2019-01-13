@@ -29,7 +29,6 @@ class Size;
 
 class XCF
 {
-private:
 public:
   static bool is_available();
 

@@ -34,9 +34,6 @@ public:
   typedef Images::const_reverse_iterator const_reverse_iterator;
   typedef Images::size_type  size_type;
 
-private:
-  Images m_images;
-
 public:
   ImageCollection();
   ~ImageCollection();
@@ -71,6 +68,9 @@ public:
 
   WorkspaceItemPtr& operator[](size_type i) { return m_images[i]; }
   const WorkspaceItemPtr& operator[](size_type i) const { return m_images[i]; }
+
+private:
+  Images m_images;
 };
 
 #endif

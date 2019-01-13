@@ -23,18 +23,17 @@
 
 class Job
 {
-private:
-  JobHandle m_handle;
-
 public:
   Job(JobHandle handle) : m_handle(handle) {}
   virtual ~Job() {}
 
+  virtual void run() =0;
+  virtual bool is_aborted() { return m_handle.is_aborted(); }
+
   JobHandle get_handle() const { return m_handle; }
 
-  virtual void run() =0;
-
-  virtual bool is_aborted() { return m_handle.is_aborted(); }
+private:
+  JobHandle m_handle;
 
 private:
   Job (const Job&);

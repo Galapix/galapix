@@ -42,11 +42,6 @@ private:
     {}
   };
 
-private:
-  ThreadMessageQueue2<Task> m_queue;
-  bool m_quit;
-  bool m_abort;
-
 public:
   JobWorkerThread();
   ~JobWorkerThread() override;
@@ -59,6 +54,11 @@ public:
   void abort_thread();
 
   bool empty() { return m_queue.empty(); }
+
+private:
+  ThreadMessageQueue2<Task> m_queue;
+  bool m_quit;
+  bool m_abort;
 
 private:
   JobWorkerThread (const JobWorkerThread&);

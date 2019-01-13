@@ -27,9 +27,6 @@ class RarHeader
 public:
   static RarHeader from_file(std::string const& rar_filename);
 
-private:
-  uint16_t m_head_flags;
-
 public:
   RarHeader(uint16_t head_flags);
 
@@ -39,6 +36,13 @@ public:
   bool has_new_volume_naming() const;
   bool is_encrypted() const;
   bool has_recovery() const;
+
+private:
+  uint16_t m_head_flags;
+
+private:
+  RarHeader(const RarHeader&) = delete;
+  RarHeader& operator=(const RarHeader&) = delete;
 };
 
 #endif

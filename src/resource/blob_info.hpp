@@ -31,16 +31,12 @@ typedef std::shared_ptr<BlobAccessor> BlobAccessorPtr;
 
 class BlobInfo
 {
-private:
-  RowId m_id;
-  SHA1 m_sha1;
-  size_t  m_size;
-
 public:
   static BlobInfo from_blob(Blob blob);
   static BlobInfo from_blob(const BlobAccessor& blob_accessor);
   static BlobInfo from_blob(const BlobAccessorPtr& blob_accessor);
 
+public:
   BlobInfo() :
     m_id(),
     m_sha1(),
@@ -65,6 +61,11 @@ public:
   RowId get_id() const { return m_id; }
   SHA1 get_sha1() const { return m_sha1; }
   size_t get_size() const { return m_size; }
+
+private:
+  RowId m_id;
+  SHA1 m_sha1;
+  size_t  m_size;
 };
 
 #endif

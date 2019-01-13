@@ -38,10 +38,6 @@
 template<typename F, typename C>
 class WeakFunctor
 {
-private:
-  F m_func;
-  std::weak_ptr<typename C::element_type> m_obj;
-
 public:
   WeakFunctor(const F& func, const C& obj) :
     m_func(func),
@@ -61,6 +57,10 @@ public:
       log_debug("WeakFunctor(): object deleted, not calling callback");
     }
   }
+
+private:
+  F m_func;
+  std::weak_ptr<typename C::element_type> m_obj;
 };
 
 template<typename F, typename C>

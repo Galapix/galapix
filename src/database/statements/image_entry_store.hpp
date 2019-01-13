@@ -26,10 +26,6 @@
 
 class ImageEntryStore final
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
   ImageEntryStore(SQLiteConnection& db) :
     m_db(db),
@@ -46,6 +42,10 @@ public:
 
     //return sqlite3_last_insert_rowid(m_db.get_db());
   }
+
+private:
+  SQLiteConnection& m_db;
+  SQLiteStatement   m_stmt;
 
 private:
   ImageEntryStore(const ImageEntryStore&);

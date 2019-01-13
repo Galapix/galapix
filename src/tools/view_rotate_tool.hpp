@@ -23,18 +23,19 @@
 
 class ViewRotateTool : public Tool
 {
-private:
-  bool active;
-  float start_angle;
 public:
   ViewRotateTool(Viewer* viewer);
 
   void move(const Vector2i& pos, const Vector2i& rel) override;
-  void up  (const Vector2i& pos) override;
+  void up(const Vector2i& pos) override;
   void down(const Vector2i& pos) override;
 
   void draw() override {}
   void update(const Vector2i& /*pos*/, float /*delta*/) {}
+
+private:
+  bool active;
+  float start_angle;
 };
 
 #endif

@@ -23,20 +23,20 @@
 
 class RotateTool : public Tool
 {
-private:
-  bool     rotate_active;
-  Vector2f selection_center;
-  float    start_angle;
-
 public:
   RotateTool(Viewer* viewer);
 
   void move(const Vector2i& pos, const Vector2i& rel) override;
-  void up  (const Vector2i& pos) override;
+  void up(const Vector2i& pos) override;
   void down(const Vector2i& pos) override;
 
   void draw() override {}
   void update(const Vector2i& pos, float delta);
+
+private:
+  bool rotate_active;
+  Vector2f selection_center;
+  float start_angle;
 };
 
 #endif

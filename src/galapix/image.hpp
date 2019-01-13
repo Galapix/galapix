@@ -53,7 +53,6 @@ public:
   int get_original_width() const override;
   int get_original_height() const override;
 
-  // _____________________________________________________
   // Debug stuff
   void clear_cache() override;
   void cache_cleanup() override;

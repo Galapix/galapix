@@ -29,7 +29,7 @@
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
 
-class ArchiveThread
+class ArchiveThread final
 {
 private:
   struct ExtractionEntry
@@ -43,11 +43,6 @@ private:
     {}
   };
 
-  ArchiveManager m_archive_mgr;
-  std::mutex m_mutex;
-  std::unordered_map<std::string, std::unique_ptr<ExtractionEntry> > m_extractions;
-  ThreadPool m_pool;
-
 public:
   ArchiveThread(const std::string& tmpdir);
   ~ArchiveThread();
@@ -60,6 +55,12 @@ public:
 private:
   ExtractionEntry& get_and_lock_extraction_entry(const std::string& archive_filename,
                                                  std::unique_lock<std::mutex>& lock_out);
+
+private:
+  ArchiveManager m_archive_mgr;
+  std::mutex m_mutex;
+  std::unordered_map<std::string, std::unique_ptr<ExtractionEntry> > m_extractions;
+  ThreadPool m_pool;
 
 private:
   ArchiveThread(const ArchiveThread&) = delete;

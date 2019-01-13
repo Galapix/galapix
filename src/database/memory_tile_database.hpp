@@ -26,9 +26,6 @@
 
 class MemoryTileDatabase : public TileDatabaseInterface
 {
-private:
-  std::vector<TileEntry> m_cache;
-
 public:
   MemoryTileDatabase();
 
@@ -44,6 +41,9 @@ public:
 
   int  size() const { return static_cast<int>(m_cache.size()); }
   void flush(TileDatabaseInterface& tile_database);
+
+private:
+  std::vector<TileEntry> m_cache;
 
 private:
   MemoryTileDatabase(const MemoryTileDatabase&) = delete;

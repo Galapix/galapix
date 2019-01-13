@@ -21,10 +21,6 @@
 
 class ImageInfoStore
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
   ImageInfoStore(SQLiteConnection& db) :
     m_db(db),
@@ -40,6 +36,10 @@ public:
 
     return {sqlite3_last_insert_rowid(m_db.get_db())};
   }
+
+private:
+  SQLiteConnection& m_db;
+  SQLiteStatement   m_stmt;
 
 private:
   ImageInfoStore(const ImageInfoStore&) = delete;

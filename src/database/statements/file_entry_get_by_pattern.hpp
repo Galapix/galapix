@@ -23,9 +23,6 @@
 
 class FileEntryGetByPattern
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   FileEntryGetByPattern(SQLiteConnection& db) :
     m_stmt(db,
@@ -47,6 +44,9 @@ public:
       entries_out.push_back(FileEntry::from_reader(reader));
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   FileEntryGetByPattern(const FileEntryGetByPattern&);

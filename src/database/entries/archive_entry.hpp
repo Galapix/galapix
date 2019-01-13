@@ -31,12 +31,6 @@ public:
     kSevenZipHandler
   };
 
-private:
-  RowId m_id;
-  RowId m_blob_id;
-  Handler m_handler;
-  std::string m_password;
-
 public:
   ArchiveEntry() :
     m_id(),
@@ -58,6 +52,12 @@ public:
   RowId get_blob_id() const { return m_blob_id; }
   std::string get_password() const { return m_password; }
   Handler get_handler() const { return m_handler; }
+
+private:
+  RowId m_id;
+  RowId m_blob_id;
+  Handler m_handler;
+  std::string m_password;
 
 private:
   ArchiveEntry(const ArchiveEntry&);

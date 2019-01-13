@@ -35,12 +35,6 @@ private:
   typedef std::map<std::string, const SoftwareSurfaceLoader*> MimeTypeMap;
   typedef std::map<std::string, const SoftwareSurfaceLoader*> MagicMap;
 
-  std::vector<std::unique_ptr<SoftwareSurfaceLoader> > m_loader;
-
-  ExtensionMap m_extension_map;
-  MimeTypeMap  m_mime_type_map;
-  MagicMap m_magic_map;
-
 public:
   SoftwareSurfaceFactory();
   ~SoftwareSurfaceFactory() override;
@@ -63,6 +57,13 @@ public:
   SoftwareSurface from_url(const URL& url) const;
   SoftwareSurface from_file(const std::string& filename) const;
   SoftwareSurface from_file(const std::string& filename, const SoftwareSurfaceLoader* loader) const;
+
+private:
+  std::vector<std::unique_ptr<SoftwareSurfaceLoader> > m_loader;
+
+  ExtensionMap m_extension_map;
+  MimeTypeMap  m_mime_type_map;
+  MagicMap m_magic_map;
 
 private:
   SoftwareSurfaceFactory(const SoftwareSurfaceFactory&);

@@ -34,12 +34,6 @@ class Extraction;
 
 class ArchiveManager : public Currenton<ArchiveManager>
 {
-private:
-  boost::filesystem::path m_tmpdir;
-  std::vector<std::unique_ptr<ArchiveLoader> > m_loader;
-  std::map<std::string, ArchiveLoader*> m_loader_by_file_exts;
-  std::map<std::string, ArchiveLoader*> m_loader_by_magic;
-
 public:
   ArchiveManager();
   ArchiveManager(const std::string& tmpdir);
@@ -48,23 +42,19 @@ public:
   bool is_archive(const std::string& filename) const;
   bool is_archive(Blob const& blob) const;
 
-  /**
-     Returns the list of files contained in the archive, if \a loader
-     is supply the loader used in the process will be returned in
-     it.
-  */
+  /** Returns the list of files contained in the archive, if \a loader
+      is supply the loader used in the process will be returned in
+      it. */
   std::vector<std::string> get_filenames(const std::string& zip_filename,
                                          const ArchiveLoader** loader_out = nullptr) const;
 
   Blob get_file(const std::string& zip_filename, const std::string& filename) const;
   BlobAccessorPtr get_file(const BlobAccessorPtr& archive, const std::string& type, const std::string& args) const;
 
-  /**
-     Returns an Extraction object that allows fast access to files
-     inside the archive. For archives that don't allow seeking this
-     means the file are extracted to a temporary directiory, seekable
-     archives are accessed directly.
-  */
+  /** Returns an Extraction object that allows fast access to files
+      inside the archive. For archives that don't allow seeking this
+      means the file are extracted to a temporary directiory, seekable
+      archives are accessed directly. */
   std::shared_ptr<Extraction> get_extraction(const std::string& filename) const;
 
 private:
@@ -76,6 +66,12 @@ private:
   const ArchiveLoader& get_loader(const std::string& filename) const;
   const ArchiveLoader* find_loader_by_filename(const std::string& filename) const;
   const ArchiveLoader* find_loader_by_magic(const std::string& filename) const;
+
+private:
+  boost::filesystem::path m_tmpdir;
+  std::vector<std::unique_ptr<ArchiveLoader> > m_loader;
+  std::map<std::string, ArchiveLoader*> m_loader_by_file_exts;
+  std::map<std::string, ArchiveLoader*> m_loader_by_magic;
 
 private:
   ArchiveManager(const ArchiveManager&);

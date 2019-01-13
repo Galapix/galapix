@@ -33,15 +33,6 @@ class Workspace;
 
 class SDLViewer
 {
-private:
-  SDLWindow m_window;
-  Viewer& m_viewer;
-
-  bool m_quit;
-  bool m_spnav_allow_rotate;
-
-  std::vector<SDL_GameController*> m_gamecontrollers;
-
 public:
   SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
             Viewer& viewer);
@@ -57,6 +48,15 @@ private:
   void remove_gamecontroller(int idx);
 
   float get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const;
+
+private:
+  SDLWindow m_window;
+  Viewer& m_viewer;
+
+  bool m_quit;
+  bool m_spnav_allow_rotate;
+
+  std::vector<SDL_GameController*> m_gamecontrollers;
 
 private:
   SDLViewer (const SDLViewer&);

@@ -35,21 +35,18 @@ public:
   typedef ImageCollection::const_iterator const_iterator;
 
 private:
-  ImageCollection m_images;
-
-private:
   Selection();
 
 public:
   static SelectionPtr create() { return SelectionPtr(new Selection); }
 
-  void   add_image(const WorkspaceItemPtr& image);
-  void   add_images(const ImageCollection& images);
-  void   remove_image(const WorkspaceItemPtr& image);
-  void   clear();
+  void add_image(const WorkspaceItemPtr& image);
+  void add_images(const ImageCollection& images);
+  void remove_image(const WorkspaceItemPtr& image);
+  void clear();
   ImageCollection get_images() const;
-  bool   empty() const;
-  bool   has(const WorkspaceItemPtr& image) const;
+  bool empty() const;
+  bool has(const WorkspaceItemPtr& image) const;
 
   void scale(float factor);
 
@@ -59,9 +56,12 @@ public:
   iterator end();
 
   const_iterator begin() const;
-  const_iterator end()   const;
+  const_iterator end() const;
 
   Rectf get_bounding_rect() const;
+
+private:
+  ImageCollection m_images;
 };
 
 #endif

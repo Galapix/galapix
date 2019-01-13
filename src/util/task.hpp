@@ -25,11 +25,6 @@
 template<typename ReturnType>
 class Task
 {
-private:
-  typename std::function<ReturnType ()> m_functor;
-  ReturnType m_return_value;
-  std::exception_ptr m_exception;
-
 public:
   template<typename Functor>
   Task(const Functor& functor) :
@@ -61,15 +56,16 @@ public:
       return m_return_value;
     }
   }
+
+private:
+  typename std::function<ReturnType ()> m_functor;
+  ReturnType m_return_value;
+  std::exception_ptr m_exception;
 };
 
 template<typename ReturnType>
 class TaskHandle
 {
-private:
-  ReturnType m_return_value;
-  std::exception_ptr m_exception;
-
 public:
   TaskHandle() :
     m_return_value(),
@@ -88,6 +84,10 @@ public:
       return m_return_value;
     }
   }
+
+private:
+  ReturnType m_return_value;
+  std::exception_ptr m_exception;
 };
 
 #endif

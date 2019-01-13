@@ -23,7 +23,6 @@ class Options;
 
 class ArgParser
 {
-private:
 public:
   static void print_usage();
   static void parse_args(int argc, char** argv, Options& opts);

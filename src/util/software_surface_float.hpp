@@ -32,13 +32,14 @@ typedef boost::shared_ptr<SoftwareSurfaceFloat> SoftwareSurfaceFloatPtr;
 
 class SoftwareSurfaceFloat
 {
-private:
-  SoftwareSurfaceFloat(const Size& size);
-
 public:
   static SoftwareSurfaceFloatPtr create(const Size& size);
   static SoftwareSurfaceFloatPtr from_software_surface(SoftwareSurface const& surface);
 
+private:
+  SoftwareSurfaceFloat(const Size& size);
+
+public:
   SoftwareSurface to_software_surface() const;
 
   void apply_gamma(float gamma);

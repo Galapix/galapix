@@ -31,12 +31,10 @@ class Texture;
 
 class Texture
 {
-private:
-  Texture(SoftwareSurface const& src, const Rect& srcrect);
-
 public:
   static Texture create(SoftwareSurface const& src, const Rect& srcrect);
 
+public:
   Texture();
 
   int get_width() const;
@@ -45,6 +43,9 @@ public:
   void bind() const;
 
   explicit operator bool() const { return m_impl != nullptr; }
+
+private:
+  Texture(SoftwareSurface const& src, const Rect& srcrect);
 
 private:
   std::shared_ptr<const TextureImpl> m_impl;

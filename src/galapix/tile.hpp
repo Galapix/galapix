@@ -25,12 +25,6 @@
 
 class Tile
 {
-private:
-  int m_scale;
-  Vector2i m_pos;
-  SoftwareSurface m_surface;
-  bool m_valid;
-
 public:
   Tile() :
     m_scale(),
@@ -61,6 +55,12 @@ public:
   {
     return m_valid;
   }
+
+private:
+  int m_scale;
+  Vector2i m_pos;
+  SoftwareSurface m_surface;
+  bool m_valid;
 };
 
 #endif

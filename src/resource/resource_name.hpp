@@ -25,8 +25,7 @@
 #include "resource/blob_info.hpp"
 #include "resource/resource_handler.hpp"
 
-/**
-    The ResourceName uniquely identifies a resource. Resources stored
+/** The ResourceName uniquely identifies a resource. Resources stored
     in different places will have the same ResourceName when they
     contain the same content.
 
@@ -40,15 +39,9 @@
 
     Example:
 
-    "sha1:95e309e639e67fa2bb0c0a40532832971309dee9//pdf:5"
-*/
+    "sha1:95e309e639e67fa2bb0c0a40532832971309dee9//pdf:5" */
 class ResourceName
 {
-private:
-  RowId m_id;
-  BlobInfo m_blob_info;
-  ResourceHandler m_handler;
-
 public:
   ResourceName();
   ResourceName(const BlobInfo& blob_info,
@@ -58,6 +51,11 @@ public:
   ResourceHandler get_handler() const { return m_handler; }
 
   std::string str() const;
+
+private:
+  RowId m_id;
+  BlobInfo m_blob_info;
+  ResourceHandler m_handler;
 };
 
 #endif

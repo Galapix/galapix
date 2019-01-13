@@ -31,18 +31,6 @@
 
 class ResourceMetadata
 {
-private:
-  ResourceInfo m_info;
-
-  SourceType m_source_type;
-  FileInfo m_file_info;
-  URLInfo m_url_info;
-
-  ImageInfo m_image_info;
-  ArchiveInfo m_archive_info;
-
-  std::vector<ResourceName> m_children;
-
 public:
   ResourceMetadata() :
     m_info(),
@@ -54,20 +42,31 @@ public:
     m_children()
   {}
 
-  ResourceInfo get_info() const
-  {
+  ResourceInfo get_info() const {
     return m_info;
   }
 
   SourceType get_source_type() const;
-  URLInfo    get_url_info() const;
-  FileInfo   get_file_info() const;
+  URLInfo get_url_info() const;
+  FileInfo get_file_info() const;
 
   ResourceType get_type() const;
-  ImageInfo    get_image_info() const;
-  ArchiveInfo  get_archive_info() const;
+  ImageInfo get_image_info() const;
+  ArchiveInfo get_archive_info() const;
 
   std::vector<ResourceName> get_children() const;
+
+private:
+  ResourceInfo m_info;
+
+  SourceType m_source_type;
+  FileInfo m_file_info;
+  URLInfo m_url_info;
+
+  ImageInfo m_image_info;
+  ArchiveInfo m_archive_info;
+
+  std::vector<ResourceName> m_children;
 
 private:
   ResourceMetadata(const ResourceMetadata&) = delete;

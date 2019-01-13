@@ -23,21 +23,21 @@
 
 class ZoomTool : public Tool
 {
-private:
-  bool  zoom_active;
-  float zoom_factor;
-
 public:
   ZoomTool(Viewer* viewer, float zoom_factor);
 
   void move(const Vector2i& pos, const Vector2i& rel) override;
-  void up  (const Vector2i& pos) override;
+  void up(const Vector2i& pos) override;
   void down(const Vector2i& pos) override;
 
   void draw() override;
   void update(const Vector2i& pos, float delta);
 
   bool is_active() const;
+
+private:
+  bool zoom_active;
+  float zoom_factor;
 };
 
 #endif

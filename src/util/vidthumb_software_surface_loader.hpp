@@ -24,15 +24,11 @@
 
 class VidThumbSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {
-private:
 public:
   VidThumbSoftwareSurfaceLoader()
   {}
 
-  std::string get_name() const override
-  {
-    return "vidthumb";
-  }
+  std::string get_name() const override { return "vidthumb"; }
 
   void register_loader(SoftwareSurfaceFactory& factory) const override
   {
@@ -47,13 +43,11 @@ public:
   bool supports_from_file() const override { return true;  }
   bool supports_from_mem()  const override { return false; }
 
-  SoftwareSurface from_file(const std::string& filename) const override
-  {
+  SoftwareSurface from_file(const std::string& filename) const override {
     return VidThumb::load_from_file(filename);
   }
 
-  SoftwareSurface from_mem(const uint8_t* data, size_t len) const override
-  {
+  SoftwareSurface from_mem(const uint8_t* data, size_t len) const override {
     assert(false && "not implemented");
     return {};
   }

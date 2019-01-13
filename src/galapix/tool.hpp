@@ -25,9 +25,6 @@ class Viewer;
 
 class Tool
 {
-protected:
-  Viewer* viewer;
-
 public:
   Tool(Viewer* viewer_) : viewer(viewer_) {}
   virtual ~Tool() {}
@@ -37,6 +34,9 @@ public:
   virtual void down(const Vector2i& pos) =0;
 
   virtual void draw() =0;
+
+protected:
+  Viewer* viewer;
 
 private:
   Tool (const Tool&);

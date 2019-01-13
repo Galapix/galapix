@@ -25,11 +25,6 @@ class Viewer;
 
 class SpaceNavigator
 {
-private:
-  bool m_quit;
-  std::thread m_thread;
-  int m_pipefd[2];
-
 public:
   SpaceNavigator();
   ~SpaceNavigator();
@@ -39,6 +34,11 @@ public:
 
 private:
   void run();
+
+private:
+  bool m_quit;
+  std::thread m_thread;
+  int m_pipefd[2];
 
 private:
   SpaceNavigator (const SpaceNavigator&);

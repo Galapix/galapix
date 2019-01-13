@@ -27,15 +27,15 @@ class Image;
 
 class TightLayouter : public Layouter
 {
-private:
-  float m_aspect_w;
-  float m_aspect_h;
-
 public:
   TightLayouter(float w, float h);
 
   void layout_zigzag(const ImageCollection& images);
   void layout(const ImageCollection& images) override;
+
+private:
+  float m_aspect_w;
+  float m_aspect_h;
 
 private:
   TightLayouter(const TightLayouter&);

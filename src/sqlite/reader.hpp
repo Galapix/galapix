@@ -26,15 +26,13 @@ class SQLiteStatement;
 
 class SQLiteReader
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement&  m_stmt;
+  friend class SQLiteStatement;
 
 private:
-  friend class SQLiteStatement;
   SQLiteReader(SQLiteConnection& db, SQLiteStatement& stmt);
 
 public:
+  SQLiteReader(const SQLiteReader&);
   ~SQLiteReader();
 
   bool next();
@@ -51,10 +49,12 @@ public:
   std::string get_column_name(int column);
   int get_column_count();
 
-public:
-  SQLiteReader(const SQLiteReader&);
 private:
   SQLiteReader& operator=(const SQLiteReader&);
+
+private:
+  SQLiteConnection& m_db;
+  SQLiteStatement&  m_stmt;
 };
 
 #endif

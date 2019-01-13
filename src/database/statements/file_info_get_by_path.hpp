@@ -21,9 +21,6 @@
 
 class FileInfoGetByPath
 {
-private:
-  SQLiteStatement   m_stmt;
-
 public:
   FileInfoGetByPath(SQLiteConnection& db) :
     m_stmt(db,
@@ -55,6 +52,9 @@ public:
       return std::optional<FileInfo>();
     }
   }
+
+private:
+  SQLiteStatement   m_stmt;
 
 private:
   FileInfoGetByPath(const FileInfoGetByPath&);

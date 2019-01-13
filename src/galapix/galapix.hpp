@@ -30,9 +30,6 @@ class System;
 
 class Galapix final
 {
-private:
-  System& m_system;
-
 public:
   Galapix(System& system);
   ~Galapix();
@@ -44,6 +41,13 @@ public:
   void list(const Options& opts);
   void info(const Options& opts);
   void export_images(const std::string& database, const std::vector<URL>& urls);
+
+private:
+  System& m_system;
+
+private:
+  Galapix(const Galapix&) = delete;
+  Galapix& operator=(const Galapix&) = delete;
 };
 
 #endif

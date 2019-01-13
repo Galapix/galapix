@@ -23,11 +23,11 @@
 
 class ImageTable
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   ImageTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   ImageTable(const ImageTable&) = delete;

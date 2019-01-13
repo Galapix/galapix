@@ -21,10 +21,6 @@
 
 class TileCacheId
 {
-private:
-  Vector2i m_pos;
-  int      m_scale;
-
 public:
   TileCacheId(const Vector2i& pos, int scale) :
     m_pos(pos),
@@ -60,6 +56,10 @@ public:
       }
     }
   }
+
+private:
+  Vector2i m_pos;
+  int m_scale;
 };
 
 #endif

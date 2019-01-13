@@ -25,15 +25,8 @@
 #include "database/resource_database.hpp"
 #include "database/tile_database_interface.hpp"
 
-/** */
 class Database
 {
-private:
-  std::unique_ptr<SQLiteConnection> m_db;
-  std::unique_ptr<SQLiteConnection> m_tile_db;
-  std::unique_ptr<ResourceDatabase> m_resources;
-  std::unique_ptr<TileDatabaseInterface> m_tiles;
-
 public:
   static Database create(const std::string& prefix);
 
@@ -42,6 +35,7 @@ public:
            std::unique_ptr<SQLiteConnection>&& tile_db,
            std::unique_ptr<ResourceDatabase>&& resources,
            std::unique_ptr<TileDatabaseInterface>&& tiles);
+  Database(Database&&) = default;
   ~Database();
 
   ResourceDatabase& get_resources() { return *m_resources; }
@@ -51,8 +45,11 @@ public:
 
   void cleanup();
 
-public:
-  Database(Database&&) = default;
+private:
+  std::unique_ptr<SQLiteConnection> m_db;
+  std::unique_ptr<SQLiteConnection> m_tile_db;
+  std::unique_ptr<ResourceDatabase> m_resources;
+  std::unique_ptr<TileDatabaseInterface> m_tiles;
 
 private:
   Database(const Database&) = delete;

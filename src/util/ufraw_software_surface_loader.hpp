@@ -26,7 +26,6 @@
 
 class UFRawSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {
-private:
 public:
   UFRawSoftwareSurfaceLoader()
   {}

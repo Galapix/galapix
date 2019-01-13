@@ -38,11 +38,6 @@ class Layouter;
     things like layouting of the image collection */
 class Workspace final
 {
-private:
-  ImageCollection m_images;
-  SelectionPtr m_selection;
-  LayouterPtr m_layouter;
-
 public:
   Workspace();
 
@@ -103,6 +98,11 @@ public:
 
 private:
   void relayout();
+
+private:
+  ImageCollection m_images;
+  SelectionPtr m_selection;
+  LayouterPtr m_layouter;
 
 private:
   Workspace (const Workspace&) = delete;

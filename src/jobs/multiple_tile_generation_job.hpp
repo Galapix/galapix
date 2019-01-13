@@ -30,14 +30,6 @@
  */
 class MultipleTileGenerationJob : public Job
 {
-private:
-  URL m_url;
-  int m_min_scale_in_db;
-  int m_max_scale_in_db;
-  int m_min_scale;
-  int m_max_scale;
-  std::function<void (Tile)> m_callback;
-
 public:
   MultipleTileGenerationJob(const JobHandle& job_handle,
                             const URL& url,
@@ -71,6 +63,14 @@ public:
 
     get_handle().set_finished();
   }
+
+private:
+  URL m_url;
+  int m_min_scale_in_db;
+  int m_max_scale_in_db;
+  int m_min_scale;
+  int m_max_scale;
+  std::function<void (Tile)> m_callback;
 
 private:
   MultipleTileGenerationJob(const MultipleTileGenerationJob&);

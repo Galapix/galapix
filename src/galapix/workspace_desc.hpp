@@ -32,9 +32,10 @@ public:
 class WorkspaceDesc
 {
 public:
-  std::vector<ImageDesc> images;
-
   void add_image(const std::string& filename);
+
+public:
+  std::vector<ImageDesc> images;
 };
 
 #endif

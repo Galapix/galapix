@@ -24,11 +24,6 @@
 // FIXME: rename ResourceHandler to BlobHandler?
 class ResourceHandler
 {
-private:
-  std::string m_type;
-  std::string m_name;
-  std::string m_args;
-
 public:
   ResourceHandler() :
     m_type(), m_name(), m_args()
@@ -48,6 +43,11 @@ public:
 
   bool operator==(const ResourceHandler& other) const;
   bool operator!=(const ResourceHandler& other) const;
+
+private:
+  std::string m_type;
+  std::string m_name;
+  std::string m_args;
 };
 
 #endif

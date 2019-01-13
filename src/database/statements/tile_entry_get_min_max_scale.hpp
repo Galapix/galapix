@@ -23,9 +23,6 @@
 
 class TileEntryGetMinMaxScale final
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   TileEntryGetMinMaxScale(SQLiteConnection& db) :
     m_stmt(db, "SELECT MIN(scale),MAX(scale) FROM tile WHERE image_id = ?1;")
@@ -56,6 +53,9 @@ public:
       return false;
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   TileEntryGetMinMaxScale(const TileEntryGetMinMaxScale&);

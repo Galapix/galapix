@@ -23,11 +23,11 @@ class SQLiteConnection;
 
 class BlobTable final
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   BlobTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   BlobTable(const BlobTable&) = delete;

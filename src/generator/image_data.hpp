@@ -24,12 +24,6 @@
 
 class ImageData
 {
-private:
-  // ResourceLocator m_locator;
-  // ResoruceInfo m_resource_info
-  ImageInfo m_image_info;
-  std::vector<Tile> m_image_tiles;
-
 public:
   ImageData() :
     m_image_info(),
@@ -44,6 +38,12 @@ public:
 
   ImageInfo get_image_info() const { return m_image_info; }
   const std::vector<Tile>& get_image_tiles() const { return m_image_tiles; }
+
+private:
+  // ResourceLocator m_locator;
+  // ResoruceInfo m_resource_info
+  ImageInfo m_image_info;
+  std::vector<Tile> m_image_tiles;
 
 private:
   ImageData(const ImageData&) = delete;

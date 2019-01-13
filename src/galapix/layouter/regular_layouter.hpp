@@ -23,14 +23,14 @@
 
 class RegularLayouter : public Layouter
 {
-private:
-  float m_aspect_w;
-  float m_aspect_h;
-
 public:
   RegularLayouter(float aspect_w, float aspect_h);
 
   void layout(const ImageCollection& images) override;
+
+private:
+  float m_aspect_w;
+  float m_aspect_h;
 
 private:
   RegularLayouter(const RegularLayouter&);

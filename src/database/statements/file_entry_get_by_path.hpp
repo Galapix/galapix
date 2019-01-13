@@ -26,9 +26,6 @@
 
 class FileEntryGetByPath
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   FileEntryGetByPath(SQLiteConnection& db) :
     m_stmt(db,
@@ -54,6 +51,9 @@ public:
       return std::optional<FileEntry>();
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   FileEntryGetByPath(const FileEntryGetByPath&);

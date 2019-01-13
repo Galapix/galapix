@@ -21,13 +21,13 @@
 
 class FileEntryGetByFileId
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   FileEntryGetByFileId(SQLiteConnection& db) :
     m_stmt(db, "SELECT * FROM file WHERE id = ?1;")
   {}
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   FileEntryGetByFileId(const FileEntryGetByFileId&);

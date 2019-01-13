@@ -31,13 +31,6 @@ class Job;
 
 class JobManager
 {
-private:
-  typedef std::vector<std::shared_ptr<JobWorkerThread> > Threads;
-  Threads threads;
-  Threads::size_type next_thread;
-
-  std::mutex mutex;
-
 public:
   JobManager(int num_threads);
   ~JobManager();
@@ -51,6 +44,13 @@ public:
       job will be deleted afterwards */
   JobHandle request(std::shared_ptr<Job> job,
                     std::function<void (std::shared_ptr<Job>, bool)> const& callback = {});
+
+private:
+  typedef std::vector<std::shared_ptr<JobWorkerThread> > Threads;
+  Threads threads;
+  Threads::size_type next_thread;
+
+  std::mutex mutex;
 };
 
 #endif

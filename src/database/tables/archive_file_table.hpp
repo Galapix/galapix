@@ -23,11 +23,11 @@
 
 class ArchiveFileTable
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   ArchiveFileTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   ArchiveFileTable(const ArchiveFileTable&);

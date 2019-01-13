@@ -59,44 +59,6 @@ private:
 public:
   static Viewer* current() { return current_; }
 
-private:
-  System& m_system;
-  Workspace* m_workspace;
-  bool  m_mark_for_redraw;
-  bool  m_draw_grid;
-  bool  m_pin_grid;
-  float m_gamma;
-  float m_brightness;
-  float m_contrast;
-
-  ViewerState m_state;
-
-  std::unique_ptr<ZoomTool>   keyboard_zoom_in_tool;
-  std::unique_ptr<ZoomTool>   keyboard_zoom_out_tool;
-  std::unique_ptr<ViewRotateTool> keyboard_view_rotate_tool;
-
-  std::unique_ptr<PanTool>      pan_tool;
-  std::unique_ptr<MoveTool>     move_tool;
-  std::unique_ptr<ZoomRectTool> zoom_rect_tool;
-  std::unique_ptr<ZoomTool>     zoom_in_tool;
-  std::unique_ptr<ZoomTool>     zoom_out_tool;
-  std::unique_ptr<ResizeTool>   resize_tool;
-  std::unique_ptr<RotateTool>   rotate_tool;
-  std::unique_ptr<GridTool>     grid_tool;
-
-  Tool* left_tool;
-  Tool* middle_tool;
-  Tool* right_tool;
-
-  Vector2i m_mouse_pos;
-
-  int m_background_color;
-  std::vector<RGBA> m_background_colors;
-
-  Vector2f m_grid_offset;
-  Sizef    m_grid_size;
-  RGBA     m_grid_color;
-
 public:
   Viewer(System& system, Workspace* workspace);
   ~Viewer();
@@ -180,6 +142,44 @@ public:
   void print_images();
   void print_info();
   void print_state();
+
+private:
+  System& m_system;
+  Workspace* m_workspace;
+  bool  m_mark_for_redraw;
+  bool  m_draw_grid;
+  bool  m_pin_grid;
+  float m_gamma;
+  float m_brightness;
+  float m_contrast;
+
+  ViewerState m_state;
+
+  std::unique_ptr<ZoomTool>   keyboard_zoom_in_tool;
+  std::unique_ptr<ZoomTool>   keyboard_zoom_out_tool;
+  std::unique_ptr<ViewRotateTool> keyboard_view_rotate_tool;
+
+  std::unique_ptr<PanTool>      pan_tool;
+  std::unique_ptr<MoveTool>     move_tool;
+  std::unique_ptr<ZoomRectTool> zoom_rect_tool;
+  std::unique_ptr<ZoomTool>     zoom_in_tool;
+  std::unique_ptr<ZoomTool>     zoom_out_tool;
+  std::unique_ptr<ResizeTool>   resize_tool;
+  std::unique_ptr<RotateTool>   rotate_tool;
+  std::unique_ptr<GridTool>     grid_tool;
+
+  Tool* left_tool;
+  Tool* middle_tool;
+  Tool* right_tool;
+
+  Vector2i m_mouse_pos;
+
+  int m_background_color;
+  std::vector<RGBA> m_background_colors;
+
+  Vector2f m_grid_offset;
+  Sizef    m_grid_size;
+  RGBA     m_grid_color;
 
 private:
   Viewer (const Viewer&);

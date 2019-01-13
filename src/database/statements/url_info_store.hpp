@@ -21,10 +21,6 @@
 
 class URLInfoStore
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
   URLInfoStore(SQLiteConnection& db) :
     m_db(db),
@@ -41,6 +37,10 @@ public:
 
     return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
+
+private:
+  SQLiteConnection& m_db;
+  SQLiteStatement   m_stmt;
 
 private:
   URLInfoStore(const URLInfoStore&);

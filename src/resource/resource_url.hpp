@@ -23,11 +23,6 @@
 
 class ResourceURL
 {
-private:
-  std::string m_scheme;
-  std::string m_authority;
-  std::string m_path;
-
 public:
   /** scheme ":" [ "//" authority ] path */
   static ResourceURL from_string(const std::string& url);
@@ -56,6 +51,11 @@ public:
   bool operator==(const ResourceURL& other) const;
   bool operator!=(const ResourceURL& other) const;
   bool operator<(const ResourceURL& other) const;
+
+private:
+  std::string m_scheme;
+  std::string m_authority;
+  std::string m_path;
 };
 
 #endif

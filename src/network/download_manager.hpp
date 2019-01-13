@@ -39,20 +39,6 @@ public:
   typedef bool ProgressFunc(double dltotal, double dlnow, double ultotal, double ulnow);
   typedef unsigned int TransferHandle;
 
-private:
-  DownloadCache m_cache;
-  std::thread m_thread;
-  int m_pipefd[2];
-
-  bool m_abort;
-  bool m_stop;
-  ThreadMessageQueue2<std::function<void ()> > m_queue;
-
-  std::vector<std::unique_ptr<DownloadTransfer> > m_transfers;
-  CURLM* m_multi_handle;
-
-  std::atomic<TransferHandle> m_next_transfer_handle;
-
 public:
   DownloadManager();
   ~DownloadManager();
@@ -80,6 +66,20 @@ private:
   void wakeup_pipe();
   void wait_for_curl_data();
   void process_curl_data();
+
+private:
+  DownloadCache m_cache;
+  std::thread m_thread;
+  int m_pipefd[2];
+
+  bool m_abort;
+  bool m_stop;
+  ThreadMessageQueue2<std::function<void ()> > m_queue;
+
+  std::vector<std::unique_ptr<DownloadTransfer> > m_transfers;
+  CURLM* m_multi_handle;
+
+  std::atomic<TransferHandle> m_next_transfer_handle;
 
 private:
   DownloadManager(const DownloadManager&);

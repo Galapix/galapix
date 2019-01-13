@@ -21,10 +21,6 @@
 
 class FileInfoStore
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
   FileInfoStore(SQLiteConnection& db) :
     m_db(db),
@@ -40,6 +36,10 @@ public:
 
     return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
   }
+
+private:
+  SQLiteConnection& m_db;
+  SQLiteStatement   m_stmt;
 
 private:
   FileInfoStore(const FileInfoStore&) = delete;

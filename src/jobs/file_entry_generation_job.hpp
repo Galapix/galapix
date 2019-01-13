@@ -29,17 +29,16 @@
 
 class FileEntryGenerationJob : public Job
 {
-private:
-  URL m_url;
-
-  boost::signals2::signal<void (OldFileEntry)> m_sig_file_callback;
-
 public:
   FileEntryGenerationJob(const JobHandle& job_handle, const URL& url);
 
   void run() override;
 
   boost::signals2::signal<void (OldFileEntry)>& sig_file_callback() { return m_sig_file_callback; }
+
+private:
+  URL m_url;
+  boost::signals2::signal<void (OldFileEntry)> m_sig_file_callback;
 
 private:
   FileEntryGenerationJob(const FileEntryGenerationJob&);

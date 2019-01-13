@@ -25,10 +25,6 @@
 
 class DirectoryExtraction final : public Extraction
 {
-private:
-  boost::filesystem::path m_path;
-  std::string m_type;
-
 public:
   DirectoryExtraction(const std::string& path,
                       const std::string& type);
@@ -38,6 +34,10 @@ public:
   std::string get_file_as_path(const std::string& filename) const override;
 
   std::string get_type() const override { return m_type; }
+
+private:
+  boost::filesystem::path m_path;
+  std::string m_type;
 
 private:
   DirectoryExtraction(const DirectoryExtraction&);

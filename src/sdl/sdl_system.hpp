@@ -23,7 +23,6 @@
 
 class SDLSystem : public System
 {
-private:
 public:
   SDLSystem();
   ~SDLSystem() override;

@@ -26,7 +26,6 @@ enum class SourceType { URL, File, Unknown };
 
 class SourceInfo
 {
-private:
 public:
   SourceInfo();
 

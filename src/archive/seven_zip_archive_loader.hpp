@@ -23,7 +23,6 @@
 
 class SevenZipArchiveLoader : public ArchiveLoader
 {
-private:
 public:
   SevenZipArchiveLoader();
 

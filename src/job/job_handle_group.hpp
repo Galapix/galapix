@@ -25,9 +25,8 @@
 
 class JobHandleGroup
 {
-private:
+public:
   typedef std::vector<JobHandle> JobHandles;
-  JobHandles m_job_handles;
 
 public:
   JobHandleGroup()
@@ -51,6 +50,9 @@ public:
   {
     m_job_handles.clear();
   }
+
+private:
+  JobHandles m_job_handles;
 
 private:
   JobHandleGroup(const JobHandleGroup&);

@@ -21,9 +21,6 @@
 
 class TileEntryHas final
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   TileEntryHas(SQLiteConnection& db) :
     m_stmt(db, "SELECT (rowid) FROM tile WHERE image_id = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
@@ -54,6 +51,9 @@ public:
       }
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   TileEntryHas(const TileEntryHas&);

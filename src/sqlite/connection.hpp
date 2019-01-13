@@ -24,9 +24,6 @@
 
 class SQLiteConnection
 {
-private:
-  sqlite3* db;
-
 public:
   SQLiteConnection(const std::string& filename);
   ~SQLiteConnection();
@@ -41,6 +38,9 @@ public:
   std::string get_error_msg();
 
   sqlite3* get_db() const { return db; }
+
+private:
+  sqlite3* db;
 
 private:
   SQLiteConnection(const SQLiteConnection&);

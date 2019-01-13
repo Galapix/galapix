@@ -21,7 +21,6 @@
 
 class TileInfo
 {
-private:
 public:
   TileInfo();
 

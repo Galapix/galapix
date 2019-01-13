@@ -23,7 +23,6 @@
 
 class TestJob : public Job
 {
-private:
 public:
   TestJob();
 

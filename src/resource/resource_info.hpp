@@ -29,17 +29,10 @@
 #include "resource/resource_status.hpp"
 #include "resource/resource_type.hpp"
 
-/**
-    ResourceInfo provides access to all the meta data related to a
-    given ResourceLocator, such as the name, status
-*/
+/** ResourceInfo provides access to all the meta data related to a
+    given ResourceLocator, such as the name, status */
 class ResourceInfo
 {
-private:
-  RowId m_id;
-  ResourceName    m_name;
-  ResourceStatus  m_status;
-
 public:
   ResourceInfo();
   ResourceInfo(const RowId& id, const ResourceInfo& other);
@@ -55,6 +48,11 @@ public:
   ResourceHandler get_handler() const { return m_name.get_handler(); }
 
   ResourceType get_type() const;
+
+private:
+  RowId m_id;
+  ResourceName    m_name;
+  ResourceStatus  m_status;
 };
 
 #endif

@@ -38,12 +38,6 @@ public:
     kImagemagickHandler
   };
 
-private:
-  Type m_type;
-  Handler m_handler;
-  RowId m_blob_id;
-  std::string m_arguments;
-
 public:
   ResourceEntry();
 
@@ -51,6 +45,12 @@ public:
   Handler get_handler() const { return m_handler; }
   RowId   get_blob_id() const { return m_blob_id; }
   std::string get_arguments() const { return m_arguments; }
+
+private:
+  Type m_type;
+  Handler m_handler;
+  RowId m_blob_id;
+  std::string m_arguments;
 };
 
 #endif

@@ -24,16 +24,6 @@
 template<typename T>
 class Failable
 {
-private:
-  union {
-    char m_dummy[sizeof(T)];
-    T m_obj;
-  };
-
-  bool m_initialized;
-
-  std::exception_ptr m_eptr;
-
 public:
   template<typename E>
   static Failable<T> from_exception(const E& e)
@@ -163,6 +153,16 @@ private:
       m_obj.~T();
     }
   }
+
+private:
+  union {
+    char m_dummy[sizeof(T)];
+    T m_obj;
+  };
+
+  bool m_initialized;
+
+  std::exception_ptr m_eptr;
 };
 
 #endif

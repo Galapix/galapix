@@ -28,10 +28,6 @@
 
 class DatabaseTileProvider : public TileProvider
 {
-private:
-  OldFileEntry  m_file_entry;
-  ImageEntry m_image_entry;
-
 public:
   DatabaseTileProvider(const OldFileEntry& file_entry,
                        const ImageEntry& image_entry) :
@@ -72,6 +68,10 @@ public:
     log_error("not implemented");
 #endif
   }
+
+private:
+  OldFileEntry m_file_entry;
+  ImageEntry m_image_entry;
 
 private:
   DatabaseTileProvider(const DatabaseTileProvider&) = delete;

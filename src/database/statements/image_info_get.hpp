@@ -21,9 +21,6 @@
 
 class ImageInfoGet
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   ImageInfoGet(SQLiteConnection& db) :
     m_stmt(db,
@@ -52,6 +49,9 @@ public:
       return std::optional<ImageInfo>();
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   ImageInfoGet(const ImageInfoGet&) = delete;

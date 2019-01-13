@@ -27,15 +27,6 @@
 class Options
 {
 public:
-  bool fullscreen;
-  Size geometry;
-  int  anti_aliasing;
-
-  std::string database;
-  std::vector<std::string> patterns;
-  int         threads;
-  std::vector<std::string> rest;
-
   Options() :
     fullscreen(false),
     geometry(800, 600),
@@ -46,6 +37,16 @@ public:
     threads(),
     rest()
   {}
+
+public:
+  bool fullscreen;
+  Size geometry;
+  int  anti_aliasing;
+
+  std::string database;
+  std::vector<std::string> patterns;
+  int         threads;
+  std::vector<std::string> rest;
 };
 
 #endif

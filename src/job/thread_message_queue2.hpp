@@ -28,14 +28,6 @@
 template<typename Data>
 class ThreadMessageQueue2
 {
-private:
-  std::queue<Data> m_queue;
-  int              m_max_size;
-
-  mutable std::mutex     m_mutex;
-  std::condition_variable m_queue_not_empty_cond;
-  std::condition_variable m_queue_not_full_cond;
-
 public:
   ThreadMessageQueue2(int max_size = -1) :
     m_queue(),
@@ -179,6 +171,14 @@ public:
     m_queue_not_full_cond.notify_all();
     m_queue_not_empty_cond.notify_all();
   }
+
+private:
+  std::queue<Data> m_queue;
+  int              m_max_size;
+
+  mutable std::mutex     m_mutex;
+  std::condition_variable m_queue_not_empty_cond;
+  std::condition_variable m_queue_not_full_cond;
 
 private:
   ThreadMessageQueue2 (const ThreadMessageQueue2&);

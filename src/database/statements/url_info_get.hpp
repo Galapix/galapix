@@ -21,9 +21,6 @@
 
 class URLInfoGet
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   URLInfoGet(SQLiteConnection& db) :
     m_stmt(db,
@@ -56,6 +53,9 @@ public:
       return std::optional<URLInfo>();
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   URLInfoGet(const URLInfoGet&);

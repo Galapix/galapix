@@ -41,18 +41,6 @@ class TileEntry;
 
 class SQLiteTileDatabase : public TileDatabaseInterface
 {
-private:
-  SQLiteConnection& m_db;
-  //ResourceDatabase& m_files;
-
-  TileTable m_tile_table;
-  TileEntryStore             m_tile_entry_store;
-  TileEntryGetAllByFileEntry m_tile_entry_get_all_by_fileid;
-  TileEntryHas               m_tile_entry_has;
-  TileEntryGetByFileEntry    m_tile_entry_get_by_fileid;
-  TileEntryGetMinMaxScale    m_tile_entry_get_min_max_scale;
-  TileEntryDelete            m_tile_entry_delete;
-
 public:
   SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files);
   ~SQLiteTileDatabase() override;
@@ -66,6 +54,18 @@ public:
   void store_tiles(const std::vector<TileEntry>& tiles) override;
 
   void delete_tiles(const RowId& image_id) override;
+
+private:
+  SQLiteConnection& m_db;
+  //ResourceDatabase& m_files;
+
+  TileTable m_tile_table;
+  TileEntryStore             m_tile_entry_store;
+  TileEntryGetAllByFileEntry m_tile_entry_get_all_by_fileid;
+  TileEntryHas               m_tile_entry_has;
+  TileEntryGetByFileEntry    m_tile_entry_get_by_fileid;
+  TileEntryGetMinMaxScale    m_tile_entry_get_min_max_scale;
+  TileEntryDelete            m_tile_entry_delete;
 
 private:
   SQLiteTileDatabase (const SQLiteTileDatabase&) = delete;

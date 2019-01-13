@@ -23,11 +23,11 @@ class SQLiteConnection;
 
 class URLTable
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   URLTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   URLTable(const URLTable&) = delete;

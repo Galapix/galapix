@@ -27,10 +27,10 @@ class SQLiteReader;
 
 class URLEntry
 {
-private:
 public:
   static URLEntry from_reader(SQLiteReader& reader);
 
+public:
   URLEntry(const RowId& id,
            const std::string& host,
            const std::string& path,

@@ -29,17 +29,6 @@
     conventient vasion. */
 class Exec
 {
-private:
-  std::string m_program;
-  bool m_absolute_path;
-  std::vector<std::string> m_arguments;
-  std::optional<std::string> m_working_directory;
-
-  std::vector<char> m_stdout_vec;
-  std::vector<char> m_stderr_vec;
-
-  Blob m_stdin_data;
-
 public:
   static const bool ABSOLUTE_PATH = true;
 
@@ -88,6 +77,17 @@ public:
 
 private:
   void process_io(int stdin_fd, int stdout_fd, int stderr_fd);
+
+private:
+  std::string m_program;
+  bool m_absolute_path;
+  std::vector<std::string> m_arguments;
+  std::optional<std::string> m_working_directory;
+
+  std::vector<char> m_stdout_vec;
+  std::vector<char> m_stderr_vec;
+
+  Blob m_stdin_data;
 
 private:
   Exec (const Exec&);

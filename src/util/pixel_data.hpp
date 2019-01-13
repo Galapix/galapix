@@ -39,12 +39,6 @@ public:
     RGBA_FORMAT
   };
 
-private:
-  Format m_format;
-  Size m_size;
-  int m_pitch;
-  std::vector<uint8_t> m_pixels;
-
 public:
   PixelData();
   PixelData(Format format, const Size& size);
@@ -72,6 +66,12 @@ public:
 
   /** Performs a simple copy from this to \a test, no blending is performed */
   void blit(PixelData& dst, const Vector2i& pos) const;
+
+private:
+  Format m_format;
+  Size m_size;
+  int m_pitch;
+  std::vector<uint8_t> m_pixels;
 };
 
 #endif

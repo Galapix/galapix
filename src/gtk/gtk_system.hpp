@@ -23,7 +23,6 @@
 
 class GtkSystem : public System
 {
-private:
 public:
   GtkSystem();
   ~GtkSystem();

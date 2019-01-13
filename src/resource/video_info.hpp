@@ -21,12 +21,6 @@
 
 class VideoInfo
 {
-private:
-  int m_width;
-  int m_height;
-  float m_duration;
-  float m_aspect_ratio;
-
 public:
   VideoInfo() :
     m_width(),
@@ -39,6 +33,12 @@ public:
   int get_height() const { return m_height; }
   float get_duration() const { return m_duration; }
   float get_aspect_ratio() const { return m_aspect_ratio; }
+
+private:
+  int m_width;
+  int m_height;
+  float m_duration;
+  float m_aspect_ratio;
 };
 
 #endif

@@ -24,10 +24,6 @@
 
 class ResourceInfoGet
 {
-private:
-  SQLiteStatement m_stmt;
-  SQLiteStatement m_blob_stmt;
-
 public:
   ResourceInfoGet(SQLiteConnection& db) :
     m_stmt(db,
@@ -100,6 +96,10 @@ public:
 
     return std::optional<ResourceInfo>();
   }
+
+private:
+  SQLiteStatement m_stmt;
+  SQLiteStatement m_blob_stmt;
 
 private:
   ResourceInfoGet(const ResourceInfoGet&);

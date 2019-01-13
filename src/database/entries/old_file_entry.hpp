@@ -33,6 +33,9 @@ class SQLiteReader;
 class OldFileEntry final
 {
 public:
+  static OldFileEntry from_reader(SQLiteReader& reader);
+
+public:
   enum Handler {
     kUnknownHandler,
     kUnhandledHandler,
@@ -41,8 +44,6 @@ public:
   };
 
 public:
-  static OldFileEntry from_reader(SQLiteReader& reader);
-
   OldFileEntry() :
     m_id(),
     m_url(),

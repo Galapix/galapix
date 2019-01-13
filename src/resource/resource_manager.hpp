@@ -48,12 +48,6 @@ class URLInfo;
 class ResourceManager : //public AsyncMessenger,
                         public Currenton<ResourceManager>
 {
-private:
-  DatabaseThread& m_database;
-  Generator& m_generator;
-  DownloadManager& m_download_mgr;
-  ArchiveManager& m_archive_mgr;
-
 public:
   ResourceManager(DatabaseThread& database,
                   Generator& generator,
@@ -69,6 +63,12 @@ public:
 
   void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
                              const std::function<void (Failable<ResourceInfo>)>& callback);
+
+private:
+  DatabaseThread& m_database;
+  Generator& m_generator;
+  DownloadManager& m_download_mgr;
+  ArchiveManager& m_archive_mgr;
 
 private:
   ResourceManager(const ResourceManager&) = delete;

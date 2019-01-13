@@ -30,11 +30,6 @@ class JobManager;
 
 class MandelbrotTileProvider : public TileProvider
 {
-private:
-  Size m_size;
-  int  m_max_scale;
-  JobManager& m_job_manager;
-
 public:
   MandelbrotTileProvider(JobManager& job_manager);
   ~MandelbrotTileProvider() override;
@@ -45,6 +40,11 @@ public:
   int  get_max_scale() const override;
   int  get_tilesize() const override;
   Size get_size() const override;
+
+private:
+  Size m_size;
+  int  m_max_scale;
+  JobManager& m_job_manager;
 
 private:
   MandelbrotTileProvider(const MandelbrotTileProvider&);

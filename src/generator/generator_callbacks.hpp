@@ -43,7 +43,6 @@ typedef std::shared_ptr<GeneratorCallbacks> GeneratorCallbacksPtr;
     incrementally whenever it is ready. */
 class GeneratorCallbacks
 {
-private:
 public:
   virtual ~GeneratorCallbacks() {}
 

@@ -21,9 +21,6 @@
 
 class TileEntryGetAll final
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   TileEntryGetAll(SQLiteConnection& db) :
     m_stmt(db, "SELECT * FROM tiles ORDER BY image_id;")
@@ -32,6 +29,9 @@ public:
   void operator()(std::vector<TileEntry>& tiles_out)
   {
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   TileEntryGetAll(const TileEntryGetAll&);

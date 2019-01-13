@@ -27,12 +27,6 @@
 
 class SExprFileWriter : public FileWriter
 {
-private:
-  /** A reference to the output stream */
-  std::ostream* out;
-  int level;
-  std::string indent();
-
 public:
   SExprFileWriter(std::ostream& out_);
   ~SExprFileWriter() override;
@@ -52,6 +46,12 @@ public:
   {
     (*out) << "\n" << indent() << "(" << name << " \"" << enum2string(value) << "\")";
   }
+
+private:
+  /** A reference to the output stream */
+  std::ostream* out;
+  int level;
+  std::string indent();
 
 private:
   SExprFileWriter(const SExprFileWriter&);

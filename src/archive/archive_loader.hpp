@@ -43,6 +43,10 @@ public:
   virtual bool is_seekable(const std::string& archive)  const = 0;
 
   virtual std::string str() const = 0;
+
+private:
+  ArchiveLoader(const ArchiveLoader&) = delete;
+  ArchiveLoader& operator=(const ArchiveLoader&) = delete;
 };
 
 #endif

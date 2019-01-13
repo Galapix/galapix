@@ -23,11 +23,11 @@ class SQLiteConnection;
 
 class TileTable
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   TileTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   TileTable(const TileTable&);

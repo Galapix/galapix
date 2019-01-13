@@ -25,27 +25,21 @@
 #include "resource/resource_handler.hpp"
 #include "resource/resource_url.hpp"
 
-/**
-   The ResourceLocator provides a path to a retrievable resource, most
-   commonly this will be a file path or web URL. The {handler} part
-   allows to dig into a resource and address child objects, such as
-   files inside an archive.
+/** The ResourceLocator provides a path to a retrievable resource, most
+    commonly this will be a file path or web URL. The {handler} part
+    allows to dig into a resource and address child objects, such as
+    files inside an archive.
 
-   The ResourceLocator is represented as string in the form:
+    The ResourceLocator is represented as string in the form:
 
-   "{protocol}://{path}//{handler}:{args}"
+    "{protocol}://{path}//{handler}:{args}"
 
     Example:
 
     "http://www.example.org/test.zip//zip:image.jpg"
-    "http://www.example.org/test.pdf//pdf:5"
- */
+    "http://www.example.org/test.pdf//pdf:5"  */
 class ResourceLocator
 {
-private:
-  ResourceURL m_url;
-  std::vector<ResourceHandler> m_handler;
-
 public:
   /** Takes a filename in the form of a string and transforms it into
       a ResourceLocator */
@@ -66,6 +60,10 @@ public:
   bool is_parent_of(const ResourceLocator& other) const;
 
   std::string str() const;
+
+private:
+  ResourceURL m_url;
+  std::vector<ResourceHandler> m_handler;
 };
 
 #endif

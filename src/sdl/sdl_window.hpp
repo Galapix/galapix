@@ -26,14 +26,6 @@
 
 class SDLWindow
 {
-protected:
-  SDL_Window*   m_window;
-  SDL_GLContext m_gl_context;
-
-  Size m_geometry;
-  bool m_fullscreen;
-  int  m_anti_aliasing;
-
 public:
   SDLWindow(const Size& geometry, bool fullscreen, int  anti_aliasing);
   virtual ~SDLWindow();
@@ -44,6 +36,14 @@ public:
 
 private:
   void set_video_mode(const Size& size, bool fullscreen, int anti_aliasing);
+
+protected:
+  SDL_Window*   m_window;
+  SDL_GLContext m_gl_context;
+
+  Size m_geometry;
+  bool m_fullscreen;
+  int  m_anti_aliasing;
 
 private:
   SDLWindow(const SDLWindow&) = delete;

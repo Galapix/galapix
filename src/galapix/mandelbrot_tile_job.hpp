@@ -26,19 +26,19 @@
 #include "math/vector2i.hpp"
 #include "galapix/tile.hpp"
 
-class MandelbrotTileJob : public Job
+class MandelbrotTileJob final : public Job
 {
-private:
-  Size     m_size;
-  int      m_scale;
-  Vector2i m_pos;
-  std::function<void (Tile)> m_callback;
-
 public:
   MandelbrotTileJob(JobHandle job_handle, const Size& size, int scale, const Vector2i& pos,
                     const std::function<void (Tile)>& callback);
 
   void run() override;
+
+private:
+  Size     m_size;
+  int      m_scale;
+  Vector2i m_pos;
+  std::function<void (Tile)> m_callback;
 };
 
 #endif

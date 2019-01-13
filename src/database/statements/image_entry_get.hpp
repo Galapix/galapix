@@ -25,10 +25,6 @@
 
 class ImageEntryGet final
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
   ImageEntryGet(SQLiteConnection& db) :
     m_db(db),
@@ -54,6 +50,10 @@ public:
       return false;
     }
   }
+
+private:
+  SQLiteConnection& m_db;
+  SQLiteStatement   m_stmt;
 
 private:
   ImageEntryGet(const ImageEntryGet&);

@@ -24,9 +24,6 @@
 
 class ResourceGeneratorCallbacks : public GeneratorCallbacks
 {
-private:
-  ResourceLocator m_locator;
-
 public:
   ResourceGeneratorCallbacks(const ResourceLocator& locator);
   ~ResourceGeneratorCallbacks() override;
@@ -41,6 +38,9 @@ public:
 
   void on_status(ResourceStatus status) override;
   void on_error(ResourceStatus status, const std::string& err) override;
+
+private:
+  ResourceLocator m_locator;
 };
 
 #endif

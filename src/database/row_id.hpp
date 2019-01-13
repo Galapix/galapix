@@ -25,9 +25,6 @@
 
 class RowId
 {
-private:
-  int64_t m_id;
-
 public:
   RowId() : m_id(0) {}
   RowId(int64_t id) : m_id(id) {}
@@ -54,6 +51,9 @@ public:
   {
     return m_id != 0;
   }
+
+private:
+  int64_t m_id;
 };
 
 std::ostream& operator<<(std::ostream& s, const RowId& id);

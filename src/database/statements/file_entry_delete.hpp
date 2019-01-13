@@ -24,10 +24,6 @@
 
 class FileEntryDelete
 {
-private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
-
 public:
   FileEntryDelete(SQLiteConnection& db) :
     m_db(db),
@@ -40,6 +36,10 @@ public:
     m_stmt.bind_int64(1, fileid.get_id());
     m_stmt.execute();
   }
+
+private:
+  SQLiteConnection& m_db;
+  SQLiteStatement   m_stmt;
 
 private:
   FileEntryDelete(const FileEntryDelete&);

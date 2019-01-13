@@ -71,19 +71,6 @@ private:
   typedef std::map<TileCacheId, SurfaceStruct> Cache;
 
 public:
-  Cache m_cache;
-
-  ThreadMessageQueue2<Tile> m_tile_queue;
-
-  TileProviderPtr m_tile_provider;
-
-  /** The maximum scale for which tiles exist */
-  int m_max_scale;
-
-  /** The smallest scale that is stored permanently */
-  int m_min_keep_scale;
-
-public:
   ImageTileCache(TileProviderPtr tile_provider);
 
   SurfaceStruct request_tile(int x, int y, int scale);
@@ -98,15 +85,26 @@ public:
   /** Cleanup the bigger tiles of the cache */
   void cleanup();
 
-  /**
-   *  \a rect and \a scale are the currently visible area, everything
-   *  not in there will be canceled
-   */
+  /** \a rect and \a scale are the currently visible area, everything
+      not in there will be canceled */
   void cancel_jobs(const Rect& rect, int scale);
 
   void receive_tile(const Tile& tile);
 
   int get_max_scale() const { return m_max_scale; }
+
+public:
+  Cache m_cache;
+
+  ThreadMessageQueue2<Tile> m_tile_queue;
+
+  TileProviderPtr m_tile_provider;
+
+  /** The maximum scale for which tiles exist */
+  int m_max_scale;
+
+  /** The smallest scale that is stored permanently */
+  int m_min_keep_scale;
 
 private:
   ImageTileCache(const ImageTileCache&);

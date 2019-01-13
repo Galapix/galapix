@@ -23,7 +23,6 @@
 
 class ZipArchiveLoader final : public ArchiveLoader
 {
-private:
 public:
   ZipArchiveLoader();
 

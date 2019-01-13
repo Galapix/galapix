@@ -75,6 +75,50 @@ class ResourceInfoStore;
     touched. */
 class ResourceDatabase
 {
+public:
+  ResourceDatabase(SQLiteConnection& db);
+  ~ResourceDatabase();
+
+  std::optional<ImageInfo> get_image_info(const ResourceInfo& resource);
+  RowId store_image_info(const ImageInfo& image_info);
+
+  std::optional<ResourceInfo> get_resource_info(const ResourceLocator& locator, const BlobInfo& blob);
+  std::optional<ResourceInfo> get_resource_info(const BlobInfo& blob);
+  RowId store_resource_info(const ResourceInfo& resource_info);
+
+  std::optional<FileInfo> get_file_info(const std::string& path);
+  RowId store_file_info(const FileInfo& file_info);
+
+  std::optional<URLInfo> get_url_info(const std::string& url);
+  RowId store_url_info(const URLInfo& url_info);
+
+  std::optional<FileEntry> get_file_entry(const std::string& path);
+  void get_file_entries(std::vector<FileEntry>& entries_out);
+  void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
+  void store_file_entry(const std::string& path, int mtime);
+
+  /** Lookup a FileEntry by its url. If there is no corresponding url,
+      then the file will be looked up in the filesystem and then
+      stored in the DB and returned. If the file can't be found in
+      either the DB or the filesystem false will be returned, else
+      true.
+
+      @param[in] url The absolute path of the file
+      @param[out] entry   Lokation where the file information will be stored
+      @return true if lookup was successful, false otherwise, in which case entry stays untouched */
+  bool get_old_file_entry(const URL& url, OldFileEntry& entry_out);
+  std::optional<ResourceEntry> get_resource_entry(const RowId& blob_id);
+  void get_old_file_entries(std::vector<OldFileEntry>& entries_out);
+  void get_old_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out);
+
+  bool get_image_entry(const OldFileEntry& entry, ImageEntry& image_out);
+
+  OldFileEntry  store_old_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler);
+  OldFileEntry  store_old_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id);
+  ImageEntry store_image_entry(const ImageEntry& image);
+
+  void delete_old_file_entry(const RowId& file_id);
+
 private:
   SQLiteConnection& m_db;
 
@@ -109,52 +153,6 @@ private:
   ImageEntryStore          m_image_entry_store;
   ImageEntryGet            m_image_entry_get;
   ResourceEntryGetByBlobId m_resource_entry_get_by_blob_id;
-
-public:
-  ResourceDatabase(SQLiteConnection& db);
-  ~ResourceDatabase();
-
-  std::optional<ImageInfo> get_image_info(const ResourceInfo& resource);
-  RowId store_image_info(const ImageInfo& image_info);
-
-  std::optional<ResourceInfo> get_resource_info(const ResourceLocator& locator, const BlobInfo& blob);
-  std::optional<ResourceInfo> get_resource_info(const BlobInfo& blob);
-  RowId store_resource_info(const ResourceInfo& resource_info);
-
-  std::optional<FileInfo> get_file_info(const std::string& path);
-  RowId store_file_info(const FileInfo& file_info);
-
-  std::optional<URLInfo> get_url_info(const std::string& url);
-  RowId store_url_info(const URLInfo& url_info);
-
-  std::optional<FileEntry> get_file_entry(const std::string& path);
-  void get_file_entries(std::vector<FileEntry>& entries_out);
-  void get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out);
-  void store_file_entry(const std::string& path, int mtime);
-
-  /**
-     Lookup a FileEntry by its url. If there is no corresponding
-     url, then the file will be looked up in the filesystem and
-     then stored in the DB and returned. If the file can't be found
-     in either the DB or the filesystem false will be returned, else
-     true
-
-     @param[in] url The absolute path of the file
-     @param[out] entry   Lokation where the file information will be stored
-     @return true if lookup was successful, false otherwise, in which case entry stays untouched
-  */
-  bool get_old_file_entry(const URL& url, OldFileEntry& entry_out);
-  std::optional<ResourceEntry> get_resource_entry(const RowId& blob_id);
-  void get_old_file_entries(std::vector<OldFileEntry>& entries_out);
-  void get_old_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out);
-
-  bool get_image_entry(const OldFileEntry& entry, ImageEntry& image_out);
-
-  OldFileEntry  store_old_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler);
-  OldFileEntry  store_old_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id);
-  ImageEntry store_image_entry(const ImageEntry& image);
-
-  void delete_old_file_entry(const RowId& file_id);
 
 private:
   ResourceDatabase (const ResourceDatabase&);

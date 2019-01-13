@@ -27,13 +27,6 @@
 template<class C>
 class ThreadMessageQueue
 {
-private:
-  std::mutex     m_mutex;
-  std::condition_variable m_wait_cond;
-  std::condition_variable m_full_cond;
-  std::queue<C>    m_values;
-  int              m_max_size;
-
 public:
   ThreadMessageQueue(int max_size = -1) :
     m_mutex(),
@@ -105,6 +98,13 @@ public:
     std::unique_lock<std::mutex> lock(m_mutex);
     m_wait_cond.notify_all();
   }
+
+private:
+  std::mutex     m_mutex;
+  std::condition_variable m_wait_cond;
+  std::condition_variable m_full_cond;
+  std::queue<C>    m_values;
+  int              m_max_size;
 
 private:
   ThreadMessageQueue (const ThreadMessageQueue&);

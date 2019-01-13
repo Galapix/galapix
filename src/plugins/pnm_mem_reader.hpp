@@ -23,17 +23,6 @@
 
 class PNMMemReader
 {
-private:
-  const char* m_data;
-  const size_t m_len;
-  const char* m_ptr;
-  int m_token_count;
-
-  std::string m_magic;
-  Size m_size;
-  int m_maxval;
-  const char* m_pixel_data;
-
 public:
   PNMMemReader(const char* data, size_t len) :
     m_data(data),
@@ -113,6 +102,17 @@ private:
       }
     }
   }
+
+private:
+  const char* m_data;
+  const size_t m_len;
+  const char* m_ptr;
+  int m_token_count;
+
+  std::string m_magic;
+  Size m_size;
+  int m_maxval;
+  const char* m_pixel_data;
 
 private:
   PNMMemReader(const PNMMemReader&);

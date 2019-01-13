@@ -23,11 +23,6 @@
 
 class SQLiteStatement
 {
-private:
-  SQLiteConnection& m_db;
-  sqlite3_stmt*  m_stmt;
-  std::string    m_stmt_str;
-
 public:
   SQLiteStatement(SQLiteConnection& db);
   SQLiteStatement(SQLiteConnection& db, const std::string& sqlstmt);
@@ -51,6 +46,11 @@ public:
   std::string str() const { return m_stmt_str; }
 
   sqlite3_stmt*  get_stmt() { return m_stmt; }
+
+private:
+  SQLiteConnection& m_db;
+  sqlite3_stmt*  m_stmt;
+  std::string    m_stmt_str;
 
 private:
   SQLiteStatement(const SQLiteStatement&);

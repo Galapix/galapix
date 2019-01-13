@@ -23,11 +23,11 @@
 
 class VideoTable
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   VideoTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   VideoTable(const VideoTable&);

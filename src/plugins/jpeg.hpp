@@ -27,8 +27,6 @@
 
 class JPEG
 {
-private:
-
 public:
   static bool filename_is_jpeg(const std::string& filename);
 
@@ -41,8 +39,7 @@ public:
       @param[in]  scale    Scale the image by 1/scale (only 1,2,4,8 allowed)
       @param[out] size     The size of the unscaled image
 
-      @return reference counted pointer to a SoftwareSurface object
-   */
+      @return reference counted pointer to a SoftwareSurface object */
   static SoftwareSurface load_from_file(const std::string& filename, int scale = 1, Size* size = nullptr);
 
   /** Load a JPEG from memory
@@ -51,8 +48,7 @@ public:
       @param[in]  len   Length of the JPEG data
       @param[out] size  The size of the unscaled image
 
-      @return reference counted pointer to a SoftwareSurface object
-   */
+      @return reference counted pointer to a SoftwareSurface object */
   static SoftwareSurface load_from_mem(const uint8_t* data, size_t len, int scale = 1, Size* size = nullptr);
 
   static void save(SoftwareSurface const& surface, int quality, const std::string& filename);

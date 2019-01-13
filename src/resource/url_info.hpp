@@ -23,13 +23,6 @@
 
 class URLInfo
 {
-private:
-  RowId m_id;
-  std::string m_url;
-  long m_mtime;
-  std::string m_content_type;
-  BlobInfo m_blob_info;
-
 public:
   URLInfo() :
     m_id(),
@@ -62,6 +55,13 @@ public:
   long get_mtime() const { return m_mtime; }
   std::string get_content_type() const { return m_content_type; }
   BlobInfo get_blob_info() const { return m_blob_info; }
+
+private:
+  RowId m_id;
+  std::string m_url;
+  long m_mtime;
+  std::string m_content_type;
+  BlobInfo m_blob_info;
 };
 
 #endif

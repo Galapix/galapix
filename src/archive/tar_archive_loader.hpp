@@ -23,7 +23,6 @@
 
 class TarArchiveLoader : public ArchiveLoader
 {
-private:
 public:
   TarArchiveLoader();
 

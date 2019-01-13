@@ -23,7 +23,6 @@
 
 class RarArchiveLoader final : public ArchiveLoader
 {
-private:
 public:
   RarArchiveLoader();
 

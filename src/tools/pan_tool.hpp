@@ -25,18 +25,12 @@ class Viewer;
 
 class PanTool : public Tool
 {
-private:
-  bool trackball_mode;
-  bool move_active;
-
-  Vector2i mouse_pos;
-
 public:
   PanTool(Viewer* viewer);
   ~PanTool() override;
 
   void move(const Vector2i& pos, const Vector2i& rel) override;
-  void up  (const Vector2i& pos) override;
+  void up(const Vector2i& pos) override;
   void down(const Vector2i& pos) override;
 
   void draw() override {}
@@ -44,6 +38,12 @@ public:
 
   bool get_trackball_mode() const;
   void set_trackball_mode(bool mode);
+
+private:
+  bool trackball_mode;
+  bool move_active;
+
+  Vector2i mouse_pos;
 };
 
 #endif

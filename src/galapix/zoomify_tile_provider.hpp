@@ -48,6 +48,23 @@ private:
     {}
   };
 
+public:
+  static std::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
+
+private:
+  ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, JobManager& job_manager);
+
+public:
+  JobHandle request_tile(int scale, const Vector2i& pos,
+                         const std::function<void (Tile)>& callback) override;
+
+  int  get_max_scale() const override { return m_max_scale; }
+  int  get_tilesize() const override { return m_tilesize; }
+  Size get_size() const override { return m_size; }
+
+private:
+  int get_tile_group(int scale, const Vector2i& pos);
+
 private:
   Size        m_size;
   int         m_tilesize;
@@ -55,22 +72,6 @@ private:
   int         m_max_scale;
   std::vector<Info> m_info;
   JobManager& m_job_manager;
-
-private:
-  ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, JobManager& job_manager);
-
-public:
-  static std::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
-
-  JobHandle request_tile(int scale, const Vector2i& pos,
-                         const std::function<void (Tile)>& callback) override;
-
-  int  get_max_scale() const override { return m_max_scale; }
-  int  get_tilesize()  const override { return m_tilesize; }
-  Size get_size()      const override { return m_size; }
-
-private:
-  int get_tile_group(int scale, const Vector2i& pos);
 
 private:
   ZoomifyTileProvider(const ZoomifyTileProvider&) = delete;

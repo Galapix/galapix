@@ -26,7 +26,6 @@
 
 class Extraction
 {
-private:
 public:
   Extraction();
   virtual ~Extraction();

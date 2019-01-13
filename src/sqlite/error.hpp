@@ -24,14 +24,14 @@
 
 class SQLiteError : public std::exception
 {
-private:
-  std::string err;
-
 public:
   SQLiteError(const std::string& err);
   ~SQLiteError() throw () override {}
 
   const char* what() const throw () override { return err.c_str(); }
+
+private:
+  std::string err;
 };
 
 #endif

@@ -25,10 +25,6 @@
 
 class ResourceItem : public WorkspaceItem
 {
-private:
-  ResourceLocator m_locator;
-  ResourceInfo m_resource_info;
-
 public:
   ResourceItem(const ResourceLocator& locator);
   ~ResourceItem() override;
@@ -44,6 +40,10 @@ public:
 
 private:
   void receive_resource_info(const ResourceInfo& resource_info);
+
+private:
+  ResourceLocator m_locator;
+  ResourceInfo m_resource_info;
 
 private:
   ResourceItem(const ResourceItem&);

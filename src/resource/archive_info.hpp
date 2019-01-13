@@ -25,10 +25,6 @@
 
 class ArchiveInfo
 {
-private:
-  std::vector<ArchiveFileInfo> m_files;
-  std::optional<std::string> m_password;
-
 public:
   ArchiveInfo() :
     m_files(),
@@ -43,6 +39,10 @@ public:
 
   std::vector<ArchiveFileInfo> get_files() const { return m_files; }
   std::optional<std::string> get_password() const { return m_password; }
+
+private:
+  std::vector<ArchiveFileInfo> m_files;
+  std::optional<std::string> m_password;
 };
 
 #endif

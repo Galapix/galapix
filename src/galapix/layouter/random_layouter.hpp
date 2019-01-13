@@ -27,8 +27,6 @@ class Image;
 
 class RandomLayouter : public Layouter
 {
-private:
-
 public:
   RandomLayouter();
 

@@ -26,12 +26,12 @@
 
 class FileJPEGCompressor : public JPEGCompressor
 {
-private:
-  FILE* m_out;
-
 public:
   FileJPEGCompressor(const std::string& filename);
   ~FileJPEGCompressor() override;
+
+private:
+  FILE* m_out;
 
 private:
   FileJPEGCompressor(const FileJPEGCompressor&);

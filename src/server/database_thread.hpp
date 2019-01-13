@@ -51,23 +51,6 @@ private:
 public:
   static DatabaseThread* current() { return current_; }
 
-private:
-
-private:
-  Database& m_database;
-
-  JobManager& m_tile_job_manager;
-
-  bool m_quit;
-  bool m_abort;
-
-  ThreadMessageQueue2<std::function<void()>> m_request_queue;
-  ThreadMessageQueue2<std::function<void()>> m_receive_queue;
-  std::list<std::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
-
-protected:
-  void run() override;
-
 public:
   DatabaseThread(Database& database,
                  JobManager& tile_job_manager);
@@ -151,6 +134,21 @@ private:
   void receive_tiles(const std::vector<TileEntry>& tiles);
 
   void process_queue(ThreadMessageQueue2<std::function<void()>>& queue);
+
+protected:
+  void run() override;
+
+private:
+  Database& m_database;
+
+  JobManager& m_tile_job_manager;
+
+  bool m_quit;
+  bool m_abort;
+
+  ThreadMessageQueue2<std::function<void()>> m_request_queue;
+  ThreadMessageQueue2<std::function<void()>> m_receive_queue;
+  std::list<std::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
 
 private:
   DatabaseThread (const DatabaseThread&);

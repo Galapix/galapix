@@ -21,9 +21,6 @@
 
 class ResourceInfoGetBySHA1
 {
-private:
-  SQLiteStatement   m_stmt;
-
 public:
   ResourceInfoGetBySHA1(SQLiteConnection& db) :
     m_stmt(db,
@@ -51,6 +48,9 @@ public:
       return std::optional<ResourceInfo>();
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   ResourceInfoGetBySHA1(const ResourceInfoGetBySHA1&);

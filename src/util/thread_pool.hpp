@@ -35,14 +35,6 @@ public:
     kWaitForActiveTasks
   };
 
-private:
-  ShutdownPolicy m_shutdown_policy;
-  bool m_shutdown;
-  bool m_forced_shutdown;
-  std::vector<std::thread> m_threads;
-
-  ThreadMessageQueue2<Task> m_queue;
-
 public:
   ThreadPool(int num_threads = 4, ShutdownPolicy shutdown_policy = kWaitForAllTasks);
   ~ThreadPool();
@@ -55,6 +47,14 @@ public:
 
 private:
   void run();
+
+private:
+  ShutdownPolicy m_shutdown_policy;
+  bool m_shutdown;
+  bool m_forced_shutdown;
+  std::vector<std::thread> m_threads;
+
+  ThreadMessageQueue2<Task> m_queue;
 
 private:
   ThreadPool(const ThreadPool&) = delete;

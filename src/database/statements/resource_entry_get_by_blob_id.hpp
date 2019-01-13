@@ -23,9 +23,6 @@
 
 class ResourceEntryGetByBlobId final
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   ResourceEntryGetByBlobId(SQLiteConnection& db) :
     m_stmt(db,
@@ -52,6 +49,9 @@ public:
       return std::optional<ResourceEntry>();
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   ResourceEntryGetByBlobId(const ResourceEntryGetByBlobId&);

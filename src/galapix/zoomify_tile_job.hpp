@@ -30,12 +30,6 @@
 
 class ZoomifyTileJob : public Job
 {
-private:
-  URL m_url;
-  int m_scale;
-  Vector2i m_pos;
-  std::function<void (Tile)> m_callback;
-
 public:
   ZoomifyTileJob(JobHandle job_handle, const URL& url,
                  int scale, const Vector2i& pos,
@@ -73,6 +67,12 @@ public:
       get_handle().set_failed();
     }
   }
+
+private:
+  URL m_url;
+  int m_scale;
+  Vector2i m_pos;
+  std::function<void (Tile)> m_callback;
 };
 
 #endif

@@ -26,6 +26,10 @@ class DownloadResult;
 class DownloadTransfer
 {
 public:
+  static size_t write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata);
+  static int progress_callback_wrap(void* userdata, double dltotal, double dlnow, double ultotal, double ulnow);
+
+public:
   DownloadTransfer(DownloadManager::TransferHandle id,
                    const std::string& url,
                    const std::optional<std::string>& post_data,
@@ -33,6 +37,7 @@ public:
                    const std::function<DownloadManager::ProgressFunc>& progress_callback);
   ~DownloadTransfer();
 
+public:
   DownloadManager::TransferHandle id;
   std::string url;
   CURL* handle;
@@ -48,9 +53,6 @@ public:
 
   std::function<void (const DownloadResult&)> callback;
   std::function<DownloadManager::ProgressFunc> progress_callback;
-
-  static size_t write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata);
-  static int progress_callback_wrap(void* userdata, double dltotal, double dlnow, double ultotal, double ulnow);
 
 private:
   DownloadTransfer(const DownloadTransfer&) = delete;

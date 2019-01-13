@@ -25,9 +25,6 @@
 
 class FileTileDatabase : public TileDatabaseInterface
 {
-private:
-  std::string m_prefix;
-
 public:
   FileTileDatabase(const std::string& prefix);
   ~FileTileDatabase() override;
@@ -55,6 +52,9 @@ private:
 
   bool parse_filename(const std::string& filename, Vector2i* pos_out, int* scale_out, int* format);
   void ensure_directory_exists(const RowId& file_id);
+
+private:
+  std::string m_prefix;
 
 private:
   FileTileDatabase(const FileTileDatabase&);

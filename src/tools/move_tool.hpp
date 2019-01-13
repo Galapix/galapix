@@ -26,23 +26,23 @@
 
 class MoveTool : public Tool
 {
+public:
+  MoveTool(Viewer* viewer);
+  ~MoveTool() override;
+
+  void move(const Vector2i& pos, const Vector2i& rel) override;
+  void up(const Vector2i& pos) override;
+  void down(const Vector2i& pos) override;
+
+  void draw() override;
+  void update(const Vector2i& pos, float delta);
+
 private:
   Vector2i mouse_pos;
   bool drag_active;
 
   bool move_active;
   Vector2f click_pos;
-
-public:
-  MoveTool(Viewer* viewer);
-  ~MoveTool() override;
-
-  void move(const Vector2i& pos, const Vector2i& rel) override;
-  void up  (const Vector2i& pos) override;
-  void down(const Vector2i& pos) override;
-
-  void draw() override;
-  void update(const Vector2i& pos, float delta);
 
 private:
   MoveTool (const MoveTool&);

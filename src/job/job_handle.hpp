@@ -30,6 +30,8 @@ class JobHandleImpl;
     that the Job is finished. (FIXME: Do we need that last thing for something?) */
 class JobHandle
 {
+  friend std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
+
 private:
   JobHandle();
 
@@ -51,8 +53,6 @@ public:
   bool is_failed() const;
 
   void wait();
-
-  friend std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
 
 private:
   std::shared_ptr<JobHandleImpl> impl;

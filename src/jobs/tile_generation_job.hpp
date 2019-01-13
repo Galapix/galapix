@@ -31,6 +31,26 @@
 
 class TileGenerationJob : public Job
 {
+public:
+  TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
+  ~TileGenerationJob() override;
+
+  /** Request a tile to be generated, returns true if the request will
+      be honored, false if the tile generation is already in progress
+      and the request has to be discarded */
+  bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
+                    const std::function<void (Tile)>& callback);
+  void run() override;
+
+  URL get_url() const { return m_url; }
+
+  bool is_aborted() override;
+
+  boost::signals2::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
+
+private:
+  void process_tile(const Tile& tile);
+
 private:
   struct TileRequest
   {
@@ -60,15 +80,15 @@ private:
     kDone
   } m_state;
 
-  URL       m_url;
+  URL m_url;
   OldFileEntry m_file_entry;
 
   /** Only valid if state is kRunning or kDone */
-  int       m_min_scale;
-  int       m_max_scale;
+  int m_min_scale;
+  int m_max_scale;
 
-  int       m_min_scale_in_db;
-  int       m_max_scale_in_db;
+  int m_min_scale_in_db;
+  int m_max_scale_in_db;
 
   /** Regular TileRequests */
   TileRequests m_tile_requests;
@@ -80,26 +100,6 @@ private:
   Tiles m_tiles;
 
   boost::signals2::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
-
-public:
-  TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
-  ~TileGenerationJob() override;
-
-  /** Request a tile to be generated, returns true if the request will
-      be honored, false if the tile generation is already in progress
-      and the request has to be discarded */
-  bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
-                    const std::function<void (Tile)>& callback);
-  void run() override;
-
-  URL get_url() const { return m_url; }
-
-  bool is_aborted() override;
-
-  boost::signals2::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
-
-private:
-  void process_tile(const Tile& tile);
 };
 
 #endif

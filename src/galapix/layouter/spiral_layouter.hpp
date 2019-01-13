@@ -27,6 +27,16 @@ class WorkspaceItem;
 
 class SpiralLayouter : public Layouter
 {
+public:
+  SpiralLayouter();
+
+  void layout(const ImageCollection& images) override;
+  void reset();
+  void layout(WorkspaceItem& item);
+
+private:
+  void advance();
+
 private:
   enum Direction {
     kRight,
@@ -39,16 +49,6 @@ private:
   Vector2i m_pos;
   int m_ring;
   Direction m_direction;
-
-public:
-  SpiralLayouter();
-
-  void layout(const ImageCollection& images) override;
-  void reset();
-  void layout(WorkspaceItem& item);
-
-private:
-  void advance();
 
 private:
   SpiralLayouter(const SpiralLayouter&);

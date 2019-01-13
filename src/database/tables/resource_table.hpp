@@ -23,11 +23,11 @@
 
 class ResourceTable
 {
-private:
-  SQLiteConnection& m_db;
-
 public:
   ResourceTable(SQLiteConnection& db);
+
+private:
+  SQLiteConnection& m_db;
 
 private:
   ResourceTable(const ResourceTable&);

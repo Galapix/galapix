@@ -30,15 +30,10 @@
  */
 class URL
 {
-private:
-  // URL: {PROTOCOL}://{PAYLOAD}//{PLUGIN}:{PLUGIN_PAYLOAD}
-  // Example:
-  // http://www.example.com/foobar.jpg
-  // file:///www.example.com/foobar.rar//rar:Filename.jpg
-  std::string m_protocol;
-  std::string m_payload;
-  std::string m_plugin;
-  std::string m_plugin_payload;
+  friend bool operator==(const URL& lhs, const URL& rhs);
+
+public:
+  static bool is_url(const std::string& url);
 
 public:
   URL();
@@ -72,8 +67,15 @@ public:
       connection */
   bool is_remote() const;
 
-  static bool is_url(const std::string& url);
-  friend bool operator==(const URL& lhs, const URL& rhs);
+private:
+  // URL: {PROTOCOL}://{PAYLOAD}//{PLUGIN}:{PLUGIN_PAYLOAD}
+  // Example:
+  // http://www.example.com/foobar.jpg
+  // file:///www.example.com/foobar.rar//rar:Filename.jpg
+  std::string m_protocol;
+  std::string m_payload;
+  std::string m_plugin;
+  std::string m_plugin_payload;
 };
 
 std::ostream& operator<<(std::ostream& out, const URL& url);

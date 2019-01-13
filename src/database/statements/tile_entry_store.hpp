@@ -23,9 +23,6 @@
 
 class TileEntryStore
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   TileEntryStore(SQLiteConnection& db) :
     m_stmt(db, "INSERT into tile (image_id, scale, x, y, data, quality, format) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);")
@@ -77,6 +74,9 @@ public:
 
     m_stmt.execute();
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   TileEntryStore(const TileEntryStore&);

@@ -39,11 +39,6 @@ class ResourceLocator;
 
 class Generator
 {
-private:
-  BlobManager& m_blob_mgr;
-  ArchiveManager& m_archive_mgr;
-  ThreadPool m_pool;
-
 public:
   Generator(BlobManager& blob_mgr, ArchiveManager& archive_mgr);
   ~Generator();
@@ -61,6 +56,11 @@ private:
   bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor,
                                 GeneratorCallbacksPtr callbacks);
   void process_image_tiling(SoftwareSurface const&  surface, GeneratorCallbacksPtr callbacks);
+
+private:
+  BlobManager& m_blob_mgr;
+  ArchiveManager& m_archive_mgr;
+  ThreadPool m_pool;
 
 private:
   Generator(const Generator&) = delete;

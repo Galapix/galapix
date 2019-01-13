@@ -28,6 +28,13 @@
     to be read and written to a file */
 class Blob final
 {
+public:
+  static Blob from_file(std::string const& filename);
+
+  /** Copy the given data into a Blob object */
+  static Blob copy(void const* data, size_t len);
+  static Blob copy(std::vector<uint8_t> data);
+
 private:
   Blob(std::vector<uint8_t> data);
   Blob(void const* data, size_t len);
@@ -41,13 +48,6 @@ public:
   std::string str() const;
 
   void write_to_file(std::string const& filename) const;
-
-public:
-  static Blob from_file(std::string const& filename);
-
-  /** Copy the given data into a Blob object */
-  static Blob copy(void const* data, size_t len);
-  static Blob copy(std::vector<uint8_t> data);
 
   explicit operator bool() const { return m_data != nullptr; }
 

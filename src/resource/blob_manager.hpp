@@ -41,14 +41,6 @@ public:
 
 class BlobManager
 {
-private:
-  DownloadManager& m_download_mgr;
-  ArchiveManager&  m_archive_mgr;
-  ThreadPool m_pool;
-
-  std::mutex m_mutex;
-  std::vector<BlobRequest> m_requests;
-
 public:
   BlobManager(DownloadManager& download_mgr,
               ArchiveManager& archive_mgr);
@@ -60,6 +52,14 @@ public:
 private:
   void register_request(const ResourceLocator& locator);
   void unregister_request(const ResourceLocator& locator);
+
+private:
+  DownloadManager& m_download_mgr;
+  ArchiveManager&  m_archive_mgr;
+  ThreadPool m_pool;
+
+  std::mutex m_mutex;
+  std::vector<BlobRequest> m_requests;
 
 private:
   BlobManager(const BlobManager&) = delete;

@@ -25,9 +25,6 @@
 
 class FileEntryGetAll
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   FileEntryGetAll(SQLiteConnection& db) :
     m_stmt(db,
@@ -46,6 +43,9 @@ public:
       entries_out.push_back(FileEntry::from_reader(reader));
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   FileEntryGetAll(const FileEntryGetAll&);

@@ -27,16 +27,16 @@ class Options;
 
 class ThumbnailGenerator
 {
-private:
-  Database       m_database;
-  JobManager     m_job_manager;
-  DatabaseThread m_database_thread;
-
 public:
   ThumbnailGenerator(const Options& opts);
   ~ThumbnailGenerator();
 
   void run(const std::vector<URL>& urls, bool generate_all_tiles);
+
+private:
+  Database       m_database;
+  JobManager     m_job_manager;
+  DatabaseThread m_database_thread;
 
 private:
   ThumbnailGenerator(const ThumbnailGenerator&) = delete;

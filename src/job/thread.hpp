@@ -23,12 +23,6 @@
 
 class Thread
 {
-private:
-  enum { kRunning, kJoined, kNothing } m_state;
-  std::thread m_thread;
-
-  void run_wrap();
-
 public:
   Thread();
   virtual ~Thread();
@@ -42,6 +36,12 @@ public:
   virtual void stop_thread() =0;
 
   virtual void run() =0;
+
+private:
+  enum { kRunning, kJoined, kNothing } m_state;
+  std::thread m_thread;
+
+  void run_wrap();
 
 private:
   Thread (const Thread&);

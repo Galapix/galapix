@@ -26,7 +26,6 @@
 
 class PNG
 {
-private:
 public:
   static bool get_size(void* data, int len, Size& size);
   static bool get_size(const std::string& filename, Size& size);

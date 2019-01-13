@@ -29,9 +29,6 @@
 
 class TileEntryGetAllByFileEntry final
 {
-private:
-  SQLiteStatement m_stmt;
-
 public:
   TileEntryGetAllByFileEntry(SQLiteConnection& db) :
     m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1;")
@@ -75,6 +72,9 @@ public:
       }
     }
   }
+
+private:
+  SQLiteStatement m_stmt;
 
 private:
   TileEntryGetAllByFileEntry(const TileEntryGetAllByFileEntry&);

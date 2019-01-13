@@ -35,15 +35,6 @@ class Rectf;
 /** Generic OpenGL helper functions */
 class Framebuffer
 {
-private:
-  static Size size;
-
-public:
-  static GLuint s_textured_prg;
-  static GLuint s_flatcolor_prg;
-  static glm::mat4 s_projection;
-  static glm::mat4 s_modelview;
-
 public:
   static void init();
   static void reshape(const Size& size);
@@ -63,6 +54,15 @@ public:
 
   static SoftwareSurface screenshot();
   static void apply_gamma_ramp(float contrast, float brightness, float gamma);
+
+private:
+  static Size size;
+
+public:
+  static GLuint s_textured_prg;
+  static GLuint s_flatcolor_prg;
+  static glm::mat4 s_projection;
+  static glm::mat4 s_modelview;
 };
 
 #endif

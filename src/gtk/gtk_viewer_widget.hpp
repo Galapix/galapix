@@ -29,10 +29,6 @@ class GtkViewerWidget
   : public Gtk::DrawingArea,
     public Gtk::GL::Widget<GtkViewerWidget>
 {
-private:
-  Viewer*  viewer;
-  Vector2i mouse_pos;
-
 public:
   GtkViewerWidget(Viewer* viewer);
   virtual ~GtkViewerWidget();
@@ -49,6 +45,11 @@ public:
 
   virtual bool key_press(GdkEventKey* event);
   virtual bool key_release(GdkEventKey* event);
+
+private:
+  Viewer* viewer;
+  Vector2i mouse_pos;
+
 private:
   GtkViewerWidget (const GtkViewerWidget&);
   GtkViewerWidget& operator= (const GtkViewerWidget&);

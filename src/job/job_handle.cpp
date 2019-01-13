@@ -33,6 +33,7 @@ public:
     cond()
   {}
 
+public:
   bool aborted;
   bool finished;
   bool failed;

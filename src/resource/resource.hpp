@@ -21,7 +21,6 @@
 
 class Resource
 {
-private:
 public:
   Resource();
 

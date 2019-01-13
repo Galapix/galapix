@@ -29,14 +29,13 @@
 
 class ResourceCacheState
 {
-private:
 public:
   ResourceCacheState();
 
   ResourceInfo get_resource_info() const;
-  ImageInfo    get_image_info() const;
-  VideoInfo    get_video_info() const;
-  ArchiveInfo  get_archive_info() const;
+  ImageInfo get_image_info() const;
+  VideoInfo get_video_info() const;
+  ArchiveInfo get_archive_info() const;
 
   std::vector<ResourceCacheState> get_children() const;
 };

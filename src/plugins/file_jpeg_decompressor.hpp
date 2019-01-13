@@ -26,13 +26,13 @@
 
 class FileJPEGDecompressor : public JPEGDecompressor
 {
-private:
-  std::string m_filename;
-  FILE* m_in;
-
 public:
   FileJPEGDecompressor(const std::string& filename);
   ~FileJPEGDecompressor() override;
+
+private:
+  std::string m_filename;
+  FILE* m_in;
 
 private:
   FileJPEGDecompressor(const FileJPEGDecompressor&);

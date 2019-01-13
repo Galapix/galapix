@@ -29,6 +29,12 @@ class System;
 
 class ViewerCommand
 {
+public:
+  ViewerCommand(System& system, const Options& options);
+  ~ViewerCommand();
+
+  void run(const std::vector<URL>& urls);
+
 private:
   System& m_system;
   Options m_opts;
@@ -37,12 +43,6 @@ private:
   JobManager m_job_manager;
   DatabaseThread m_database_thread;
   std::vector<std::string> m_patterns;
-
-public:
-  ViewerCommand(System& system, const Options& options);
-  ~ViewerCommand();
-
-  void run(const std::vector<URL>& urls);
 
 private:
   ViewerCommand(const ViewerCommand&) = delete;
