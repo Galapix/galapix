@@ -198,7 +198,7 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
     {
       std::ostringstream str;
       str << "JPEGDecompressor::read_image(): Unsupported colorspace: "
-          << m_cinfo.out_color_space << " components: " << m_cinfo.output_components;
+          << static_cast<int>(m_cinfo.out_color_space) << " components: " << m_cinfo.output_components;
       raise_runtime_error(str.str());
     }
 

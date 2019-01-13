@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry)
             << "         id: " << entry.get_id() << '\n'
             << "        url: " << entry.get_url() << '\n'
             << "      mtime: " << entry.get_mtime() << '\n'
-            << "    handler: " << entry.get_handler() << '\n'
+            << "    handler: " << static_cast<int>(entry.get_handler()) << '\n'
             << "     parent: " << entry.get_parent() << '\n'
             << "    blob_id: " << entry.get_blob_entry().get_id() << '\n'
             << "  blob_sha1: " << entry.get_blob_entry().get_sha1() << '\n'
