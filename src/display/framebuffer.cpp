@@ -231,7 +231,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
   float start_x = fmodf(offset.x, size_.width);
   float start_y = fmodf(offset.y, size_.height);
 
-  for(float x = start_x; x < Framebuffer::get_width(); x += size_.width)
+  for(float x = start_x; x < static_cast<float>(Framebuffer::get_width()); x += size_.width)
   {
     positions.push_back(x);
     positions.push_back(0);
@@ -240,7 +240,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     positions.push_back(static_cast<float>(Framebuffer::get_height()));
   }
 
-  for(float y = start_y; y < Framebuffer::get_height(); y += size_.height)
+  for(float y = start_y; y < static_cast<float>(Framebuffer::get_height()); y += size_.height)
   {
     positions.push_back(0);
     positions.push_back(y);
