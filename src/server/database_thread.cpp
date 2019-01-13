@@ -237,7 +237,7 @@ DatabaseThread::request_tiles(const OldFileEntry& file_entry, int min_scale, int
 }
 
 void
-DatabaseThread::request_job_removal(std::shared_ptr<Job> job, bool)
+DatabaseThread::request_job_removal(std::shared_ptr<Job> const& job, bool)
 {
   m_request_queue.wait_and_push([this, job](){
       remove_job(job);
@@ -370,7 +370,7 @@ DatabaseThread::process_queue(ThreadMessageQueue2<std::function<void()>>& queue)
 }
 
 void
-DatabaseThread::remove_job(std::shared_ptr<Job> job)
+DatabaseThread::remove_job(std::shared_ptr<Job> const& job)
 {
   for(std::list<std::shared_ptr<TileGenerationJob> >::iterator i = m_tile_generation_jobs.begin();
       i != m_tile_generation_jobs.end(); ++i)

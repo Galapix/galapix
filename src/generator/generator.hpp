@@ -47,15 +47,15 @@ public:
                          const std::function<void (const Failable<FileInfo>&)>& callback);
 
   void request_resource_processing(const ResourceLocator& locator,
-                                   GeneratorCallbacksPtr callbacks);
+                                   GeneratorCallbacksPtr const& callbacks);
 
 private:
-  void process_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, GeneratorCallbacksPtr callbacks);
+  void process_resource(ResourceLocator const& locator, BlobAccessorPtr const& blob_accessor, GeneratorCallbacksPtr const& callbacks);
   bool process_image_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info,
-                              GeneratorCallbacksPtr callbacks);
+                              GeneratorCallbacksPtr const& callbacks);
   bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor,
-                                GeneratorCallbacksPtr callbacks);
-  void process_image_tiling(SoftwareSurface const&  surface, GeneratorCallbacksPtr callbacks);
+                                GeneratorCallbacksPtr const& callbacks);
+  void process_image_tiling(SoftwareSurface const&  surface, GeneratorCallbacksPtr const& callbacks);
 
 private:
   BlobManager& m_blob_mgr;

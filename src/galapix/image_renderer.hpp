@@ -31,7 +31,7 @@ class Rectf;
 class ImageRenderer
 {
 public:
-  ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> cache);
+  ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> const& cache);
 
   /** Return true if something was drawn to the screen, false when
       image was outside the cliprect */

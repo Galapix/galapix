@@ -55,10 +55,10 @@ private:
   std::string string;
 };
 
-Parser::Parser()
-  : filename(),
-    lexer(nullptr),
-    token()
+Parser::Parser() :
+  filename(),
+  lexer(nullptr),
+  token()
 {
 }
 

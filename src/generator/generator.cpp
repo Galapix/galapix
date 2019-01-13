@@ -74,7 +74,7 @@ Generator::request_file_info(const std::string& path,
 
 void
 Generator::request_resource_processing(const ResourceLocator& locator,
-                                       GeneratorCallbacksPtr callbacks)
+                                       GeneratorCallbacksPtr const & callbacks)
 {
   m_blob_mgr.request_blob
     (locator,
@@ -82,7 +82,7 @@ Generator::request_resource_processing(const ResourceLocator& locator,
      {
        try
        {
-         BlobAccessorPtr blob = result.get();
+         BlobAccessorPtr const& blob = result.get();
          m_pool.schedule
            ([this, locator, blob, callbacks]
             {
@@ -108,9 +108,9 @@ Generator::request_resource_processing(const ResourceLocator& locator,
 }
 
 void
-Generator::process_resource(const ResourceLocator& locator,
-                            const BlobAccessorPtr& blob_accessor,
-                            GeneratorCallbacksPtr callbacks)
+Generator::process_resource(ResourceLocator const& locator,
+                            BlobAccessorPtr const& blob_accessor,
+                            GeneratorCallbacksPtr const& callbacks)
 {
   // FIXME:
   // 1) use BlobAccessor instead
@@ -141,9 +141,9 @@ Generator::process_resource(const ResourceLocator& locator,
 }
 
 bool
-Generator::process_archive_resource(const ResourceLocator& locator,
-                                    const BlobAccessorPtr& blob_accessor,
-                                    GeneratorCallbacksPtr callbacks)
+Generator::process_archive_resource(ResourceLocator const& locator,
+                                    BlobAccessorPtr const& blob_accessor,
+                                    GeneratorCallbacksPtr const& callbacks)
 {
   try
   {
@@ -191,9 +191,9 @@ Generator::process_archive_resource(const ResourceLocator& locator,
 }
 
 bool
-Generator::process_image_resource(const ResourceLocator& locator,
-                                  const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info,
-                                  GeneratorCallbacksPtr callbacks)
+Generator::process_image_resource(ResourceLocator const& locator,
+                                  BlobAccessorPtr const& blob_accessor, BlobInfo const& blob_info,
+                                  GeneratorCallbacksPtr const& callbacks)
 {
   // generate ImageData if it is an image
   const SoftwareSurfaceLoader* loader = nullptr;
@@ -260,7 +260,7 @@ inline int calc_max_scale(int width, int height)
 }
 
 void
-Generator::process_image_tiling(SoftwareSurface const& surface, GeneratorCallbacksPtr callbacks)
+Generator::process_image_tiling(SoftwareSurface const& surface, GeneratorCallbacksPtr const& callbacks)
 {
   std::vector<Tile> tiles;
 

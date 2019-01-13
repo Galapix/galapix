@@ -27,7 +27,7 @@
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"
 
-ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr cache) :
+ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr const& cache) :
   m_image(image),
   m_cache(cache)
 {

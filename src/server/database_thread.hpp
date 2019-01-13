@@ -89,21 +89,21 @@ public:
   JobHandle request_tiles(const OldFileEntry&, int min_scale, int max_scale,
                           const std::function<void (Tile)>& callback);
 
-  void      request_job_removal(std::shared_ptr<Job> job, bool);
+  void request_job_removal(std::shared_ptr<Job> const& job, bool);
 
   /** Request the OldFileEntry for \a filename */
   JobHandle request_file(const URL& url,
                          const std::function<void (OldFileEntry)>& file_callback);
 
   /** Request OldFileEntrys by glob pattern from the database */
-  void      request_files_by_pattern(const std::function<void (OldFileEntry)>& callback, const std::string& pattern);
+  void request_files_by_pattern(const std::function<void (OldFileEntry)>& callback, const std::string& pattern);
 
   /** Request all OldFileEntrys available in the database */
-  void      request_all_files(const std::function<void (OldFileEntry)>& callback);
+  void request_all_files(const std::function<void (OldFileEntry)>& callback);
 
-  void      store_file_entry(const JobHandle& job_handle,
-                             const URL& url, int size, int mtime, OldFileEntry::Handler handler,
-                             const std::function<void (OldFileEntry)>& callback);
+  void store_file_entry(const JobHandle& job_handle,
+                        const URL& url, int size, int mtime, OldFileEntry::Handler handler,
+                        const std::function<void (OldFileEntry)>& callback);
 
   /** Delete the given OldFileEntry along with all TileEntry refering to it */
   void      delete_file_entry(const RowId& fileid);
@@ -113,7 +113,7 @@ public:
                               const std::function<void (const std::optional<ResourceEntry>&)>& callback);
 
 private:
-  void remove_job(std::shared_ptr<Job> job);
+  void remove_job(std::shared_ptr<Job> const& job);
 
   /** Generates the requested tile from its original image */
   void generate_tiles(const JobHandle& job_handle, const OldFileEntry&,
