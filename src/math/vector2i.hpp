@@ -18,6 +18,8 @@
 #define HEADER_GALAPIX_MATH_VECTOR2I_HPP
 
 #include <iosfwd>
+
+#define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
 #include "math/vector2f.hpp"

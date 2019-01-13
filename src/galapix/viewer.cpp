@@ -20,9 +20,9 @@
 #include <fstream>
 #include <logmich/log.hpp>
 
+#define GLM_FORCE_CTOR_INIT
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/io.hpp>
-
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 

@@ -18,6 +18,7 @@
 
 #include "galapix/viewer_state.hpp"
 
+#define GLM_FORCE_CTOR_INIT
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/ext.hpp>
 

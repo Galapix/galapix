@@ -20,6 +20,7 @@
 
 #include <iosfwd>
 
+#define GLM_FORCE_CTOR_INIT
 #define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 
