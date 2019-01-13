@@ -44,7 +44,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
 {
   // register_request()
 
-  ResourceURL url = locator.get_url();
+  ResourceURL const& url = locator.get_url();
   if (url.get_scheme() == "file")
   {
     m_pool.schedule

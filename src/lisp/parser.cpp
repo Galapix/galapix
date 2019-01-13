@@ -166,7 +166,7 @@ Parser::parse()
     token = lexer->getNextToken();
   }
 
-  return std::shared_ptr<Lisp>(new Lisp(entries));
+  return std::make_shared<Lisp>(entries);
 }
 
 } // end of namespace lisp

@@ -60,6 +60,7 @@ Filesystem::find_exe(const std::string& name)
       fullpath << p << "/" << name;
       if (access(fullpath.str().c_str(), X_OK) == 0)
       {
+        free(path);
         return fullpath.str();
       }
     }

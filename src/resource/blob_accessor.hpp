@@ -30,7 +30,7 @@ class BlobAccessor
 {
 public:
   BlobAccessor(const std::string& filename);
-  BlobAccessor(Blob blob);
+  BlobAccessor(Blob const& blob);
 
   bool has_stdio_name() const;
   std::string get_stdio_name() const;

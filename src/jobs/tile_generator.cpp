@@ -156,7 +156,7 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
 
 
 void
-TileGenerator::cut_into_tiles(SoftwareSurface surface,
+TileGenerator::cut_into_tiles(SoftwareSurface const& surface,
                               const std::function<void (int x, int y, SoftwareSurface)>& callback)
 {
   int tile_w = (surface.get_width()  + (TILE_WIDTH  - 1)) / TILE_WIDTH;
@@ -173,21 +173,21 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
 }
 
 void
-TileGenerator::generate(SoftwareSurface surface, int min_scale, int max_scale,
+TileGenerator::generate(SoftwareSurface const& surface, int min_scale, int max_scale,
                         const std::function<void (int x, int y, int scale, SoftwareSurface)>& callback)
 {
   Size target_size(surface.get_width()  / Math::pow2(min_scale),
                    surface.get_height() / Math::pow2(min_scale));
-  surface = surface.scale(target_size);
+  SoftwareSurface modified_surface = surface.scale(target_size);
 
   for(int scale = min_scale; scale < max_scale; ++scale)
   {
     if (scale != min_scale)
     {
-      surface = surface.halve();
+      modified_surface = modified_surface.halve();
     }
 
-    cut_into_tiles(surface,
+    cut_into_tiles(modified_surface,
                    [scale, callback](int x, int y, SoftwareSurface const& tile)
                    {
                      callback(x, y, scale, tile);

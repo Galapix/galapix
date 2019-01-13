@@ -370,7 +370,7 @@ SoftwareSurface::crop(Rect const& rect_in) const
   {
     memcpy(dst.get_row_data(y - rect.top),
            src.get_row_data(y) + rect.left * src.get_bytes_per_pixel(),
-           static_cast<size_t>(rect.get_width() * src.get_bytes_per_pixel()));
+           rect.get_width() * src.get_bytes_per_pixel());
   }
 
   return SoftwareSurface(std::move(dst));

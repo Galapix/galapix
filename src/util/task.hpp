@@ -41,7 +41,7 @@ public:
     }
     catch(...)
     {
-      m_exception = std::current_exception();
+      m_exception = std::current_exception(); // NOLINT
     }
   }
 

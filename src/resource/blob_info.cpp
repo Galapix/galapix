@@ -21,7 +21,7 @@
 #include "resource/blob_accessor.hpp"
 
 BlobInfo
-BlobInfo::from_blob(Blob blob)
+BlobInfo::from_blob(Blob const& blob)
 {
   return BlobInfo(SHA1::from_mem(blob.get_data(), blob.size()),
                   blob.size());

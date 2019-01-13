@@ -277,10 +277,8 @@ DatabaseThread::request_file(const URL& url,
 }
 
 void
-DatabaseThread::request_all_files(const std::function<void (OldFileEntry)>& callback_)
+DatabaseThread::request_all_files(const std::function<void (OldFileEntry)>& callback)
 {
-  std::function<void (OldFileEntry)> callback = callback_; // FIXME: internal error workaround
-
   m_request_queue.wait_and_push([this, callback]{
       std::vector<OldFileEntry> entries;
       m_database.get_resources().get_old_file_entries(entries);

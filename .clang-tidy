@@ -1,6 +1,6 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,portability-*,performance-*,bugprone-*,misc-*,-misc-unused-parameters'
-WarningsAsErrors: '*,-bugprone-parent-virtual-call,-clang-analyzer-optin.cplusplus.VirtualCall,-clang-analyzer-security.FloatLoopCounter,-bugprone-misplaced-widening-cast,-bugprone-throw-keyword-missing,-performance-unnecessary-copy-initialization,-bugprone-macro-parentheses,-bugprone-throw-keyword-missing,-clang-analyzer-unix.Malloc,-bugprone-string-literal-with-embedded-nul'
+Checks:          'clang-*,portability-*,performance-*,bugprone-*,misc-*,-misc-unused-parameters,-clang-analyzer-security.FloatLoopCounter'
+WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/.*hpp'
 AnalyzeTemporaryDtors: true
 ...

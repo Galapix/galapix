@@ -47,9 +47,9 @@ public:
 
 public:
   ResourceLocator() : m_url(), m_handler() {}
-  ResourceLocator(const ResourceURL& url, const std::vector<ResourceHandler>& handler) :
-    m_url(url),
-    m_handler(handler)
+  ResourceLocator(ResourceURL url, std::vector<ResourceHandler> handler) :
+    m_url(std::move(url)),
+    m_handler(std::move(handler))
   {}
 
   ResourceLocator get_blob_locator() const;

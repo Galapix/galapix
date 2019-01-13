@@ -30,13 +30,13 @@ ImageCollection::~ImageCollection()
 }
 
 void
-ImageCollection::add(WorkspaceItemPtr image)
+ImageCollection::add(WorkspaceItemPtr const& image)
 {
   m_images.push_back(image);
 }
 
 void
-ImageCollection::remove(WorkspaceItemPtr image)
+ImageCollection::remove(WorkspaceItemPtr const& image)
 {
   m_images.erase(std::remove(m_images.begin(), m_images.end(), image),
                  m_images.end());

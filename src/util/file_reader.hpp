@@ -37,7 +37,7 @@ class URL;
 class FileReader
 {
 public:
-  FileReader(std::shared_ptr<FileReaderImpl> impl_);
+  FileReader(std::shared_ptr<FileReaderImpl> const& impl_);
   FileReader();
   virtual ~FileReader() {}
 

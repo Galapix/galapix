@@ -38,8 +38,8 @@ public:
   ImageCollection();
   ~ImageCollection();
 
-  void add(WorkspaceItemPtr image);
-  void remove(WorkspaceItemPtr image);
+  void add(WorkspaceItemPtr const& image);
+  void remove(WorkspaceItemPtr const& image);
 
   void clear() { m_images.clear(); }
 

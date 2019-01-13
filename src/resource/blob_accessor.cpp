@@ -28,7 +28,7 @@ BlobAccessor::BlobAccessor(const std::string& filename) :
 {
 }
 
-BlobAccessor::BlobAccessor(Blob blob) :
+BlobAccessor::BlobAccessor(Blob const& blob) :
   m_mutex(),
   m_filename(),
   m_blob(blob),

@@ -30,10 +30,10 @@ std::vector<std::string>
 ZipArchiveLoader::get_magics() const
 {
   return {
-    "PK\003\004", // regular archive
-    "PK\005\006", // empty archive
-    "PK\007\008"  // spanned archive
-      };
+    "PK\x03\x04", // regular archive
+    "PK\x05\x06", // empty archive
+    "PK\x07\x08"  // spanned archive
+  };
 }
 
 std::vector<std::string>

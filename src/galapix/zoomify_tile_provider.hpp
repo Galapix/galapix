@@ -25,7 +25,7 @@
 
 class JobManager;
 
-class ZoomifyTileProvider : public TileProvider
+class ZoomifyTileProvider final : public TileProvider
 {
 private:
   struct Info

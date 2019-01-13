@@ -23,7 +23,7 @@
 #include "util/sexpr_file_reader.hpp"
 #include "util/url.hpp"
 
-FileReader::FileReader(std::shared_ptr<FileReaderImpl> impl_) :
+FileReader::FileReader(std::shared_ptr<FileReaderImpl> const& impl_) :
   impl(impl_)
 {
 }

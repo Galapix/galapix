@@ -53,11 +53,11 @@ public:
                              const std::function<void (Tile)>& callback);
 
   /** Cuts the given surface into tiles, returning the results to the callback */
-  static void cut_into_tiles(SoftwareSurface surface,
+  static void cut_into_tiles(SoftwareSurface const& surface,
                              const std::function<void (int x, int y, SoftwareSurface)>& callback);
 
   /** Generate tiles for all the given downsample/scale levels */
-  static void generate(SoftwareSurface surface, int min_scale, int max_scale,
+  static void generate(SoftwareSurface const& surface, int min_scale, int max_scale,
                        const std::function<void (int x, int y, int scale, SoftwareSurface)>& callback);
 
 private:

@@ -44,12 +44,12 @@ PixelData::PixelData(Format format, Size const& size) :
   {
     case RGB_FORMAT:
       m_pitch  = m_size.width * 3;
-      m_pixels.resize(static_cast<size_t>(m_pitch * m_size.height));
+      m_pixels.resize(m_pitch * m_size.height);
       break;
 
     case RGBA_FORMAT:
       m_pitch  = size.width * 4;
-      m_pixels.resize(static_cast<size_t>(m_pitch * m_size.height));
+      m_pixels.resize(m_pitch * m_size.height);
       break;
 
     default:
@@ -83,16 +83,16 @@ PixelData::put_pixel(int x, int y, RGBA const& rgba)
   switch(m_format)
   {
     case RGBA_FORMAT:
-      m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 0)] = rgba.r;
-      m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 1)] = rgba.g;
-      m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 2)] = rgba.b;
-      m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 3)] = rgba.a;
+      m_pixels[y * m_pitch + x*4 + 0] = rgba.r;
+      m_pixels[y * m_pitch + x*4 + 1] = rgba.g;
+      m_pixels[y * m_pitch + x*4 + 2] = rgba.b;
+      m_pixels[y * m_pitch + x*4 + 3] = rgba.a;
       break;
 
     case RGB_FORMAT:
-      m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 0)] = rgba.r;
-      m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 1)] = rgba.g;
-      m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 2)] = rgba.b;
+      m_pixels[y * m_pitch + x*3 + 0] = rgba.r;
+      m_pixels[y * m_pitch + x*3 + 1] = rgba.g;
+      m_pixels[y * m_pitch + x*3 + 2] = rgba.b;
       break;
   }
 }
@@ -104,9 +104,9 @@ PixelData::PixelData::put_pixel(int x, int y, RGB const& rgb)
   assert(x >= 0 && x < m_size.width &&
          y >= 0 && y < m_size.height);
 
-  m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 0)] = rgb.r;
-  m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 1)] = rgb.g;
-  m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 2)] = rgb.b;
+  m_pixels[y * m_pitch + x*3 + 0] = rgb.r;
+  m_pixels[y * m_pitch + x*3 + 1] = rgb.g;
+  m_pixels[y * m_pitch + x*3 + 2] = rgb.b;
 }
 
 void
@@ -118,16 +118,16 @@ PixelData::get_pixel(int x, int y, RGBA& rgb) const
   switch(m_format)
   {
     case RGBA_FORMAT:
-      rgb.r = m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 0)];
-      rgb.g = m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 1)];
-      rgb.b = m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 2)];
-      rgb.a = m_pixels[static_cast<size_t>(y * m_pitch + x*4 + 3)];
+      rgb.r = m_pixels[y * m_pitch + x*4 + 0];
+      rgb.g = m_pixels[y * m_pitch + x*4 + 1];
+      rgb.b = m_pixels[y * m_pitch + x*4 + 2];
+      rgb.a = m_pixels[y * m_pitch + x*4 + 3];
       break;
 
     case RGB_FORMAT:
-      rgb.r = m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 0)];
-      rgb.g = m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 1)];
-      rgb.b = m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 2)];
+      rgb.r = m_pixels[y * m_pitch + x*3 + 0];
+      rgb.g = m_pixels[y * m_pitch + x*3 + 1];
+      rgb.b = m_pixels[y * m_pitch + x*3 + 2];
       rgb.a = 255;
       break;
   }
@@ -140,9 +140,9 @@ PixelData::get_pixel(int x, int y, RGB& rgb) const
   assert(x >= 0 && x < m_size.width &&
          y >= 0 && y < m_size.height);
 
-  rgb.r = m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 0)];
-  rgb.g = m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 1)];
-  rgb.b = m_pixels[static_cast<size_t>(y * m_pitch + x*3 + 2)];
+  rgb.r = m_pixels[y * m_pitch + x*3 + 0];
+  rgb.g = m_pixels[y * m_pitch + x*3 + 1];
+  rgb.b = m_pixels[y * m_pitch + x*3 + 2];
 }
 
 uint8_t*
@@ -184,7 +184,7 @@ PixelData::blit(PixelData& dst, const Vector2i& pos) const
     {
       memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*3,
              get_row_data(y) + start_x*3,
-             static_cast<size_t>((end_x - start_x) * 3));
+             (end_x - start_x) * 3);
     }
   }
   else if (dst.m_format == RGBA_FORMAT && m_format == RGBA_FORMAT)
@@ -193,7 +193,7 @@ PixelData::blit(PixelData& dst, const Vector2i& pos) const
     {
       memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*4,
              get_row_data(y) + start_x*4,
-             static_cast<size_t>((end_x - start_x) * 4));
+             (end_x - start_x) * 4);
     }
   }
   else if (dst.m_format == RGBA_FORMAT && m_format == RGB_FORMAT)

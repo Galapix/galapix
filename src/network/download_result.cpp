@@ -23,7 +23,7 @@ DownloadResult::from_curl(CURL* handle, Blob blob)
 {
   DownloadResult result;
 
-  result.m_blob = blob;
+  result.m_blob = std::move(blob);
 
   char* content_type = nullptr;
   curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);

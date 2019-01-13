@@ -32,9 +32,9 @@ typedef std::shared_ptr<BlobAccessor> BlobAccessorPtr;
 class BlobInfo
 {
 public:
-  static BlobInfo from_blob(Blob blob);
-  static BlobInfo from_blob(const BlobAccessor& blob_accessor);
-  static BlobInfo from_blob(const BlobAccessorPtr& blob_accessor);
+  static BlobInfo from_blob(Blob const& blob);
+  static BlobInfo from_blob(BlobAccessor const& blob_accessor);
+  static BlobInfo from_blob(BlobAccessorPtr const& blob_accessor);
 
 public:
   BlobInfo() :

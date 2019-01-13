@@ -31,7 +31,7 @@
 class ZoomifyTileJob : public Job
 {
 public:
-  ZoomifyTileJob(JobHandle job_handle, const URL& url,
+  ZoomifyTileJob(JobHandle const& job_handle, const URL& url,
                  int scale, const Vector2i& pos,
                  const std::function<void (Tile)>& callback) :
     Job(job_handle),
