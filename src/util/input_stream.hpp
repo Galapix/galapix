@@ -27,7 +27,7 @@ public:
   static InputStream from_file(std::string const& filename);
 
 public:
-  InputStream(InputStream&& other);
+  InputStream(InputStream&& other) noexcept;
   InputStream(int fd);
   ~InputStream();
 

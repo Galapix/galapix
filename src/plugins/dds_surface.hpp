@@ -48,16 +48,12 @@
 #define DDPF_BUMPLUMINANCE              0x00040000
 #define DDPF_BUMPDUDV                   0x00080000
 
-namespace {
-
-uint32_t read_uint32(std::istream& in)
+inline uint32_t read_uint32(std::istream& in)
 {
   uint32_t v;
   in.read(reinterpret_cast<char*>(&v), sizeof(v));
   return v;
 }
-
-} // namespace
 
 class DDSCapabilities
 {

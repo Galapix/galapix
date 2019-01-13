@@ -39,7 +39,7 @@ public:
 
   WorkspaceItemWPtr get_parent() const { return m_parent; }
   std::vector<WorkspaceItemPtr> get_children() const { return m_children; }
-  void add_child(WorkspaceItemPtr child) { m_children.push_back(child); }
+  void add_child(WorkspaceItemPtr child) { m_children.emplace_back(std::move(child)); }
 
   virtual void     set_pos(const Vector2f& pos);
   virtual Vector2f get_pos() const;

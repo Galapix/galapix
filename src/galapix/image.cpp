@@ -33,7 +33,7 @@
 
 Image::Image(const URL& url, TileProviderPtr provider) :
   m_url(url),
-  m_provider(provider),
+  m_provider(std::move(provider)),
   m_cache(),
   m_renderer()
 {
@@ -120,7 +120,7 @@ Image::set_tile_provider(TileProviderPtr provider)
   // set the new provider and related data
   if (provider)
   {
-    m_provider = provider;
+    m_provider = std::move(provider);
     m_cache    = std::make_shared<ImageTileCache>(m_provider);
     m_renderer = std::make_unique<ImageRenderer>(*this, m_cache);
   }

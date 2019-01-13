@@ -32,7 +32,7 @@ ArchiveThread::~ArchiveThread()
 }
 
 void
-ArchiveThread::request_blob(const std::string archive_filename, const std::string& filename,
+ArchiveThread::request_blob(const std::string& archive_filename, const std::string& filename,
                             const std::function<void (Failable<Blob>)>& callback)
 {
   m_pool.schedule

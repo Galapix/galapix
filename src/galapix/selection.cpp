@@ -95,7 +95,7 @@ Selection::get_center() const
   }
   else
   {
-    Vector2f pos;
+    Vector2f pos(0.0f, 0.0f);
     for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
       pos += (*i)->get_pos();

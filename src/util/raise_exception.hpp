@@ -24,7 +24,7 @@
 
 #define raise_exception(type, expr) do {  \
   std::ostringstream b42465a70169; \
-  b42465a70169 << __FILE__ << ":" << __LINE__ << ":" << expr;       \
+  b42465a70169 << __FILE__ << ":" << __LINE__ << ":" << expr; /* NOLINT */ \
   throw type(b42465a70169.str()); \
 } while(false)
 

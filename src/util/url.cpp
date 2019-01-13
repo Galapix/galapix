@@ -68,7 +68,7 @@ URL::from_string(const std::string& url)
   else
   {
     ret.m_payload  = url.substr(i+2, j-i-2);
-    std::string::size_type k = url.find(":", j+2);
+    std::string::size_type k = url.find(':', j+2);
     ret.m_plugin          = url.substr(j+2, k-j-2);
     ret.m_plugin_payload  = url.substr(k+1);
     //std::cout << "'" << protocol << "' '" << payload << "' '" << plugin << "' " << plugin_payload << std::endl;

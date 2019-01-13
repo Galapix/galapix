@@ -77,7 +77,7 @@ public:
   Format    get_format() const { return m_format; }
 
   void set_image_id(const RowId& image_id) { m_image_id = image_id; }
-  void set_surface(SoftwareSurface surface)  { m_surface = surface; }
+  void set_surface(SoftwareSurface surface)  { m_surface = std::move(surface); }
   void set_blob(Blob const& blob) { m_blob = blob; }
   void set_format(Format format) { m_format = format; }
 

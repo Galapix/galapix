@@ -20,6 +20,7 @@
 #define HEADER_GALAPIX_MATH_MATH_HPP
 
 #include <assert.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string>
 
@@ -43,7 +44,7 @@ const float tau  = 3.14159265358979323846f * 2.0f; /* 2*pi */
 #endif
 
 template<class T>
-T min (const T& a, const T& b)
+T min(const T& a, const T& b)
 {
   if (a < b)
     return a;
@@ -52,7 +53,7 @@ T min (const T& a, const T& b)
 }
 
 template<class T>
-T max (const T& a, const T& b)
+T max(const T& a, const T& b)
 {
   if (a > b)
     return a;
@@ -61,7 +62,7 @@ T max (const T& a, const T& b)
 }
 
 template<class T>
-T clamp (const T& low, const T& v, const T& high)
+T clamp(const T& low, const T& v, const T& high)
 {
   assert(low <= high);
   return max((low), min((v), (high)));
@@ -79,12 +80,9 @@ bool rand_bool()
   return rand()%2 == 0;
 }
 
-inline int round (float f)
+inline int round(float f)
 {
-  if (f >= 0.0f)
-    return int(f + 0.5f);
-  else
-    return int(f - 0.5f);
+  return static_cast<int>(::round(f));
 }
 
 float abs(float v);

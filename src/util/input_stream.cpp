@@ -47,7 +47,7 @@ InputStream::InputStream(int fd) :
   assert(m_fd > 0);
 }
 
-InputStream::InputStream(InputStream&& other) :
+InputStream::InputStream(InputStream&& other) noexcept :
   m_fd(other.m_fd)
 {
   other.m_fd = 0;

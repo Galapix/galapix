@@ -30,7 +30,7 @@ public:
   std::shared_ptr<lisp::Lisp> sexpr;
 
   SExprFileReaderImpl(std::shared_ptr<lisp::Lisp> sexpr_)
-    : sexpr(sexpr_)
+    : sexpr(std::move(sexpr_))
   {
     assert(sexpr->get_type() == lisp::Lisp::TYPE_LIST &&
            sexpr->get_list_size() >= 1);
@@ -247,7 +247,7 @@ private:
 };
 
 SExprFileReader::SExprFileReader(std::shared_ptr<lisp::Lisp> lisp)
-  : FileReader(std::shared_ptr<FileReaderImpl>(new SExprFileReaderImpl(lisp)))
+  : FileReader(std::shared_ptr<FileReaderImpl>(new SExprFileReaderImpl(std::move(lisp))))
 {
 }
 

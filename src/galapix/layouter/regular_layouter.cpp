@@ -45,12 +45,12 @@ RegularLayouter::layout(const ImageCollection& images)
       if ((i/w) % 2 == 0)
       {
         images[i]->set_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
-                                    static_cast<float>(i / w) * 1024.0f));
+                                    static_cast<float>(i / w) * 1024.0f)); // NOLINT
       }
       else
       {
         images[i]->set_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
-                                    static_cast<float>(i / w) * 1024.0f));
+                                    static_cast<float>(i / w) * 1024.0f)); // NOLINT
       }
     }
   }

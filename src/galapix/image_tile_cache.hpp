@@ -63,7 +63,7 @@ public:
                   Surface surface_) :
       job_handle(job_handle_),
       status(status_),
-      surface(surface_)
+      surface(std::move(surface_))
     {}
   };
 
