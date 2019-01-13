@@ -54,36 +54,36 @@ public:
 inline DDSRGB operator*(unsigned int s, const DDSRGB& a)
 {
   DDSRGB result;
-  result.r = static_cast<DDSRGB::dds_int_t>(a.r * s);
-  result.g = static_cast<DDSRGB::dds_int_t>(a.g * s);
-  result.b = static_cast<DDSRGB::dds_int_t>(a.b * s);
+  result.r = a.r * s;
+  result.g = a.g * s;
+  result.b = a.b * s;
   return result;
 }
 
 inline DDSRGB operator*(const DDSRGB& a, unsigned int s)
 {
   DDSRGB result;
-  result.r = static_cast<DDSRGB::dds_int_t>(a.r * s);
-  result.g = static_cast<DDSRGB::dds_int_t>(a.g * s);
-  result.b = static_cast<DDSRGB::dds_int_t>(a.b * s);
+  result.r = a.r * s;
+  result.g = a.g * s;
+  result.b = a.b * s;
   return result;
 }
 
 inline DDSRGB operator/(const DDSRGB& a, unsigned int s)
 {
   DDSRGB result;
-  result.r = static_cast<DDSRGB::dds_int_t>(a.r / s);
-  result.g = static_cast<DDSRGB::dds_int_t>(a.g / s);
-  result.b = static_cast<DDSRGB::dds_int_t>(a.b / s);
+  result.r = a.r / s;
+  result.g = a.g / s;
+  result.b = a.b / s;
   return result;
 }
 
 inline DDSRGB operator+(const DDSRGB& a, const DDSRGB& b)
 {
   DDSRGB result;
-  result.r = static_cast<DDSRGB::dds_int_t>(a.r + b.r);
-  result.g = static_cast<DDSRGB::dds_int_t>(a.g + b.g);
-  result.b = static_cast<DDSRGB::dds_int_t>(a.b + b.b);
+  result.r = a.r + b.r;
+  result.g = a.g + b.g;
+  result.b = a.b + b.b;
   return result;
 }
 

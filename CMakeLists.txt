@@ -40,6 +40,7 @@ if(WARNINGS)
       -Wconversion
       -Wctor-dtor-privacy
       -Wdisabled-optimization
+      -Wdouble-promotion
       -Weffc++
       -Wformat=2
       -Winit-self
@@ -60,6 +61,7 @@ if(WARNINGS)
       -Wstrict-null-sentinel
       -Wsuggest-override
       -Wunreachable-code
+      -Wuseless-cast
       -Wzero-as-null-pointer-constant
       -pedantic
       )

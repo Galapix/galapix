@@ -74,7 +74,7 @@ int main(int argc, char** argv)
       std::cout << "Processing image... Done" << std::endl;
 
       std::ostringstream out_filename;
-      out_filename << "/tmp/out" << static_cast<int>(i) << ".png";
+      out_filename << "/tmp/out" << i << ".png";
       PNG::save(out, out_filename.str());
 
       std::cout << "Wrote " << out_filename.str() << std::endl;

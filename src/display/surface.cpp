@@ -41,7 +41,7 @@ public:
 
     uv = Rectf(Vector2f(0, 0), Sizef(1.0f, 1.0f));
 
-    size = Size(srcrect.get_size());
+    size = srcrect.get_size();
   }
 
   ~SurfaceImpl()
