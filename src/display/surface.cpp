@@ -18,7 +18,6 @@
 
 #include "display/surface.hpp"
 
-#define GLM_FORCE_CTOR_INIT
 #include <glm/ext.hpp>
 
 #include "display/framebuffer.hpp"
