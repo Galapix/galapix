@@ -318,7 +318,7 @@ public:
   { return (left == r.left && top == r.top && right == r.right && bottom == r.bottom); }
 
   //: Rect != Rect operator.
-  bool operator!=(const Rect &r) const
+  bool operator!=(const Rectf &r) const
   { return (left != r.left || top != r.top || right != r.right || bottom != r.bottom); }
 
   //! Attributes:
