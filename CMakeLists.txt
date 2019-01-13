@@ -33,42 +33,35 @@ option(THREADSANITIZER "Thread Sanitizer" OFF)
 
 if(WARNINGS)
   list(APPEND -Wall -Wextra)
-  # -Winline -Wfloat-equal
-
-  # temporarily disabled:
-  #   -Wsign-conversion -Wfloat-equal -Wundef -Wswitch-default
-  #   -Wswitch-enum -Wsign-promo -Woverloaded-virtual -Wmissing-format-attribute
-  #   -Wpadded -Winline -Wunsafe-loop-optimizations -Wstrict-overflow=5
-  # fails on MinGW:
-  #   -ansi
   if(CMAKE_COMPILER_IS_GNUCXX)
     list(APPEND WARNINGS_CXX_FLAGS
-      -fdiagnostics-show-option
-      -pedantic
-      -Wno-long-long
       -Wcast-align
+      -Wcast-qual
+      -Wconversion
+      -Wctor-dtor-privacy
       -Wdisabled-optimization
+      -Weffc++
+      -Wformat=2
       -Winit-self
       -Winvalid-pch
+      -Wlogical-op
+      -Wmissing-format-attribute
       -Wmissing-include-dirs
       -Wmissing-noreturn
-      -Wpacked -Wredundant-decls
-      -Wformat=2
-      -Weffc++
-      -Wctor-dtor-privacy
-      -Wno-unused-parameter
-      -Wshadow
-      -Wnon-virtual-dtor
-      -Wcast-qual
-      -Wold-style-cast
-      -Wzero-as-null-pointer-constant
-      -Wconversion
-      -Wlogical-op
-      -Wstrict-null-sentinel
-      -Wsuggest-override
       -Wno-suggest-attribute=noreturn
       -Wno-unused-parameter
+      -Wnon-virtual-dtor
+      -Wold-style-cast
+      -Woverloaded-virtual
+      -Wpacked
+      -Wredundant-decls
+      -Wshadow
+      -Wsign-promo
+      -Wstrict-null-sentinel
+      -Wsuggest-override
       -Wunreachable-code
+      -Wzero-as-null-pointer-constant
+      -pedantic
       )
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8)
       list(APPEND WARNINGS_CXX_FLAGS -Wint-in-bool-context)
