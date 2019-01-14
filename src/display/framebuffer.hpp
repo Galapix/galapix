@@ -20,6 +20,7 @@
 #define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
+#include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "util/opengl.hpp"
 #include "util/software_surface.hpp"

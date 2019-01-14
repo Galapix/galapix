@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_TOOL_HPP
 #define HEADER_GALAPIX_GALAPIX_TOOL_HPP
 
+#include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 
 class Viewer;

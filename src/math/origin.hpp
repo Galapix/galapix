@@ -35,6 +35,7 @@
 
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
+#include "math/vector2f.hpp"
 
 namespace origin {
 
@@ -61,7 +62,7 @@ typedef origin::Origin Origin;
 //: Returns the anchor point for the origin within the dimensions of the size structure.
 //- !group=Display/Display 2D!
 //- !header=display.h!
-Vector2i  calc_origin(Origin origin, const Size &size);
+Vector2i calc_origin(Origin origin, const Size &size);
 Vector2f calc_origin(Origin origin, const Sizef &size);
 
 #endif
