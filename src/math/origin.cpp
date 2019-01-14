@@ -34,32 +34,32 @@ Vector2i calc_origin(Origin origin, const Size &size)
 {
   switch(origin)
   {
-    case origin::top_left:
+    case Origin::TOP_LEFT:
     default:
       return Vector2i(0, 0);
       break;
-    case origin::top_center:
+    case Origin::TOP_CENTER:
       return Vector2i(size.width / 2, 0);
       break;
-    case origin::top_right:
+    case Origin::TOP_RIGHT:
       return Vector2i(size.width, 0);
       break;
-    case origin::center_left:
+    case Origin::CENTER_LEFT:
       return Vector2i(0, size.height / 2);
       break;
-    case origin::center:
+    case Origin::CENTER:
       return Vector2i(size.width / 2, size.height / 2);
       break;
-    case origin::center_right:
+    case Origin::CENTER_RIGHT:
       return Vector2i(size.width, size.height / 2);
       break;
-    case origin::bottom_left:
+    case Origin::BOTTOM_LEFT:
       return Vector2i(0, size.height);
       break;
-    case origin::bottom_center:
+    case Origin::BOTTOM_CENTER:
       return Vector2i(size.width / 2, size.height);
       break;
-    case origin::bottom_right:
+    case Origin::BOTTOM_RIGHT:
       return Vector2i(size.width, size.height);
       break;
   }
@@ -69,32 +69,32 @@ Vector2f calc_origin(Origin origin, const Sizef &size)
 {
   switch(origin)
   {
-    case origin::top_left:
+    case Origin::TOP_LEFT:
     default:
       return Vector2f(0, 0);
       break;
-    case origin::top_center:
+    case Origin::TOP_CENTER:
       return Vector2f(size.width / 2, 0);
       break;
-    case origin::top_right:
+    case Origin::TOP_RIGHT:
       return Vector2f(size.width, 0);
       break;
-    case origin::center_left:
+    case Origin::CENTER_LEFT:
       return Vector2f(0, size.height / 2);
       break;
-    case origin::center:
+    case Origin::CENTER:
       return Vector2f(size.width / 2, size.height / 2);
       break;
-    case origin::center_right:
+    case Origin::CENTER_RIGHT:
       return Vector2f(size.width, size.height / 2);
       break;
-    case origin::bottom_left:
+    case Origin::BOTTOM_LEFT:
       return Vector2f(0, size.height);
       break;
-    case origin::bottom_center:
+    case Origin::BOTTOM_CENTER:
       return Vector2f(size.width / 2, size.height);
       break;
-    case origin::bottom_right:
+    case Origin::BOTTOM_RIGHT:
       return Vector2f(size.width, size.height);
       break;
   }

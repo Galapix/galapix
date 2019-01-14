@@ -27,9 +27,6 @@
 **    (if your name is missing here, please add it)
 */
 
-//! clanCore="Math"
-//! header=core.h
-
 #ifndef HEADER_GALAPIX_MATH_ORIGIN_HPP
 #define HEADER_GALAPIX_MATH_ORIGIN_HPP
 
@@ -37,31 +34,21 @@
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 
-namespace origin {
-
-//: Alignment origins.
-//- !group=Core/Math!
-//- !header=core.h!
-enum Origin
+enum class Origin
 {
-top_left,
-top_center,
-top_right,
-center_left,
-center,
-center_right,
-bottom_left,
-bottom_center,
-bottom_right
+  TOP_LEFT,
+  TOP_CENTER,
+  TOP_RIGHT,
+  CENTER_LEFT,
+  CENTER,
+  CENTER_RIGHT,
+  BOTTOM_LEFT,
+  BOTTOM_CENTER,
+  BOTTOM_RIGHT
 };
 
-}
-
-typedef origin::Origin Origin;
-
-//: Returns the anchor point for the origin within the dimensions of the size structure.
-//- !group=Display/Display 2D!
-//- !header=display.h!
+/** Returns the anchor point for the origin within the dimensions of
+    the size structure. */
 Vector2i calc_origin(Origin origin, const Size &size);
 Vector2f calc_origin(Origin origin, const Sizef &size);
 
