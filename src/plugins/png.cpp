@@ -214,8 +214,9 @@ PNG::load_from_file(const std::string& filename)
         dst = PixelData(PixelData::RGBA_FORMAT, Size(width, height));
 
         std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
-        for (int y = 0; y < height; ++y)
+        for (int y = 0; y < height; ++y) {
           row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
+        }
 
         png_read_image(png_ptr, row_pointers.data());
       }
@@ -226,8 +227,9 @@ PNG::load_from_file(const std::string& filename)
         dst = PixelData(PixelData::RGB_FORMAT, Size(width, height));
 
         std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
-        for (int y = 0; y < height; ++y)
+        for (int y = 0; y < height; ++y) {
           row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
+        }
 
         png_read_image(png_ptr, row_pointers.data());
       }
@@ -288,8 +290,9 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
       dst = PixelData(PixelData::RGBA_FORMAT, Size(width, height));
 
       std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
-      for (int y = 0; y < height; ++y)
+      for (int y = 0; y < height; ++y) {
         row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
+      }
 
       png_read_image(png_ptr, row_pointers.data());
     }
@@ -300,8 +303,9 @@ PNG::load_from_mem(const uint8_t* data, size_t len)
       dst = PixelData(PixelData::RGB_FORMAT, Size(width, height));
 
       std::vector<png_bytep> row_pointers(static_cast<size_t>(height));
-      for (int y = 0; y < height; ++y)
+      for (int y = 0; y < height; ++y) {
         row_pointers[static_cast<size_t>(y)] = dst.get_row_data(y);
+      }
 
       png_read_image(png_ptr, row_pointers.data());
     }
@@ -351,8 +355,7 @@ PNG::save(SoftwareSurface const& surface, const std::string& filename)
 
     png_write_info(png_ptr, info_ptr);
 
-    for (int y = 0; y < src.get_height(); ++y)
-    {
+    for (int y = 0; y < src.get_height(); ++y) {
       png_write_row(png_ptr, const_cast<png_bytep>(src.get_row_data(y)));
     }
 

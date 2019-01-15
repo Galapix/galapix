@@ -337,7 +337,7 @@ SDLViewer::process_event(const SDL_Event& event)
             for(int i = 0; ; ++i)
             {
               std::string outfile = (boost::format("/tmp/galapix-screenshot-%04d.png") % i).str();
-              if (!Filesystem::exist(outfile.c_str()))
+              if (!Filesystem::exist(outfile))
               {
                 PNG::save(surface, outfile);
                 std::cout << "Screenshot written to " << outfile << std::endl;
@@ -601,7 +601,7 @@ SDLViewer::run()
 
   while(!m_quit)
   {
-    if (m_viewer.is_active() || (true)) // FIXME: hack for joystick support
+    if (m_viewer.is_active() || (true)) // FIXME: hack for joystick support // NOLINT
     {
       SDL_Event event;
       while (SDL_PollEvent(&event))

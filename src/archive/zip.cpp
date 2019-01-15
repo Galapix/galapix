@@ -154,10 +154,10 @@ void unzip_parse_output(std::vector<char>::const_iterator start, std::vector<cha
 } // namespace
 
 std::vector<std::string>
-Zip::get_filenames(const std::string& archive)
+Zip::get_filenames(const std::string& zip_filename)
 {
   Exec unzip("unzip");
-  unzip.arg("-lqq").arg(archive);
+  unzip.arg("-lqq").arg(zip_filename);
   int zip_return_code = unzip.exec();
   if (zip_return_code == 0)
   {
@@ -176,7 +176,7 @@ Zip::get_filenames(const std::string& archive)
 }
 
 Blob
-Zip::get_file(const std::string& archive, const std::string& filename_in)
+Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
 {
   // unzip uses wildcard expressions, not raw filenames, thus we have
   // to escape a few special characters
@@ -198,7 +198,7 @@ Zip::get_file(const std::string& archive, const std::string& filename_in)
   }
 
   Exec unzip("unzip");
-  unzip.arg("-pqq").arg(archive).arg(filename);
+  unzip.arg("-pqq").arg(zip_filename).arg(filename);
   int zip_return_code = unzip.exec();
   if (zip_return_code == 0)
   {
@@ -218,10 +218,10 @@ Zip::get_file(const std::string& archive, const std::string& filename_in)
 }
 
 void
-Zip::extract(const std::string& archive, const std::string& target_directory)
+Zip::extract(const std::string& zip_filename, const std::string& target_directory)
 {
   Exec unzip("unzip");
-  unzip.arg("-qq").arg(archive).arg("-d").arg(target_directory).arg(archive);
+  unzip.arg("-qq").arg(zip_filename).arg("-d").arg(target_directory);
   int zip_return_code = unzip.exec();
   if (zip_return_code != 0)
   {

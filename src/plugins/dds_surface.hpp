@@ -244,7 +244,7 @@ private:
   /** Returns the image data in RGBA format */
   void read_data(std::istream& in);
 
-  void decode_dxt1(unsigned char buf[8], unsigned char out[4*4*3]);
+  void decode_dxt1(const unsigned char buf[8], unsigned char out[4*4*3]);
   void read_data_dxt1(std::istream& in);
   void read_data_dtx3(std::istream& in);
 };

@@ -73,16 +73,19 @@ Lisp::~Lisp()
 void
 Lisp::print(std::ostream& out, int indent) const
 {
-  for(int i = 0; i < indent; ++i)
+  for(int i = 0; i < indent; ++i) {
     out << ' ';
+  }
 
   switch(type) {
     case TYPE_LIST:
       out << "(\n";
-      for(size_t i = 0; i < v.list.size; ++i)
+      for(size_t i = 0; i < v.list.size; ++i) {
         v.list.entries[i]->print(out, indent+2);
-      for(int i = 0; i < indent; ++i)
+      }
+      for(int i = 0; i < indent; ++i) {
         out << ' ';
+      }
       out << ")";
       break;
     case TYPE_STRING:

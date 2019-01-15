@@ -41,7 +41,7 @@ class ResourceLocator
 public:
   /** Takes a filename in the form of a string and transforms it into
       a ResourceLocator */
-  static ResourceLocator from_string(const std::string& str);
+  static ResourceLocator from_string(const std::string& locator);
 
 public:
   ResourceLocator() : m_url(), m_handler() {}

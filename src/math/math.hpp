@@ -29,9 +29,9 @@
     @brief A collection of mathematical helper functions */
 namespace Math {
 
-const float pi   = 3.14159265358979323846f;/* pi */
-const float pi_2 = 1.57079632679489661923f;/* pi/2 */
-const float tau  = 3.14159265358979323846f * 2.0f; /* 2*pi */
+constexpr float pi   = 3.14159265358979323846f;/* pi */
+constexpr float pi_2 = 1.57079632679489661923f;/* pi/2 */
+constexpr float tau  = 3.14159265358979323846f * 2.0f; /* 2*pi */
 
 // Win32 defines these are defines already, so we have to undef them
 #ifdef min
@@ -44,19 +44,21 @@ const float tau  = 3.14159265358979323846f * 2.0f; /* 2*pi */
 template<class T>
 T min(const T& a, const T& b)
 {
-  if (a < b)
+  if (a < b) {
     return a;
-  else
+  } else {
     return b;
+  }
 }
 
 template<class T>
 T max(const T& a, const T& b)
 {
-  if (a > b)
+  if (a > b) {
     return a;
-  else
+  } else {
     return b;
+  }
 }
 
 template<class T>

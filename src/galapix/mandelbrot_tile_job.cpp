@@ -40,8 +40,9 @@ MandelbrotTileJob::run()
 
   for(int py = 0; py < surface.get_height(); ++py)
   {
-    if (get_handle().is_aborted())
+    if (get_handle().is_aborted()) {
       return;
+    }
 
     for(int px = 0; px < surface.get_width(); ++px)
     {

@@ -521,14 +521,16 @@ Viewer::toggle_background_color(bool backwards)
   if (backwards)
   {
     m_background_color -= 1;
-    if (m_background_color < 0)
+    if (m_background_color < 0) {
       m_background_color = static_cast<int>(m_background_colors.size()) - 1;
+    }
   }
   else
   {
     m_background_color += 1;
-    if (m_background_color >= static_cast<int>(m_background_colors.size()))
+    if (m_background_color >= static_cast<int>(m_background_colors.size())) {
       m_background_color = 0;
+    }
   }
 }
 

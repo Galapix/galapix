@@ -77,7 +77,7 @@ public:
 
   // ---------------------------------------------
 
-  void draw(const Rectf& cliprect, float scale);
+  void draw(const Rectf& cliprect, float zoom);
   void update(float delta);
 
   // ---------------------------------------------

@@ -43,7 +43,7 @@ public:
   virtual Vector2f get_pos() const;
 
   virtual Vector2f get_top_left_pos() const;
-  virtual void set_top_left_pos(const Vector2f&);
+  virtual void set_top_left_pos(const Vector2f& p) ;
 
   virtual void  set_scale(float f);
   virtual float get_scale() const;

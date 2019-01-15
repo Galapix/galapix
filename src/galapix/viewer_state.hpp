@@ -42,8 +42,8 @@ public:
 
   void zoom_to(const Size& display, const Rectf& rect);
 
-  Vector2f screen2world(const Vector2i&) const;
-  Rectf    screen2world(const Rect&) const;
+  Vector2f screen2world(const Vector2i& pos) const;
+  Rectf    screen2world(const Rect& rect) const;
 
   Vector2f get_offset() const { return offset; }
   float    get_scale()  const { return scale; }

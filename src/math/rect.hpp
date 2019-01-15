@@ -177,14 +177,12 @@ public:
   }
 
   //: Calculates and returns the union of two rectangles.
-  Rect calc_union(const Rect &rect)
+  Rect calc_union(const Rect& other)
   {
-    Rect result;
-    if (left   > rect.left)   result.left   = left;   else result.left   = rect.left;
-    if (right  < rect.right)  result.right  = right;  else result.right  = rect.right;
-    if (top    > rect.top)    result.top    = top;    else result.top    = rect.top;
-    if (bottom < rect.bottom) result.bottom = bottom; else result.bottom = rect.bottom;
-    return result;
+    return Rect(std::max(left, other.left),
+                std::max(top, other.top),
+                std::min(right, other.right),
+                std::min(bottom, other.bottom));
   }
 
   bool is_normal() const
@@ -363,14 +361,12 @@ public:
   }
 
   //: Calculates and returns the union of two rectangles.
-  Rectf calc_union(const Rectf &rect)
+  Rectf calc_union(const Rectf& other)
   {
-    Rectf result;
-    if (left   > rect.left)   result.left   = left;   else result.left   = rect.left;
-    if (right  < rect.right)  result.right  = right;  else result.right  = rect.right;
-    if (top    > rect.top)    result.top    = top;    else result.top    = rect.top;
-    if (bottom < rect.bottom) result.bottom = bottom; else result.bottom = rect.bottom;
-    return result;
+    return Rectf(std::max(left, other.left),
+                 std::max(top, other.top),
+                 std::min(right, other.right),
+                 std::min(bottom, other.bottom));
   }
 
   bool is_normal() const

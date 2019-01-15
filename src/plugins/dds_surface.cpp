@@ -45,8 +45,9 @@ DDSSurface::DDSSurface(std::istream& in) :
   dwDepth = read_uint32(in);
   dwMipMapCount = read_uint32(in);
 
-  for(int i = 0; i < 11; ++i)
+  for(int i = 0; i < 11; ++i) {
     dwReserved1[i] = read_uint32(in);
+  }
 
   pixel_format = PixelFormat(in);
 
@@ -129,7 +130,7 @@ DDSSurface::read_data(std::istream& in)
 }
 
 void
-DDSSurface::decode_dxt1(unsigned char buf[8], unsigned char out[4*4*3])
+DDSSurface::decode_dxt1(const unsigned char buf[8], unsigned char out[4*4*3])
 {
   unsigned short color0 = static_cast<unsigned short>(buf[0] | (buf[1] << 8));
   unsigned short color1 = static_cast<unsigned short>(buf[2] | (buf[3] << 8));
@@ -154,6 +155,7 @@ DDSSurface::decode_dxt1(unsigned char buf[8], unsigned char out[4*4*3])
   }
 
   for(int y1 = 0; y1 < 4; ++y1)
+  {
     for(int x1 = 0; x1 < 4; ++x1)
     {
       unsigned int idx = ((bits >> (2*(4*(y1)+(x1)))) & 0x3);
@@ -162,6 +164,7 @@ DDSSurface::decode_dxt1(unsigned char buf[8], unsigned char out[4*4*3])
       out[3*4*y1 + 3*x1 + 1] = static_cast<uint8_t>(rgb[idx].g);
       out[3*4*y1 + 3*x1 + 0] = static_cast<uint8_t>(rgb[idx].b);
     }
+  }
 }
 
 void
@@ -172,12 +175,14 @@ DDSSurface::read_data_dxt1(std::istream& in)
 
   data.resize(width * height * 4);
   for(unsigned int y = 0; y < height; y += 4)
+  {
     for(unsigned int x = 0; x < width; x += 4)
     {
       in.read(reinterpret_cast<char*>(buf), 8);
       decode_dxt1(buf, out);
 
       for(unsigned int y1 = 0; y1 < 4; y1 += 1)
+      {
         for(unsigned int x1 = 0; x1 < 4; x1 += 1)
         {
           data[4*(y+y1)*width + 4*(x+x1) + 0] = out[3*4*y1 + 3*x1 + 0];
@@ -185,7 +190,9 @@ DDSSurface::read_data_dxt1(std::istream& in)
           data[4*(y+y1)*width + 4*(x+x1) + 2] = out[3*4*y1 + 3*x1 + 2];
           data[4*(y+y1)*width + 4*(x+x1) + 3] = 255;
         }
+      }
     }
+  }
 }
 
 void
@@ -196,6 +203,7 @@ DDSSurface::read_data_dtx3(std::istream& in)
 
   data.resize(width * height * 4);
   for(unsigned int y = 0; y < height; y += 4)
+  {
     for(unsigned int x = 0; x < width; x += 4)
     {
       in.read(reinterpret_cast<char*>(buf), 8);
@@ -205,6 +213,7 @@ DDSSurface::read_data_dtx3(std::istream& in)
       in.read(reinterpret_cast<char*>(buf), 8);
 
       for(unsigned int y1 = 0; y1 < 4; y1 += 1)
+      {
         for(unsigned int x1 = 0; x1 < 4; x1 += 1)
         {
           data[4*(y+y1)*width + 4*(x+x1) + 0] = out[3*4*y1 + 3*x1 + 0];
@@ -212,7 +221,9 @@ DDSSurface::read_data_dtx3(std::istream& in)
           data[4*(y+y1)*width + 4*(x+x1) + 2] = out[3*4*y1 + 3*x1 + 2];
           data[4*(y+y1)*width + 4*(x+x1) + 3] = 255;
         }
+      }
     }
+  }
 }
 
 /* EOF */

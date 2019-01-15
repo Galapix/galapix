@@ -22,13 +22,16 @@
 #include "util/raise_exception.hpp"
 
 namespace {
+
 bool has_prefix(const std::string& lhs, const std::string& rhs)
 {
-  if (lhs.length() < rhs.length())
+  if (lhs.length() < rhs.length()) {
     return false;
-  else
+  } else {
     return lhs.compare(0, rhs.length(), rhs) == 0;
- }
+  }
+}
+
 } // namespace
 
 std::vector<std::string>

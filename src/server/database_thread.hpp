@@ -81,13 +81,13 @@ public:
    *  Request the tile from the database, if not in the database the
    *  tile will be generated from the source image
    */
-  JobHandle request_tile(const OldFileEntry&, int tilescale, const Vector2i& pos,
+  JobHandle request_tile(const OldFileEntry& file_entry, int tilescale, const Vector2i& pos,
                          const std::function<void (Tile)>& callback);
 
-  JobHandle request_tiles(const OldFileEntry&, int min_scale, int max_scale,
+  JobHandle request_tiles(const OldFileEntry& file_entry, int min_scale, int max_scale,
                           const std::function<void (Tile)>& callback);
 
-  void request_job_removal(std::shared_ptr<Job> const& job, bool);
+  void request_job_removal(std::shared_ptr<Job> const& job, bool unused);
 
   /** Request the OldFileEntry for \a filename */
   JobHandle request_file(const URL& url,
@@ -114,13 +114,13 @@ private:
   void remove_job(std::shared_ptr<Job> const& job);
 
   /** Generates the requested tile from its original image */
-  void generate_tiles(const JobHandle& job_handle, const OldFileEntry&,
+  void generate_tiles(const JobHandle& job_handle, const OldFileEntry& file_entry,
                       int min_scale, int max_scale,
                       const std::function<void (Tile)>& callback);
 
   /** Generates the requested tile from its original image */
   void generate_tile(const JobHandle& job_handle,
-                     const OldFileEntry&, int tilescale, const Vector2i& pos,
+                     const OldFileEntry& file_entry, int tilescale, const Vector2i& pos,
                      const std::function<void (Tile)>& callback);
 
   void generate_file_entry(const JobHandle& job_handle, const URL& url,

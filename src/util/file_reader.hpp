@@ -43,18 +43,18 @@ public:
       <groundpiece><pos>...</groundpiece> it would be 'groundpiece' */
   std::string get_name() const;
 
-  bool read_int   (const char* name, int&)           const;
-  bool read_float (const char* name, float&)         const;
-  bool read_bool  (const char* name, bool&)          const;
-  bool read_string(const char* name, std::string&)   const;
-  bool read_url   (const char* name, URL&)           const;
-  bool read_vector2i(const char* name, Vector2i&)    const;
-  bool read_vector2f(const char* name, Vector2f&)    const;
-  bool read_rect(const char* name, Rect&)    const;
-  bool read_size  (const char* name, Size&)          const;
-  bool read_rgba (const char* name, RGBA&)         const;
-  bool read_section(const char* name, FileReader&)   const;
-  FileReader read_section(const char* name)   const;
+  bool read_int (const char* name, int& value) const;
+  bool read_float (const char* name, float& value) const;
+  bool read_bool (const char* name, bool& value) const;
+  bool read_string(const char* name, std::string& value) const;
+  bool read_url (const char* name, URL& value) const;
+  bool read_vector2i(const char* name, Vector2i& value) const;
+  bool read_vector2f(const char* name, Vector2f& value) const;
+  bool read_rect(const char* name, Rect& value) const;
+  bool read_size (const char* name, Size& value) const;
+  bool read_rgba (const char* name, RGBA& value) const;
+  bool read_section(const char* name, FileReader& reader) const;
+  FileReader read_section(const char* name) const;
 
   template<class E, class T>
   bool read_enum  (const char* name, E& value, T enum2string) const

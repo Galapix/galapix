@@ -34,8 +34,8 @@ public:
   SQLiteStatement& bind_null(int n);
   SQLiteStatement& bind_int(int n, int i);
   SQLiteStatement& bind_int64(int n, int64_t i);
-  SQLiteStatement& bind_text(int n, const std::string&);
-  SQLiteStatement& bind_blob(int n, Blob const&);
+  SQLiteStatement& bind_text(int n, const std::string& text);
+  SQLiteStatement& bind_blob(int n, Blob const& blob);
   SQLiteStatement& bind_blob(int n, const uint8_t* data, size_t len);
 
   void execute();

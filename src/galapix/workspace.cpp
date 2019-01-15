@@ -227,10 +227,10 @@ Workspace::print_images(const Rectf& rect)
 }
 
 void
-Workspace::select_images(const ImageCollection& lst)
+Workspace::select_images(const ImageCollection& images)
 {
   m_selection->clear();
-  m_selection->add_images(lst);
+  m_selection->add_images(images);
 }
 
 bool
@@ -238,8 +238,9 @@ Workspace::selection_clicked(const Vector2f& pos) const
 {
   for(auto& i: *m_selection)
   {
-    if (i->get_image_rect().contains(pos))
+    if (i->get_image_rect().contains(pos)) {
       return true;
+    }
   }
   return false;
 }
@@ -280,8 +281,9 @@ Workspace::delete_selection()
                                 [this](const WorkspaceItemPtr& image)->bool{
                                   for(auto& i: *m_selection)
                                   {
-                                    if (i == image)
+                                    if (i == image) {
                                       return true;
+                                    }
                                   }
                                   return false;
                                 }),

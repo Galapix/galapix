@@ -25,7 +25,7 @@ public:
   SDLSystem();
   ~SDLSystem() override;
 
-  void launch_viewer(Workspace& workspace, Options& options) override;
+  void launch_viewer(Workspace& workspace, Options& opts) override;
   bool requires_command_line_args() override;
   void trigger_redraw() override;
   void set_trackball_mode(bool active) override;

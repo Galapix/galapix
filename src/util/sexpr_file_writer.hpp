@@ -32,12 +32,12 @@ public:
   void begin_section(const char* name) override;
   void end_section() override;
 
-  void write_int(const char* name, int) override;
-  void write_float(const char* name, float) override;
-  virtual void write_rgba(const char* name, const RGBA&);
-  void write_bool(const char* name, bool) override;
-  void write_string(const char* name, const std::string&) override;
-  void write_size(const char* name, const Size&) override;
+  void write_int(const char* name, int value) override;
+  void write_float(const char* name, float value) override;
+  virtual void write_rgba(const char* name, const RGBA& rgba);
+  void write_bool(const char* name, bool value) override;
+  void write_string(const char* name, const std::string& value) override;
+  void write_size(const char* name, const Size& size) override;
 
   template<class E, class F>
   void write_enum(const char* name, E value, F enum2string)

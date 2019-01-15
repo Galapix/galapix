@@ -28,7 +28,7 @@ class System;
 class ViewerCommand
 {
 public:
-  ViewerCommand(System& system, const Options& options);
+  ViewerCommand(System& system, const Options& opts);
   ~ViewerCommand();
 
   void run(const std::vector<URL>& urls);

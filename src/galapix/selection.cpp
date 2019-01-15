@@ -31,8 +31,9 @@ Selection::add_image(const WorkspaceItemPtr& image)
 void
 Selection::add_images(const ImageCollection& images)
 {
-  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
+  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i) {
     m_images.add(*i);
+  }
 }
 
 void

@@ -155,24 +155,24 @@ ArchiveManager::get_filenames(const std::string& zip_filename,
 }
 
 Blob
-ArchiveManager::get_file(const std::string& archive, const std::string& filename) const
+ArchiveManager::get_file(const std::string& archive_filename, const std::string& filename) const
 {
-  const auto& loader = get_loader(archive);
-  return loader.get_file(archive, filename);
+  const auto& loader = get_loader(archive_filename);
+  return loader.get_file(archive_filename, filename);
 }
 
 std::shared_ptr<Extraction>
-ArchiveManager::get_extraction(const std::string& archive) const
+ArchiveManager::get_extraction(const std::string& archive_filename) const
 {
-  const auto& loader = get_loader(archive);
-  if (loader.is_seekable(archive))
+  const auto& loader = get_loader(archive_filename);
+  if (loader.is_seekable(archive_filename))
   {
-    return std::make_shared<IncrementalExtraction>(loader, archive);
+    return std::make_shared<IncrementalExtraction>(loader, archive_filename);
   }
   else
   {
     std::string tmpdir = create_extraction_directory();
-    loader.extract(archive, tmpdir);
+    loader.extract(archive_filename, tmpdir);
     return std::make_shared<DirectoryExtraction>(tmpdir, loader.str());
   }
 }

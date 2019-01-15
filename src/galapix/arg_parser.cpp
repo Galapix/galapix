@@ -135,28 +135,31 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
                strcmp(argv[i], "-p") == 0)
       {
         i += 1;
-        if (i < argc)
+        if (i < argc) {
           opts.patterns.push_back(argv[i]);
-        else
+        } else {
           raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+        }
       }
       else if (strcmp(argv[i], "--anti-aliasing") == 0 ||
                strcmp(argv[i], "-a") == 0)
       {
         i += 1;
-        if (i < argc)
+        if (i < argc) {
           opts.anti_aliasing = atoi(argv[i]);
-        else
+        } else {
           raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+        }
       }
       else if (strcmp(argv[i], "--geometry") == 0 ||
                strcmp(argv[i], "-g") == 0)
       {
         i += 1;
-        if (i < argc)
+        if (i < argc) {
           sscanf(argv[i], "%dx%d", &opts.geometry.width, &opts.geometry.height);
-        else
+        } else {
           raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
+        }
       }
       else if (strcmp(argv[i], "--fullscreen") == 0 ||
                strcmp(argv[i], "-f") == 0)

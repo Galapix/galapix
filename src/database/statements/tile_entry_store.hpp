@@ -31,11 +31,12 @@ public:
   {
     TileEntry tile = tile_;
 
-    if (0)
+    if ((false)) {
       std::cout << "store_tile("
                 << "image_id: " << tile.get_image_id()
                 << ", scale: " << tile.get_scale()
                 << ", pos: " << tile.get_pos() << ")" << std::endl;
+    }
 
     if (!tile.get_blob())
     {

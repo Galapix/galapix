@@ -71,38 +71,45 @@ public:
 
   const char* get_symbol() const
   {
-    if(type != TYPE_SYMBOL)
+    if(type != TYPE_SYMBOL) {
       throw std::runtime_error("Lisp is not a symbol");
-    return v.string;
+    } else {
+      return v.string;
+    }
   }
 
   int get_int() const
   {
-    if(type != TYPE_INT)
+    if(type != TYPE_INT) {
       throw std::runtime_error("Lisp is not an int");
-    return v.int_;
+    } else {
+      return v.int_;
+    }
   }
 
   float get_float() const
   {
     if(type != TYPE_FLOAT)
-      {
-        if(type != TYPE_INT)
-          throw std::runtime_error("Lisp is not a float");
-        else
-          return static_cast<float>(v.int_);
+    {
+      if(type != TYPE_INT) {
+        throw std::runtime_error("Lisp is not a float");
+      } else {
+        return static_cast<float>(v.int_);
       }
+    }
     else
-      {
-        return v.float_;
-      }
+    {
+      return v.float_;
+    }
   }
 
   bool get_bool() const
   {
-    if(type != TYPE_BOOL)
+    if(type != TYPE_BOOL) {
       throw std::runtime_error("Lisp is not a bool");
-    return v.bool_;
+    } else {
+      return v.bool_;
+    }
   }
 
   void print(std::ostream& out = std::cout, int indent = 0) const;

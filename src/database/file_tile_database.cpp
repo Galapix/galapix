@@ -132,15 +132,8 @@ FileTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, i
     }
   }
 
-  if (min_scale_out == std::numeric_limits<int>::max() ||
-      max_scale_out == std::numeric_limits<int>::min())
-  {
-    return false;
-  }
-  else
-  {
-    return true;
-  }
+  return !(min_scale_out == std::numeric_limits<int>::max() ||
+           max_scale_out == std::numeric_limits<int>::min());
 }
 
 void

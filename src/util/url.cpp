@@ -99,10 +99,7 @@ URL::get_stdio_name() const
 bool
 URL::has_stdio_name() const
 {
-  if (m_protocol == "file" && m_plugin.empty())
-    return true;
-  else
-    return false;
+  return m_protocol == "file" && m_plugin.empty();
 }
 
 std::string
@@ -195,9 +192,11 @@ URL::is_url(const std::string& url)
   }
   else
   {
-    for(std::string::size_type i = 0; i < k; ++i)
-      if (!(url[i] >= 'a' && url[i] <= 'z'))
+    for(std::string::size_type i = 0; i < k; ++i) {
+      if (!(url[i] >= 'a' && url[i] <= 'z')) {
         return false;
+      }
+    }
 
     return true;
   }

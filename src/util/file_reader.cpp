@@ -34,46 +34,51 @@ FileReader::FileReader() :
 std::string
 FileReader::get_name() const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->get_name();
-  else
+  } else {
     return "";
+  }
 }
 
 bool
 FileReader::read_int(const char* name, int& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_int(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
 FileReader::read_float (const char* name, float& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_float(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
 FileReader::read_bool  (const char* name, bool& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_bool(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
 FileReader::read_string(const char* name, std::string& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_string(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
@@ -93,79 +98,89 @@ FileReader::read_url(const char* name, URL& value) const
     }
   }
   else
+  {
     return false;
+  }
 }
 
 bool
 FileReader::read_rgba(const char* name, RGBA& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_rgba(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
 FileReader::read_size  (const char* name, Size& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_size(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
 FileReader::read_vector2i(const char* name, Vector2i& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_vector2i(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
 FileReader::read_vector2f(const char* name, Vector2f& value) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_vector2f(name, value);
-  else
+  } else {
     return false;
+  }
 }
 
 bool
 FileReader::read_rect(const char* name, Rect& value)    const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_rect(name, value);
-  else
+  } else { 
     return false;
+  }
 }
 
 bool
 FileReader::read_section(const char* name, FileReader& reader) const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->read_section(name, reader);
-  else
+  } else {
     return false;
+  }
 }
 
 std::vector<std::string>
 FileReader::get_section_names() const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->get_section_names();
-  else
+  } else {
     return std::vector<std::string>();
+  }
 }
 
 std::vector<FileReader>
 FileReader::get_sections() const
 {
-  if (impl.get())
+  if (impl.get()) {
     return impl->get_sections();
-  else
+  } else {
     return std::vector<FileReader>();
+  }
 }
 
 int
@@ -186,12 +201,9 @@ FileReader
 FileReader::parse(const std::string& filename)
 {
   std::shared_ptr<lisp::Lisp> sexpr = lisp::Parser::parse(filename);
-  if (sexpr)
-  {
+  if (sexpr) {
     return SExprFileReader(sexpr->get_list_elem(0));
-  }
-  else
-  {
+  } else {
     return {};
   }
 }

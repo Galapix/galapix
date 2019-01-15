@@ -39,37 +39,37 @@ void check_gl_error(const char* msg = nullptr)
 
     case GL_INVALID_ENUM :
       std::cerr << "OpenGL error: GL_INVALID_ENUM" << std::endl;
-      if (msg) std::cerr << msg << std::endl;
+      if (msg) { std::cerr << msg << std::endl; }
       abort();
       break;
 
     case GL_INVALID_VALUE :
       std::cerr << "OpenGL error: GL_INVALID_VALUE" << std::endl;
-      if (msg) std::cerr << msg << std::endl;
+      if (msg) { std::cerr << msg << std::endl; }
       abort();
       break;
 
     case GL_INVALID_OPERATION :
       std::cerr << "OpenGL error: GL_INVALID_OPERATION" << std::endl;
-      if (msg) std::cerr << msg << std::endl;
+      if (msg) { std::cerr << msg << std::endl; }
       abort();
       break;
 
     case GL_INVALID_FRAMEBUFFER_OPERATION :
       std::cerr << "OpenGL error: GL_INVALID_FRAMEBUFFER_OPERATION" << std::endl;
-      if (msg) std::cerr << msg << std::endl;
+      if (msg) { std::cerr << msg << std::endl; }
       abort();
       break;
 
     case GL_OUT_OF_MEMORY :
       std::cerr << "OpenGL error: GL_OUT_OF_MEMORY" << std::endl;
-      if (msg) std::cerr << msg << std::endl;
+      if (msg) { std::cerr << msg << std::endl; }
       abort();
       break;
 
     default:
       std::cerr << "unknown OpenGL error" << std::endl;
-      if (msg) std::cerr << msg << std::endl;
+      if (msg) { std::cerr << msg << std::endl; }
       abort();
       break;
   };

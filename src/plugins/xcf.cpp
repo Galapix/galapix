@@ -101,10 +101,11 @@ XCF::get_layers(const URL& url)
 {
   Exec xcfinfo("xcfinfo");
 
-  if (url.has_stdio_name())
+  if (url.has_stdio_name()) {
     xcfinfo.arg(url.get_stdio_name());
-  else
+  } else {
     xcfinfo.arg("-").set_stdin(url.get_blob());
+  }
 
   if (xcfinfo.exec() == 0)
   {

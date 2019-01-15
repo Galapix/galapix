@@ -32,7 +32,7 @@ public:
 
 public:
   SHA1();
-  SHA1(const uint8_t data[20]);
+  SHA1(const uint8_t text[20]);
   SHA1(Blob const& blob);
 
   std::string str() const;

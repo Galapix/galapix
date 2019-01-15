@@ -49,8 +49,9 @@ MD5::from_string(const std::string& str)
 
     // Convert to string representation
     std::ostringstream out;
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 16; i++) {
       out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
+    }
 
     return out.str();
   }
@@ -89,8 +90,9 @@ MD5::from_file(const std::string& filename)
 
       // Convert to string representation
       std::ostringstream out;
-      for (int i = 0; i < 16; i++)
+      for (int i = 0; i < 16; i++) {
         out << std::setfill('0') << std::setw(2) << std::hex << int(hash[i]);
+      }
 
       return out.str();
     }

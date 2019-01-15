@@ -32,7 +32,7 @@ TileGenerator::generate_old(const URL& url,
                             int min_scale, int max_scale,
                             const std::function<void(Tile)>& callback)
 {
-  if (true /* verbose */)
+  if ((true)) // verbose
   {
     std::ostringstream out;
     out << "TileGenerator::generate(): have ";
@@ -139,6 +139,7 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
     }
 
     for(int y = 0; 256*y < surface.get_height(); ++y)
+    {
       for(int x = 0; 256*x < surface.get_width(); ++x)
       {
         SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
@@ -146,6 +147,7 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
 
         callback(Tile(scale, Vector2i(x, y), croped_surface));
       }
+    }
 
     scale += 1;
   }
@@ -161,6 +163,7 @@ TileGenerator::cut_into_tiles(SoftwareSurface const& surface,
   int tile_h = (surface.get_height() + (TILE_HEIGHT - 1)) / TILE_HEIGHT;
 
   for(int y = 0; y < tile_h; ++y)
+  {
     for(int x = 0; x < tile_w; ++x)
     {
       SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
@@ -168,6 +171,7 @@ TileGenerator::cut_into_tiles(SoftwareSurface const& surface,
 
       callback(x, y, croped_surface);
     }
+  }
 }
 
 void

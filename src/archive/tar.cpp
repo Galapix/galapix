@@ -65,13 +65,13 @@ Tar::get_file(const std::string& tar_filename, const std::string& filename)
 }
 
 void
-Tar::extract(const std::string& archive, const std::string& target_directory)
+Tar::extract(const std::string& tar_filename, const std::string& target_directory)
 {
   Exec tar("tar");
   tar
     .arg("--extract")
     .arg("--directory").arg(target_directory)
-    .arg("--file").arg(archive);
+    .arg("--file").arg(tar_filename);
   if (tar.exec() != 0)
   {
     raise_runtime_error(tar.str() + "\n" + std::string(tar.get_stderr().begin(), tar.get_stderr().end()));

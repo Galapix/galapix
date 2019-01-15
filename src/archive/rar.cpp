@@ -24,10 +24,10 @@
 #include "util/raise_exception.hpp"
 
 std::vector<std::string>
-Rar::get_filenames(const std::string& archive)
+Rar::get_filenames(const std::string& rar_filename)
 {
   Exec rar("rar");
-  rar.arg("vb").arg("-p-").arg(archive);
+  rar.arg("vb").arg("-p-").arg(rar_filename);
   if (rar.exec() == 0)
   {
     std::vector<std::string> lst;
@@ -51,10 +51,10 @@ Rar::get_filenames(const std::string& archive)
 }
 
 Blob
-Rar::get_file(const std::string& archive, const std::string& filename)
+Rar::get_file(const std::string& rar_filename, const std::string& filename)
 {
   Exec rar("rar");
-  rar.arg("p").arg("-inul").arg("-p-").arg(archive).arg(filename);
+  rar.arg("p").arg("-inul").arg("-p-").arg(rar_filename).arg(filename);
   if (rar.exec() == 0)
   {
     // FIXME: Unneeded copy of data
@@ -68,10 +68,10 @@ Rar::get_file(const std::string& archive, const std::string& filename)
 }
 
 void
-Rar::extract(const std::string& archive, const std::string& target_directory)
+Rar::extract(const std::string& rar_filename, const std::string& target_directory)
 {
   Exec rar("rar");
-  rar.arg("x").arg("-inul").arg("-w" + target_directory).arg(archive);
+  rar.arg("x").arg("-inul").arg("-w" + target_directory).arg(rar_filename);
   if (rar.exec() != 0)
   {
     raise_runtime_error(rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));

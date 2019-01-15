@@ -120,11 +120,11 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
     {
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
-      for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
+      for (JDIMENSION y = 0; y < m_cinfo.output_height; ++y) {
         scanlines[y] = dst.get_row_data(static_cast<int>(y));
+      }
 
-      while (m_cinfo.output_scanline < m_cinfo.output_height)
-      {
+      while (m_cinfo.output_scanline < m_cinfo.output_height) {
         jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
@@ -134,11 +134,11 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
     {
       std::vector<JSAMPLE*> scanlines(m_cinfo.output_height);
 
-      for(JDIMENSION y = 0; y < m_cinfo.output_height; ++y)
+      for (JDIMENSION y = 0; y < m_cinfo.output_height; ++y) {
         scanlines[y] = dst.get_row_data(static_cast<int>(y));
+      }
 
-      while (m_cinfo.output_scanline < m_cinfo.output_height)
-      {
+      while (m_cinfo.output_scanline < m_cinfo.output_height) {
         jpeg_read_scanlines(&m_cinfo, &scanlines[m_cinfo.output_scanline],
                             m_cinfo.output_height - m_cinfo.output_scanline);
       }
@@ -146,10 +146,10 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
       // Expand the greyscale data to RGB
       // FIXME: Could be made faster if SoftwareSurface would support
       // other color formats
-      for(int y = 0; y < dst.get_height(); ++y)
+      for (int y = 0; y < dst.get_height(); ++y)
       {
         uint8_t* rowptr = dst.get_row_data(y);
-        for(int x = dst.get_width()-1; x >= 0; --x)
+        for (int x = dst.get_width()-1; x >= 0; --x)
         {
           rowptr[3*x+0] = rowptr[x];
           rowptr[3*x+1] = rowptr[x];

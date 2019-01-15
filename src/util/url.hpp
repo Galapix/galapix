@@ -33,16 +33,16 @@ class URL
 public:
   static bool is_url(const std::string& url);
 
-public:
-  URL();
-  ~URL();
-
   /** Create a URL from a normal filename */
   static URL from_filename(const std::string& filename);
 
   /** Create a URL object from a URL string as returned from
       get_url() */
-  static URL from_string(const std::string& str);
+  static URL from_string(const std::string& url);
+
+public:
+  URL();
+  ~URL();
 
   std::string get_protocol() const;
   std::string get_payload() const;

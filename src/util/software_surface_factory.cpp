@@ -44,13 +44,16 @@
 #include "util/xcf_software_surface_loader.hpp"
 
 namespace {
+
 bool has_prefix(const std::string& lhs, const std::string& rhs)
 {
-  if (lhs.length() < rhs.length())
+  if (lhs.length() < rhs.length()) {
     return false;
-  else
+  } else {
     return lhs.compare(0, rhs.length(), rhs) == 0;
+  }
 }
+
 } // namespace
 
 SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
@@ -64,20 +67,25 @@ SoftwareSurfaceFactory::SoftwareSurfaceFactory() :
   add_loader(std::make_unique<JPEGSoftwareSurfaceLoader>());
   add_loader(std::make_unique<PNGSoftwareSurfaceLoader>());
 
-  if (XCF::is_available())
+  if (XCF::is_available()) {
     add_loader(std::make_unique<XCFSoftwareSurfaceLoader>());
+  }
 
-  if (UFRaw::is_available())
+  if (UFRaw::is_available()) {
     add_loader(std::make_unique<UFRawSoftwareSurfaceLoader>());
+  }
 
-  if (RSVG::is_available())
+  if (RSVG::is_available()) {
     add_loader(std::make_unique<RSVGSoftwareSurfaceLoader>());
+  }
 
-  if (VidThumb::is_available())
+  if (VidThumb::is_available()) {
     add_loader(std::make_unique<VidThumbSoftwareSurfaceLoader>());
+  }
 
-  if (KRA::is_available())
+  if (KRA::is_available()) {
     add_loader(std::make_unique<KRASoftwareSurfaceLoader>());
+  }
 
   add_loader(std::make_unique<DDSSoftwareSurfaceLoader>());
 

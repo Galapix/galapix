@@ -142,10 +142,10 @@ SHA1::SHA1(Blob const& blob) :
   std::copy_n(blob.get_data(), blob.size(), m_data.begin());
 }
 
-SHA1::SHA1(const uint8_t sha1[20]) :
+SHA1::SHA1(const uint8_t text[20]) :
   m_data()
 {
-  std::copy_n(sha1, 20, m_data.begin());
+  std::copy_n(text, 20, m_data.begin());
 }
 
 SHA1::operator bool() const
@@ -178,8 +178,9 @@ std::string
 SHA1::str() const
 {
   std::ostringstream out;
-  for (mutils_word32 i = 0; i < m_data.size(); ++i)
+  for (mutils_word32 i = 0; i < m_data.size(); ++i) {
     out << std::setfill('0') << std::setw(2) << std::hex << int(m_data[i]);
+  }
   return out.str();
 }
 

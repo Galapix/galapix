@@ -306,10 +306,11 @@ Galapix::run(const Options& opts)
         std::cout << "Scanning directories... " << std::flush;
         for(std::vector<std::string>::const_iterator i = opts.rest.begin()+1; i != opts.rest.end(); ++i)
         {
-          if (URL::is_url(*i))
+          if (URL::is_url(*i)) {
             urls.push_back(URL::from_string(*i));
-          else
+          } else {
             Filesystem::generate_image_file_list(*i, urls);
+          }
         }
         std::sort(urls.begin(), urls.end(),
                   [](const URL& lhs, const URL& rhs) {

@@ -30,7 +30,7 @@ public:
   void stop_thread() override;
 
 protected:
-  void queue(const std::function<void ()>&);
+  void queue(const std::function<void ()>& message);
 
 private:
   bool m_quit;

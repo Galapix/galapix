@@ -235,7 +235,7 @@ DatabaseThread::request_tiles(const OldFileEntry& file_entry, int min_scale, int
 }
 
 void
-DatabaseThread::request_job_removal(std::shared_ptr<Job> const& job, bool)
+DatabaseThread::request_job_removal(std::shared_ptr<Job> const& job, bool unused)
 {
   m_request_queue.wait_and_push([this, job](){
       remove_job(job);

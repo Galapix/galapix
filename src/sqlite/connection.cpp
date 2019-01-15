@@ -21,7 +21,7 @@
 
 #include "sqlite/error.hpp"
 
-static int busy_callback(void* , int)
+static int busy_callback(void* user_data, int tries)
 {
   // FIXME: Is this a good idea?
   usleep(1000*10);

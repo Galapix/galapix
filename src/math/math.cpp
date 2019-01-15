@@ -71,12 +71,13 @@ std::string float2string(float value)
 
 static char hex2int(char c)
 {
-  if (c >= '0' && c <= '9')
+  if (c >= '0' && c <= '9') {
     return static_cast<char>(c - '0');
-  else if (c >= 'a' && c <= 'f')
+  } else if (c >= 'a' && c <= 'f') {
     return static_cast<char>(c - 'a' + 0xa);
-  else
+  } else {
     return 0;
+  }
 }
 
 float string2float(const std::string& str)

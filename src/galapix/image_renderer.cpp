@@ -108,21 +108,21 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
     }
 
     // draw higher resolution tiles
-    if (nw) nw.draw(Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f)));
-    if (ne) ne.draw(Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f)));
-    if (sw) sw.draw(Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f)));
-    if (se) se.draw(Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f)));
+    if (nw) { nw.draw(Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f))); }
+    if (ne) { ne.draw(Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f))); }
+    if (sw) { sw.draw(Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f))); }
+    if (se) { se.draw(Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f))); }
   }
 }
 
 void
 ImageRenderer::draw_tiles(const Rect& rect, int scale, float zoom)
 {
-  for(int y = rect.top; y < rect.bottom; ++y)
-    for(int x = rect.left; x < rect.right; ++x)
-    {
+  for(int y = rect.top; y < rect.bottom; ++y) {
+    for(int x = rect.left; x < rect.right; ++x) {
       draw_tile(x, y, scale, zoom);
     }
+  }
 }
 
 bool

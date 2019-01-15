@@ -54,15 +54,17 @@ private:
       {
         // skip comment
         forward();
-        while(!eof() && *m_ptr != '\n')
+        while(!eof() && *m_ptr != '\n') {
           forward();
+        }
       }
       else if (isspace(*m_ptr))
       {
         // skip whitespace
         forward();
-        while(!eof() && isspace(*m_ptr))
+        while(!eof() && isspace(*m_ptr)) {
           forward();
+        }
       }
       else
       {

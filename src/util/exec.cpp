@@ -67,8 +67,9 @@ Exec::exec()
   int stderr_fd[2];
 
   // FIXME: Bad, we potentially leak file descriptors
-  if (pipe(stdout_fd) < 0 || pipe(stderr_fd) < 0 || pipe(stdin_fd) < 0)
+  if (pipe(stdout_fd) < 0 || pipe(stderr_fd) < 0 || pipe(stdin_fd) < 0) {
     raise_runtime_error("Exec:exec(): pipe failed");
+  }
 
   pid_t pid = fork();
   if (pid < 0)
@@ -103,8 +104,10 @@ Exec::exec()
     // Create C-style array for arguments
     std::vector<char*> c_arguments(m_arguments.size() + 2);
     c_arguments[0] = strdup(m_program.c_str());
-    for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
+    for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i) {
       c_arguments[i+1] = strdup(m_arguments[i].c_str());
+    }
+
     c_arguments[m_arguments.size()+1] = nullptr;
 
     if (m_working_directory)
@@ -277,8 +280,9 @@ Exec::str() const
 
   out << m_program << " ";
 
-  for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i)
+  for(std::vector<std::string>::size_type i = 0; i < m_arguments.size(); ++i) {
     out << "'" << m_arguments[i] << "' ";
+  }
 
   return out.str();
 }

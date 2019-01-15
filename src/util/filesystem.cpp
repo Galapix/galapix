@@ -150,8 +150,9 @@ Filesystem::open_directory(const std::string& pathname)
     while ((de = ::readdir(dp)) != nullptr)
     {
       if (strcmp(de->d_name, ".")  != 0 &&
-          strcmp(de->d_name, "..") != 0)
+          strcmp(de->d_name, "..") != 0) {
         dir_list.push_back(pathname + "/" + de->d_name);
+      }
     }
 
     closedir(dp);
@@ -198,11 +199,11 @@ Filesystem::deinit()
 }
 
 bool
-Filesystem::has_extension(const std::string& str, const std::string& suffix)
+Filesystem::has_extension(const std::string& filename, const std::string& ext)
 {
-  if (str.length() >= suffix.length())
+  if (filename.length() >= ext.length())
   {
-    return str.compare(str.length() - suffix.length(), suffix.length(), suffix) == 0;
+    return filename.compare(filename.length() - ext.length(), ext.length(), ext) == 0;
   }
   else
   {
@@ -414,7 +415,7 @@ Filesystem::realpath_fast(const std::string& pathname)
   std::string fullpath;
   std::string drive;
 
-  if (pathname.size() > 0 && pathname[0] == '/')
+  if (!pathname.empty() && pathname[0] == '/')
   {
     fullpath = pathname;
   }
@@ -466,12 +467,11 @@ Filesystem::realpath_fast(const std::string& pathname)
       }
       else
       {
-        if (skip == 0)
-        {
+        if (skip == 0) {
           result += dir;
-        }
-        else
+        } else {
           skip -= 1;
+        }
       }
 
       last_slash = i;

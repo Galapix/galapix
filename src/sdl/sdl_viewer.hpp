@@ -42,8 +42,8 @@ private:
   void process_event(const SDL_Event& event);
   void update_gamecontrollers(float delta);
 
-  void add_gamecontroller(int idx);
-  void remove_gamecontroller(int idx);
+  void add_gamecontroller(int joy_id);
+  void remove_gamecontroller(int joy_id);
 
   float get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const;
 

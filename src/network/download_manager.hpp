@@ -50,7 +50,7 @@ public:
                               const std::function<void (const DownloadResult&)>& callback,
                               const std::function<ProgressFunc>& progress_callback = {});
 
-  void cancel_transfer(TransferHandle handle);
+  void cancel_transfer(TransferHandle id);
   void cancel_all_transfers();
 
 private:
