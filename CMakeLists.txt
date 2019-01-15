@@ -260,6 +260,7 @@ file(GLOB LOGMICH_CXX_SOURCES
   external/logmich/src/log.cpp
   external/logmich/src/logger.cpp)
 add_library(logmich STATIC ${LOGMICH_CXX_SOURCES})
+set_target_properties(logmich PROPERTIES CXX_CLANG_TIDY "")
 
 # compile libgalapix
 file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -379,6 +380,7 @@ if(BUILD_TESTS)
   file(GLOB UITEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} external/uitest/src/*.cpp)
   add_library(uitest STATIC ${UITEST_SOURCES})
   target_include_directories(uitest SYSTEM PRIVATE external/uitest/include/)
+  set_target_properties(uitest PROPERTIES CXX_CLANG_TIDY "")
 
   # build interactive tests
   file(GLOB UITEST_GALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} uitest/*_test.cpp)
