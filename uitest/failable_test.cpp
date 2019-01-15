@@ -29,8 +29,8 @@ class Foo
 public:
   Foo() { std::cout << "Foo()" << std::endl; }
   ~Foo() { std::cout << "~Foo()" << std::endl; }
-  Foo(const Foo&) { std::cout << "Foo(const Foo&)" << std::endl; }
-  Foo& operator=(const Foo&) { std::cout << "Foo::operator=()" << std::endl; return *this; }
+  Foo(const Foo& other) { std::cout << "Foo(const Foo&)" << std::endl; }
+  Foo& operator=(const Foo& other) { std::cout << "Foo::operator=()" << std::endl; return *this; }
 };
 
 std::ostream& operator<<(std::ostream& os, const Foo& foo)
