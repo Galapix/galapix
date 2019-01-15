@@ -28,7 +28,7 @@ public:
   SExprFileReaderImpl(sexp::Value sx) :
     m_sx(std::move(sx))
   {
-    assert(m_sx.is_array() && m_sx.as_array().size() >= 1);
+    assert(m_sx.is_array() && !m_sx.as_array().empty());
   }
 
   ~SExprFileReaderImpl() override
