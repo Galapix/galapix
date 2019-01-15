@@ -16,7 +16,8 @@
 
 #include "util/file_reader.hpp"
 
-#include "lisp/parser.hpp"
+#include <sexp/parser.hpp>
+
 #include "util/file_reader_impl.hpp"
 #include "util/sexpr_file_reader.hpp"
 #include "util/url.hpp"
@@ -200,12 +201,7 @@ FileReader::read_section(const char* name)   const
 FileReader
 FileReader::parse(const std::string& filename)
 {
-  std::shared_ptr<lisp::Lisp> sexpr = lisp::Parser::parse(filename);
-  if (sexpr) {
-    return SExprFileReader(sexpr->get_list_elem(0));
-  } else {
-    return {};
-  }
+  return SExprFileReader(sexp::Parser::from_string(filename));
 }
 
 /* EOF */

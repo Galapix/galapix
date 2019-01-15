@@ -18,12 +18,12 @@
 #define HEADER_GALAPIX_UTIL_SEXPR_FILE_READER_HPP
 
 #include "util/file_reader.hpp"
-#include "lisp/lisp.hpp"
+#include "sexp/value.hpp"
 
 class SExprFileReader : public FileReader
 {
 public:
-  SExprFileReader(std::shared_ptr<lisp::Lisp> lisp);
+  SExprFileReader(sexp::Value sx);
 };
 
 #endif

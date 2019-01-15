@@ -25,75 +25,57 @@
 class SExprFileReaderImpl: public FileReaderImpl
 {
 public:
-  std::shared_ptr<lisp::Lisp> sexpr;
-
-  SExprFileReaderImpl(std::shared_ptr<lisp::Lisp> sexpr_)
-    : sexpr(std::move(sexpr_))
+  SExprFileReaderImpl(sexp::Value sx) :
+    m_sx(std::move(sx))
   {
-    assert(sexpr->get_type() == lisp::Lisp::TYPE_LIST &&
-           sexpr->get_list_size() >= 1);
-
-    for(size_t i = 1; i < sexpr->get_list_size(); ++i)
-    { // iterate over subsections
-      sexpr->get_list_elem(i);
-    }
+    assert(m_sx.is_array() && m_sx.as_array().size() >= 1);
   }
 
   ~SExprFileReaderImpl() override
   {
-    // FIXME: Do we have to free the lisp pointer here or outside of the code?
   }
 
   std::string get_name() const override
   {
-    return sexpr->get_list_elem(0)->get_symbol();
+    return m_sx.as_array()[0].as_string();
   }
 
-  bool read_int   (const char* name, int& v) const override
+  bool read_int(const char* name, int& v) const override
   {
-    std::shared_ptr<lisp::Lisp> item = get_subsection_item(name);
-    if (item && item->get_type() == lisp::Lisp::TYPE_INT)
+    sexp::Value const* item = get_subsection_item(name);
+    if (item && item->is_integer())
     {
-      v = item->get_int();
+      v = item->as_int();
       return true;
     }
     return false;
   }
 
-  bool read_float (const char* name, float& v) const override
+  bool read_float(const char* name, float& v) const override
   {
-    std::shared_ptr<lisp::Lisp> item = get_subsection_item(name);
-    if (item)
+    sexp::Value const* item = get_subsection_item(name);
+    if (item && item->is_real())
     {
-      if (item->get_type() == lisp::Lisp::TYPE_FLOAT)
-      {
-        v = item->get_float();
-        return true;
-      }
-      else if (item->get_type() == lisp::Lisp::TYPE_INT)
-      {
-        v = static_cast<float>(item->get_int());
-        return true;
-      }
-      else
-      {
-        return false;
-      }
+      v = item->as_float();
+      return true;
     }
-    return false;
+    else
+    {
+      return false;
+    }
   }
 
   bool read_bool  (const char* name, bool& v) const override
   {
-    std::shared_ptr<lisp::Lisp> item = get_subsection_item(name);
-    if (item && item->get_type() == lisp::Lisp::TYPE_BOOL)
+    sexp::Value const* item = get_subsection_item(name);
+    if (item && item->is_boolean())
     {
-      v = item->get_bool();
+      v = item->as_bool();
       return true;
     }
-    else if (item && item->get_type() == lisp::Lisp::TYPE_INT)
+    else if (item && item->is_integer())
     {
-      v = item->get_int();
+      v = item->as_int();
       return true;
     }
     return false;
@@ -101,20 +83,16 @@ public:
 
   bool read_string(const char* name, std::string& v) const override
   {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
+    sexp::Value const* sub = get_subsection(name);
     if (sub)
     {
       v = "";
-      for(size_t i = 1; i < sub->get_list_size(); ++i)
+      for(size_t i = 1; i < sub->as_array().size(); ++i)
       {
-        std::shared_ptr<lisp::Lisp> item = sub->get_list_elem(i);
-        if (item->get_type() == lisp::Lisp::TYPE_STRING)
+        sexp::Value const& item = sub->as_array()[i];
+        if (item.is_string() || item.is_symbol())
         {
-          v += item->get_string();
-        }
-        else if (item->get_type() == lisp::Lisp::TYPE_SYMBOL)
-        {
-          v += item->get_symbol();
+          v += item.as_string();
         }
       }
       return true;
@@ -124,11 +102,11 @@ public:
 
   bool read_size(const char* name, Size& v) const override
   {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
-    if (sub && sub->get_list_size() == 3)
+    sexp::Value const* sub = get_subsection(name);
+    if (sub && sub->as_array().size() == 3)
     {
-      v.width  = sub->get_list_elem(1)->get_int();
-      v.height = sub->get_list_elem(2)->get_int();
+      v.width  = sub->as_array()[1].as_int();
+      v.height = sub->as_array()[2].as_int();
       return true;
     }
     return false;
@@ -136,11 +114,11 @@ public:
 
   bool read_vector2i(const char* name, Vector2i& v) const override
   {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
-    if (sub && sub->get_list_size() == 3)
+    sexp::Value const* sub = get_subsection(name);
+    if (sub && sub->as_array().size() == 3)
     {
-      v.x = sub->get_list_elem(1)->get_int();
-      v.y = sub->get_list_elem(2)->get_int();
+      v.x = sub->as_array()[1].as_int();
+      v.y = sub->as_array()[2].as_int();
       return true;
     }
     return false;
@@ -148,11 +126,11 @@ public:
 
   bool read_vector2f(const char* name, Vector2f& v) const override
   {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
-    if (sub && sub->get_list_size() == 3)
+    sexp::Value const* sub = get_subsection(name);
+    if (sub && sub->as_array().size() == 3)
     {
-      v.x = sub->get_list_elem(1)->get_float();
-      v.y = sub->get_list_elem(2)->get_float();
+      v.x = sub->as_array()[1].as_float();
+      v.y = sub->as_array()[2].as_float();
       return true;
     }
     return false;
@@ -160,13 +138,13 @@ public:
 
   bool read_rect(const char* name, Rect& rect) const override
   {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
-    if (sub && sub->get_list_size() == 5)
+    sexp::Value const* sub = get_subsection(name);
+    if (sub && sub->as_array().size() == 5)
     {
-      rect.left   = sub->get_list_elem(1)->get_int();
-      rect.top    = sub->get_list_elem(2)->get_int();
-      rect.right  = sub->get_list_elem(3)->get_int();
-      rect.bottom = sub->get_list_elem(4)->get_int();
+      rect.left = sub->as_array()[1].as_int();
+      rect.top = sub->as_array()[2].as_int();
+      rect.right = sub->as_array()[3].as_int();
+      rect.bottom = sub->as_array()[4].as_int();
       return true;
     }
     return false;
@@ -174,13 +152,13 @@ public:
 
   bool read_rgba(const char* name, RGBA& v) const override
   {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
-    if (sub && sub->get_list_size() == 5)
+    sexp::Value const* sub = get_subsection(name);
+    if (sub && sub->as_array().size() == 5)
     {
-      v = RGBA(static_cast<uint8_t>(sub->get_list_elem(1)->get_float() * 255),
-               static_cast<uint8_t>(sub->get_list_elem(2)->get_float() * 255),
-               static_cast<uint8_t>(sub->get_list_elem(3)->get_float() * 255),
-               static_cast<uint8_t>(sub->get_list_elem(4)->get_float() * 255));
+      v = RGBA(static_cast<uint8_t>(sub->as_array()[1].as_float() * 255),
+               static_cast<uint8_t>(sub->as_array()[2].as_float() * 255),
+               static_cast<uint8_t>(sub->as_array()[3].as_float() * 255),
+               static_cast<uint8_t>(sub->as_array()[4].as_float() * 255));
       return true;
     }
     return false;
@@ -188,10 +166,10 @@ public:
 
   bool read_section(const char* name, FileReader& v) const override
   {
-    std::shared_ptr<lisp::Lisp> cur = get_subsection(name);
+    sexp::Value const* cur = get_subsection(name);
     if (cur)
     {
-      v = SExprFileReader(cur);
+      v = SExprFileReader(*cur);
       return true;
     }
     return false;
@@ -200,9 +178,9 @@ public:
   std::vector<FileReader> get_sections() const override
   {
     std::vector<FileReader> lst;
-    for(size_t i = 1; i < sexpr->get_list_size(); ++i)
-    { // iterate over subsections
-      lst.push_back(SExprFileReader(sexpr->get_list_elem(i)));
+    for(size_t i = 1; i < m_sx.as_array().size(); ++i)
+    {
+      lst.push_back(SExprFileReader(m_sx.as_array()[i]));
     }
     return lst;
   }
@@ -211,41 +189,45 @@ public:
   {
     std::vector<std::string> lst;
 
-    for(size_t i = 1; i < sexpr->get_list_size(); ++i)
-    { // iterate over subsections
-      std::shared_ptr<lisp::Lisp> sub = sexpr->get_list_elem(i);
-      lst.push_back(sub->get_list_elem(0)->get_symbol());
+    for(size_t i = 1; i < m_sx.as_array().size(); ++i)
+    {
+      sexp::Value const& sub = m_sx.as_array()[i];
+      lst.push_back(sub.as_array()[0].as_string());
     }
 
     return lst;
   }
 
 private:
-  std::shared_ptr<lisp::Lisp> get_subsection_item(const char* name) const
+  sexp::Value const* get_subsection_item(const char* name) const
   {
-    std::shared_ptr<lisp::Lisp> sub = get_subsection(name);
-    if (sub && sub->get_list_size() == 2)
+    sexp::Value const* sub = get_subsection(name);
+    if (sub && sub->is_array() && sub->as_array().size() == 2)
     {
-      return sub->get_list_elem(1);
+      return &sub->as_array()[1];
     }
-    return std::shared_ptr<lisp::Lisp>();
+    return nullptr;
   }
 
-  std::shared_ptr<lisp::Lisp> get_subsection(const char* name) const
+  sexp::Value const* get_subsection(const char* name) const
   {
-    for(size_t i = 1; i < sexpr->get_list_size(); ++i)
+    assert(m_sx.is_array());
+    for(size_t i = 1; i < m_sx.as_array().size(); ++i)
     { // iterate over subsections
-      std::shared_ptr<lisp::Lisp> sub = sexpr->get_list_elem(i);
-      if (strcmp(sub->get_list_elem(0)->get_symbol(), name) == 0)
-        return sub;
+      sexp::Value const& sub = m_sx.as_array()[i];
+      if (sub.as_array()[0].as_string() == name) {
+        return &sub;
+      }
     }
-    return std::shared_ptr<lisp::Lisp>();
+    return nullptr;
   }
 
+private:
+  sexp::Value const m_sx;
 };
 
-SExprFileReader::SExprFileReader(std::shared_ptr<lisp::Lisp> lisp)
-  : FileReader(std::shared_ptr<FileReaderImpl>(new SExprFileReaderImpl(std::move(lisp))))
+SExprFileReader::SExprFileReader(sexp::Value sx) :
+  FileReader(std::shared_ptr<FileReaderImpl>(new SExprFileReaderImpl(std::move(sx))))
 {
 }
 
