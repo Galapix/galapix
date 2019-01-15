@@ -219,6 +219,7 @@ set(GALAPIX_DEPS_LIBRARIES
   libgalapix
   libgalapix_sdl
   logmich
+  sexp
   ${SPNAV_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
@@ -237,6 +238,7 @@ set(GALAPIX_DEPS_LIBRARIES
 include_directories(src/)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
 include_directories(SYSTEM external/logmich/include/)
+include_directories(SYSTEM external/sexp-cpp/include/)
 include_directories(SYSTEM external/glm/)
 include_directories(SYSTEM external/googletest/googletest/include/)
 include_directories(SYSTEM ${MAGICKXX_INCLUDE_DIRS})
@@ -254,6 +256,12 @@ add_custom_command(
   ${SHADER_SOURCE}
   DEPENDS ${SHADER_SOURCE}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
+# compile sexp
+file(GLOB SEXP_CXX_SOURCES
+  external/sexp-cpp/src/*.cpp)
+add_library(sexp STATIC ${SEXP_CXX_SOURCES})
+set_target_properties(sexp PROPERTIES CXX_CLANG_TIDY "")
 
 # compile logmich
 file(GLOB LOGMICH_CXX_SOURCES
