@@ -152,7 +152,7 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
 
     glUseProgram(s_flatcolor_prg);
-    glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
+    glUniform4f(color_loc, rgb.r_f(), rgb.g_f(), rgb.b_f(), 1.0f);
 
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
@@ -195,7 +195,7 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
-    glUniform4f(color_loc, rgb.r/255.0f, rgb.g/255.0f, rgb.b/255.0f, 1.0f);
+    glUniform4f(color_loc, rgb.r_f(), rgb.g_f(), rgb.b_f(), 1.0f);
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
@@ -261,7 +261,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-    glUniform4f(color_loc, rgba.r/255.0f, rgba.g/255.0f, rgba.b/255.0f, rgba.a/255.0f);
+    glUniform4f(color_loc, rgba.r_f(), rgba.g_f(), rgba.b_f(), rgba.a_f());
 
     GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);

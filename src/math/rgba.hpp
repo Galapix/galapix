@@ -48,6 +48,11 @@ public:
             (static_cast<uint32_t>(b) << 16) |
             (static_cast<uint32_t>(a) << 24));
   }
+
+  float r_f() const { return static_cast<float>(r) / 255.0f; }
+  float g_f() const { return static_cast<float>(g) / 255.0f; }
+  float b_f() const { return static_cast<float>(b) / 255.0f; }
+  float a_f() const { return static_cast<float>(a) / 255.0f; }
 };
 
 #endif
