@@ -84,7 +84,7 @@ public:
 
   bool is_initialized() const { return m_initialized ; }
 
-  void set_exception(std::exception_ptr eptr)
+  void set_exception(std::exception_ptr const& eptr)
   {
     m_eptr = eptr;
   }

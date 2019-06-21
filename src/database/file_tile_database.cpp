@@ -185,9 +185,9 @@ FileTileDatabase::get_directory(const RowId& file_id_obj)
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
 
   // FIXME: Ignoring the last 32 bits for now
-  int part1 = (file_id >> 24) & 0xfff;
-  int part2 = (file_id >> 12) & 0xfff;
-  int part3 = (file_id >>  0) & 0xfff;
+  int part1 = static_cast<int>((file_id >> 24) & 0xfff);
+  int part2 = static_cast<int>((file_id >> 12) & 0xfff);
+  int part3 = static_cast<int>((file_id >>  0) & 0xfff);
 
   return (boost::format("%03x/%03x/%03x") % part1 % part2 % part3).str();
 }
@@ -248,9 +248,9 @@ FileTileDatabase::ensure_directory_exists(const RowId& file_id_obj)
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
 
   // FIXME: Ignoring the last 32 bits for now
-  int part1 = (file_id >> 24) & 0xfff;
-  int part2 = (file_id >> 12) & 0xfff;
-  int part3 = (file_id >>  0) & 0xfff;
+  int part1 = static_cast<int>((file_id >> 24) & 0xfff);
+  int part2 = static_cast<int>((file_id >> 12) & 0xfff);
+  int part3 = static_cast<int>((file_id >>  0) & 0xfff);
 
   std::ostringstream str;
   str << m_prefix;

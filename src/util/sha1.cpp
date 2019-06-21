@@ -178,7 +178,7 @@ std::string
 SHA1::str() const
 {
   std::ostringstream out;
-  for (mutils_word32 i = 0; i < m_data.size(); ++i) {
+  for (size_t i = 0; i < m_data.size(); ++i) {
     out << std::setfill('0') << std::setw(2) << std::hex << int(m_data[i]);
   }
   return out.str();

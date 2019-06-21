@@ -72,7 +72,7 @@ void check_gl_error(const char* msg = nullptr)
       if (msg) { std::cerr << msg << std::endl; }
       abort();
       break;
-  };
+  }
 }
 
 std::string read_text_file(const std::string& filename)

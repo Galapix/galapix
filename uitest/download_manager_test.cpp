@@ -138,7 +138,7 @@ UITEST(DownloadManager, test, "",
        "Run interactive download shell")
 {
   logmich::set_log_level(logmich::kDebug);
-  run_repl();
+  run_repl(); // NOLINT
 }
 
 /* EOF */

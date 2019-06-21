@@ -266,7 +266,7 @@ Generator::process_image_tiling(SoftwareSurface const& surface, GeneratorCallbac
   int max_scale = calc_max_scale(surface.get_width(), surface.get_height());
 
   TileGenerator::generate(surface, min_scale, max_scale,
-                          [&tiles](int x, int y, int scale, SoftwareSurface tile)
+                          [&tiles](int x, int y, int scale, SoftwareSurface const& tile)
                           {
                             tiles.emplace_back(Tile(scale, Vector2i(x, y), tile));
                           });
