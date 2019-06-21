@@ -6,11 +6,15 @@ Checks: >
   performance-*,
   bugprone-*,
   misc-*,
-  -misc-unused-parameters,
   -clang-analyzer-security.FloatLoopCounter,
-  -readability-redundant-member-init,
+  -misc-non-private-member-variables-in-classes,
+  -misc-unused-parameters,
   -readability-else-after-return,
-  -readability-implicit-bool-conversion
+  -readability-implicit-bool-conversion,
+  -readability-magic-numbers,
+  -readability-redundant-member-init,
+  -readability-uppercase-literal-suffix,
+  -readability-isolate-declaration,
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/.*hpp'
 AnalyzeTemporaryDtors: true
