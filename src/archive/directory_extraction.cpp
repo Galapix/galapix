@@ -23,14 +23,14 @@
 namespace {
 
 void
-collect_files(const boost::filesystem::path& path,
-              const boost::filesystem::path& base,
+collect_files(const std::filesystem::path& path,
+              const std::filesystem::path& base,
               std::vector<std::string>& lst)
 {
   try
   {
-    for(boost::filesystem::directory_iterator it(path);
-        it != boost::filesystem::directory_iterator();
+    for(std::filesystem::directory_iterator it(path);
+        it != std::filesystem::directory_iterator();
         ++it)
     {
       if (is_directory(it->symlink_status()))
@@ -67,7 +67,7 @@ DirectoryExtraction::get_filenames() const
 {
   std::vector<std::string> lst;
 
-  collect_files(m_path, boost::filesystem::path(), lst);
+  collect_files(m_path, std::filesystem::path(), lst);
 
   return lst;
 }

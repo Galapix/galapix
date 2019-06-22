@@ -19,7 +19,7 @@
 
 #include "archive/extraction.hpp"
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 class DirectoryExtraction final : public Extraction
 {
@@ -34,7 +34,7 @@ public:
   std::string get_type() const override { return m_type; }
 
 private:
-  boost::filesystem::path m_path;
+  std::filesystem::path m_path;
   std::string m_type;
 
 private:

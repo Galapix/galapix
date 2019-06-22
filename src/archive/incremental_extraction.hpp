@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_ARCHIVE_INCREMENTAL_EXTRACTION_HPP
 #define HEADER_GALAPIX_ARCHIVE_INCREMENTAL_EXTRACTION_HPP
 
+#include <filesystem>
 #include <boost/filesystem.hpp>
 
 #include "archive/extraction.hpp"
@@ -47,8 +48,8 @@ public:
   std::string get_file_as_path(const std::string& filename) const override
   {
     Blob blob = m_loader.get_file(m_archive, filename);
-    boost::filesystem::path path = boost::filesystem::temp_directory_path() /
-      boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
+    std::filesystem::path path = std::filesystem::temp_directory_path() /
+      boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").string();
     blob.write_to_file(path.string());
     return path.string();
   }

@@ -18,7 +18,7 @@
 
 #include <string.h>
 #include <stdexcept>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <logmich/log.hpp>
 
 #include "util/filesystem.hpp"
@@ -34,7 +34,7 @@
 #include "util/filesystem.hpp"
 
 ArchiveManager::ArchiveManager() :
-  ArchiveManager(boost::filesystem::temp_directory_path().string())
+  ArchiveManager(std::filesystem::temp_directory_path().string())
 {
 }
 
@@ -199,9 +199,9 @@ ArchiveManager::get_file(const BlobAccessorPtr& archive, const std::string& type
 std::string
 ArchiveManager::create_extraction_directory() const
 {
-  boost::filesystem::path directory = m_tmpdir / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
+  std::filesystem::path directory = m_tmpdir / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").string();
   log_info("creating directory: %1%", directory);
-  boost::filesystem::create_directory(directory);
+  std::filesystem::create_directory(directory);
   return directory.string();
 }
 

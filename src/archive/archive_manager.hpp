@@ -21,7 +21,7 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 #include "resource/blob_accessor.hpp"
 #include "util/blob.hpp"
@@ -66,7 +66,7 @@ private:
   const ArchiveLoader* find_loader_by_magic(const std::string& filename) const;
 
 private:
-  boost::filesystem::path m_tmpdir;
+  std::filesystem::path m_tmpdir;
   std::vector<std::unique_ptr<ArchiveLoader> > m_loader;
   std::map<std::string, ArchiveLoader*> m_loader_by_file_exts;
   std::map<std::string, ArchiveLoader*> m_loader_by_magic;

@@ -16,6 +16,7 @@
 
 #include "resource/blob_accessor.hpp"
 
+#include <filesystem>
 #include <boost/filesystem.hpp>
 
 BlobAccessor::BlobAccessor(const std::string& filename) :
@@ -53,7 +54,7 @@ BlobAccessor::get_stdio_name() const
   }
   else
   {
-    boost::filesystem::path tmpfile = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%");
+    std::filesystem::path tmpfile = std::filesystem::temp_directory_path() / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").string();
     m_filename = tmpfile.string();
     m_blob.write_to_file(m_filename);
     return m_filename;
