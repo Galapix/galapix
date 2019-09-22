@@ -142,7 +142,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 include(CheckIncludeFile)
 
 find_package(Threads REQUIRED)
-find_package(Boost COMPONENTS system filesystem signals REQUIRED)
+find_package(Boost COMPONENTS system filesystem REQUIRED)
 find_package(CURL REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
