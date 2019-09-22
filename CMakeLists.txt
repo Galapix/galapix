@@ -304,7 +304,7 @@ install(TARGETS libgalapix
 if(BUILD_GALAPIX_SDL)
   file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
   list(APPEND LIBGALAPIX_SDL_SOURCES ${SPNAV_SOURCES})
-  add_library(libgalapix_sdl SHARED ${LIBGALAPIX_SDL_SOURCES})
+  add_library(libgalapix_sdl STATIC ${LIBGALAPIX_SDL_SOURCES})
   target_compile_options(libgalapix_sdl PRIVATE ${WARNINGS_CXX_FLAGS})
   target_include_directories(libgalapix_sdl SYSTEM PRIVATE ${GALAPIX_SDL_DEPS_INCLUDE_DIRS})
   target_link_libraries(libgalapix_sdl ${GALAPIX_SDL_DEPS_LIBRARIES})
