@@ -56,20 +56,20 @@ class Project:
         
     def configure(self):       
         if 'BUILD' in self.env:
-            print "Build type: %s" % self.env['BUILD']
+            print("Build type: %s" % self.env['BUILD'])
             self.env.Append(CXXFLAGS  = preset_cxxflags[self.env['BUILD']],
                             LINKFLAGS = preset_linkflags[self.env['BUILD']])
         else:
-            print "Build type: release"
+            print("Build type: release")
             self.env.Append(CXXFLAGS  = preset_cxxflags['release'],
                             LINKFLAGS = preset_linkflags['release'])
 
         conf = Configure(self.env)
 
         if self.env['CXX']:
-            print "Using C++ compiler...", self.env['CXX']
+            print("Using C++ compiler...", self.env['CXX'])
         else:
-            print "Error: C++ compiler missing"
+            print("Error: C++ compiler missing")
             Exit(1)
 
         if conf.CheckLibWithHeader("spnav", "spnav.h", "c++"):
@@ -82,27 +82,27 @@ class Project:
         #     Exit(1)
             
         if not conf.CheckHeader("boost/signals2/signal.hpp", "<>", "c++"):
-            print "Error: boost_signals2 is missing"
+            print("Error: boost_signals2 is missing")
             Exit(1)
 
         if not conf.CheckLibWithHeader("exif", "libexif/exif-data.h", "c++", autoadd=0):
-            print "Error: libexif is missing"
+            print("Error: libexif is missing")
             Exit(1)
 
         if not conf.CheckLibWithHeader("sqlite3", "sqlite3.h", "c++", autoadd=0):
-            print "Error: sqlite3 is missing"
+            print("Error: sqlite3 is missing")
             Exit(1)
 
         if not conf.CheckLib("jpeg", autoadd=0):
-            print "Error: libjpeg is missing"
+            print("Error: libjpeg is missing")
             Exit(1)
 
         if not conf.CheckLibWithHeader("GL", "GL/gl.h", "c++", autoadd=0):
-            print "Error: libGL is missing"
+            print("Error: libGL is missing")
             Exit(1)
 
         if not conf.CheckLibWithHeader("GLEW", "GL/glew.h", "c++", autoadd=0):
-            print "Error: libGLEW is missing"
+            print("Error: libGLEW is missing")
             Exit(1)
 
         self.env = conf.Finish()
