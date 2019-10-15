@@ -30,6 +30,7 @@
 #include <sstream>
 #include <algorithm>
 
+#include "job/semaphore.hpp"
 #include "plugins/rar.hpp"
 #include "plugins/seven_zip.hpp"
 #include "plugins/tar.hpp"
@@ -327,16 +328,23 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
   
     // check the file list for valid entries, if entries are archives,
     // get a file list from them
+    Semaphore task_limiter(std::thread::hardware_concurrency());
     std::vector<std::future<std::vector<URL>>> archive_tasks;
     for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
     {
       URL url = URL::from_filename(*i);
-
-      try 
+      std::cout << "Processing: " << *i << std::endl;
+      try
       {
         if (ArchiveManager::current().is_archive(*i))
         {
-          archive_tasks.push_back(std::async([i, url]() -> std::vector<URL> {
+          std::cout << "async\n";
+          archive_tasks.push_back(
+            std::async(
+              std::launch::async,
+              [i, url, &task_limiter]() -> std::vector<URL> {
+                SemaphoreLock lock(task_limiter);
+
                 std::vector<URL> sub_file_list;
 
                 const ArchiveLoader* loader;
@@ -352,6 +360,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 
                 return sub_file_list;
               }));
+          std::cout << "async: done\n";
         }
         else if (has_extension(*i, ".galapix"))
         {
@@ -373,13 +382,14 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         {
           //log_debug << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
         }
-      } 
+      }
       catch(const std::exception& err) 
       {
         log_warning << "Warning: " << err.what() << std::endl;
       }
     }
 
+    std::cout << "waiting for async tasks: " << archive_tasks.size() << std::endl;
     for(auto& task: archive_tasks)
     {
       try 
