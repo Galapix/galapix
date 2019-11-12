@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.0)
-project(galapix VERSION 0.3.0)
+project(galapix-0.3 VERSION 0.3.0)
 
 if(POLICY CMP0072)
   # FindOpenGL prefers GLVND by default when available
@@ -293,8 +293,8 @@ file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/util/*.cpp)
 list(APPEND LIBGALAPIX_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp)
 add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
+set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
 target_compile_options(libgalapix PRIVATE ${WARNINGS_CXX_FLAGS})
-set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "galapix")
 target_compile_options(libgalapix PRIVATE ${MAGICKXX_CFLAGS_OTHER})
 
 install(TARGETS libgalapix
@@ -311,6 +311,7 @@ if(BUILD_GALAPIX_SDL)
   target_compile_definitions(libgalapix_sdl PRIVATE -DGALAPIX_SDL)
 
   add_executable(galapix.sdl src/main/sdl_main.cpp)
+  set_target_properties(galapix.sdl PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.sdl")
   target_compile_options(galapix.sdl PRIVATE ${WARNINGS_CXX_FLAGS})
   target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL ${SPNAV_CFLAGS_OTHER})
   target_link_libraries(galapix.sdl
@@ -335,6 +336,7 @@ if(BUILD_GALAPIX_GTK)
     ${GALAPIX_GTK_DEPS_LIBRARIES})
 
   add_executable(galapix.gtk src/main/gtk_main.cpp)
+  set_target_properties(galapix.gtk PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.gtk")
   target_compile_options(galapix.gtk PRIVATE ${WARNINGS_CXX_FLAGS})
   target_compile_definitions(galapix.gtk PRIVATE -DGALAPIX_GTK)
   target_include_directories(galapix.gtk SYSTEM PRIVATE
