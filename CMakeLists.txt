@@ -141,6 +141,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 include(CheckIncludeFile)
 
+find_package(Python)
 find_package(Threads REQUIRED)
 find_package(Boost COMPONENTS system filesystem REQUIRED)
 find_package(CURL REQUIRED)
@@ -250,7 +251,7 @@ file(GLOB SHADER_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/display)
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin2h.py
+  COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bin2h.py
   -o ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp
   --namespace=shader_vfs --table
   ${SHADER_SOURCE}
