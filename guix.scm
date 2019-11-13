@@ -17,100 +17,78 @@
 ;; Install with:
 ;; guix package --install-from-file=guix.scm
 
-(use-modules (ice-9 popen)
-             (ice-9 rdelim)
-             (guix build utils)
-             (guix build-system scons)
-             (guix gexp)
-             (guix git-download)
-             (guix licenses)
+(set! %load-path
+  (cons* "/ipfs/QmZdLjyRm29uL4Eh4HqkZHvwMMus6zjwQ8EdBtp5JUPT99/guix-cocfree_0.0.0-52-ga8e1798"
+         %load-path))
+
+(use-modules (guix build-system scons)
+             ((guix licenses) #:prefix license:)
              (guix packages)
              (gnu packages base)
              (gnu packages mcrypt)
              (gnu packages boost)
+             (gnu packages compression)
              (gnu packages curl)
              (gnu packages gcc)
              (gnu packages gl)
              (gnu packages imagemagick)
              (gnu packages pkg-config)
              (gnu packages photo)
-             (gnu packages python)
              (gnu packages sdl)
              (gnu packages sqlite)
-             )
+             (guix-cocfree utils))
 
 (define %source-dir (dirname (current-filename)))
 
-(define current-commit
-  (with-directory-excursion %source-dir
-   (let* ((port   (open-input-pipe "git describe --tags"))
-          (output (read-line port)))
-     (close-pipe port)
-     (string-trim-right output #\newline))))
+(define-public galapix-0.2
+  (package
+   (name "galapix")
+   (version (version-from-source %source-dir))
+   (source  (source-from-source %source-dir))
+   (arguments
+    `(#:tests? #f
+      #:scons-flags (list "GALAPIX_GTK=False")
+      #:phases (modify-phases
+                %standard-phases
+                (add-before 'build 'fixgcc9
+                            (lambda _
+                              (unsetenv "C_INCLUDE_PATH")
+                              (unsetenv "CPLUS_INCLUDE_PATH")
+                              #t))
+                (replace 'install
+                         (lambda* (#:key outputs #:allow-other-keys)
+                           (let* ((out (assoc-ref outputs "out"))
+                                  (bindir (string-append out "/bin")))
+                             (mkdir-p bindir)
+                             (copy-file "build/galapix.sdl" (string-append bindir "/galapix.sdl")))
+                           #t))
+                )))
+   (build-system scons-build-system)
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
+   (inputs
+    `(("gcc" ,gcc-9)
+      ("sdl2" ,sdl2)
+      ("sdl2-image" ,sdl2-image)
+      ("mesa" ,mesa)
+      ("glew" ,glew)
+      ("curl" ,curl)
+      ("boost" ,boost)
+      ("boost-signals2" ,boost-signals2)
+      ("sqlite" ,sqlite)
+      ("libmhash" ,libmhash)
+      ("imagemagick" ,imagemagick)
+      ("libexif" ,libexif)
+      ))
+   (propagated-inputs
+    `(("p7zip" ,p7zip)
+      ("tar" ,tar)
+      ("unzip" ,unzip)))
+   (synopsis "An image viewer for large image collections")
+   (description "An image viewer for large image collections")
+   (home-page "https://gitlab.com/galapix/galapix")
+   (license license:gpl3+)))
 
-;;           (add-before 'configure 'fixgcc7
-;;             (lambda _
-;;               (unsetenv "C_INCLUDE_PATH")
-;;               (unsetenv "CPLUS_INCLUDE_PATH")))
-
-(define (source-predicate . dirs)
-  (let ((preds (map (lambda (p)
-                      (git-predicate (string-append %source-dir p)))
-                    dirs)))
-    (lambda (file stat)
-      (let loop ((f (car preds))
-                 (rest (cdr preds)))
-        (if (f file stat)
-            #t
-            (if (not (nil? rest))
-                (loop (car rest) (cdr rest))
-                #f))))))
-
-(package
- (name "galapix-master")
- (version current-commit)
- (source (local-file %source-dir
-                     #:recursive? #t
-                     #:select? (source-predicate "")))
- (arguments
-  `(#:tests? #f
-    #:scons-flags (list "GALAPIX_GTK=False")
-    #:phases (modify-phases
-              %standard-phases
-              (add-before 'build 'fixgcc9
-                          (lambda _
-                            (unsetenv "C_INCLUDE_PATH")
-                            (unsetenv "CPLUS_INCLUDE_PATH")
-                            #t))
-              (replace 'install
-                       (lambda* (#:key outputs #:allow-other-keys)
-                                (let* ((out (assoc-ref outputs "out"))
-                                       (bindir (string-append out "/bin")))
-                                  (mkdir-p bindir)
-                                  (copy-file "build/galapix.sdl" (string-append bindir "/galapix.sdl")))
-                                #t))
-              )))
- (build-system scons-build-system)
- (inputs `(("python" ,python)
-           ("sdl2" ,sdl2)
-           ("sdl2-image" ,sdl2-image)
-           ("sdl2-mixer" ,sdl2-mixer)
-           ("mesa" ,mesa)
-           ("glew" ,glew)
-           ("curl" ,curl)
-           ("boost" ,boost)
-           ("boost-signals2" ,boost-signals2)
-           ("sqlite" ,sqlite)
-           ("libmhash" ,libmhash)
-           ("imagemagick" ,imagemagick)
-           ("libexif" ,libexif)
-           ("coreutils" ,coreutils)
-           ))
- (native-inputs `(("pkg-config" ,pkg-config)
-                  ("gcc" ,gcc-9)))
- (synopsis "An image viewer for large image collections")
- (description "An image viewer for large image collections")
- (home-page "https://gitlab.com/galapix/galapix")
- (license gpl3+))
+galapix-0.2
 
 ;; EOF ;;
