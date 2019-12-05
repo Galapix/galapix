@@ -23,6 +23,7 @@ class ArgParser
 {
 public:
   static void print_usage();
+  static void print_version();
   static void parse_args(int argc, char** argv, Options& opts);
 
 private:

@@ -45,7 +45,7 @@
   (package
    (name "galapix-0.3")
    (version (version-from-source %source-dir))
-   (source (source-from-source %source-dir))
+   (source (source-from-source %source-dir #:version version))
    (arguments
     `(#:tests? #f))
    (build-system cmake-build-system)

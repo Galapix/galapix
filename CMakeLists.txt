@@ -15,7 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.6)
-project(galapix-0.3 VERSION 0.3.0)
+project(galapix-0.3)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/mk/cmake)
 
 set(PROJECT_NAME ${PROJECT_NAME} CACHE STRING "Set project name")
 
@@ -24,6 +26,7 @@ if(POLICY CMP0072)
   cmake_policy(SET CMP0072 NEW)
 endif()
 
+include(GetProjectVersion)
 include(GNUInstallDirs)
 
 option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
@@ -299,6 +302,9 @@ add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
 set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
 target_compile_options(libgalapix PRIVATE ${WARNINGS_CXX_FLAGS})
 target_compile_options(libgalapix PRIVATE ${MAGICKXX_CFLAGS_OTHER})
+target_compile_definitions(libgalapix PUBLIC
+  -DPROJECT_VERSION="${PROJECT_VERSION}"
+  -DPROJECT_NAME="${PROJECT_NAME}")
 
 install(TARGETS libgalapix
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

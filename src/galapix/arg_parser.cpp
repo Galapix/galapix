@@ -57,6 +57,12 @@ ArgParser::print_usage()
 }
 
 void
+ArgParser::print_version()
+{
+  std::cout << PROJECT_NAME << " " << PROJECT_VERSION << std::endl;
+}
+
+void
 ArgParser::parse_args(int argc, char** argv, Options& opts)
 {
   // Parse arguments
@@ -68,6 +74,12 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
           strcmp(argv[i], "-h") == 0)
       {
         print_usage();
+        exit(0);
+      }
+      else if (strcmp(argv[i], "--version") == 0 ||
+               strcmp(argv[i], "-V") == 0)
+      {
+        print_version();
         exit(0);
       }
       else if (strcmp(argv[i], "--database") == 0 ||
