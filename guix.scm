@@ -18,16 +18,11 @@
 ;; guix package --install-from-file=guix.scm
 
 (set! %load-path
-      (cons* "/ipfs/QmafuNSaiqymsEvRECwQaz7TSz5hYMWiJ3X7Z3QGwuThPb/guix-cocfree_v0.0.0-37-g291d4eb"
-             %load-path))
+  (cons* "/ipfs/QmZdLjyRm29uL4Eh4HqkZHvwMMus6zjwQ8EdBtp5JUPT99/guix-cocfree_0.0.0-52-ga8e1798"
+         %load-path))
 
-(use-modules (ice-9 popen)
-             (ice-9 rdelim)
-             (guix build utils)
-             (guix build-system cmake)
-             (guix gexp)
-             (guix git-download)
-             (guix licenses)
+(use-modules (guix build-system cmake)
+             ((guix licenses) #:prefix license:)
              (guix packages)
              (gnu packages base)
              (gnu packages mcrypt)
@@ -35,6 +30,7 @@
              (gnu packages curl)
              (gnu packages gcc)
              (gnu packages gl)
+             (gnu packages image)
              (gnu packages imagemagick)
              (gnu packages pkg-config)
              (gnu packages photo)
@@ -49,53 +45,31 @@
   (package
    (name "galapix-0.3")
    (version (version-from-source %source-dir))
-   (source (local-file %source-dir
-                       #:recursive? #t
-                       #:select? (source-select-function %source-dir
-                                                         '(""
-                                                           "/external/benchmark"
-                                                           "/external/glm"
-                                                           "/external/googletest"
-                                                           "/external/logmich"
-                                                           "/external/sexp-cpp"
-                                                           "/external/uitest"))))
+   (source (source-from-source %source-dir))
    (arguments
-    `(#:tests? #f
-      #:configure-flags '()
-      #:phases (modify-phases
-                %standard-phases
-                (add-before 'configure 'fixgcc9
-                            (lambda _
-                              (unsetenv "C_INCLUDE_PATH")
-                              (unsetenv "CPLUS_INCLUDE_PATH")))
-                (add-before 'configure 'patch-python
-                            (lambda _
-                              (substitute* "bin2h.py"
-                                           (("/usr/bin/env python") (which "python3")))
-                              #t))
-
-                )))
+    `(#:tests? #f))
    (build-system cmake-build-system)
-   (inputs `(("python" ,python)
-             ("sdl2" ,sdl2)
-             ("sdl2-image" ,sdl2-image)
-             ("sdl2-mixer" ,sdl2-mixer)
-             ("mesa" ,mesa)
-             ("glew" ,glew)
-             ("curl" ,curl)
-             ("boost" ,boost)
-             ("sqlite" ,sqlite)
-             ("libmhash" ,libmhash)
-             ("imagemagick" ,imagemagick)
-             ("libexif" ,libexif)
-             ("coreutils" ,coreutils)
-             ))
-   (native-inputs `(("pkg-config" ,pkg-config)
-                    ("gcc" ,gcc-9)))
-   (synopsis "An image viewer for large image collections")
-   (description "An image viewer for large image collections")
-   (home-page "https://gitlab.com/galapix/galapix")
-   (license gpl3+)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("gcc" ,gcc-9) ; for <filesystem>
+      ))
+   (inputs
+    `(("python" ,python)
+      ("sdl2" ,sdl2)
+      ("mesa" ,mesa)
+      ("glew" ,glew)
+      ("curl" ,curl)
+      ("boost" ,boost)
+      ("libjpeg" ,libjpeg)
+      ("libpng" ,libpng)
+      ("sqlite" ,sqlite)
+      ("libmhash" ,libmhash)
+      ("imagemagick" ,imagemagick)
+      ("libexif" ,libexif)))
+   (synopsis (synopsis-from-source %source-dir))
+   (description (description-from-source %source-dir))
+   (home-page (homepage-from-source %source-dir))
+   (license license:gpl3+)))
 
 galapix-0.3
 
