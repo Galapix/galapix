@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.6)
 project(galapix-0.3 VERSION 0.3.0)
+
+set(PROJECT_NAME ${PROJECT_NAME} CACHE STRING "Set project name")
 
 if(POLICY CMP0072)
   # FindOpenGL prefers GLVND by default when available
