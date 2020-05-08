@@ -29,7 +29,6 @@
              (gnu packages boost)
              (gnu packages compression)
              (gnu packages curl)
-             (gnu packages gcc)
              (gnu packages gl)
              (gnu packages imagemagick)
              (gnu packages pkg-config)
@@ -50,11 +49,6 @@
       #:scons-flags (list "GALAPIX_GTK=False")
       #:phases (modify-phases
                 %standard-phases
-                (add-before 'build 'fixgcc9
-                            (lambda _
-                              (unsetenv "C_INCLUDE_PATH")
-                              (unsetenv "CPLUS_INCLUDE_PATH")
-                              #t))
                 (replace 'install
                          (lambda* (#:key outputs #:allow-other-keys)
                            (let* ((out (assoc-ref outputs "out"))
@@ -67,8 +61,7 @@
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (inputs
-    `(("gcc" ,gcc-9)
-      ("sdl2" ,sdl2)
+    `(("sdl2" ,sdl2)
       ("sdl2-image" ,sdl2-image)
       ("mesa" ,mesa)
       ("glew" ,glew)
