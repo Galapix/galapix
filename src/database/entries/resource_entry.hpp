@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_ENTRIES_RESOURCE_ENTRY_HPP
 #define HEADER_GALAPIX_DATABASE_ENTRIES_RESOURCE_ENTRY_HPP
 
+#include <string>
+
 #include "database/row_id.hpp"
 
 class ResourceEntry
