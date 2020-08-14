@@ -18,7 +18,7 @@
 ;; guix package --install-from-file=guix.scm
 
 (set! %load-path
-  (cons* "/ipfs/QmZdLjyRm29uL4Eh4HqkZHvwMMus6zjwQ8EdBtp5JUPT99/guix-cocfree_0.0.0-52-ga8e1798"
+  (cons* "/ipfs/QmdrwuaArAXmKGPY3oEoNpxTp7EUSKetXAVGBt67nqo54X/guix-cocfree_0.0.0-59-gd79b2bf"
          %load-path))
 
 (use-modules (guix build-system cmake)
@@ -32,6 +32,7 @@
              (gnu packages gl)
              (gnu packages image)
              (gnu packages imagemagick)
+             (gnu packages maths)
              (gnu packages pkg-config)
              (gnu packages photo)
              (gnu packages python)
@@ -51,16 +52,17 @@
    (build-system cmake-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)
-      ("gcc" ,gcc-9) ; for <filesystem>
+      ("gcc" ,gcc-10) ; for <filesystem>
       ))
    (inputs
     `(("python" ,python)
       ("sdl2" ,sdl2)
       ("mesa" ,mesa)
       ("glew" ,glew)
+      ("glm" ,glm)
       ("curl" ,curl)
       ("boost" ,boost)
-      ("libjpeg" ,libjpeg)
+      ("libjpeg-turbo" ,libjpeg-turbo)
       ("libpng" ,libpng)
       ("sqlite" ,sqlite)
       ("libmhash" ,libmhash)
