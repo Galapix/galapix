@@ -202,7 +202,7 @@ void
 DownloadManager::cancel_transfer(TransferHandle id)
 {
   m_queue.wait_and_push(
-    [=]{
+    [=, this]{
       auto it = std::find_if(m_transfers.begin(), m_transfers.end(),
                              [&id](std::unique_ptr<DownloadTransfer>& transfer) {
                                return transfer->id == id;
@@ -223,7 +223,7 @@ void
 DownloadManager::cancel_all_transfers()
 {
   m_queue.wait_and_push(
-    [=]{
+    [this]{
       for(auto& transfer : m_transfers)
       {
         curl_multi_remove_handle(m_multi_handle, transfer->handle);
@@ -276,7 +276,7 @@ DownloadManager::request_get(const std::string& url,
   TransferHandle uuid = generate_transfer_handle();
 
   m_queue.wait_and_push(
-    [=]{
+    [=, this]{
       std::optional<DownloadResult> cached_result = m_cache.get(url);
       if (cached_result)
       {
@@ -307,7 +307,7 @@ DownloadManager::request_post(const std::string& url,
   TransferHandle uuid = generate_transfer_handle();
 
   m_queue.wait_and_push(
-    [=]{
+    [=, this]{
       log_info("downloading: %1%", url);
       auto transfer = std::make_unique<DownloadTransfer>(uuid, url, post_data,
                                                          callback, progress_callback);

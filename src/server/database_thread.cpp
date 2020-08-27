@@ -334,7 +334,7 @@ void
 DatabaseThread::request_resource_entry(const RowId& blob_id,
                                        const std::function<void (const std::optional<ResourceEntry>&)>& callback)
 {
-  m_request_queue.wait_and_push([=](){
+  m_request_queue.wait_and_push([=, this](){
       callback(m_database.get_resources().get_resource_entry(blob_id));
     });
 }
