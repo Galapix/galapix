@@ -249,6 +249,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
 include_directories(SYSTEM external/logmich/include/)
 include_directories(SYSTEM external/sexp-cpp/include/)
 include_directories(SYSTEM external/googletest/googletest/include/)
+include_directories(SYSTEM external/entt/single_include/)
 include_directories(SYSTEM ${MAGICKXX_INCLUDE_DIRS})
 
 # turn shader soure in a .hpp file
