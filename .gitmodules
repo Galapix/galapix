@@ -13,3 +13,6 @@
 [submodule "external/sexp-cpp"]
 	path = external/sexp-cpp
 	url = https://gitlab.com/lispparser/sexp-cpp.git
+[submodule "external/entt"]
+	path = external/entt
+	url = https://github.com/skypjack/entt.git
