@@ -18,7 +18,7 @@
 #define HEADER_GALAPIX_JOBS_TILE_GENERATION_JOB_HPP
 
 #include <functional>
-#include <boost/signals2/signal.hpp>
+#include <sigc++/signal.h>
 #include <mutex>
 
 #include "database/entries/old_file_entry.hpp"
@@ -44,7 +44,7 @@ public:
 
   bool is_aborted() override;
 
-  boost::signals2::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
+  sigc::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
   void process_tile(const Tile& tile);
@@ -97,7 +97,7 @@ private:
   typedef std::vector<Tile> Tiles;
   Tiles m_tiles;
 
-  boost::signals2::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
+  sigc::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
 };
 
 #endif

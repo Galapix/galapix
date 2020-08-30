@@ -159,6 +159,7 @@ find_package(fmt REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(SQLITE3 REQUIRED sqlite3)
+pkg_search_module(SIGCXX REQUIRED sigc++-2.0)
 
 # older versions don't have a mhash.pc
 pkg_search_module(MHASH mhash)
@@ -231,6 +232,7 @@ set(GALAPIX_DEPS_LIBRARIES
   logmich
   sexp
   fmt::fmt
+  ${SIGCXX_LIBRARIES}
   ${SPNAV_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}
@@ -243,7 +245,6 @@ set(GALAPIX_DEPS_LIBRARIES
   ${MHASH_LIBRARIES}
   ${Boost_SYSTEM_LIBRARY}
   ${Boost_FILESYSTEM_LIBRARY}
-  ${Boost_SIGNALS_LIBRARY}
   ${CMAKE_THREAD_LIBS_INIT})
 
 include_directories(src/)
@@ -253,6 +254,7 @@ include_directories(SYSTEM external/sexp-cpp/include/)
 include_directories(SYSTEM external/googletest/googletest/include/)
 include_directories(SYSTEM external/entt/single_include/)
 include_directories(SYSTEM ${MAGICKXX_INCLUDE_DIRS})
+include_directories(SYSTEM ${SIGCXX_INCLUDE_DIRS})
 
 # turn shader soure in a .hpp file
 file(GLOB SHADER_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}

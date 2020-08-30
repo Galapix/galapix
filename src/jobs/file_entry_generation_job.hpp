@@ -18,7 +18,7 @@
 #define HEADER_GALAPIX_JOBS_FILE_ENTRY_GENERATION_JOB_HPP
 
 #include <functional>
-#include <boost/signals2/signal.hpp>
+#include <sigc++/signal.h>
 
 #include "util/url.hpp"
 #include "job/job.hpp"
@@ -32,11 +32,11 @@ public:
 
   void run() override;
 
-  boost::signals2::signal<void (OldFileEntry)>& sig_file_callback() { return m_sig_file_callback; }
+  sigc::signal<void (OldFileEntry)>& sig_file_callback() { return m_sig_file_callback; }
 
 private:
   URL m_url;
-  boost::signals2::signal<void (OldFileEntry)> m_sig_file_callback;
+  sigc::signal<void (OldFileEntry)> m_sig_file_callback;
 
 private:
   FileEntryGenerationJob(const FileEntryGenerationJob&);
