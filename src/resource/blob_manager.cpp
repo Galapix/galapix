@@ -16,10 +16,11 @@
 
 #include "resource/blob_manager.hpp"
 
+#include <fmt/format.h>
+
 #include "archive/archive_manager.hpp"
 #include "network/download_manager.hpp"
 #include "resource/resource_locator.hpp"
-#include "util/format.hpp"
 
 BlobManager::BlobManager(DownloadManager& download_mgr,
                          ArchiveManager&  archive_mgr) :
@@ -93,16 +94,16 @@ BlobManager::request_blob(const ResourceLocator& locator,
          }
          else
          {
-           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(format("%s: error: invalid response code: %d",
-                                                                                        url.str(), result.get_response_code()))));
+           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(fmt::format("{}: error: invalid response code: {}",
+                                                                                             url.str(), result.get_response_code()))));
          }
        });
   }
   else
   {
     Failable<BlobAccessorPtr> failable;
-    failable.set_exception(std::make_exception_ptr(std::runtime_error(format("%s: error: unsupported URL scheme: %s",
-                                                                             locator.str(), url.get_scheme()))));
+    failable.set_exception(std::make_exception_ptr(std::runtime_error(fmt::format("{}: error: unsupported URL scheme: {}",
+                                                                                  locator.str(), url.get_scheme()))));
     callback(failable);
   }
 }

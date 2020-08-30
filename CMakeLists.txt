@@ -155,6 +155,7 @@ find_package(CURL REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(glm REQUIRED)
+find_package(fmt REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(SQLITE3 REQUIRED sqlite3)

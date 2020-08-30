@@ -16,7 +16,7 @@
 
 #include "database/file_tile_database.hpp"
 
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <sstream>
 #include <string.h>
 #include <stdio.h>
@@ -189,13 +189,13 @@ FileTileDatabase::get_directory(const RowId& file_id_obj)
   int part2 = static_cast<int>((file_id >> 12) & 0xfff);
   int part3 = static_cast<int>((file_id >>  0) & 0xfff);
 
-  return (boost::format("%03x/%03x/%03x") % part1 % part2 % part3).str();
+  return fmt::format("{:03x}/{:03x}/{:03x}", part1, part2, part3);
 }
 
 std::string
 FileTileDatabase::get_filename(const Vector2i& pos, int scale)
 {
-  return (boost::format("tile-%03d-%03d-%03d.dat") % scale % pos.x % pos.y).str();
+  return fmt::format("tile-{:03d}-{:03d}-{:03d}.dat", scale, pos.x, pos.y);
 }
 
 std::string
@@ -255,13 +255,13 @@ FileTileDatabase::ensure_directory_exists(const RowId& file_id_obj)
   std::ostringstream str;
   str << m_prefix;
 
-  str << '/' << boost::format("%03x") % part1;
+  str << '/' << fmt::format("{:03x}", part1);
   Filesystem::mkdir(str.str());
 
-  str << '/' << boost::format("%03x") % part2;
+  str << '/' << fmt::format("{:03x}", part2);
   Filesystem::mkdir(str.str());
 
-  str << '/' << boost::format("%03x") % part3;
+  str << '/' << fmt::format("{:03x}", part3);
   Filesystem::mkdir(str.str());
 }
 

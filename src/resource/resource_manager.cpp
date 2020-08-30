@@ -18,6 +18,7 @@
 
 #include <future>
 #include <logmich/log.hpp>
+#include <fmt/format.h>
 
 #include "generator/generator.hpp"
 #include "network/download_manager.hpp"
@@ -32,7 +33,6 @@
 #include "resource/tile_info.hpp"
 #include "resource/url_info.hpp"
 #include "server/database_thread.hpp"
-#include "util/format.hpp"
 
 ResourceManager::ResourceManager(DatabaseThread& database,
                                  Generator& generator,

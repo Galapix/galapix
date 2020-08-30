@@ -18,7 +18,7 @@
 
 #include <iostream>
 #include <thread>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 #include <logmich/log.hpp>
 #include <SDL_keycode.h>
 
@@ -336,7 +336,7 @@ SDLViewer::process_event(const SDL_Event& event)
             // FIXME: Could do this in a worker thread to avoid pause on screenshotting
             for(int i = 0; ; ++i)
             {
-              std::string outfile = (boost::format("/tmp/galapix-screenshot-%04d.png") % i).str();
+              std::string outfile = fmt::format("/tmp/galapix-screenshot-{:04d}.png", i);
               if (!Filesystem::exist(outfile))
               {
                 PNG::save(surface, outfile);

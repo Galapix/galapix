@@ -62,6 +62,7 @@
       ("glm" ,glm)
       ("curl" ,curl)
       ("boost" ,boost)
+      ("fmt" ,fmt)
       ("libjpeg-turbo" ,libjpeg-turbo)
       ("libpng" ,libpng)
       ("sqlite" ,sqlite)

@@ -19,9 +19,9 @@
 #include <stdexcept>
 #include <sstream>
 #include <tuple>
+#include <fmt/format.h>
 
 #include "util/filesystem.hpp"
-#include "util/format.hpp"
 
 ResourceURL::ResourceURL(const std::string& scheme,
                          const std::string& authority,
@@ -54,7 +54,7 @@ ResourceURL::from_string(const std::string& url)
   std::string::size_type scheme_pos = url.find(':');
   if (scheme_pos == std::string::npos)
   {
-    throw std::runtime_error(format("not a valid url: %s", url));
+    throw std::runtime_error(fmt::format("not a valid url: {}", url));
   }
   else
   {

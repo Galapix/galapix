@@ -16,7 +16,6 @@
 
 #include "resource_locator.hpp"
 
-#include <boost/algorithm/string/predicate.hpp>
 #include <sstream>
 #include <logmich/log.hpp>
 
@@ -24,11 +23,11 @@ ResourceLocator
 ResourceLocator::from_string(const std::string& locator)
 {
   std::string::size_type skip = 0;
-  if      (boost::starts_with(locator, "file://" )) { skip = 7; }
-  else if (boost::starts_with(locator, "ftp://"  )) { skip = 6; }
-  else if (boost::starts_with(locator, "http://" )) { skip = 7; }
-  else if (boost::starts_with(locator, "https://")) { skip = 8; }
-  else                                              { skip = 0; }
+  if      (locator.starts_with("file://" )) { skip = 7; }
+  else if (locator.starts_with("ftp://"  )) { skip = 6; }
+  else if (locator.starts_with("http://" )) { skip = 7; }
+  else if (locator.starts_with("https://")) { skip = 8; }
+  else                                      { skip = 0; }
 
   std::string::size_type handler_start = locator.find("//", skip, 2);
   if (handler_start == std::string::npos)
