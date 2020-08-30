@@ -150,7 +150,7 @@ include(CheckIncludeFile)
 
 find_package(Python)
 find_package(Threads REQUIRED)
-find_package(Boost COMPONENTS system filesystem REQUIRED)
+find_package(Boost COMPONENTS REQUIRED)
 find_package(CURL REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
@@ -243,8 +243,6 @@ set(GALAPIX_DEPS_LIBRARIES
   ${CURL_LIBRARIES}
   ${MAGICKXX_LIBRARIES}
   ${MHASH_LIBRARIES}
-  ${Boost_SYSTEM_LIBRARY}
-  ${Boost_FILESYSTEM_LIBRARY}
   ${CMAKE_THREAD_LIBS_INIT})
 
 include_directories(src/)

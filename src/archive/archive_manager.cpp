@@ -22,6 +22,7 @@
 #include <logmich/log.hpp>
 
 #include "util/filesystem.hpp"
+#include "util/path.hpp"
 #include "util/raise_exception.hpp"
 #include "util/string_util.hpp"
 
@@ -199,7 +200,7 @@ ArchiveManager::get_file(const BlobAccessorPtr& archive, const std::string& type
 std::string
 ArchiveManager::create_extraction_directory() const
 {
-  std::filesystem::path directory = m_tmpdir / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").string();
+  std::filesystem::path directory = m_tmpdir / unique_path();
   log_info("creating directory: {}", directory.string());
   std::filesystem::create_directory(directory);
   return directory.string();

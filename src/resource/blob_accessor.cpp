@@ -17,7 +17,8 @@
 #include "resource/blob_accessor.hpp"
 
 #include <filesystem>
-#include <boost/filesystem.hpp>
+
+#include "util/path.hpp"
 
 BlobAccessor::BlobAccessor(const std::string& filename) :
   m_mutex(),
@@ -54,7 +55,7 @@ BlobAccessor::get_stdio_name() const
   }
   else
   {
-    std::filesystem::path tmpfile = std::filesystem::temp_directory_path() / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").string();
+    std::filesystem::path tmpfile = std::filesystem::temp_directory_path() / unique_path();
     m_filename = tmpfile.string();
     m_blob.write_to_file(m_filename);
     return m_filename;
