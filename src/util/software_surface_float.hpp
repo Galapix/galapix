@@ -17,7 +17,7 @@
 #ifndef HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_FLOAT_HPP
 #define HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_FLOAT_HPP
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 #include "math/size.hpp"
@@ -26,7 +26,7 @@
 
 class SoftwareSurfaceFloat;
 
-typedef boost::shared_ptr<SoftwareSurfaceFloat> SoftwareSurfaceFloatPtr;
+typedef std::shared_ptr<SoftwareSurfaceFloat> SoftwareSurfaceFloatPtr;
 
 class SoftwareSurfaceFloat
 {

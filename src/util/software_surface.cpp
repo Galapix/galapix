@@ -18,7 +18,6 @@
 
 #include <iostream>
 #include <string.h>
-#include <boost/scoped_array.hpp>
 
 #include "math/rect.hpp"
 #include "math/rgb.hpp"
