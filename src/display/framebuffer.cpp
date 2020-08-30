@@ -311,7 +311,7 @@ Framebuffer::set_modelview(const glm::mat4& modelview)
 void
 Framebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
 {
-  log_error("not implemented: %1% %2% %3%", contrast, brightness, gamma);
+  log_error("not implemented: {} {} {}", contrast, brightness, gamma);
 }
 
 /* EOF */

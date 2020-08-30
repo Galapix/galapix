@@ -31,7 +31,7 @@ VidThumb::is_available()
   try
   {
     std::string exe = Filesystem::find_exe("vidthumb");
-    log_info("found %1%", exe);
+    log_info("found {}", exe);
     return true;
   }
   catch(std::exception& err)

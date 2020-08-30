@@ -79,7 +79,7 @@ ThreadPool::run()
     }
     catch(const std::exception& err)
     {
-      log_error("exception while executing task: %1%", err.what());
+      log_error("exception while executing task: {}", err.what());
     }
     catch(...)
     {

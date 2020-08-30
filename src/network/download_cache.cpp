@@ -45,7 +45,7 @@ DownloadCache::get(const std::string& url)
 void
 DownloadCache::store(const std::string& url, const DownloadResult& result)
 {
-  log_error("not implemented: %1%", url);
+  log_error("not implemented: {}", url);
 }
 
 /* EOF */

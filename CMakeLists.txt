@@ -230,6 +230,7 @@ set(GALAPIX_DEPS_LIBRARIES
   libgalapix_sdl
   logmich
   sexp
+  fmt::fmt
   ${SPNAV_LIBRARIES}
   ${OPENGL_LIBRARIES}
   ${GLEW_LIBRARIES}

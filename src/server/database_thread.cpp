@@ -170,7 +170,7 @@ JobHandle
 DatabaseThread::request_tile(const OldFileEntry& file_entry, int tilescale, const Vector2i& pos,
                              const std::function<void (Tile)>& callback)
 {
-  log_info("%1% %2% %3%", file_entry, tilescale, pos);
+  log_info("{} {} {}", file_entry, tilescale, pos);
 
   JobHandle job_handle_ = JobHandle::create();
 
@@ -246,7 +246,7 @@ JobHandle
 DatabaseThread::request_file(const URL& url,
                              const std::function<void (OldFileEntry)>& file_callback)
 {
-  log_info("%1%", url);
+  log_info("{}", url);
 
   JobHandle job_handle_ = JobHandle::create();
 

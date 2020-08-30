@@ -115,7 +115,7 @@ Exec::exec()
       if (chdir(m_working_directory->c_str()) != 0)
       {
         int errnum = errno;
-        log_error("%1%: failed change to directory: %2%", *m_working_directory, strerror(errnum));
+        log_error("{}: failed change to directory: {}", *m_working_directory, strerror(errnum));
         _exit(EXIT_FAILURE);
       }
     }
@@ -135,7 +135,7 @@ Exec::exec()
     // FIXME: this ain't proper, need to exit(1) on failure and signal error to parent somehow
 
     // execvp() only returns on failure
-    log_error("%1%: %2%", m_program, strerror(error_code));
+    log_error("{}: {}", m_program, strerror(error_code));
     _exit(EXIT_FAILURE);
   }
   else // if (pid > 0)

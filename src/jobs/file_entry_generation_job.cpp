@@ -93,8 +93,8 @@ FileEntryGenerationJob::run()
   }
   catch(const std::exception& err)
   {
-    log_error("Error while processing %1%", m_url);
-    log_error("  Exception: %1%", err.what());
+    log_error("Error while processing {}", m_url);
+    log_error("  Exception: {}", err.what());
   }
 }
 

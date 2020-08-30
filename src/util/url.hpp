@@ -18,6 +18,8 @@
 #define HEADER_GALAPIX_UTIL_URL_HPP
 
 #include <string>
+#include <fmt/format.h>
+#include <sstream>
 
 #include "util/blob.hpp"
 
@@ -79,6 +81,24 @@ private:
 std::ostream& operator<<(std::ostream& out, const URL& url);
 bool operator<(const URL& lhs, const URL& rhs);
 bool operator==(const URL& lhs, const URL& rhs);
+
+template<>
+struct fmt::formatter<URL>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(URL const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif
 

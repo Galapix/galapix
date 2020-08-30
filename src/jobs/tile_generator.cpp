@@ -53,7 +53,7 @@ TileGenerator::generate_old(const URL& url,
 
   if (0)
   {
-    log_info("TileGeneratorThread: processing scales %1%-%2%: %3%: done",
+    log_info("TileGeneratorThread: processing scales {}-{}: {}: done",
              min_scale, max_scale, url);
   }
 }
@@ -117,12 +117,12 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
     if (0 <= x_miss && x_miss <= 1 &&
         0 <= y_miss && y_miss <= 1)
     {
-      log_debug("image doesn't match target size, ignoring as it is close enough: target=%1% vs surface=%2%",
+      log_debug("image doesn't match target size, ignoring as it is close enough: target={} vs surface={}",
                 target_size, surface.get_size());
     }
     else
     {
-      log_debug("image doesn't match target size, doing scaling: target=%1% vs surface=%2%",
+      log_debug("image doesn't match target size, doing scaling: target={} vs surface={}",
                 target_size, surface.get_size());
       surface = surface.scale(target_size);
     }

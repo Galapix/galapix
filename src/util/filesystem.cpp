@@ -393,7 +393,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
       }
       catch(const std::exception& err)
       {
-        log_warn("Warning: %1%", err.what());
+        log_warn("Warning: {}", err.what());
       }
     }
   }

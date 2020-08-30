@@ -19,6 +19,8 @@
 
 #include <array>
 #include <string>
+#include <fmt/format.h>
+#include <sstream>
 
 #include "util/blob.hpp"
 
@@ -49,6 +51,24 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const SHA1& sha1);
+
+template<>
+struct fmt::formatter<SHA1>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(SHA1 const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif
 

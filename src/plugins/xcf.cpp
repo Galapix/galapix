@@ -86,7 +86,7 @@ XCF::is_available()
   {
     std::string xcfinfo_exe = Filesystem::find_exe("xcfinfo");
     std::string xcf2png_exe = Filesystem::find_exe("xcf2png");
-    log_info("found %1%, %2%", xcfinfo_exe, xcf2png_exe);
+    log_info("found {}, {}", xcfinfo_exe, xcf2png_exe);
     return true;
   }
   catch(std::exception& err)

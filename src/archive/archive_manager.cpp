@@ -200,7 +200,7 @@ std::string
 ArchiveManager::create_extraction_directory() const
 {
   std::filesystem::path directory = m_tmpdir / boost::filesystem::unique_path("%%%%-%%%%-%%%%-%%%%").string();
-  log_info("creating directory: %1%", directory);
+  log_info("creating directory: {}", directory.string());
   std::filesystem::create_directory(directory);
   return directory.string();
 }

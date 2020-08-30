@@ -55,13 +55,13 @@ ResourceGeneratorCallbacks::on_resource_name(const ResourceName& resource_name)
 void
 ResourceGeneratorCallbacks::on_archive_data(const ArchiveInfo& archive_info)
 {
-  log_info("%1%", archive_info.get_files().size());
+  log_info("{}", archive_info.get_files().size());
 }
 
 void
 ResourceGeneratorCallbacks::on_image_data(const ImageData& image_data)
 {
-  log_info("%1% %2%x%3%",
+  log_info("{} {}x{}",
            image_data.get_image_tiles().size(),
            image_data.get_image_info().get_width(),
            image_data.get_image_info().get_height());

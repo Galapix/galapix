@@ -18,6 +18,8 @@
 #define HEADER_GALAPIX_MATH_VECTOR2_HPP
 
 #include <iosfwd>
+#include <sstream>
+#include <fmt/format.h>
 
 #define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
@@ -25,6 +27,24 @@
 typedef glm::vec2 Vector2f;
 
 std::ostream& operator<<(std::ostream& s, const Vector2f& v);
+
+template<>
+struct fmt::formatter<Vector2f>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(Vector2f const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif
 

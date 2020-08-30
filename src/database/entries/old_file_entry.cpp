@@ -16,6 +16,7 @@
 
 #include "database/entries/old_file_entry.hpp"
 
+#include <fmt/format.h>
 #include <iostream>
 
 #include "sqlite/reader.hpp"

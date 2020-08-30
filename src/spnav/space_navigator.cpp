@@ -121,7 +121,7 @@ SpaceNavigator::stop_thread()
   char data[]{0};
   if (write(m_pipefd[1], data, 1) < 0)
   {
-    log_warn("wakeup pipe write() error: %1%", strerror(errno));
+    log_warn("wakeup pipe write() error: {}", strerror(errno));
   }
 
   m_thread.join();

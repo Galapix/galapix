@@ -18,6 +18,8 @@
 #define HEADER_GALAPIX_RESOURCE_RESOURCE_TYPE_HPP
 
 #include <ostream>
+#include <sstream>
+#include <fmt/format.h>
 
 enum class ResourceType
 {
@@ -26,6 +28,24 @@ enum class ResourceType
 
 ResourceType ResourceType_from_string(const std::string& value);
 std::ostream& operator<<(std::ostream& os, ResourceType type);
+
+template<>
+struct fmt::formatter<ResourceType>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(ResourceType const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif
 

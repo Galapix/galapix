@@ -88,7 +88,7 @@ std::string read_text_file(const std::string& filename)
     {
       if (shader_vfs::file_table[i].name == filename)
       {
-        log_info("using buildin file: %s", filename);
+        log_info("using buildin file: {}", filename);
         return std::string(shader_vfs::file_table[i].data,
                            shader_vfs::file_table[i].size);
       }
@@ -100,7 +100,7 @@ std::string read_text_file(const std::string& filename)
   }
   else
   {
-    log_info("using external file: %s", filename);
+    log_info("using external file: {}", filename);
     std::ostringstream buffer;
     buffer << fin.rdbuf();
     return buffer.str();
@@ -117,7 +117,7 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
   source = "#version 330 core\n" + source;
 #endif
 
-  log_info("compiling shader '%1%'", filename);
+  log_info("compiling shader '{}'", filename);
 
   check_gl_error();
   GLuint shader = glCreateShader(shader_type);
@@ -143,7 +143,7 @@ GLuint compile_shader(GLenum shader_type, const std::string& filename)
   }
   else
   {
-    log_info("compiling shader ok: status = %1%", status);
+    log_info("compiling shader ok: status = {}", status);
     return shader;
   }
 }
@@ -181,7 +181,7 @@ GLuint create_program(const std::string& vert_shader_filename,
   }
   else
   {
-    log_info("link ok: status = %1%", link_status);
+    log_info("link ok: status = {}", link_status);
   }
 
   return program;

@@ -31,6 +31,7 @@
 #define __MATH_RECT_HPP__
 
 #include <math.h>
+#include <fmt/format.h>
 
 #include "math/origin.hpp"
 #include "math/vector2f.hpp"
@@ -471,6 +472,42 @@ inline Rect::Rect(const Rectf& rect)
 
 std::ostream& operator<<(std::ostream& s, const Rect& rect);
 std::ostream& operator<<(std::ostream& s, const Rectf& rect);
+
+template<>
+struct fmt::formatter<Rect>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(Rect const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
+
+template<>
+struct fmt::formatter<Rectf>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(Rectf const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif
 

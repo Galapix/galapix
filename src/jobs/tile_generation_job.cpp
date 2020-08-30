@@ -191,10 +191,10 @@ TileGenerationJob::run()
       // catch weird database inconsisntencies
       if (m_min_scale == -1 || m_max_scale == -1)
       {
-        log_error("[DEBUG] Database inconsisntencies: [%1%..%2%]", m_min_scale, m_max_scale);
+        log_error("[DEBUG] Database inconsisntencies: [{}..{}]", m_min_scale, m_max_scale);
         for(TileRequests::iterator i = m_tile_requests.begin(); i != m_tile_requests.end(); ++i)
         {
-          log_error("[DEBUG] TileRequest: scale=%1%", i->scale);
+          log_error("[DEBUG] TileRequest: scale={}", i->scale);
         }
 
         m_min_scale = 0;
@@ -211,8 +211,8 @@ TileGenerationJob::run()
   }
   catch(const std::exception& err)
   {
-    log_error("Error while processing %1%", m_file_entry);
-    log_error("  Exception: %1%", err.what());
+    log_error("Error while processing {}", m_file_entry);
+    log_error("  Exception: {}", err.what());
   }
 
   {

@@ -34,6 +34,8 @@
 #define HEADER_GALAPIX_MATH_SIZE_HPP
 
 #include <iosfwd>
+#include <sstream>
+#include <fmt/format.h>
 
 class Sizef;
 
@@ -191,5 +193,23 @@ inline Size::Size(const Sizef& s)
 {}
 
 std::ostream& operator<<(std::ostream& s, const Size& size);
+
+template<>
+struct fmt::formatter<Size>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(Size const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif

@@ -19,6 +19,8 @@
 
 #include <memory>
 #include <assert.h>
+#include <sstream>
+#include <fmt/format.h>
 
 #include "database/entries/blob_entry.hpp"
 #include "database/row_id.hpp"
@@ -105,6 +107,24 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry);
+
+template<>
+struct fmt::formatter<OldFileEntry>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(OldFileEntry const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif
 

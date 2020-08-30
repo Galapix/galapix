@@ -20,6 +20,8 @@
 #include <stdint.h>
 #include <assert.h>
 #include <iosfwd>
+#include <fmt/format.h>
+#include <sstream>
 
 class RowId
 {
@@ -55,6 +57,24 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& s, const RowId& id);
+
+template<>
+struct fmt::formatter<RowId>
+{
+  template<typename ParseContext>
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
+
+  template<typename FormatContext>
+  auto format(RowId const& v, FormatContext& ctx)
+  {
+    std::ostringstream os;
+    os << v;
+    return fmt::format_to(ctx.out(), os.str());
+  }
+};
 
 #endif
 

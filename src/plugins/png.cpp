@@ -117,7 +117,7 @@ PNG::get_size(const std::string& filename, Size& size)
     if (setjmp(png_jmpbuf(png_ptr)))
     {
       png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
-      log_warn("PNG::get_size: setjmp: Couldn't load %1%", filename);
+      log_warn("PNG::get_size: setjmp: Couldn't load {}", filename);
       return false;
     }
     else

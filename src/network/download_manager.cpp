@@ -99,7 +99,7 @@ DownloadManager::wakeup_pipe()
   ssize_t ret = write(m_pipefd[1], buf, sizeof(buf));
   if (ret < 0)
   {
-    log_error("write() to pipe failed: %1%", strerror(errno));
+    log_error("write() to pipe failed: {}", strerror(errno));
   }
 }
 
@@ -143,7 +143,7 @@ DownloadManager::wait_for_curl_data()
       char buf[32];
       if (read(m_pipefd[0], buf, sizeof(buf)) < 0)
       {
-        log_warn("wakeup pipe read() error: %1%", strerror(errno));
+        log_warn("wakeup pipe read() error: {}", strerror(errno));
       }
     }
   }
@@ -168,7 +168,7 @@ DownloadManager::process_curl_data()
         break;
 
       default:
-        log_error("unhandled cURL message: %1%", msg->msg);
+        log_error("unhandled cURL message: {}", msg->msg);
         break;
     }
   }
@@ -209,7 +209,7 @@ DownloadManager::cancel_transfer(TransferHandle id)
                              });
       if (it == m_transfers.end())
       {
-        log_info("transfer not found: %1%", id);
+        log_info("transfer not found: {}", id);
       }
       else
       {
@@ -280,12 +280,12 @@ DownloadManager::request_get(const std::string& url,
       std::optional<DownloadResult> cached_result = m_cache.get(url);
       if (cached_result)
       {
-        log_info("downloading from cache: %1%", url);
+        log_info("downloading from cache: {}", url);
         callback(*cached_result);
       }
       else
       {
-        log_info("downloading: %1%", url);
+        log_info("downloading: {}", url);
         auto transfer = std::make_unique<DownloadTransfer>(uuid, url, std::optional<std::string>(),
                                                            callback, progress_callback);
         curl_multi_add_handle(m_multi_handle, transfer->handle);
@@ -308,7 +308,7 @@ DownloadManager::request_post(const std::string& url,
 
   m_queue.wait_and_push(
     [=, this]{
-      log_info("downloading: %1%", url);
+      log_info("downloading: {}", url);
       auto transfer = std::make_unique<DownloadTransfer>(uuid, url, post_data,
                                                          callback, progress_callback);
       curl_multi_add_handle(m_multi_handle, transfer->handle);
