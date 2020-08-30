@@ -75,12 +75,7 @@ if(WARNINGS)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8)
       list(APPEND WARNINGS_CXX_FLAGS -Wint-in-bool-context)
     endif()
-    if(Boost_VERSION LESS 106500)
-      list(APPEND WARNINGS_CXX_FLAGS
-        -Wno-implicit-fallthrough
-        )
-    endif()
-  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND WARNINGS_CXX_FLAGS
       -Weverything
 
@@ -150,7 +145,6 @@ include(CheckIncludeFile)
 
 find_package(Python)
 find_package(Threads REQUIRED)
-find_package(Boost COMPONENTS REQUIRED)
 find_package(CURL REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)

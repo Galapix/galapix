@@ -39,7 +39,6 @@
              (gnu packages pretty-print)
              (gnu packages sdl)
              (gnu packages sqlite)
-             (guix-cocfree packages boost)
              (guix-cocfree utils))
 
 (define %source-dir (dirname (current-filename)))
@@ -64,7 +63,6 @@
       ("glm" ,glm)
       ("curl" ,curl)
       ("fmt" ,fmt)
-      ("boost" ,boost-1.74)
       ("libjpeg-turbo" ,libjpeg-turbo)
       ("libpng" ,libpng)
       ("sqlite" ,sqlite)

@@ -67,7 +67,6 @@ Required Libraries and Tools:
 * [libpng](http://www.libpng.org/pub/png/)
 * [GLEW](http://glew.sourceforge.net/)
 * [Magick++](http://www.imagemagick.org/Magick%2B%2B/)
-* [boost](http://www.boost.org/)
 * [librsvg](http://librsvg.sourceforge.net/)
 * [libexif](http://libexif.sourceforge.net/)
 * [libmhash](http://mhash.sourceforge.net/)
