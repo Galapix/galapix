@@ -18,7 +18,6 @@
 #define HEADER_GALAPIX_NETWORK_DOWNLOAD_MANAGER_HPP
 
 #include <optional>
-#include <boost/uuid/uuid.hpp>
 #include <curl/curl.h>
 #include <thread>
 #include <atomic>

@@ -18,8 +18,6 @@
 
 #include <algorithm>
 #include <assert.h>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <curl/curl.h>
 #include <errno.h>
 #include <signal.h>
