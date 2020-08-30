@@ -104,17 +104,18 @@ StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
   return lhs.size() < rhs.size();
 }
 
-std::vector<std::string> string_tokenize(std::string const& text, char delimiter)
+std::vector<std::string> string_tokenize(std::string_view text, char delimiter)
 {
-  std::istringstream in(text);
   std::vector<std::string> result;
-  std::string token;
 
-  while(std::getline(in, token, delimiter))
+  for(std::string::size_type i = 0; i != text.size();)
   {
-    if (!token.empty())
-    {
-      result.emplace_back(std::move(token));
+    while(text[i] == delimiter && i != text.size()) { ++i; };
+    const std::string::size_type start = i;
+    while(text[i] != delimiter && i != text.size()) { ++i; };
+    const std::string::size_type end = i;
+    if (start != end) {
+      result.emplace_back(text.substr(start, end - start));
     }
   }
 
