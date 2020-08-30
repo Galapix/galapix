@@ -18,14 +18,11 @@
 
 #include <iostream>
 #include <thread>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/string_generator.hpp>
 
 #include <logmich/log.hpp>
 #include <uitest/uitest.hpp>
 
+#include "util/string_util.hpp"
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
 
@@ -40,8 +37,7 @@ void run_repl()
   std::string line;
   while(std::getline(std::cin, line))
   {
-    std::vector<std::string> args;
-    boost::split(args, line, boost::is_any_of(" "), boost::token_compress_on);
+    std::vector<std::string> args = string_tokenize(line, ' ');
 
     if (!args.empty())
     {
@@ -120,7 +116,15 @@ void run_repl()
         }
         else
         {
-          downloader.cancel_transfer(boost::lexical_cast<DownloadManager::TransferHandle>(args[1]));
+          DownloadManager::TransferHandle handle;
+          if (from_string(args[1], handle))
+          {
+            downloader.cancel_transfer(handle);
+          }
+          else
+          {
+            std::cout << "not a valid TransferHandle: " << args[1] << std::endl;
+          }
         }
       }
       else

@@ -15,6 +15,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <algorithm>
+#include <string>
 
 #include "string_util.hpp"
 
@@ -101,6 +102,23 @@ StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
   }
 
   return lhs.size() < rhs.size();
+}
+
+std::vector<std::string> string_tokenize(std::string const& text, char delimiter)
+{
+  std::istringstream in(text);
+  std::vector<std::string> result;
+  std::string token;
+
+  while(std::getline(in, token, delimiter))
+  {
+    if (!token.empty())
+    {
+      result.emplace_back(std::move(token));
+    }
+  }
+
+  return result;
 }
 
 /* EOF */

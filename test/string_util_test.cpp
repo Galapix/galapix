@@ -41,4 +41,11 @@ TEST(StringUtilTest, numeric_less)
   EXPECT_FALSE(StringUtil::numeric_less("1111", "999"));
 }
 
+TEST(StringUtilTest, string_tokenize)
+{
+  EXPECT_EQ(string_tokenize("a b c d", ' '), (std::vector<std::string>{"a", "b", "c", "d"}));
+  EXPECT_EQ(string_tokenize("  a1   b2  c3  d4  ", ' '), (std::vector<std::string>{"a1", "b2", "c3", "d4"}));
+  EXPECT_EQ(string_tokenize("xxa1xxxb2xxc3xxd4xxx", 'x'), (std::vector<std::string>{"a1", "b2", "c3", "d4"}));
+}
+
 /* EOF */
