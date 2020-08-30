@@ -18,7 +18,7 @@
 ;; guix package --install-from-file=guix.scm
 
 (set! %load-path
-  (cons* "/ipfs/QmdrwuaArAXmKGPY3oEoNpxTp7EUSKetXAVGBt67nqo54X/guix-cocfree_0.0.0-59-gd79b2bf"
+  (cons* "/ipfs/QmdHSWX34MXZeAgMuDuFwrYzSPf4fknX7E7cYJ7HDxaLrZ/guix-cocfree_0.0.0-62-g3b27118"
          %load-path))
 
 (use-modules (guix build-system cmake)
@@ -26,7 +26,6 @@
              (guix packages)
              (gnu packages base)
              (gnu packages mcrypt)
-             (gnu packages boost)
              (gnu packages curl)
              (gnu packages gcc)
              (gnu packages gl)
@@ -36,8 +35,10 @@
              (gnu packages pkg-config)
              (gnu packages photo)
              (gnu packages python)
+             (gnu packages pretty-print)
              (gnu packages sdl)
              (gnu packages sqlite)
+             (guix-cocfree packages boost)
              (guix-cocfree utils))
 
 (define %source-dir (dirname (current-filename)))
@@ -61,8 +62,8 @@
       ("glew" ,glew)
       ("glm" ,glm)
       ("curl" ,curl)
-      ("boost" ,boost)
       ("fmt" ,fmt)
+      ("boost" ,boost-1.74)
       ("libjpeg-turbo" ,libjpeg-turbo)
       ("libpng" ,libpng)
       ("sqlite" ,sqlite)
