@@ -20,32 +20,6 @@
 #include "string_util.hpp"
 
 bool
-StringUtil::has_suffix(const std::string& data, const std::string& suffix)
-{
-  if (data.length() >= suffix.length())
-  {
-    return data.compare(data.length() - suffix.length(), suffix.length(), suffix) == 0;
-  }
-  else
-  {
-    return false;
-  }
-}
-
-bool
-StringUtil::has_prefix(const std::string& lhs, const std::string& rhs)
-{
-  if (lhs.length() < rhs.length())
-  {
-    return false;
-  }
-  else
-  {
-    return lhs.compare(0, rhs.length(), rhs) == 0;
-  }
-}
-
-bool
 StringUtil::numeric_less(const std::string& lhs, const std::string& rhs)
 {
   std::string::size_type i = 0;

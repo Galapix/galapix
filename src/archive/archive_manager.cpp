@@ -133,7 +133,7 @@ ArchiveManager::find_loader_by_magic(const std::string& filename) const
   // search for a loader that can handle the magic
   for(const auto& it: m_loader_by_magic)
   {
-    if (StringUtil::has_prefix(start_of_file, it.first))
+    if (start_of_file.starts_with(it.first))
     {
       return it.second;
     }
