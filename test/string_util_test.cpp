@@ -33,4 +33,17 @@ TEST(StringUtilTest, string_tokenize)
   EXPECT_EQ(string_tokenize("", ' '), (std::vector<std::string>{}));
 }
 
+TEST(StringUtilTest, string_split)
+{
+  EXPECT_EQ(string_split("a:b:c:d", ':'), (std::vector<std::string>{"a", "b", "c", "d"}));
+  EXPECT_EQ(string_split("a:b:c:d", ':'), (std::vector<std::string>{"a", "b", "c", "d"}));
+  EXPECT_EQ(string_split(":a:b:c:d:", ':'), (std::vector<std::string>{"", "a", "b", "c", "d", ""}));
+  EXPECT_EQ(string_split("", ':'), (std::vector<std::string>{""}));
+  EXPECT_EQ(string_split(":", ':'), (std::vector<std::string>{"", ""}));
+  EXPECT_EQ(string_split("::", ':'), (std::vector<std::string>{"", "", ""}));
+  EXPECT_EQ(string_split("abc:", ':'), (std::vector<std::string>{"abc", ""}));
+  EXPECT_EQ(string_split(":xyz", ':'), (std::vector<std::string>{"", "xyz"}));
+  EXPECT_EQ(string_split("abc", ':'), (std::vector<std::string>{"abc"}));
+}
+
 /* EOF */
