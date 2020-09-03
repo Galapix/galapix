@@ -28,6 +28,7 @@ endif()
 
 include(GetProjectVersion)
 include(GNUInstallDirs)
+include(CheckIncludeFile)
 
 option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
 option(BUILD_GALAPIX_GTK "Build galapix.gtk" OFF)
@@ -75,37 +76,37 @@ if(WARNINGS)
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 8)
       list(APPEND WARNINGS_CXX_FLAGS -Wint-in-bool-context)
     endif()
- elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND WARNINGS_CXX_FLAGS
       -Weverything
 
       # flags that we deliberately ignore
-     -Wno-c++98-compat
-     -Wno-c++98-compat-pedantic
-     -Wno-float-equal
-     -Wno-padded
-     -Wno-weak-vtables
-     -Wno-disabled-macro-expansion
-     -Wno-documentation
-     -Wno-reserved-id-macro
-     -Wno-sign-conversion
+      -Wno-c++98-compat
+      -Wno-c++98-compat-pedantic
+      -Wno-float-equal
+      -Wno-padded
+      -Wno-weak-vtables
+      -Wno-disabled-macro-expansion
+      -Wno-documentation
+      -Wno-reserved-id-macro
+      -Wno-sign-conversion
 
       # warnings that should probably be fixed in code
-     -Wno-documentation-unknown-command
-     -Wno-inconsistent-missing-destructor-override
-     -Wno-deprecated-dynamic-exception-spec
-     -Wno-deprecated
-     -Wno-switch-enum
-     -Wno-covered-switch-default
-     -Wno-exit-time-destructors
-     -Wno-global-constructors
-     -Wno-duplicate-enum
-     -Wno-unused-parameter
-     -Wno-old-style-cast
-     -Wno-unreachable-code-break
-     -Wno-double-promotion
-     -Wno-unused-private-field
-     -Wno-unused-exception-parameter
+      -Wno-documentation-unknown-command
+      -Wno-inconsistent-missing-destructor-override
+      -Wno-deprecated-dynamic-exception-spec
+      -Wno-deprecated
+      -Wno-switch-enum
+      -Wno-covered-switch-default
+      -Wno-exit-time-destructors
+      -Wno-global-constructors
+      -Wno-duplicate-enum
+      -Wno-unused-parameter
+      -Wno-old-style-cast
+      -Wno-unreachable-code-break
+      -Wno-double-promotion
+      -Wno-unused-private-field
+      -Wno-unused-exception-parameter
       )
   endif()
 endif()
@@ -141,8 +142,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-include(CheckIncludeFile)
-
+find_package(PkgConfig REQUIRED)
 find_package(Python)
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
@@ -151,9 +151,14 @@ find_package(PNG REQUIRED)
 find_package(glm REQUIRED)
 find_package(fmt REQUIRED)
 
-find_package(PkgConfig REQUIRED)
-pkg_search_module(SQLITE3 REQUIRED sqlite3)
-pkg_search_module(SIGCXX REQUIRED sigc++-2.0)
+pkg_search_module(SQLITE3 REQUIRED sqlite3 IMPORTED_TARGET)
+pkg_search_module(SIGCXX REQUIRED sigc++-2.0 IMPORTED_TARGET)
+pkg_search_module(EXIF REQUIRED libexif IMPORTED_TARGET)
+
+# Not using find_package(), see:
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=776832
+# find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
+pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
 
 # older versions don't have a mhash.pc
 pkg_search_module(MHASH mhash)
@@ -164,13 +169,6 @@ if(NOT MHASH_FOUND)
     message(FATAL_ERROR "required library mhash not found")
   endif()
 endif()
-
-# Not using find_package(), see:
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=776832
-# find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
-pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++)
-
-pkg_search_module(EXIF REQUIRED libexif)
 
 check_include_file(spnav.h HAVE_SPNAV)
 find_library(SPNAV spnav)
@@ -186,67 +184,25 @@ endif()
 
 check_include_file(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
 if(USE_OPENGLES2 OR HAVE_BCMHOST)
-  set(OPENGL_LIBPATH /opt/vc/lib)
-  set(OPENGL_INCLUDE_DIR /opt/vc/include)
-  set(OPENGL_LIBRARIES GLESv2)
-  set(OPENGL_CFLAGS_OTHER -DHAVE_OPENGLES2)
-  link_directories(${OPENGL_LIBPATH})
+  message(STATUS "Using OpenGLES2")
+  find_library(OPENGL_LIBRARIES GLESv2 ${OPENGL_LIBPATH})
+
+  add_library(OpenGL::GL INTERFACE IMPORTED)
+  target_link_libraries(OpenGL::GL INTERFACE ${OPENGL_LIBRARIES})
+  target_compile_definitions(OpenGL::GL INTERFACE HAVE_OPENGLES2)
+  if(HAVE_BCMHOST)
+    target_include_directories(OpenGL::GL INTERFACE /opt/vc/include)
+    target_link_directories(OpenGL::GL INTERFACE /opt/vc/lib)
+  endif()
+  add_library(OpenGL::GLU INTERFACE IMPORTED)
+  add_library(GLEW::GLEW INTERFACE IMPORTED)
 else()
   find_package(OpenGL REQUIRED)
   find_package(GLEW REQUIRED)
 endif()
 
-if(BUILD_GALAPIX_SDL)
-  pkg_search_module(SDL2 REQUIRED sdl2)
-
-  set(GALAPIX_SDL_DEPS_INCLUDE_DIRS
-    ${SDL2_INCLUDE_DIRS})
-  set(GALAPIX_SDL_DEPS_LIBRARIES
-    ${SDL2_LIBRARIES})
-endif()
-
-if(BUILD_GALAPIX_GTK)
-  pkg_search_module(GTKMM REQUIRED gtkmm-2.4)
-  pkg_search_module(GLADEMM REQUIRED libglademm-2.4)
-  pkg_search_module(GTKGLEXTMM REQUIRED gtkglextmm-1.2)
-
-  set(GALAPIX_GTK_DEPS_INCLUDE_DIRS
-    ${GTKMM_INCLUDE_DIRS}
-    ${GLADEMM_INCLUDE_DIRS}
-    ${GTKGLEXTMM_INCLUDE_DIRS})
-  set(GALAPIX_GTK_DEPS_LIBRARIES
-    ${GTKMM_LIBRARIES}
-    ${GLADEMM_LIBRARIES}
-    ${GTKGLEXTMM_LIBRARIES})
-endif()
-
-set(GALAPIX_DEPS_LIBRARIES
-  libgalapix
-  libgalapix_sdl
-  logmich
-  sexp
-  fmt::fmt
-  ${SIGCXX_LIBRARIES}
-  ${SPNAV_LIBRARIES}
-  ${OPENGL_LIBRARIES}
-  ${GLEW_LIBRARIES}
-  ${SQLITE3_LIBRARIES}
-  ${PNG_LIBRARIES}
-  ${JPEG_LIBRARIES}
-  ${EXIF_LIBRARIES}
-  ${CURL_LIBRARIES}
-  ${MAGICKXX_LIBRARIES}
-  ${MHASH_LIBRARIES}
-  ${CMAKE_THREAD_LIBS_INIT})
-
-include_directories(src/)
-include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/)
-include_directories(SYSTEM external/logmich/include/)
-include_directories(SYSTEM external/sexp-cpp/include/)
-include_directories(SYSTEM external/googletest/googletest/include/)
-include_directories(SYSTEM external/entt/single_include/)
-include_directories(SYSTEM ${MAGICKXX_INCLUDE_DIRS})
-include_directories(SYSTEM ${SIGCXX_INCLUDE_DIRS})
+add_library(entt INTERFACE IMPORTED)
+target_include_directories(entt INTERFACE external/entt/single_include/)
 
 # turn shader soure in a .hpp file
 file(GLOB SHADER_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -266,6 +222,7 @@ add_custom_command(
 file(GLOB SEXP_CXX_SOURCES
   external/sexp-cpp/src/*.cpp)
 add_library(sexp STATIC ${SEXP_CXX_SOURCES})
+target_include_directories(sexp SYSTEM PUBLIC external/sexp-cpp/include/)
 set_target_properties(sexp PROPERTIES CXX_CLANG_TIDY "")
 
 # compile logmich
@@ -273,6 +230,7 @@ file(GLOB LOGMICH_CXX_SOURCES
   external/logmich/src/log.cpp
   external/logmich/src/logger.cpp)
 add_library(logmich STATIC ${LOGMICH_CXX_SOURCES})
+target_include_directories(logmich SYSTEM PUBLIC external/logmich/include/)
 set_target_properties(logmich PROPERTIES CXX_CLANG_TIDY "")
 
 # compile libgalapix
@@ -300,59 +258,77 @@ list(APPEND LIBGALAPIX_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vf
 add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
 set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
 target_compile_options(libgalapix PRIVATE ${WARNINGS_CXX_FLAGS})
-target_compile_options(libgalapix PRIVATE ${MAGICKXX_CFLAGS_OTHER})
 target_compile_definitions(libgalapix PUBLIC
   -DPROJECT_VERSION="${PROJECT_VERSION}"
   -DPROJECT_NAME="${PROJECT_NAME}")
+target_include_directories(libgalapix PUBLIC
+  src/
+  ${CMAKE_CURRENT_BINARY_DIR}/src/)
+target_link_libraries(libgalapix PUBLIC
+  logmich
+  sexp
+  entt
+  fmt::fmt
+  PkgConfig::SIGCXX
+  ${SPNAV_LIBRARIES}
+  ${MHASH_LIBRARIES}
+  OpenGL::GL
+  OpenGL::GLU
+  GLEW::GLEW
+  PkgConfig::SQLITE3
+  PNG::PNG
+  JPEG::JPEG
+  PkgConfig::EXIF
+  CURL::libcurl
+  PkgConfig::MAGICKXX
+  Threads::Threads)
 
 install(TARGETS libgalapix
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-# compile galapix.sdl
 if(BUILD_GALAPIX_SDL)
+  pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
+
   file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
   list(APPEND LIBGALAPIX_SDL_SOURCES ${SPNAV_SOURCES})
   add_library(libgalapix_sdl STATIC ${LIBGALAPIX_SDL_SOURCES})
   target_compile_options(libgalapix_sdl PRIVATE ${WARNINGS_CXX_FLAGS})
-  target_include_directories(libgalapix_sdl SYSTEM PRIVATE ${GALAPIX_SDL_DEPS_INCLUDE_DIRS})
-  target_link_libraries(libgalapix_sdl ${GALAPIX_SDL_DEPS_LIBRARIES})
+  target_link_libraries(libgalapix_sdl PUBLIC
+    libgalapix
+    PkgConfig::SDL2)
   target_compile_definitions(libgalapix_sdl PRIVATE -DGALAPIX_SDL)
 
   add_executable(galapix.sdl src/main/sdl_main.cpp)
   set_target_properties(galapix.sdl PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.sdl")
   target_compile_options(galapix.sdl PRIVATE ${WARNINGS_CXX_FLAGS})
   target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL ${SPNAV_CFLAGS_OTHER})
-  target_link_libraries(galapix.sdl
-    libgalapix_sdl
-    ${GALAPIX_DEPS_LIBRARIES})
+  target_link_libraries(galapix.sdl PRIVATE libgalapix_sdl)
 
   install(TARGETS galapix.sdl
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
-# compile galapix.gtk
 if(BUILD_GALAPIX_GTK)
+  pkg_search_module(GTKMM REQUIRED gtkmm-2.4 IMPORTED_TARGET)
+  pkg_search_module(GLADEMM REQUIRED libglademm-2.4 IMPORTED_TARGET)
+  pkg_search_module(GTKGLEXTMM REQUIRED gtkglextmm-1.2 IMPORTED_TARGET)
+
   file(GLOB LIBGALAPIX_GTK_SOURCES src/gtk/*.cpp)
   add_library(libgalapix_gtk SHARED ${LIBGALAPIX_GTK_SOURCES})
   target_compile_options(libgalapix_gtk PRIVATE ${WARNINGS_CXX_FLAGS})
   target_compile_definitions(libgalapix_gtk PRIVATE -DGALAPIX_GTK)
-  target_include_directories(libgalapix_gtk SYSTEM PRIVATE
-    ${GALAPIX_GTK_DEPS_INCLUDE_DIRS})
-  target_link_libraries(libgalapix_gtk
-    ${GALAPIX_DEPS_LIBRARIES}
-    ${GALAPIX_GTK_DEPS_LIBRARIES})
+  target_link_libraries(libgalapix_gtk PUBLIC
+    libgalapix
+    PkgConfig::GTKMM
+    PkgConfig::GLADEMM
+    PkgConfig::GTKGLEXTMM)
 
   add_executable(galapix.gtk src/main/gtk_main.cpp)
   set_target_properties(galapix.gtk PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.gtk")
   target_compile_options(galapix.gtk PRIVATE ${WARNINGS_CXX_FLAGS})
   target_compile_definitions(galapix.gtk PRIVATE -DGALAPIX_GTK)
-  target_include_directories(galapix.gtk SYSTEM PRIVATE
-    ${GALAPIX_GTK_DEPS_INCLUDE_DIRS})
-  target_link_libraries(galapix.gtk
-    libgalapix_gtk
-    ${GALAPIX_DEPS_LIBRARIES}
-    ${GALAPIX_GTK_DEPS_LIBRARIES})
+  target_link_libraries(galapix.gtk PRIVATE libgalapix_gtk)
 
   install(TARGETS libgalapix_gtk galapix.gtk
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -369,30 +345,30 @@ if(BUILD_EXTRA)
     add_executable(${SRC_BASENAME} ${SRC})
     target_compile_options("${SRC_BASENAME}" PRIVATE ${WARNINGS_CXX_FLAGS})
     # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
-    target_link_libraries(${SRC_BASENAME} ${GALAPIX_DEPS_LIBRARIES})
+    target_link_libraries(${SRC_BASENAME} libgalapix)
   endforeach(SRC)
 
   add_executable(imagescaler ${CMAKE_CURRENT_SOURCE_DIR}/extra/imagescaler/imagescaler.cpp)
   target_compile_options(imagescaler PRIVATE ${WARNINGS_CXX_FLAGS})
-  target_link_libraries(imagescaler ${GALAPIX_DEPS_LIBRARIES})
+  target_link_libraries(imagescaler libgalapix)
 endif()
 
 # compile tests
 if(BUILD_TESTS)
   # build gtest
-  add_library(gtest STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/src/gtest-all.cc)
-  target_include_directories(gtest SYSTEM PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/)
-
-  # build gtest_main
-  add_library(gtest_main STATIC ${CMAKE_CURRENT_SOURCE_DIR}/external/googletest/googletest/src/gtest_main.cc)
+  add_library(gtest STATIC
+    external/googletest/googletest/src/gtest-all.cc
+    external/googletest/googletest/src/gtest_main.cc)
+  target_include_directories(gtest SYSTEM PUBLIC external/googletest/googletest/include/)
+  target_include_directories(gtest SYSTEM PRIVATE external/googletest/googletest/)
 
   # build automatic tests
   file(GLOB TEST_GALAPIX_SOURCES test/*_test.cpp)
   add_executable(test_galapix ${TEST_GALAPIX_SOURCES})
   target_compile_options(test_galapix PRIVATE ${WARNINGS_CXX_FLAGS})
   target_link_libraries(test_galapix
-    gtest gtest_main
-    ${GALAPIX_DEPS_LIBRARIES})
+    gtest
+    libgalapix)
 
   # build uitest
   file(GLOB UITEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} external/uitest/src/*.cpp)
@@ -407,7 +383,9 @@ if(BUILD_TESTS)
   target_include_directories(uitest_galapix PRIVATE src/)
   target_include_directories(uitest_galapix SYSTEM PRIVATE
     external/uitest/include/)
-  target_link_libraries(uitest_galapix uitest ${GALAPIX_DEPS_LIBRARIES})
+  target_link_libraries(uitest_galapix
+    libgalapix
+    uitest)
 
   if(BUILD_GALAPIX_SDL)
     file(GLOB TEST_GALAPIX_SDL_SOURCES test/sdl/*_test.cpp)
@@ -416,7 +394,7 @@ if(BUILD_TESTS)
       add_executable(${SRC_BASENAME} ${SRC})
       target_compile_options(${SRC_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
       set_target_properties(${SRC_BASENAME} PROPERTIES OUTPUT_NAME "extra/${SRC_BASENAME}")
-      target_link_libraries(${SRC_BASENAME} ${GALAPIX_DEPS_LIBRARIES})
+      target_link_libraries(${SRC_BASENAME} libgalapix)
       # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
     endforeach()
   endif()
@@ -430,11 +408,8 @@ endif()
 
 if(BUILD_BENCHMARKS)
   # build google-benchmark
-  include_directories(${PROJECT_SOURCE_DIR}/src)
   file(GLOB BENCHMARK_SOURCES external/benchmark/src/*.cc)
   add_library(benchmark ${BENCHMARK_SOURCES})
-  target_compile_definitions(benchmark PRIVATE -DHAVE_STD_REGEX)
-  target_compile_options(benchmark PRIVATE -std=c++1y)
   target_include_directories(benchmark SYSTEM PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/external/benchmark/include)
 
@@ -443,10 +418,12 @@ if(BUILD_BENCHMARKS)
   foreach(SOURCE ${BENCHMARKSOURCES})
     get_filename_component(SOURCE_BASENAME ${SOURCE} NAME_WE)
     add_executable(${SOURCE_BASENAME} ${SOURCE})
-    target_link_libraries(${SOURCE_BASENAME} benchmark ${GALAPIX_DEPS_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${SOURCE_BASENAME}
+      libgalapix
+      benchmark)
     set_target_properties(${SOURCE_BASENAME} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/benchmarks/")
-    target_compile_options(${SOURCE_BASENAME} PRIVATE -std=c++1y ${WARNINGS_CXX_FLAGS})
+    target_compile_options(${SOURCE_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
   endforeach(SOURCE)
 endif()
 
