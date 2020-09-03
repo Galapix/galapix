@@ -144,10 +144,10 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 } // namespace
 
 SoftwareSurface
-Imagemagick::load_from_mem(const void* data, size_t len)
+Imagemagick::load_from_mem(std::span<uint8_t const> data)
 {
   // FIXME: Magick::Blob creates an unneeded copy of the data
-  return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data, len)));
+  return MagickImage2SoftwareSurface(Magick::Image(Magick::Blob(data.data(), data.size())));
 }
 
 SoftwareSurface

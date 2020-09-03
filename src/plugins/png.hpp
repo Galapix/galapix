@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_PLUGINS_PNG_HPP
 #define HEADER_GALAPIX_PLUGINS_PNG_HPP
 
+#include <span>
 #include <string>
 
 #include "math/size.hpp"
@@ -31,7 +32,7 @@ public:
   static bool is_png(const std::string& filename);
 
   static SoftwareSurface load_from_file(const std::string& filename);
-  static SoftwareSurface load_from_mem(const uint8_t* data, size_t len);
+  static SoftwareSurface load_from_mem(std::span<uint8_t const> data);
 
   static void save(SoftwareSurface const& surface, const std::string& filename);
   static Blob save(SoftwareSurface const& surface);

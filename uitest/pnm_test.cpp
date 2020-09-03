@@ -31,7 +31,7 @@ UITEST(PNM, test, "FILE...",
   {
     Blob blob = Blob::from_file(rest[i]);
 
-    SoftwareSurface surface = PNM::load_from_mem(reinterpret_cast<const char*>(blob.get_data()), blob.size());
+    SoftwareSurface surface = PNM::load_from_mem(blob);
 
     std::ostringstream output_filename;
     output_filename << "/tmp/pnm_test" << i << ".png";

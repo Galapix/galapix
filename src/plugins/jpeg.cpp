@@ -71,11 +71,11 @@ JPEG::get_size(const std::string& filename)
 
 
 Size
-JPEG::get_size(const uint8_t* data, int len)
+JPEG::get_size(std::span<uint8_t const> data)
 {
-  MemJPEGDecompressor loader(data, static_cast<size_t>(len));
+  MemJPEGDecompressor loader(data);
   Size size = loader.read_size();
-  return apply_orientation(EXIF::get_orientation(data, static_cast<size_t>(len)), size);
+  return apply_orientation(EXIF::get_orientation(data), size);
 }
 
 
@@ -100,12 +100,12 @@ JPEG::load_from_file(const std::string& filename, int scale, Size* image_size)
 
 
 SoftwareSurface
-JPEG::load_from_mem(const uint8_t* data, size_t len, int scale, Size* image_size)
+JPEG::load_from_mem(std::span<uint8_t const> data, int scale, Size* image_size)
 {
-  MemJPEGDecompressor loader(data, len);
+  MemJPEGDecompressor loader(data);
   SoftwareSurface surface = loader.read_image(scale, image_size);
 
-  SoftwareSurface::Modifier modifier = EXIF::get_orientation(data, len);
+  SoftwareSurface::Modifier modifier = EXIF::get_orientation(data);
 
   if (image_size) {
     *image_size = apply_orientation(modifier, *image_size);

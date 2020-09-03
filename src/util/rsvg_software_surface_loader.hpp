@@ -48,7 +48,7 @@ public:
     return RSVG::load_from_file(filename);
   }
 
-  SoftwareSurface from_mem(const uint8_t* data, size_t len) const override
+  SoftwareSurface from_mem(std::span<uint8_t const> data) const override
   {
     assert(false && "not implemented");
     return {};

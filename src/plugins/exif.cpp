@@ -75,9 +75,9 @@ SoftwareSurface::Modifier get_orientation(ExifData* ed)
 } // namespace
 
 SoftwareSurface::Modifier
-EXIF::get_orientation(const uint8_t* data, size_t len)
+EXIF::get_orientation(std::span<uint8_t const> data)
 {
-  ExifData* ed = exif_data_new_from_data(data, static_cast<unsigned int>(len));
+  ExifData* ed = exif_data_new_from_data(data.data(), static_cast<unsigned int>(data.size()));
   SoftwareSurface::Modifier orientation = ::get_orientation(ed);
   exif_data_free(ed);
   return orientation;

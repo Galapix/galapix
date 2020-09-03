@@ -17,9 +17,11 @@
 #ifndef HEADER_GALAPIX_PLUGINS_JPEG_HPP
 #define HEADER_GALAPIX_PLUGINS_JPEG_HPP
 
-#include <string>
-#include <jpeglib.h>
 #include <functional>
+#include <span>
+#include <string>
+
+#include <jpeglib.h>
 
 #include "util/software_surface.hpp"
 
@@ -29,7 +31,7 @@ public:
   static bool filename_is_jpeg(const std::string& filename);
 
   static Size get_size(const std::string& filename);
-  static Size get_size(const uint8_t* data, int len);
+  static Size get_size(std::span<uint8_t const> data);
 
   /** Load a SoftwareSurface from the filesystem
 
@@ -47,7 +49,7 @@ public:
       @param[out] size  The size of the unscaled image
 
       @return reference counted pointer to a SoftwareSurface object */
-  static SoftwareSurface load_from_mem(const uint8_t* data, size_t len, int scale = 1, Size* size = nullptr);
+  static SoftwareSurface load_from_mem(std::span<uint8_t const> data, int scale = 1, Size* size = nullptr);
 
   static void save(SoftwareSurface const& surface, int quality, const std::string& filename);
   static Blob save(SoftwareSurface const& surface, int quality);

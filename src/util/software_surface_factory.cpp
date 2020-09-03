@@ -200,7 +200,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename, const SoftwareSur
   else if (loader->supports_from_mem())
   {
     Blob blob = Blob::from_file(filename);
-    return loader->from_mem(blob.get_data(), blob.size());
+    return loader->from_mem(blob);
   }
   else
   {
@@ -290,7 +290,7 @@ SoftwareSurfaceFactory::from_url(const URL& url) const
     {
       if (loader->supports_from_mem())
       {
-        return loader->from_mem(blob.get_data(), blob.size());
+        return loader->from_mem(blob);
       }
       else
       {

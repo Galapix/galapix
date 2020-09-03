@@ -73,7 +73,7 @@ void jpeg_memory_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 
 } // namespace
 
-void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
+void jpeg_memory_src(j_decompress_ptr cinfo, std::span<uint8_t const> data)
 {
   if (cinfo->src == nullptr)
   {
@@ -92,8 +92,8 @@ void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len)
   cinfo->src->next_input_byte = nullptr; /* until buffer loaded */
 
   struct jpeg_memory_source_mgr* mgr = reinterpret_cast<struct jpeg_memory_source_mgr*>(cinfo->src);
-  mgr->data = data;
-  mgr->len  = len;
+  mgr->data = data.data();
+  mgr->len  = static_cast<int>(data.size());
 }
 
 /* EOF */

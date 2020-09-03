@@ -17,12 +17,14 @@
 #ifndef HEADER_GALAPIX_PLUGINS_PNM_HPP
 #define HEADER_GALAPIX_PLUGINS_PNM_HPP
 
+#include <span>
+
 #include "util/software_surface.hpp"
 
 class PNM
 {
 public:
-  static SoftwareSurface load_from_mem(const char* data, size_t len);
+  static SoftwareSurface load_from_mem(std::span<uint8_t const> data);
 };
 
 #endif

@@ -203,7 +203,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
   if (zip_return_code == 0)
   {
     // FIXME: Unneeded copy of data
-    return Blob::copy(&*unzip.get_stdout().begin(), unzip.get_stdout().size());
+    return Blob::copy({reinterpret_cast<uint8_t const*>(unzip.get_stdout().data()), unzip.get_stdout().size()});
   }
   else
   {

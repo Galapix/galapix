@@ -18,6 +18,7 @@
 #define HEADER_GALAPIX_PLUGINS_EXIF_HPP
 
 #include <string>
+#include <span>
 
 #include "util/software_surface.hpp"
 
@@ -25,7 +26,7 @@ class EXIF
 {
 public:
   static SoftwareSurface::Modifier get_orientation(const std::string& filename);
-  static SoftwareSurface::Modifier get_orientation(const uint8_t* data, size_t len);
+  static SoftwareSurface::Modifier get_orientation(std::span<uint8_t const> data);
 
 private:
   EXIF(const EXIF&);

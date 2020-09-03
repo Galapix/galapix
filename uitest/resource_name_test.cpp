@@ -23,7 +23,8 @@
 
 UITEST(ResourceName, test, "")
 {
-  ResourceName res_name(BlobInfo(SHA1::from_mem(nullptr, 0), 0), ResourceHandler("archive", "rar", ""));
+  ResourceName res_name(BlobInfo(SHA1::from_mem(std::span<uint8_t const>()), 0),
+                                 ResourceHandler("archive", "rar", ""));
   std::cout << res_name.str() << std::endl;
 }
 

@@ -131,9 +131,9 @@ SQLiteStatement::bind_blob(int n, Blob const& blob)
 }
 
 SQLiteStatement&
-SQLiteStatement::bind_blob(int n, const uint8_t* data, size_t len)
+SQLiteStatement::bind_blob(int n, std::span<uint8_t const> data)
 {
-  if (sqlite3_bind_blob(m_stmt, n, data, static_cast<int>(len), SQLITE_TRANSIENT) != SQLITE_OK)
+  if (sqlite3_bind_blob(m_stmt, n, data.data(), static_cast<int>(data.size()), SQLITE_TRANSIENT) != SQLITE_OK)
   {
     raise_exception(SQLiteError, "in\n" << m_stmt_str << "\n" << m_db.get_error_msg());
   }

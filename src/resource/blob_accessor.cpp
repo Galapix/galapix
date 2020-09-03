@@ -103,8 +103,7 @@ BlobAccessor::get_blob_info() const
     }
     else
     {
-      m_blob_info = BlobInfo(SHA1::from_mem(m_blob.get_data(), m_blob.size()),
-                             m_blob.size());
+      m_blob_info = BlobInfo(SHA1::from_mem(m_blob), m_blob.size());
     }
     return *m_blob_info;
   }

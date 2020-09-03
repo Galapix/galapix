@@ -35,7 +35,7 @@
 #include "util/raise_exception.hpp"
 
 SHA1
-SHA1::from_mem(const uint8_t* data, size_t len)
+SHA1::from_mem(std::span<uint8_t const> data)
 {
   MHASH td = mhash_init(MHASH_SHA1);
   if (td == MHASH_FAILED)
@@ -44,7 +44,7 @@ SHA1::from_mem(const uint8_t* data, size_t len)
   }
   else
   {
-    mhash(td, data, static_cast<mutils_word32>(len));
+    mhash(td, data.data(), static_cast<mutils_word32>(data.size()));
 
     SHA1 sha1;
     mhash_deinit(td, sha1.m_data.data());
@@ -55,7 +55,7 @@ SHA1::from_mem(const uint8_t* data, size_t len)
 SHA1
 SHA1::from_mem(const std::string& str)
 {
-  return from_mem(reinterpret_cast<const uint8_t*>(str.data()), str.size());
+  return from_mem({reinterpret_cast<const uint8_t*>(str.data()), str.size()});
 }
 
 SHA1

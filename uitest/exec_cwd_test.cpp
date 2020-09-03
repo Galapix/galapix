@@ -28,7 +28,7 @@ UITEST(Exec, cwd, "WORKINGDIR PROGRAM [ARGUMENTS]...")
   prgn.set_working_directory(args[0]);
 
   std::string stdin_data = "-- Stdin Test Data --\n";
-  prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
+  prgn.set_stdin(Blob::copy({reinterpret_cast<uint8_t const*>(stdin_data.c_str()), stdin_data.length()}));
   for(auto const& arg : rest) {
     prgn.arg(arg);
   }

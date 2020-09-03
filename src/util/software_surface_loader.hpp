@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_LOADER_HPP
 #define HEADER_GALAPIX_UTIL_SOFTWARE_SURFACE_LOADER_HPP
 
+#include <span>
+
 #include "util/software_surface.hpp"
 
 class SoftwareSurfaceFactory;
@@ -35,7 +37,7 @@ public:
   virtual SoftwareSurface from_file(const std::string& filename) const =0;
 
   virtual bool supports_from_mem() const =0;
-  virtual SoftwareSurface from_mem(const uint8_t* data, size_t len) const =0;
+  virtual SoftwareSurface from_mem(std::span<uint8_t const>) const =0;
 
 private:
   SoftwareSurfaceLoader(const SoftwareSurfaceLoader&);

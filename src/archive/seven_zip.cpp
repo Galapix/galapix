@@ -92,7 +92,7 @@ SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
   if (zip.exec() == 0)
   {
     // FIXME: Unneeded copy of data
-    return Blob::copy(&*zip.get_stdout().begin(), zip.get_stdout().size());
+    return Blob::copy({reinterpret_cast<uint8_t const*>(zip.get_stdout().data()), zip.get_stdout().size()});
   }
   else
   {

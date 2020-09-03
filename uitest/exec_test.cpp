@@ -25,7 +25,7 @@ UITEST(Exec, test, "PROGRAM [ARGUMENT]...")
 {
   Exec prgn(args[0]);
   std::string stdin_data = "-- Stdin Test Data --\n";
-  prgn.set_stdin(Blob::copy(stdin_data.c_str(), stdin_data.length()));
+  prgn.set_stdin(Blob::copy({reinterpret_cast<uint8_t const*>(stdin_data.c_str()), stdin_data.length()}));
   for(const auto& arg : rest) {
     prgn.arg(arg);
   }

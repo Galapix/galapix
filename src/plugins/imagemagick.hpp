@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_PLUGINS_IMAGEMAGICK_HPP
 #define HEADER_GALAPIX_PLUGINS_IMAGEMAGICK_HPP
 
+#include <span>
 #include <string>
 
 #include "util/software_surface.hpp"
@@ -29,7 +30,7 @@ class Imagemagick
 public:
   static bool get_size(const std::string& filename, Size& size);
   static SoftwareSurface load_from_file(const std::string& filename);
-  static SoftwareSurface load_from_mem(const void* data, size_t len);
+  static SoftwareSurface load_from_mem(std::span<uint8_t const> data);
   static std::vector<std::string> get_supported_extensions();
 };
 

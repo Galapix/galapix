@@ -33,13 +33,6 @@ Blob::Blob(std::vector<uint8_t> data) :
 {
 }
 
-Blob::Blob(void const* data, size_t len) :
-  m_data(std::make_shared<std::vector<uint8_t> >(
-           static_cast<uint8_t const*>(data),
-           static_cast<uint8_t const*>(data) + len))
-{
-}
-
 size_t
 Blob::size() const
 {
@@ -120,9 +113,9 @@ Blob::from_file(const std::string& filename)
 }
 
 Blob
-Blob::copy(void const* data, size_t len)
+Blob::copy(std::span<uint8_t const> data)
 {
-  return Blob(data, len);
+  return Blob({data.begin(), data.end()});
 }
 
 Blob

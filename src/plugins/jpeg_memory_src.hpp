@@ -17,12 +17,13 @@
 #ifndef HEADER_GALAPIX_PLUGINS_JPEG_MEMORY_SRC_HPP
 #define HEADER_GALAPIX_PLUGINS_JPEG_MEMORY_SRC_HPP
 
+#include <span>
 #include <stdint.h>
 #include <stdio.h>
 #include <jpeglib.h>
 
 /** Setup IO handling so that a JPEG can be read from memory */
-void jpeg_memory_src(j_decompress_ptr cinfo, const uint8_t* data, int len);
+void jpeg_memory_src(j_decompress_ptr cinfo, std::span<uint8_t const> data);
 
 #endif
 

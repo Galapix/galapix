@@ -22,10 +22,9 @@
 class PNMMemReader
 {
 public:
-  PNMMemReader(const char* data, size_t len) :
+  PNMMemReader(std::span<uint8_t const> data) :
     m_data(data),
-    m_len(len),
-    m_ptr(data),
+    m_ptr(data.data()),
     m_token_count(),
     m_magic(),
     m_size(),
@@ -36,12 +35,12 @@ public:
   }
 
   std::string get_magic() const { return m_magic; }
-  const char* get_pixel_data() const { return m_pixel_data; }
+  uint8_t const* get_pixel_data() const { return m_pixel_data; }
   Size get_size() const { return m_size; }
   int  get_maxval() const { return m_maxval; }
 
 private:
-  bool eof() const { return m_ptr >= (m_data + m_len); }
+  bool eof() const { return m_ptr >= (m_data.data() + m_data.size()); }
   void forward() { m_ptr += 1; }
 
   void parse()
@@ -68,7 +67,7 @@ private:
       }
       else
       {
-        const char* start = m_ptr;
+        uint8_t const* start = m_ptr;
         forward();
         while(!eof() && !isspace(*m_ptr) && *m_ptr != '#')
         {
@@ -94,7 +93,7 @@ private:
             m_maxval = atoi(token.c_str());
             forward();
             m_pixel_data = m_ptr;
-            m_ptr = m_data + m_len; // set ptr to EOF
+            m_ptr = m_data.data() + m_data.size(); // set ptr to EOF
             break;
         }
 
@@ -104,15 +103,14 @@ private:
   }
 
 private:
-  const char* m_data;
-  const size_t m_len;
-  const char* m_ptr;
+  std::span<uint8_t const> const m_data;
+  uint8_t const* m_ptr;
   int m_token_count;
 
   std::string m_magic;
   Size m_size;
   int m_maxval;
-  const char* m_pixel_data;
+  uint8_t const* m_pixel_data;
 
 private:
   PNMMemReader(const PNMMemReader&);

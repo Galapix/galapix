@@ -28,7 +28,7 @@ namespace {
 
 struct PNGReadMemory
 {
-  const png_byte* data;
+  png_byte const* data;
   png_size_t len;
   png_size_t pos;
 };
@@ -245,15 +245,15 @@ PNG::load_from_file(const std::string& filename)
 }
 
 SoftwareSurface
-PNG::load_from_mem(const uint8_t* data, size_t len)
+PNG::load_from_mem(std::span<uint8_t const> data)
 {
   // FIXME: Merge this with load_from_file
   png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
   png_infop info_ptr  = png_create_info_struct(png_ptr);
 
   PNGReadMemory png_memory;
-  png_memory.data = data;
-  png_memory.len  = len;
+  png_memory.data = data.data();
+  png_memory.len  = data.size();
   png_memory.pos  = 0;
 
   if (setjmp(png_jmpbuf(png_ptr)))

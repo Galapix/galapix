@@ -106,9 +106,9 @@ SQLiteReader::get_text(int column)
 Blob
 SQLiteReader::get_blob(int column)
 {
-  const void* data = sqlite3_column_blob(m_stmt.get_stmt(), column);
-  int len = sqlite3_column_bytes(m_stmt.get_stmt(), column);
-  return Blob::copy(data, static_cast<size_t>(len));
+  return Blob::copy({
+      static_cast<uint8_t const*>(sqlite3_column_blob(m_stmt.get_stmt(), column)),
+      static_cast<size_t>(sqlite3_column_bytes(m_stmt.get_stmt(), column))});
 }
 
 std::string

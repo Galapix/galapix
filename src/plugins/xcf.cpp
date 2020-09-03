@@ -178,25 +178,24 @@ XCF::load_from_file(const std::string& filename)
   }
   else
   {
-    return PNG::load_from_mem(reinterpret_cast<const uint8_t*>(&*xcf2png.get_stdout().begin()),
-                              xcf2png.get_stdout().size());
+    return PNG::load_from_mem({reinterpret_cast<uint8_t const*>(xcf2png.get_stdout().data()), xcf2png.get_stdout().size()});
   }
 }
 
 SoftwareSurface
-XCF::load_from_mem(const void* data, size_t len)
+XCF::load_from_mem(std::span<uint8_t const> data)
 {
   Exec xcf2png("xcf2png");
   xcf2png.arg("-"); // Read from stdin
-  xcf2png.set_stdin(Blob::copy(data, len));
+  xcf2png.set_stdin(Blob::copy(data));
   if (xcf2png.exec() != 0)
   {
     raise_runtime_error("XCF::load_from_mem(): " + std::string(xcf2png.get_stderr().begin(), xcf2png.get_stderr().end()));
   }
   else
   {
-    return PNG::load_from_mem(reinterpret_cast<const uint8_t*>(&*xcf2png.get_stdout().begin()),
-                              xcf2png.get_stdout().size());
+    return PNG::load_from_mem({reinterpret_cast<const uint8_t*>(&*xcf2png.get_stdout().begin()),
+        xcf2png.get_stdout().size()});
   }
 }
 

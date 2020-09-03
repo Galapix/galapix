@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_UTIL_BLOB_HPP
 #define HEADER_GALAPIX_UTIL_BLOB_HPP
 
+#include <span>
 #include <memory>
 #include <vector>
 #include <stdint.h>
@@ -30,12 +31,11 @@ public:
   static Blob from_file(std::string const& filename);
 
   /** Copy the given data into a Blob object */
-  static Blob copy(void const* data, size_t len);
   static Blob copy(std::vector<uint8_t> data);
+  static Blob copy(std::span<uint8_t const> data);
 
 private:
   Blob(std::vector<uint8_t> data);
-  Blob(void const* data, size_t len);
 
 public:
   Blob();
@@ -49,8 +49,11 @@ public:
 
   explicit operator bool() const { return m_data != nullptr; }
 
+  std::vector<uint8_t>::const_iterator begin() const { return m_data->begin(); }
+  std::vector<uint8_t>::const_iterator end() const { return m_data->end(); }
+
 private:
-  std::shared_ptr<const std::vector<uint8_t> > m_data;
+  std::shared_ptr<std::vector<uint8_t> const> m_data;
 };
 
 #endif

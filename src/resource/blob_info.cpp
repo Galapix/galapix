@@ -21,8 +21,7 @@
 BlobInfo
 BlobInfo::from_blob(Blob const& blob)
 {
-  return BlobInfo(SHA1::from_mem(blob.get_data(), blob.size()),
-                  blob.size());
+  return BlobInfo(SHA1::from_mem(blob), blob.size());
 }
 
 BlobInfo
@@ -36,8 +35,7 @@ BlobInfo::from_blob(const BlobAccessor& blob_accessor)
   else
   {
     Blob const& blob = blob_accessor.get_blob();
-    return BlobInfo(SHA1::from_mem(blob.get_data(), blob.size()),
-                    blob.size());
+    return BlobInfo(SHA1::from_mem(blob), blob.size());
   }
 }
 

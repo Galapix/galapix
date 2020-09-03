@@ -24,17 +24,17 @@
 #include "util/raise_exception.hpp"
 
 SoftwareSurface
-PNM::load_from_mem(const char* data, size_t len)
+PNM::load_from_mem(std::span<uint8_t const> data)
 {
-  PNMMemReader pnm(data, len);
+  PNMMemReader pnm(data);
 
   PixelData dst(PixelData::RGB_FORMAT, pnm.get_size());
-  const uint8_t* src_pixels = reinterpret_cast<const uint8_t*>(pnm.get_pixel_data());
+  uint8_t const* src_pixels = pnm.get_pixel_data();
   uint8_t* dst_pixels = dst.get_data();
   //std::cout << "MaxVal: " << pnm.get_maxval() << std::endl;
   assert(pnm.get_maxval() == 255);
 
-  const int pixel_data_len = static_cast<int>((reinterpret_cast<const uint8_t*>(data) + len) - src_pixels);
+  const int pixel_data_len = static_cast<int>((data.data() + data.size()) - src_pixels);
 
   if (pnm.get_magic() == "P6") // RGB
   {

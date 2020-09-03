@@ -19,10 +19,12 @@
 
 #include "plugins/jpeg_decompressor.hpp"
 
+#include <span>
+
 class MemJPEGDecompressor : public JPEGDecompressor
 {
 public:
-  MemJPEGDecompressor(const uint8_t* data, size_t len);
+  MemJPEGDecompressor(std::span<uint8_t const> data);
   ~MemJPEGDecompressor() override;
 
 private:
