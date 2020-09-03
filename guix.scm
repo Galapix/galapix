@@ -49,7 +49,13 @@
    (version (version-from-source %source-dir))
    (source (source-from-source %source-dir #:version version))
    (arguments
-    `(#:tests? #f))
+    `(#:tests? #f ; no network
+      #:configure-flags '("-DCMAKE_BUILD_TYPE=Release"
+                          "-DBUILD_GALAPIX_SDL=ON"
+                          "-DBUILD_GALAPIX_GTK=OFF" ; no libglademm
+                          "-DBUILD_TESTS=ON"
+                          "-DBUILD_BENCHMARKS=ON"
+                          "-DBUILD_EXTRAS=ON")))
    (build-system cmake-build-system)
    (native-inputs
     `(("pkg-config" ,pkg-config)
