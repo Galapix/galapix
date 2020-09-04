@@ -50,11 +50,11 @@ SevenZip::get_filenames(const std::string& zip_filename)
   }
   else
   {
-    const std::vector<char>& stdout_lst = zip.get_stdout();
-    std::vector<char>::const_iterator line_start = stdout_lst.begin();
+    auto const& stdout_lst = zip.get_stdout();
+    auto line_start = stdout_lst.begin();
     bool parse_files = false;
     std::string file_start = "----------";
-    for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
+    for(auto i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
     {
       if (*i == '\n')
       {
@@ -92,7 +92,7 @@ SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
   if (zip.exec() == 0)
   {
     // FIXME: Unneeded copy of data
-    return Blob::copy({reinterpret_cast<uint8_t const*>(zip.get_stdout().data()), zip.get_stdout().size()});
+    return Blob::copy(zip.get_stdout());
   }
   else
   {

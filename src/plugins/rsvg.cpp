@@ -52,7 +52,7 @@ RSVG::load_from_file(const std::string& filename)
 
   if (rsvg.exec() == 0)
   {
-    Blob blob = Blob::copy({reinterpret_cast<uint8_t const*>(rsvg.get_stdout().data()), rsvg.get_stdout().size()});
+    Blob blob = Blob::copy(rsvg.get_stdout());
     SoftwareSurface surface = PNG::load_from_mem(blob);
     return surface;
   }

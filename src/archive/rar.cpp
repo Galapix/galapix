@@ -31,9 +31,9 @@ Rar::get_filenames(const std::string& rar_filename)
   if (rar.exec() == 0)
   {
     std::vector<std::string> lst;
-    const std::vector<char>& stdout_lst = rar.get_stdout();
-    std::vector<char>::const_iterator start = stdout_lst.begin();
-    for(std::vector<char>::const_iterator i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
+    auto const& stdout_lst = rar.get_stdout();
+    auto start = stdout_lst.begin();
+    for(auto i = stdout_lst.begin(); i != stdout_lst.end(); ++i)
     {
       if (*i == '\n')
       {
@@ -58,7 +58,7 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
   if (rar.exec() == 0)
   {
     // FIXME: Unneeded copy of data
-    return Blob::copy({reinterpret_cast<uint8_t const*>(rar.get_stdout().data()), rar.get_stdout().size()});
+    return Blob::copy(rar.get_stdout());
   }
   else
   {

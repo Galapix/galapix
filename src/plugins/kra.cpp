@@ -47,7 +47,7 @@ KRA::load_from_file(const std::string& filename)
   koconverter.arg(filename).arg("/dev/stdout");
   koconverter.exec();
 
-  return PNG::load_from_mem({reinterpret_cast<uint8_t const*>(koconverter.get_stdout().data()), koconverter.get_stdout().size()});
+  return PNG::load_from_mem(koconverter.get_stdout());
 }
 
 // SoftwareSurface

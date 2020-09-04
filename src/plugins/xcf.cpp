@@ -46,13 +46,16 @@
 namespace {
 
 std::vector<std::string>
-xcfinfo_get_layer(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end)
+xcfinfo_get_layer(std::string_view text)
 {
   std::vector<std::string> layer_names;
 
+  auto start = text.begin();
+  auto end = text.end();
+
   while(start != end)
   {
-    std::vector<char>::const_iterator line_end = std::find(start, end, '\n');
+    auto line_end = std::find(start, end, '\n');
     std::string line(&*start, static_cast<size_t>(line_end - start));
     start = line_end+1;
 
@@ -109,8 +112,8 @@ XCF::get_layers(const URL& url)
 
   if (xcfinfo.exec() == 0)
   {
-    const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
-    std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
+    auto const& stdout_lst = xcfinfo.get_stdout_txt();
+    auto line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
     if (line_end == stdout_lst.end())
     {
       raise_runtime_error("XCF::get_layers(): Couldn't parse output");
@@ -118,7 +121,7 @@ XCF::get_layers(const URL& url)
     }
     else
     {
-      return xcfinfo_get_layer(line_end+1, stdout_lst.end());
+      return xcfinfo_get_layer(std::string_view(line_end + 1, stdout_lst.end()));
     }
   }
   else
@@ -135,8 +138,8 @@ XCF::get_size(const std::string& filename, Size& size)
   xcfinfo.arg(filename);
   if (xcfinfo.exec() == 0)
   {
-    const std::vector<char>& stdout_lst = xcfinfo.get_stdout();
-    std::vector<char>::const_iterator line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
+    auto const& stdout_lst = xcfinfo.get_stdout();
+    auto line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
     if (line_end == stdout_lst.end())
     {
       std::cout << "Error: XCF: couldn't parse xcfinfo output" << std::endl;
@@ -161,8 +164,7 @@ XCF::get_size(const std::string& filename, Size& size)
   }
   else
   {
-    std::cout.write(&*xcfinfo.get_stderr().begin(),
-                    static_cast<std::streamsize>(xcfinfo.get_stderr().size()));
+    std::cout << xcfinfo.get_stderr_txt();
     return false;
   }
 }
@@ -178,7 +180,7 @@ XCF::load_from_file(const std::string& filename)
   }
   else
   {
-    return PNG::load_from_mem({reinterpret_cast<uint8_t const*>(xcf2png.get_stdout().data()), xcf2png.get_stdout().size()});
+    return PNG::load_from_mem(xcf2png.get_stdout());
   }
 }
 
@@ -194,8 +196,7 @@ XCF::load_from_mem(std::span<uint8_t const> data)
   }
   else
   {
-    return PNG::load_from_mem({reinterpret_cast<const uint8_t*>(&*xcf2png.get_stdout().begin()),
-        xcf2png.get_stdout().size()});
+    return PNG::load_from_mem(xcf2png.get_stdout());
   }
 }
 

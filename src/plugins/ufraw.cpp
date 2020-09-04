@@ -57,7 +57,7 @@ UFRaw::load_from_file(const std::string& filename)
   }
   else
   {
-    return PNM::load_from_mem({reinterpret_cast<uint8_t const*>(ufraw.get_stdout().data()), ufraw.get_stdout().size()});
+    return PNM::load_from_mem(ufraw.get_stdout());
   }
 }
 

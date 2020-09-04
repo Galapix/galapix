@@ -63,10 +63,16 @@ public:
   int exec();
 
   /** Access the stdout output of the program */
-  const std::vector<char>& get_stdout() const { return m_stdout_vec; }
+  std::span<uint8_t const> get_stdout() const { return {reinterpret_cast<uint8_t const*>(m_stdout_vec.data()), m_stdout_vec.size()}; }
 
   /** Access the stderr output of the program */
-  const std::vector<char>& get_stderr() const { return m_stderr_vec; }
+  std::span<uint8_t const> get_stderr() const { return {reinterpret_cast<uint8_t const*>(m_stderr_vec.data()), m_stderr_vec.size()}; }
+
+    /** Access the stdout output of the program */
+  std::string_view get_stdout_txt() const { return std::string_view(m_stdout_vec.begin(), m_stdout_vec.end()); }
+
+  /** Access the stderr output of the program */
+  std::string_view get_stderr_txt() const { return {m_stderr_vec.begin(), m_stderr_vec.end()}; }
 
   /** Returns a representation of the command call in simple string
       form, for visualitation only, no gurantee is made that arguments

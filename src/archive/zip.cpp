@@ -100,10 +100,11 @@ std::string zip_error_to_string(int err)
   }
 }
 
-void unzip_parse_line(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end,
+void unzip_parse_line(std::string_view data,
                       std::vector<std::string>& lst)
 {
-
+  auto start = data.begin();
+  auto end = data.end();
   if (start != end && *(end-1) == '/')
   { // Do nothing if the given entry is a directory
     return;
@@ -112,7 +113,7 @@ void unzip_parse_line(std::vector<char>::const_iterator start, std::vector<char>
   { // Figure out where the filename starts
     bool in_whitespace = true;
     int  column = 0;
-    for(std::vector<char>::const_iterator i = start; i != end; ++i)
+    for(auto i = start; i != end; ++i)
     {
       if (in_whitespace)
       {
@@ -137,16 +138,16 @@ void unzip_parse_line(std::vector<char>::const_iterator start, std::vector<char>
   }
 }
 
-void unzip_parse_output(std::vector<char>::const_iterator start, std::vector<char>::const_iterator end,
+void unzip_parse_output(std::string_view data,
                         std::vector<std::string>& lst)
 {
-  std::vector<char>::const_iterator line_start = start;
-  for(std::vector<char>::const_iterator i = start; i != end; ++i)
+  auto line_start = data.begin();
+  for(auto it = data.begin(); it != data.end(); ++it)
   {
-    if (*i == '\n')
+    if (*it == '\n')
     {
-      unzip_parse_line(line_start, i, lst);
-      line_start = i + 1;
+      unzip_parse_line(std::string_view(line_start, it), lst);
+      line_start = it + 1;
     }
   }
 }
@@ -162,7 +163,7 @@ Zip::get_filenames(const std::string& zip_filename)
   if (zip_return_code == 0)
   {
     std::vector<std::string> lst;
-    unzip_parse_output(unzip.get_stdout().begin(), unzip.get_stdout().end(), lst);
+    unzip_parse_output(unzip.get_stdout_txt(), lst);
     return lst;
   }
   else
@@ -203,7 +204,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
   if (zip_return_code == 0)
   {
     // FIXME: Unneeded copy of data
-    return Blob::copy({reinterpret_cast<uint8_t const*>(unzip.get_stdout().data()), unzip.get_stdout().size()});
+    return Blob::copy(unzip.get_stdout());
   }
   else
   {
