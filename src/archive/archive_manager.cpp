@@ -95,7 +95,7 @@ ArchiveManager::is_archive(Blob const& blob) const
 const ArchiveLoader&
 ArchiveManager::get_loader(const std::string& filename) const
 {
-  auto loader = find_loader_by_magic(filename);
+  auto const* loader = find_loader_by_magic(filename);
 
   if (!loader)
   {

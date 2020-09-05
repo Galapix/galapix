@@ -20,7 +20,6 @@
 #include <logmich/log.hpp>
 #include <unistd.h>
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/io.hpp>
 
 #include "database/database.hpp"

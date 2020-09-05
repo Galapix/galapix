@@ -40,8 +40,8 @@ public:
   void schedule(const Task& task);
   void abort();
 
-  bool is_shutting_down() { return m_shutdown; }
-  bool is_aborted() { return m_forced_shutdown; }
+  bool is_shutting_down() const { return m_shutdown; }
+  bool is_aborted() const { return m_forced_shutdown; }
 
 private:
   void run();

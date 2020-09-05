@@ -103,8 +103,8 @@ std::string zip_error_to_string(int err)
 void unzip_parse_line(std::string_view data,
                       std::vector<std::string>& lst)
 {
-  auto start = data.begin();
-  auto end = data.end();
+  char const* start = data.begin();
+  char const* end = data.end();
   if (start != end && *(end-1) == '/')
   { // Do nothing if the given entry is a directory
     return;
@@ -113,7 +113,7 @@ void unzip_parse_line(std::string_view data,
   { // Figure out where the filename starts
     bool in_whitespace = true;
     int  column = 0;
-    for(auto i = start; i != end; ++i)
+    for(char const* i = start; i != end; ++i)
     {
       if (in_whitespace)
       {
@@ -141,8 +141,8 @@ void unzip_parse_line(std::string_view data,
 void unzip_parse_output(std::string_view data,
                         std::vector<std::string>& lst)
 {
-  auto line_start = data.begin();
-  for(auto it = data.begin(); it != data.end(); ++it)
+  char const* line_start = data.begin();
+  for(char const* it = data.begin(); it != data.end(); ++it)
   {
     if (*it == '\n')
     {
