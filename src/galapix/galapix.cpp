@@ -17,13 +17,15 @@
 #include "galapix/galapix.hpp"
 
 #include <algorithm>
+#include <atomic>
 #include <fstream>
-#include <sstream>
-#include <stdlib.h>
-#include <stdexcept>
 #include <iostream>
+#include <sstream>
+#include <stdexcept>
+#include <stdlib.h>
 #include <string>
 #include <vector>
+
 #include <Magick++.h>
 
 #include "archive/archive_manager.hpp"
@@ -146,7 +148,7 @@ Galapix::info(const Options& opts)
   ResourceManager resource_mgr(database, generator, download_mgr,
                                ArchiveManager::current());
 
-  int count = 0;
+  std::atomic_int count = 0;
   auto files = std::vector<std::string>(opts.rest.begin() + 1, opts.rest.end());
   for(const auto& filename : files)
   {
