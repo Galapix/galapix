@@ -38,6 +38,8 @@ option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(WARNINGS "Switch on extra warnings" OFF)
 option(WERROR "Treat all warnings as errors" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
+option(CLANG_TIDY "Enable clang-tidy" OFF)
+option(CLANG_TIDY_FIX "Apply clang-tidy fixes to source code" OFF)
 
 if(WARNINGS)
   list(APPEND WARNINGS_CXX_FLAGS -Wall -Wextra)
@@ -121,7 +123,7 @@ if(WERROR)
 endif()
 
 if(CMAKE_VERSION VERSION_GREATER 3.6)
-  if (USE_CLANG_TIDY)
+  if (CLANG_TIDY)
     find_program(
       CLANG_TIDY_EXE
       NAMES "clang-tidy"
