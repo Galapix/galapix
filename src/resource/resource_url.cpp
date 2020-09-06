@@ -118,6 +118,8 @@ ResourceURL::operator!=(const ResourceURL& other) const
   return !(*this == other);
 }
 
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+
 bool
 ResourceURL::operator<(const ResourceURL& other) const
 {

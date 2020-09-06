@@ -213,6 +213,8 @@ std::ostream& operator<<(std::ostream& out, const URL& url)
   return out << "URL(\"" << url.str() << "\")";
 }
 
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
+
 bool operator<(const URL& lhs, const URL& rhs)
 {
   return lhs.str() < rhs.str();
