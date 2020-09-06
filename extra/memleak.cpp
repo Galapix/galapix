@@ -16,11 +16,8 @@ int main(int argc, char** argv)
     {
       //SoftwareSurfacePtr surface = SoftwareSurfaceFactory::current().from_url(URL::from_string(argv[i]));
       SoftwareSurface surface = JPEG::load_from_file(argv[i], 2);
-
     }
   }
-
-  return 0;
 }
 
 /* EOF */

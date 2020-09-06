@@ -27,6 +27,8 @@
 #include "math/rgb.hpp"
 #include "plugins/png.hpp"
 
+namespace {
+
 struct Pixel
 {
   uint8_t tl;
@@ -42,12 +44,12 @@ struct TileDBEntry
   SoftwareSurface original;
 };
 
-std::string gen_filename(uint32_t num)
-{
-  std::ostringstream str;
-  str << "/tmp/tiledb/" << std::hex << num << ".png";
-  return str.str();
-}
+// std::string gen_filename(uint32_t num)
+// {
+//   std::ostringstream str;
+//   str << "/tmp/tiledb/" << std::hex << num << ".png";
+//   return str.str();
+// }
 
 int diff(const Pixel& lhs, const Pixel& rhs)
 {
@@ -99,6 +101,8 @@ SoftwareSurface find_closest_tile(std::vector<TileDBEntry>& tiledb,
 
   return best_match;
 }
+
+} // namespace
 
 int main(int argc, char* argv[])
 {

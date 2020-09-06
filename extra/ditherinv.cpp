@@ -25,6 +25,8 @@
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 
+namespace {
+
 void invert(SoftwareSurfaceFloatPtr surface)
 {
   for(int y = 0; y < surface->get_height(); ++y)
@@ -40,6 +42,8 @@ void invert(SoftwareSurfaceFloatPtr surface)
     }
   }
 }
+
+} // namespace
 
 int main(int argc, char** argv)
 {

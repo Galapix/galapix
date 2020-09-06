@@ -26,6 +26,8 @@
 #include "util/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
+namespace {
+
 void add(SoftwareSurfaceFloatPtr out, SoftwareSurface const& surface)
 {
   PixelData const& src = surface.get_pixel_data();
@@ -60,6 +62,8 @@ void tone_map(PixelData out, SoftwareSurfaceFloatPtr in, float factor)
       out.put_pixel(x, y, rgb);
     }
 }
+
+} // namespace
 
 int main(int argc, char** argv)
 {

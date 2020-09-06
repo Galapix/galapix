@@ -21,6 +21,8 @@
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 
+namespace {
+
 void scanlines(SoftwareSurfaceFloatPtr surface)
 {
   for(int y = 0; y < surface->get_height(); ++y)
@@ -56,6 +58,8 @@ void scanlines(SoftwareSurfaceFloatPtr surface)
     }
   }
 }
+
+} // namespace
 
 int main(int argc, char** argv)
 {

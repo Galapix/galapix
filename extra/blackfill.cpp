@@ -29,6 +29,8 @@
 #include "util/url.hpp"
 #include "math/rgb.hpp"
 
+namespace {
+
 bool is_black(const RGB rgb)
 {
   return (rgb.r < 128 ||
@@ -105,6 +107,8 @@ void blackfill(PixelData const& in,
                                     p02, p12, p22));
     }
 }
+
+} // namespace
 
 int main(int argc, char* argv[])
 {

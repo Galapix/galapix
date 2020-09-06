@@ -56,7 +56,7 @@ GtkViewer::run()
   // Fake command line argument construction
   argv = static_cast<char**>(malloc(sizeof(char*) * 2));
   argv[0] = strdup("galapix");
-  argv[1] = NULL;
+  argv[1] = nullptr;
 
   Gtk::Main kit(&argc, &argv);
   Gtk::GL::init(&argc, &argv);
