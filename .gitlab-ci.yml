@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-image: ubuntu:latest
+image: ubuntu:focal
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -27,26 +27,27 @@ before_script:
   - apt-get -qq -y install
     build-essential
     cmake
-    g++-8
-    clang-6.0
-    libglew-dev
-    libopenal-dev
-    libsqlite3-dev
-    libjsoncpp-dev
-    libgl1-mesa-dev
+    g++-10
+    clang-10
+    clang-tidy-10
     libcurl4-openssl-dev
-    libsdl2-dev
-    libpng-dev
-    libjpeg8-dev
-    libmagick++-dev
     libexif-dev
+    libfmt-dev
+    libgl1-mesa-dev
     libglademm-2.4-dev
+    libglew-dev
+    libglm-dev
     libgtkglextmm-x11-1.2-dev
     libgtkmm-2.4-dev
+    libjpeg8-dev
+    libjsoncpp-dev
+    libmagick++-dev
     libmhash-dev
-    libboost-filesystem-dev
-    libboost-signals-dev
-    libboost-system-dev
+    libopenal-dev
+    libpng-dev
+    libsdl2-dev
+    libsigc++-2.0-dev
+    libsqlite3-dev
 
 .build_galapix_template: &build_galapix
   stage: build
@@ -60,25 +61,33 @@ before_script:
 build:gcc:release:
   <<: *build_galapix
   variables:
-    CXX: g++-8
-    BUILD_TYPE: Release
+    CXX: "g++-10"
+    BUILD_TYPE: "Release"
 
 build:clang:release:
   <<: *build_galapix
   variables:
-    CXX: clang++-6.0
-    BUILD_TYPE: Release
+    CXX: "clang++-10"
+    BUILD_TYPE: "Release"
 
 build:gcc:debug:
   <<: *build_galapix
   variables:
-    CXX: g++-8
-    BUILD_TYPE: Debug
+    CXX: "g++-10"
+    BUILD_TYPE: "Debug"
 
 build:clang:debug:
   <<: *build_galapix
   variables:
-    CXX: clang++-6.0
-    BUILD_TYPE: Debug
+    CXX: "clang++-10"
+    BUILD_TYPE: "Debug"
+
+build:clang-tidy:
+  <<: *build_galapix
+  variables:
+    CXX: "clang++-10"
+    BUILD_TYPE: "Debug"
+    CLANG_TIDY: "ON"
+    CLANG_TIDY_FIX: "OFF"
 
 # EOF #
