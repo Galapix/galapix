@@ -36,19 +36,12 @@ option(BUILD_GALAPIX_GTK "Build galapix.gtk" OFF)
 option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXTRA "Build extra apps" OFF)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
-option(WARNINGS "Switch on extra warnings" OFF)
-option(WERROR "Treat all warnings as errors" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 option(CLANG_TIDY "Enable clang-tidy" OFF)
 option(CLANG_TIDY_FIX "Apply clang-tidy fixes to source code" OFF)
 
 if(THREADSANITIZER)
   add_compile_options(-fsanitize=thread)
-endif()
-
-if(WERROR)
-  set(WARNINGS_CXX_FLAGS ${WARNINGS_CXX_FLAGS}
-    -Werror)
 endif()
 
 if(CMAKE_VERSION VERSION_GREATER 3.6)
