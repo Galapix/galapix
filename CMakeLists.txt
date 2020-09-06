@@ -30,6 +30,7 @@ include(GetProjectVersion)
 include(GNUInstallDirs)
 include(CheckIncludeFile)
 include(MaximumWarnings)
+include(ClangTidy)
 
 option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
 option(BUILD_GALAPIX_GTK "Build galapix.gtk" OFF)
@@ -37,32 +38,9 @@ option(BUILD_TESTS "Build tests" OFF)
 option(BUILD_EXTRA "Build extra apps" OFF)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
-option(CLANG_TIDY "Enable clang-tidy" OFF)
-option(CLANG_TIDY_FIX "Apply clang-tidy fixes to source code" OFF)
 
 if(THREADSANITIZER)
   add_compile_options(-fsanitize=thread)
-endif()
-
-if(CMAKE_VERSION VERSION_GREATER 3.6)
-  if (CLANG_TIDY)
-    find_program(
-      CLANG_TIDY_EXE
-      NAMES "clang-tidy"
-      DOC "Path to clang-tidy executable"
-      )
-
-    if(NOT CLANG_TIDY_EXE)
-      message(FATAL_ERROR "clang-tidy not found.")
-    else()
-      message(STATUS "clang-tidy found: ${CLANG_TIDY_EXE}")
-      if(CLANG_TIDY_FIX)
-        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" "-fix")
-      else()
-        set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}")
-      endif()
-    endif()
-  endif()
 endif()
 
 set(CMAKE_CXX_STANDARD 20)
