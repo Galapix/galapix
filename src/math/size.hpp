@@ -75,6 +75,8 @@ public:
 
   //! Operations:
 public:
+  Size& operator=(const Size&) = default;
+
   //: Size += Size operator.
   Size &operator+=(const Size &s)
   { width += s.width; height += s.height; return *this; }
@@ -149,6 +151,8 @@ public:
 
   //! Operations:
 public:
+  Sizef& operator=(const Sizef&) = default;
+
   //: Size += Size operator.
   Sizef &operator+=(const Sizef &s)
   { width += s.width; height += s.height; return *this; }
