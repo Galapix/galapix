@@ -6,6 +6,8 @@ Checks: >
   performance-*,
   bugprone-*,
   misc-*,
+  modernize-use-override,
+  modernize-use-nullptr,
   -clang-analyzer-security.FloatLoopCounter,
   -misc-non-private-member-variables-in-classes,
   -misc-unused-parameters,
@@ -15,6 +17,10 @@ Checks: >
   -readability-redundant-member-init,
   -readability-uppercase-literal-suffix,
   -readability-isolate-declaration,
+  -readability-redundant-access-specifiers,
+  -readability-convert-member-functions-to-static,
+  -bugprone-branch-clone,
+  -clang-diagnostic-return-std-move-in-c++11,
 WarningsAsErrors: '*'
 HeaderFilterRegex: 'src/.*hpp'
 AnalyzeTemporaryDtors: true
