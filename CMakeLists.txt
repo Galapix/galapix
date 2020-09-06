@@ -40,7 +40,7 @@ option(WERROR "Treat all warnings as errors" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 
 if(WARNINGS)
-  list(APPEND -Wall -Wextra)
+  list(APPEND WARNINGS_CXX_FLAGS -Wall -Wextra)
   if(CMAKE_COMPILER_IS_GNUCXX)
     list(APPEND WARNINGS_CXX_FLAGS
       -Wcast-align
