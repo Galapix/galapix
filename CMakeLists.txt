@@ -109,6 +109,7 @@ if(WARNINGS)
       -Wno-double-promotion
       -Wno-unused-private-field
       -Wno-unused-exception-parameter
+      -Wno-return-std-move-in-c++11
       )
   endif()
 endif()
