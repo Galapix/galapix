@@ -28,7 +28,7 @@ std::filesystem::path unique_path()
     "abcdefghijklmnopqrstuvwxyz";
 
   std::random_device rnd;
-  std::uniform_int_distribution<int> distributed(std::size(charset));
+  std::uniform_int_distribution<int> distributed(0, std::size(charset) - 1);
 
   std::string str(16, ' ');
   for(size_t i = 0; i < str.size(); ++i)
