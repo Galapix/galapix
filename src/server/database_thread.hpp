@@ -131,7 +131,7 @@ private:
   void receive_file(const OldFileEntry& file_entry);
   void receive_tiles(const std::vector<TileEntry>& tiles);
 
-  void process_queue(ThreadMessageQueue2<std::function<void()>>& queue);
+  void process_queue(ThreadMessageQueue2<std::function<void()>>& queue) const;
 
 protected:
   void run() override;

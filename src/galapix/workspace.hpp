@@ -85,8 +85,8 @@ public:
   // Debug stuff
   void clear_cache();
   void cache_cleanup();
-  void print_info(const Rectf& rect);
-  void print_images(const Rectf& rect);
+  void print_info(const Rectf& rect) const;
+  void print_images(const Rectf& rect) const;
 
   // ---------------------------------------------
   void load(const std::string& filename);

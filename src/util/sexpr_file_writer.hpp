@@ -49,7 +49,7 @@ private:
   /** A reference to the output stream */
   std::ostream* out;
   int level;
-  std::string indent();
+  std::string indent() const;
 
 private:
   SExprFileWriter(const SExprFileWriter&);

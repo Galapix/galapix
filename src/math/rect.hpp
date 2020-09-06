@@ -178,7 +178,7 @@ public:
   }
 
   //: Calculates and returns the union of two rectangles.
-  Rect calc_union(const Rect& other)
+  Rect calc_union(const Rect& other) const
   {
     return Rect(std::max(left, other.left),
                 std::max(top, other.top),
@@ -362,7 +362,7 @@ public:
   }
 
   //: Calculates and returns the union of two rectangles.
-  Rectf calc_union(const Rectf& other)
+  Rectf calc_union(const Rectf& other) const
   {
     return Rectf(std::max(left, other.left),
                  std::max(top, other.top),

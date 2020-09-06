@@ -201,11 +201,11 @@ Workspace::cache_cleanup()
 }
 
 void
-Workspace::print_info(const Rectf& rect)
+Workspace::print_info(const Rectf& rect) const
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
-  for(auto& img: get_images(rect))
+  for(const auto& img: get_images(rect))
   {
     img->print_info();
   }
@@ -214,7 +214,7 @@ Workspace::print_info(const Rectf& rect)
 }
 
 void
-Workspace::print_images(const Rectf& rect)
+Workspace::print_images(const Rectf& rect) const
 {
   std::cout << "-- Visible images --------------------------------------" << std::endl;
   for(auto& img: get_images(rect))

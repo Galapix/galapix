@@ -119,7 +119,7 @@ TightLayouter::layout(const ImageCollection& images)
 }
 
 void
-TightLayouter::layout_zigzag(const ImageCollection& images)
+TightLayouter::layout_zigzag(const ImageCollection& images) const
 {
   float spacing = 24.0f;
 

@@ -50,12 +50,12 @@ xcfinfo_get_layer(std::string_view text)
 {
   std::vector<std::string> layer_names;
 
-  auto start = text.begin();
-  auto end = text.end();
+  const char* start = text.begin();
+  const char* end = text.end();
 
   while(start != end)
   {
-    auto line_end = std::find(start, end, '\n');
+    const char* line_end = std::find(start, end, '\n');
     std::string line(&*start, static_cast<size_t>(line_end - start));
     start = line_end+1;
 
@@ -113,7 +113,7 @@ XCF::get_layers(const URL& url)
   if (xcfinfo.exec() == 0)
   {
     auto const& stdout_lst = xcfinfo.get_stdout_txt();
-    auto line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
+    const auto *line_end = std::find(stdout_lst.begin(), stdout_lst.end(), '\n');
     if (line_end == stdout_lst.end())
     {
       raise_runtime_error("XCF::get_layers(): Couldn't parse output");

@@ -228,7 +228,7 @@ SoftwareSurfaceFactory::from_file(const std::string& filename) const
     {
       // retry with magic
       std::string magic = Filesystem::get_magic(filename);
-      auto new_loader = find_loader_by_magic(magic);
+      const auto* new_loader = find_loader_by_magic(magic);
       if (new_loader && new_loader != loader)
       {
         log_warn("{}: file extension error, file is a {}", filename, new_loader->get_name());

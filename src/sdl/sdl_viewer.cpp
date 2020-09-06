@@ -88,7 +88,7 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
 
 SDLViewer::~SDLViewer()
 {
-  for(auto gamecontroller: m_gamecontrollers)
+  for(SDL_GameController* gamecontroller: m_gamecontrollers)
   {
     SDL_GameControllerClose(gamecontroller);
   }
@@ -545,7 +545,7 @@ SDLViewer::update_gamecontrollers(float delta)
   const auto rotate_left_axis = SDL_CONTROLLER_AXIS_TRIGGERRIGHT;
   const auto rotate_right_axis = SDL_CONTROLLER_AXIS_TRIGGERLEFT;
 
-  for(auto gamecontroller: m_gamecontrollers)
+  for(SDL_GameController* gamecontroller: m_gamecontrollers)
   {
     float zoom_value = get_axis(gamecontroller, zoom_axis);
     float x_value = get_axis(gamecontroller, move_x_axis);

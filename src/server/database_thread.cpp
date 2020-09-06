@@ -355,7 +355,7 @@ DatabaseThread::run()
 }
 
 void
-DatabaseThread::process_queue(ThreadMessageQueue2<std::function<void()>>& queue)
+DatabaseThread::process_queue(ThreadMessageQueue2<std::function<void()>>& queue) const
 {
   std::function<void()> func;
   while(!m_abort && queue.try_pop(func))
