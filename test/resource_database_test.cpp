@@ -2,6 +2,8 @@
 
 #include "database/resource_database.hpp"
 
+using namespace galapix;
+
 class ResourceDatabaseTest : public testing::Test
 {
 protected:

@@ -42,14 +42,14 @@ public:
     m_blob_info(rhs.m_blob_info)
   {}
 
-  FileInfo(const RowId& id, const std::string& path, time_t mtime, const SHA1& sha1, size_t size) :
+  FileInfo(const RowId& id, const std::string& path, time_t mtime, const galapix::SHA1& sha1, size_t size) :
     m_id(id),
     m_path(path),
     m_mtime(mtime),
     m_blob_info(sha1, size)
   {}
 
-  FileInfo(const std::string& path, time_t mtime, const SHA1& sha1, size_t size) :
+  FileInfo(const std::string& path, time_t mtime, const galapix::SHA1& sha1, size_t size) :
     m_id(),
     m_path(path),
     m_mtime(mtime),
@@ -61,7 +61,7 @@ public:
   time_t get_mtime() const { return m_mtime; }
   BlobInfo get_blob_info() const { return m_blob_info; }
 
-  SHA1 get_sha1() const { return m_blob_info.get_sha1(); }
+  galapix::SHA1 get_sha1() const { return m_blob_info.get_sha1(); }
   size_t get_size() const { return m_blob_info.get_size(); }
 
 private:

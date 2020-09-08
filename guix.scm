@@ -39,6 +39,7 @@
              (gnu packages pretty-print)
              (gnu packages sdl)
              (gnu packages sqlite)
+             (gnu packages tls)
              (guix-cocfree utils))
 
 (define %source-dir (dirname (current-filename)))
@@ -73,7 +74,7 @@
       ("libpng" ,libpng)
       ("sqlite" ,sqlite)
       ("libsigc++" ,libsigc++)
-      ("libmhash" ,libmhash)
+      ("openssl" ,openssl)
       ("imagemagick" ,imagemagick)
       ("libexif" ,libexif)))
    (synopsis (synopsis-from-source %source-dir))

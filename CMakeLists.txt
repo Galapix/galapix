@@ -56,6 +56,7 @@ find_package(JPEG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(glm REQUIRED)
 find_package(fmt REQUIRED)
+find_package(OpenSSL COMPONENTS Crypto REQUIRED)
 
 pkg_search_module(SQLITE3 REQUIRED sqlite3 IMPORTED_TARGET)
 pkg_search_module(SIGCXX REQUIRED sigc++-2.0 IMPORTED_TARGET)
@@ -65,16 +66,6 @@ pkg_search_module(EXIF REQUIRED libexif IMPORTED_TARGET)
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=776832
 # find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
 pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
-
-# older versions don't have a mhash.pc
-pkg_search_module(MHASH mhash)
-if(NOT MHASH_FOUND)
-  find_library(MHASH_LIBRARIES mhash)
-  message(STATUS "Found mhash: ${MHASH_LIBRARIES}")
-  if(MHASH_LIBRARIES-NOTFOUND)
-    message(FATAL_ERROR "required library mhash not found")
-  endif()
-endif()
 
 check_include_file(spnav.h HAVE_SPNAV)
 find_library(SPNAV spnav)
@@ -177,7 +168,7 @@ target_link_libraries(libgalapix PUBLIC
   fmt::fmt
   PkgConfig::SIGCXX
   ${SPNAV_LIBRARIES}
-  ${MHASH_LIBRARIES}
+  OpenSSL::Crypto
   OpenGL::GL
   OpenGL::GLU
   GLEW::GLEW

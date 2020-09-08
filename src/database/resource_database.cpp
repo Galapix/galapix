@@ -34,6 +34,8 @@
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
 
+using namespace galapix;
+
 ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
   m_db(db),
 

@@ -2,6 +2,8 @@
 
 #include "util/sha1.hpp"
 
+using namespace galapix;
+
 TEST(SHA1Test, from_string)
 {
   ASSERT_EQ(SHA1::from_string("0a4d55a8d778e5022fab701977c5d840bbc486d0").str(),

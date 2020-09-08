@@ -53,7 +53,6 @@ class OldFileEntry;
 class ResourceHandler;
 class ResourceInfo;
 class ResourceLocator;
-class SHA1;
 class TileEntry;
 class URL;
 class URLInfo;
@@ -63,6 +62,10 @@ class ImageInfoGet;
 class ImageInfoStore;
 class ResourceInfoGet;
 class ResourceInfoStore;
+
+namespace galapix {
+class SHA1;
+} // namespace galapix
 
 /** The ResourceDatabase keeps a record of all files that have been
     viewed. It keeps information on the last modification time and
@@ -112,7 +115,7 @@ public:
   bool get_image_entry(const OldFileEntry& entry, ImageEntry& image_out);
 
   OldFileEntry  store_old_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler);
-  OldFileEntry  store_old_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id);
+  OldFileEntry  store_old_file_entry(const URL& url, const galapix::SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id);
   ImageEntry store_image_entry(const ImageEntry& image);
 
   void delete_old_file_entry(const RowId& file_id);

@@ -42,14 +42,14 @@ public:
   {}
 
   BlobInfo(const RowId& id,
-           const SHA1& sha1,
+           const galapix::SHA1& sha1,
            size_t size) :
     m_id(id),
     m_sha1(sha1),
     m_size(size)
   {}
 
-  BlobInfo(const SHA1& sha1,
+  BlobInfo(const galapix::SHA1& sha1,
            size_t size) :
     m_id(),
     m_sha1(sha1),
@@ -57,12 +57,12 @@ public:
   {}
 
   RowId get_id() const { return m_id; }
-  SHA1 get_sha1() const { return m_sha1; }
+  galapix::SHA1 get_sha1() const { return m_sha1; }
   size_t get_size() const { return m_size; }
 
 private:
   RowId m_id;
-  SHA1 m_sha1;
+  galapix::SHA1 m_sha1;
   size_t  m_size;
 };
 

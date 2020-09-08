@@ -16,40 +16,33 @@
 
 #include "util/sha1.hpp"
 
-// clang doesn't define _Bool in C++ mode, but mhash needs it
-#ifndef _Bool
-#  define _Bool bool
-#  include <mhash.h>
-#  undef _Bool
-#else
-#  include <mhash.h>
-#endif
-
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
+#include <openssl/sha.h>
+
 #include "util/blob.hpp"
 #include "util/raise_exception.hpp"
+
+std::ostream& operator<<(std::ostream& os, const galapix::SHA1& sha1)
+{
+  return os << sha1.str();
+}
+
+namespace galapix {
 
 SHA1
 SHA1::from_mem(std::span<uint8_t const> data)
 {
-  MHASH td = mhash_init(MHASH_SHA1);
-  if (td == MHASH_FAILED)
-  {
-    raise_runtime_error("Failed to init MHash");
-  }
-  else
-  {
-    mhash(td, data.data(), static_cast<mutils_word32>(data.size()));
-
-    SHA1 sha1;
-    mhash_deinit(td, sha1.m_data.data());
-    return sha1;
-  }
+  SHA_CTX ctx;
+  SHA1_Init(&ctx);
+  SHA1_Update(&ctx, data.data(), data.size());
+  SHA1 sha1;
+  SHA1_Final(sha1.m_data.data(), &ctx);
+  return sha1;
 }
 
 SHA1
@@ -61,35 +54,29 @@ SHA1::from_mem(const std::string& str)
 SHA1
 SHA1::from_file(const std::string& filename)
 {
-  MHASH td = mhash_init(MHASH_SHA1);
-  if (td == MHASH_FAILED)
+  SHA_CTX ctx;
+  SHA1_Init(&ctx);
+
+  const unsigned int buf_size = 32768;
+  char buf[buf_size];
+  std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
+  if (!in)
   {
-    raise_runtime_error("Failed to init MHash");
+    raise_runtime_error("Couldn't open file " + filename);
   }
   else
   {
-    const unsigned int buf_size = 32768;
-    char buf[buf_size];
-    std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
-    if (!in)
+    while(!in.eof())
     {
-      raise_runtime_error("Couldn't open file " + filename);
+      in.read(buf, buf_size);
+      SHA1_Update(&ctx, buf, in.gcount());
     }
-    else
-    {
 
-      while(!in.eof())
-      {
-        in.read(buf, buf_size);
-        mhash(td, buf, static_cast<mutils_word32>(in.gcount()));
-      }
+    in.close();
 
-      in.close();
-
-      SHA1 sha1;
-      mhash_deinit(td, sha1.m_data.data());
-      return sha1;
-    }
+    SHA1 sha1;
+    SHA1_Final(sha1.m_data.data(), &ctx);
+    return sha1;
   }
 }
 
@@ -173,7 +160,6 @@ SHA1::operator!=(const SHA1& rhs) const
   return !operator==(rhs);
 }
 
-
 std::string
 SHA1::str() const
 {
@@ -184,9 +170,6 @@ SHA1::str() const
   return out.str();
 }
 
-std::ostream& operator<<(std::ostream& os, const SHA1& sha1)
-{
-  return os << sha1.str();
-}
+} // namespace galapix
 
 /* EOF */

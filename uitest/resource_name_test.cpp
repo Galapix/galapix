@@ -23,7 +23,7 @@
 
 UITEST(ResourceName, test, "")
 {
-  ResourceName res_name(BlobInfo(SHA1::from_mem(std::span<uint8_t const>()), 0),
+  ResourceName res_name(BlobInfo(galapix::SHA1::from_mem(std::span<uint8_t const>()), 0),
                                  ResourceHandler("archive", "rar", ""));
   std::cout << res_name.str() << std::endl;
 }

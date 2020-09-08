@@ -23,7 +23,7 @@ FileInfo::from_file(const std::string& filename)
 {
   return FileInfo(filename,
                   Filesystem::get_mtime(filename),
-                  SHA1::from_file(filename),
+                  galapix::SHA1::from_file(filename),
                   Filesystem::get_size(filename));
 }
 

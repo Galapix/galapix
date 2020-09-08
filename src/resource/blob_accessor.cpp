@@ -99,11 +99,11 @@ BlobAccessor::get_blob_info() const
   {
     if (!m_filename.empty())
     {
-      m_blob_info = BlobInfo(SHA1::from_file(m_filename), Filesystem::get_size(m_filename));
+      m_blob_info = BlobInfo(galapix::SHA1::from_file(m_filename), Filesystem::get_size(m_filename));
     }
     else
     {
-      m_blob_info = BlobInfo(SHA1::from_mem(m_blob), m_blob.size());
+      m_blob_info = BlobInfo(galapix::SHA1::from_mem(m_blob), m_blob.size());
     }
     return *m_blob_info;
   }

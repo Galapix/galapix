@@ -69,7 +69,6 @@ Required Libraries and Tools:
 * [Magick++](http://www.imagemagick.org/Magick%2B%2B/)
 * [librsvg](http://librsvg.sourceforge.net/)
 * [libexif](http://libexif.sourceforge.net/)
-* [libmhash](http://mhash.sourceforge.net/)
 
 On Ubuntu 15.04 one can install all required libraries with this call:
 
@@ -86,8 +85,7 @@ On Ubuntu 15.04 one can install all required libraries with this call:
       libpng12-dev \
       libsdl2-dev \
       libspnav-dev \
-      libsqlite3-dev \
-      libmhash-dev
+      libsqlite3-dev
 
 The following packages are optional and used to handle some more
 exotic image formats:

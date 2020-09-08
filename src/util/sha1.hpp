@@ -24,6 +24,8 @@
 
 #include "util/blob.hpp"
 
+namespace galapix {
+
 class SHA1
 {
 public:
@@ -50,10 +52,12 @@ private:
   std::array<uint8_t, 20> m_data;
 };
 
-std::ostream& operator<<(std::ostream& os, const SHA1& sha1);
+} // namespace galapix
+
+std::ostream& operator<<(std::ostream& os, const galapix::SHA1& sha1);
 
 template<>
-struct fmt::formatter<SHA1>
+struct fmt::formatter<galapix::SHA1>
 {
   template<typename ParseContext>
   constexpr auto parse(ParseContext& ctx)
@@ -62,7 +66,7 @@ struct fmt::formatter<SHA1>
   }
 
   template<typename FormatContext>
-  auto format(SHA1 const& v, FormatContext& ctx)
+  auto format(galapix::SHA1 const& v, FormatContext& ctx)
   {
     std::ostringstream os;
     os << v;

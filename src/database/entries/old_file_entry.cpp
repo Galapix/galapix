@@ -30,7 +30,7 @@ OldFileEntry::from_reader(SQLiteReader& reader)
                    static_cast<OldFileEntry::Handler>(reader.get_int(3)), // handler
                    RowId(reader.get_int64(4)),
                    BlobEntry(reader.get_int64(5),
-                             SHA1(reader.get_blob(6)),
+                             galapix::SHA1(reader.get_blob(6)),
                              reader.get_int(7)));
 }
 

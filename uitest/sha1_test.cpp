@@ -24,13 +24,13 @@
 
 UITEST_S(SHA1, test, "FILE", "")
 {
-  std::cout << SHA1::from_file(arg).str() << "  " << arg << std::endl;
+  std::cout << galapix::SHA1::from_file(arg).str() << "  " << arg << std::endl;
 }
 
 UITEST_S(SHA1, parse_string, "TEXT", "")
 {
   std::string const& in = arg;
-  std::string out = SHA1::from_string(in).str();
+  std::string out = galapix::SHA1::from_string(in).str();
   std::cout <<  in << "  " << out << std::endl;
   assert(in == out);
 }
