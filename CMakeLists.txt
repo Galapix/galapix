@@ -324,4 +324,16 @@ if(BUILD_BENCHMARKS)
   endforeach(SOURCE)
 endif()
 
+install(FILES
+  galapix.svg
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+
+install(FILES
+  galapix.desktop
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+
+configure_file(galapix.appdata.xml.in ${CMAKE_CURRENT_BINARY_DIR}/galapix.appdata.xml)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/galapix.appdata.xml
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+
 # EOF #

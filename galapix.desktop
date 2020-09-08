@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Galapix
+Comment=A Zoomable Image Viewer
+Icon=galapix
+Terminal=false
+Exec=galapix.sdl %f
+Type=Application
+Categories=Graphics;Office;
+StartupNotify=false
+MimeType=application/x-galapix
