@@ -37,6 +37,7 @@ before_script:
     libglademm-2.4-dev
     libglew-dev
     libglm-dev
+    libgtest-dev
     libgtkglextmm-x11-1.2-dev
     libgtkmm-2.4-dev
     libjpeg8-dev

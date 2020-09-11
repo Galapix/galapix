@@ -4,9 +4,6 @@
 [submodule "external/logmich"]
 	path = external/logmich
 	url = https://gitlab.com/logmich/logmich.git
-[submodule "external/googletest"]
-	path = external/googletest
-	url = https://github.com/google/googletest
 [submodule "external/benchmark"]
 	path = external/benchmark
 	url = https://github.com/google/benchmark.git

@@ -252,19 +252,15 @@ endif()
 
 # compile tests
 if(BUILD_TESTS)
-  # build gtest
-  add_library(gtest STATIC
-    external/googletest/googletest/src/gtest-all.cc
-    external/googletest/googletest/src/gtest_main.cc)
-  target_include_directories(gtest SYSTEM PUBLIC external/googletest/googletest/include/)
-  target_include_directories(gtest SYSTEM PRIVATE external/googletest/googletest/)
+  find_package(GTest REQUIRED)
 
   # build automatic tests
   file(GLOB TEST_GALAPIX_SOURCES test/*_test.cpp)
   add_executable(test_galapix ${TEST_GALAPIX_SOURCES})
   target_compile_options(test_galapix PRIVATE ${WARNINGS_CXX_FLAGS})
   target_link_libraries(test_galapix
-    gtest
+    GTest::GTest
+    GTest::Main
     libgalapix)
 
   # build uitest
