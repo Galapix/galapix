@@ -101,6 +101,20 @@ endif()
 add_library(entt INTERFACE IMPORTED)
 target_include_directories(entt INTERFACE external/entt/single_include/)
 
+function(build_dependencies)
+  if(BUILD_TESTS)
+    set(BUILD_TESTS OFF)
+    add_subdirectory(external/uitest/ EXCLUDE_FROM_ALL)
+  endif()
+
+  set(BUILD_TESTS OFF)
+  set(TINYGETTEXT_WITH_SDL ON)
+  add_subdirectory(external/geomcpp/ EXCLUDE_FROM_ALL)
+  add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
+  add_subdirectory(external/sexp-cpp/ EXCLUDE_FROM_ALL)
+endfunction()
+build_dependencies()
+
 # turn shader soure in a .hpp file
 file(GLOB SHADER_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/shader/*.frag
@@ -114,21 +128,6 @@ add_custom_command(
   ${SHADER_SOURCE}
   DEPENDS ${SHADER_SOURCE}
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-# compile sexp
-file(GLOB SEXP_CXX_SOURCES
-  external/sexp-cpp/src/*.cpp)
-add_library(sexp STATIC ${SEXP_CXX_SOURCES})
-target_include_directories(sexp SYSTEM PUBLIC external/sexp-cpp/include/)
-set_target_properties(sexp PROPERTIES CXX_CLANG_TIDY "")
-
-# compile logmich
-file(GLOB LOGMICH_CXX_SOURCES
-  external/logmich/src/log.cpp
-  external/logmich/src/logger.cpp)
-add_library(logmich STATIC ${LOGMICH_CXX_SOURCES})
-target_include_directories(logmich SYSTEM PUBLIC external/logmich/include/)
-set_target_properties(logmich PROPERTIES CXX_CLANG_TIDY "")
 
 # compile libgalapix
 file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -165,6 +164,7 @@ target_link_libraries(libgalapix PUBLIC
   logmich
   sexp
   entt
+  geomcpp
   fmt::fmt
   PkgConfig::SIGCXX
   ${SPNAV_LIBRARIES}
@@ -263,22 +263,15 @@ if(BUILD_TESTS)
     GTest::Main
     libgalapix)
 
-  # build uitest
-  file(GLOB UITEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} external/uitest/src/*.cpp)
-  add_library(uitest STATIC ${UITEST_SOURCES})
-  target_include_directories(uitest SYSTEM PRIVATE external/uitest/include/)
-  set_target_properties(uitest PROPERTIES CXX_CLANG_TIDY "")
-
   # build interactive tests
   file(GLOB UITEST_GALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} uitest/*_test.cpp)
   add_executable(uitest_galapix ${UITEST_GALAPIX_SOURCES})
   target_compile_options(uitest_galapix PRIVATE ${WARNINGS_CXX_FLAGS})
   target_include_directories(uitest_galapix PRIVATE src/)
-  target_include_directories(uitest_galapix SYSTEM PRIVATE
-    external/uitest/include/)
   target_link_libraries(uitest_galapix
     libgalapix
-    uitest)
+    uitest
+    uitest_main)
 
   if(BUILD_GALAPIX_SDL)
     file(GLOB TEST_GALAPIX_SDL_SOURCES test/sdl/*_test.cpp)
