@@ -30,26 +30,8 @@
 #ifndef HEADER_GALAPIX_MATH_ORIGIN_HPP
 #define HEADER_GALAPIX_MATH_ORIGIN_HPP
 
-#include "math/size.hpp"
-#include "math/vector2i.hpp"
-#include "math/vector2f.hpp"
+#include <geom/origin.hpp>
 
-enum class Origin
-{
-  TOP_LEFT,
-  TOP_CENTER,
-  TOP_RIGHT,
-  CENTER_LEFT,
-  CENTER,
-  CENTER_RIGHT,
-  BOTTOM_LEFT,
-  BOTTOM_CENTER,
-  BOTTOM_RIGHT
-};
-
-/** Returns the anchor point for the origin within the dimensions of
-    the size structure. */
-Vector2i calc_origin(Origin origin, const Size &size);
-Vector2f calc_origin(Origin origin, const Sizef &size);
+using Origin = geom::origin;
 
 #endif
