@@ -43,9 +43,6 @@
 using Rectf = geom::frect;
 using Rect = geom::irect;
 
-std::ostream& operator<<(std::ostream& s, const Rect& rect);
-std::ostream& operator<<(std::ostream& s, const Rectf& rect);
-
 template<>
 struct fmt::formatter<Rect>
 {

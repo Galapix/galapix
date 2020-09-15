@@ -37,11 +37,10 @@
 #include <sstream>
 #include <fmt/format.h>
 #include <geom/size.hpp>
+#include <geom/io.hpp>
 
 using Sizef = geom::fsize;
 using Size = geom::isize;
-
-std::ostream& operator<<(std::ostream& s, const Size& size);
 
 template<>
 struct fmt::formatter<Size>
