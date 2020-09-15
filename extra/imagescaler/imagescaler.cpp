@@ -118,10 +118,10 @@ int main(int argc, char* argv[])
     SoftwareSurface surface = SoftwareSurfaceFactory::current().from_file(argv[i]);
     Size tile_size(8, 8);
 
-    for(int y = 0; y < surface.get_height() - tile_size.height; y += tile_size.height)
+    for(int y = 0; y < surface.get_height() - tile_size.height(); y += tile_size.height())
     {
       std::cout << y << std::endl;
-      for(int x = 0; x < surface.get_width() - tile_size.width; x += tile_size.width)
+      for(int x = 0; x < surface.get_width() - tile_size.width(); x += tile_size.width())
       {
         SoftwareSurface src_tile = surface.crop(Rect(Vector2i(x, y), tile_size));
         SoftwareSurface small = src_tile.halve();
@@ -140,10 +140,10 @@ int main(int argc, char* argv[])
     PixelData out_surface(PixelData::RGB_FORMAT, surface.get_size() * 2);
     Size tile_size(4, 4);
 
-    for(int y = 0; y < surface.get_height() - tile_size.height; y += tile_size.height)
+    for(int y = 0; y < surface.get_height() - tile_size.height(); y += tile_size.height())
     {
       std::cout << y << std::endl;
-      for(int x = 0; x < surface.get_width() - tile_size.width; x += tile_size.width)
+      for(int x = 0; x < surface.get_width() - tile_size.width(); x += tile_size.width())
       {
         SoftwareSurface src_tile = surface.crop(Rect(Vector2i(x, y), tile_size));
         SoftwareSurface closest_tile = find_closest_tile(tiledb, src_tile);

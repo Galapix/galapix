@@ -59,7 +59,7 @@ private:
 public:
   QuadTreeNode(int depth, const Rectf& bounding_rect) :
     m_bounding_rect(bounding_rect),
-    m_center(geom::center(bounding_rect)),
+    m_center(geom::center(bounding_rect).as_vec()),
     m_items(),
     m_depth(depth),
     m_nw(),
@@ -86,7 +86,7 @@ public:
         {
           if (!m_nw.get())
           {
-            m_nw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left, m_bounding_rect.top,
+            m_nw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left(), m_bounding_rect.top(),
                                                                    m_center.x, m_center.y));
           }
           m_nw->add(rect, c);
@@ -95,8 +95,8 @@ public:
         {
           if (!m_sw.get())
           {
-            m_sw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left, m_center.y,
-                                                                   m_center.x, m_bounding_rect.bottom));
+            m_sw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left(), m_center.y,
+                                                                   m_center.x, m_bounding_rect.bottom()));
           }
           m_sw->add(rect, c);
         }
@@ -114,8 +114,8 @@ public:
         {
           if (!m_ne.get())
           {
-            m_ne = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x, m_bounding_rect.top,
-                                                                   m_bounding_rect.right, m_center.y));
+            m_ne = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x, m_bounding_rect.top(),
+                                                                   m_bounding_rect.right(), m_center.y));
           }
           m_ne->add(rect, c);
         }
@@ -124,7 +124,7 @@ public:
           if (!m_se.get())
           {
             m_se = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x, m_center.y,
-                                                                   m_bounding_rect.right, m_bounding_rect.bottom));
+                                                                   m_bounding_rect.right(), m_bounding_rect.bottom()));
           }
           m_se->add(rect, c);
         }

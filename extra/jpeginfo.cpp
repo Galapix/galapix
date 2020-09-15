@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     for(int i = 1; i < argc; ++i)
     {
       Size img_size = JPEG::get_size(argv[i]);
-      std::cout << img_size.width << "x" << img_size.height << "\t" << argv[i] << std::endl;
+      std::cout << img_size.width() << "x" << img_size.height() << "\t" << argv[i] << std::endl;
     }
   }
   return 0;
