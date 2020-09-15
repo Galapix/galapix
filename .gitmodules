@@ -16,3 +16,6 @@
 [submodule "shared-modules"]
 	path = shared-modules
 	url = https://github.com/Grumbel/shared-modules.git
+[submodule "external/geomcpp"]
+	path = external/geomcpp
+	url = https://gitlab.com/grumbel/geomcpp.git
