@@ -49,6 +49,7 @@ before_script:
     libsdl2-dev
     libsigc++-2.0-dev
     libsqlite3-dev
+    libssl-dev
 
 .build_galapix_template: &build_galapix
   stage: build
