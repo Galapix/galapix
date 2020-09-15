@@ -19,12 +19,12 @@
 
 #include <vector>
 #include <memory>
+#include <geom/fwd.hpp>
 
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 
 class RGBA;
-class Size;
 class Rect;
 
 class FileReaderImpl;
@@ -51,7 +51,7 @@ public:
   bool read_vector2i(const char* name, Vector2i& value) const;
   bool read_vector2f(const char* name, Vector2f& value) const;
   bool read_rect(const char* name, Rect& value) const;
-  bool read_size (const char* name, Size& value) const;
+  bool read_size (const char* name, geom::isize& value) const;
   bool read_rgba (const char* name, RGBA& value) const;
   bool read_section(const char* name, FileReader& reader) const;
   FileReader read_section(const char* name) const;

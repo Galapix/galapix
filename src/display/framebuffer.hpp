@@ -20,6 +20,8 @@
 #define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
+#include <geom/fwd.hpp>
+
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "util/opengl.hpp"
@@ -27,8 +29,6 @@
 
 class RGB;
 class RGBA;
-class Size;
-class Sizef;
 class Rectf;
 
 /** Generic OpenGL helper functions */

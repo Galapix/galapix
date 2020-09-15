@@ -95,8 +95,8 @@ JPEGDecompressor::read_image(int scale, Size* image_size)
 
     if (image_size)
     {
-      image_size->width = static_cast<int>(m_cinfo.image_width);
-      image_size->height = static_cast<int>(m_cinfo.image_height);
+      *image_size = Size(static_cast<int>(m_cinfo.image_width),
+                         static_cast<int>(m_cinfo.image_height));
     }
 
     if (scale != 1) // scale the image down by \a scale

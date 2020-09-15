@@ -104,7 +104,7 @@ SExprFileWriter::write_string(const char* name, const std::string& value)
 void
 SExprFileWriter::write_size(const char* name, const Size& size)
 {
-  (*out) << "\n" << indent() << "(" << name << " " << size.width << " " << size.height << ")";
+  (*out) << "\n" << indent() << "(" << name << " " << size.width() << " " << size.height() << ")";
 }
 
 /* EOF */

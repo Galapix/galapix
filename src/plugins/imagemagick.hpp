@@ -19,11 +19,11 @@
 
 #include <span>
 #include <string>
+#include <geom/fwd.hpp>
 
 #include "util/software_surface.hpp"
 
 class URL;
-class Size;
 
 class Imagemagick
 {

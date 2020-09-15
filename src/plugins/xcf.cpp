@@ -151,8 +151,7 @@ XCF::get_size(const std::string& filename, Size& size)
       int version, width, height;
       if (sscanf(line.c_str(), "Version %d, %dx%d", &version, &width, &height) == 3)
       {
-        size.width  = width;
-        size.height = height;
+        size = Size(width, height);
         return true;
       }
       else

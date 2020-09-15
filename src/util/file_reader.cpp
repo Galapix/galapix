@@ -17,6 +17,7 @@
 #include "util/file_reader.hpp"
 
 #include <sexp/parser.hpp>
+#include <geom/geom.hpp>
 
 #include "util/file_reader_impl.hpp"
 #include "util/sexpr_file_reader.hpp"
@@ -115,7 +116,7 @@ FileReader::read_rgba(const char* name, RGBA& value) const
 }
 
 bool
-FileReader::read_size  (const char* name, Size& value) const
+FileReader::read_size  (const char* name, geom::isize& value) const
 {
   if (impl.get()) {
     return impl->read_size(name, value);

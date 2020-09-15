@@ -47,7 +47,7 @@ Image::get_original_width() const
 {
   if (m_provider)
   {
-    return m_provider->get_size().width;
+    return m_provider->get_size().width();
   }
   else
   {
@@ -60,7 +60,7 @@ Image::get_original_height() const
 {
   if (m_provider)
   {
-    return m_provider->get_size().height;
+    return m_provider->get_size().height();
   }
   else
   {

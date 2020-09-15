@@ -37,7 +37,7 @@ Size apply_orientation(SoftwareSurface::Modifier modifier, const Size& size)
     case SoftwareSurface::kRot90Flip:
     case SoftwareSurface::kRot270:
     case SoftwareSurface::kRot270Flip:
-      return Size(size.height, size.width);
+      return geom::transpose(size);
 
     case SoftwareSurface::kRot0:
     case SoftwareSurface::kRot0Flip:

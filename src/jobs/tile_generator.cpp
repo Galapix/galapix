@@ -104,15 +104,15 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
 {
   // Scale the image if loading a downsized version was not possible
   // or the downscale wasn't enough
-  Size target_size(original_size.width  / Math::pow2(min_scale),
-                   original_size.height / Math::pow2(min_scale));
+  Size target_size(original_size.width()  / Math::pow2(min_scale),
+                   original_size.height() / Math::pow2(min_scale));
 
   if (target_size != surface.get_size())
   {
     // JPEG that are downscaled on loading might not match target_size
     // exactly and be one pixel larger
-    int x_miss = surface.get_size().width  - target_size.width;
-    int y_miss = surface.get_size().height - target_size.height;
+    int x_miss = surface.get_size().width()  - target_size.width();
+    int y_miss = surface.get_size().height() - target_size.height();
 
     if (0 <= x_miss && x_miss <= 1 &&
         0 <= y_miss && y_miss <= 1)

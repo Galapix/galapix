@@ -47,8 +47,8 @@ public:
   }
 
   RowId  get_resource_id() const { return m_resource_id; }
-  int    get_width()   const { return m_size.width; }
-  int    get_height()  const { return m_size.height; }
+  int    get_width()   const { return m_size.width(); }
+  int    get_height()  const { return m_size.height(); }
   Size   get_size()    const { return m_size; }
   int    get_max_scale() const { return m_max_scale; }
 

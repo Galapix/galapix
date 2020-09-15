@@ -77,7 +77,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
       {
         Rectf subsection(Vector2f(static_cast<float>(x % downscale * 256 / downscale), // NOLINT
                                   static_cast<float>(y % downscale * 256 / downscale)), // NOLINT
-                         Size(256 / downscale, 256 / downscale));
+                         Sizef(Size(256 / downscale, 256 / downscale)));
 
         subsection.right  = std::min(subsection.right,  static_cast<float>(surface.get_width()));
         subsection.bottom = std::min(subsection.bottom, static_cast<float>(surface.get_height()));

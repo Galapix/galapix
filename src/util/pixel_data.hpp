@@ -43,8 +43,8 @@ public:
 
   Format get_format() const { return m_format; }
   Size get_size() const { return m_size; }
-  int get_width() const { return m_size.width; }
-  int get_height() const { return m_size.height; }
+  int get_width() const { return m_size.width(); }
+  int get_height() const { return m_size.height(); }
   int get_pitch() const { return m_pitch; }
   int get_bytes_per_pixel() const;
 

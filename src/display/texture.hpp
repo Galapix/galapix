@@ -18,11 +18,11 @@
 #define HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 
 #include <memory>
+#include <geom/fwd.hpp>
 
 #include "util/software_surface.hpp"
 
 class Rect;
-class Size;
 class SoftwareSurface;
 class TextureImpl;
 class Texture;

@@ -105,8 +105,8 @@ public:
     sexp::Value const* sub = get_subsection(name);
     if (sub && sub->as_array().size() == 3)
     {
-      v.width  = sub->as_array()[1].as_int();
-      v.height = sub->as_array()[2].as_int();
+      v = Size(sub->as_array()[1].as_int(),
+               sub->as_array()[2].as_int());
       return true;
     }
     return false;

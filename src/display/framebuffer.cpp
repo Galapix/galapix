@@ -98,8 +98,8 @@ Framebuffer::init()
 void
 Framebuffer::begin_render()
 {
-  s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
-                            static_cast<float>(size.height), 0.0f,
+  s_projection = glm::ortho(0.0f, static_cast<float>(size.width()),
+                            static_cast<float>(size.height()), 0.0f,
                             1000.0f, -1000.0f);
   assert_gl("Framebuffer::begin_render");
 }
@@ -115,9 +115,9 @@ Framebuffer::reshape(const Size& size_)
 {
   size = size_;
 
-  glViewport(0, 0, size.width, size.height);
-  s_projection = glm::ortho(0.0f, static_cast<float>(size.width),
-                            static_cast<float>(size.height), 0.0f,
+  glViewport(0, 0, size.width(), size.height());
+  s_projection = glm::ortho(0.0f, static_cast<float>(size.width()),
+                            static_cast<float>(size.height()), 0.0f,
                             1000.0f, -1000.0f);
 }
 
@@ -225,10 +225,10 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 
   std::vector<float> positions;
 
-  float start_x = fmodf(offset.x, size_.width);
-  float start_y = fmodf(offset.y, size_.height);
+  float start_x = fmodf(offset.x, size_.width());
+  float start_y = fmodf(offset.y, size_.height());
 
-  for(float x = start_x; x < static_cast<float>(Framebuffer::get_width()); x += size_.width)
+  for(float x = start_x; x < static_cast<float>(Framebuffer::get_width()); x += size_.width())
   {
     positions.push_back(x);
     positions.push_back(0);
@@ -237,7 +237,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     positions.push_back(static_cast<float>(Framebuffer::get_height()));
   }
 
-  for(float y = start_y; y < static_cast<float>(Framebuffer::get_height()); y += size_.height)
+  for(float y = start_y; y < static_cast<float>(Framebuffer::get_height()); y += size_.height())
   {
     positions.push_back(0);
     positions.push_back(y);
@@ -283,13 +283,13 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 int
 Framebuffer::get_width()
 {
-  return size.width;
+  return size.width();
 }
 
 int
 Framebuffer::get_height()
 {
-  return size.height;
+  return size.height();
 }
 
 SoftwareSurface

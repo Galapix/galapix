@@ -16,6 +16,8 @@
 
 #include "util/software_surface_float.hpp"
 
+#include <geom/size.hpp>
+
 #include "math/math.hpp"
 
 SoftwareSurfaceFloatPtr
@@ -26,7 +28,7 @@ SoftwareSurfaceFloat::create(const Size& size)
 
 SoftwareSurfaceFloat::SoftwareSurfaceFloat(const Size& size) :
   m_size(size),
-  m_pixels(static_cast<size_t>(size.get_area() * 4))
+  m_pixels(static_cast<size_t>(geom::area(size) * 4))
 {
 }
 
@@ -52,9 +54,9 @@ SoftwareSurfaceFloat::from_software_surface(SoftwareSurface const& surface)
 void
 SoftwareSurfaceFloat::apply_gamma(float gamma)
 {
-  for(int y = 0; y < m_size.height; ++y)
+  for(int y = 0; y < m_size.height(); ++y)
   {
-    for(int x = 0; x < m_size.width; ++x)
+    for(int x = 0; x < m_size.width(); ++x)
     {
       RGBAf rgba;
       get_pixel(x, y, rgba);
@@ -75,19 +77,19 @@ SoftwareSurfaceFloat::get_size() const
 int
 SoftwareSurfaceFloat::get_width() const
 {
-  return m_size.width;
+  return m_size.width();
 }
 
 int
 SoftwareSurfaceFloat::get_height() const
 {
-  return m_size.height;
+  return m_size.height();
 }
 
 int
 SoftwareSurfaceFloat::get_pitch() const
 {
-  return m_size.width * 4;
+  return m_size.width() * 4;
 }
 
 void
@@ -112,9 +114,9 @@ SoftwareSurface
 SoftwareSurfaceFloat::to_software_surface() const
 {
   PixelData dst(PixelData::RGBA_FORMAT, m_size);
-  for(int y = 0; y < m_size.height; ++y)
+  for(int y = 0; y < m_size.height(); ++y)
   {
-    for(int x = 0; x < m_size.width; ++x)
+    for(int x = 0; x < m_size.width(); ++x)
     {
       RGBAf rgbaf;
       get_pixel(x, y, rgbaf);

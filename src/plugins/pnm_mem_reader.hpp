@@ -82,11 +82,11 @@ private:
             break;
 
           case 1:
-            m_size.width = atoi(token.c_str());
+            m_size = Size(atoi(token.c_str()), m_size.height());
             break;
 
           case 2:
-            m_size.height = atoi(token.c_str());
+            m_size = Size(m_size.width(), atoi(token.c_str()));
             break;
 
           case 3:

@@ -39,28 +39,28 @@ Vector2i calc_origin(Origin origin, const Size &size)
       return Vector2i(0, 0);
       break;
     case Origin::TOP_CENTER:
-      return Vector2i(size.width / 2, 0);
+      return Vector2i(size.width() / 2, 0);
       break;
     case Origin::TOP_RIGHT:
-      return Vector2i(size.width, 0);
+      return Vector2i(size.width(), 0);
       break;
     case Origin::CENTER_LEFT:
-      return Vector2i(0, size.height / 2);
+      return Vector2i(0, size.height() / 2);
       break;
     case Origin::CENTER:
-      return Vector2i(size.width / 2, size.height / 2);
+      return Vector2i(size.width() / 2, size.height() / 2);
       break;
     case Origin::CENTER_RIGHT:
-      return Vector2i(size.width, size.height / 2);
+      return Vector2i(size.width(), size.height() / 2);
       break;
     case Origin::BOTTOM_LEFT:
-      return Vector2i(0, size.height);
+      return Vector2i(0, size.height());
       break;
     case Origin::BOTTOM_CENTER:
-      return Vector2i(size.width / 2, size.height);
+      return Vector2i(size.width() / 2, size.height());
       break;
     case Origin::BOTTOM_RIGHT:
-      return Vector2i(size.width, size.height);
+      return Vector2i(size.width(), size.height());
       break;
   }
 }
@@ -74,28 +74,28 @@ Vector2f calc_origin(Origin origin, const Sizef &size)
       return Vector2f(0, 0);
       break;
     case Origin::TOP_CENTER:
-      return Vector2f(size.width / 2, 0);
+      return Vector2f(size.width() / 2, 0);
       break;
     case Origin::TOP_RIGHT:
-      return Vector2f(size.width, 0);
+      return Vector2f(size.width(), 0);
       break;
     case Origin::CENTER_LEFT:
-      return Vector2f(0, size.height / 2);
+      return Vector2f(0, size.height() / 2);
       break;
     case Origin::CENTER:
-      return Vector2f(size.width / 2, size.height / 2);
+      return Vector2f(size.width() / 2, size.height() / 2);
       break;
     case Origin::CENTER_RIGHT:
-      return Vector2f(size.width, size.height / 2);
+      return Vector2f(size.width(), size.height() / 2);
       break;
     case Origin::BOTTOM_LEFT:
-      return Vector2f(0, size.height);
+      return Vector2f(0, size.height());
       break;
     case Origin::BOTTOM_CENTER:
-      return Vector2f(size.width / 2, size.height);
+      return Vector2f(size.width() / 2, size.height());
       break;
     case Origin::BOTTOM_RIGHT:
-      return Vector2f(size.width, size.height);
+      return Vector2f(size.width(), size.height());
       break;
   }
 }

@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <geom/fwd.hpp>
 
 #include "math/vector2i.hpp"
 #include "util/blob.hpp"
@@ -27,7 +28,6 @@
 class RGB;
 class RGBA;
 class Rect;
-class Size;
 
 /** A non-mutable high-level SoftwareSurface with value semantics */
 class SoftwareSurface

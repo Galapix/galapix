@@ -33,8 +33,8 @@ Imagemagick::get_size(const std::string& filename, Size& size)
   {
     Magick::Image image(filename);
 
-    size.width = static_cast<int>(image.columns());
-    size.height = static_cast<int>(image.rows());
+    size = Size(static_cast<int>(image.columns()),
+                static_cast<int>(image.rows()));
 
     return true;
   }

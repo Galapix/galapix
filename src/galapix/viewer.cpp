@@ -505,12 +505,12 @@ Viewer::toggle_pinned_grid()
   if (!m_pin_grid)
   {
     m_grid_offset = m_grid_offset * m_state.get_scale() + m_state.get_offset();
-    m_grid_size  *= m_state.get_scale();
+    m_grid_size   = m_grid_size * m_state.get_scale();
   }
   else
   {
     m_grid_offset = (m_grid_offset - m_state.get_offset()) / m_state.get_scale();
-    m_grid_size  /= m_state.get_scale();
+    m_grid_size   = m_grid_size / m_state.get_scale();
   }
 }
 

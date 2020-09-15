@@ -67,7 +67,7 @@ public:
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
 
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
-                 size.width, size.height,
+                 size.width(), size.height(),
                  0, /* border */
                  gl_format,
                  GL_UNSIGNED_BYTE,
@@ -126,7 +126,7 @@ Texture::get_width() const
   }
   else
   {
-    return m_impl->size.width;
+    return m_impl->size.width();
   }
 }
 
@@ -139,7 +139,7 @@ Texture::get_height() const
   }
   else
   {
-    return m_impl->size.height;
+    return m_impl->size.height();
   }
 }
 

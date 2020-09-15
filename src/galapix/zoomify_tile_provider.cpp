@@ -31,7 +31,7 @@ namespace {
 
 int get_max_scale(const Size& size, int tilesize)
 {
-  int width = std::max(size.width, size.height);
+  int width = std::max(size.width(), size.height());
   int i = 0;
 
   while(width > tilesize)
@@ -59,11 +59,11 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
     int previous_tiles_count = 0;
     for(int j = i; j <= m_max_scale; ++j)
     {
-      previous_tiles_count += m_info[static_cast<size_t>(j)].m_size.get_area();
+      previous_tiles_count += geom::area(m_info[static_cast<size_t>(j)].m_size);
     }
 
-    Size size_in_tiles((m_size.width  / Math::pow2(i) - 1) / get_tilesize() + 1,
-                       (m_size.height / Math::pow2(i) - 1) / get_tilesize() + 1);
+    Size size_in_tiles((m_size.width()  / Math::pow2(i) - 1) / get_tilesize() + 1,
+                       (m_size.height() / Math::pow2(i) - 1) / get_tilesize() + 1);
 
     //std::cout << i << " " << previous_tiles_count << " " << size_in_tiles << " - " << size_in_tiles.get_area() << std::endl;
 
@@ -86,9 +86,12 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
   int  num_tiles;
 
   // FIXME: this isn't exactly a tolerant way to parse the xml file
+  int size_width = 0;
+  int size_height = 0;
   int ret = sscanf(content.c_str(),
                    "<IMAGE_PROPERTIES WIDTH=\"%d\" HEIGHT=\"%d\" NUMTILES=\"%d\" NUMIMAGES=\"1\" VERSION=\"1.8\" TILESIZE=\"%d\" />",
-                   &size.width, &size.height, &num_tiles, &tilesize);
+                   &size_width, &size_height, &num_tiles, &tilesize);
+  size = Size(size_width, size_height);
   if (ret != 4)
   {
     raise_runtime_error("ZoomifyTileProvider::create(): Couldn't parse ImageProperties.xml");
@@ -102,7 +105,7 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
 int
 ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 {
-  int tilenum = (m_info[static_cast<size_t>(scale)].m_size.width * pos.y + pos.x) +
+  int tilenum = (m_info[static_cast<size_t>(scale)].m_size.width() * pos.y + pos.x) +
     m_info[static_cast<size_t>(scale)].m_previous_tiles_count;
   // a tilegroup has 256 tiles
   return tilenum / 256;

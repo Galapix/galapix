@@ -90,7 +90,7 @@ SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
 
   m_window = SDL_CreateWindow("Galapix 0.3.0",
                               SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                              size.width, size.height,
+                              size.width(), size.height(),
                               flags);
   if (!m_window)
   {
@@ -105,9 +105,10 @@ SDLWindow::set_video_mode(const Size& size, bool fullscreen, int anti_aliasing)
 
   Framebuffer::init();
 
-  Size s;
-  SDL_GetWindowSize(m_window, &s.width, &s.height);
-  Framebuffer::reshape(s);
+  int width = 0;
+  int height = 0;
+  SDL_GetWindowSize(m_window, &width, &height);
+  Framebuffer::reshape(Size(width, height));
 }
 
 void
@@ -130,9 +131,10 @@ SDLWindow::toggle_fullscreen()
     m_fullscreen = false;
   }
 
-  Size s;
-  SDL_GetWindowSize(m_window, &s.width, &s.height);
-  Framebuffer::reshape(s);
+  int width = 0;
+  int height = 0;
+  SDL_GetWindowSize(m_window, &width, &height);
+  Framebuffer::reshape(Size(width, height));
 }
 
 void

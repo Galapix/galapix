@@ -18,10 +18,11 @@
 #define HEADER_GALAPIX_PLUGINS_UFRAW_HPP
 
 #include <string>
+#include <geom/fwd.hpp>
+
 #include "util/software_surface.hpp"
 
 class URL;
-class Size;
 
 class UFRaw
 {

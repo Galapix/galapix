@@ -187,7 +187,7 @@ public:
 
   void draw(const Vector2f& pos) const
   {
-    draw(Rectf(pos, size));
+    draw(Rectf(pos, Sizef(size)));
   }
 };
 
@@ -250,7 +250,7 @@ Surface::get_width() const
 {
   if (m_impl)
   {
-    return m_impl->size.width;
+    return m_impl->size.width();
   }
   else
   {
@@ -263,7 +263,7 @@ Surface::get_height() const
 {
   if (m_impl)
   {
-    return m_impl->size.height;
+    return m_impl->size.height();
   }
   else
   {

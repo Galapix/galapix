@@ -41,13 +41,13 @@ PixelData::PixelData(Format format, Size const& size) :
   switch(format)
   {
     case RGB_FORMAT:
-      m_pitch  = m_size.width * 3;
-      m_pixels.resize(m_pitch * m_size.height);
+      m_pitch  = m_size.width() * 3;
+      m_pixels.resize(m_pitch * m_size.height());
       break;
 
     case RGBA_FORMAT:
-      m_pitch  = size.width * 4;
-      m_pixels.resize(m_pitch * m_size.height);
+      m_pitch  = size.width() * 4;
+      m_pixels.resize(m_pitch * m_size.height());
       break;
 
     default:
@@ -75,8 +75,8 @@ PixelData::get_bytes_per_pixel() const
 void
 PixelData::put_pixel(int x, int y, RGBA const& rgba)
 {
-  assert(x >= 0 && x < m_size.width &&
-         y >= 0 && y < m_size.height);
+  assert(x >= 0 && x < m_size.width() &&
+         y >= 0 && y < m_size.height());
 
   switch(m_format)
   {
@@ -99,8 +99,8 @@ void
 PixelData::PixelData::put_pixel(int x, int y, RGB const& rgb)
 {
   assert(m_format == RGB_FORMAT);
-  assert(x >= 0 && x < m_size.width &&
-         y >= 0 && y < m_size.height);
+  assert(x >= 0 && x < m_size.width() &&
+         y >= 0 && y < m_size.height());
 
   m_pixels[y * m_pitch + x*3 + 0] = rgb.r;
   m_pixels[y * m_pitch + x*3 + 1] = rgb.g;
@@ -110,8 +110,8 @@ PixelData::PixelData::put_pixel(int x, int y, RGB const& rgb)
 void
 PixelData::get_pixel(int x, int y, RGBA& rgb) const
 {
-  assert(x >= 0 && x < m_size.width &&
-         y >= 0 && y < m_size.height);
+  assert(x >= 0 && x < m_size.width() &&
+         y >= 0 && y < m_size.height());
 
   switch(m_format)
   {
@@ -135,8 +135,8 @@ void
 PixelData::get_pixel(int x, int y, RGB& rgb) const
 {
   assert(m_format == RGB_FORMAT);
-  assert(x >= 0 && x < m_size.width &&
-         y >= 0 && y < m_size.height);
+  assert(x >= 0 && x < m_size.width() &&
+         y >= 0 && y < m_size.height());
 
   rgb.r = m_pixels[y * m_pitch + x*3 + 0];
   rgb.g = m_pixels[y * m_pitch + x*3 + 1];
@@ -173,8 +173,8 @@ PixelData::blit(PixelData& dst, const Vector2i& pos) const
   int start_x = std::max(0, -pos.x);
   int start_y = std::max(0, -pos.y);
 
-  int end_x = std::min(m_size.width,  dst.m_size.width  - pos.x);
-  int end_y = std::min(m_size.height, dst.m_size.height - pos.y);
+  int end_x = std::min(m_size.width(),  dst.m_size.width()  - pos.x);
+  int end_y = std::min(m_size.height(), dst.m_size.height() - pos.y);
 
   if (dst.m_format == RGB_FORMAT && m_format == RGB_FORMAT)
   {

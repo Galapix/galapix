@@ -137,8 +137,8 @@ SoftwareSurface::scale(Size const& size) const
         {
           for(int x = 0; x < dst.get_width(); ++x)
           {
-            src.get_pixel(x * src.get_size().width  / dst.get_size().width,
-                          y * src.get_size().height / dst.get_size().height,
+            src.get_pixel(x * src.get_size().width()  / dst.get_size().width(),
+                          y * src.get_size().height() / dst.get_size().height(),
                           rgb);
 
             dst.put_pixel(x, y, rgb);
@@ -154,8 +154,8 @@ SoftwareSurface::scale(Size const& size) const
         {
           for(int x = 0; x < dst.get_width(); ++x)
           {
-            src.get_pixel(x * src.get_size().width  / dst.get_size().width,
-                          y * src.get_size().height / dst.get_size().height,
+            src.get_pixel(x * src.get_size().width()  / dst.get_size().width(),
+                          y * src.get_size().height() / dst.get_size().height(),
                           rgba);
 
             dst.put_pixel(x, y, rgba);
@@ -214,27 +214,27 @@ SoftwareSurface
 SoftwareSurface::rotate90() const
 {
   PixelData const& src = *m_pixel_data;
-  PixelData dst(src.get_format(), Size(src.get_size().height, src.get_size().width));
+  PixelData dst(src.get_format(), Size(src.get_size().height(), src.get_size().width()));
 
   switch(src.get_format())
   {
     case PixelData::RGB_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y)
+      for(int y = 0; y < src.get_size().height(); ++y)
       {
-        for(int x = 0; x < src.get_size().width; ++x)
+        for(int x = 0; x < src.get_size().width(); ++x)
         {
-          copy_pixel_rgb(dst, src.get_size().height - y - 1, x,
+          copy_pixel_rgb(dst, src.get_size().height() - y - 1, x,
                          src, x, y);
         }
       }
       break;
 
     case PixelData::RGBA_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y)
+      for(int y = 0; y < src.get_size().height(); ++y)
       {
-        for(int x = 0; x < src.get_size().width; ++x)
+        for(int x = 0; x < src.get_size().width(); ++x)
         {
-          copy_pixel_rgba(dst, src.get_size().height - y - 1, x,
+          copy_pixel_rgba(dst, src.get_size().height() - y - 1, x,
                           src, x, y);
         }
       }
@@ -253,22 +253,22 @@ SoftwareSurface::rotate180() const
   switch(src.get_format())
   {
     case PixelData::RGB_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y)
+      for(int y = 0; y < src.get_size().height(); ++y)
       {
-        for(int x = 0; x < src.get_size().width; ++x)
+        for(int x = 0; x < src.get_size().width(); ++x)
         {
-          copy_pixel_rgb(dst, src.get_size().width - x - 1, src.get_size().height - 1 - y,
+          copy_pixel_rgb(dst, src.get_size().width() - x - 1, src.get_size().height() - 1 - y,
                          src, x, y);
         }
       }
       break;
 
     case PixelData::RGBA_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y)
+      for(int y = 0; y < src.get_size().height(); ++y)
       {
-        for(int x = 0; x < src.get_size().width; ++x)
+        for(int x = 0; x < src.get_size().width(); ++x)
         {
-          copy_pixel_rgba(dst, src.get_size().width - x - 1, src.get_size().height - 1 - y,
+          copy_pixel_rgba(dst, src.get_size().width() - x - 1, src.get_size().height() - 1 - y,
                           src, x, y);
         }
       }
@@ -287,18 +287,18 @@ SoftwareSurface::rotate270() const
   switch(src.get_format())
   {
     case PixelData::RGB_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y) {
-        for(int x = 0; x < src.get_size().width; ++x) {
-          copy_pixel_rgb(dst, y, src.get_size().width - 1 - x,
+      for(int y = 0; y < src.get_size().height(); ++y) {
+        for(int x = 0; x < src.get_size().width(); ++x) {
+          copy_pixel_rgb(dst, y, src.get_size().width() - 1 - x,
                          src, x, y);
         }
       }
       break;
 
     case PixelData::RGBA_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y) {
-        for(int x = 0; x < src.get_size().width; ++x) {
-          copy_pixel_rgba(dst, y, src.get_size().width - 1 - x,
+      for(int y = 0; y < src.get_size().height(); ++y) {
+        for(int x = 0; x < src.get_size().width(); ++x) {
+          copy_pixel_rgba(dst, y, src.get_size().width() - 1 - x,
                           src, x, y);
         }
       }
@@ -317,18 +317,18 @@ SoftwareSurface::hflip() const
   switch(src.get_format())
   {
     case PixelData::RGB_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y) {
-        for(int x = 0; x < src.get_size().width; ++x) {
-          copy_pixel_rgb(dst, src.get_size().width - 1 - x, y,
+      for(int y = 0; y < src.get_size().height(); ++y) {
+        for(int x = 0; x < src.get_size().width(); ++x) {
+          copy_pixel_rgb(dst, src.get_size().width() - 1 - x, y,
                          src, x, y);
         }
       }
       break;
 
     case PixelData::RGBA_FORMAT:
-      for(int y = 0; y < src.get_size().height; ++y) {
-        for(int x = 0; x < src.get_size().width; ++x) {
-          copy_pixel_rgba(dst, src.get_size().width - 1 - x, y,
+      for(int y = 0; y < src.get_size().height(); ++y) {
+        for(int x = 0; x < src.get_size().width(); ++x) {
+          copy_pixel_rgba(dst, src.get_size().width() - 1 - x, y,
                           src, x, y);
         }
       }
@@ -344,9 +344,9 @@ SoftwareSurface::vflip() const
   PixelData const& src = *m_pixel_data;
   PixelData dst(src.get_format(), src.get_size());
 
-  for(int y = 0; y < src.get_size().height; ++y)
+  for(int y = 0; y < src.get_size().height(); ++y)
   {
-    memcpy(dst.get_row_data(src.get_size().height - y - 1),
+    memcpy(dst.get_row_data(src.get_size().height() - y - 1),
            src.get_row_data(y),
            static_cast<size_t>(src.get_pitch()));
   }

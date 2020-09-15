@@ -168,7 +168,10 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
       {
         i += 1;
         if (i < argc) {
-          sscanf(argv[i], "%dx%d", &opts.geometry.width, &opts.geometry.height);
+          int width = 0;
+          int height = 0;
+          sscanf(argv[i], "%dx%d", &width, &height);
+          opts.geometry = Size(width, height);
         } else {
           raise_runtime_error(std::string("Option ") + argv[i-1] + " requires an argument");
         }

@@ -91,8 +91,8 @@ PNG::get_size(void* data, int len, Size& size)
 
     png_read_info(png_ptr, info_ptr);
 
-    size.width  = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
-    size.height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
+    size = Size(static_cast<int>(png_get_image_width(png_ptr, info_ptr)),
+                static_cast<int>(png_get_image_height(png_ptr, info_ptr)));
 
     png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
@@ -126,8 +126,8 @@ PNG::get_size(const std::string& filename, Size& size)
 
       png_read_info(png_ptr, info_ptr);
 
-      size.width = static_cast<int>(png_get_image_width(png_ptr, info_ptr));
-      size.height = static_cast<int>(png_get_image_height(png_ptr, info_ptr));
+      size = Size(static_cast<int>(png_get_image_width(png_ptr, info_ptr)),
+                  static_cast<int>(png_get_image_height(png_ptr, info_ptr)));
 
       png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 

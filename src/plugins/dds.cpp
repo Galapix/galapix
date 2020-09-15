@@ -38,8 +38,7 @@ DDS::get_size(const std::string& filename, Size& size)
   {
     // FIXME: not very fast as we decode the complete surface
     DDSSurface surface(in);
-    size.width  = surface.get_width();
-    size.height = surface.get_height();
+    size = Size(surface.get_width(), surface.get_height());
     return true;
   }
 }

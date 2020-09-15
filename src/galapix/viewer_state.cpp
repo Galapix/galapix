@@ -103,20 +103,20 @@ ViewerState::zoom_to(const Size& display_, const Rectf& rect)
 {
   assert(rect.is_normal());
 
-  Sizef display = display_;
+  Sizef display = Sizef(display_);
 
-  if ((display.height / display.width) > (rect.get_height() / rect.get_width()))
+  if ((display.height() / display.width()) > (rect.get_height() / rect.get_width()))
   { // match width
-    scale = display.width / rect.get_width();
+    scale = display.width() / rect.get_width();
 
     offset.x = -rect.left * scale;
-    offset.y = -(rect.top - ((display.height / scale) - rect.get_height()) / 2.0f) * scale;
+    offset.y = -(rect.top - ((display.height() / scale) - rect.get_height()) / 2.0f) * scale;
   }
   else
   { // match height
-    scale = display.height / rect.get_height();
+    scale = display.height() / rect.get_height();
 
-    offset.x = -(rect.left - ((display.width / scale) - rect.get_width()) / 2.0f) * scale;
+    offset.x = -(rect.left - ((display.width() / scale) - rect.get_width()) / 2.0f) * scale;
     offset.y = -rect.top  * scale;
   }
 }

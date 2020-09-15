@@ -20,11 +20,11 @@
 #include <span>
 #include <string>
 #include <vector>
+#include <geom/fwd.hpp>
 
 #include "util/software_surface.hpp"
 
 class URL;
-class Size;
 
 class XCF
 {
