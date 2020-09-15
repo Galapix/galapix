@@ -23,9 +23,9 @@
 
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
+#include "math/rect.hpp"
 
 class RGBA;
-class Rect;
 
 class FileReaderImpl;
 class URL;

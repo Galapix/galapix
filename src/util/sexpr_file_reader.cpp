@@ -141,10 +141,10 @@ public:
     sexp::Value const* sub = get_subsection(name);
     if (sub && sub->as_array().size() == 5)
     {
-      rect.left = sub->as_array()[1].as_int();
-      rect.top = sub->as_array()[2].as_int();
-      rect.right = sub->as_array()[3].as_int();
-      rect.bottom = sub->as_array()[4].as_int();
+      rect = geom::irect(sub->as_array()[1].as_int(),
+                         sub->as_array()[2].as_int(),
+                         sub->as_array()[3].as_int(),
+                         sub->as_array()[4].as_int());
       return true;
     }
     return false;

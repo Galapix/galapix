@@ -22,10 +22,10 @@
 
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
+#include "math/rect.hpp"
 
 class RGB;
 class RGBA;
-class Rect;
 
 /** A mutable low-level container for pixel data */
 class PixelData

@@ -42,7 +42,7 @@ Workspace::get_images(const Rectf& rect) const
   ImageCollection result;
   for(const auto& i: m_images)
   {
-    if (rect.contains(i->get_image_rect()))
+    if (geom::contains(rect, i->get_image_rect()))
     {
       result.add(i);
     }
@@ -56,7 +56,7 @@ Workspace::get_image(const Vector2f& pos) const
   for(ImageCollection::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
   {
 
-    if ((*i)->get_image_rect().contains(pos))
+    if (geom::contains((*i)->get_image_rect(), geom::fpoint(pos)))
     {
       return *i;
     }
@@ -117,7 +117,7 @@ Workspace::draw(const Rectf& cliprect, float zoom)
 {
   for(auto& i: m_images)
   {
-    if (i->get_image_rect().is_overlapped(cliprect))
+    if (geom::intersects(i->get_image_rect(), cliprect))
     {
       if (!i->is_visible())
       {
@@ -238,7 +238,7 @@ Workspace::selection_clicked(const Vector2f& pos) const
 {
   for(auto& i: *m_selection)
   {
-    if (i->get_image_rect().contains(pos)) {
+    if (geom::contains(i->get_image_rect(), geom::fpoint(pos))) {
       return true;
     }
   }
@@ -309,22 +309,22 @@ Workspace::solve_overlaps()
         Rectf irect = (*i)->get_image_rect();
         Rectf jrect = (*j)->get_image_rect();
 
-        if (irect.is_overlapped(jrect))
+        if (geom::intersects(irect, jrect))
         {
           num_overlappings += 1;
 
-          Rectf clip = irect.clip_to(jrect);
+          Rectf clip = geom::intersection(irect, jrect);
 
           // FIXME: This only works if one rect isn't completly within the other
-          if (clip.get_width() > clip.get_height())
+          if (clip.width() > clip.height())
           {
-            (*i)->set_pos((*i)->get_pos() - Vector2f(0.0f, clip.get_height()/2 + 16.0f));
-            (*j)->set_pos((*j)->get_pos() + Vector2f(0.0f, clip.get_height()/2 + 16.0f));
+            (*i)->set_pos((*i)->get_pos() - Vector2f(0.0f, clip.height()/2 + 16.0f));
+            (*j)->set_pos((*j)->get_pos() + Vector2f(0.0f, clip.height()/2 + 16.0f));
           }
           else
           {
-            (*i)->set_pos((*i)->get_pos() - Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
-            (*j)->set_pos((*j)->get_pos() + Vector2f(clip.get_width()/2 + 16.0f, 0.0f));
+            (*i)->set_pos((*i)->get_pos() - Vector2f(clip.width()/2 + 16.0f, 0.0f));
+            (*j)->set_pos((*j)->get_pos() + Vector2f(clip.width()/2 + 16.0f, 0.0f));
           }
         }
       }
@@ -408,10 +408,10 @@ Workspace::get_bounding_rect() const
     {
       const Rectf& image_rect = (*i)->get_image_rect();
 
-      rect.left   = Math::min(rect.left,   image_rect.left);
-      rect.right  = Math::max(rect.right,  image_rect.right);
-      rect.top    = Math::min(rect.top,    image_rect.top);
-      rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+      rect = geom::frect(Math::min(rect.left(),   image_rect.left()),
+                         Math::min(rect.top(),    image_rect.top()),
+                         Math::max(rect.right(),  image_rect.right()),
+                         Math::max(rect.bottom(), image_rect.bottom()));
     }
 
     return rect;

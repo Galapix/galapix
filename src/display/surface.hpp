@@ -21,10 +21,9 @@
 
 #include "display/texture.hpp"
 #include "math/vector2f.hpp"
+#include "math/rect.hpp"
 
 class SurfaceImpl;
-class Rect;
-class Rectf;
 class Surface;
 
 class Surface

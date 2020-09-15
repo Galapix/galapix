@@ -29,12 +29,12 @@
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
 #include "galapix/workspace_item.hpp"
+#include "math/rect.hpp"
 
 class ImageTileCache;
 class ImageRenderer;
 class TileEntry;
 class Image;
-class Rectf;
 
 class Image final : public WorkspaceItem
 {

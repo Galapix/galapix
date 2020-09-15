@@ -24,12 +24,12 @@
 
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
+#include "math/rect.hpp"
 #include "util/opengl.hpp"
 #include "util/software_surface.hpp"
 
 class RGB;
 class RGBA;
-class Rectf;
 
 /** Generic OpenGL helper functions */
 class Framebuffer

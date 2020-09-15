@@ -21,8 +21,8 @@
 #include <geom/fwd.hpp>
 
 #include "util/software_surface.hpp"
+#include "math/rect.hpp"
 
-class Rect;
 class SoftwareSurface;
 class TextureImpl;
 class Texture;

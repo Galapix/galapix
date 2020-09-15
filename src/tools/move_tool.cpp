@@ -54,7 +54,7 @@ MoveTool::up(const Vector2i& /*pos*/)
     drag_active = false;
     Rectf rect(click_pos,
                viewer->get_state().screen2world(mouse_pos));
-    rect.normalize();
+    rect = geom::normalize(rect);
     viewer->get_workspace()->select_images(viewer->get_workspace()->get_images(rect));
   }
   else if (move_active)
@@ -97,7 +97,7 @@ MoveTool::draw()
   {
     Rectf rect(click_pos,
                viewer->get_state().screen2world(mouse_pos));
-    rect.normalize();
+    rect = geom::normalize(rect);
     Framebuffer::draw_rect(rect, RGB(255, 255, 255));
   }
 }

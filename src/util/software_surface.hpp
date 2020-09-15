@@ -24,10 +24,10 @@
 #include "math/vector2i.hpp"
 #include "util/blob.hpp"
 #include "util/pixel_data.hpp"
+#include "math/rect.hpp"
 
 class RGB;
 class RGBA;
-class Rect;
 
 /** A non-mutable high-level SoftwareSurface with value semantics */
 class SoftwareSurface

@@ -187,7 +187,7 @@ ImageTileCache::cancel_jobs(const Rect& rect, int scale)
     for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
     {
       if (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
-          (scale != i->first.get_scale() || !rect.contains(i->first.get_pos())))
+          (scale != i->first.get_scale() || !geom::contains(rect, geom::ipoint(i->first.get_pos()))))
       {
         i->second.job_handle.set_aborted();
         m_cache.erase(i++);

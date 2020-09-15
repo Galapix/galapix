@@ -142,10 +142,10 @@ Selection::get_bounding_rect() const
     {
       const Rectf& image_rect = (*i)->get_image_rect();
 
-      rect.left   = Math::min(rect.left,   image_rect.left);
-      rect.right  = Math::max(rect.right,  image_rect.right);
-      rect.top    = Math::min(rect.top,    image_rect.top);
-      rect.bottom = Math::max(rect.bottom, image_rect.bottom);
+      rect = geom::frect(Math::min(rect.left(),   image_rect.left()),
+                         Math::min(rect.top(),    image_rect.top()),
+                         Math::max(rect.right(),  image_rect.right()),
+                         Math::max(rect.bottom(), image_rect.bottom()));
     }
 
     return rect;

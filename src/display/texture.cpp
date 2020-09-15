@@ -28,7 +28,7 @@ public:
 
   TextureImpl(SoftwareSurface const& src, Rect const& srcrect) :
     handle(),
-    size(srcrect.get_size())
+    size(srcrect.size())
   {
     assert_gl("TextureImpl enter");
 
@@ -72,8 +72,8 @@ public:
                  gl_format,
                  GL_UNSIGNED_BYTE,
                  pixel_data.get_data() +
-                 (pixel_data.get_pitch() * srcrect.top) +
-                 (srcrect.left * pixel_data.get_bytes_per_pixel()));
+                 (pixel_data.get_pitch() * srcrect.top()) +
+                 (srcrect.left() * pixel_data.get_bytes_per_pixel()));
 #endif
 
     assert_gl("packing image texture");

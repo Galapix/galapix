@@ -28,8 +28,8 @@
 #include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
 #include "util/url.hpp"
+#include "math/rect.hpp"
 
-class Rectf;
 class Layouter;
 
 /** The Workspace houses all the images, the current selection and

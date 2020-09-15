@@ -44,7 +44,7 @@ ZoomRectTool::up  (const Vector2i& pos)
     drag_active = false;
     Rectf rect(click_pos,
                viewer->get_state().screen2world(mouse_pos));
-    rect.normalize();
+    rect = geom::normalize(rect);
 
     viewer->get_state().zoom_to(Framebuffer::get_size(), rect);
     std::cout << "Zooming to: " << rect << std::endl;
@@ -65,7 +65,7 @@ ZoomRectTool::draw()
   {
     Rectf rect(click_pos,
                viewer->get_state().screen2world(mouse_pos));
-    rect.normalize();
+    rect = geom::normalize(rect);
     Framebuffer::draw_rect(rect, RGB(255, 255, 255));
   }
 }

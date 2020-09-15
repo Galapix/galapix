@@ -59,7 +59,7 @@ private:
 public:
   QuadTreeNode(int depth, const Rectf& bounding_rect) :
     m_bounding_rect(bounding_rect),
-    m_center(bounding_rect.get_center()),
+    m_center(geom::center(bounding_rect)),
     m_items(),
     m_depth(depth),
     m_nw(),
@@ -80,9 +80,9 @@ public:
     }
     else
     {
-      if (rect.right < m_center.x) // west
+      if (rect.right() < m_center.x) // west
       {
-        if (rect.bottom < m_center.y) // north
+        if (rect.bottom() < m_center.y) // north
         {
           if (!m_nw.get())
           {
@@ -91,7 +91,7 @@ public:
           }
           m_nw->add(rect, c);
         }
-        else if(rect.top > m_center.y)  // south
+        else if(rect.top() > m_center.y)  // south
         {
           if (!m_sw.get())
           {
@@ -108,9 +108,9 @@ public:
           m_items.push_back(obj);
         }
       }
-      else if (rect.left > m_center.x) // east
+      else if (rect.left() > m_center.x) // east
       {
-        if (rect.bottom < m_center.y) // north
+        if (rect.bottom() < m_center.y) // north
         {
           if (!m_ne.get())
           {
@@ -119,7 +119,7 @@ public:
           }
           m_ne->add(rect, c);
         }
-        else if(rect.top > m_center.y) // south
+        else if(rect.top() > m_center.y) // south
         {
           if (!m_se.get())
           {
@@ -150,29 +150,29 @@ public:
   {
     // If rect overlaps with the given quadrant, recursivly check the quadrant
     if (m_nw.get() &&
-        rect.left < m_center.x &&
-        rect.top  < m_center.y)
+        rect.left() < m_center.x &&
+        rect.top()  < m_center.y)
     {
       m_nw->get_items_at(rect, out_items);
     }
 
     if (m_ne.get() &&
-        rect.right > m_center.x &&
-        rect.top   < m_center.y)
+        rect.right() > m_center.x &&
+        rect.top()   < m_center.y)
     {
       m_ne->get_items_at(rect, out_items);
     }
 
     if (m_sw.get() &&
-        rect.left   < m_center.x &&
-        rect.bottom > m_center.y)
+        rect.left()   < m_center.x &&
+        rect.bottom() > m_center.y)
     {
       m_sw->get_items_at(rect, out_items);
     }
 
     if (m_se.get() &&
-        rect.right  > m_center.x &&
-        rect.bottom > m_center.y)
+        rect.right()  > m_center.x &&
+        rect.bottom() > m_center.y)
     {
       m_se->get_items_at(rect, out_items);
     }

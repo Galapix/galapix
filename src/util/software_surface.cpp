@@ -360,22 +360,22 @@ SoftwareSurface::crop(Rect const& rect_in) const
   // FIXME: We could do a crop without copying content, sm_imply
   // reference the old SoftwareSurfaceM_Impl and have a different pitch
   // and pixel offset
-  assert(rect_in.is_normal());
+  assert(rect_in);
 
   // Clip the rectangle to the image
-  Rect rect(Math::clamp(0, rect_in.left,   get_width()),
-            Math::clamp(0, rect_in.top,    get_height()),
-            Math::clamp(0, rect_in.right,  get_width()),
-            Math::clamp(0, rect_in.bottom, get_height()));
+  Rect rect(Math::clamp(0, rect_in.left(),   get_width()),
+            Math::clamp(0, rect_in.top(),    get_height()),
+            Math::clamp(0, rect_in.right(),  get_width()),
+            Math::clamp(0, rect_in.bottom(), get_height()));
 
   PixelData const& src = *m_pixel_data;
-  PixelData dst(src.get_format(), rect.get_size());
+  PixelData dst(src.get_format(), rect.size());
 
-  for(int y = rect.top; y < rect.bottom; ++y)
+  for(int y = rect.top(); y < rect.bottom(); ++y)
   {
-    memcpy(dst.get_row_data(y - rect.top),
-           src.get_row_data(y) + rect.left * src.get_bytes_per_pixel(),
-           rect.get_width() * src.get_bytes_per_pixel());
+    memcpy(dst.get_row_data(y - rect.top()),
+           src.get_row_data(y) + rect.left() * src.get_bytes_per_pixel(),
+           rect.width() * src.get_bytes_per_pixel());
   }
 
   return SoftwareSurface(std::move(dst));

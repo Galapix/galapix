@@ -39,7 +39,7 @@ public:
 
     uv = Rectf(Vector2f(0, 0), Sizef(1.0f, 1.0f));
 
-    size = srcrect.get_size();
+    size = srcrect.size();
   }
 
   ~SurfaceImpl()
@@ -52,10 +52,10 @@ public:
 
     if (texture)
     {
-      const float left = srcrect.left / static_cast<float>(texture.get_width());
-      const float top = srcrect.top / static_cast<float>(texture.get_height());
-      const float right = srcrect.right / static_cast<float>(texture.get_width());
-      const float bottom = srcrect.bottom / static_cast<float>(texture.get_height());
+      const float left = srcrect.left() / static_cast<float>(texture.get_width());
+      const float top = srcrect.top() / static_cast<float>(texture.get_height());
+      const float right = srcrect.right() / static_cast<float>(texture.get_width());
+      const float bottom = srcrect.bottom() / static_cast<float>(texture.get_height());
 
       std::array<float, 2*4> texcoords = {{
           left, top,
@@ -65,10 +65,10 @@ public:
         }};
 
       std::array<float, 2*4> positions = {{
-          dstrect.left, dstrect.top,
-          dstrect.right, dstrect.top,
-          dstrect.right, dstrect.bottom,
-          dstrect.left, dstrect.bottom,
+          dstrect.left(), dstrect.top(),
+          dstrect.right(), dstrect.top(),
+          dstrect.right(), dstrect.bottom(),
+          dstrect.left(), dstrect.bottom(),
         }};
 
       GLuint texcoords_vbo;
@@ -125,17 +125,17 @@ public:
     if (texture)
     {
       const std::array<float, 2*4> texcoords = {{
-          uv.left, uv.top,
-          uv.right, uv.top,
-          uv.right, uv.bottom,
-          uv.left, uv.bottom,
+          uv.left(), uv.top(),
+          uv.right(), uv.top(),
+          uv.right(), uv.bottom(),
+          uv.left(), uv.bottom(),
         }};
 
       const std::array<float, 2*4> positions = {{
-          rect.left, rect.top,
-          rect.right, rect.top,
-          rect.right, rect.bottom,
-          rect.left, rect.bottom,
+          rect.left(), rect.top(),
+          rect.right(), rect.top(),
+          rect.right(), rect.bottom(),
+          rect.left(), rect.bottom(),
         }};
 
       GLuint texcoords_vbo;

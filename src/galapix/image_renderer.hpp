@@ -20,11 +20,10 @@
 #include <memory>
 
 #include "math/vector2f.hpp"
+#include "math/rect.hpp"
 
 class Image;
 class ImageTileCache;
-class Rect;
-class Rectf;
 
 class ImageRenderer
 {

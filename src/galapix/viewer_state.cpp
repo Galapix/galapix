@@ -92,32 +92,32 @@ ViewerState::screen2world(const Vector2i& pos) const
 Rectf
 ViewerState::screen2world(const Rect& rect) const
 {
-  return Rectf((static_cast<float>(rect.left)   - offset.x) / scale,
-               (static_cast<float>(rect.top)    - offset.y) / scale,
-               (static_cast<float>(rect.right)  - offset.x) / scale,
-               (static_cast<float>(rect.bottom) - offset.y) / scale);
+  return Rectf((static_cast<float>(rect.left())   - offset.x) / scale,
+               (static_cast<float>(rect.top())    - offset.y) / scale,
+               (static_cast<float>(rect.right())  - offset.x) / scale,
+               (static_cast<float>(rect.bottom()) - offset.y) / scale);
 }
 
 void
 ViewerState::zoom_to(const Size& display_, const Rectf& rect)
 {
-  assert(rect.is_normal());
+  assert(rect);
 
   Sizef display = Sizef(display_);
 
-  if ((display.height() / display.width()) > (rect.get_height() / rect.get_width()))
+  if ((display.height() / display.width()) > (rect.height() / rect.width()))
   { // match width
-    scale = display.width() / rect.get_width();
+    scale = display.width() / rect.width();
 
-    offset.x = -rect.left * scale;
-    offset.y = -(rect.top - ((display.height() / scale) - rect.get_height()) / 2.0f) * scale;
+    offset.x = -rect.left() * scale;
+    offset.y = -(rect.top() - ((display.height() / scale) - rect.height()) / 2.0f) * scale;
   }
   else
   { // match height
-    scale = display.height() / rect.get_height();
+    scale = display.height() / rect.height();
 
-    offset.x = -(rect.left - ((display.width() / scale) - rect.get_width()) / 2.0f) * scale;
-    offset.y = -rect.top  * scale;
+    offset.x = -(rect.left() - ((display.width() / scale) - rect.width()) / 2.0f) * scale;
+    offset.y = -rect.top()  * scale;
   }
 }
 

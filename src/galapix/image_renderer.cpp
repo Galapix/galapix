@@ -79,8 +79,9 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
                                   static_cast<float>(y % downscale * 256 / downscale)), // NOLINT
                          Sizef(Size(256 / downscale, 256 / downscale)));
 
-        subsection.right  = std::min(subsection.right,  static_cast<float>(surface.get_width()));
-        subsection.bottom = std::min(subsection.bottom, static_cast<float>(surface.get_height()));
+        subsection = geom::frect(subsection.topleft(),
+                                 geom::fpoint(std::min(subsection.right(),  static_cast<float>(surface.get_width())),
+                                              std::min(subsection.bottom(), static_cast<float>(surface.get_height()))));
 
         surface.draw(subsection,
                       Rectf(get_vertex(x,   y,   zoom),
@@ -118,8 +119,8 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
 void
 ImageRenderer::draw_tiles(const Rect& rect, int scale, float zoom)
 {
-  for(int y = rect.top; y < rect.bottom; ++y) {
-    for(int x = rect.left; x < rect.right; ++x) {
+  for(int y = rect.top(); y < rect.bottom(); ++y) {
+    for(int x = rect.left(); x < rect.right(); ++x) {
       draw_tile(x, y, scale, zoom);
     }
   }
@@ -130,7 +131,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
 {
   Rectf image_rect = m_image.get_image_rect();
 
-  if (!cliprect.is_overlapped(image_rect))
+  if (!geom::intersects(cliprect, image_rect))
   {
     m_cache->cleanup();
     return false;
@@ -154,20 +155,20 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
     }
     else
     {
-      Rectf image_region = image_rect.clip_to(cliprect); // visible part of the image
+      Rectf image_region = geom::intersection(image_rect, cliprect); // visible part of the image
 
-      image_region.left   = (image_region.left   - image_rect.left) / m_image.get_scale();
-      image_region.right  = (image_region.right  - image_rect.left) / m_image.get_scale();
-      image_region.top    = (image_region.top    - image_rect.top)  / m_image.get_scale();
-      image_region.bottom = (image_region.bottom - image_rect.top)  / m_image.get_scale();
+      image_region = Rectf((image_region.left()   - image_rect.left()) / m_image.get_scale(),
+                           (image_region.top()    - image_rect.top())  / m_image.get_scale(),
+                           (image_region.right()  - image_rect.left()) / m_image.get_scale(),
+                           (image_region.bottom() - image_rect.top())  / m_image.get_scale());
 
       int   itilesize = 256 * scale_factor;
 
-      int start_x = static_cast<int>(image_region.left / static_cast<float>(itilesize));
-      int end_x   = Math::ceil_div(static_cast<int>(image_region.right), itilesize);
+      int start_x = static_cast<int>(image_region.left() / static_cast<float>(itilesize));
+      int end_x   = Math::ceil_div(static_cast<int>(image_region.right()), itilesize);
 
-      int start_y = static_cast<int>(image_region.top / static_cast<float>(itilesize));
-      int end_y   = Math::ceil_div(static_cast<int>(image_region.bottom), itilesize);
+      int start_y = static_cast<int>(image_region.top() / static_cast<float>(itilesize));
+      int end_y   = Math::ceil_div(static_cast<int>(image_region.bottom()), itilesize);
 
       Rect rect(start_x, start_y, end_x, end_y);
       m_cache->cancel_jobs(rect, tiledb_scale);

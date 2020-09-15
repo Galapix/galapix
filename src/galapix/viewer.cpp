@@ -167,12 +167,13 @@ Viewer::draw()
     // FIXME: We enlarge the cliprect so much that we can rotate
     // freely, however this enlargement creates a cliprect that
     // might be quite a bit larger then what is really needed
-    float  diagonal = cliprect.get_diagonal();
-    Vector2f center = cliprect.get_center();
-    cliprect.left   = center.x - diagonal;
-    cliprect.right  = center.x + diagonal;
-    cliprect.top    = center.y - diagonal;
-    cliprect.bottom = center.y + diagonal;
+    float  diagonal = geom::diagonal(cliprect);
+    Vector2f center = geom::center(cliprect).as_vec();
+
+    cliprect = Rectf(center.x - diagonal,
+                     center.y - diagonal,
+                     center.x + diagonal,
+                     center.y + diagonal);
   }
 
   modelview *= glm::translate(glm::vec3(m_state.get_offset().x, m_state.get_offset().y, 0.0f));
