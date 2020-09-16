@@ -17,7 +17,7 @@
 cmake_minimum_required(VERSION 3.6)
 project(galapix-0.3)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/mk/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/)
 
 set(PROJECT_NAME ${PROJECT_NAME} CACHE STRING "Set project name")
 

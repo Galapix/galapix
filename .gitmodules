@@ -19,3 +19,6 @@
 [submodule "external/geomcpp"]
 	path = external/geomcpp
 	url = https://gitlab.com/grumbel/geomcpp.git
+[submodule "external/cmake-modules"]
+	path = external/cmake-modules
+	url = https://gitlab.com/grumbel/cmake-modules.git
