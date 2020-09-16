@@ -42,22 +42,4 @@
 using Sizef = geom::fsize;
 using Size = geom::isize;
 
-template<>
-struct fmt::formatter<Size>
-{
-  template<typename ParseContext>
-  constexpr auto parse(ParseContext& ctx)
-  {
-    return ctx.begin();
-  }
-
-  template<typename FormatContext>
-  auto format(Size const& v, FormatContext& ctx)
-  {
-    std::ostringstream os;
-    os << v;
-    return fmt::format_to(ctx.out(), os.str());
-  }
-};
-
 #endif

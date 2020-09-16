@@ -28,24 +28,6 @@ typedef glm::ivec2 Vector2i;
 
 std::ostream& operator<<(std::ostream& s, const Vector2i& v);
 
-template<>
-struct fmt::formatter<Vector2i>
-{
-  template<typename ParseContext>
-  constexpr auto parse(ParseContext& ctx)
-  {
-    return ctx.begin();
-  }
-
-  template<typename FormatContext>
-  auto format(Vector2i const& v, FormatContext& ctx)
-  {
-    std::ostringstream os;
-    os << v;
-    return fmt::format_to(ctx.out(), os.str());
-  }
-};
-
 #endif
 
 /* EOF */
