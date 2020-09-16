@@ -39,7 +39,6 @@ class ResourceInfo;
 class ResourceLocator;
 class ResourceMetadata;
 class ResourceName;
-class SHA1;
 class TileInfo;
 class URLInfo;
 

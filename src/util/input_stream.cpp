@@ -60,7 +60,7 @@ InputStream::~InputStream()
 }
 
 size_t
-InputStream::read(void* buffer, size_t len)
+InputStream::read(void* buffer, size_t len) // NOLINT
 {
   ssize_t ret = ::read(m_fd, buffer, len);
   if (ret < 0)
@@ -74,7 +74,7 @@ InputStream::read(void* buffer, size_t len)
 }
 
 void
-InputStream::read_exact(void* buffer, size_t len)
+InputStream::read_exact(void* buffer, size_t len) // NOLINT
 {
   ssize_t ret = ::read(m_fd, buffer, len);
   if (ret < 0)
