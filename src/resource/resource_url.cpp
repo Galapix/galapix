@@ -123,9 +123,9 @@ ResourceURL::operator!=(const ResourceURL& other) const
 bool
 ResourceURL::operator<(const ResourceURL& other) const
 {
-  return // NOLINT
+  return
     std::tie(this->m_scheme, this->m_authority, this->m_path)
-    <
+    < // NOLINT
     std::tie(other.m_scheme, other.m_authority, other.m_path);
 }
 

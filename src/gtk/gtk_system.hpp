@@ -19,11 +19,11 @@
 
 #include "galapix/system.hpp"
 
-class GtkSystem : public System
+class GtkSystem final : public System
 {
 public:
   GtkSystem();
-  ~GtkSystem();
+  ~GtkSystem() override;
 
   void launch_viewer(Workspace& workspace, Options& options) override;
   bool requires_command_line_args() override;

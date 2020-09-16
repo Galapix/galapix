@@ -45,7 +45,7 @@ public:
   {
   }
 
-  virtual ~TestGeneratorCallbacks()
+  ~TestGeneratorCallbacks() override
   {
   }
 
@@ -118,7 +118,7 @@ UITEST(Generator, test, "FILE...")
   BlobManager blob_mgr(download_mgr, archive_mgr);
   Generator   generator(blob_mgr, archive_mgr);
 
-  int count = 0;
+  std::atomic_int count = 0;
   for(const auto& arg : rest)
   {
     ResourceLocator locator = ResourceLocator::from_string(arg);

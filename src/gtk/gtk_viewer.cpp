@@ -151,37 +151,42 @@ GtkViewer::run()
   Gtk::Main::run(window);
 
   // Cleanup
-  for(int i = 0; i < argc; ++i)
+  for(int i = 0; i < argc; ++i) {
     free(argv[i]);
+  }
   free(argv);
 }
 
 void
 GtkViewer::on_pan_tool_toggled()
 {
-  if (pan_tool_button->get_active())
+  if (pan_tool_button->get_active()) {
     viewer->set_pan_tool();
+  }
 }
 
 void
 GtkViewer::on_zoom_tool_toggled()
 {
-  if (zoom_tool_button->get_active())
+  if (zoom_tool_button->get_active()) {
     viewer->set_zoom_tool();
+  }
 }
 
 void
 GtkViewer::on_grid_tool_toggled()
 {
-  if (grid_tool_button->get_active())
+  if (grid_tool_button->get_active()) {
     viewer->set_grid_tool();
+  }
 }
 
 void
 GtkViewer::on_move_tool_toggled()
 {
-  if (move_tool_button->get_active())
+  if (move_tool_button->get_active()) {
     viewer->set_move_resize_tool();
+  }
 }
 
 void

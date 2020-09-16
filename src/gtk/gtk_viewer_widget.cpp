@@ -93,8 +93,9 @@ GtkViewerWidget::on_realize()
 
   Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
 
-  if (!glwindow->gl_begin(get_gl_context()))
+  if (!glwindow->gl_begin(get_gl_context())) {
     return;
+  }
 
   Framebuffer::init();
   Framebuffer::reshape(Size(get_width(), get_height()));
@@ -108,8 +109,9 @@ GtkViewerWidget::on_configure_event(GdkEventConfigure* ev)
   Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
 
   // *** OpenGL BEGIN ***
-  if (!glwindow->gl_begin(get_gl_context()))
+  if (!glwindow->gl_begin(get_gl_context())) {
     return false;
+  }
 
   Framebuffer::reshape(Size(get_width(), get_height()));
 
@@ -124,16 +126,18 @@ GtkViewerWidget::on_expose_event(GdkEventExpose* ev)
 {
   Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
 
-  if (!glwindow->gl_begin(get_gl_context()))
+  if (!glwindow->gl_begin(get_gl_context())) {
     return false;
+  }
 
   viewer->draw();
 
   // Swap buffers.
-  if (glwindow->is_double_buffered())
+  if (glwindow->is_double_buffered()) {
     glwindow->swap_buffers();
-  else
+  } else {
     glFlush();
+  }
 
   glwindow->gl_end();
 

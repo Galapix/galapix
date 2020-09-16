@@ -49,7 +49,7 @@ UITEST(ResourceManager, request_url_info, "URL...")
 
   ResourceManager resource_mgr(database, generator, download_mgr, archive_mgr);
 
-  int count = 0;
+  std::atomic_int count = 0;
   //for(const auto& arg : rest)
   {
 #if 0

@@ -23,26 +23,26 @@
 
 class Viewer;
 
-class GtkViewerWidget
+class GtkViewerWidget final
   : public Gtk::DrawingArea,
     public Gtk::GL::Widget<GtkViewerWidget>
 {
 public:
   GtkViewerWidget(Viewer* viewer);
-  virtual ~GtkViewerWidget();
+  ~GtkViewerWidget() override;
 
-  virtual void on_realize() override;
-  virtual bool on_timeout();
-  virtual bool on_configure_event(GdkEventConfigure* event) override;
-  virtual bool on_expose_event(GdkEventExpose* event) override;
+  void on_realize() override;
+  bool on_timeout();
+  bool on_configure_event(GdkEventConfigure* event) override;
+  bool on_expose_event(GdkEventExpose* event) override;
 
-  virtual bool mouse_move(GdkEventMotion* event);
-  virtual bool mouse_down (GdkEventButton* event);
-  virtual bool mouse_up(GdkEventButton* event);
-  virtual bool scroll(GdkEventScroll* event);
+  bool mouse_move(GdkEventMotion* event);
+  bool mouse_down (GdkEventButton* event);
+  bool mouse_up(GdkEventButton* event);
+  bool scroll(GdkEventScroll* event);
 
-  virtual bool key_press(GdkEventKey* event);
-  virtual bool key_release(GdkEventKey* event);
+  bool key_press(GdkEventKey* event);
+  bool key_release(GdkEventKey* event);
 
 private:
   Viewer* viewer;

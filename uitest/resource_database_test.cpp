@@ -33,7 +33,7 @@ UITEST(ResourceDatabase, test, "")
   res_db.store_file_info(FileInfo("/tmp/foobar.txt", 456, galapix::SHA1::from_mem("foobar"), 1234578));
   res_db.store_file_info(FileInfo("/tmp/barfoo.txt", 789, galapix::SHA1::from_mem("barfoo"), 1234578));
 
-  for(auto& path : { "/tmp/foobar.txt", "/tmp/barfoo.txt", "/tmp/unknown.txt", "/tmp/hello_world.txt",  })
+  for(auto const& path : { "/tmp/foobar.txt", "/tmp/barfoo.txt", "/tmp/unknown.txt", "/tmp/hello_world.txt",  })
   {
     std::optional<FileInfo> file_info = res_db.get_file_info(path);
     if (file_info)
