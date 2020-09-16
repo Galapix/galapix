@@ -276,19 +276,19 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_KP_8:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(0.0f, +128.0f));
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(0.0f, +128.0f).as_vec());
           break;
 
         case SDLK_KP_2:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(0.0f, -128.0f));
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(0.0f, -128.0f).as_vec());
           break;
 
         case SDLK_KP_4:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(+128.0f, 0.0f));
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(+128.0f, 0.0f).as_vec());
           break;
 
         case SDLK_KP_6:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset() + Vector2f(-128.0f, 0.0f));
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(-128.0f, 0.0f).as_vec());
           break;
 
         case SDLK_p:

@@ -170,17 +170,17 @@ PixelData::get_row_data(int y) const
 void
 PixelData::blit(PixelData& dst, const Vector2i& pos) const
 {
-  int start_x = std::max(0, -pos.x);
-  int start_y = std::max(0, -pos.y);
+  int start_x = std::max(0, -pos.x());
+  int start_y = std::max(0, -pos.y());
 
-  int end_x = std::min(m_size.width(),  dst.m_size.width()  - pos.x);
-  int end_y = std::min(m_size.height(), dst.m_size.height() - pos.y);
+  int end_x = std::min(m_size.width(),  dst.m_size.width()  - pos.x());
+  int end_y = std::min(m_size.height(), dst.m_size.height() - pos.y());
 
   if (dst.m_format == RGB_FORMAT && m_format == RGB_FORMAT)
   {
     for(int y = start_y; y < end_y; ++y)
     {
-      memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*3,
+      memcpy(dst.get_row_data(y + pos.y()) + (pos.x() + start_x)*3,
              get_row_data(y) + start_x*3,
              (end_x - start_x) * 3);
     }
@@ -189,7 +189,7 @@ PixelData::blit(PixelData& dst, const Vector2i& pos) const
   {
     for(int y = start_y; y < end_y; ++y)
     {
-      memcpy(dst.get_row_data(y + pos.y) + (pos.x+start_x)*4,
+      memcpy(dst.get_row_data(y + pos.y()) + (pos.x() + start_x)*4,
              get_row_data(y) + start_x*4,
              (end_x - start_x) * 4);
     }
@@ -198,7 +198,7 @@ PixelData::blit(PixelData& dst, const Vector2i& pos) const
   {
     for(int y = start_y; y < end_y; ++y)
     {
-      uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*4;
+      uint8_t* dstpx = dst.get_row_data(y + pos.y()) + (pos.x() + start_x)*4;
       uint8_t const* srcpx = get_row_data(y) + start_x*3;
 
       for(int x = 0; x < (end_x - start_x); ++x)
@@ -214,7 +214,7 @@ PixelData::blit(PixelData& dst, const Vector2i& pos) const
   {
     for(int y = start_y; y < end_y; ++y)
     {
-      uint8_t* dstpx = dst.get_row_data(y + pos.y) + (pos.x+start_x)*3;
+      uint8_t* dstpx = dst.get_row_data(y + pos.y()) + (pos.x() + start_x)*3;
       uint8_t const* srcpx = get_row_data(y) + start_x*4;
 
       for(int x = 0; x < (end_x - start_x); ++x)

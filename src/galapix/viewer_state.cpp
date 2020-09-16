@@ -37,11 +37,11 @@ ViewerState::zoom(float factor, const Vector2i& pos)
                   static_cast<float>(Framebuffer::get_height()) / 2.0f);
 
   Vector2f rotated_pos(pos);
-  rotated_pos -= center;
-  rotated_pos = glm::rotate(rotated_pos, glm::radians(-angle));
-  rotated_pos += center;
+  rotated_pos = rotated_pos.as_vec() - center.as_vec();
+  rotated_pos = glm::rotate(rotated_pos.as_vec(), glm::radians(-angle));
+  rotated_pos = rotated_pos.as_vec() + center.as_vec();
 
-  offset = rotated_pos - ((rotated_pos - offset) * factor);
+  offset = rotated_pos.as_vec() - ((rotated_pos.as_vec() - offset.as_vec()) * factor);
 }
 
 void
@@ -79,23 +79,23 @@ void
 ViewerState::move(const Vector2f& pos)
 {
   // FIXME: Implement a proper 2D Matrix instead of this hackery
-  offset.x += pos.x * cosf(angle/180.0f*Math::pi) +  pos.y * sinf(angle/180.0f*Math::pi);
-  offset.y -= pos.x * sinf(angle/180.0f*Math::pi) -  pos.y * cosf(angle/180.0f*Math::pi);
+  offset = Vector2f(offset.x() + (pos.x() * cosf(angle/180.0f*Math::pi) + pos.y() * sinf(angle/180.0f*Math::pi)),
+                    offset.y() - (pos.x() * sinf(angle/180.0f*Math::pi) - pos.y() * cosf(angle/180.0f*Math::pi)));
 }
 
 Vector2f
 ViewerState::screen2world(const Vector2i& pos) const
 {
-  return (Vector2f(pos) - offset) / scale;
+  return (Vector2f(pos).as_vec() - offset.as_vec()) / scale;
 }
 
 Rectf
 ViewerState::screen2world(const Rect& rect) const
 {
-  return Rectf((static_cast<float>(rect.left())   - offset.x) / scale,
-               (static_cast<float>(rect.top())    - offset.y) / scale,
-               (static_cast<float>(rect.right())  - offset.x) / scale,
-               (static_cast<float>(rect.bottom()) - offset.y) / scale);
+  return Rectf((static_cast<float>(rect.left())   - offset.x()) / scale,
+               (static_cast<float>(rect.top())    - offset.y()) / scale,
+               (static_cast<float>(rect.right())  - offset.x()) / scale,
+               (static_cast<float>(rect.bottom()) - offset.y()) / scale);
 }
 
 void
@@ -109,15 +109,15 @@ ViewerState::zoom_to(const Size& display_, const Rectf& rect)
   { // match width
     scale = display.width() / rect.width();
 
-    offset.x = -rect.left() * scale;
-    offset.y = -(rect.top() - ((display.height() / scale) - rect.height()) / 2.0f) * scale;
+    offset = Vector2f(-rect.left() * scale,
+                      -(rect.top() - ((display.height() / scale) - rect.height()) / 2.0f) * scale);
   }
   else
   { // match height
     scale = display.height() / rect.height();
 
-    offset.x = -(rect.left() - ((display.width() / scale) - rect.width()) / 2.0f) * scale;
-    offset.y = -rect.top()  * scale;
+    offset = Vector2f(-(rect.left() - ((display.width() / scale) - rect.width()) / 2.0f) * scale,
+                      -rect.top()  * scale);
   }
 }
 

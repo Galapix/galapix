@@ -45,13 +45,13 @@ WorkspaceItem::get_pos() const
 Vector2f
 WorkspaceItem::get_top_left_pos() const
 {
-  return m_pos - Vector2f(get_scaled_width()/2, get_scaled_height()/2);
+  return m_pos - geom::fsize(get_scaled_width()/2, get_scaled_height()/2);
 }
 
 void
 WorkspaceItem::set_top_left_pos(const Vector2f& p)
 {
-  m_pos = p + Vector2f(get_scaled_width()/2, get_scaled_height()/2);
+  m_pos = p + geom::fsize(get_scaled_width()/2, get_scaled_height()/2);
 }
 
 void

@@ -80,23 +80,23 @@ public:
     }
     else
     {
-      if (rect.right() < m_center.x) // west
+      if (rect.right() < m_center.x()) // west
       {
-        if (rect.bottom() < m_center.y) // north
+        if (rect.bottom() < m_center.y()) // north
         {
           if (!m_nw.get())
           {
             m_nw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left(), m_bounding_rect.top(),
-                                                                   m_center.x, m_center.y));
+                                                                   m_center.x(), m_center.y()));
           }
           m_nw->add(rect, c);
         }
-        else if(rect.top() > m_center.y)  // south
+        else if(rect.top() > m_center.y())  // south
         {
           if (!m_sw.get())
           {
-            m_sw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left(), m_center.y,
-                                                                   m_center.x, m_bounding_rect.bottom()));
+            m_sw = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_bounding_rect.left(), m_center.y(),
+                                                                   m_center.x(), m_bounding_rect.bottom()));
           }
           m_sw->add(rect, c);
         }
@@ -108,22 +108,22 @@ public:
           m_items.push_back(obj);
         }
       }
-      else if (rect.left() > m_center.x) // east
+      else if (rect.left() > m_center.x()) // east
       {
-        if (rect.bottom() < m_center.y) // north
+        if (rect.bottom() < m_center.y()) // north
         {
           if (!m_ne.get())
           {
-            m_ne = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x, m_bounding_rect.top(),
-                                                                   m_bounding_rect.right(), m_center.y));
+            m_ne = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x(), m_bounding_rect.top(),
+                                                                   m_bounding_rect.right(), m_center.y()));
           }
           m_ne->add(rect, c);
         }
-        else if(rect.top() > m_center.y) // south
+        else if(rect.top() > m_center.y()) // south
         {
           if (!m_se.get())
           {
-            m_se = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x, m_center.y,
+            m_se = std::make_unique<QuadTreeNode>(m_depth+1, Rectf(m_center.x(), m_center.y(),
                                                                    m_bounding_rect.right(), m_bounding_rect.bottom()));
           }
           m_se->add(rect, c);
@@ -150,29 +150,29 @@ public:
   {
     // If rect overlaps with the given quadrant, recursivly check the quadrant
     if (m_nw.get() &&
-        rect.left() < m_center.x &&
-        rect.top()  < m_center.y)
+        rect.left() < m_center.x() &&
+        rect.top()  < m_center.y())
     {
       m_nw->get_items_at(rect, out_items);
     }
 
     if (m_ne.get() &&
-        rect.right() > m_center.x &&
-        rect.top()   < m_center.y)
+        rect.right() > m_center.x() &&
+        rect.top()   < m_center.y())
     {
       m_ne->get_items_at(rect, out_items);
     }
 
     if (m_sw.get() &&
-        rect.left()   < m_center.x &&
-        rect.bottom() > m_center.y)
+        rect.left()   < m_center.x() &&
+        rect.bottom() > m_center.y())
     {
       m_sw->get_items_at(rect, out_items);
     }
 
     if (m_se.get() &&
-        rect.right()  > m_center.x &&
-        rect.bottom() > m_center.y)
+        rect.right()  > m_center.x() &&
+        rect.bottom() > m_center.y())
     {
       m_se->get_items_at(rect, out_items);
     }

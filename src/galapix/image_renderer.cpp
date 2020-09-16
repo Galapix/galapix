@@ -37,10 +37,10 @@ ImageRenderer::get_vertex(int x, int y, float zoom) const
   float tilesize = 256.0f * zoom;
 
   return m_image.get_top_left_pos() +
-    Vector2f(std::min(static_cast<float>(x) * tilesize,
-                      m_image.get_scaled_width()),
-             std::min(static_cast<float>(y) * tilesize,
-                      m_image.get_scaled_height()));
+    geom::fsize(std::min(static_cast<float>(x) * tilesize,
+                         m_image.get_scaled_width()),
+                std::min(static_cast<float>(y) * tilesize,
+                         m_image.get_scaled_height()));
 }
 
 void
@@ -54,8 +54,8 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
 
     if ((false))
     { // draw debug rectangle that shows tiles
-      Framebuffer::draw_rect(Rectf(get_vertex(x,   y,   zoom) + Vector2f(zoom, zoom)*8.0f,
-                                   get_vertex(x+1, y+1, zoom) - Vector2f(zoom, zoom)*8.0f),
+      Framebuffer::draw_rect(Rectf(get_vertex(x,   y,   zoom) + geom::fsize(zoom, zoom) * 8.0f,
+                                   get_vertex(x+1, y+1, zoom) - geom::fsize(zoom, zoom) * 8.0f),
                              RGB(255, 0, 255));
     }
   }

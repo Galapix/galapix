@@ -34,8 +34,8 @@ public:
     {
       m_stmt.bind_int64(1, fileid.get_id());
       m_stmt.bind_int(2, scale);
-      m_stmt.bind_int(3, pos.x);
-      m_stmt.bind_int(4, pos.y);
+      m_stmt.bind_int(3, pos.x());
+      m_stmt.bind_int(4, pos.y());
 
       SQLiteReader reader = m_stmt.execute_query();
 

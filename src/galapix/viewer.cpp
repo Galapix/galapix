@@ -170,13 +170,13 @@ Viewer::draw()
     float  diagonal = geom::diagonal(cliprect);
     Vector2f center = geom::center(cliprect).as_vec();
 
-    cliprect = Rectf(center.x - diagonal,
-                     center.y - diagonal,
-                     center.x + diagonal,
-                     center.y + diagonal);
+    cliprect = Rectf(center.x() - diagonal,
+                     center.y() - diagonal,
+                     center.x() + diagonal,
+                     center.y() + diagonal);
   }
 
-  modelview *= glm::translate(glm::vec3(m_state.get_offset().x, m_state.get_offset().y, 0.0f));
+  modelview *= glm::translate(glm::vec3(m_state.get_offset().x(), m_state.get_offset().y(), 0.0f));
   modelview *= glm::scale(glm::vec3(m_state.get_scale(), m_state.get_scale(), 1.0f));
 
   Framebuffer::set_modelview(modelview);
@@ -202,7 +202,7 @@ Viewer::draw()
   {
     if (m_pin_grid)
     {
-      Framebuffer::draw_grid(m_grid_offset * m_state.get_scale() + m_state.get_offset(),
+      Framebuffer::draw_grid(m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec(),
                              m_grid_size * m_state.get_scale(),
                              m_grid_color);
     }
@@ -344,7 +344,7 @@ Viewer::set_grid(const Vector2f& offset, const Sizef& size)
   }
   else
   {
-    m_grid_offset = offset * m_state.get_scale() + m_state.get_offset();
+    m_grid_offset = offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec();
     m_grid_size   = size * m_state.get_scale() ;
   }
 }
@@ -505,12 +505,12 @@ Viewer::toggle_pinned_grid()
   log_info("Pin Grid: {}", m_pin_grid);
   if (!m_pin_grid)
   {
-    m_grid_offset = m_grid_offset * m_state.get_scale() + m_state.get_offset();
+    m_grid_offset = m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec();
     m_grid_size   = m_grid_size * m_state.get_scale();
   }
   else
   {
-    m_grid_offset = (m_grid_offset - m_state.get_offset()) / m_state.get_scale();
+    m_grid_offset = (m_grid_offset.as_vec() - m_state.get_offset().as_vec()) / m_state.get_scale();
     m_grid_size   = m_grid_size / m_state.get_scale();
   }
 }

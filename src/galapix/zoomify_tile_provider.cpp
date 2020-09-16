@@ -105,7 +105,7 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
 int
 ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 {
-  int tilenum = (m_info[static_cast<size_t>(scale)].m_size.width() * pos.y + pos.x) +
+  int tilenum = (m_info[static_cast<size_t>(scale)].m_size.width() * pos.y() + pos.x()) +
     m_info[static_cast<size_t>(scale)].m_previous_tiles_count;
   // a tilegroup has 256 tiles
   return tilenum / 256;
@@ -120,7 +120,7 @@ ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
   // construct the URL of the tile
   std::ostringstream out;
   out << m_basedir << "TileGroup" << tile_group << "/"
-      << (m_max_scale - scale) << "-" << pos.x << "-" << pos.y << ".jpg";
+      << (m_max_scale - scale) << "-" << pos.x() << "-" << pos.y() << ".jpg";
 
   JobHandle job_handle = JobHandle::create();
   m_job_manager.request(std::make_shared<ZoomifyTileJob>(job_handle, URL::from_string(out.str()), scale, pos, callback));

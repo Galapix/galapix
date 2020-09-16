@@ -42,7 +42,7 @@ MoveTool::move(const Vector2i& pos, const Vector2i& rel)
   if (move_active)
   {
     // FIXME: Why does (Vector2i * float) work instead of giving an error?
-    viewer->get_workspace()->move_selection(Vector2f(rel) * (1.0f/viewer->get_state().get_scale()));
+    viewer->get_workspace()->move_selection(Vector2f(rel).as_vec() * (1.0f/viewer->get_state().get_scale()));
   }
 }
 

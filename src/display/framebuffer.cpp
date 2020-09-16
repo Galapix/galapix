@@ -225,8 +225,8 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
 
   std::vector<float> positions;
 
-  float start_x = fmodf(offset.x, size_.width());
-  float start_y = fmodf(offset.y, size_.height());
+  float start_x = fmodf(offset.x(), size_.width());
+  float start_y = fmodf(offset.y(), size_.height());
 
   for(float x = start_x; x < static_cast<float>(Framebuffer::get_width()); x += size_.width())
   {

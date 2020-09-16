@@ -40,17 +40,17 @@ public:
     }
     else
     {
-      if (m_pos.x < rhs.m_pos.x)
+      if (m_pos.x() < rhs.m_pos.x())
       {
         return true;
       }
-      else if (m_pos.x > rhs.m_pos.x)
+      else if (m_pos.x() > rhs.m_pos.x())
       {
         return false;
       }
       else
       {
-        return m_pos.y < rhs.m_pos.y;
+        return m_pos.y() < rhs.m_pos.y();
       }
     }
   }

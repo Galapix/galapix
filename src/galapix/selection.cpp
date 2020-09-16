@@ -50,7 +50,7 @@ Selection::scale(float factor)
   {
     (*i)->set_scale((*i)->get_scale() * factor);
 
-    (*i)->set_pos(center + ((*i)->get_pos() - center) * factor);
+    (*i)->set_pos(center.as_vec() + ((*i)->get_pos().as_vec() - center.as_vec()) * factor);
   }
 }
 
@@ -97,9 +97,9 @@ Selection::get_center() const
     Vector2f pos(0.0f, 0.0f);
     for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
     {
-      pos += (*i)->get_pos();
+      pos = pos.as_vec() + (*i)->get_pos().as_vec();
     }
-    return pos / static_cast<float>(m_images.size());
+    return pos.as_vec() / static_cast<float>(m_images.size());
   }
 }
 

@@ -195,7 +195,7 @@ FileTileDatabase::get_directory(const RowId& file_id_obj)
 std::string
 FileTileDatabase::get_filename(const Vector2i& pos, int scale)
 {
-  return fmt::format("tile-{:03d}-{:03d}-{:03d}.dat", scale, pos.x, pos.y);
+  return fmt::format("tile-{:03d}-{:03d}-{:03d}.dat", scale, pos.x(), pos.y());
 }
 
 std::string

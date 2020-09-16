@@ -24,9 +24,11 @@
 #define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
-typedef glm::vec2 Vector2f;
+#include <geom/geom.hpp>
 
-std::ostream& operator<<(std::ostream& s, const Vector2f& v);
+using Vector2f = geom::fpoint;
+
+//std::ostream& operator<<(std::ostream& s, const Vector2f& v);
 
 #endif
 

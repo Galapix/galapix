@@ -145,7 +145,7 @@ GtkViewerWidget::mouse_move(GdkEventMotion* ev)
 {
   //std::cout << "Motion: " << ev->x << ", " << ev->y << std::endl;
   Vector2i new_pos(static_cast<int>(ev->x), static_cast<int>(ev->y));
-  viewer->on_mouse_motion(new_pos, new_pos - mouse_pos);
+  viewer->on_mouse_motion(new_pos, new_pos.as_vec() - mouse_pos.as_vec());
   mouse_pos = new_pos;
 
   // Trigger redraw

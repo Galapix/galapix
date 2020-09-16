@@ -80,7 +80,8 @@ Workspace::layout_vertical()
   {
     i->set_scale(1.0f);
     i->set_pos(next_pos);
-    next_pos.y += static_cast<float>(i->get_original_height()) + spacing;
+    next_pos = Vector2f(next_pos.x(),
+                        next_pos.y() + static_cast<float>(i->get_original_height()) + spacing);
   }
 }
 
@@ -263,7 +264,7 @@ Workspace::move_selection(const Vector2f& rel)
 {
   for(auto& i: *m_selection)
   {
-    i->set_pos(i->get_pos() + rel);
+    i->set_pos(i->get_pos().as_vec() + rel.as_vec());
   }
 }
 
@@ -318,13 +319,13 @@ Workspace::solve_overlaps()
           // FIXME: This only works if one rect isn't completly within the other
           if (clip.width() > clip.height())
           {
-            (*i)->set_pos((*i)->get_pos() - Vector2f(0.0f, clip.height()/2 + 16.0f));
-            (*j)->set_pos((*j)->get_pos() + Vector2f(0.0f, clip.height()/2 + 16.0f));
+            (*i)->set_pos((*i)->get_pos().as_vec() - Vector2f(0.0f, clip.height()/2 + 16.0f).as_vec());
+            (*j)->set_pos((*j)->get_pos().as_vec() + Vector2f(0.0f, clip.height()/2 + 16.0f).as_vec());
           }
           else
           {
-            (*i)->set_pos((*i)->get_pos() - Vector2f(clip.width()/2 + 16.0f, 0.0f));
-            (*j)->set_pos((*j)->get_pos() + Vector2f(clip.width()/2 + 16.0f, 0.0f));
+            (*i)->set_pos((*i)->get_pos().as_vec() - Vector2f(clip.width()/2 + 16.0f, 0.0f).as_vec());
+            (*j)->set_pos((*j)->get_pos().as_vec() + Vector2f(clip.width()/2 + 16.0f, 0.0f).as_vec());
           }
         }
       }
@@ -344,7 +345,7 @@ Workspace::save(std::ostream& out)
   {
     // FIXME: Must escape the filename!
     out  << "    (image (url   \"" << i->get_url() << "\")\n"
-         << "           (pos   " << i->get_pos().x << " " << i->get_pos().y << ")\n"
+         << "           (pos   " << i->get_pos().x() << " " << i->get_pos().y() << ")\n"
          << "           (scale " << i->get_scale() << ")"
       // << "           (angle " << i->get_angle() << ")"
       // << "           (alpha " << i->get_alpha() << ")"

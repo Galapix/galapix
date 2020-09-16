@@ -65,8 +65,8 @@ public:
     // just storing a duplicate
     m_stmt.bind_int64(1, tile.get_image_id().get_id());
     m_stmt.bind_int (2, tile.get_scale());
-    m_stmt.bind_int (3, tile.get_pos().x);
-    m_stmt.bind_int (4, tile.get_pos().y);
+    m_stmt.bind_int (3, tile.get_pos().x());
+    m_stmt.bind_int (4, tile.get_pos().y());
     m_stmt.bind_blob(5, tile.get_blob());
     m_stmt.bind_int (6, 0);
     m_stmt.bind_int (7, tile.get_format());

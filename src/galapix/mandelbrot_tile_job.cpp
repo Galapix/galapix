@@ -46,8 +46,8 @@ MandelbrotTileJob::run()
 
     for(int px = 0; px < surface.get_width(); ++px)
     {
-      double x0 = static_cast<double>(256 * m_pos.x + px) / static_cast<double>(imagesize.width())  * 4.0 - 2.5;
-      double y0 = static_cast<double>(256 * m_pos.y + py) / static_cast<double>(imagesize.height()) * 3.0 - 1.5;
+      double x0 = static_cast<double>(256 * m_pos.x() + px) / static_cast<double>(imagesize.width())  * 4.0 - 2.5;
+      double y0 = static_cast<double>(256 * m_pos.y() + py) / static_cast<double>(imagesize.height()) * 3.0 - 1.5;
 
       double x = 0;
       double y = 0;

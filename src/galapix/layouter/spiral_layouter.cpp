@@ -44,51 +44,59 @@ SpiralLayouter::advance()
   switch(m_direction)
   {
     case kRight:
-      if (m_pos.x == last)
+      if (m_pos.x() == last)
       {
         m_direction = kDown;
-        m_pos.y += 1;
+        m_pos = Vector2i(m_pos.x(),
+                         m_pos.y() + 1);
       }
       else
       {
-        m_pos.x += 1;
+        m_pos = Vector2i(m_pos.x() + 1,
+                         m_pos.y());
       }
       break;
 
     case kDown:
-      if (m_pos.y == last)
+      if (m_pos.y() == last)
       {
         m_direction = kLeft;
-        m_pos.x -= 1;
+        m_pos = Vector2i(m_pos.x() - 1,
+                         m_pos.y());
       }
       else
       {
-        m_pos.y += 1;
+        m_pos = Vector2i(m_pos.x(),
+                         m_pos.y() + 1);
       }
       break;
 
     case kLeft:
-      if (m_pos.x == first)
+      if (m_pos.x() == first)
       {
         m_direction = kUp;
-        m_pos.y -= 1;
+        m_pos = Vector2i(m_pos.x(),
+                         m_pos.y() - 1);
       }
       else
       {
-        m_pos.x -= 1;
+        m_pos = Vector2i(m_pos.x() - 1,
+                         m_pos.y());
       }
       break;
 
     case kUp:
-      if (m_pos.y == first - 1)
+      if (m_pos.y() == first - 1)
       {
         m_direction = kRight;
-        m_pos.x += 1;
+        m_pos = Vector2i(m_pos.x() + 1,
+                         m_pos.y());
         m_ring  += 1;
       }
       else
       {
-        m_pos.y -= 1;
+        m_pos = Vector2i(m_pos.x(),
+                         m_pos.y() - 1);
       }
       break;
   }
@@ -102,8 +110,8 @@ SpiralLayouter::layout(WorkspaceItem& item)
                                  1000.0f / static_cast<float>(item.get_original_height()));
 
   item.set_scale(target_scale);
-  item.set_pos(Vector2f(static_cast<float>(m_pos.x) * 1024.0f,
-                               static_cast<float>(m_pos.y) * 1024.0f));
+  item.set_pos(Vector2f(static_cast<float>(m_pos.x()) * 1024.0f,
+                               static_cast<float>(m_pos.y()) * 1024.0f));
 
   advance();
 }

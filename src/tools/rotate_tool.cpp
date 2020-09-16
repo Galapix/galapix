@@ -37,8 +37,8 @@ RotateTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
   if (rotate_active)
   {
     Vector2f mouse_pos = viewer->get_state().screen2world(pos);
-    float angle = atan2f(selection_center.y - mouse_pos.y,
-                         selection_center.x - mouse_pos.x);
+    float angle = atan2f(selection_center.y() - mouse_pos.y(),
+                         selection_center.x() - mouse_pos.x());
 
     std::cout << "Angle: " << ((start_angle - angle) / Math::pi * 180.0f) << std::endl;
 
@@ -64,8 +64,8 @@ RotateTool::down(const Vector2i& pos)
   rotate_active    = true;
   selection_center = viewer->get_workspace()->get_selection()->get_center();
 
-  start_angle = atan2f(selection_center.y - mouse_pos.y,
-                       selection_center.x - mouse_pos.x);
+  start_angle = atan2f(selection_center.y() - mouse_pos.y(),
+                       selection_center.x() - mouse_pos.x());
 }
 
 /* EOF */

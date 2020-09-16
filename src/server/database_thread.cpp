@@ -197,8 +197,8 @@ DatabaseThread::request_tile(const OldFileEntry& file_entry, int tilescale, cons
            {
              std::cout << "Error: Couldn't get tile: "
                        << file_entry.get_id() << " "
-                       << pos.x << " "
-                       << pos.y << " "
+                       << pos.x() << " "
+                       << pos.y() << " "
                        << tilescale
                        << std::endl;
            }

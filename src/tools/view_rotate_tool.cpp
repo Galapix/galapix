@@ -34,8 +34,8 @@ ViewRotateTool::move(const Vector2i& pos, const Vector2i& rel)
     Vector2i center(Framebuffer::get_width()/2,
                     Framebuffer::get_height()/2);
 
-    float angle = atan2f(static_cast<float>(pos.y - center.y),
-                         static_cast<float>(pos.x - center.x));
+    float angle = atan2f(static_cast<float>(pos.y() - center.y()),
+                         static_cast<float>(pos.x() - center.x()));
 
     viewer->get_state().rotate((angle - start_angle)/Math::pi * 180.0f);
     start_angle = angle;
@@ -56,8 +56,8 @@ ViewRotateTool::down(const Vector2i& pos)
   Vector2i center(Framebuffer::get_width()/2,
                   Framebuffer::get_height()/2);
 
-  start_angle = atan2f(static_cast<float>(pos.y - center.y),
-                       static_cast<float>(pos.x - center.x));
+  start_angle = atan2f(static_cast<float>(pos.y() - center.y()),
+                       static_cast<float>(pos.x() - center.x()));
 }
 
 /* EOF */
