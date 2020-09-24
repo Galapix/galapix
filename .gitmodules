@@ -25,3 +25,6 @@
 [submodule "external/strut"]
 	path = external/strut
 	url = https://gitlab.com/grumbel/strut.git
+[submodule "external/surfcpp"]
+	path = external/surfcpp
+	url = https://gitlab.com/grumbel/surfcpp.git
