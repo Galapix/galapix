@@ -23,7 +23,7 @@
 
 #include "display/surface.hpp"
 #include "galapix/viewer_state.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgba.hpp"
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"
 

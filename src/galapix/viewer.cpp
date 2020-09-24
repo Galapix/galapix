@@ -28,8 +28,8 @@
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "math/rect.hpp"
-#include "math/rgb.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgb.hpp"
+#include "surface/rgba.hpp"
 #include "math/vector2f.hpp"
 #include "tools/grid_tool.hpp"
 #include "tools/move_tool.hpp"
@@ -40,7 +40,7 @@
 #include "tools/zoom_rect_tool.hpp"
 #include "tools/zoom_tool.hpp"
 #include "util/filesystem.hpp"
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 Viewer* Viewer::current_ = nullptr;
 

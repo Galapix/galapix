@@ -20,7 +20,7 @@
 #include <assert.h>
 
 #include "plugins/ufraw.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 
 class UFRawSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {

@@ -1,11 +1,11 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
-#include "util/software_surface.hpp"
-#include "util/url.hpp"
-#include "util/software_surface_factory.hpp"
-#include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
+#include "plugins/png.hpp"
+#include "surface/software_surface.hpp"
+#include "surface/software_surface_factory.hpp"
+#include "util/url.hpp"
 
 UITEST(SoftwareSurface, test, "FILENAME",
        "Load FILENAME and perform actions on it")

@@ -18,7 +18,7 @@
 #define HEADER_GALAPIX_UTIL_KRA_SOFTWARE_SURFACE_LOADER_HPP
 
 #include "plugins/kra.hpp"
-#include "util/software_surface_loader.hpp"
+#include "surface/software_surface_loader.hpp"
 
 class KRASoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {

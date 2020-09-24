@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "util/software_surface_float.hpp"
+#include "surface/software_surface_float.hpp"
 
 #include <geom/size.hpp>
 

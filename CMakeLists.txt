@@ -148,6 +148,7 @@ file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/network/*.cpp
   src/plugins/*.cpp
   src/resource/*.cpp
+  src/surface/*.cpp
   src/sqlite/*.cpp
   src/tools/*.cpp
   src/util/*.cpp)

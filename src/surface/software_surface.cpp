@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 #include <iostream>
 #include <string.h>
 
 #include "math/rect.hpp"
-#include "math/rgb.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgb.hpp"
+#include "surface/rgba.hpp"
 
 namespace {
 

@@ -20,7 +20,7 @@
 #include <memory>
 #include <geom/fwd.hpp>
 
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 #include "math/rect.hpp"
 
 class SoftwareSurface;

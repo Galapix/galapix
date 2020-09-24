@@ -19,7 +19,7 @@
 #include "galapix/workspace.hpp"
 #include "galapix/viewer.hpp"
 #include "display/framebuffer.hpp"
-#include "math/rgb.hpp"
+#include "surface/rgb.hpp"
 
 MoveTool::MoveTool(Viewer* viewer_)
   : Tool(viewer_),

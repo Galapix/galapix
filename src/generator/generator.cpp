@@ -27,8 +27,8 @@
 #include "resource/image_info.hpp"
 #include "resource/resource_cache_state.hpp"
 #include "resource/resource_status.hpp"
-#include "util/software_surface_factory.hpp"
-#include "util/software_surface_loader.hpp"
+#include "surface/software_surface_factory.hpp"
+#include "surface/software_surface_loader.hpp"
 
 Generator::Generator(BlobManager& blob_mgr, ArchiveManager& archive_mgr) :
   m_blob_mgr(blob_mgr),

@@ -21,7 +21,7 @@
 
 #include "database/entries/old_file_entry.hpp"
 #include "database/entries/tile_entry.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
 

@@ -22,8 +22,8 @@
 #include "galapix/image_tile_cache.hpp"
 #include "math/math.hpp"
 #include "math/rect.hpp"
-#include "math/rgb.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgb.hpp"
+#include "surface/rgba.hpp"
 
 ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr const& cache) :
   m_image(image),

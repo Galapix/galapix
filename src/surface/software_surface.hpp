@@ -23,7 +23,7 @@
 
 #include "math/vector2i.hpp"
 #include "util/blob.hpp"
-#include "util/pixel_data.hpp"
+#include "surface/pixel_data.hpp"
 #include "math/rect.hpp"
 
 class RGB;

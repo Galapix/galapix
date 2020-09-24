@@ -19,7 +19,7 @@
 
 #include "database/entries/tile_entry.hpp"
 #include "math/vector2i.hpp"
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 class Tile
 {

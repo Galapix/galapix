@@ -26,8 +26,8 @@
 #include <logmich/log.hpp>
 
 #include "display/shader.hpp"
-#include "math/rgb.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgb.hpp"
+#include "surface/rgba.hpp"
 #include "math/rect.hpp"
 #include "util/raise_exception.hpp"
 

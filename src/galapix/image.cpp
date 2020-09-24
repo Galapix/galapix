@@ -25,7 +25,7 @@
 #include "galapix/image_renderer.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer.hpp"
-#include "math/rgb.hpp"
+#include "surface/rgb.hpp"
 #include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
 

@@ -14,49 +14,50 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_GALAPIX_UTIL_RSVG_SOFTWARE_SURFACE_LOADER_HPP
-#define HEADER_GALAPIX_UTIL_RSVG_SOFTWARE_SURFACE_LOADER_HPP
+#ifndef HEADER_GALAPIX_UTIL_XCF_SOFTWARE_SURFACE_LOADER_HPP
+#define HEADER_GALAPIX_UTIL_XCF_SOFTWARE_SURFACE_LOADER_HPP
 
-#include "plugins/rsvg.hpp"
-#include "util/software_surface_loader.hpp"
+#include "surface/software_surface_factory.hpp"
 
-class RSVGSoftwareSurfaceLoader : public SoftwareSurfaceLoader
+class XCFSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {
 private:
 public:
-  RSVGSoftwareSurfaceLoader()
+  XCFSoftwareSurfaceLoader()
   {}
 
   std::string get_name() const override
   {
-    return "rsvg";
+    return "xcf";
   }
 
   void register_loader(SoftwareSurfaceFactory& factory) const override
   {
-    factory.register_by_extension(this, "svg");
-    factory.register_by_extension(this, "svgz");
+    factory.register_by_extension(this, "xcf");
+    factory.register_by_extension(this, "xcf.bz2");
+    factory.register_by_extension(this, "xcf.gz");
 
-    factory.register_by_mime_type(this, "image/svg+xml");
+    factory.register_by_mime_type(this, "application/x-gimp-image");
+
+    factory.register_by_magic(this, "gimp xcf");
   }
 
-  bool supports_from_file() const override { return true;  }
-  bool supports_from_mem()  const override { return false; }
+  bool supports_from_file() const override { return true; }
+  bool supports_from_mem()  const override { return true; }
 
   SoftwareSurface from_file(const std::string& filename) const override
   {
-    return RSVG::load_from_file(filename);
+    return XCF::load_from_file(filename);
   }
 
   SoftwareSurface from_mem(std::span<uint8_t const> data) const override
   {
-    assert(false && "not implemented");
-    return {};
+    return XCF::load_from_mem(data);
   }
 
 private:
-  RSVGSoftwareSurfaceLoader(const RSVGSoftwareSurfaceLoader&);
-  RSVGSoftwareSurfaceLoader& operator=(const RSVGSoftwareSurfaceLoader&);
+  XCFSoftwareSurfaceLoader(const XCFSoftwareSurfaceLoader&);
+  XCFSoftwareSurfaceLoader& operator=(const XCFSoftwareSurfaceLoader&);
 };
 
 #endif

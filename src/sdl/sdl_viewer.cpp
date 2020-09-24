@@ -27,7 +27,7 @@
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgba.hpp"
 #include "plugins/png.hpp"
 #include "server/database_thread.hpp"
 #include "spnav/space_navigator.hpp"

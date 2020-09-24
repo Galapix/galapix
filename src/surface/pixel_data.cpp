@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "util/pixel_data.hpp"
+#include "surface/pixel_data.hpp"
 
 #include <string.h>
 
-#include "math/rgb.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgb.hpp"
+#include "surface/rgba.hpp"
 
 // FIXME: Stuff in this file is currently written to just work, not to
 // be fast

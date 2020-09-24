@@ -21,8 +21,8 @@
 #include <vector>
 
 #include "math/size.hpp"
-#include "math/rgbaf.hpp"
-#include "util/software_surface.hpp"
+#include "surface/rgbaf.hpp"
+#include "surface/software_surface.hpp"
 
 class SoftwareSurfaceFloat;
 

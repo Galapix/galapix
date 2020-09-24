@@ -18,7 +18,7 @@
 #define HEADER_GALAPIX_DATABASE_ENTRIES_TILE_ENTRY_HPP
 
 #include "math/vector2i.hpp"
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 #include "database/entries/old_file_entry.hpp"
 
 class TileEntry

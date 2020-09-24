@@ -17,9 +17,9 @@
 */
 
 #include "plugins/png.hpp"
-#include "util/software_surface_float.hpp"
-#include "util/software_surface.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_float.hpp"
+#include "surface/software_surface.hpp"
+#include "surface/software_surface_factory.hpp"
 
 namespace {
 

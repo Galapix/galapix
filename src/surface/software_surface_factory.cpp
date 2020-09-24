@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 
 #include <sstream>
 #include <stdexcept>
@@ -22,7 +22,7 @@
 
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
-#include "util/software_surface_loader.hpp"
+#include "surface/software_surface_loader.hpp"
 #include "util/url.hpp"
 
 #include "plugins/imagemagick.hpp"
@@ -33,15 +33,15 @@
 #include "plugins/vidthumb.hpp"
 #include "plugins/xcf.hpp"
 
-#include "util/dds_software_surface_loader.hpp"
-#include "util/imagemagick_software_surface_loader.hpp"
-#include "util/jpeg_software_surface_loader.hpp"
-#include "util/kra_software_surface_loader.hpp"
-#include "util/png_software_surface_loader.hpp"
-#include "util/rsvg_software_surface_loader.hpp"
-#include "util/ufraw_software_surface_loader.hpp"
-#include "util/vidthumb_software_surface_loader.hpp"
-#include "util/xcf_software_surface_loader.hpp"
+#include "surface/dds_software_surface_loader.hpp"
+#include "surface/imagemagick_software_surface_loader.hpp"
+#include "surface/jpeg_software_surface_loader.hpp"
+#include "surface/kra_software_surface_loader.hpp"
+#include "surface/png_software_surface_loader.hpp"
+#include "surface/rsvg_software_surface_loader.hpp"
+#include "surface/ufraw_software_surface_loader.hpp"
+#include "surface/vidthumb_software_surface_loader.hpp"
+#include "surface/xcf_software_surface_loader.hpp"
 
 namespace {
 

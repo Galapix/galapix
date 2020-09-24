@@ -21,10 +21,10 @@
 
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
-#include "util/software_surface.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface.hpp"
+#include "surface/software_surface_factory.hpp"
 #include "util/url.hpp"
-#include "math/rgb.hpp"
+#include "surface/rgb.hpp"
 
 int main(int argc, char* argv[])
 {

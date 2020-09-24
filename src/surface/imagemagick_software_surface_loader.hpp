@@ -14,50 +14,51 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_GALAPIX_UTIL_XCF_SOFTWARE_SURFACE_LOADER_HPP
-#define HEADER_GALAPIX_UTIL_XCF_SOFTWARE_SURFACE_LOADER_HPP
+#ifndef HEADER_GALAPIX_UTIL_IMAGEMAGICK_SOFTWARE_SURFACE_LOADER_HPP
+#define HEADER_GALAPIX_UTIL_IMAGEMAGICK_SOFTWARE_SURFACE_LOADER_HPP
 
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_loader.hpp"
+#include "surface/software_surface_factory.hpp"
+#include "plugins/imagemagick.hpp"
 
-class XCFSoftwareSurfaceLoader : public SoftwareSurfaceLoader
+class ImagemagickSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {
-private:
 public:
-  XCFSoftwareSurfaceLoader()
+  ImagemagickSoftwareSurfaceLoader()
   {}
 
   std::string get_name() const override
   {
-    return "xcf";
+    return "imagemagick";
   }
 
   void register_loader(SoftwareSurfaceFactory& factory) const override
   {
-    factory.register_by_extension(this, "xcf");
-    factory.register_by_extension(this, "xcf.bz2");
-    factory.register_by_extension(this, "xcf.gz");
-
-    factory.register_by_mime_type(this, "application/x-gimp-image");
-
-    factory.register_by_magic(this, "gimp xcf");
+    std::vector<std::string> lst = Imagemagick::get_supported_extensions();
+    for(std::vector<std::string>::const_iterator i = lst.begin();
+        i != lst.end(); ++i)
+    {
+      factory.register_by_extension(this, *i);
+    }
   }
 
+
   bool supports_from_file() const override { return true; }
-  bool supports_from_mem()  const override { return true; }
+  bool supports_from_mem() const override { return true; }
 
   SoftwareSurface from_file(const std::string& filename) const override
   {
-    return XCF::load_from_file(filename);
+    return Imagemagick::load_from_file(filename);
   }
 
   SoftwareSurface from_mem(std::span<uint8_t const> data) const override
   {
-    return XCF::load_from_mem(data);
+    return Imagemagick::load_from_mem(data);
   }
 
 private:
-  XCFSoftwareSurfaceLoader(const XCFSoftwareSurfaceLoader&);
-  XCFSoftwareSurfaceLoader& operator=(const XCFSoftwareSurfaceLoader&);
+  ImagemagickSoftwareSurfaceLoader(const ImagemagickSoftwareSurfaceLoader&);
+  ImagemagickSoftwareSurfaceLoader& operator=(const ImagemagickSoftwareSurfaceLoader&);
 };
 
 #endif

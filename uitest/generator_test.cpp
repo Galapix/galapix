@@ -29,7 +29,7 @@
 #include "resource/archive_info.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/resource_info.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 
 class TestGeneratorCallbacks final : public GeneratorCallbacks
 {

@@ -29,7 +29,7 @@
 #include "plugins/png.hpp"
 #include "util/blob.hpp"
 #include "util/filesystem.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 
 FileTileDatabase::FileTileDatabase(const std::string& prefix) :
   m_prefix(prefix)

@@ -19,7 +19,7 @@
 
 #include <span>
 
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 class PNM
 {

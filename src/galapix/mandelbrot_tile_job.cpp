@@ -18,8 +18,8 @@
 
 #include <iostream>
 
-#include "math/rgb.hpp"
-#include "util/pixel_data.hpp"
+#include "surface/rgb.hpp"
+#include "surface/pixel_data.hpp"
 
 MandelbrotTileJob::MandelbrotTileJob(JobHandle const& job_handle, const Size& size, int scale, const Vector2i& pos,
                                      const std::function<void (Tile)>& callback) :

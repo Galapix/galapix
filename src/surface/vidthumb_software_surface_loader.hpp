@@ -18,7 +18,7 @@
 #define HEADER_GALAPIX_UTIL_VIDTHUMB_SOFTWARE_SURFACE_LOADER_HPP
 
 #include "plugins/rsvg.hpp"
-#include "util/software_surface_loader.hpp"
+#include "surface/software_surface_loader.hpp"
 
 class VidThumbSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {

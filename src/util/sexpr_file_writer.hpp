@@ -20,7 +20,7 @@
 #include <ostream>
 
 #include "util/file_writer.hpp"
-#include "math/rgba.hpp"
+#include "surface/rgba.hpp"
 #include "math/size.hpp"
 
 class SExprFileWriter : public FileWriter

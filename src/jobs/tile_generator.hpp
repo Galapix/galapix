@@ -19,7 +19,7 @@
 
 #include <functional>
 
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 #include "galapix/tile.hpp"
 
 class FileEntry;

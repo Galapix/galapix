@@ -18,7 +18,7 @@
 
 #include <string.h>
 
-#include "math/rgba.hpp"
+#include "surface/rgba.hpp"
 #include "math/rect.hpp"
 #include "util/file_reader_impl.hpp"
 

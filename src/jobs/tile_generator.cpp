@@ -24,7 +24,7 @@
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 #include "plugins/jpeg.hpp"
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 void
 TileGenerator::generate_old(const URL& url,

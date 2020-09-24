@@ -1,8 +1,8 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
-#include "util/software_surface.hpp"
-#include "math/rgb.hpp"
+#include "surface/software_surface.hpp"
+#include "surface/rgb.hpp"
 #include "math/rect.hpp"
 
 TEST(SoftwareSurfaceTest, default_is_valid)

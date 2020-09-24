@@ -23,8 +23,8 @@
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
 #include "math/rect.hpp"
-#include "util/software_surface_factory.hpp"
-#include "math/rgb.hpp"
+#include "surface/software_surface_factory.hpp"
+#include "surface/rgb.hpp"
 #include "plugins/png.hpp"
 
 namespace {

@@ -21,7 +21,7 @@
 #include "jobs/tile_generator.hpp"
 #include "plugins/jpeg.hpp"
 #include "util/filesystem.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 
 FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url) :
   Job(job_handle),

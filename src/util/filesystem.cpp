@@ -39,8 +39,8 @@
 #include "archive/archive_loader.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
-#include "util/software_surface.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface.hpp"
+#include "surface/software_surface_factory.hpp"
 
 std::string Filesystem::home_directory;
 

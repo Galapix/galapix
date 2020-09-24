@@ -21,7 +21,7 @@
 #include <string>
 
 #include "math/size.hpp"
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 class PNG
 {

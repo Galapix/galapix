@@ -14,49 +14,49 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_GALAPIX_UTIL_PNG_SOFTWARE_SURFACE_LOADER_HPP
-#define HEADER_GALAPIX_UTIL_PNG_SOFTWARE_SURFACE_LOADER_HPP
+#ifndef HEADER_GALAPIX_UTIL_RSVG_SOFTWARE_SURFACE_LOADER_HPP
+#define HEADER_GALAPIX_UTIL_RSVG_SOFTWARE_SURFACE_LOADER_HPP
 
-#include "plugins/png.hpp"
-#include "util/software_surface_loader.hpp"
+#include "plugins/rsvg.hpp"
+#include "surface/software_surface_loader.hpp"
 
-class PNGSoftwareSurfaceLoader : public SoftwareSurfaceLoader
+class RSVGSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {
+private:
 public:
-  PNGSoftwareSurfaceLoader()
+  RSVGSoftwareSurfaceLoader()
   {}
 
   std::string get_name() const override
   {
-    return "png";
+    return "rsvg";
   }
 
   void register_loader(SoftwareSurfaceFactory& factory) const override
   {
-    factory.register_by_extension(this, "png");
+    factory.register_by_extension(this, "svg");
+    factory.register_by_extension(this, "svgz");
 
-    factory.register_by_magic(this, "\x89PNG");
-
-    factory.register_by_mime_type(this, "image/png");
-    factory.register_by_mime_type(this, "image/x-png");
+    factory.register_by_mime_type(this, "image/svg+xml");
   }
 
-  bool supports_from_file() const override { return true; }
-  bool supports_from_mem() const override { return true; }
+  bool supports_from_file() const override { return true;  }
+  bool supports_from_mem()  const override { return false; }
 
   SoftwareSurface from_file(const std::string& filename) const override
   {
-    return PNG::load_from_file(filename);
+    return RSVG::load_from_file(filename);
   }
 
   SoftwareSurface from_mem(std::span<uint8_t const> data) const override
   {
-    return PNG::load_from_mem(data);
+    assert(false && "not implemented");
+    return {};
   }
 
 private:
-  PNGSoftwareSurfaceLoader(const PNGSoftwareSurfaceLoader&);
-  PNGSoftwareSurfaceLoader& operator=(const PNGSoftwareSurfaceLoader&);
+  RSVGSoftwareSurfaceLoader(const RSVGSoftwareSurfaceLoader&);
+  RSVGSoftwareSurfaceLoader& operator=(const RSVGSoftwareSurfaceLoader&);
 };
 
 #endif

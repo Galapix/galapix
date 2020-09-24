@@ -17,8 +17,8 @@
 #ifndef HEADER_GALAPIX_MATH_RGBAF_HPP
 #define HEADER_GALAPIX_MATH_RGBAF_HPP
 
-#include "math/rgba.hpp"
-#include "math/rgb.hpp"
+#include "surface/rgba.hpp"
+#include "surface/rgb.hpp"
 
 class RGBAf
 {

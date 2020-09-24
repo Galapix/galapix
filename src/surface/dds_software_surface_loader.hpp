@@ -14,51 +14,43 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_GALAPIX_UTIL_IMAGEMAGICK_SOFTWARE_SURFACE_LOADER_HPP
-#define HEADER_GALAPIX_UTIL_IMAGEMAGICK_SOFTWARE_SURFACE_LOADER_HPP
+#ifndef HEADER_GALAPIX_UTIL_DDS_SOFTWARE_SURFACE_LOADER_HPP
+#define HEADER_GALAPIX_UTIL_DDS_SOFTWARE_SURFACE_LOADER_HPP
 
-#include "util/software_surface_loader.hpp"
-#include "util/software_surface_factory.hpp"
-#include "plugins/imagemagick.hpp"
+#include "plugins/dds.hpp"
+#include "surface/software_surface_loader.hpp"
+#include "surface/software_surface_factory.hpp"
 
-class ImagemagickSoftwareSurfaceLoader : public SoftwareSurfaceLoader
+class DDSSoftwareSurfaceLoader : public SoftwareSurfaceLoader
 {
 public:
-  ImagemagickSoftwareSurfaceLoader()
-  {}
+  DDSSoftwareSurfaceLoader() {}
 
-  std::string get_name() const override
-  {
-    return "imagemagick";
-  }
+  std::string get_name() const override { return "dds"; }
 
   void register_loader(SoftwareSurfaceFactory& factory) const override
   {
-    std::vector<std::string> lst = Imagemagick::get_supported_extensions();
-    for(std::vector<std::string>::const_iterator i = lst.begin();
-        i != lst.end(); ++i)
-    {
-      factory.register_by_extension(this, *i);
-    }
+    factory.register_by_extension(this, "dds");
+    factory.register_by_extension(this, "tex");
   }
 
-
   bool supports_from_file() const override { return true; }
-  bool supports_from_mem() const override { return true; }
+  bool supports_from_mem() const override { return false; }
 
   SoftwareSurface from_file(const std::string& filename) const override
   {
-    return Imagemagick::load_from_file(filename);
+    return DDS::load_from_file(filename);
   }
 
   SoftwareSurface from_mem(std::span<uint8_t const> data) const override
   {
-    return Imagemagick::load_from_mem(data);
+    assert(false && "not implemented");
+    return {};
   }
 
 private:
-  ImagemagickSoftwareSurfaceLoader(const ImagemagickSoftwareSurfaceLoader&);
-  ImagemagickSoftwareSurfaceLoader& operator=(const ImagemagickSoftwareSurfaceLoader&);
+  DDSSoftwareSurfaceLoader(const DDSSoftwareSurfaceLoader&);
+  DDSSoftwareSurfaceLoader& operator=(const DDSSoftwareSurfaceLoader&);
 };
 
 #endif

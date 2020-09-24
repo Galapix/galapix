@@ -31,8 +31,8 @@
 #include "database/statements/url_info_get.hpp"
 #include "database/statements/url_info_store.hpp"
 #include "util/filesystem.hpp"
-#include "util/software_surface.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface.hpp"
+#include "surface/software_surface_factory.hpp"
 
 using namespace galapix;
 

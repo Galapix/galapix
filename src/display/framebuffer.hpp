@@ -26,7 +26,7 @@
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "util/opengl.hpp"
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 class RGB;
 class RGBA;

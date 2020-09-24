@@ -21,9 +21,9 @@
 
 #include "math/math.hpp"
 #include "util/url.hpp"
-#include "util/software_surface_factory.hpp"
-#include "util/software_surface.hpp"
-#include "util/software_surface_float.hpp"
+#include "surface/software_surface_factory.hpp"
+#include "surface/software_surface.hpp"
+#include "surface/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
 int main(int argc, char** argv)

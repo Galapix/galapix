@@ -23,7 +23,7 @@
 
 #include <jpeglib.h>
 
-#include "util/software_surface.hpp"
+#include "surface/software_surface.hpp"
 
 class JPEG
 {

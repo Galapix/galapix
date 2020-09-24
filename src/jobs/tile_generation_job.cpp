@@ -20,7 +20,7 @@
 
 #include "math/rect.hpp"
 #include "plugins/jpeg.hpp"
-#include "util/software_surface_factory.hpp"
+#include "surface/software_surface_factory.hpp"
 #include "jobs/tile_generator.hpp"
 #include "database/entries/tile_entry.hpp"
 
