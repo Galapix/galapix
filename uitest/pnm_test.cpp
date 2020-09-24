@@ -24,6 +24,8 @@
 #include "plugins/pnm.hpp"
 #include "plugins/png.hpp"
 
+using namespace surf;
+
 UITEST(PNM, test, "FILE...",
        "Load .pnm file")
 {

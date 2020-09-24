@@ -19,6 +19,8 @@
 #include <iostream>
 #include <map>
 
+using namespace surf;
+
 SExprFileWriter::SExprFileWriter(std::ostream& out_)
   : out(&out_), level(0)
 {

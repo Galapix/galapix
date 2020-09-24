@@ -42,6 +42,8 @@
 #include "util/filesystem.hpp"
 #include "surface/software_surface.hpp"
 
+using namespace surf;
+
 Viewer* Viewer::current_ = nullptr;
 
 Viewer::Viewer(System& system, Workspace* workspace_) :

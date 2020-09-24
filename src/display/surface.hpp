@@ -29,12 +29,12 @@ class Surface;
 class Surface
 {
 public:
-  static Surface create(SoftwareSurface const& src, Rect const& srcrect);
-  static Surface create(SoftwareSurface const& src);
+  static Surface create(surf::SoftwareSurface const& src, Rect const& srcrect);
+  static Surface create(surf::SoftwareSurface const& src);
 
 private:
-  explicit Surface(SoftwareSurface const& src, Rect const& srcrect);
-  explicit Surface(SoftwareSurface const& src);
+  explicit Surface(surf::SoftwareSurface const& src, Rect const& srcrect);
+  explicit Surface(surf::SoftwareSurface const& src);
 
 public:
   Surface();

@@ -26,6 +26,8 @@
 #include "surface/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
+using namespace surf;
+
 namespace {
 
 void add(SoftwareSurfaceFloatPtr out, SoftwareSurface const& surface)
@@ -80,7 +82,7 @@ int main(int argc, char** argv)
     for(int i = 1; i < argc; ++i)
     {
       std::cout << "Loading: " << argv[i] << std::endl;
-      SoftwareSurface image = factory.from_url(URL::from_filename(argv[i]));
+      SoftwareSurface image = factory.from_file(argv[i]);
 
       if (!out)
       {

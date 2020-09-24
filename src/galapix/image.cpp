@@ -29,6 +29,8 @@
 #include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
 
+using namespace surf;
+
 Image::Image(const URL& url, TileProviderPtr provider) :
   m_url(url),
   m_provider(std::move(provider)),

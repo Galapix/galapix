@@ -28,6 +28,8 @@
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 
+using namespace surf;
+
 int main(int argc, char** argv)
 {
   if (argc == 1)
@@ -43,7 +45,7 @@ int main(int argc, char** argv)
     {
       std::cout << "Loading: " << argv[i] << std::endl;
 
-      SoftwareSurface image = factory.from_url(URL::from_string(argv[i]));
+      SoftwareSurface image = factory.from_file(argv[i]);
       PixelData const& src = image.get_pixel_data();
       PixelData out = PixelData(PixelData::RGB_FORMAT, src.get_size());
 

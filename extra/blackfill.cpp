@@ -29,6 +29,8 @@
 #include "util/url.hpp"
 #include "surface/rgb.hpp"
 
+using namespace surf;
+
 namespace {
 
 bool is_black(const RGB rgb)
@@ -118,7 +120,7 @@ int main(int argc, char* argv[])
   for(int i = 1; i < argc; ++i)
   {
     std::cout << "Loading: " << argv[i] << std::endl;
-    SoftwareSurface in  = factory.from_url(URL::from_filename(argv[1]));
+    SoftwareSurface in  = factory.from_file(argv[1]);
     PixelData out(PixelData::RGB_FORMAT, in.get_size());
 
     blackfill(in.get_pixel_data(), out);

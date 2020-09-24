@@ -34,7 +34,7 @@ public:
 
   void write_int(const char* name, int value) override;
   void write_float(const char* name, float value) override;
-  virtual void write_rgba(const char* name, const RGBA& rgba);
+  virtual void write_rgba(const char* name, const surf::RGBA& rgba);
   void write_bool(const char* name, bool value) override;
   void write_string(const char* name, const std::string& value) override;
   void write_size(const char* name, const Size& size) override;

@@ -3,6 +3,8 @@
 #include "math/size.hpp"
 #include "plugins/jpeg.hpp"
 
+using namespace surf;
+
 TEST(JPEGTest, get_size)
 {
   EXPECT_EQ(Size(64, 128), JPEG::get_size("test/data/images/rgb.jpg"));

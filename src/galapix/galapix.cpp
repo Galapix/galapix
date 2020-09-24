@@ -62,6 +62,9 @@
 #include "surface/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
+#include "util/url.hpp"
+
+using namespace surf;
 
 Galapix::Galapix(System& system) :
   m_system(system)

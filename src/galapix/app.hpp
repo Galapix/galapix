@@ -19,7 +19,9 @@
 #ifndef HEADER_GALAPIX_GALAPIX_APP_HPP
 #define HEADER_GALAPIX_GALAPIX_APP_HPP
 
+namespace surf {
 class SoftwareSurfaceFactory;
+} // namespace surf
 
 class App
 {
@@ -27,10 +29,10 @@ class App
 public:
   App();
 
-  SoftwareSurfaceFactory& surface_factory();
+  surf::SoftwareSurfaceFactory& surface_factory();
 
 private:
-  SoftwareSurfaceFactory* m_surface_factory;
+  surf::SoftwareSurfaceFactory* m_surface_factory;
 
 private:
   App(const App&) = delete;

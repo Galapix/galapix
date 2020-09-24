@@ -38,14 +38,14 @@ public:
     m_valid(tile_entry)
   {}
 
-  Tile(int scale, const Vector2i& pos, SoftwareSurface const& surface) :
+  Tile(int scale, const Vector2i& pos, surf::SoftwareSurface const& surface) :
     m_scale(scale),
     m_pos(pos),
     m_surface(surface),
     m_valid(true)
   {}
 
-  SoftwareSurface get_surface() const { return m_surface; }
+  surf::SoftwareSurface get_surface() const { return m_surface; }
   int      get_scale()  const { return m_scale; }
   Vector2i get_pos()    const { return m_pos; }
 
@@ -57,7 +57,7 @@ public:
 private:
   int m_scale;
   Vector2i m_pos;
-  SoftwareSurface m_surface;
+  surf::SoftwareSurface m_surface;
   bool m_valid;
 };
 

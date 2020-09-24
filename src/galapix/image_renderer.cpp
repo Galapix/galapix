@@ -25,6 +25,8 @@
 #include "surface/rgb.hpp"
 #include "surface/rgba.hpp"
 
+using namespace surf;
+
 ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr const& cache) :
   m_image(image),
   m_cache(cache)

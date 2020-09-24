@@ -173,11 +173,11 @@ private:
   Vector2i m_mouse_pos;
 
   int m_background_color;
-  std::vector<RGBA> m_background_colors;
+  std::vector<surf::RGBA> m_background_colors;
 
   Vector2f m_grid_offset;
   Sizef    m_grid_size;
-  RGBA     m_grid_color;
+  surf::RGBA     m_grid_color;
 
 private:
   Viewer (const Viewer&);

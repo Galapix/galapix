@@ -21,6 +21,8 @@
 
 #include "plugins/png.hpp"
 
+using namespace surf;
+
 UITEST(PNG, test, "FILE...",
        "Load .png")
 {

@@ -21,6 +21,8 @@
 #include "math/size.hpp"
 #include "plugins/jpeg.hpp"
 
+using namespace surf;
+
 int main(int argc, char** argv)
 {
   if (argc == 1)

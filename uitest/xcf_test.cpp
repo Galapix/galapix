@@ -23,6 +23,8 @@
 #include "plugins/xcf.hpp"
 #include "plugins/png.hpp"
 
+using namespace surf;
+
 UITEST(XCF, test, "FILE...")
 {
   for(size_t i = 0; i < rest.size(); ++i)

@@ -27,6 +27,8 @@
 #include "plugins/jpeg.hpp"
 #include "surface/software_surface.hpp"
 
+using namespace surf;
+
 void
 TileGenerator::generate_old(const URL& url,
                             int m_min_scale_in_db, int m_max_scale_in_db,

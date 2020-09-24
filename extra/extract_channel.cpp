@@ -26,6 +26,8 @@
 #include "surface/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
+using namespace surf;
+
 int main(int argc, char** argv)
 {
   SoftwareSurfaceFactory factory;

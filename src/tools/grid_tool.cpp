@@ -20,6 +20,8 @@
 #include "galapix/viewer.hpp"
 #include "surface/rgb.hpp"
 
+using namespace surf;
+
 GridTool::GridTool(Viewer* viewer_)
   : Tool(viewer_),
     mouse_pos(),

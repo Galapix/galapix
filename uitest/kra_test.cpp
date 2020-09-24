@@ -23,6 +23,8 @@
 #include "plugins/kra.hpp"
 #include "plugins/png.hpp"
 
+using namespace surf;
+
 UITEST(KRA, test, "INFILE OUTFILE")
 {
   std::string infile  = args[0];

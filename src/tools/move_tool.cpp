@@ -21,6 +21,8 @@
 #include "display/framebuffer.hpp"
 #include "surface/rgb.hpp"
 
+using namespace surf;
+
 MoveTool::MoveTool(Viewer* viewer_)
   : Tool(viewer_),
     mouse_pos(),

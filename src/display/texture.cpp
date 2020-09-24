@@ -20,6 +20,8 @@
 #include "math/rect.hpp"
 #include "util/opengl.hpp"
 
+using namespace surf;
+
 class TextureImpl
 {
 public:

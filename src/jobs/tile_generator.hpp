@@ -39,24 +39,24 @@ public:
   static void generate(const URL& url, int min_scale, int max_scale,
                        const std::function<void(Tile)>& callback);
 
-  static SoftwareSurface load_surface(const URL& url, int min_scale, Size* size);
+  static surf::SoftwareSurface load_surface(const URL& url, int min_scale, Size* size);
 
   /** Takes the given surface and cuts it into tiles which are then
       passed to callback. Surface can already be prescaled.
       min_scale/max_scale are the exact range for which tiles are
       generated. */
-  static void cut_into_tiles(SoftwareSurface surface,
+  static void cut_into_tiles(surf::SoftwareSurface surface,
                              const Size& original_size,
                              int min_scale, int max_scale,
                              const std::function<void (Tile)>& callback);
 
   /** Cuts the given surface into tiles, returning the results to the callback */
-  static void cut_into_tiles(SoftwareSurface const& surface,
-                             const std::function<void (int x, int y, SoftwareSurface)>& callback);
+  static void cut_into_tiles(surf::SoftwareSurface const& surface,
+                             const std::function<void (int x, int y, surf::SoftwareSurface)>& callback);
 
   /** Generate tiles for all the given downsample/scale levels */
-  static void generate(SoftwareSurface const& surface, int min_scale, int max_scale,
-                       const std::function<void (int x, int y, int scale, SoftwareSurface)>& callback);
+  static void generate(surf::SoftwareSurface const& surface, int min_scale, int max_scale,
+                       const std::function<void (int x, int y, int scale, surf::SoftwareSurface)>& callback);
 
 private:
   TileGenerator(const TileGenerator&);

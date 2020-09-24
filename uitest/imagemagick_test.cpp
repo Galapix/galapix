@@ -21,6 +21,8 @@
 
 #include "plugins/imagemagick.hpp"
 
+using namespace surf;
+
 UITEST(ImageMagick, list_ext, "",
        "List supported extensions")
 {

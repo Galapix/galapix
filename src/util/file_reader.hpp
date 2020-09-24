@@ -25,7 +25,9 @@
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
+namespace surf {
 class RGBA;
+} // namespace surf
 
 class FileReaderImpl;
 class URL;
@@ -52,7 +54,7 @@ public:
   bool read_vector2f(const char* name, Vector2f& value) const;
   bool read_rect(const char* name, Rect& value) const;
   bool read_size (const char* name, geom::isize& value) const;
-  bool read_rgba (const char* name, RGBA& value) const;
+  bool read_rgba (const char* name, surf::RGBA& value) const;
   bool read_section(const char* name, FileReader& reader) const;
   FileReader read_section(const char* name) const;
 

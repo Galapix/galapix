@@ -21,6 +21,8 @@
 #include "surface/rgb.hpp"
 #include "surface/pixel_data.hpp"
 
+using namespace surf;
+
 MandelbrotTileJob::MandelbrotTileJob(JobHandle const& job_handle, const Size& size, int scale, const Vector2i& pos,
                                      const std::function<void (Tile)>& callback) :
   Job(job_handle),

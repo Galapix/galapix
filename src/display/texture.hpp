@@ -23,14 +23,16 @@
 #include "surface/software_surface.hpp"
 #include "math/rect.hpp"
 
+namespace surf {
 class SoftwareSurface;
+} // namespace surf
 class TextureImpl;
 class Texture;
 
 class Texture
 {
 public:
-  static Texture create(SoftwareSurface const& src, const Rect& srcrect);
+  static Texture create(surf::SoftwareSurface const& src, const Rect& srcrect);
 
 public:
   Texture();
@@ -43,7 +45,7 @@ public:
   explicit operator bool() const { return m_impl != nullptr; }
 
 private:
-  Texture(SoftwareSurface const& src, const Rect& srcrect);
+  Texture(surf::SoftwareSurface const& src, const Rect& srcrect);
 
 private:
   std::shared_ptr<const TextureImpl> m_impl;

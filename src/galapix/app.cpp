@@ -18,14 +18,14 @@
 
 #include "galapix/app.hpp"
 
-App App::g_app;
+App g_app;
 
 App::App() :
   m_surface_factory()
 {
 }
 
-SoftwareSurfaceFactory&
+surf::SoftwareSurfaceFactory&
 App::surface_factory()
 {
   return *m_surface_factory;

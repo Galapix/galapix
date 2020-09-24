@@ -31,6 +31,8 @@
 #include "surface/software_surface_factory.hpp"
 #include "surface/software_surface_loader.hpp"
 
+using namespace surf;
+
 Generator::Generator(BlobManager& blob_mgr, ArchiveManager& archive_mgr) :
   m_blob_mgr(blob_mgr),
   m_archive_mgr(archive_mgr),

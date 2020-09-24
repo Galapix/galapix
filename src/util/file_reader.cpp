@@ -23,6 +23,8 @@
 #include "util/sexpr_file_reader.hpp"
 #include "util/url.hpp"
 
+using namespace surf;
+
 FileReader::FileReader(std::shared_ptr<FileReaderImpl> const& impl_) :
   impl(impl_)
 {

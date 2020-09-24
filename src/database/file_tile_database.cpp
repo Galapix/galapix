@@ -31,6 +31,8 @@
 #include "util/filesystem.hpp"
 #include "surface/software_surface_factory.hpp"
 
+using namespace surf;
+
 FileTileDatabase::FileTileDatabase(const std::string& prefix) :
   m_prefix(prefix)
 {
@@ -53,7 +55,7 @@ FileTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos
   std::string filename = get_complete_filename(image_id, pos, scale);
   if (Filesystem::exist(filename))
   {
-    SoftwareSurface surface;
+    surf::SoftwareSurface surface;
     // FIXME: need another way to find out the format
     if (PNG::is_png(filename))
     {

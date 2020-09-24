@@ -37,6 +37,8 @@
 #  include <spnav.h>
 #endif
 
+using namespace surf;
+
 namespace {
 
 Key sdlkey2viewer(SDL_Keycode key)

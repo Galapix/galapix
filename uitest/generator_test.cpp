@@ -31,6 +31,8 @@
 #include "resource/resource_info.hpp"
 #include "surface/software_surface_factory.hpp"
 
+using namespace surf;
+
 class TestGeneratorCallbacks final : public GeneratorCallbacks
 {
 private:

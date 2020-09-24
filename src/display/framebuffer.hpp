@@ -28,8 +28,10 @@
 #include "util/opengl.hpp"
 #include "surface/software_surface.hpp"
 
+namespace surf {
 class RGB;
 class RGBA;
+} // namespace surf
 
 /** Generic OpenGL helper functions */
 class Framebuffer
@@ -41,17 +43,17 @@ public:
   static int  get_height();
   static Size get_size()   { return Size(get_width(), get_height()); }
 
-  static void clear(const RGBA& rgba);
-  static void draw_rect(const Rectf& rect, const RGB& rgb);
-  static void fill_rect(const Rectf& rect, const RGB& rgb);
-  static void draw_grid(const Vector2f& offset, const Sizef& size, const RGBA& rgba);
+  static void clear(const surf::RGBA& rgba);
+  static void draw_rect(const Rectf& rect, const surf::RGB& rgb);
+  static void fill_rect(const Rectf& rect, const surf::RGB& rgb);
+  static void draw_grid(const Vector2f& offset, const Sizef& size, const surf::RGBA& rgba);
 
   static void set_modelview(const glm::mat4& modelview);
 
   static void begin_render();
   static void end_render();
 
-  static SoftwareSurface screenshot();
+  static surf::SoftwareSurface screenshot();
   static void apply_gamma_ramp(float contrast, float brightness, float gamma);
 
 private:

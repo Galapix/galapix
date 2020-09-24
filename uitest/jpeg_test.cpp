@@ -22,6 +22,8 @@
 #include "math/size.hpp"
 #include "plugins/jpeg.hpp"
 
+using namespace surf;
+
 UITEST(JPEG, get_size, "FILE...")
 {
   for(const auto& arg : rest)

@@ -21,6 +21,8 @@
 #include "surface/software_surface.hpp"
 #include "surface/software_surface_factory.hpp"
 
+using namespace surf;
+
 namespace {
 
 void scanlines(SoftwareSurfaceFloatPtr surface)

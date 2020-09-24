@@ -22,6 +22,8 @@
 #include "galapix/viewer.hpp"
 #include "surface/rgb.hpp"
 
+using namespace surf;
+
 ZoomRectTool::ZoomRectTool(Viewer* viewer_)
   : Tool(viewer_),
     mouse_pos(),

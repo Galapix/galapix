@@ -5,6 +5,8 @@
 #include "util/url.hpp"
 #include "plugins/jpeg.hpp"
 
+using namespace surf;
+
 int main(int argc, char** argv)
 {
   ArchiveManager archive_manager;

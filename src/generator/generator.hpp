@@ -53,7 +53,7 @@ private:
                               GeneratorCallbacksPtr const& callbacks);
   bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor,
                                 GeneratorCallbacksPtr const& callbacks);
-  void process_image_tiling(SoftwareSurface const&  surface, GeneratorCallbacksPtr const& callbacks);
+  void process_image_tiling(surf::SoftwareSurface const&  surface, GeneratorCallbacksPtr const& callbacks);
 
 private:
   BlobManager& m_blob_mgr;

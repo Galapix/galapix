@@ -22,6 +22,8 @@
 #include "math/rect.hpp"
 #include "util/file_reader_impl.hpp"
 
+using namespace surf;
+
 class SExprFileReaderImpl: public FileReaderImpl
 {
 public:

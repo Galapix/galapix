@@ -27,6 +27,8 @@
 #include "surface/rgb.hpp"
 #include "plugins/png.hpp"
 
+using namespace surf;
+
 namespace {
 
 struct Pixel
@@ -115,7 +117,7 @@ int main(int argc, char* argv[])
   {
     std::cout << "Processing: " << argv[i] << std::endl;
 
-    SoftwareSurface surface = SoftwareSurfaceFactory::current().from_file(argv[i]);
+    SoftwareSurface surface = surface_factory.from_file(argv[i]);
     Size tile_size(8, 8);
 
     for(int y = 0; y < surface.get_height() - tile_size.height(); y += tile_size.height())
@@ -136,7 +138,7 @@ int main(int argc, char* argv[])
   // use tiledb to scale the images
   for(int i = argc-1; i < argc; ++i)
   {
-    SoftwareSurface surface = SoftwareSurfaceFactory::current().from_file(argv[i]);
+    SoftwareSurface surface = surface_factory.from_file(argv[i]);
     PixelData out_surface(PixelData::RGB_FORMAT, surface.get_size() * 2);
     Size tile_size(4, 4);
 

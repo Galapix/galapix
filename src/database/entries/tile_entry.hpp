@@ -36,7 +36,7 @@ private:
   int        m_scale;
   Vector2i   m_pos;
   Blob m_blob;
-  SoftwareSurface m_surface;
+  surf::SoftwareSurface m_surface;
   Format     m_format;
 
 public:
@@ -49,7 +49,7 @@ public:
     m_format()
   {}
 
-  TileEntry(const RowId& image_id, int scale, const Vector2i& pos, SoftwareSurface const& surface) :
+  TileEntry(const RowId& image_id, int scale, const Vector2i& pos, surf::SoftwareSurface const& surface) :
     m_image_id(image_id),
     m_scale(scale),
     m_pos(pos),
@@ -67,7 +67,7 @@ public:
     m_format(format)
   {}
 
-  SoftwareSurface get_surface() const { return m_surface; }
+  surf::SoftwareSurface get_surface() const { return m_surface; }
   Blob   get_blob()   const { return m_blob; }
   RowId     get_image_id() const { return m_image_id; }
   int       get_scale()  const { return m_scale; }
@@ -75,7 +75,7 @@ public:
   Format    get_format() const { return m_format; }
 
   void set_image_id(const RowId& image_id) { m_image_id = image_id; }
-  void set_surface(SoftwareSurface surface)  { m_surface = std::move(surface); }
+  void set_surface(surf::SoftwareSurface surface)  { m_surface = std::move(surface); }
   void set_blob(Blob const& blob) { m_blob = blob; }
   void set_format(Format format) { m_format = format; }
 

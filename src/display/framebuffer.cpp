@@ -31,6 +31,8 @@
 #include "math/rect.hpp"
 #include "util/raise_exception.hpp"
 
+using namespace surf;
+
 Size Framebuffer::size;
 GLuint Framebuffer::s_textured_prg = 0;
 GLuint Framebuffer::s_flatcolor_prg = 0;

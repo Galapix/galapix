@@ -26,6 +26,8 @@
 #include "util/url.hpp"
 #include "surface/rgb.hpp"
 
+using namespace surf;
+
 int main(int argc, char* argv[])
 {
   assert(argc != 3);
@@ -37,7 +39,7 @@ int main(int argc, char* argv[])
 
   std::cout << "Loading: " << in_filename << " - writing to " << out_filename << std::endl;
 
-  SoftwareSurface in = factory.from_url(URL::from_filename(in_filename));
+  SoftwareSurface in = factory.from_file(in_filename);
   PixelData out(PixelData::RGB_FORMAT, in.get_size());
 
   //PNG::save(out, out_filename);
