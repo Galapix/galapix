@@ -28,3 +28,6 @@
 [submodule "external/surfcpp"]
 	path = external/surfcpp
 	url = https://gitlab.com/grumbel/surfcpp.git
+[submodule "external/archcpp"]
+	path = external/archcpp
+	url = https://gitlab.com/grumbel/archcpp.git
