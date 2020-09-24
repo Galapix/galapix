@@ -27,6 +27,7 @@
 #include <vector>
 
 #include <Magick++.h>
+#include <strut/numeric_less.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
@@ -60,7 +61,6 @@
 #include "util/raise_exception.hpp"
 #include "util/software_surface.hpp"
 #include "util/software_surface_factory.hpp"
-#include "util/string_util.hpp"
 
 Galapix::Galapix(System& system) :
   m_system(system)
@@ -316,7 +316,7 @@ Galapix::run(const Options& opts)
         }
         std::sort(urls.begin(), urls.end(),
                   [](const URL& lhs, const URL& rhs) {
-                    return StringUtil::numeric_less(lhs.str(), rhs.str());
+                    return strut::numeric_less(lhs.str(), rhs.str());
                   });
         std::cout << urls.size() << " files found." << std::endl;
         return urls;

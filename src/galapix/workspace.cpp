@@ -18,7 +18,9 @@
 
 #include <algorithm>
 #include <iostream>
+
 #include <logmich/log.hpp>
+#include <strut/numeric_less.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "galapix/layouter/random_layouter.hpp"
@@ -27,7 +29,6 @@
 #include "galapix/layouter/tight_layouter.hpp"
 #include "server/database_thread.hpp"
 #include "util/file_reader.hpp"
-#include "util/string_util.hpp"
 
 Workspace::Workspace() :
   m_images(),
@@ -161,7 +162,7 @@ Workspace::sort()
 {
   std::sort(m_images.begin(), m_images.end(),
             [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
-              return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
+              return strut::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
   relayout();
 }
@@ -171,7 +172,7 @@ Workspace::sort_reverse()
 {
   std::sort(m_images.rbegin(), m_images.rend(),
             [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
-              return StringUtil::numeric_less(lhs->get_url().str(), rhs->get_url().str());
+              return strut::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
   relayout();
 }

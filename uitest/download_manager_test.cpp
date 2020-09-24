@@ -21,8 +21,9 @@
 
 #include <logmich/log.hpp>
 #include <uitest/uitest.hpp>
+#include <strut/tokenize.hpp>
+#include <strut/from_string.hpp>
 
-#include "util/string_util.hpp"
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"
 
@@ -37,7 +38,7 @@ void run_repl()
   std::string line;
   while(std::getline(std::cin, line))
   {
-    std::vector<std::string> args = string_tokenize(line, ' ');
+    std::vector<std::string> args = strut::tokenize(line, ' ');
 
     if (!args.empty())
     {
@@ -117,7 +118,7 @@ void run_repl()
         else
         {
           DownloadManager::TransferHandle handle;
-          if (from_string(args[1], handle))
+          if (strut::from_string(args[1], handle))
           {
             downloader.cancel_transfer(handle);
           }

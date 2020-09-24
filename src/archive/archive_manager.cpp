@@ -24,7 +24,6 @@
 #include "util/filesystem.hpp"
 #include "util/path.hpp"
 #include "util/raise_exception.hpp"
-#include "util/string_util.hpp"
 
 #include "archive/directory_extraction.hpp"
 #include "archive/incremental_extraction.hpp"
