@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "archive/archive_thread.hpp"
+#include "galapix/archive_thread.hpp"
+
 #include <logmich/log.hpp>
 
 ArchiveThread::ArchiveThread(const std::string& tmpdir) :

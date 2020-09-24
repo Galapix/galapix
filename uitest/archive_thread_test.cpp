@@ -20,7 +20,7 @@
 #include <logmich/log.hpp>
 #include <uitest/uitest.hpp>
 
-#include "archive/archive_thread.hpp"
+#include "galapix/archive_thread.hpp"
 
 UITEST(Archive, thread, "ARCHIVENAME...",
        "Produce an Extraction object")
