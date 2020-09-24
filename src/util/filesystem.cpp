@@ -339,13 +339,13 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 
       try
       {
-        if (ArchiveManager::current().is_archive(*i))
+        if (g_app.archive().is_archive(*i))
         {
           archive_tasks.push_back(std::async([i, url]() -> std::vector<URL> {
                 std::vector<URL> sub_file_list;
 
                 const ArchiveLoader* loader;
-                const auto& files = ArchiveManager::current().get_filenames(*i, &loader);
+                const auto& files = g_app.archive().get_filenames(*i, &loader);
                 for(const auto& file: files)
                 {
                   URL archive_url = URL::from_string(url.str() + "//" + loader->str() + ":" + file);

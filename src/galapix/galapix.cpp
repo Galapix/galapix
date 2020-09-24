@@ -144,13 +144,13 @@ Galapix::info(const Options& opts)
 
   DatabaseThread database(db, job_manager);
   DownloadManager download_mgr;
-  BlobManager blob_mgr(download_mgr, ArchiveManager::current());
-  Generator generator(blob_mgr, ArchiveManager::current());
+  BlobManager blob_mgr(download_mgr, g_app.archive());
+  Generator generator(blob_mgr, g_app.archive());
 
   database.start_thread();
 
   ResourceManager resource_mgr(database, generator, download_mgr,
-                               ArchiveManager::current());
+                               g_app.archive());
 
   std::atomic_int count = 0;
   auto files = std::vector<std::string>(opts.rest.begin() + 1, opts.rest.end());
@@ -273,6 +273,8 @@ Galapix::main(int argc, char** argv)
     DownloadManager download_manager;
     ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
+
+    g_app.m_archive_manager = &archive_manager;
     g_app.m_surface_factory = &software_surface_factory;
 
     run(opts);

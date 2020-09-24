@@ -25,17 +25,16 @@
 
 #include "resource/blob_accessor.hpp"
 #include "util/blob.hpp"
-#include "util/currenton.hpp"
 
 class ArchiveLoader;
 class Extraction;
 
-class ArchiveManager : public Currenton<ArchiveManager>
+class ArchiveManager
 {
 public:
   ArchiveManager();
   ArchiveManager(const std::string& tmpdir);
-  ~ArchiveManager() override;
+  ~ArchiveManager();
 
   bool is_archive(const std::string& filename) const;
   bool is_archive(Blob const& blob) const;

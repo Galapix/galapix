@@ -18,17 +18,28 @@
 
 #include "galapix/app.hpp"
 
+#include <assert.h>
+
 App g_app;
 
 App::App() :
-  m_surface_factory()
+  m_surface_factory(nullptr),
+  m_archive_manager(nullptr)
 {
 }
 
 surf::SoftwareSurfaceFactory&
 App::surface_factory()
 {
+  assert(m_surface_factory != nullptr);
   return *m_surface_factory;
+}
+
+ArchiveManager&
+App::archive()
+{
+  assert(m_archive_manager != nullptr);
+  return *m_archive_manager;
 }
 
 /* EOF */

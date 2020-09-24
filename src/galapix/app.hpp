@@ -23,6 +23,8 @@ namespace surf {
 class SoftwareSurfaceFactory;
 } // namespace surf
 
+class ArchiveManager;
+
 class App
 {
   friend class Galapix;
@@ -30,9 +32,11 @@ public:
   App();
 
   surf::SoftwareSurfaceFactory& surface_factory();
+  ArchiveManager& archive();
 
 private:
   surf::SoftwareSurfaceFactory* m_surface_factory;
+  ArchiveManager* m_archive_manager;
 
 private:
   App(const App&) = delete;
