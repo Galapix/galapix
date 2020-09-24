@@ -23,7 +23,6 @@
 
 #include "util/filesystem.hpp"
 #include "util/path.hpp"
-#include "util/raise_exception.hpp"
 
 #include "archive/directory_extraction.hpp"
 #include "archive/incremental_extraction.hpp"
@@ -103,7 +102,7 @@ ArchiveManager::get_loader(const std::string& filename) const
 
   if (!loader)
   {
-    raise_exception(std::runtime_error, "failed to find loader for archive file: " << filename);
+    throw std::runtime_error("failed to find loader for archive file: " + filename);
   }
   else
   {
@@ -188,7 +187,7 @@ ArchiveManager::get_file(const BlobAccessorPtr& archive, const std::string& type
 
   if (it == m_loader.end())
   {
-    raise_exception(std::runtime_error, "unknown archive type: " << type);
+    throw std::runtime_error("unknown archive type: " + type);
   }
   else
   {

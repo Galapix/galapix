@@ -20,7 +20,6 @@
 #include <sstream>
 
 #include "util/exec.hpp"
-#include "util/raise_exception.hpp"
 
 namespace {
 
@@ -172,7 +171,7 @@ Zip::get_filenames(const std::string& zip_filename)
     out << "Zip::get_filenames(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
-    raise_runtime_error(out.str());
+    throw std::runtime_error(out.str());
   }
 }
 
@@ -214,7 +213,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
     out << "Zip::get_file(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
-    raise_runtime_error(out.str());
+    throw std::runtime_error(out.str());
   }
 }
 
@@ -232,7 +231,7 @@ Zip::extract(const std::string& zip_filename, const std::string& target_director
     out << "Zip::extract(): " << unzip.str()
         << "\n  zip-exit-code: " << zip_error_to_string(zip_return_code)
         << "\n  " << std::string(unzip.get_stderr().begin(), unzip.get_stderr().end());
-    raise_runtime_error(out.str());
+    throw std::runtime_error(out.str());
   }
 }
 

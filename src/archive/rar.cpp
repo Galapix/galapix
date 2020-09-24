@@ -21,7 +21,6 @@
 #include <fstream>
 
 #include "util/exec.hpp"
-#include "util/raise_exception.hpp"
 
 std::vector<std::string>
 Rar::get_filenames(const std::string& rar_filename)
@@ -45,7 +44,7 @@ Rar::get_filenames(const std::string& rar_filename)
   }
   else
   {
-    raise_runtime_error(std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    throw std::runtime_error(std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
     return std::vector<std::string>();
   }
 }
@@ -62,7 +61,7 @@ Rar::get_file(const std::string& rar_filename, const std::string& filename)
   }
   else
   {
-    raise_runtime_error(rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    throw std::runtime_error(rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
     return {};
   }
 }
@@ -74,7 +73,7 @@ Rar::extract(const std::string& rar_filename, const std::string& target_director
   rar.arg("x").arg("-inul").arg("-w" + target_directory).arg(rar_filename);
   if (rar.exec() != 0)
   {
-    raise_runtime_error(rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
+    throw std::runtime_error(rar.str() + "\n" + std::string(rar.get_stderr().begin(), rar.get_stderr().end()));
   }
 }
 

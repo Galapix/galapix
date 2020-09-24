@@ -19,7 +19,6 @@
 #include <stdexcept>
 
 #include "util/exec.hpp"
-#include "util/raise_exception.hpp"
 
 namespace {
 
@@ -45,7 +44,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
 
   if (zip.exec() != 0)
   {
-    raise_runtime_error("SevenZip::get_filenames(): " + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
+    throw std::runtime_error("SevenZip::get_filenames(): " + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
     return std::vector<std::string>();
   }
   else
@@ -96,7 +95,7 @@ SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
   }
   else
   {
-    raise_runtime_error(zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
+    throw std::runtime_error(zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
     return {};
   }
 }
@@ -109,7 +108,7 @@ SevenZip::extract(const std::string& archive, const std::string& target_director
   zip.arg(archive);
   if (zip.exec() != 0)
   {
-    raise_runtime_error(zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
+    throw std::runtime_error(zip.str() + "\n" + std::string(zip.get_stderr().begin(), zip.get_stderr().end()));
   }
 }
 
