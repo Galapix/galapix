@@ -25,7 +25,7 @@ using namespace surf;
 
 namespace {
 
-void scanlines(SoftwareSurfaceFloatPtr surface)
+void scanlines(SoftwareSurfaceFloatPtr const& surface)
 {
   for(int y = 0; y < surface->get_height(); ++y)
   {

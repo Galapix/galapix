@@ -30,13 +30,12 @@ using namespace surf;
 
 namespace {
 
-void add(SoftwareSurfaceFloatPtr out, SoftwareSurface const& surface)
+void add(SoftwareSurfaceFloatPtr const& out, SoftwareSurface const& surface)
 {
   PixelData const& src = surface.get_pixel_data();
 
-  for(int y = 0; y < out->get_height(); ++y)
-    for(int x = 0; x < out->get_width(); ++x)
-    {
+  for(int y = 0; y < out->get_height(); ++y) {
+    for(int x = 0; x < out->get_width(); ++x) {
       RGB rgb;
       src.get_pixel(x, y, rgb);
       RGBAf rgba;
@@ -48,13 +47,13 @@ void add(SoftwareSurfaceFloatPtr out, SoftwareSurface const& surface)
 
       out->put_pixel(x, y, rgba);
     }
+  }
 }
 
-void tone_map(PixelData out, SoftwareSurfaceFloatPtr in, float factor)
+void tone_map(PixelData out, SoftwareSurfaceFloatPtr const& in, float factor)
 {
-  for(int y = 0; y < out.get_height(); ++y)
-    for(int x = 0; x < out.get_width(); ++x)
-    {
+  for(int y = 0; y < out.get_height(); ++y) {
+    for(int x = 0; x < out.get_width(); ++x) {
       RGBAf rgba;
       in->get_pixel(x, y, rgba);
       RGB rgb;
@@ -63,6 +62,7 @@ void tone_map(PixelData out, SoftwareSurfaceFloatPtr in, float factor)
       rgb.b = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.b / factor, 2.2f), 1.0f));
       out.put_pixel(x, y, rgb);
     }
+  }
 }
 
 } // namespace

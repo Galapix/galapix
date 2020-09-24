@@ -29,7 +29,7 @@ using namespace surf;
 
 namespace {
 
-void invert(SoftwareSurfaceFloatPtr surface)
+void invert(SoftwareSurfaceFloatPtr const& surface)
 {
   for(int y = 0; y < surface->get_height(); ++y)
   {

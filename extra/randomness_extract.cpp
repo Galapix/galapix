@@ -50,29 +50,33 @@ int main(int argc, char** argv)
       PixelData out = PixelData(PixelData::RGB_FORMAT, src.get_size());
 
       std::cout << "Processing image..." << std::endl;
-      for(int y = 0; y < out.get_height(); ++y)
+      for(int y = 0; y < out.get_height(); ++y) {
         for(int x = 0; x < out.get_width(); ++x)
         {
           RGB rgb;
           src.get_pixel(x, y, rgb);
 
-          if (rgb.r & (1<<3))
+          if (rgb.r & (1<<3)) {
             rgb.r = 0;
-          else
+          } else {
             rgb.r = 255;
+          }
 
-          if (rgb.g & (1<<3))
+          if (rgb.g & (1<<3)) {
             rgb.g = 0;
-          else
+          } else {
             rgb.g = 255;
+          }
 
-          if (rgb.b & (1<<3))
+          if (rgb.b & (1<<3)) {
             rgb.b = 0;
-          else
+          } else {
             rgb.b = 255;
+          }
 
           out.put_pixel(x, y, rgb);
         }
+      }
       std::cout << "Processing image... Done" << std::endl;
 
       std::ostringstream out_filename;

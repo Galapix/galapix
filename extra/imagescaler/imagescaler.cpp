@@ -63,7 +63,7 @@ int diff(const Pixel& lhs, const Pixel& rhs)
   return a*a + b*b + c*c + d*d;
 }
 
-Pixel get_pixels(SoftwareSurface surface)
+Pixel get_pixels(SoftwareSurface const& surface)
 {
   assert(surface.get_width()  == 4);
   assert(surface.get_height() == 4);

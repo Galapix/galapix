@@ -88,9 +88,8 @@ RGB get_pixel(PixelData const& img, int x, int y)
 void blackfill(PixelData const& in,
                PixelData& out)
 {
-  for(int y = 0; y < in.get_height()-2; ++y)
-    for(int x = 0; x < in.get_width()-2; ++x)
-    {
+  for(int y = 0; y < in.get_height()-2; ++y) {
+    for(int x = 0; x < in.get_width()-2; ++x) {
       RGB p00 = get_pixel(in, x+0, y+0);
       RGB p10 = get_pixel(in, x+1, y+0);
       RGB p20 = get_pixel(in, x+2, y+0);
@@ -108,6 +107,7 @@ void blackfill(PixelData const& in,
                                     p01, p11, p21,
                                     p02, p12, p22));
     }
+  }
 }
 
 } // namespace
