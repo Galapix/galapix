@@ -46,7 +46,7 @@ ZipArchiveLoader::get_filenames(const std::string& zip_filename) const
   return Zip::get_filenames(zip_filename);
 }
 
-Blob
+std::vector<uint8_t>
 ZipArchiveLoader::get_file(const std::string& zip_filename, const std::string& filename) const
 {
   return Zip::get_file(zip_filename, filename);

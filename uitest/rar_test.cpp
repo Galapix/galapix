@@ -16,11 +16,12 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "archive/rar.hpp"
-#include "archive/rar_header.hpp"
-
 #include <iostream>
 #include <uitest/uitest.hpp>
+
+#include "archive/rar.hpp"
+#include "archive/rar_header.hpp"
+#include "archive/util.hpp"
 
 UITEST_S(Rar, info, "ARCHIVE")
 {
@@ -46,8 +47,8 @@ UITEST(Rar, list, "ARCHIVE")
 
 UITEST(Rar, extract, "ARCHIVE FILENAME")
 {
-  Blob blob = Rar::get_file(args[0], args[1]);
-  blob.write_to_file("/tmp/out.file");
+  auto data = Rar::get_file(args[0], args[1]);
+  write_file("/tmp/out.file", data);
   std::cout << "Writting /tmp/out.file" << std::endl;
 }
 

@@ -21,6 +21,7 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
+#include "archive/util.hpp"
 #include "network/curl.hpp"
 
 UITEST(CURL, test, "URL...",
@@ -39,7 +40,8 @@ UITEST(CURL, test, "URL...",
     {
       std::cout << "Trying to get: " << arg << std::endl;
       std::string mime_type;
-      CURLHandler::get_data(arg, &mime_type).write_to_file("/tmp/out");
+      auto data = CURLHandler::get_data(arg, &mime_type);
+      write_file("/tmp/out", data);
       std::cout << "Got: " << arg << " -> '" << mime_type << "'" << std::endl;
     }
 

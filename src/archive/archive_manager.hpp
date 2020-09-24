@@ -17,14 +17,12 @@
 #ifndef HEADER_GALAPIX_ARCHIVE_ARCHIVE_MANAGER_HPP
 #define HEADER_GALAPIX_ARCHIVE_ARCHIVE_MANAGER_HPP
 
-#include <memory>
+#include <filesystem>
 #include <map>
+#include <memory>
+#include <span>
 #include <string>
 #include <vector>
-#include <filesystem>
-
-#include "resource/blob_accessor.hpp"
-#include "util/blob.hpp"
 
 class ArchiveLoader;
 class Extraction;
@@ -37,7 +35,7 @@ public:
   ~ArchiveManager();
 
   bool is_archive(const std::string& filename) const;
-  bool is_archive(Blob const& blob) const;
+  bool is_archive(std::span<uint8_t const> data) const;
 
   /** Returns the list of files contained in the archive, if \a loader
       is supply the loader used in the process will be returned in
@@ -45,8 +43,8 @@ public:
   std::vector<std::string> get_filenames(const std::string& zip_filename,
                                          const ArchiveLoader** loader_out = nullptr) const;
 
-  Blob get_file(const std::string& archive_filename, const std::string& filename) const;
-  BlobAccessorPtr get_file(const BlobAccessorPtr& archive, const std::string& type, const std::string& args) const;
+  std::vector<uint8_t> get_file(const std::string& archive_filename, const std::string& filename) const;
+  std::vector<uint8_t> get_file(std::string const& archive_filename, const std::string& type, const std::string& filename) const;
 
   /** Returns an Extraction object that allows fast access to files
       inside the archive. For archives that don't allow seeking this

@@ -29,6 +29,7 @@ class BlobAccessor
 public:
   BlobAccessor(const std::string& filename);
   BlobAccessor(Blob const& blob);
+  BlobAccessor(std::vector<uint8_t> blob);
 
   bool has_stdio_name() const;
   std::string get_stdio_name() const;

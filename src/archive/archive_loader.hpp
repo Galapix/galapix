@@ -21,8 +21,6 @@
 #include <string>
 #include <memory>
 
-#include "util/blob.hpp"
-
 class ArchiveManager;
 class Extraction;
 
@@ -36,7 +34,7 @@ public:
   virtual std::vector<std::string> get_extensions() const = 0;
 
   virtual std::vector<std::string> get_filenames(const std::string& zip_filename) const = 0;
-  virtual Blob get_file(const std::string& zip_filename, const std::string& filename) const = 0;
+  virtual std::vector<uint8_t> get_file(const std::string& zip_filename, const std::string& filename) const = 0;
   virtual void extract(const std::string& archive, const std::string& target_directory) const = 0;
   virtual bool is_seekable(const std::string& archive)  const = 0;
 

@@ -39,8 +39,8 @@ ArchiveThread::request_blob(const std::string& archive_filename, const std::stri
      {
        try
        {
-         Blob blob = m_archive_mgr.get_file(archive_filename, filename);
-         callback(blob);
+         std::vector<uint8_t> blob = m_archive_mgr.get_file(archive_filename, filename);
+         callback(Blob::copy(std::move(blob)));
        }
        catch(...)
        {

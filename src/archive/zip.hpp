@@ -20,13 +20,11 @@
 #include <string>
 #include <vector>
 
-#include "util/blob.hpp"
-
 class Zip
 {
 public:
   static std::vector<std::string> get_filenames(const std::string& zip_filename);
-  static Blob get_file(const std::string& zip_filename, const std::string& filename);
+  static std::vector<uint8_t> get_file(const std::string& zip_filename, const std::string& filename);
   static void extract(const std::string& zip_filename, const std::string& target_directory);
 };
 

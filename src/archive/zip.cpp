@@ -175,7 +175,7 @@ Zip::get_filenames(const std::string& zip_filename)
   }
 }
 
-Blob
+std::vector<uint8_t>
 Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
 {
   // unzip uses wildcard expressions, not raw filenames, thus we have
@@ -202,8 +202,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
   int zip_return_code = unzip.exec();
   if (zip_return_code == 0)
   {
-    // FIXME: Unneeded copy of data
-    return Blob::copy(unzip.get_stdout());
+    return unzip.move_stdout();
   }
   else
   {

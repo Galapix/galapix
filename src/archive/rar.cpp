@@ -49,15 +49,14 @@ Rar::get_filenames(const std::string& rar_filename)
   }
 }
 
-Blob
+std::vector<uint8_t>
 Rar::get_file(const std::string& rar_filename, const std::string& filename)
 {
   Exec rar("rar");
   rar.arg("p").arg("-inul").arg("-p-").arg(rar_filename).arg(filename);
   if (rar.exec() == 0)
   {
-    // FIXME: Unneeded copy of data
-    return Blob::copy(rar.get_stdout());
+    return rar.move_stdout();
   }
   else
   {

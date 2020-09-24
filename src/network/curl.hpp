@@ -18,15 +18,14 @@
 #define HEADER_GALAPIX_NETWORK_CURL_HPP
 
 #include <string>
-
-#include "util/blob.hpp"
+#include <vector>
 
 class CURLHandler
 {
 public:
   /** Download the given \a url and return the result. If mime_type is
       provided, the returned mime_type is stored therein. */
-  static Blob get_data(const std::string& url, std::string* mime_type = nullptr);
+  static std::vector<uint8_t> get_data(const std::string& url, std::string* mime_type = nullptr);
 };
 
 #endif

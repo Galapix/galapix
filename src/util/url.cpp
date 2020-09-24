@@ -21,9 +21,10 @@
 #include <ostream>
 
 #include "archive/rar.hpp"
-#include "archive/zip.hpp"
 #include "archive/seven_zip.hpp"
 #include "archive/tar.hpp"
+#include "archive/util.hpp"
+#include "archive/zip.hpp"
 #include "network/curl.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
@@ -117,11 +118,17 @@ URL::get_payload() const
 Blob
 URL::get_blob(std::string* mime_type) const
 {
+  return Blob::copy(get_data(mime_type));
+}
+
+std::vector<uint8_t>
+URL::get_data(std::string* mime_type) const
+{
   if (m_protocol == "file")
   {
     if (m_plugin.empty())
     {
-      return Blob::from_file(m_payload);
+      return read_file(m_payload);
     }
     else if (m_plugin == "rar")
     {

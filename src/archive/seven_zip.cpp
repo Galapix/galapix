@@ -80,7 +80,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
   return lst;
 }
 
-Blob
+std::vector<uint8_t>
 SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
 {
   Exec zip("7zr");
@@ -90,8 +90,7 @@ SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
 
   if (zip.exec() == 0)
   {
-    // FIXME: Unneeded copy of data
-    return Blob::copy(zip.get_stdout());
+    return zip.move_stdout();
   }
   else
   {

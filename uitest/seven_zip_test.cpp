@@ -16,10 +16,11 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "archive/seven_zip.hpp"
-
 #include <iostream>
 #include <uitest/uitest.hpp>
+
+#include "archive/seven_zip.hpp"
+#include "archive/util.hpp"
 
 UITEST(SevenZip, list, "FILENAME")
 {
@@ -32,8 +33,8 @@ UITEST(SevenZip, list, "FILENAME")
 
 UITEST(SevenZip, extract, "ARCHIVE FILENAME")
 {
-  Blob blob = SevenZip::get_file(args[0], args[1]);
-  blob.write_to_file("/tmp/out.file");
+  auto data = SevenZip::get_file(args[0], args[1]);
+  write_file("/tmp/out.file", data);
   std::cout << "Writting /tmp/out.file" << std::endl;
 }
 

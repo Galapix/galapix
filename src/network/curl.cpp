@@ -16,8 +16,10 @@
 
 #include "network/curl.hpp"
 
+#include <memory>
 #include <sstream>
 #include <stdexcept>
+
 #include <curl/curl.h>
 
 #include "util/raise_exception.hpp"
@@ -29,7 +31,7 @@ static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void*
   return nmemb * size;
 }
 
-Blob
+std::vector<uint8_t>
 CURLHandler::get_data(const std::string& url, std::string* mime_type)
 {
   std::unique_ptr<CURL, decltype(&curl_easy_cleanup)> handle{curl_easy_init(), &curl_easy_cleanup};
@@ -78,7 +80,7 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
 
   if (ret == 0)
   {
-    return Blob::copy(data);
+    return data;
   }
   else
   {

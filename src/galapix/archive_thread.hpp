@@ -24,6 +24,7 @@
 
 #include "archive/archive_manager.hpp"
 #include "archive/extraction.hpp"
+#include "util/blob.hpp"
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
 

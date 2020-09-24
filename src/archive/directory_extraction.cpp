@@ -18,7 +18,7 @@
 
 #include <logmich/log.hpp>
 
-#include "util/blob.hpp"
+#include "archive/util.hpp"
 
 namespace {
 
@@ -72,10 +72,10 @@ DirectoryExtraction::get_filenames() const
   return lst;
 }
 
-Blob
+std::vector<uint8_t>
 DirectoryExtraction::get_file(const std::string& filename) const
 {
-  return Blob::from_file((m_path / filename).string());
+  return read_file((m_path / filename).string());
 }
 
 std::string

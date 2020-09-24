@@ -36,6 +36,14 @@ BlobAccessor::BlobAccessor(Blob const& blob) :
 {
 }
 
+BlobAccessor::BlobAccessor(std::vector<uint8_t> blob) :
+  m_mutex(),
+  m_filename(),
+  m_blob(Blob::copy(blob)),
+  m_blob_info()
+{
+}
+
 bool
 BlobAccessor::has_stdio_name() const
 {

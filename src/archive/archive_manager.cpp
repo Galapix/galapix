@@ -84,7 +84,7 @@ ArchiveManager::is_archive(const std::string& filename) const
 }
 
 bool
-ArchiveManager::is_archive(Blob const& blob) const
+ArchiveManager::is_archive(std::span<uint8_t const> data) const
 {
   log_error("not implemented");
   return false;
@@ -153,7 +153,7 @@ ArchiveManager::get_filenames(const std::string& zip_filename,
   return files;
 }
 
-Blob
+std::vector<uint8_t>
 ArchiveManager::get_file(const std::string& archive_filename, const std::string& filename) const
 {
   const auto& loader = get_loader(archive_filename);
@@ -176,22 +176,18 @@ ArchiveManager::get_extraction(const std::string& archive_filename) const
   }
 }
 
-BlobAccessorPtr
-ArchiveManager::get_file(const BlobAccessorPtr& archive, const std::string& type, const std::string& args) const
+std::vector<uint8_t>
+ArchiveManager::get_file(std::string const& archive_filename, const std::string& type, const std::string& filename) const
 {
   auto it = std::find_if(m_loader.begin(), m_loader.end(),
-                         [&type](std::unique_ptr<ArchiveLoader> const& loader)
-                         {
+                         [&type](std::unique_ptr<ArchiveLoader> const& loader) {
                            return loader->str() == type;
                          });
 
-  if (it == m_loader.end())
-  {
+  if (it == m_loader.end()) {
     throw std::runtime_error("unknown archive type: " + type);
-  }
-  else
-  {
-    return std::make_shared<BlobAccessor>((*it)->get_file(archive->get_stdio_name(), args));
+  } else {
+    return (*it)->get_file(archive_filename, filename);
   }
 }
 

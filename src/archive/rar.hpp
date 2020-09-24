@@ -20,13 +20,11 @@
 #include <vector>
 #include <string>
 
-#include "util/blob.hpp"
-
 class Rar
 {
 public:
   static std::vector<std::string> get_filenames(const std::string& rar_filename);
-  static Blob get_file(const std::string& rar_filename, const std::string& filename);
+  static std::vector<uint8_t> get_file(const std::string& rar_filename, const std::string& filename);
   static void extract(const std::string& rar_filename, const std::string& target_directory);
 };
 

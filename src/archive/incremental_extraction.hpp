@@ -21,6 +21,7 @@
 
 #include "archive/extraction.hpp"
 #include "archive/archive_loader.hpp"
+#include "archive/util.hpp"
 #include "util/path.hpp"
 
 class IncrementalExtraction : public Extraction
@@ -40,16 +41,16 @@ public:
     return m_loader.get_filenames(m_archive);
   }
 
-  Blob get_file(const std::string& filename) const override
+  std::vector<uint8_t> get_file(const std::string& filename) const override
   {
     return m_loader.get_file(m_archive, filename);
   }
 
   std::string get_file_as_path(const std::string& filename) const override
   {
-    Blob blob = m_loader.get_file(m_archive, filename);
+    std::vector<uint8_t> data = m_loader.get_file(m_archive, filename);
     std::filesystem::path path = std::filesystem::temp_directory_path() / unique_path();
-    blob.write_to_file(path.string());
+    write_file(path, data);
     return path.string();
   }
 

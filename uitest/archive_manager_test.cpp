@@ -20,6 +20,7 @@
 #include <uitest/uitest.hpp>
 
 #include "archive/archive_manager.hpp"
+#include "archive/util.hpp"
 
 UITEST(ArchiveManager, is_archive, "ARCHIVENAME...",
        "Check if the given filename is an archive or not")
@@ -69,8 +70,8 @@ UITEST(ArchiveManager, extract, "ARCHIVENAME FILENAME OUTFILE",
   std::string outfile  = args[2];
 
   ArchiveManager archiver;
-  Blob blob = archiver.get_file(archive, filename);
-  blob.write_to_file(outfile);
+  auto blob = archiver.get_file(archive, filename);
+  write_file(outfile, blob);
 }
 
 /* EOF */

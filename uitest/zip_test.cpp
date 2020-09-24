@@ -19,6 +19,7 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
+#include "archive/util.hpp"
 #include "archive/zip.hpp"
 
 UITEST(ZipTest, list, "ZIPFILE",
@@ -34,8 +35,8 @@ UITEST(ZipTest, list, "ZIPFILE",
 UITEST(ZipTest, extract, "ZIPFILE FILETOEXTRACT",
        "Extract a file from a .zip")
 {
-  Blob blob = Zip::get_file(args[0], args[1]);
-  blob.write_to_file("/tmp/out.file");
+  auto blob = Zip::get_file(args[0], args[1]);
+  write_file("/tmp/out.file", blob);
   std::cout << "Writting /tmp/out.file" << std::endl;
 }
 

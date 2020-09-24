@@ -47,15 +47,14 @@ Tar::get_filenames(const std::string& tar_filename)
   }
 }
 
-Blob
+std::vector<uint8_t>
 Tar::get_file(const std::string& tar_filename, const std::string& filename)
 {
   Exec tar("tar");
   tar.arg("--extract").arg("--to-stdout").arg("--file").arg(tar_filename).arg(filename);
   if (tar.exec() == 0)
   {
-    // FIXME: Unneeded copy of data
-    return Blob::copy(tar.get_stdout());
+    return tar.move_stdout();
   }
   else
   {
