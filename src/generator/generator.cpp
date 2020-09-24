@@ -20,6 +20,7 @@
 
 #include "archive/archive_manager.hpp"
 #include "archive/extraction.hpp"
+#include "galapix/app.hpp"
 #include "galapix/tile.hpp"
 #include "generator/image_data.hpp"
 #include "jobs/tile_generator.hpp"
@@ -198,11 +199,11 @@ Generator::process_image_resource(ResourceLocator const& locator,
   if (blob_accessor->has_stdio_name())
   {
     std::string magic = Filesystem::get_magic(blob_accessor->get_stdio_name());
-    loader = SoftwareSurfaceFactory::current().find_loader_by_magic(magic);
+    loader = g_app.surface_factory().find_loader_by_magic(magic);
   }
   else
   {
-    loader = SoftwareSurfaceFactory::current().find_loader_by_magic(blob_accessor->get_blob());
+    loader = g_app.surface_factory().find_loader_by_magic(blob_accessor->get_blob().as_span());
   }
 
   if (!loader)

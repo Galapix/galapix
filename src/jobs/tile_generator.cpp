@@ -20,6 +20,7 @@
 #include <sstream>
 #include <logmich/log.hpp>
 
+#include "galapix/app.hpp"
 #include "galapix/tile.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
@@ -90,9 +91,21 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
   }
   else
   {
-    SoftwareSurface surface = SoftwareSurfaceFactory::current().from_url(url);
-    *size = surface.get_size();
-    return surface;
+    log_debug("{}", url);
+
+    if (url.has_stdio_name())
+    {
+      return g_app.surface_factory().from_file(url.get_stdio_name());
+    }
+    else
+    {
+      std::string mime_type;
+      Blob blob = url.get_blob(&mime_type);
+
+      SoftwareSurface surface = g_app.surface_factory().from_mem(blob.as_span(), mime_type, url.str());
+      *size = surface.get_size();
+      return surface;
+    }
   }
 }
 

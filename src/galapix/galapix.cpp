@@ -33,6 +33,7 @@
 #include "database/database.hpp"
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
+#include "galapix/app.hpp"
 #include "galapix/arg_parser.hpp"
 #include "galapix/options.hpp"
 #include "galapix/system.hpp"
@@ -57,10 +58,10 @@
 #include "resource/resource_manager.hpp"
 #include "resource/resource_metadata.hpp"
 #include "server/database_thread.hpp"
-#include "util/filesystem.hpp"
-#include "util/raise_exception.hpp"
 #include "surface/software_surface.hpp"
 #include "surface/software_surface_factory.hpp"
+#include "util/filesystem.hpp"
+#include "util/raise_exception.hpp"
 
 Galapix::Galapix(System& system) :
   m_system(system)
@@ -269,6 +270,7 @@ Galapix::main(int argc, char** argv)
     DownloadManager download_manager;
     ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
+    g_app.m_surface_factory = &software_surface_factory;
 
     run(opts);
 

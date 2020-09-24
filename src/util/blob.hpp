@@ -49,6 +49,8 @@ public:
 
   explicit operator bool() const { return m_data != nullptr; }
 
+  std::span<uint8_t const> as_span() { return std::span<uint8_t const>(m_data->begin(), m_data->end()); }
+
   std::vector<uint8_t>::const_iterator begin() const { return m_data->begin(); }
   std::vector<uint8_t>::const_iterator end() const { return m_data->end(); }
 

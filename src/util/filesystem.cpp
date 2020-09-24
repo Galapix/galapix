@@ -31,16 +31,17 @@
 #include <algorithm>
 #include <logmich/log.hpp>
 
+#include "archive/archive_loader.hpp"
+#include "archive/archive_manager.hpp"
 #include "archive/rar.hpp"
 #include "archive/seven_zip.hpp"
 #include "archive/tar.hpp"
 #include "archive/zip.hpp"
-#include "archive/archive_manager.hpp"
-#include "archive/archive_loader.hpp"
-#include "util/filesystem.hpp"
-#include "util/raise_exception.hpp"
+#include "galapix/app.hpp"
 #include "surface/software_surface.hpp"
 #include "surface/software_surface_factory.hpp"
+#include "util/filesystem.hpp"
+#include "util/raise_exception.hpp"
 
 std::string Filesystem::home_directory;
 
@@ -348,7 +349,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
                 for(const auto& file: files)
                 {
                   URL archive_url = URL::from_string(url.str() + "//" + loader->str() + ":" + file);
-                  if (SoftwareSurfaceFactory::current().has_supported_extension(archive_url))
+                  if (g_app.surface_factory().has_supported_extension(archive_url.str()))
                   {
                     sub_file_list.push_back(archive_url);
                   }
@@ -369,7 +370,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
         {
           file_list.push_back(url);
         }
-        else if (SoftwareSurfaceFactory::current().has_supported_extension(url))
+        else if (g_app.surface_factory().has_supported_extension(url.str()))
         {
           file_list.push_back(url);
         }
