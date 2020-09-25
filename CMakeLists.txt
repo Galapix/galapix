@@ -109,6 +109,7 @@ function(build_dependencies)
 
   set(BUILD_TESTS OFF)
   set(TINYGETTEXT_WITH_SDL ON)
+  add_subdirectory(external/SQLiteCpp/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/geomcpp/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/sexp-cpp/ EXCLUDE_FROM_ALL)
@@ -172,6 +173,7 @@ target_link_libraries(libgalapix PUBLIC
   sexp
   entt
   geomcpp
+  SQLiteCpp
   fmt::fmt
   PkgConfig::SIGCXX
   ${SPNAV_LIBRARIES}
