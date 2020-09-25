@@ -25,7 +25,7 @@
 #include "plugins/png.hpp"
 #include "surface/software_surface_factory.hpp"
 
-SQLiteTileDatabase::SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files) :
+SQLiteTileDatabase::SQLiteTileDatabase(SQLite::Database& db, ResourceDatabase& files) :
   m_db(db),
   //m_files(files),
   m_tile_table(m_db),

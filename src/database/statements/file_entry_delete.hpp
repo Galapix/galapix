@@ -18,12 +18,12 @@
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_DELETE_HPP
 
 #include "database/row_id.hpp"
-#include "sqlite/statement.hpp"
+#include <SQLiteCpp/Statement.h>
 
 class FileEntryDelete
 {
 public:
-  FileEntryDelete(SQLiteConnection& db) :
+  FileEntryDelete(SQLite::Database& db) :
     m_db(db),
     m_stmt(db, "DELETE FROM file WHERE id = ?1;")
   {}
@@ -31,13 +31,13 @@ public:
   void operator()(const RowId& fileid)
   {
     assert(fileid);
-    m_stmt.bind_int64(1, fileid.get_id());
-    m_stmt.execute();
+    m_stmt.bind(1, fileid.get_id());
+    m_stmt.exec();
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement m_stmt;
 
 private:
   FileEntryDelete(const FileEntryDelete&);

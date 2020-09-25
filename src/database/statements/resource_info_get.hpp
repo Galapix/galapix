@@ -23,7 +23,7 @@
 class ResourceInfoGet
 {
 public:
-  ResourceInfoGet(SQLiteConnection& db) :
+  ResourceInfoGet(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  resource.id, resource.type, resource.handler, resource.arguments, resource.status\n"
@@ -42,9 +42,9 @@ public:
 
   std::optional<ResourceInfo> operator()(const BlobInfo& blob)
   {
-    m_blob_stmt.bind_int64(1, blob.get_id().get_id());
+    m_blob_stmt.bind(1, blob.get_id().get_id());
 
-    SQLiteReader reader = m_blob_stmt.execute_query();
+    SQLiteReader reader(m_blob_stmt);
     if (reader.next())
     {
       return std::make_optional<ResourceInfo>(
@@ -64,9 +64,9 @@ public:
   /** scan through all resource entries trying to find one that matches the given handler */
   std::optional<ResourceInfo> operator()(const ResourceLocator& locator, const BlobInfo& blob)
   {
-    m_stmt.bind_text(1, blob.get_sha1().str());
+    m_stmt.bind(1, blob.get_sha1().str());
 
-    SQLiteReader reader = m_stmt.execute_query();
+    SQLiteReader reader(m_stmt);
 
     while(reader.next())
     {
@@ -96,8 +96,8 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
-  SQLiteStatement m_blob_stmt;
+  SQLite::Statement m_stmt;
+  SQLite::Statement m_blob_stmt;
 
 private:
   ResourceInfoGet(const ResourceInfoGet&);

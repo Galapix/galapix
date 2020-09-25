@@ -17,15 +17,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TABLES_TILE_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TABLES_TILE_TABLE_HPP
 
-class SQLiteConnection;
+#include <SQLiteCpp/Database.h>
 
 class TileTable
 {
 public:
-  TileTable(SQLiteConnection& db);
+  TileTable(SQLite::Database& db);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
 private:
   TileTable(const TileTable&);

@@ -20,25 +20,25 @@
 class URLInfoStore
 {
 public:
-  URLInfoStore(SQLiteConnection& db) :
+  URLInfoStore(SQLite::Database& db) :
     m_db(db),
     m_stmt(db, "INSERT OR REPLACE INTO url (url, mtime, content_type, blob_id) SELECT ?1, ?2, ?3, blob.id FROM blob WHERE blob.sha1 = ?4;")
   {}
 
   RowId operator()(const URLInfo& url_info)
   {
-    m_stmt.bind_text(1, url_info.get_url());
-    m_stmt.bind_int64(2, url_info.get_mtime());
-    m_stmt.bind_text(3, url_info.get_content_type());
-    m_stmt.bind_text(4, url_info.get_blob_info().get_sha1().str());
-    m_stmt.execute();
+    m_stmt.bind(1, url_info.get_url());
+    m_stmt.bind(2, url_info.get_mtime());
+    m_stmt.bind(3, url_info.get_content_type());
+    m_stmt.bind(4, url_info.get_blob_info().get_sha1().str());
+    m_stmt.exec();
 
-    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
+    return RowId(m_db.getLastInsertRowid());
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement   m_stmt;
 
 private:
   URLInfoStore(const URLInfoStore&);

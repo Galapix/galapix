@@ -17,26 +17,29 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_BLOB_INFO_STORE_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_BLOB_INFO_STORE_HPP
 
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Statement.h>
+
 class BlobInfoStore
 {
 public:
-  BlobInfoStore(SQLiteConnection& db) :
+  BlobInfoStore(SQLite::Database& db) :
     m_db(db),
     m_stmt(db, "INSERT INTO blob (sha1, size) VALUES (?1, ?2);")
   {}
 
   RowId operator()(const BlobInfo& blob_info)
   {
-    m_stmt.bind_text(1, blob_info.get_sha1().str());
-    m_stmt.bind_int64(2, static_cast<int64_t>(blob_info.get_size()));
-    m_stmt.execute();
+    m_stmt.bind(1, blob_info.get_sha1().str());
+    m_stmt.bind(2, static_cast<int64_t>(blob_info.get_size()));
+    m_stmt.exec();
 
-    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
+    return RowId(m_db.getLastInsertRowid());
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement m_stmt;
 
 private:
   BlobInfoStore(const BlobInfoStore&);

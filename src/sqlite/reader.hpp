@@ -17,20 +17,16 @@
 #ifndef HEADER_GALAPIX_SQLITE_READER_HPP
 #define HEADER_GALAPIX_SQLITE_READER_HPP
 
-#include "sqlite/connection.hpp"
-#include "util/blob.hpp"
+#include <SQLiteCpp/Column.h>
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Statement.h>
 
-class SQLiteStatement;
+#include "util/blob.hpp"
 
 class SQLiteReader
 {
-  friend class SQLiteStatement;
-
-private:
-  SQLiteReader(SQLiteConnection& db, SQLiteStatement& stmt);
-
 public:
-  SQLiteReader(const SQLiteReader&);
+  SQLiteReader(SQLite::Statement& stmt);
   ~SQLiteReader();
 
   bool next();
@@ -51,8 +47,7 @@ private:
   SQLiteReader& operator=(const SQLiteReader&);
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement&  m_stmt;
+  SQLite::Statement& m_stmt;
 };
 
 #endif

@@ -108,8 +108,9 @@ function(build_dependencies)
   endif()
 
   set(BUILD_TESTS OFF)
-  set(TINYGETTEXT_WITH_SDL ON)
   add_subdirectory(external/SQLiteCpp/ EXCLUDE_FROM_ALL)
+  set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
+
   add_subdirectory(external/geomcpp/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/sexp-cpp/ EXCLUDE_FROM_ALL)

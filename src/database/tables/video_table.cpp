@@ -16,7 +16,7 @@
 
 #include "database/tables/video_table.hpp"
 
-VideoTable::VideoTable(SQLiteConnection& db) :
+VideoTable::VideoTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS video (\n"

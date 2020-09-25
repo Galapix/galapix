@@ -16,7 +16,7 @@
 
 #include "database/tables/image_table.hpp"
 
-ImageTable::ImageTable(SQLiteConnection& db) :
+ImageTable::ImageTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS image (\n"

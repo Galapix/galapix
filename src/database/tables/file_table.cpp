@@ -16,9 +16,9 @@
 
 #include "database/tables/file_table.hpp"
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
 
-FileTable::FileTable(SQLiteConnection& db) :
+FileTable::FileTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS file (\n"

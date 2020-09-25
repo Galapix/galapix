@@ -17,15 +17,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TABLES_BLOB_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TABLES_BLOB_TABLE_HPP
 
-class SQLiteConnection;
+#include <SQLiteCpp/Database.h>
 
 class BlobTable final
 {
 public:
-  BlobTable(SQLiteConnection& db);
+  BlobTable(SQLite::Database& db);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
 private:
   BlobTable(const BlobTable&) = delete;

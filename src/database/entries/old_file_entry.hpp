@@ -20,15 +20,15 @@
 #include <memory>
 #include <assert.h>
 #include <sstream>
+
 #include <fmt/format.h>
+#include "sqlite/reader.hpp"
 
 #include "database/entries/blob_entry.hpp"
 #include "database/row_id.hpp"
 #include "math/math.hpp"
 #include "math/size.hpp"
 #include "util/url.hpp"
-
-class SQLiteReader;
 
 class OldFileEntry final
 {

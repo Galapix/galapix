@@ -19,8 +19,11 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
-#include "sqlite/connection.hpp"
-#include "sqlite/statement.hpp"
+#include <sqlite3.h>
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Statement.h>
+
+#include "sqlite/reader.hpp"
 
 UITEST(SQLite, test, "SQLITEDATABASE TABLE")
 {
@@ -28,10 +31,10 @@ UITEST(SQLite, test, "SQLITEDATABASE TABLE")
   {
     try
     {
-      SQLiteConnection db(args[0]);
+      SQLite::Database db(args[0], SQLite::OPEN_READONLY);
 
-      SQLiteStatement stmt(db, std::string("select * from ") + args[1] + ";"); // FIXME: totaly not safe
-      SQLiteReader reader = stmt.execute_query();
+      SQLite::Statement stmt(db, std::string("select * from ") + args[1] + ";"); // FIXME: totaly not safe
+      SQLiteReader reader(stmt);
 
       const int columns = reader.get_column_count();
       for(int i = 0; i < columns; ++i)

@@ -16,7 +16,7 @@
 
 #include "database/tables/archive_file_table.hpp"
 
-ArchiveFileTable::ArchiveFileTable(SQLiteConnection& db) :
+ArchiveFileTable::ArchiveFileTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS archive_file (\n"

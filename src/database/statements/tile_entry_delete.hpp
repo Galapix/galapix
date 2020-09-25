@@ -20,7 +20,7 @@
 class TileEntryDelete final
 {
 public:
-  TileEntryDelete(SQLiteConnection& db) :
+  TileEntryDelete(SQLite::Database& db) :
     m_db(db),
     m_stmt(db, "DELETE FROM tile WHERE image_id = ?1;")
   {}
@@ -28,13 +28,13 @@ public:
   void operator()(const RowId& image_id)
   {
     assert(image_id);
-    m_stmt.bind_int64(1, image_id.get_id());
-    m_stmt.execute();
+    m_stmt.bind(1, image_id.get_id());
+    m_stmt.exec();
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement   m_stmt;
 
 private:
   TileEntryDelete(const TileEntryDelete&);

@@ -17,14 +17,14 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_GET_ALL_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_GET_ALL_HPP
 
-#include "sqlite/connection.hpp"
-#include "sqlite/statement.hpp"
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Statement.h>
 #include "database/entries/file_entry.hpp"
 
 class FileEntryGetAll
 {
 public:
-  FileEntryGetAll(SQLiteConnection& db) :
+  FileEntryGetAll(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  file.id, file.path, file.mtime, file.blob_id\n"
@@ -34,8 +34,7 @@ public:
 
   void operator()(std::vector<FileEntry>& entries_out)
   {
-    SQLiteReader reader = m_stmt.execute_query();
-
+    SQLiteReader reader(m_stmt);
     while (reader.next())
     {
       entries_out.push_back(FileEntry::from_reader(reader));
@@ -43,7 +42,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   FileEntryGetAll(const FileEntryGetAll&);

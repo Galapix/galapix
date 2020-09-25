@@ -25,7 +25,7 @@
 class FileEntryGetByPath
 {
 public:
-  FileEntryGetByPath(SQLiteConnection& db) :
+  FileEntryGetByPath(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  file.id, file.path, file.mtime\n"
@@ -37,8 +37,8 @@ public:
 
   std::optional<FileEntry> operator()(const std::string& path)
   {
-    m_stmt.bind_text(1, path);
-    SQLiteReader reader = m_stmt.execute_query();
+    m_stmt.bind(1, path);
+    SQLiteReader reader(m_stmt);
 
     if (reader.next())
     {
@@ -51,7 +51,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   FileEntryGetByPath(const FileEntryGetByPath&);

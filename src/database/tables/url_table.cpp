@@ -16,9 +16,9 @@
 
 #include "database/tables/url_table.hpp"
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
 
-URLTable::URLTable(SQLiteConnection& db) :
+URLTable::URLTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS url (\n"

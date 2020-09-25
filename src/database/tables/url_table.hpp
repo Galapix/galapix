@@ -17,15 +17,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TABLES_URL_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TABLES_URL_TABLE_HPP
 
-class SQLiteConnection;
+#include <SQLiteCpp/Database.h>
 
 class URLTable
 {
 public:
-  URLTable(SQLiteConnection& db);
+  URLTable(SQLite::Database& db);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
 private:
   URLTable(const URLTable&) = delete;

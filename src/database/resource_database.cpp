@@ -17,6 +17,10 @@
 #include "database/resource_database.hpp"
 
 #include <iostream>
+
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Statement.h>
+
 #include <logmich/log.hpp>
 
 #include "database/database.hpp"
@@ -36,7 +40,7 @@
 
 using namespace galapix;
 
-ResourceDatabase::ResourceDatabase(SQLiteConnection& db) :
+ResourceDatabase::ResourceDatabase(SQLite::Database& db) :
   m_db(db),
 
   m_archive_table(m_db),

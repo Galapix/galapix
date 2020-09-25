@@ -17,15 +17,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TABLES_VIDEO_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TABLES_VIDEO_TABLE_HPP
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
 
 class VideoTable
 {
 public:
-  VideoTable(SQLiteConnection& db);
+  VideoTable(SQLite::Database& db);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
 private:
   VideoTable(const VideoTable&);

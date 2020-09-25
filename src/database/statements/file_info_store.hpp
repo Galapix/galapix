@@ -20,24 +20,24 @@
 class FileInfoStore
 {
 public:
-  FileInfoStore(SQLiteConnection& db) :
+  FileInfoStore(SQLite::Database& db) :
     m_db(db),
     m_stmt(db, "INSERT OR REPLACE INTO file (path, mtime, blob_id) SELECT ?1, ?2, blob.id FROM blob WHERE blob.sha1 = ?3;")
   {}
 
   RowId operator()(const FileInfo& file_info)
   {
-    m_stmt.bind_text(1, file_info.get_path());
-    m_stmt.bind_int64(2, file_info.get_mtime());
-    m_stmt.bind_text(3, file_info.get_blob_info().get_sha1().str());
-    m_stmt.execute();
+    m_stmt.bind(1, file_info.get_path());
+    m_stmt.bind(2, file_info.get_mtime());
+    m_stmt.bind(3, file_info.get_blob_info().get_sha1().str());
+    m_stmt.exec();
 
-    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
+    return RowId(m_db.getLastInsertRowid());
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement   m_stmt;
 
 private:
   FileInfoStore(const FileInfoStore&) = delete;

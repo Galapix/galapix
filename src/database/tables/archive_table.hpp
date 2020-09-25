@@ -17,15 +17,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TABLES_ARCHIVE_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TABLES_ARCHIVE_TABLE_HPP
 
-class SQLiteConnection;
+#include <SQLiteCpp/Database.h>
 
 class ArchiveTable
 {
 public:
-  ArchiveTable(SQLiteConnection& db);
+  ArchiveTable(SQLite::Database& db);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
 private:
   ArchiveTable(const ArchiveTable&);

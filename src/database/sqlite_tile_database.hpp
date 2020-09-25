@@ -17,7 +17,7 @@
 #ifndef HEADER_GALAPIX_DATABASE_SQLITE_TILE_DATABASE_HPP
 #define HEADER_GALAPIX_DATABASE_SQLITE_TILE_DATABASE_HPP
 
-#include "sqlite/statement.hpp"
+#include <SQLiteCpp/Statement.h>
 #include "math/vector2i.hpp"
 
 #include "database/file_tile_database.hpp"
@@ -40,7 +40,7 @@ class TileEntry;
 class SQLiteTileDatabase : public TileDatabaseInterface
 {
 public:
-  SQLiteTileDatabase(SQLiteConnection& db, ResourceDatabase& files);
+  SQLiteTileDatabase(SQLite::Database& db, ResourceDatabase& files);
   ~SQLiteTileDatabase() override;
 
   bool has_tile(const RowId& image_id, const Vector2i& pos, int scale) override;
@@ -54,7 +54,7 @@ public:
   void delete_tiles(const RowId& image_id) override;
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
   //ResourceDatabase& m_files;
 
   TileTable m_tile_table;

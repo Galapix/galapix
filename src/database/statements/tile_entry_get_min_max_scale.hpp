@@ -22,14 +22,14 @@
 class TileEntryGetMinMaxScale final
 {
 public:
-  TileEntryGetMinMaxScale(SQLiteConnection& db) :
+  TileEntryGetMinMaxScale(SQLite::Database& db) :
     m_stmt(db, "SELECT MIN(scale),MAX(scale) FROM tile WHERE image_id = ?1;")
   {}
 
   bool operator()(const RowId& fileid, int& min_scale_out, int& max_scale_out)
   {
-    m_stmt.bind_int64(1, fileid.get_id());
-    SQLiteReader reader = m_stmt.execute_query();
+    m_stmt.bind(1, fileid.get_id());
+    SQLiteReader reader(m_stmt);
 
     if (reader.next())
     {
@@ -53,7 +53,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   TileEntryGetMinMaxScale(const TileEntryGetMinMaxScale&);

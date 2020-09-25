@@ -19,7 +19,9 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
+#include <SQLiteCpp/Statement.h>
+
 #include "database/tables/file_table.hpp"
 #include "database/statements/file_entry_get_all.hpp"
 #include "database/statements/file_entry_store.hpp"
@@ -30,7 +32,7 @@
 UITEST(FileTable, test, "",
        "FileTable test")
 {
-  SQLiteConnection db("");
+  SQLite::Database db(":memory:", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
   FileTable file_table(db);
   FileEntryGetAll file_entry_get_all(db);
   FileEntryStore file_entry_store(db);

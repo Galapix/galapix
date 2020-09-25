@@ -20,7 +20,7 @@
 class FileInfoGetByPath
 {
 public:
-  FileInfoGetByPath(SQLiteConnection& db) :
+  FileInfoGetByPath(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  file.id, file.path, file.mtime, blob.sha1, blob.size\n"
@@ -32,8 +32,8 @@ public:
 
   std::optional<FileInfo> operator()(const std::string& path)
   {
-    m_stmt.bind_text(1, path);
-    SQLiteReader reader = m_stmt.execute_query();
+    m_stmt.bind(1, path);
+    SQLiteReader reader(m_stmt);
 
     if (reader.next())
     {
@@ -52,7 +52,7 @@ public:
   }
 
 private:
-  SQLiteStatement   m_stmt;
+  SQLite::Statement   m_stmt;
 
 private:
   FileInfoGetByPath(const FileInfoGetByPath&);

@@ -22,7 +22,7 @@
 class TileEntryStore
 {
 public:
-  TileEntryStore(SQLiteConnection& db) :
+  TileEntryStore(SQLite::Database& db) :
     m_stmt(db, "INSERT into tile (image_id, scale, x, y, data, quality, format) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);")
     // FIXME: This is brute force and doesn't handle collisions
   {}
@@ -63,19 +63,19 @@ public:
 
     // FIXME: We need to update a already existing record, instead of
     // just storing a duplicate
-    m_stmt.bind_int64(1, tile.get_image_id().get_id());
-    m_stmt.bind_int (2, tile.get_scale());
-    m_stmt.bind_int (3, tile.get_pos().x());
-    m_stmt.bind_int (4, tile.get_pos().y());
-    m_stmt.bind_blob(5, tile.get_blob());
-    m_stmt.bind_int (6, 0);
-    m_stmt.bind_int (7, tile.get_format());
+    m_stmt.bind(1, tile.get_image_id().get_id());
+    m_stmt.bind(2, tile.get_scale());
+    m_stmt.bind(3, tile.get_pos().x());
+    m_stmt.bind(4, tile.get_pos().y());
+    m_stmt.bind(5, tile.get_blob().get_data(), static_cast<int>(tile.get_blob().size()));
+    m_stmt.bind(6, 0);
+    m_stmt.bind(7, static_cast<int>(tile.get_format()));
 
-    m_stmt.execute();
+    m_stmt.exec();
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   TileEntryStore(const TileEntryStore&);

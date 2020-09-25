@@ -22,7 +22,7 @@
 class ResourceEntryGetByBlobId final
 {
 public:
-  ResourceEntryGetByBlobId(SQLiteConnection& db) :
+  ResourceEntryGetByBlobId(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  *\n"
@@ -34,9 +34,9 @@ public:
 
   std::optional<ResourceEntry> operator()(RowId id)
   {
-    m_stmt.bind_int64(1, id.get_id());
+    m_stmt.bind(1, id.get_id());
 
-    SQLiteReader reader = m_stmt.execute_query();
+    SQLiteReader reader(m_stmt);
     if (reader.next())
     {
       //return std::optional<ResourceEntry>(reader.get_int(0),);
@@ -49,7 +49,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   ResourceEntryGetByBlobId(const ResourceEntryGetByBlobId&);

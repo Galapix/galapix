@@ -16,7 +16,7 @@
 
 #include "resource_table.hpp"
 
-ResourceTable::ResourceTable(SQLiteConnection& db) :
+ResourceTable::ResourceTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS resource (\n"

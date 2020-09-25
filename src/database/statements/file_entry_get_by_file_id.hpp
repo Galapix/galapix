@@ -20,12 +20,12 @@
 class FileEntryGetByFileId
 {
 public:
-  FileEntryGetByFileId(SQLiteConnection& db) :
+  FileEntryGetByFileId(SQLite::Database& db) :
     m_stmt(db, "SELECT * FROM file WHERE id = ?1;")
   {}
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   FileEntryGetByFileId(const FileEntryGetByFileId&);

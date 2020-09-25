@@ -22,7 +22,7 @@
 class FileEntryGetByPattern
 {
 public:
-  FileEntryGetByPattern(SQLiteConnection& db) :
+  FileEntryGetByPattern(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  file.id, file.path, file.mtime, file.blob_id\n"
@@ -34,17 +34,15 @@ public:
 
   void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
   {
-    m_stmt.bind_text(1, pattern);
-    SQLiteReader reader = m_stmt.execute_query();
-
-    while (reader.next())
-    {
+    m_stmt.bind(1, pattern);
+    SQLiteReader reader(m_stmt);
+    while (reader.next()) {
       entries_out.push_back(FileEntry::from_reader(reader));
     }
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   FileEntryGetByPattern(const FileEntryGetByPattern&);

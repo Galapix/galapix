@@ -26,8 +26,8 @@ Database::create(const std::string& prefix)
 {
   Filesystem::mkdir(prefix);
 
-  auto db = std::make_unique<SQLiteConnection>(prefix + "/cache4.sqlite3");
-  auto tile_db = std::make_unique<SQLiteConnection>(prefix + "/cache4_tiles.sqlite3");
+  auto db = std::make_unique<SQLite::Database>(prefix + "/cache4.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+  auto tile_db = std::make_unique<SQLite::Database>(prefix + "/cache4_tiles.sqlite3");
 
   auto resources = std::make_unique<ResourceDatabase>(*db);
 
@@ -44,10 +44,11 @@ Database::create(const std::string& prefix)
   return Database(std::move(db), std::move(tile_db), std::move(resources), std::move(tiles));
 }
 
-Database::Database(std::unique_ptr<SQLiteConnection> db,
-                   std::unique_ptr<SQLiteConnection> tile_db,
+Database::Database(std::unique_ptr<SQLite::Database> db,
+                   std::unique_ptr<SQLite::Database> tile_db,
                    std::unique_ptr<ResourceDatabase> resources,
                    std::unique_ptr<TileDatabaseInterface> tiles) :
+  m_db2(),
   m_db(std::move(db)),
   m_tile_db(std::move(tile_db)),
   m_resources(std::move(resources)),
@@ -73,7 +74,7 @@ Database::delete_file_entry(const RowId& fileid)
 void
 Database::cleanup()
 {
-  m_db->vacuum();
+  m_db->exec("VACUUM;");
 }
 
 /* EOF */

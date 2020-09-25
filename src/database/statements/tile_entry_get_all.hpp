@@ -20,7 +20,7 @@
 class TileEntryGetAll final
 {
 public:
-  TileEntryGetAll(SQLiteConnection& db) :
+  TileEntryGetAll(SQLite::Database& db) :
     m_stmt(db, "SELECT * FROM tiles ORDER BY image_id;")
   {}
 
@@ -29,7 +29,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   TileEntryGetAll(const TileEntryGetAll&);

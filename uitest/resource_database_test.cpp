@@ -19,14 +19,15 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
+
 #include "database/resource_database.hpp"
 #include "util/filesystem.hpp"
 #include "util/sha1.hpp"
 
 UITEST(ResourceDatabase, test, "")
 {
-  SQLiteConnection db(""); //("/tmp/resource_database_test.sqlite3");
+  SQLite::Database db(":memory:", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE); //("/tmp/resource_database_test.sqlite3");
   ResourceDatabase res_db(db);
 
   res_db.store_file_info(FileInfo("/tmp/hello_world.txt", 123, galapix::SHA1::from_mem("hello world"), 98787));

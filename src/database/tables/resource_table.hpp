@@ -17,15 +17,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TABLES_RESOURCE_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TABLES_RESOURCE_TABLE_HPP
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
 
 class ResourceTable
 {
 public:
-  ResourceTable(SQLiteConnection& db);
+  ResourceTable(SQLite::Database& db);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
 private:
   ResourceTable(const ResourceTable&);

@@ -19,9 +19,9 @@
 
 #include <string>
 
-#include "database/row_id.hpp"
+#include "sqlite/reader.hpp"
 
-class SQLiteReader;
+#include "database/row_id.hpp"
 
 class URLEntry
 {

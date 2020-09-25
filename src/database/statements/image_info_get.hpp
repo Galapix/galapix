@@ -20,7 +20,7 @@
 class ImageInfoGet
 {
 public:
-  ImageInfoGet(SQLiteConnection& db) :
+  ImageInfoGet(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  image.id, image.width, image.height\n"
@@ -32,8 +32,8 @@ public:
 
   std::optional<ImageInfo> operator()(const ResourceInfo& resource_info)
   {
-    m_stmt.bind_int64(1, resource_info.get_id().get_id());
-    SQLiteReader reader = m_stmt.execute_query();
+    m_stmt.bind(1, resource_info.get_id().get_id());
+    SQLiteReader reader(m_stmt);
 
     if (reader.next())
     {
@@ -49,7 +49,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   ImageInfoGet(const ImageInfoGet&) = delete;

@@ -23,23 +23,23 @@
 class FileEntryStore
 {
 public:
-  FileEntryStore(SQLiteConnection& db) :
+  FileEntryStore(SQLite::Database& db) :
     m_db(db),
     m_file_stmt(db, "INSERT OR REPLACE INTO file (path, mtime) VALUES (?1, ?2);")
   {}
 
   RowId operator()(const std::string& path, long mtime)
   {
-    m_file_stmt.bind_text(1, path);
-    m_file_stmt.bind_int64(2, mtime);
-    m_file_stmt.execute();
+    m_file_stmt.bind(1, path);
+    m_file_stmt.bind(2, mtime);
+    m_file_stmt.exec();
 
-    return RowId{sqlite3_last_insert_rowid(m_db.get_db())};
+    return RowId(m_db.getLastInsertRowid());
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_file_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement m_file_stmt;
 
 private:
   FileEntryStore(const FileEntryStore&);

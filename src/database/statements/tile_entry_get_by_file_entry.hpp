@@ -23,7 +23,7 @@
 class TileEntryGetByFileEntry final
 {
 public:
-  TileEntryGetByFileEntry(SQLiteConnection& db) :
+  TileEntryGetByFileEntry(SQLite::Database& db) :
     m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
@@ -35,12 +35,12 @@ public:
     }
     else
     {
-      m_stmt.bind_int64(1, image_id.get_id());
-      m_stmt.bind_int(2, scale);
-      m_stmt.bind_int(3, pos.x());
-      m_stmt.bind_int(4, pos.y());
+      m_stmt.bind(1, image_id.get_id());
+      m_stmt.bind(2, scale);
+      m_stmt.bind(3, pos.x());
+      m_stmt.bind(4, pos.y());
 
-      SQLiteReader reader = m_stmt.execute_query();
+      SQLiteReader reader(m_stmt);
 
       if (reader.next())
       {
@@ -76,7 +76,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   TileEntryGetByFileEntry(const TileEntryGetByFileEntry&);

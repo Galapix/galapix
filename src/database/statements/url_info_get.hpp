@@ -20,7 +20,7 @@
 class URLInfoGet
 {
 public:
-  URLInfoGet(SQLiteConnection& db) :
+  URLInfoGet(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  url.id, url.mtime, url.content_type, blob.sha1, blob.size\n"
@@ -32,8 +32,8 @@ public:
 
   std::optional<URLInfo> operator()(const std::string& url)
   {
-    m_stmt.bind_text(1, url);
-    SQLiteReader reader = m_stmt.execute_query();
+    m_stmt.bind(1, url);
+    SQLiteReader reader(m_stmt);
 
     if (reader.next())
     {
@@ -53,7 +53,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   URLInfoGet(const URLInfoGet&);

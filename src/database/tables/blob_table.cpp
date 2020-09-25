@@ -16,9 +16,9 @@
 
 #include "database/tables/blob_table.hpp"
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
 
-BlobTable::BlobTable(SQLiteConnection& db) :
+BlobTable::BlobTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS blob (\n"

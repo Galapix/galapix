@@ -19,6 +19,8 @@
 
 #include <memory>
 
+#include <SQLiteCpp/Database.h>
+
 #include "database/memory_tile_database.hpp"
 #include "database/resource_database.hpp"
 #include "database/tile_database_interface.hpp"
@@ -29,8 +31,8 @@ public:
   static Database create(const std::string& prefix);
 
 public:
-  Database(std::unique_ptr<SQLiteConnection> db,
-           std::unique_ptr<SQLiteConnection> tile_db,
+  Database(std::unique_ptr<SQLite::Database> db,
+           std::unique_ptr<SQLite::Database> tile_db,
            std::unique_ptr<ResourceDatabase> resources,
            std::unique_ptr<TileDatabaseInterface> tiles);
   Database(Database&&) = default;
@@ -44,8 +46,9 @@ public:
   void cleanup();
 
 private:
-  std::unique_ptr<SQLiteConnection> m_db;
-  std::unique_ptr<SQLiteConnection> m_tile_db;
+  std::unique_ptr<SQLite::Database> m_db2;
+  std::unique_ptr<SQLite::Database> m_db;
+  std::unique_ptr<SQLite::Database> m_tile_db;
   std::unique_ptr<ResourceDatabase> m_resources;
   std::unique_ptr<TileDatabaseInterface> m_tiles;
 

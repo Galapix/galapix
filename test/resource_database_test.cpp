@@ -8,11 +8,11 @@ class ResourceDatabaseTest : public testing::Test
 {
 protected:
   ResourceDatabaseTest() :
-    m_db(""),
+    m_db(":memory:", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE),
     m_resource(m_db)
   {}
 
-  SQLiteConnection m_db;
+  SQLite::Database m_db;
   ResourceDatabase m_resource;
 };
 

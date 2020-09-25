@@ -20,7 +20,7 @@
 class ResourceInfoGetBySHA1
 {
 public:
-  ResourceInfoGetBySHA1(SQLiteConnection& db) :
+  ResourceInfoGetBySHA1(SQLite::Database& db) :
     m_stmt(db,
            "SELECT\n"
            "  resource.type, resource.handler, resource.arguments\n"
@@ -32,8 +32,8 @@ public:
 
   std::optional<ResourceInfo> operator()(const SHA1& sha1)
   {
-    m_stmt.bind_text(1, path);
-    SQLiteReader reader = m_stmt.execute_query();
+    m_stmt.bind(1, path);
+    SQLiteReader reader(m_stmt);
 
     if (reader.next())
     {
@@ -48,7 +48,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   ResourceInfoGetBySHA1(const ResourceInfoGetBySHA1&);

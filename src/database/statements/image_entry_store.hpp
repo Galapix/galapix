@@ -25,25 +25,25 @@
 class ImageEntryStore final
 {
 public:
-  ImageEntryStore(SQLiteConnection& db) :
+  ImageEntryStore(SQLite::Database& db) :
     m_db(db),
     m_stmt(db, "INSERT OR REPLACE INTO image (resource_id, width, height) VALUES (?1, ?2, ?3);")
   {}
 
   void operator()(const ImageEntry& image)
   {
-    m_stmt.bind_int64(1, image.get_resource_id().get_id());
-    m_stmt.bind_int(2, image.get_width());
-    m_stmt.bind_int(3, image.get_height());
+    m_stmt.bind(1, image.get_resource_id().get_id());
+    m_stmt.bind(2, image.get_width());
+    m_stmt.bind(3, image.get_height());
 
-    m_stmt.execute();
+    m_stmt.exec();
 
     //return sqlite3_last_insert_rowid(m_db.get_db());
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement   m_stmt;
 
 private:
   ImageEntryStore(const ImageEntryStore&);

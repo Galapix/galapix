@@ -16,9 +16,9 @@
 
 #include "database/tables/archive_table.hpp"
 
-#include "sqlite/connection.hpp"
+#include <SQLiteCpp/Database.h>
 
-ArchiveTable::ArchiveTable(SQLiteConnection& db) :
+ArchiveTable::ArchiveTable(SQLite::Database& db) :
   m_db(db)
 {
   m_db.exec("CREATE TABLE IF NOT EXISTS archive (\n"

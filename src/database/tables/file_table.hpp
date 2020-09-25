@@ -17,15 +17,15 @@
 #ifndef HEADER_GALAPIX_DATABASE_TABLES_FILE_TABLE_HPP
 #define HEADER_GALAPIX_DATABASE_TABLES_FILE_TABLE_HPP
 
-class SQLiteConnection;
+#include <SQLiteCpp/Database.h>
 
 class FileTable
 {
 public:
-  FileTable(SQLiteConnection& db);
+  FileTable(SQLite::Database& db);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
 private:
   FileTable(const FileTable&);

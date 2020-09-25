@@ -24,7 +24,7 @@
 class ImageEntryGet final
 {
 public:
-  ImageEntryGet(SQLiteConnection& db) :
+  ImageEntryGet(SQLite::Database& db) :
     m_db(db),
     m_stmt(db, "SELECT id, resource_id, width, height FROM image WHERE id = ?1;")
   {}
@@ -32,9 +32,9 @@ public:
   bool operator()(const RowId& image_id, ImageEntry& image_out)
   {
     log_debug("looking up: %d", image_id);
-    m_stmt.bind_int64(1, image_id.get_id());
+    m_stmt.bind(1, image_id.get_id());
 
-    SQLiteReader reader = m_stmt.execute_query();
+    SQLiteReader reader(m_stmt);
     if (reader.next())
     {
       image_out = ImageEntry(reader.get_int64(0),
@@ -50,8 +50,8 @@ public:
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement   m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement   m_stmt;
 
 private:
   ImageEntryGet(const ImageEntryGet&);

@@ -18,12 +18,11 @@
 
 #include <sstream>
 
-#include "sqlite/error.hpp"
-#include "sqlite/statement.hpp"
+#include <SQLiteCpp/Statement.h>
+
 #include "util/raise_exception.hpp"
 
-SQLiteReader::SQLiteReader(SQLiteConnection& db, SQLiteStatement& stmt) :
-  m_db(db),
+SQLiteReader::SQLiteReader(SQLite::Statement& stmt) :
   m_stmt(stmt)
 {
 }
@@ -36,91 +35,69 @@ SQLiteReader::~SQLiteReader()
 bool
 SQLiteReader::next()
 {
-retry:
-  switch(sqlite3_step(m_stmt.get_stmt()))
-  {
-    case SQLITE_DONE:
-      return false;
-
-    case SQLITE_ROW:
-      return true;
-
-    case SQLITE_LOCKED:
-    case SQLITE_BUSY:
-      goto retry;
-
-    case SQLITE_ERROR:
-    case SQLITE_MISUSE:
-    default:
-    {
-      raise_exception(SQLiteError, m_db.get_error_msg());
-      return false;
-    }
-  }
+  return m_stmt.executeStep();
 }
 
 int
 SQLiteReader::get_int(int column)
 {
-  return sqlite3_column_int(m_stmt.get_stmt(), column);
+  return m_stmt.getColumn(column).getInt();
 }
 
 int64_t
 SQLiteReader::get_int64(int column)
 {
-  return sqlite3_column_int64(m_stmt.get_stmt(), column);
+  return m_stmt.getColumn(column).getInt64();
 }
 
 float
 SQLiteReader::get_float(int column)
 {
-  return static_cast<float>(get_double(column));
+  return static_cast<float>(m_stmt.getColumn(column).getDouble());
 }
 
 double
 SQLiteReader::get_double(int column)
 {
-  return sqlite3_column_double(m_stmt.get_stmt(), column);
+  return m_stmt.getColumn(column).getDouble();
 }
 
 bool
 SQLiteReader::is_null(int column)
 {
-  return sqlite3_column_type(m_stmt.get_stmt(), column) == SQLITE_NULL;
+  return m_stmt.getColumn(column).isNull();
 }
 
 int
 SQLiteReader::get_type(int column)
 {
-  return sqlite3_column_type(m_stmt.get_stmt(), column);
+   return m_stmt.getColumn(column).getType();
 }
 
 std::string
 SQLiteReader::get_text(int column)
 {
-  const void* data = sqlite3_column_text(m_stmt.get_stmt(), column);
-  int len = sqlite3_column_bytes(m_stmt.get_stmt(), column);
-  return std::string(static_cast<const char*>(data), static_cast<size_t>(len));
+  return m_stmt.getColumn(column).getText();
 }
 
 Blob
 SQLiteReader::get_blob(int column)
 {
   return Blob::copy({
-      static_cast<uint8_t const*>(sqlite3_column_blob(m_stmt.get_stmt(), column)),
-      static_cast<size_t>(sqlite3_column_bytes(m_stmt.get_stmt(), column))});
+      static_cast<uint8_t const*>(m_stmt.getColumn(column).getBlob()),
+      static_cast<size_t>(m_stmt.getColumn(column).size())});
 }
 
 std::string
 SQLiteReader::get_column_name(int column)
 {
-  return sqlite3_column_name(m_stmt.get_stmt(), column);
+  return m_stmt.getColumn(column).getName();
 }
 
 int
 SQLiteReader::get_column_count()
 {
-  return sqlite3_column_count(m_stmt.get_stmt());
+  return m_stmt.getColumnCount();
 }
 
 /* EOF */

@@ -38,14 +38,13 @@
 #include "database/tables/url_table.hpp"
 #include "database/tables/video_table.hpp"
 #include "math/size.hpp"
-#include "sqlite/statement.hpp"
+#include <SQLiteCpp/Statement.h>
 #include "resource/file_info.hpp"
 #include "resource/image_info.hpp"
 #include "resource/resource_info.hpp"
 #include "resource/url_info.hpp"
 
 class BlobInfoStore;
-class Database;
 class FileInfoGetByPath;
 class FileInfoStore;
 class ImageEntry;
@@ -77,7 +76,7 @@ class SHA1;
 class ResourceDatabase
 {
 public:
-  ResourceDatabase(SQLiteConnection& db);
+  ResourceDatabase(SQLite::Database& db);
   ~ResourceDatabase();
 
   std::optional<ImageInfo> get_image_info(const ResourceInfo& resource);
@@ -121,7 +120,7 @@ public:
   void delete_old_file_entry(const RowId& file_id);
 
 private:
-  SQLiteConnection& m_db;
+  SQLite::Database& m_db;
 
   ArchiveTable             m_archive_table;
   BlobTable                m_blob_table;

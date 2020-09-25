@@ -20,7 +20,7 @@
 class ResourceInfoStore
 {
 public:
-  ResourceInfoStore(SQLiteConnection& db) :
+  ResourceInfoStore(SQLite::Database& db) :
     m_db(db),
     m_stmt(db,
            "INSERT INTO resource (blob_id, type, handler, arguments, status) VALUES (?1, ?2, ?3, ?4, ?5);")
@@ -28,19 +28,19 @@ public:
 
   RowId operator()(const ResourceInfo& info)
   {
-    m_stmt.bind_int64(1, info.get_name().get_blob_info().get_id().get_id());
-    m_stmt.bind_text(2, info.get_handler().get_type());
-    m_stmt.bind_text(3, info.get_handler().get_name());
-    m_stmt.bind_text(4, info.get_handler().get_args());
-    m_stmt.bind_int(5, static_cast<int>(info.get_status()));
-    m_stmt.execute();
+    m_stmt.bind(1, info.get_name().get_blob_info().get_id().get_id());
+    m_stmt.bind(2, info.get_handler().get_type());
+    m_stmt.bind(3, info.get_handler().get_name());
+    m_stmt.bind(4, info.get_handler().get_args());
+    m_stmt.bind(5, static_cast<int>(info.get_status()));
+    m_stmt.exec();
 
-    return {sqlite3_last_insert_rowid(m_db.get_db())};
+    return RowId(m_db.getLastInsertRowid());
   }
 
 private:
-  SQLiteConnection& m_db;
-  SQLiteStatement m_stmt;
+  SQLite::Database& m_db;
+  SQLite::Statement m_stmt;
 
 private:
   ResourceInfoStore(const ResourceInfoStore&);

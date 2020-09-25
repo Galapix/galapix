@@ -28,7 +28,7 @@
 class TileEntryGetAllByFileEntry final
 {
 public:
-  TileEntryGetAllByFileEntry(SQLiteConnection& db) :
+  TileEntryGetAllByFileEntry(SQLite::Database& db) :
     m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1;")
   {}
 
@@ -36,9 +36,9 @@ public:
   {
     if (fileid)
     {
-      m_stmt.bind_int64(1, fileid.get_id());
+      m_stmt.bind(1, fileid.get_id());
 
-      SQLiteReader reader = m_stmt.execute_query();
+      SQLiteReader reader(m_stmt);
       while(reader.next())
       {
         TileEntry tile(fileid,
@@ -72,7 +72,7 @@ public:
   }
 
 private:
-  SQLiteStatement m_stmt;
+  SQLite::Statement m_stmt;
 
 private:
   TileEntryGetAllByFileEntry(const TileEntryGetAllByFileEntry&);

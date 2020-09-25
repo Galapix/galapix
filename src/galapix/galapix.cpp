@@ -26,7 +26,9 @@
 #include <string>
 #include <vector>
 
+#include <sqlite3.h>
 #include <Magick++.h>
+
 #include <strut/numeric_less.hpp>
 
 #include "archive/archive_manager.hpp"
