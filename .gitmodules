@@ -31,3 +31,6 @@
 [submodule "external/archcpp"]
 	path = external/archcpp
 	url = https://gitlab.com/grumbel/archcpp.git
+[submodule "external/SQLiteCpp"]
+	path = external/SQLiteCpp
+	url = https://github.com/SRombauts/SQLiteCpp.git
