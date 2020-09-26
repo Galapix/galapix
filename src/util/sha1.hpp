@@ -20,6 +20,7 @@
 #include <array>
 #include <string>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <sstream>
 
 #include "util/blob.hpp"
@@ -55,24 +56,6 @@ private:
 } // namespace galapix
 
 std::ostream& operator<<(std::ostream& os, const galapix::SHA1& sha1);
-
-template<>
-struct fmt::formatter<galapix::SHA1>
-{
-  template<typename ParseContext>
-  constexpr auto parse(ParseContext& ctx)
-  {
-    return ctx.begin();
-  }
-
-  template<typename FormatContext>
-  auto format(galapix::SHA1 const& v, FormatContext& ctx)
-  {
-    std::ostringstream os;
-    os << v;
-    return fmt::format_to(ctx.out(), os.str());
-  }
-};
 
 #endif
 

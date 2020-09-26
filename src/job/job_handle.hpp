@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <sstream>
 #include <iosfwd>
 
@@ -59,24 +60,6 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
-
-template<>
-struct fmt::formatter<JobHandle>
-{
-  template<typename ParseContext>
-  constexpr auto parse(ParseContext& ctx)
-  {
-    return ctx.begin();
-  }
-
-  template<typename FormatContext>
-  auto format(JobHandle const& v, FormatContext& ctx)
-  {
-    std::ostringstream os;
-    os << v;
-    return fmt::format_to(ctx.out(), os.str());
-  }
-};
 
 #endif
 
