@@ -25,7 +25,6 @@
 #include "job/job_manager.hpp"
 #include "job/thread_message_queue2.hpp"
 #include "network/download_cache.hpp"
-#include "util/blob.hpp"
 
 class DownloadProgress;
 class DownloadResult;
@@ -42,12 +41,12 @@ public:
   ~DownloadManager();
 
   TransferHandle request_get(const std::string& url,
-                             const std::function<void (const DownloadResult&)>& callback,
+                             const std::function<void (DownloadResult)>& callback,
                              const std::function<ProgressFunc>& progress_callback = {});
 
   TransferHandle request_post(const std::string& url,
                               const std::string& data,
-                              const std::function<void (const DownloadResult&)>& callback,
+                              const std::function<void (DownloadResult)>& callback,
                               const std::function<ProgressFunc>& progress_callback = {});
 
   void cancel_transfer(TransferHandle id);

@@ -19,18 +19,17 @@
 
 #include <curl/curl.h>
 #include <string>
-
-#include "util/blob.hpp"
+#include <vector>
 
 class DownloadResult
 {
 public:
-  static DownloadResult from_curl(CURL* handle, Blob blob);
+  static DownloadResult from_curl(CURL* handle, std::vector<uint8_t> data);
 
 private:
   DownloadResult() :
     m_content_type(),
-    m_blob(),
+    m_data(),
     m_mtime(-1),
     m_response_code()
   {}
@@ -38,7 +37,8 @@ private:
 public:
   std::string get_content_type() const { return m_content_type; }
   long get_mtime() const { return m_mtime; }
-  Blob get_blob() const { return m_blob; }
+  std::vector<uint8_t>&& move_data() { return std::move(m_data); }
+  std::vector<uint8_t> const& get_data() const { return m_data; }
   long get_response_code() const { return m_response_code; }
   bool success() const {
     return m_response_code / 100 == 2;
@@ -46,7 +46,7 @@ public:
 
 private:
   std::string m_content_type;
-  Blob m_blob;
+  std::vector<uint8_t> m_data;
   long m_mtime;
   long m_response_code;
 };

@@ -10,7 +10,7 @@ TEST(DownloadManagerTest, request_get) {
                            [&success](const DownloadResult& result){
                              if (result.success())
                              {
-                               result.get_blob();
+                               result.get_data();
                                success = true;
                              }
                            });

@@ -73,16 +73,21 @@ BlobManager::request_blob(const ResourceLocator& locator,
   {
     m_download_mgr.request_get
       (url.str(),
-       [this, callback, locator, url](const DownloadResult& result)
+       [this, callback, locator, url](DownloadResult result)
        {
-         if (result.success())
+         if (!result.success())
+         {
+           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(fmt::format("{}: error: invalid response code: {}",
+                                                                                             url.str(), result.get_response_code()))));
+         }
+         else
          {
            m_pool.schedule
-             ([this, callback, locator, result]()
+             ([this, callback, locator, result = std::move(result)]() mutable
               {
                 try
                 {
-                  BlobAccessorPtr blob = std::make_shared<BlobAccessor>(result.get_blob());
+                  BlobAccessorPtr blob = std::make_shared<BlobAccessor>(result.move_data());
                   for(const auto& handler : locator.get_handler())
                   {
                     assert(blob->has_stdio_name());
@@ -96,11 +101,6 @@ BlobManager::request_blob(const ResourceLocator& locator,
                   callback(Failable<BlobAccessorPtr>(std::current_exception()));
                 }
               });
-         }
-         else
-         {
-           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(fmt::format("{}: error: invalid response code: {}",
-                                                                                             url.str(), result.get_response_code()))));
          }
        });
   }

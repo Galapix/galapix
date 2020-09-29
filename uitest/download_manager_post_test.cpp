@@ -40,8 +40,8 @@ UITEST(DownloadManager, post, "URL...",
                               std::cout << "got " << result.get_response_code() << " for " << " " << arg << std::endl;
                               if (result.success())
                               {
-                                std::cout.write(reinterpret_cast<const char*>(result.get_blob().get_data()),
-                                                static_cast<std::streamsize>(result.get_blob().size()));
+                                std::cout.write(reinterpret_cast<const char*>(result.get_data().data()),
+                                                static_cast<std::streamsize>(result.get_data().size()));
                               }
                               else
                               {

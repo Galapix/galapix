@@ -17,11 +17,11 @@
 #include "network/download_result.hpp"
 
 DownloadResult
-DownloadResult::from_curl(CURL* handle, Blob blob)
+DownloadResult::from_curl(CURL* handle, std::vector<uint8_t> data)
 {
   DownloadResult result;
 
-  result.m_blob = std::move(blob);
+  result.m_data = std::move(data);
 
   char* content_type = nullptr;
   curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);

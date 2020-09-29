@@ -251,7 +251,7 @@ DownloadManager::finish_transfer(CURL* handle)
     }
     else
     {
-      DownloadResult result = DownloadResult::from_curl(transfer->handle, Blob::copy(transfer->data));
+      DownloadResult result = DownloadResult::from_curl(transfer->handle, std::move(transfer->data));
       m_cache.store(transfer->url, result);
       transfer->callback(result);
     }
@@ -268,7 +268,7 @@ DownloadManager::generate_transfer_handle()
 
 DownloadManager::TransferHandle
 DownloadManager::request_get(const std::string& url,
-                             const std::function<void (const DownloadResult&)>& callback,
+                             const std::function<void (DownloadResult)>& callback,
                              const std::function<ProgressFunc>& progress_callback)
 {
   TransferHandle uuid = generate_transfer_handle();
@@ -299,7 +299,7 @@ DownloadManager::request_get(const std::string& url,
 DownloadManager::TransferHandle
 DownloadManager::request_post(const std::string& url,
                               const std::string& post_data,
-                              const std::function<void (const DownloadResult&)>& callback,
+                              const std::function<void (DownloadResult)>& callback,
                               const std::function<ProgressFunc>& progress_callback)
 {
   TransferHandle uuid = generate_transfer_handle();
