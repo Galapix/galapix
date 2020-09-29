@@ -26,7 +26,7 @@
 class ThreadPool
 {
 public:
-  typedef std::function<void ()> Task;
+  using Task = std::function<void ()>;
 
   enum ShutdownPolicy {
     kWaitForAllTasks,

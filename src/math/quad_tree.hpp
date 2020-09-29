@@ -43,7 +43,7 @@ private:
     {}
   };
 
-  typedef std::vector<Object> Items;
+  using Items = std::vector<Object>;
 
 private:
   Rectf    m_bounding_rect;

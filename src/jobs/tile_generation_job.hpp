@@ -66,7 +66,7 @@ private:
     {}
   };
 
-  typedef std::vector<TileRequest> TileRequests;
+  using TileRequests = std::vector<TileRequest>;
 
 private:
   std::mutex m_state_mutex;
@@ -94,7 +94,7 @@ private:
   /** TileRequests that came in when the process was already running */
   TileRequests m_late_tile_requests;
 
-  typedef std::vector<Tile> Tiles;
+  using Tiles = std::vector<Tile>;
   Tiles m_tiles;
 
   sigc::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;

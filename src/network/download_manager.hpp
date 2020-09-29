@@ -22,7 +22,6 @@
 #include <thread>
 #include <atomic>
 
-#include "job/job_manager.hpp"
 #include "job/thread_message_queue2.hpp"
 #include "network/download_cache.hpp"
 
@@ -33,8 +32,8 @@ class DownloadTransfer;
 class DownloadManager
 {
 public:
-  typedef bool ProgressFunc(DownloadProgress const&);
-  typedef unsigned int TransferHandle;
+  using ProgressFunc = bool (DownloadProgress const&);
+  using TransferHandle = unsigned int;
 
 public:
   DownloadManager();

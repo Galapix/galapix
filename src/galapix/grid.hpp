@@ -28,8 +28,8 @@ template<typename T>
 class Grid
 {
 private:
-  typedef std::vector<T> Columns;
-  typedef std::vector<Columns> Rows;
+  using Columns = std::vector<T>;
+  using Rows = std::vector<Columns>;
 
 public:
   Grid(int w, int h)

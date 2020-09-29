@@ -36,7 +36,7 @@ private:
   Layouter& operator=(const Layouter&);
 };
 
-typedef std::shared_ptr<Layouter> LayouterPtr;
+using LayouterPtr = std::shared_ptr<Layouter>;
 
 #endif
 

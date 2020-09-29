@@ -63,7 +63,7 @@ private:
   JobWorkerThread& operator= (const JobWorkerThread&);
 };
 
-typedef std::shared_ptr<JobWorkerThread> JobWorkerThreadPtr;
+using JobWorkerThreadPtr = std::shared_ptr<JobWorkerThread>;
 
 #endif
 

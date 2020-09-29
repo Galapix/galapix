@@ -24,13 +24,13 @@
 
 class Selection;
 
-typedef std::shared_ptr<Selection> SelectionPtr;
+using SelectionPtr = std::shared_ptr<Selection>;
 
 class Selection
 {
 public:
-  typedef ImageCollection::iterator iterator;
-  typedef ImageCollection::const_iterator const_iterator;
+  using iterator = ImageCollection::iterator;
+  using const_iterator = ImageCollection::const_iterator;
 
 private:
   Selection();

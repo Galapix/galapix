@@ -34,7 +34,7 @@ class ResourceName;
 class VideoData;
 class VideoInfo;
 
-typedef std::shared_ptr<GeneratorCallbacks> GeneratorCallbacksPtr;
+using GeneratorCallbacksPtr = std::shared_ptr<GeneratorCallbacks>;
 
 /** The GeneratorCallbacks class receives all the data that the
     Generator produces while processing a resource. The data is send

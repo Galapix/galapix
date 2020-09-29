@@ -24,7 +24,7 @@
 class JobHandleGroup
 {
 public:
-  typedef std::vector<JobHandle> JobHandles;
+  using JobHandles = std::vector<JobHandle>;
 
 public:
   JobHandleGroup() :

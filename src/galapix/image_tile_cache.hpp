@@ -33,7 +33,7 @@
 
 class ImageTileCache;
 
-typedef std::shared_ptr<ImageTileCache> ImageTileCachePtr;
+using ImageTileCachePtr = std::shared_ptr<ImageTileCache>;
 
 class ImageTileCache : public std::enable_shared_from_this<ImageTileCache>
 {
@@ -66,7 +66,7 @@ public:
   };
 
 private:
-  typedef std::map<TileCacheId, SurfaceStruct> Cache;
+  using Cache = std::map<TileCacheId, SurfaceStruct>;
 
 public:
   ImageTileCache(TileProviderPtr const& tile_provider);

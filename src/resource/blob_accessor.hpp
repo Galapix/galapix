@@ -53,7 +53,7 @@ private:
   BlobAccessor& operator=(const BlobAccessor&);
 };
 
-typedef std::shared_ptr<BlobAccessor> BlobAccessorPtr;
+using BlobAccessorPtr = std::shared_ptr<BlobAccessor>;
 
 #endif
 

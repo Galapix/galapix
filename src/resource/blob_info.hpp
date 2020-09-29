@@ -25,7 +25,7 @@
 #include "util/filesystem.hpp"
 
 class BlobAccessor;
-typedef std::shared_ptr<BlobAccessor> BlobAccessorPtr;
+using BlobAccessorPtr = std::shared_ptr<BlobAccessor>;
 
 class BlobInfo
 {

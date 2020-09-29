@@ -25,12 +25,12 @@
 class ImageCollection
 {
 public:
-  typedef std::vector<WorkspaceItemPtr> Images;
-  typedef Images::iterator iterator;
-  typedef Images::const_iterator const_iterator;
-  typedef Images::reverse_iterator reverse_iterator;
-  typedef Images::const_reverse_iterator const_reverse_iterator;
-  typedef Images::size_type  size_type;
+  using Images = std::vector<WorkspaceItemPtr>;
+  using iterator = Images::iterator;
+  using const_iterator = Images::const_iterator;
+  using reverse_iterator = Images::reverse_iterator;
+  using const_reverse_iterator = Images::const_reverse_iterator;
+  using size_type = Images::size_type;
 
 public:
   ImageCollection();

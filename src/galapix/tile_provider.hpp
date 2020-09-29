@@ -25,7 +25,7 @@
 
 class TileProvider;
 
-typedef std::shared_ptr<TileProvider> TileProviderPtr;
+using TileProviderPtr = std::shared_ptr<TileProvider>;
 
 /** A TileProvider is the data source from which an Image requests the
     tiles */

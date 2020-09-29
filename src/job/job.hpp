@@ -38,7 +38,7 @@ private:
   Job& operator= (const Job&);
 };
 
-typedef std::shared_ptr<Job> JobPtr;
+using JobPtr = std::shared_ptr<Job>;
 
 #endif
 

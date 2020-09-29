@@ -26,7 +26,7 @@
 
 #include <geom/geom.hpp>
 
-typedef geom::ipoint Vector2i;
+using Vector2i = geom::ipoint;
 
 // std::ostream& operator<<(std::ostream& s, const Vector2i& v);
 

@@ -44,7 +44,7 @@ public:
                     std::function<void (std::shared_ptr<Job>, bool)> const& callback = {});
 
 private:
-  typedef std::vector<std::shared_ptr<JobWorkerThread> > Threads;
+  using Threads = std::vector<std::shared_ptr<JobWorkerThread> >;
   Threads threads;
   Threads::size_type next_thread;
 

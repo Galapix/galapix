@@ -26,8 +26,8 @@
 
 class WorkspaceItem;
 
-typedef std::weak_ptr<WorkspaceItem>   WorkspaceItemWPtr;
-typedef std::shared_ptr<WorkspaceItem> WorkspaceItemPtr;
+using WorkspaceItemWPtr = std::weak_ptr<WorkspaceItem>;
+using WorkspaceItemPtr = std::shared_ptr<WorkspaceItem>;
 
 class WorkspaceItem
 {
