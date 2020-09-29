@@ -83,7 +83,6 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
   else
   {
     throw std::runtime_error("CURLHandler::get_data(): " + std::string(errbuf));
-    return {};
   }
 }
 
