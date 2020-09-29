@@ -25,6 +25,7 @@
 #include <strut/from_string.hpp>
 
 #include "network/download_manager.hpp"
+#include "network/download_progress.hpp"
 #include "network/download_result.hpp"
 
 namespace {
@@ -68,8 +69,8 @@ void run_repl()
                                        std::cout << "failure: " << result.get_response_code() << std::endl;
                                      }
                                    },
-                                   [=](double dltotal, double dlnow, double ultotal, double ulnow) -> bool {
-                                     std::cout << args[1] << ": " << dlnow/1000 << " / " << dltotal/1000 << std::endl;
+                                   [=](DownloadProgress const& progress) -> bool {
+                                     std::cout << args[1] << ": " << progress.dlnow/1000 << " / " << progress.dltotal/1000 << std::endl;
                                      return false;
                                    });
           std::cout << "launched " << handle << std::endl;
@@ -98,8 +99,8 @@ void run_repl()
                                         std::cout << "failure: " << result.get_response_code() << std::endl;
                                       }
                                     },
-                                    [=](double dltotal, double dlnow, double ultotal, double ulnow) -> bool {
-                                      std::cout << args[1] << ": " << dlnow/1000 << " / " << dltotal/1000 << std::endl;
+                                    [=](DownloadProgress progress) -> bool {
+                                      std::cout << args[1] << ": " << progress.dlnow/1000 << " / " << progress.dltotal/1000 << std::endl;
                                       return false;
                                     });
           std::cout << "launched " << handle << std::endl;

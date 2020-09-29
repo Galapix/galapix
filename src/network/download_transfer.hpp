@@ -18,6 +18,7 @@
 #define HEADER_GALAPIX_NETWORK_DOWNLOAD_TRANSFER_HPP
 
 #include "network/download_manager.hpp"
+#include "network/download_progress.hpp"
 
 class DownloadResult;
 
@@ -43,11 +44,7 @@ public:
   std::vector<uint8_t> data;
   char* post_data;
 
-  double progress_dlnow;
-  double progress_dltotal;
-
-  double progress_ulnow;
-  double progress_ultotal;
+  DownloadProgress m_progress;
 
   std::function<void (const DownloadResult&)> callback;
   std::function<DownloadManager::ProgressFunc> progress_callback;

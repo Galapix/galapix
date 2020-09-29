@@ -28,10 +28,7 @@ DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
   errbuf(),
   data(),
   post_data(nullptr),
-  progress_dlnow(0.0),
-  progress_dltotal(0.0),
-  progress_ulnow(0.0),
-  progress_ultotal(0.0),
+  m_progress(),
   callback(callback_),
   progress_callback(progress_callback_)
 {
@@ -89,15 +86,15 @@ DownloadTransfer::progress_callback_wrap(void* userdata, double dltotal, double 
 {
   DownloadTransfer* transfer = static_cast<DownloadTransfer*>(userdata);
 
-  transfer->progress_dlnow   = dlnow;
-  transfer->progress_dltotal = dltotal;
+  transfer->m_progress.dlnow   = dlnow;
+  transfer->m_progress.dltotal = dltotal;
 
-  transfer->progress_ulnow   = ulnow;
-  transfer->progress_ultotal = ultotal;
+  transfer->m_progress.ulnow   = ulnow;
+  transfer->m_progress.ultotal = ultotal;
 
   if (transfer->progress_callback)
   {
-    return transfer->progress_callback(dltotal, dlnow, ultotal, ulnow);
+    return transfer->progress_callback(transfer->m_progress);
   }
   else
   {

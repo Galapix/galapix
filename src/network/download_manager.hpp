@@ -27,13 +27,14 @@
 #include "network/download_cache.hpp"
 #include "util/blob.hpp"
 
-class DownloadTransfer;
+class DownloadProgress;
 class DownloadResult;
+class DownloadTransfer;
 
 class DownloadManager
 {
 public:
-  typedef bool ProgressFunc(double dltotal, double dlnow, double ultotal, double ulnow);
+  typedef bool ProgressFunc(DownloadProgress const&);
   typedef unsigned int TransferHandle;
 
 public:

@@ -21,6 +21,7 @@
 #include <uitest/uitest.hpp>
 
 #include "network/download_manager.hpp"
+#include "network/download_progress.hpp"
 #include "network/download_result.hpp"
 #include <logmich/log.hpp>
 
@@ -47,8 +48,8 @@ UITEST(DownloadManager, post, "URL...",
                                 std::cout << "failure: " << result.get_response_code() << std::endl;
                               }
                             },
-                            [=](double dltotal, double dlnow, double ultotal, double ulnow) -> bool {
-                              std::cout << arg << ": " << dlnow/1000 << " / " << dltotal/1000 << std::endl;
+                            [=](DownloadProgress const& progress) -> bool {
+                              std::cout << arg << ": " << progress.dlnow/1000 << " / " << progress.dltotal/1000 << std::endl;
                               return false;
                             });
   }
