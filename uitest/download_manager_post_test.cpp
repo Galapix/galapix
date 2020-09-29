@@ -37,15 +37,15 @@ UITEST(DownloadManager, post, "URL...",
     downloader.request_post(arg,
                             "Hello World",
                             [=](const DownloadResult& result) {
-                              std::cout << "got " << result.get_response_code() << " for " << " " << arg << std::endl;
+                              std::cout << "got " << result.response_code << " for " << " " << arg << std::endl;
                               if (result.success())
                               {
-                                std::cout.write(reinterpret_cast<const char*>(result.get_data().data()),
-                                                static_cast<std::streamsize>(result.get_data().size()));
+                                std::cout.write(reinterpret_cast<const char*>(result.data.data()),
+                                                static_cast<std::streamsize>(result.data.size()));
                               }
                               else
                               {
-                                std::cout << "failure: " << result.get_response_code() << std::endl;
+                                std::cout << "failure: " << result.response_code << std::endl;
                               }
                             },
                             [=](DownloadProgress const& progress) -> bool {

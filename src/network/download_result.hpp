@@ -21,34 +21,21 @@
 #include <string>
 #include <vector>
 
-class DownloadResult
+struct DownloadResult
 {
 public:
   static DownloadResult from_curl(CURL* handle, std::vector<uint8_t> data);
 
-private:
-  DownloadResult() :
-    m_content_type(),
-    m_data(),
-    m_mtime(-1),
-    m_response_code()
-  {}
-
 public:
-  std::string get_content_type() const { return m_content_type; }
-  long get_mtime() const { return m_mtime; }
-  std::vector<uint8_t>&& move_data() { return std::move(m_data); }
-  std::vector<uint8_t> const& get_data() const { return m_data; }
-  long get_response_code() const { return m_response_code; }
   bool success() const {
-    return m_response_code / 100 == 2;
+    return response_code / 100 == 2;
   }
 
-private:
-  std::string m_content_type;
-  std::vector<uint8_t> m_data;
-  long m_mtime;
-  long m_response_code;
+public:
+  std::string content_type = {};
+  std::vector<uint8_t> data = {};
+  long mtime = {};
+  long response_code = {};
 };
 
 #endif

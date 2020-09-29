@@ -78,7 +78,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
          if (!result.success())
          {
            callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(fmt::format("{}: error: invalid response code: {}",
-                                                                                             url.str(), result.get_response_code()))));
+                                                                                             url.str(), result.response_code))));
          }
          else
          {
@@ -87,7 +87,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
               {
                 try
                 {
-                  BlobAccessorPtr blob = std::make_shared<BlobAccessor>(result.move_data());
+                  BlobAccessorPtr blob = std::make_shared<BlobAccessor>(std::move(result.data));
                   for(const auto& handler : locator.get_handler())
                   {
                     assert(blob->has_stdio_name());

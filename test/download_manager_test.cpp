@@ -8,9 +8,7 @@ TEST(DownloadManagerTest, request_get) {
     DownloadManager downloader;
     downloader.request_get("https://raw.githubusercontent.com/Galapix/galapix/master/test/jpeg_size_test.cpp",
                            [&success](const DownloadResult& result){
-                             if (result.success())
-                             {
-                               result.get_data();
+                             if (result.success()) {
                                success = true;
                              }
                            });

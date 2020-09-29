@@ -20,7 +20,7 @@
 #include "network/download_manager.hpp"
 #include "network/download_progress.hpp"
 
-class DownloadResult;
+struct DownloadResult;
 
 class DownloadTransfer
 {

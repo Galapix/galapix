@@ -21,17 +21,17 @@ DownloadResult::from_curl(CURL* handle, std::vector<uint8_t> data)
 {
   DownloadResult result;
 
-  result.m_data = std::move(data);
+  result.data = std::move(data);
 
   char* content_type = nullptr;
   curl_easy_getinfo(handle, CURLINFO_CONTENT_TYPE, &content_type);
   if (content_type)
   {
-    result.m_content_type = content_type;
+    result.content_type = content_type;
   }
 
-  curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &result.m_response_code);
-  curl_easy_getinfo(handle, CURLINFO_FILETIME, &result.m_mtime);
+  curl_easy_getinfo(handle, CURLINFO_RESPONSE_CODE, &result.response_code);
+  curl_easy_getinfo(handle, CURLINFO_FILETIME, &result.mtime);
 
   return result;
 }

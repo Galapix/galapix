@@ -56,17 +56,17 @@ void run_repl()
                                    [=](const DownloadResult& result) {
 
                                      std::cout << "results for " << args[1] << std::endl;
-                                     std::cout << "  response code     : " << result.get_response_code() << std::endl;
-                                     std::cout << "  modification time : " << result.get_mtime() << std::endl;
+                                     std::cout << "  response code     : " << result.response_code << std::endl;
+                                     std::cout << "  modification time : " << result.mtime << std::endl;
 
                                      if (result.success())
                                      {
-                                       std::cout.write(reinterpret_cast<const char*>(result.get_data().data()),
-                                                       static_cast<std::streamsize>(result.get_data().size()));
+                                       std::cout.write(reinterpret_cast<const char*>(result.data.data()),
+                                                       static_cast<std::streamsize>(result.data.size()));
                                      }
                                      else
                                      {
-                                       std::cout << "failure: " << result.get_response_code() << std::endl;
+                                       std::cout << "failure: " << result.response_code << std::endl;
                                      }
                                    },
                                    [=](DownloadProgress const& progress) -> bool {
@@ -88,15 +88,15 @@ void run_repl()
             downloader.request_post(args[1],
                                     args[2],
                                     [=](const DownloadResult& result) {
-                                      std::cout << "got " << result.get_response_code() << " for " << " " << args[1] << std::endl;
+                                      std::cout << "got " << result.response_code << " for " << " " << args[1] << std::endl;
                                       if (result.success())
                                       {
-                                        std::cout.write(reinterpret_cast<const char*>(result.get_data().data()),
-                                                        static_cast<std::streamsize>(result.get_data().size()));
+                                        std::cout.write(reinterpret_cast<const char*>(result.data.data()),
+                                                        static_cast<std::streamsize>(result.data.size()));
                                       }
                                       else
                                       {
-                                        std::cout << "failure: " << result.get_response_code() << std::endl;
+                                        std::cout << "failure: " << result.response_code << std::endl;
                                       }
                                     },
                                     [=](DownloadProgress progress) -> bool {

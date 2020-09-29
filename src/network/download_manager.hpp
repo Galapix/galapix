@@ -26,8 +26,8 @@
 #include "job/thread_message_queue2.hpp"
 #include "network/download_cache.hpp"
 
-class DownloadProgress;
-class DownloadResult;
+struct DownloadProgress;
+struct DownloadResult;
 class DownloadTransfer;
 
 class DownloadManager
