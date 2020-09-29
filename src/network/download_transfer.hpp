@@ -24,7 +24,7 @@ class DownloadResult;
 
 class DownloadTransfer
 {
-public:
+private:
   static size_t write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata);
   static int progress_callback_wrap(void* userdata, double dltotal, double dlnow, double ultotal, double ulnow);
 
@@ -44,7 +44,7 @@ public:
   std::vector<uint8_t> data;
   char* post_data;
 
-  DownloadProgress m_progress;
+  DownloadProgress progress;
 
   std::function<void (const DownloadResult&)> callback;
   std::function<DownloadManager::ProgressFunc> progress_callback;

@@ -28,7 +28,7 @@ DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
   errbuf(),
   data(),
   post_data(nullptr),
-  m_progress(),
+  progress(),
   callback(callback_),
   progress_callback(progress_callback_)
 {
@@ -66,8 +66,7 @@ DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
 
 DownloadTransfer::~DownloadTransfer()
 {
-  if (post_data)
-  {
+  if (post_data) {
     curl_free(post_data);
   }
   curl_easy_cleanup(handle);
@@ -76,28 +75,27 @@ DownloadTransfer::~DownloadTransfer()
 size_t
 DownloadTransfer::write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
-  DownloadTransfer* transfer = static_cast<DownloadTransfer*>(userdata);
-  std::copy(static_cast<uint8_t*>(ptr), static_cast<uint8_t*>(ptr) + size*nmemb, std::back_inserter(transfer->data));
+  DownloadTransfer& transfer = *static_cast<DownloadTransfer*>(userdata);
+  transfer.data.insert(transfer.data.end(),
+                       static_cast<uint8_t*>(ptr),
+                       static_cast<uint8_t*>(ptr) + size * nmemb);
   return nmemb * size;
 }
 
 int
 DownloadTransfer::progress_callback_wrap(void* userdata, double dltotal, double dlnow, double ultotal, double ulnow)
 {
-  DownloadTransfer* transfer = static_cast<DownloadTransfer*>(userdata);
+  DownloadTransfer& transfer = *static_cast<DownloadTransfer*>(userdata);
 
-  transfer->m_progress.dlnow   = dlnow;
-  transfer->m_progress.dltotal = dltotal;
+  transfer.progress.dlnow = dlnow;
+  transfer.progress.dltotal = dltotal;
 
-  transfer->m_progress.ulnow   = ulnow;
-  transfer->m_progress.ultotal = ultotal;
+  transfer.progress.ulnow = ulnow;
+  transfer.progress.ultotal = ultotal;
 
-  if (transfer->progress_callback)
-  {
-    return transfer->progress_callback(transfer->m_progress);
-  }
-  else
-  {
+  if (transfer.progress_callback) {
+    return transfer.progress_callback(transfer.progress);
+  } else {
     return false;
   }
 }
