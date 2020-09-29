@@ -27,7 +27,7 @@ Database::create(const std::string& prefix)
   Filesystem::mkdir(prefix);
 
   auto db = std::make_unique<SQLite::Database>(prefix + "/cache4.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-  auto tile_db = std::make_unique<SQLite::Database>(prefix + "/cache4_tiles.sqlite3");
+  auto tile_db = std::make_unique<SQLite::Database>(prefix + "/cache4_tiles.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
 
   auto resources = std::make_unique<ResourceDatabase>(*db);
 
