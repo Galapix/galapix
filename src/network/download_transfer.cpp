@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "network/download_transfer.hpp"
-#include "util/raise_exception.hpp"
 
 DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
                                    const std::string& url_,
@@ -34,7 +33,7 @@ DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
 {
   if (!handle)
   {
-    raise_runtime_error("curl_easy_init() failed");
+    throw std::runtime_error("curl_easy_init() failed");
   }
   else
   {

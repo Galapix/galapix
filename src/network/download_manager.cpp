@@ -28,7 +28,6 @@
 #include "network/curl.hpp"
 #include "network/download_transfer.hpp"
 #include "network/download_result.hpp"
-#include "util/raise_exception.hpp"
 
 DownloadManager::DownloadManager() :
   m_cache("/tmp/cachdir"),
@@ -44,18 +43,18 @@ DownloadManager::DownloadManager() :
   int ret = pipe(m_pipefd);
   if (ret < 0)
   {
-    raise_runtime_error("pipe() failed: " << strerror(errno));
+    throw std::runtime_error(fmt::format("pipe() failed: {}", strerror(errno)));
   }
 
   if (curl_global_init(CURL_GLOBAL_ALL) != 0)
   {
-    raise_runtime_error("curl_global_init() failed");
+    throw std::runtime_error("curl_global_init() failed");
   }
 
   m_multi_handle = curl_multi_init();
   if (!m_multi_handle)
   {
-    raise_runtime_error("curl_multi_init() failed");
+    throw std::runtime_error("curl_multi_init() failed");
   }
 
   m_thread = std::thread(std::bind(&DownloadManager::run, this));

@@ -22,8 +22,6 @@
 
 #include <curl/curl.h>
 
-#include "util/raise_exception.hpp"
-
 static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   std::vector<uint8_t>* data = static_cast<std::vector<uint8_t>*>(userdata);
@@ -75,7 +73,7 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
   {
     std::ostringstream str;
     str << "CURLHandler::get_data(): HTTP Error: " << response_code;
-    raise_runtime_error(str.str());
+    throw std::runtime_error(str.str());
   }
 
   if (ret == 0)
@@ -84,7 +82,7 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
   }
   else
   {
-    raise_runtime_error("CURLHandler::get_data(): " + std::string(errbuf));
+    throw std::runtime_error("CURLHandler::get_data(): " + std::string(errbuf));
     return {};
   }
 }
