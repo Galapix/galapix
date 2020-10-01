@@ -25,7 +25,6 @@
 #include "galapix/layouter/spiral_layouter.hpp"
 #include "galapix/selection.hpp"
 #include "galapix/workspace_item.hpp"
-#include "job/thread_message_queue.hpp"
 #include "math/quad_tree.hpp"
 #include "util/url.hpp"
 #include "math/rect.hpp"
