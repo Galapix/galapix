@@ -107,6 +107,14 @@ function(build_dependencies)
     add_subdirectory(external/uitest/ EXCLUDE_FROM_ALL)
   endif()
 
+  if(BUILD_BENCHMARKS)
+    # build google-benchmark
+    file(GLOB BENCHMARK_SOURCES external/benchmark/src/*.cc)
+    add_library(benchmark ${BENCHMARK_SOURCES})
+    target_include_directories(benchmark SYSTEM PUBLIC
+      ${CMAKE_CURRENT_SOURCE_DIR}/external/benchmark/include)
+  endif()
+
   set(BUILD_TESTS OFF)
   add_subdirectory(external/SQLiteCpp/ EXCLUDE_FROM_ALL)
   set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
@@ -303,12 +311,6 @@ if(BUILD_TESTS)
 endif()
 
 if(BUILD_BENCHMARKS)
-  # build google-benchmark
-  file(GLOB BENCHMARK_SOURCES external/benchmark/src/*.cc)
-  add_library(benchmark ${BENCHMARK_SOURCES})
-  target_include_directories(benchmark SYSTEM PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/benchmark/include)
-
   # build benchmarks
   file(GLOB BENCHMARKSOURCES benchmarks/*.cpp)
   foreach(SOURCE ${BENCHMARKSOURCES})
