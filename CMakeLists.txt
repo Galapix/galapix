@@ -125,6 +125,7 @@ function(build_dependencies)
   add_subdirectory(external/strut/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/surfcpp/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/archcpp/ EXCLUDE_FROM_ALL)
+  add_subdirectory(external/priocpp/ EXCLUDE_FROM_ALL)
 endfunction()
 build_dependencies()
 
@@ -175,6 +176,7 @@ target_include_directories(libgalapix PUBLIC
   src/
   ${CMAKE_CURRENT_BINARY_DIR}/src/)
 target_link_libraries(libgalapix PUBLIC
+  prio
   arch
   surf
   strut

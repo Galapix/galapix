@@ -34,3 +34,6 @@
 [submodule "external/SQLiteCpp"]
 	path = external/SQLiteCpp
 	url = https://github.com/SRombauts/SQLiteCpp.git
+[submodule "external/priocpp"]
+	path = external/priocpp
+	url = https://gitlab.com/grumbel/priocpp.git
