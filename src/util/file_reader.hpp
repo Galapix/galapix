@@ -19,6 +19,8 @@
 
 #include <vector>
 #include <memory>
+
+#include <prio/fwd.hpp>
 #include <geom/fwd.hpp>
 
 #include "math/vector2i.hpp"
@@ -29,57 +31,22 @@ namespace surf {
 class RGBA;
 } // namespace surf
 
-class FileReaderImpl;
 class URL;
 
-/** Interface to read name/value pairs out of some kind of file or
-    structure */
-class FileReader
-{
-public:
-  FileReader(std::shared_ptr<FileReaderImpl> const& impl_);
-  FileReader();
-  virtual ~FileReader() {}
 
-  /** Name of the current section, ie. in the case of
-      <groundpiece><pos>...</groundpiece> it would be 'groundpiece' */
-  std::string get_name() const;
+using ReaderCollection = prio::ReaderCollection;
+using ReaderDocument = prio::ReaderDocument;
+using ReaderMapping = prio::ReaderMapping;
+using ReaderObject = prio::ReaderObject;
 
-  bool read_int (const char* name, int& value) const;
-  bool read_float (const char* name, float& value) const;
-  bool read_bool (const char* name, bool& value) const;
-  bool read_string(const char* name, std::string& value) const;
-  bool read_url (const char* name, URL& value) const;
-  bool read_vector2i(const char* name, Vector2i& value) const;
-  bool read_vector2f(const char* name, Vector2f& value) const;
-  bool read_rect(const char* name, Rect& value) const;
-  bool read_size (const char* name, geom::isize& value) const;
-  bool read_rgba (const char* name, surf::RGBA& value) const;
-  bool read_section(const char* name, FileReader& reader) const;
-  FileReader read_section(const char* name) const;
+bool read_custom(ReaderMapping const& map, std::string_view key, URL& value);
+bool read_custom(ReaderMapping const& map, std::string_view key, Vector2i& value);
+bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value);
+bool read_custom(ReaderMapping const& map, std::string_view key, Rect& value);
+bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& value);
+bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& value);
 
-  template<class E, class T>
-  bool read_enum  (const char* name, E& value, T enum2string) const
-  {
-    std::string str;
-    if (read_string(name, str))
-      {
-        value = enum2string(str);
-        return true;
-      }
-
-    return false;
-  }
-
-  std::vector<std::string> get_section_names() const;
-  std::vector<FileReader>  get_sections() const;
-  int  get_num_sections() const;
-
-  static FileReader parse(const std::string& filename);
-
-private:
-  std::shared_ptr<FileReaderImpl> impl;
-};
+#include <prio/prio.hpp>
 
 #endif
 

@@ -18,26 +18,15 @@
 #define HEADER_GALAPIX_UTIL_FILE_WRITER_HPP
 
 #include <string>
-#include <geom/fwd.hpp>
 
-/** Interface to write out name/value pairs out of some kind of file or
-    structure */
-class FileWriter
-{
-public:
-  virtual ~FileWriter() {}
+#include <prio/fwd.hpp>
+#include <geom/size.hpp>
 
-  virtual void begin_section (const char* name) =0;
-  virtual void end_section () =0;
+using Writer = prio::Writer;
 
-  virtual void write_int    (const char* name, int) =0;
-  virtual void write_float  (const char* name, float) =0;
-  //virtual void write_color  (const char* name, const Color&) =0;
-  virtual void write_bool   (const char* name, bool) =0;
-  virtual void write_string (const char* name, const std::string&) =0;
-  virtual void write_size   (const char* name, const geom::isize&) = 0;
-};
+void write_custom(prio::Writer& writer, std::string_view key, geom::isize const& value);
 
+#include <prio/writer.hpp>
 
 #endif
 

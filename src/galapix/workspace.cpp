@@ -360,29 +360,31 @@ Workspace::save(std::ostream& out)
 void
 Workspace::load(const std::string& filename)
 {
-  FileReader reader = FileReader::parse(filename);
+  auto doc = ReaderDocument::from_file(filename, true);
 
-  if (reader.get_name() != "galapix-workspace")
+  if (doc.get_name() != "galapix-workspace")
   {
-    std::cout << "Error: Unknown file format: " << reader.get_name() << std::endl;
+    std::cout << "Error: Unknown file format: " << doc.get_name() << std::endl;
   }
   else
   {
-    //clear();
+    ReaderCollection collection;
 
-    std::vector<FileReader> image_sections = reader.read_section("images").get_sections();
+    doc.get_mapping().read("images", collection);
 
-    for(auto& i: image_sections)
+    for (auto& i: collection.get_objects())
     {
       if (i.get_name() == "image")
       {
+        ReaderMapping image_reader = i.get_mapping();
+
         URL      url;
         Vector2f pos;
         float    scale = 0.5f;
 
-        i.read_url("url", url);
-        i.read_vector2f("pos", pos);
-        i.read_float("scale", scale);
+        image_reader.read("url", url);
+        image_reader.read("pos", pos);
+        image_reader.read("scale", scale);
 
         std::cout << url << " " << pos << " " << scale << std::endl;
 

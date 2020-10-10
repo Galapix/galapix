@@ -16,195 +16,97 @@
 
 #include "util/file_reader.hpp"
 
-#include <sexp/parser.hpp>
-#include <geom/geom.hpp>
-
-#include "util/file_reader_impl.hpp"
-#include "util/sexpr_file_reader.hpp"
+#include "surface/rgba.hpp"
 #include "util/url.hpp"
 
-using namespace surf;
-
-FileReader::FileReader(std::shared_ptr<FileReaderImpl> const& impl_) :
-  impl(impl_)
+bool read_custom(ReaderMapping const& map, std::string_view key, URL& value_out)
 {
-}
-
-FileReader::FileReader() :
-  impl()
-{
-}
-
-std::string
-FileReader::get_name() const
-{
-  if (impl.get()) {
-    return impl->get_name();
-  } else {
-    return "";
-  }
-}
-
-bool
-FileReader::read_int(const char* name, int& value) const
-{
-  if (impl.get()) {
-    return impl->read_int(name, value);
-  } else {
+  std::string filename;
+  if (!map.read(key, filename)) {
     return false;
   }
+
+  value_out = URL::from_string(filename);
+  return true;
 }
 
-bool
-FileReader::read_float (const char* name, float& value) const
+bool read_custom(ReaderMapping const& map, std::string_view key, Vector2i& value_out)
 {
-  if (impl.get()) {
-    return impl->read_float(name, value);
-  } else {
+  std::vector<int> v;
+  if (!map.read(key, v)) {
     return false;
   }
-}
 
-bool
-FileReader::read_bool  (const char* name, bool& value) const
-{
-  if (impl.get()) {
-    return impl->read_bool(name, value);
-  } else {
+  if (v.size() != 2) {
     return false;
   }
+
+  value_out = Vector2i(v[0], v[1]);
+  return true;
 }
 
-bool
-FileReader::read_string(const char* name, std::string& value) const
+bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value_out)
 {
-  if (impl.get()) {
-    return impl->read_string(name, value);
-  } else {
+  std::vector<float> v;
+  if (!map.read(key, v)) {
     return false;
   }
-}
 
-bool
-FileReader::read_url(const char* name, URL& value) const
-{
-  if (impl.get())
-  {
-    std::string filename;
-    if (impl->read_string(name, filename))
-    {
-      value = URL::from_string(filename);
-      return true;
-    }
-    else
-    {
-      return false;
-    }
-  }
-  else
-  {
+  if (v.size() != 2) {
     return false;
   }
+
+  value_out = Vector2f(v[0], v[1]);
+  return true;
+
 }
 
-bool
-FileReader::read_rgba(const char* name, RGBA& value) const
+bool read_custom(ReaderMapping const& map, std::string_view key, geom::irect& value_out)
 {
-  if (impl.get()) {
-    return impl->read_rgba(name, value);
-  } else {
+  std::vector<int> v;
+  if (!map.read(key, v)) {
     return false;
   }
-}
 
-bool
-FileReader::read_size  (const char* name, geom::isize& value) const
-{
-  if (impl.get()) {
-    return impl->read_size(name, value);
-  } else {
+  if (v.size() != 4) {
     return false;
   }
+
+  value_out = geom::irect(v[0], v[1], v[2], v[3]);
+  return true;
 }
 
-bool
-FileReader::read_vector2i(const char* name, Vector2i& value) const
+bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& value_out)
 {
-  if (impl.get()) {
-    return impl->read_vector2i(name, value);
-  } else {
+  std::vector<int> v;
+  if (!map.read(key, v)) {
     return false;
   }
-}
 
-bool
-FileReader::read_vector2f(const char* name, Vector2f& value) const
-{
-  if (impl.get()) {
-    return impl->read_vector2f(name, value);
-  } else {
+  if (v.size() != 2) {
     return false;
   }
+
+  value_out = geom::isize(v[0], v[1]);
+  return true;
 }
 
-bool
-FileReader::read_rect(const char* name, Rect& value)    const
+bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& value_out)
 {
-  if (impl.get()) {
-    return impl->read_rect(name, value);
-  } else { 
+  std::vector<int> v;
+  if (!map.read(key, v)) {
     return false;
   }
-}
 
-bool
-FileReader::read_section(const char* name, FileReader& reader) const
-{
-  if (impl.get()) {
-    return impl->read_section(name, reader);
-  } else {
+  if (v.size() != 4) {
     return false;
   }
-}
 
-std::vector<std::string>
-FileReader::get_section_names() const
-{
-  if (impl.get()) {
-    return impl->get_section_names();
-  } else {
-    return std::vector<std::string>();
-  }
-}
-
-std::vector<FileReader>
-FileReader::get_sections() const
-{
-  if (impl.get()) {
-    return impl->get_sections();
-  } else {
-    return std::vector<FileReader>();
-  }
-}
-
-int
-FileReader::get_num_sections() const
-{
-  return int(impl->get_sections().size());
-}
-
-FileReader
-FileReader::read_section(const char* name)   const
-{
-  FileReader reader;
-  read_section(name, reader);
-  return reader;
-}
-
-FileReader
-FileReader::parse(const std::string& filename)
-{
-  return SExprFileReader(sexp::Parser::from_string(filename));
+  value_out.r = static_cast<uint8_t>(v[0]);
+  value_out.g = static_cast<uint8_t>(v[1]);
+  value_out.b = static_cast<uint8_t>(v[2]);
+  value_out.a = static_cast<uint8_t>(v[3]);
+  return true;
 }
 
 /* EOF */
