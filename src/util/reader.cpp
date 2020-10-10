@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "util/file_reader.hpp"
+#include "util/reader.hpp"
 
 #include "surface/rgba.hpp"
 #include "util/url.hpp"

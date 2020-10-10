@@ -28,7 +28,7 @@
 #include "galapix/layouter/spiral_layouter.hpp"
 #include "galapix/layouter/tight_layouter.hpp"
 #include "server/database_thread.hpp"
-#include "util/file_reader.hpp"
+#include "util/reader.hpp"
 
 Workspace::Workspace() :
   m_images(),
