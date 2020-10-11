@@ -360,7 +360,7 @@ Workspace::save(std::ostream& out)
 void
 Workspace::load(const std::string& filename)
 {
-  auto doc = ReaderDocument::from_file(filename, true);
+  auto doc = ReaderDocument::from_file(filename);
 
   if (doc.get_name() != "galapix-workspace")
   {

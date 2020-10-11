@@ -20,7 +20,10 @@
 #include <vector>
 #include <memory>
 
-#include <prio/fwd.hpp>
+#include <prio/reader_collection.hpp>
+#include <prio/reader_document.hpp>
+#include <prio/reader_mapping.hpp>
+#include <prio/reader_object.hpp>
 #include <geom/fwd.hpp>
 
 #include "math/vector2i.hpp"
@@ -33,20 +36,21 @@ class RGBA;
 
 class URL;
 
-
 using ReaderCollection = prio::ReaderCollection;
 using ReaderDocument = prio::ReaderDocument;
 using ReaderMapping = prio::ReaderMapping;
 using ReaderObject = prio::ReaderObject;
 
-bool read_custom(ReaderMapping const& map, std::string_view key, URL& value);
-bool read_custom(ReaderMapping const& map, std::string_view key, Vector2i& value);
-bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value);
-bool read_custom(ReaderMapping const& map, std::string_view key, Rect& value);
-bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& value);
-bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& value);
+namespace prio {
 
-#include <prio/prio.hpp>
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, URL& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, Vector2i& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, Rect& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& value);
+
+} // namespace prio
 
 #endif
 

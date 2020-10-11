@@ -19,6 +19,9 @@
 #include "surface/rgba.hpp"
 #include "util/url.hpp"
 
+namespace prio {
+
+template<>
 bool read_custom(ReaderMapping const& map, std::string_view key, URL& value_out)
 {
   std::string filename;
@@ -30,6 +33,7 @@ bool read_custom(ReaderMapping const& map, std::string_view key, URL& value_out)
   return true;
 }
 
+template<>
 bool read_custom(ReaderMapping const& map, std::string_view key, Vector2i& value_out)
 {
   std::vector<int> v;
@@ -45,6 +49,7 @@ bool read_custom(ReaderMapping const& map, std::string_view key, Vector2i& value
   return true;
 }
 
+template<>
 bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value_out)
 {
   std::vector<float> v;
@@ -61,6 +66,7 @@ bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value
 
 }
 
+template<>
 bool read_custom(ReaderMapping const& map, std::string_view key, geom::irect& value_out)
 {
   std::vector<int> v;
@@ -76,6 +82,7 @@ bool read_custom(ReaderMapping const& map, std::string_view key, geom::irect& va
   return true;
 }
 
+template<>
 bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& value_out)
 {
   std::vector<int> v;
@@ -91,6 +98,7 @@ bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& va
   return true;
 }
 
+template<>
 bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& value_out)
 {
   std::vector<int> v;
@@ -108,5 +116,7 @@ bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& val
   value_out.a = static_cast<uint8_t>(v[3]);
   return true;
 }
+
+} // namespace prio
 
 /* EOF */
