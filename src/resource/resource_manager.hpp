@@ -24,7 +24,6 @@
 #include "util/async_messenger.hpp"
 #include "util/blob.hpp"
 #include "util/failable.hpp"
-#include "util/currenton.hpp"
 
 class ArchiveInfo;
 class ArchiveManager;
@@ -42,15 +41,14 @@ class ResourceName;
 class TileInfo;
 class URLInfo;
 
-class ResourceManager : //public AsyncMessenger,
-                        public Currenton<ResourceManager>
+class ResourceManager
 {
 public:
   ResourceManager(DatabaseThread& database,
                   Generator& generator,
                   DownloadManager& download_mgr,
                   ArchiveManager& archive_mgr);
-  ~ResourceManager() override;
+  ~ResourceManager();
 
   void request_resource_metadata(const ResourceLocator& locator,
                                  const std::function<void (const Failable<ResourceMetadata>&)>& callback);
