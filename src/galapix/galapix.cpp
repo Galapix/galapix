@@ -30,6 +30,8 @@
 #include <Magick++.h>
 
 #include <strut/numeric_less.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_factory.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
@@ -60,8 +62,6 @@
 #include "resource/resource_manager.hpp"
 #include "resource/resource_metadata.hpp"
 #include "server/database_thread.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 #include "util/url.hpp"
@@ -104,7 +104,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
         size /= 2;
       }
 
-      SoftwareSurface target = SoftwareSurface::create(PixelData::RGB_FORMAT, size);
+      SoftwareSurface target = SoftwareSurface::create(surf::PixelFormat::RGB, size);
       for(int y = 0; y < (size.height+255)/256; ++y)
         for(int x = 0; x < (size.width+255)/256; ++x)
         {

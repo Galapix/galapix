@@ -19,11 +19,12 @@
 #include <iostream>
 #include <math.h>
 
+#include <surf/software_surface_factory.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_float.hpp>
+
 #include "math/math.hpp"
 #include "util/url.hpp"
-#include "surface/software_surface_factory.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
 using namespace surf;
@@ -42,7 +43,7 @@ int main(int argc, char** argv)
     image = image.halve();
 
     PixelData const& src = image.get_pixel_data();
-    PixelData out(PixelData::RGB_FORMAT, src.get_size());
+    PixelData out(surf::PixelFormat::RGB, src.get_size());
 
     for(int y = 0; y < src.get_height(); ++y)
     {

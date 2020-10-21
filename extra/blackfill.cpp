@@ -22,12 +22,13 @@
 #include <iostream>
 #include <assert.h>
 
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_factory.hpp>
+#include <surf/rgb.hpp>
+
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_factory.hpp"
 #include "util/url.hpp"
-#include "surface/rgb.hpp"
 
 using namespace surf;
 
@@ -121,7 +122,7 @@ int main(int argc, char* argv[])
   {
     std::cout << "Loading: " << argv[i] << std::endl;
     SoftwareSurface in  = factory.from_file(argv[1]);
-    PixelData out(PixelData::RGB_FORMAT, in.get_size());
+    PixelData out(surf::PixelFormat::RGB, in.get_size());
 
     blackfill(in.get_pixel_data(), out);
 

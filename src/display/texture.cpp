@@ -40,11 +40,11 @@ public:
     GLenum gl_format = GL_RGB;
     switch(src.get_pixel_data().get_format())
     {
-      case PixelData::RGB_FORMAT:
+      case surf::PixelFormat::RGB:
         gl_format = GL_RGB;
         break;
 
-      case PixelData::RGBA_FORMAT:
+      case surf::PixelFormat::RGBA:
         gl_format = GL_RGBA;
         break;
 

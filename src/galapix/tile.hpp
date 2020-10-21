@@ -17,9 +17,10 @@
 #ifndef HEADER_GALAPIX_GALAPIX_TILE_HPP
 #define HEADER_GALAPIX_GALAPIX_TILE_HPP
 
+#include <surf/software_surface.hpp>
+
 #include "database/entries/tile_entry.hpp"
 #include "math/vector2i.hpp"
-#include "surface/software_surface.hpp"
 
 class Tile
 {

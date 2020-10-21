@@ -18,12 +18,13 @@
 
 #include <iostream>
 
+#include <surf/software_surface_factory.hpp>
+
 #include "database/entries/tile_entry.hpp"
 #include "database/row_id.hpp"
 #include "database/database.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
-#include "surface/software_surface_factory.hpp"
 
 SQLiteTileDatabase::SQLiteTileDatabase(SQLite::Database& db, ResourceDatabase& files) :
   m_db(db),

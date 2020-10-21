@@ -22,12 +22,13 @@
 #include <logmich/log.hpp>
 #include <SDL_keycode.h>
 
+#include <surf/rgba.hpp>
+
 #include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
-#include "surface/rgba.hpp"
 #include "plugins/png.hpp"
 #include "server/database_thread.hpp"
 #include "spnav/space_navigator.hpp"

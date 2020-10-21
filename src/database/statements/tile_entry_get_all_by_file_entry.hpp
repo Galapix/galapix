@@ -19,9 +19,10 @@
 
 #include <assert.h>
 
+#include <surf/software_surface_factory.hpp>
+
 #include "database/entries/old_file_entry.hpp"
 #include "database/entries/tile_entry.hpp"
-#include "surface/software_surface_factory.hpp"
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
 

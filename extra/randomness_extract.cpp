@@ -20,11 +20,12 @@
 #include <sstream>
 #include <math.h>
 
+#include <surf/software_surface_factory.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_float.hpp>
+
 #include "math/math.hpp"
 #include "util/url.hpp"
-#include "surface/software_surface_factory.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 
@@ -47,7 +48,7 @@ int main(int argc, char** argv)
 
       SoftwareSurface image = factory.from_file(argv[i]);
       PixelData const& src = image.get_pixel_data();
-      PixelData out = PixelData(PixelData::RGB_FORMAT, src.get_size());
+      PixelData out = PixelData(surf::PixelFormat::RGB, src.get_size());
 
       std::cout << "Processing image..." << std::endl;
       for(int y = 0; y < out.get_height(); ++y) {

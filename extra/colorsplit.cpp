@@ -17,9 +17,10 @@
 */
 
 #include "plugins/png.hpp"
-#include "surface/software_surface_float.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_factory.hpp"
+
+#include <surf/software_surface_float.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_factory.hpp>
 
 using namespace surf;
 

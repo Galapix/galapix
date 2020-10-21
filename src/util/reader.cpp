@@ -16,7 +16,8 @@
 
 #include "util/reader.hpp"
 
-#include "surface/rgba.hpp"
+#include <surf/rgba.hpp>
+
 #include "util/url.hpp"
 
 namespace prio {

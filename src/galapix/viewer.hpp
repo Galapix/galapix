@@ -21,9 +21,10 @@
 #include <memory>
 #include <vector>
 
+#include <surf/rgba.hpp>
+
 #include "display/surface.hpp"
 #include "galapix/viewer_state.hpp"
-#include "surface/rgba.hpp"
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"
 

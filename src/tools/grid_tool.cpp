@@ -16,9 +16,10 @@
 
 #include "tools/grid_tool.hpp"
 
+#include <surf/rgb.hpp>
+
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
-#include "surface/rgb.hpp"
 
 using namespace surf;
 

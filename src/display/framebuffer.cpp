@@ -24,10 +24,10 @@
 #include <glm/ext.hpp>
 
 #include <logmich/log.hpp>
+#include <surf/rgb.hpp>
+#include <surf/rgba.hpp>
 
 #include "display/shader.hpp"
-#include "surface/rgb.hpp"
-#include "surface/rgba.hpp"
 #include "math/rect.hpp"
 #include "util/raise_exception.hpp"
 
@@ -297,7 +297,7 @@ Framebuffer::get_height()
 SoftwareSurface
 Framebuffer::screenshot()
 {
-  PixelData dst(PixelData::RGB_FORMAT, get_size());
+  PixelData dst(surf::PixelFormat::RGB, get_size());
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   glReadPixels(0, 0, dst.get_width(), dst.get_height(),
                GL_RGB, GL_UNSIGNED_BYTE, dst.get_data());

@@ -17,6 +17,8 @@
 #include "generator/generator.hpp"
 
 #include <logmich/log.hpp>
+#include <surf/software_surface_factory.hpp>
+#include <surf/software_surface_loader.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "archive/extraction.hpp"
@@ -28,8 +30,6 @@
 #include "resource/image_info.hpp"
 #include "resource/resource_cache_state.hpp"
 #include "resource/resource_status.hpp"
-#include "surface/software_surface_factory.hpp"
-#include "surface/software_surface_loader.hpp"
 
 using namespace surf;
 

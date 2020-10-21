@@ -19,7 +19,8 @@
 
 #include <functional>
 
-#include "surface/software_surface_factory.hpp"
+#include <surf/software_surface_factory.hpp>
+
 #include "galapix/tile.hpp"
 
 class FileEntry;

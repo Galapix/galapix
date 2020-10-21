@@ -45,12 +45,12 @@ public:
       auto surface = tile.get_surface();
       switch(surface.get_pixel_data().get_format())
       {
-        case surf::PixelData::RGB_FORMAT:
+        case surf::PixelFormat::RGB:
           tile.set_blob(Blob::copy(surf::JPEG::save(surface, 75)));
           tile.set_format(TileEntry::JPEG_FORMAT);
           break;
 
-        case surf::PixelData::RGBA_FORMAT:
+        case surf::PixelFormat::RGBA:
           tile.set_blob(Blob::copy(surf::PNG::save(surface)));
           tile.set_format(TileEntry::PNG_FORMAT);
           break;

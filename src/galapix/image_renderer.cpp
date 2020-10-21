@@ -16,14 +16,15 @@
 
 #include "galapix/image_renderer.hpp"
 
+#include <surf/rgb.hpp>
+#include <surf/rgba.hpp>
+
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
 #include "galapix/image.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "math/math.hpp"
 #include "math/rect.hpp"
-#include "surface/rgb.hpp"
-#include "surface/rgba.hpp"
 
 using namespace surf;
 

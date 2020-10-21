@@ -1,7 +1,8 @@
 #include <iostream>
 
+#include <surf/software_surface_factory.hpp>
+
 #include "archive/archive_manager.hpp"
-#include "surface/software_surface_factory.hpp"
 #include "util/url.hpp"
 #include "plugins/jpeg.hpp"
 

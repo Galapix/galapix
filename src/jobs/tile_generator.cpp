@@ -18,14 +18,15 @@
 
 #include <iostream>
 #include <sstream>
+
 #include <logmich/log.hpp>
+#include <surf/software_surface.hpp>
 
 #include "galapix/app.hpp"
 #include "galapix/tile.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 #include "plugins/jpeg.hpp"
-#include "surface/software_surface.hpp"
 
 using namespace surf;
 

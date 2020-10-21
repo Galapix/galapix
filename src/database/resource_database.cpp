@@ -22,6 +22,8 @@
 #include <SQLiteCpp/Statement.h>
 
 #include <logmich/log.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_factory.hpp>
 
 #include "database/database.hpp"
 #include "database/entries/old_file_entry.hpp"
@@ -35,8 +37,6 @@
 #include "database/statements/url_info_get.hpp"
 #include "database/statements/url_info_store.hpp"
 #include "util/filesystem.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_factory.hpp"
 
 using namespace galapix;
 

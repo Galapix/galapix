@@ -20,11 +20,12 @@
 #include <sstream>
 #include <limits>
 
+#include <surf/software_surface_factory.hpp>
+#include <surf/rgb.hpp>
+
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
 #include "math/rect.hpp"
-#include "surface/software_surface_factory.hpp"
-#include "surface/rgb.hpp"
 #include "plugins/png.hpp"
 
 using namespace surf;
@@ -139,7 +140,7 @@ int main(int argc, char* argv[])
   for(int i = argc-1; i < argc; ++i)
   {
     SoftwareSurface surface = surface_factory.from_file(argv[i]);
-    PixelData out_surface(PixelData::RGB_FORMAT, surface.get_size() * 2);
+    PixelData out_surface(surf::PixelFormat::RGB, surface.get_size() * 2);
     Size tile_size(4, 4);
 
     for(int y = 0; y < surface.get_height() - tile_size.height(); y += tile_size.height())

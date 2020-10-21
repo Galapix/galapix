@@ -21,12 +21,12 @@
 #include <glm/glm.hpp>
 
 #include <geom/fwd.hpp>
+#include <surf/software_surface.hpp>
 
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "util/opengl.hpp"
-#include "surface/software_surface.hpp"
 
 namespace surf {
 class RGB;

@@ -21,11 +21,12 @@
 #include <sigc++/signal.h>
 #include <mutex>
 
+#include <surf/software_surface_factory.hpp>
+
 #include "database/entries/old_file_entry.hpp"
 #include "galapix/tile.hpp"
 #include "job/job.hpp"
 #include "math/vector2i.hpp"
-#include "surface/software_surface_factory.hpp"
 
 class TileGenerationJob : public Job
 {

@@ -21,6 +21,8 @@
 #include <logmich/log.hpp>
 #include <uitest/uitest.hpp>
 
+#include <surf/software_surface_factory.hpp>
+
 #include "archive/archive_manager.hpp"
 #include "generator/generator.hpp"
 #include "generator/generator_callbacks.hpp"
@@ -29,7 +31,6 @@
 #include "resource/archive_info.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/resource_info.hpp"
-#include "surface/software_surface_factory.hpp"
 
 using namespace surf;
 

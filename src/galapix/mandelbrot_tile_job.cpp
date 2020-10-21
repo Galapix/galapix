@@ -18,8 +18,8 @@
 
 #include <iostream>
 
-#include "surface/rgb.hpp"
-#include "surface/pixel_data.hpp"
+#include <surf/rgb.hpp>
+#include <surf/pixel_data.hpp>
 
 using namespace surf;
 
@@ -35,7 +35,7 @@ MandelbrotTileJob::MandelbrotTileJob(JobHandle const& job_handle, const Size& si
 void
 MandelbrotTileJob::run()
 {
-  PixelData surface(PixelData::RGB_FORMAT, Size(256, 256));
+  PixelData surface(surf::PixelFormat::RGB, Size(256, 256));
 
   Size imagesize(m_size.width()  / Math::pow2(m_scale),
                  m_size.height() / Math::pow2(m_scale));

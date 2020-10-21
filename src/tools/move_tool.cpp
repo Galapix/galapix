@@ -16,10 +16,11 @@
 
 #include "tools/move_tool.hpp"
 
+#include <surf/rgb.hpp>
+
 #include "galapix/workspace.hpp"
 #include "galapix/viewer.hpp"
 #include "display/framebuffer.hpp"
-#include "surface/rgb.hpp"
 
 using namespace surf;
 

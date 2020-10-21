@@ -19,11 +19,12 @@
 #include <iostream>
 #include <math.h>
 
+#include <surf/software_surface_factory.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_float.hpp>
+
 #include "math/math.hpp"
 #include "util/url.hpp"
-#include "surface/software_surface_factory.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_float.hpp"
 #include "plugins/jpeg.hpp"
 
 using namespace surf;
@@ -92,7 +93,7 @@ int main(int argc, char** argv)
       add(out, image);
     }
 
-    PixelData out_rgb(PixelData::RGB_FORMAT, out->get_size());
+    PixelData out_rgb(surf::PixelFormat::RGB, out->get_size());
     tone_map(out_rgb, out, static_cast<float>(argc - 1));
 
     std::string out_filename = "/tmp/out.jpg";

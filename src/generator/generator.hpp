@@ -21,10 +21,11 @@
 #include <string>
 #include <vector>
 
+#include <surf/software_surface.hpp>
+
 #include "resource/file_info.hpp"
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
-#include "surface/software_surface.hpp"
 #include "generator/generator_callbacks.hpp"
 
 class ArchiveManager;

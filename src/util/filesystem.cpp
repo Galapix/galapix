@@ -29,7 +29,10 @@
 #include <utime.h>
 #include <sstream>
 #include <algorithm>
+
 #include <logmich/log.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_factory.hpp>
 
 #include "archive/archive_loader.hpp"
 #include "archive/archive_manager.hpp"
@@ -38,8 +41,6 @@
 #include "archive/tar.hpp"
 #include "archive/zip.hpp"
 #include "galapix/app.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_factory.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 

@@ -20,10 +20,11 @@
 // with a checkboard pattern of it's inverted image. This leads to a
 // grey looking image, unless the display gamma is changed.
 
+#include <surf/software_surface_float.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_factory.hpp>
+
 #include "plugins/png.hpp"
-#include "surface/software_surface_float.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_factory.hpp"
 
 using namespace surf;
 

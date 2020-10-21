@@ -23,13 +23,14 @@
 #include <iostream>
 #include <limits>
 
+#include <surf/software_surface_factory.hpp>
+
 #include "database/entries/image_entry.hpp"
 #include "galapix/tile.hpp"
 #include "plugins/jpeg.hpp"
 #include "plugins/png.hpp"
 #include "util/blob.hpp"
 #include "util/filesystem.hpp"
-#include "surface/software_surface_factory.hpp"
 
 using namespace surf;
 
@@ -151,11 +152,11 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
   auto surface = tile.get_surface();
   switch(surface.get_pixel_data().get_format())
   {
-    case PixelData::RGB_FORMAT:
+    case surf::PixelFormat::RGB:
       JPEG::save(surface, 75, filename);
       break;
 
-    case PixelData::RGBA_FORMAT:
+    case surf::PixelFormat::RGBA:
       PNG::save(surface, filename);
       break;
 

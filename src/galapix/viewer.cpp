@@ -23,13 +23,15 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <surf/software_surface.hpp>
+#include <surf/rgb.hpp>
+#include <surf/rgba.hpp>
+
 #include "display/framebuffer.hpp"
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "math/rect.hpp"
-#include "surface/rgb.hpp"
-#include "surface/rgba.hpp"
 #include "math/vector2f.hpp"
 #include "tools/grid_tool.hpp"
 #include "tools/move_tool.hpp"
@@ -40,7 +42,6 @@
 #include "tools/zoom_rect_tool.hpp"
 #include "tools/zoom_tool.hpp"
 #include "util/filesystem.hpp"
-#include "surface/software_surface.hpp"
 
 using namespace surf;
 

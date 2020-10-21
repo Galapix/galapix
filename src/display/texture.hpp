@@ -18,9 +18,10 @@
 #define HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 
 #include <memory>
-#include <geom/fwd.hpp>
 
-#include "surface/software_surface.hpp"
+#include <geom/fwd.hpp>
+#include <surf/software_surface.hpp>
+
 #include "math/rect.hpp"
 
 namespace surf {

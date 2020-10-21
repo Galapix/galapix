@@ -19,12 +19,13 @@
 #include <iostream>
 #include <assert.h>
 
+#include <surf/software_surface.hpp>
+#include <surf/software_surface_factory.hpp>
+#include <surf/rgb.hpp>
+
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
-#include "surface/software_surface.hpp"
-#include "surface/software_surface_factory.hpp"
 #include "util/url.hpp"
-#include "surface/rgb.hpp"
 
 using namespace surf;
 
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
   std::cout << "Loading: " << in_filename << " - writing to " << out_filename << std::endl;
 
   SoftwareSurface in = factory.from_file(in_filename);
-  PixelData out(PixelData::RGB_FORMAT, in.get_size());
+  PixelData out(surf::PixelFormat::RGB, in.get_size());
 
   //PNG::save(out, out_filename);
   JPEG::save(out, 85, out_filename);
