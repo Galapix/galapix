@@ -58,13 +58,13 @@ FileTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos
   {
     surf::SoftwareSurface surface;
     // FIXME: need another way to find out the format
-    if (PNG::is_png(filename))
+    if (png::is_png(filename))
     {
-      surface = PNG::load_from_file(filename);
+      surface = png::load_from_file(filename);
     }
     else
     {
-      surface = JPEG::load_from_file(filename);
+      surface = jpeg::load_from_file(filename);
     }
 
     tile_out = TileEntry(image_id, scale, pos, surface);
@@ -96,13 +96,13 @@ FileTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles
     else
     {
       SoftwareSurface surface;
-      if (PNG::is_png(directory + '/' + *i))
+      if (png::is_png(directory + '/' + *i))
       {
-        surface = PNG::load_from_file(directory + '/' + *i);
+        surface = png::load_from_file(directory + '/' + *i);
       }
       else
       {
-        surface = JPEG::load_from_file(directory + '/' + *i);
+        surface = jpeg::load_from_file(directory + '/' + *i);
       }
 
       tiles.push_back(TileEntry(image_id, scale, pos, surface));
@@ -153,11 +153,11 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
   switch(surface.get_pixel_data().get_format())
   {
     case surf::PixelFormat::RGB:
-      JPEG::save(surface, 75, filename);
+      jpeg::save(surface, 75, filename);
       break;
 
     case surf::PixelFormat::RGBA:
-      PNG::save(surface, filename);
+      png::save(surface, filename);
       break;
 
     default:

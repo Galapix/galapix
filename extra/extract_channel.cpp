@@ -70,7 +70,7 @@ int main(int argc, char** argv)
       }
     }
 
-    JPEG::save(out,  100, outfile);
+    jpeg::save(out,  100, outfile);
     std::cout << "Wrote: " << outfile << std::endl;
   }
 

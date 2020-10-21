@@ -56,11 +56,11 @@ public:
         switch(tile.get_format())
         {
           case TileEntry::JPEG_FORMAT:
-            tile.set_surface(surf::JPEG::load_from_mem(blob));
+            tile.set_surface(surf::jpeg::load_from_mem(blob));
             break;
 
           case TileEntry::PNG_FORMAT:
-            tile.set_surface(surf::PNG::load_from_mem(blob));
+            tile.set_surface(surf::png::load_from_mem(blob));
             break;
 
           default:

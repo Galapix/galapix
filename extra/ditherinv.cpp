@@ -37,11 +37,11 @@ void invert(SoftwareSurfaceFloatPtr const& surface)
     for(int x = y%2; x < surface->get_width(); x+=2)
     {
       RGBAf rgba;
-      surface->get_pixel(x, y, rgba);
+      surface->get_pixel({x, y}, rgba);
       rgba.r = 1.0f - rgba.r;
       rgba.g = 1.0f - rgba.g;
       rgba.b = 1.0f - rgba.b;
-      surface->put_pixel(x, y, rgba);
+      surface->put_pixel({x, y}, rgba);
     }
   }
 }
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
     surfacef->apply_gamma(1.0f/gamma);
 
     surface = surfacef->to_software_surface();
-    PNG::save(surface, "/tmp/out.png");
+    png::save(surface, "/tmp/out.png");
   }
 
   return 0;

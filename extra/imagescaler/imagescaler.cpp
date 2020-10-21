@@ -76,10 +76,10 @@ Pixel get_pixels(SoftwareSurface const& surface)
   RGB bl;
   RGB br;
 
-  src.get_pixel(0, 0, tl);
-  src.get_pixel(1, 0, tr);
-  src.get_pixel(0, 1, bl);
-  src.get_pixel(1, 1, br);
+  src.get_pixel({0, 0}, tl);
+  src.get_pixel({1, 0}, tr);
+  src.get_pixel({0, 1}, bl);
+  src.get_pixel({1, 1}, br);
 
   return Pixel{tl.r, tr.r, bl.r, br.r};
 }
@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
       }
     }
 
-    PNG::save(out_surface, "/tmp/scaledup.png");
+    png::save(out_surface, "/tmp/scaledup.png");
   }
 
   return 0;

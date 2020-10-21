@@ -33,7 +33,7 @@ void scanlines(SoftwareSurfaceFloatPtr const& surface)
     for(int x = 0; x < surface->get_width(); ++x)
     {
       RGBAf rgba;
-      surface->get_pixel(x, y, rgba);
+      surface->get_pixel({x, y}, rgba);
 
       int v = (x+y%3) % 3;
       if (v % 6 == 0)
@@ -55,9 +55,9 @@ void scanlines(SoftwareSurfaceFloatPtr const& surface)
         rgba.b = rgba.b * 3.0f;
       }
 
-      rgba.clamp();
+      surf::clamp(rgba);
 
-      surface->put_pixel(x, y, rgba);
+      surface->put_pixel({x, y}, rgba);
     }
   }
 }
@@ -79,7 +79,7 @@ int main(int argc, char** argv)
     surfacef->apply_gamma(1.0f/gamma);
 
     surface = surfacef->to_software_surface();
-    PNG::save(surface, "/tmp/out.png");
+    png::save(surface, "/tmp/out.png");
   }
 
   return 0;

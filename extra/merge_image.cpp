@@ -38,15 +38,15 @@ void add(SoftwareSurfaceFloatPtr const& out, SoftwareSurface const& surface)
   for(int y = 0; y < out->get_height(); ++y) {
     for(int x = 0; x < out->get_width(); ++x) {
       RGB rgb;
-      src.get_pixel(x, y, rgb);
+      src.get_pixel({x, y}, rgb);
       RGBAf rgba;
-      out->get_pixel(x, y, rgba);
+      out->get_pixel({x, y}, rgba);
 
       rgba.r += powf(static_cast<float>(rgb.r) / 255.0f, 0.4545f);
       rgba.g += powf(static_cast<float>(rgb.g) / 255.0f, 0.4545f);
       rgba.b += powf(static_cast<float>(rgb.b) / 255.0f, 0.4545f);
 
-      out->put_pixel(x, y, rgba);
+      out->put_pixel({x, y}, rgba);
     }
   }
 }
@@ -56,12 +56,12 @@ void tone_map(PixelData out, SoftwareSurfaceFloatPtr const& in, float factor)
   for(int y = 0; y < out.get_height(); ++y) {
     for(int x = 0; x < out.get_width(); ++x) {
       RGBAf rgba;
-      in->get_pixel(x, y, rgba);
+      in->get_pixel({x, y}, rgba);
       RGB rgb;
       rgb.r = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.r / factor, 2.2f), 1.0f));
       rgb.g = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.g / factor, 2.2f), 1.0f));
       rgb.b = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.b / factor, 2.2f), 1.0f));
-      out.put_pixel(x, y, rgb);
+      out.put_pixel({x, y}, rgb);
     }
   }
 }
@@ -97,7 +97,7 @@ int main(int argc, char** argv)
     tone_map(out_rgb, out, static_cast<float>(argc - 1));
 
     std::string out_filename = "/tmp/out.jpg";
-    JPEG::save(out_rgb, 100, out_filename);
+    jpeg::save(out_rgb, 100, out_filename);
     std::cout << "Wrote " << out_filename << std::endl;
     std::cout << "Done" << std::endl;
   }

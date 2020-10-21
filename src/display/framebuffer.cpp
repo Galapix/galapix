@@ -301,7 +301,7 @@ Framebuffer::screenshot()
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   glReadPixels(0, 0, dst.get_width(), dst.get_height(),
                GL_RGB, GL_UNSIGNED_BYTE, dst.get_data());
-  return SoftwareSurface(std::move(dst)).vflip();
+  return flip_vertical(SoftwareSurface(std::move(dst)));
 }
 
 void

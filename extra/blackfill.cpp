@@ -82,7 +82,7 @@ RGB blackfill_pixel(RGB p00, RGB p10, RGB p20,
 RGB get_pixel(PixelData const& img, int x, int y)
 {
   RGB rgb;
-  img.get_pixel(x, y, rgb);
+  img.get_pixel({x, y}, rgb);
   return rgb;
 }
 
@@ -103,7 +103,7 @@ void blackfill(PixelData const& in,
       RGB p12 = get_pixel(in, x+1, y+2);
       RGB p22 = get_pixel(in, x+2, y+2);
 
-      out.put_pixel(x+1, y+1,
+      out.put_pixel({x+1, y+1},
                     blackfill_pixel(p00, p10, p20,
                                     p01, p11, p21,
                                     p02, p12, p22));
@@ -126,8 +126,8 @@ int main(int argc, char* argv[])
 
     blackfill(in.get_pixel_data(), out);
 
-    //PNG::save(out, argv[2]);
-    JPEG::save(SoftwareSurface(out), 85, argv[2]);
+    //png::save(out, argv[2]);
+    jpeg::save(SoftwareSurface(out), 85, argv[2]);
   }
 
   return 0;

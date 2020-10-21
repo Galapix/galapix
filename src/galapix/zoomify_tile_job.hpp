@@ -46,7 +46,7 @@ public:
     {
       if (m_url.has_stdio_name())
       {
-        surf::SoftwareSurface surface = surf::JPEG::load_from_file(m_url.get_stdio_name());
+        surf::SoftwareSurface surface = surf::jpeg::load_from_file(m_url.get_stdio_name());
         m_callback(Tile(m_scale, m_pos, surface));
         get_handle().set_finished();
       }
@@ -54,7 +54,7 @@ public:
       {
         std::cout << "ZoomifyTileJob::run(): downloading " << m_url << std::endl;
         Blob blob = Blob::copy(CURLHandler::get_data(m_url.str()));
-        surf::SoftwareSurface surface = surf::JPEG::load_from_mem(blob);
+        surf::SoftwareSurface surface = surf::jpeg::load_from_mem(blob);
         m_callback(Tile(m_scale, m_pos, surface));
         get_handle().set_finished();
       }

@@ -28,8 +28,8 @@ UITEST(PNG, test, "FILE...",
 {
   for(const auto& arg : rest)
   {
-    //PNG::get_size(args[i]);
-    PNG::load_from_file(arg);
+    //png::get_size(args[i]);
+    png::load_from_file(arg);
   }
 }
 

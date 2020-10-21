@@ -342,7 +342,7 @@ SDLViewer::process_event(const SDL_Event& event)
               std::string outfile = fmt::format("/tmp/galapix-screenshot-{:04d}.png", i);
               if (!Filesystem::exist(outfile))
               {
-                PNG::save(surface, outfile);
+                png::save(surface, outfile);
                 std::cout << "Screenshot written to " << outfile << std::endl;
                 break;
               }

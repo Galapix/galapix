@@ -43,8 +43,8 @@ int main(int argc, char* argv[])
   SoftwareSurface in = factory.from_file(in_filename);
   PixelData out(surf::PixelFormat::RGB, in.get_size());
 
-  //PNG::save(out, out_filename);
-  JPEG::save(out, 85, out_filename);
+  //png::save(out, out_filename);
+  jpeg::save(out, 85, out_filename);
 
   return 0;
 }

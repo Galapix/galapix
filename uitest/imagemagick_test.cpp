@@ -26,7 +26,7 @@ using namespace surf;
 UITEST(ImageMagick, list_ext, "",
        "List supported extensions")
 {
-  std::vector<std::string> lst = Imagemagick::get_supported_extensions();
+  std::vector<std::string> lst = imagemagick::get_supported_extensions();
 
   for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
   {

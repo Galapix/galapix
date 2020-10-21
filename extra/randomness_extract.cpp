@@ -55,7 +55,7 @@ int main(int argc, char** argv)
         for(int x = 0; x < out.get_width(); ++x)
         {
           RGB rgb;
-          src.get_pixel(x, y, rgb);
+          src.get_pixel({x, y}, rgb);
 
           if (rgb.r & (1<<3)) {
             rgb.r = 0;
@@ -75,14 +75,14 @@ int main(int argc, char** argv)
             rgb.b = 255;
           }
 
-          out.put_pixel(x, y, rgb);
+          out.put_pixel({x, y}, rgb);
         }
       }
       std::cout << "Processing image... Done" << std::endl;
 
       std::ostringstream out_filename;
       out_filename << "/tmp/out" << i << ".png";
-      PNG::save(out, out_filename.str());
+      png::save(out, out_filename.str());
 
       std::cout << "Wrote " << out_filename.str() << std::endl;
       std::cout << "Done" << std::endl;

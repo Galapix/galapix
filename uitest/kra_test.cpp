@@ -31,10 +31,10 @@ UITEST(KRA, test, "INFILE OUTFILE")
   std::string outfile = args[1];
 
   std::cout << "Trying to load  " << infile << std::endl;
-  SoftwareSurface surface = KRA::load_from_file(infile);
+  SoftwareSurface surface = kra::load_from_file(infile);
 
   std::cout << "Trying to save  " << outfile << std::endl;
-  PNG::save(surface, outfile);
+  png::save(surface, outfile);
 }
 
 /* EOF */

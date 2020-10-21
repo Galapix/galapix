@@ -30,8 +30,8 @@ UITEST(JPEG, get_size, "FILE...")
   {
     try
     {
-      Size size = JPEG::get_size(arg);
-      std::cout << "JPEG::get_size(\"" << arg << "\", " << size << ")" << std::endl;
+      Size size = jpeg::get_size(arg);
+      std::cout << "jpeg::get_size(\"" << arg << "\", " << size << ")" << std::endl;
     }
     catch(std::exception& err)
     {

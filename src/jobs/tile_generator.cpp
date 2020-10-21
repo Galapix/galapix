@@ -76,7 +76,7 @@ SoftwareSurface
 TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
 {
   // Load the image
-  if (JPEG::filename_is_jpeg(url.str())) // FIXME: filename_is_jpeg() is ugly
+  if (jpeg::filename_is_jpeg(url.str())) // FIXME: filename_is_jpeg() is ugly
   {
     // The JPEG class can only scale down by factor 2,4,8, so we have to
     // limit things (FIXME: is that true? if so, why?)
@@ -84,12 +84,12 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
 
     if (url.has_stdio_name())
     {
-      return JPEG::load_from_file(url.get_stdio_name(), jpeg_scale, size);
+      return jpeg::load_from_file(url.get_stdio_name(), jpeg_scale, size);
     }
     else
     {
       Blob blob = url.get_blob();
-      return JPEG::load_from_mem(blob, jpeg_scale, size);
+      return jpeg::load_from_mem(blob, jpeg_scale, size);
     }
   }
   else
