@@ -52,20 +52,12 @@ find_package(PkgConfig REQUIRED)
 find_package(Python)
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
-find_package(JPEG REQUIRED)
-find_package(PNG REQUIRED)
 find_package(glm REQUIRED)
 find_package(fmt REQUIRED)
 find_package(OpenSSL COMPONENTS Crypto REQUIRED)
 
 pkg_search_module(SQLITE3 REQUIRED sqlite3 IMPORTED_TARGET)
 pkg_search_module(SIGCXX REQUIRED sigc++-2.0 IMPORTED_TARGET)
-pkg_search_module(EXIF REQUIRED libexif IMPORTED_TARGET)
-
-# Not using find_package(), see:
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=776832
-# find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
-pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
 
 check_include_file(spnav.h HAVE_SPNAV)
 find_library(SPNAV spnav)
@@ -193,11 +185,7 @@ target_link_libraries(libgalapix PUBLIC
   OpenGL::GLU
   GLEW::GLEW
   PkgConfig::SQLITE3
-  PNG::PNG
-  JPEG::JPEG
-  PkgConfig::EXIF
   CURL::libcurl
-  PkgConfig::MAGICKXX
   Threads::Threads)
 
 install(TARGETS libgalapix
