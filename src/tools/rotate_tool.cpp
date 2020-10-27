@@ -19,6 +19,8 @@
 #include <iostream>
 #include <math.h>
 
+#include <glm/gtc/constants.hpp>
+
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "math/math.hpp"
@@ -40,7 +42,7 @@ RotateTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
     float angle = atan2f(selection_center.y() - mouse_pos.y(),
                          selection_center.x() - mouse_pos.x());
 
-    std::cout << "Angle: " << ((start_angle - angle) / Math::pi * 180.0f) << std::endl;
+    std::cout << "Angle: " << ((start_angle - angle) / glm::pi<float>() * 180.0f) << std::endl;
 
     SelectionPtr selection = viewer->get_workspace()->get_selection();
     for(Selection::iterator i = selection->begin(); i != selection->end(); ++i)

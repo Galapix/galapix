@@ -31,11 +31,11 @@ RegularLayouter::layout(const ImageCollection& images)
 {
   if (!images.empty())
   {
-    size_t w = static_cast<size_t>(Math::sqrt(m_aspect_w * static_cast<float>(images.size()) / m_aspect_h));
+    size_t w = static_cast<size_t>(std::sqrt(m_aspect_w * static_cast<float>(images.size()) / m_aspect_h));
 
     for(size_t i = 0; i < images.size(); ++i)
     {
-      float target_scale = Math::min(1000.0f / static_cast<float>(images[i]->get_original_width()),
+      float target_scale = std::min(1000.0f / static_cast<float>(images[i]->get_original_width()),
                                      1000.0f / static_cast<float>(images[i]->get_original_height()));
 
       images[i]->set_scale(target_scale);

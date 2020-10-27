@@ -37,7 +37,7 @@ public:
     m_size(width, height),
     m_max_scale()
   {
-    int s = Math::max(width, height);
+    int s = std::max(width, height);
     m_max_scale = 0;
     while(s > 8)
     {

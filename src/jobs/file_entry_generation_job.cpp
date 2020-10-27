@@ -61,7 +61,7 @@ FileEntryGenerationJob::run()
 
       // 2^3 is the highest scale JPEG supports, so we limit the
       // min_scale to that
-      min_scale = Math::min(min_scale, 3);
+      min_scale = std::min(min_scale, 3);
 
       // FIXME: recalc min_scale from jpeg scale
       if (!blob)

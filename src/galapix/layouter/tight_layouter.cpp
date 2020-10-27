@@ -40,7 +40,7 @@ TightLayouter::layout(const ImageCollection& images)
     width += static_cast<float>(image->get_original_width()) * scale;
   }
 
-  width /= Math::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
+  width /= std::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
 
   Vector2f pos(0.0f, 0.0f);
   Vector2f last_pos(0.0f, 0.0f);
@@ -135,7 +135,7 @@ TightLayouter::layout_zigzag(const ImageCollection& images) const
     width += static_cast<float>(image->get_original_width()) * scale;
   }
 
-  width /= Math::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
+  width /= std::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
 
   Vector2f pos(0.0f, 0.0f);
   Vector2f last_pos(0.0f, 0.0f);

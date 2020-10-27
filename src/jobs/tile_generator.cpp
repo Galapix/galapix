@@ -80,7 +80,7 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
   {
     // The JPEG class can only scale down by factor 2,4,8, so we have to
     // limit things (FIXME: is that true? if so, why?)
-    int jpeg_scale = Math::min(Math::pow2(min_scale), 8);
+    int jpeg_scale = std::min(Math::pow2(min_scale), 8);
 
     if (url.has_stdio_name())
     {

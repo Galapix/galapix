@@ -16,6 +16,8 @@
 
 #include "tools/view_rotate_tool.hpp"
 
+#include <glm/gtc/constants.hpp>
+
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 
@@ -37,7 +39,7 @@ ViewRotateTool::move(const Vector2i& pos, const Vector2i& rel)
     float angle = atan2f(static_cast<float>(pos.y() - center.y()),
                          static_cast<float>(pos.x() - center.x()));
 
-    viewer->get_state().rotate((angle - start_angle)/Math::pi * 180.0f);
+    viewer->get_state().rotate((angle - start_angle) / glm::pi<float>() * 180.0f);
     start_angle = angle;
   }
 }

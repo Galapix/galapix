@@ -58,9 +58,9 @@ void tone_map(PixelData out, SoftwareSurfaceFloatPtr const& in, float factor)
       RGBAf rgba;
       in->get_pixel({x, y}, rgba);
       RGB rgb;
-      rgb.r = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.r / factor, 2.2f), 1.0f));
-      rgb.g = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.g / factor, 2.2f), 1.0f));
-      rgb.b = static_cast<uint8_t>(255 * Math::clamp(0.0f, powf(rgba.b / factor, 2.2f), 1.0f));
+      rgb.r = static_cast<uint8_t>(255 * std::clamp(powf(rgba.r / factor, 2.2f), 0.0f, 1.0f));
+      rgb.g = static_cast<uint8_t>(255 * std::clamp(powf(rgba.g / factor, 2.2f), 0.0f, 1.0f));
+      rgb.b = static_cast<uint8_t>(255 * std::clamp(powf(rgba.b / factor, 2.2f), 0.0f, 1.0f));
       out.put_pixel({x, y}, rgb);
     }
   }

@@ -143,8 +143,9 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
   {
     // scale factor for requesting the tile from the TileDatabase
     // FIXME: Can likely be done without float
-    int tiledb_scale = Math::clamp(0, static_cast<int>(logf(1.0f / (zoom * m_image.get_scale())) /
-                                                       logf(2.0f)), m_cache->get_max_scale());
+    int tiledb_scale = std::clamp(static_cast<int>(logf(1.0f / (zoom * m_image.get_scale())) /
+                                                   logf(2.0f)),
+                                  0, m_cache->get_max_scale());
     int scale_factor = Math::pow2(tiledb_scale);
 
     int scaled_width  = m_image.get_original_width()  / scale_factor;

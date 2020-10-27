@@ -250,7 +250,7 @@ Generator::process_image_resource(ResourceLocator const& locator,
 
 inline int calc_max_scale(int width, int height)
 {
-  int s = Math::max(width, height);
+  int s = std::max(width, height);
   int max_scale = 0;
   while(s > 8)
   {

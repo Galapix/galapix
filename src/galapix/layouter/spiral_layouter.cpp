@@ -106,7 +106,7 @@ void
 SpiralLayouter::layout(WorkspaceItem& item)
 {
   // normalize the image size to 1000x1000
-  float target_scale = Math::min(1000.0f / static_cast<float>(item.get_original_width()),
+  float target_scale = std::min(1000.0f / static_cast<float>(item.get_original_width()),
                                  1000.0f / static_cast<float>(item.get_original_height()));
 
   item.set_scale(target_scale);

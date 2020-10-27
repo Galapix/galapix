@@ -79,8 +79,8 @@ void
 ViewerState::move(const Vector2f& pos)
 {
   // FIXME: Implement a proper 2D Matrix instead of this hackery
-  offset = Vector2f(offset.x() + (pos.x() * cosf(angle/180.0f*Math::pi) + pos.y() * sinf(angle/180.0f*Math::pi)),
-                    offset.y() - (pos.x() * sinf(angle/180.0f*Math::pi) - pos.y() * cosf(angle/180.0f*Math::pi)));
+  offset = Vector2f(offset.x() + (pos.x() * cosf(angle/180.0f*glm::pi<float>()) + pos.y() * sinf(angle/180.0f*glm::pi<float>())),
+                    offset.y() - (pos.x() * sinf(angle/180.0f*glm::pi<float>()) - pos.y() * cosf(angle/180.0f*glm::pi<float>())));
 }
 
 Vector2f

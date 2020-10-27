@@ -26,7 +26,7 @@ RandomLayouter::RandomLayouter()
 void
 RandomLayouter::layout(const ImageCollection& images)
 {
-  const int width = static_cast<int>(Math::sqrt(float(images.size())) * 1500.0f);
+  const int width = static_cast<int>(std::sqrt(float(images.size())) * 1500.0f);
 
   for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
   {
