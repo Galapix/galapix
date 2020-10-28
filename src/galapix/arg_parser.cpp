@@ -98,12 +98,12 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
       else if (strcmp(argv[i], "-D") == 0 ||
                strcmp(argv[i], "--debug") == 0)
       {
-        logmich::set_log_level(logmich::kDebug);
+        logmich::set_log_level(logmich::LogLevel::DEBUG);
       }
       else if (strcmp(argv[i], "-v") == 0 ||
                strcmp(argv[i], "--verbose") == 0)
       {
-        logmich::set_log_level(logmich::kInfo);
+        logmich::set_log_level(logmich::LogLevel::INFO);
       }
       else if (strcmp(argv[i], "-t") == 0 ||
                strcmp(argv[i], "--threads") == 0)

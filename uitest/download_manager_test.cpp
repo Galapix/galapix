@@ -143,7 +143,7 @@ void run_repl()
 UITEST(DownloadManager, test, "",
        "Run interactive download shell")
 {
-  logmich::set_log_level(logmich::kDebug);
+  logmich::set_log_level(logmich::LogLevel::DEBUG);
   run_repl(); // NOLINT
 }
 

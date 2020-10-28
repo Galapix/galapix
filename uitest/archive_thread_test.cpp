@@ -25,7 +25,7 @@
 UITEST(Archive, thread, "ARCHIVENAME...",
        "Produce an Extraction object")
 {
-  logmich::set_log_level(logmich::kDebug);
+  logmich::set_log_level(logmich::LogLevel::DEBUG);
 
   ArchiveThread m_archive("/tmp/foobar");
 

@@ -113,7 +113,7 @@ public:
 
 UITEST(Generator, test, "FILE...")
 {
-  logmich::set_log_level(logmich::kDebug);
+  logmich::set_log_level(logmich::LogLevel::DEBUG);
 
   SoftwareSurfaceFactory surface_factory;
   DownloadManager download_mgr;

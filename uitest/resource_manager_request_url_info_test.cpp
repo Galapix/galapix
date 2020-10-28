@@ -32,7 +32,7 @@
 
 UITEST(ResourceManager, request_url_info, "URL...")
 {
-  logmich::set_log_level(logmich::kDebug);
+  logmich::set_log_level(logmich::LogLevel::DEBUG);
 
   Database db = Database::create("/tmp/resource_manager_test");
   JobManager job_manager(4);

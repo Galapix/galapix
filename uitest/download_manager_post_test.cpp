@@ -28,7 +28,7 @@
 UITEST(DownloadManager, post, "URL...",
        "Post to an URL")
 {
-  logmich::set_log_level(logmich::kDebug);
+  logmich::set_log_level(logmich::LogLevel::DEBUG);
   DownloadManager downloader;
 
   for(const auto& arg : rest)
