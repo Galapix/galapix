@@ -140,7 +140,7 @@ Viewer::draw()
 
   bool clip_debug = false;
 
-  glm::mat4 modelview;
+  glm::mat4 modelview = glm::mat4(1);
 
   if (clip_debug)
   {
@@ -197,7 +197,7 @@ Viewer::draw()
   right_tool->draw();
   Framebuffer::end_render();
 
-  Framebuffer::set_modelview(glm::mat4());
+  Framebuffer::set_modelview(glm::mat4(1));
   Framebuffer::begin_render();
   if (m_draw_grid)
   {

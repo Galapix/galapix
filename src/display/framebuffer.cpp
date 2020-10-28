@@ -36,8 +36,8 @@ using namespace surf;
 Size Framebuffer::size;
 GLuint Framebuffer::s_textured_prg = 0;
 GLuint Framebuffer::s_flatcolor_prg = 0;
-glm::mat4 Framebuffer::s_projection;
-glm::mat4 Framebuffer::s_modelview;
+glm::mat4 Framebuffer::s_projection = glm::mat4(1);
+glm::mat4 Framebuffer::s_modelview = glm::mat4(1);
 
 namespace {
 
