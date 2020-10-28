@@ -29,9 +29,13 @@ GtkSystem::~GtkSystem()
 void
 GtkSystem::launch_viewer(Workspace& workspace, Options& options)
 {
-  GtkViewer gtk_viewer(*this);
-  gtk_viewer.set_workspace(&workspace);
-  gtk_viewer.run();
+  try {
+    GtkViewer gtk_viewer(*this);
+    gtk_viewer.set_workspace(&workspace);
+    gtk_viewer.run();
+  } catch (Glib::Exception const& err) {
+    throw std::runtime_error(err.what());
+  }
 }
 
 bool

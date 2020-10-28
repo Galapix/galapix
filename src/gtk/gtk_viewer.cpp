@@ -18,9 +18,6 @@
 #include <string.h>
 #include <gtkmm.h>
 #include <gtkmm/builder.h>
-#include <iostream>
-
-#include <iostream>
 
 #include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
@@ -65,19 +62,8 @@ GtkViewer::run()
   std::cout << "hele\n" << std::endl;
   Glib::RefPtr<Gtk::Builder> builder;
 
-    builder = Gtk::Builder::create();
-  std::cout << "GOING CRASH\n";
-  try {
-    builder->add_from_file("data/glade/galapix.xml");
-  } catch (std::exception const& err) {
-    std::cout << "EXCEPTION: " << err.what() << std::endl;
-  } catch (Glib::Exception const& err) {
-    std::cout << "BUILDERROR: " << err.what() << std::endl;
-  } catch (...) {
-    std::cout << "DONT KNOWOOOWWWoeuaou: NO" << std::endl;
-  }
-  std::cout << "NEVER REACHED\n";
-  std::cout << "oeuaou: YESdNO" << std::endl;
+  builder = Gtk::Builder::create();
+  builder->add_from_file("data/glade/galapix.xml");
 
   // start the event loop; exit when the specified window is closed
   Gtk::Window* window = nullptr;
@@ -166,13 +152,7 @@ GtkViewer::run()
   */
 
   // Run the thing
-  try {
-    Gtk::Main::run(*window);
-  } catch (std::exception const& err) {
-    std::cout << "Error: " << err.what() << std::endl;
-  } catch (...) {
-    std::cout << "Error: unknown" << std::endl;
-  }
+  Gtk::Main::run(*window);
 
   // Cleanup
   for(int i = 0; i < argc; ++i) {
