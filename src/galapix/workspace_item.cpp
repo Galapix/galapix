@@ -17,9 +17,9 @@
 #include "galapix/workspace_item.hpp"
 
 WorkspaceItem::WorkspaceItem() :
-  m_pos(),
-  m_scale(),
-  m_angle(),
+  m_pos(0.0f, 0.0f),
+  m_scale(1.0f),
+  m_angle(0.0f),
   m_visible(false),
   m_parent(),
   m_children()
