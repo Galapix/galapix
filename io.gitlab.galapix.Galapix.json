@@ -14,9 +14,15 @@
         "--socket=wayland"
     ],
     "modules": [
+        "shared-modules/jsoncpp/jsoncpp-1.8.json",
         "shared-modules/glu/glu-9.json",
         "shared-modules/glew/glew.json",
         "shared-modules/sigc++/sigc++-2.0.json",
+        "shared-modules/glibmm/glibmm-2.4.json",
+        "shared-modules/cairomm/cairomm-1.0.json",
+        "shared-modules/pangomm/pangomm-1.4.json",
+        "shared-modules/atkmm/atkmm-1.6.json",
+        "shared-modules/gtkmm/gtkmm-3.24.2.json",
         "shared-modules/fmt/fmt.json",
         "shared-modules/glm/glm.json",
         "shared-modules/imagemagick/imagemagick-6.9.11.json",
@@ -26,7 +32,7 @@
             "config-opts": [
                 "-DCMAKE_BUILD_TYPE=Release",
                 "-DBUILD_GALAPIX_SDL=ON",
-                "-DBUILD_GALAPIX_GTK=OFF"
+                "-DBUILD_GALAPIX_GTK=ON"
             ],
             "sources": [
                 {
