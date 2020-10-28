@@ -224,7 +224,7 @@ std::ostream& operator<<(std::ostream& out, const URL& url)
 
 bool operator<(const URL& lhs, const URL& rhs)
 {
-  return lhs.str() < rhs.str();
+  return lhs.str() < rhs.str(); // NOLINT
 }
 
 bool operator==(const URL& lhs, const URL& rhs)
