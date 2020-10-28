@@ -16,6 +16,8 @@
 
 #include <gtkmm.h>
 
+#include <logmich/log.hpp>
+
 #include "util/opengl.hpp"
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
@@ -26,6 +28,7 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   : viewer(viewer_),
     mouse_pos()
 {
+#ifdef DISABLED_FOR_GTK3
   Glib::RefPtr<Gdk::GL::Config> glconfig;
 
   glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB    |
@@ -46,6 +49,7 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   }
 
   set_gl_capability(glconfig);
+#endif
 
   add_events(Gdk::POINTER_MOTION_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK |
              Gdk::KEY_PRESS_MASK      | Gdk::KEY_RELEASE_MASK |
@@ -55,7 +59,7 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   // Gdk::BUTTON_MOTION_MASK | Gdk::BUTTON1_MOTION_MASK | Gdk::BUTTON2_MOTION_MASK |
   // Gdk::BUTTON3_MOTION_MASK |
 
-  set_flags(get_flags()|Gtk::CAN_FOCUS);
+  set_can_focus(true);
 
   signal_button_release_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_up));
   signal_button_press_event().connect(sigc::mem_fun(this, &GtkViewerWidget::mouse_down));
@@ -86,62 +90,48 @@ GtkViewerWidget::on_timeout()
   return true;
 }
 
-void
-GtkViewerWidget::on_realize()
+Glib::RefPtr<Gdk::GLContext>
+GtkViewerWidget::on_create_context()
 {
-  Gtk::DrawingArea::on_realize();
+  log_trace("GtkViewerWidget::on_create_context()");
+  auto ctx = GLArea::on_create_context();
 
-  Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+  //ctx->set_debug_enabled();
+  ctx->make_current();
 
-  if (!glwindow->gl_begin(get_gl_context())) {
-    return;
-  }
+  int major, minor;
+  ctx->get_version(major, minor);
+  log_info("OpenGL: {}.{}");
+  log_info("OpenGLES: {}", ctx->get_use_es());
 
   Framebuffer::init();
   Framebuffer::reshape(Size(get_width(), get_height()));
 
-  glwindow->gl_end();
+  return ctx;
 }
 
-bool
-GtkViewerWidget::on_configure_event(GdkEventConfigure* ev)
+void
+GtkViewerWidget::on_realize()
 {
-  Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+  log_trace("GtkViewerWidget::on_realize()");
+  Gtk::GLArea::on_realize();
+}
 
-  // *** OpenGL BEGIN ***
-  if (!glwindow->gl_begin(get_gl_context())) {
-    return false;
-  }
-
+void
+GtkViewerWidget::on_resize(int width, int height)
+{
+  log_trace("GtkViewerWidget::on_resize({}x{})", width, height);
   Framebuffer::reshape(Size(get_width(), get_height()));
-
-  glwindow->gl_end();
-  // *** OpenGL END ***
-
-  return true;
 }
 
 bool
-GtkViewerWidget::on_expose_event(GdkEventExpose* ev)
+GtkViewerWidget::on_render(const Glib::RefPtr<Gdk::GLContext>& context)
 {
-  Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
-
-  if (!glwindow->gl_begin(get_gl_context())) {
-    return false;
-  }
-
+  log_trace("GtkViewerWidget::on_render()");
+  Gtk::GLArea::on_render(context);
   viewer->draw();
 
-  // Swap buffers.
-  if (glwindow->is_double_buffered()) {
-    glwindow->swap_buffers();
-  } else {
-    glFlush();
-  }
-
-  glwindow->gl_end();
-
-  return true;
+  return false;
 }
 
 bool
@@ -198,22 +188,26 @@ GtkViewerWidget::key_press(GdkEventKey* ev)
   std::cout << "v" << ev->keyval << std::endl;
   switch(ev->keyval)
   {
-    case GDK_space:
+    case GDK_KEY_space:
       break;
 
-    case GDK_l:
+    case GDK_KEY_l:
       viewer->print_state();
       break;
 
-    case GDK_h:
+    case GDK_KEY_d:
+      viewer->zoom_to_selection();
+      break;
+
+    case GDK_KEY_h:
       viewer->zoom_home();
       break;
 
-    case GDK_g:
+    case GDK_KEY_g:
       viewer->toggle_grid();
       break;
 
-    case GDK_f:
+    case GDK_KEY_f:
       viewer->toggle_pinned_grid();
       break;
 

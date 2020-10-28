@@ -18,14 +18,11 @@
 #define HEADER_GALAPIX_GTK_GTK_VIEWER_WIDGET_HPP
 
 #include <iostream>
-#include <gtkglmm.h>
-#include <gtkmm/gl/widget.h>
+#include <gtkmm/glarea.h>
 
 class Viewer;
 
-class GtkViewerWidget final
-  : public Gtk::DrawingArea,
-    public Gtk::GL::Widget<GtkViewerWidget>
+class GtkViewerWidget final : public Gtk::GLArea
 {
 public:
   GtkViewerWidget(Viewer* viewer);
@@ -33,8 +30,9 @@ public:
 
   void on_realize() override;
   bool on_timeout();
-  bool on_configure_event(GdkEventConfigure* event) override;
-  bool on_expose_event(GdkEventExpose* event) override;
+  Glib::RefPtr<Gdk::GLContext> on_create_context() override;
+  void on_resize(int width, int height) override;
+  bool on_render(const Glib::RefPtr<Gdk::GLContext>& context) override;
 
   bool mouse_move(GdkEventMotion* event);
   bool mouse_down (GdkEventButton* event);

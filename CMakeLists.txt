@@ -217,9 +217,7 @@ if(BUILD_GALAPIX_SDL)
 endif()
 
 if(BUILD_GALAPIX_GTK)
-  pkg_search_module(GTKMM REQUIRED gtkmm-2.4 IMPORTED_TARGET)
-  pkg_search_module(GLADEMM REQUIRED libglademm-2.4 IMPORTED_TARGET)
-  pkg_search_module(GTKGLEXTMM REQUIRED gtkglextmm-1.2 IMPORTED_TARGET)
+  pkg_search_module(GTKMM REQUIRED gtkmm-3.0 IMPORTED_TARGET)
 
   file(GLOB LIBGALAPIX_GTK_SOURCES src/gtk/*.cpp)
   add_library(libgalapix_gtk SHARED ${LIBGALAPIX_GTK_SOURCES})
@@ -227,9 +225,7 @@ if(BUILD_GALAPIX_GTK)
   target_compile_definitions(libgalapix_gtk PRIVATE -DGALAPIX_GTK)
   target_link_libraries(libgalapix_gtk PUBLIC
     libgalapix
-    PkgConfig::GTKMM
-    PkgConfig::GLADEMM
-    PkgConfig::GTKGLEXTMM)
+    PkgConfig::GTKMM)
 
   add_executable(galapix.gtk src/main/gtk_main.cpp)
   set_target_properties(galapix.gtk PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.gtk")

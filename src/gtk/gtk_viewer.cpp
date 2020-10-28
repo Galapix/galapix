@@ -17,7 +17,9 @@
 #include <memory>
 #include <string.h>
 #include <gtkmm.h>
-#include <libglademm/xml.h>
+#include <gtkmm/builder.h>
+#include <iostream>
+
 #include <iostream>
 
 #include "galapix/viewer.hpp"
@@ -59,14 +61,30 @@ GtkViewer::run()
   argv[1] = nullptr;
 
   Gtk::Main kit(&argc, &argv);
-  Gtk::GL::init(&argc, &argv);
 
-  Glib::RefPtr<Gnome::Glade::Xml> xml = Gnome::Glade::Xml::create("data/glade/galapix.glade");
+  std::cout << "hele\n" << std::endl;
+  Glib::RefPtr<Gtk::Builder> builder;
+
+    builder = Gtk::Builder::create();
+  std::cout << "GOING CRASH\n";
+  try {
+    builder->add_from_file("data/glade/galapix.xml");
+  } catch (std::exception const& err) {
+    std::cout << "EXCEPTION: " << err.what() << std::endl;
+  } catch (Glib::Exception const& err) {
+    std::cout << "BUILDERROR: " << err.what() << std::endl;
+  } catch (...) {
+    std::cout << "DONT KNOWOOOWWWoeuaou: NO" << std::endl;
+  }
+  std::cout << "NEVER REACHED\n";
+  std::cout << "oeuaou: YESdNO" << std::endl;
 
   // start the event loop; exit when the specified window is closed
-  Gtk::Window& window = dynamic_cast<Gtk::Window&>(*xml->get_widget("MainWindow"));
+  Gtk::Window* window = nullptr;
+  builder->get_widget("MainWindow", window);
 
-  Gtk::ScrolledWindow& hbox = dynamic_cast<Gtk::ScrolledWindow&>(*xml->get_widget("scrolledwindow1"));
+  Gtk::ScrolledWindow* hbox = nullptr;
+  builder->get_widget("scrolledwindow1", hbox);
 
   viewer = std::make_unique<Viewer>(m_system, workspace);
 
@@ -75,14 +93,14 @@ GtkViewer::run()
   //viewer->toggle_pinned_grid();
 
   GtkViewerWidget viewer_widget(viewer.get());
-  hbox.add(viewer_widget);
+  hbox->add(viewer_widget);
   viewer_widget.show();
 
   // Toolbox
-  pan_tool_button  = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("PanToolButton"));
-  zoom_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("ZoomToolButton"));
-  grid_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("GridToolButton"));
-  move_tool_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("MoveToolButton"));
+  builder->get_widget("PanToolButton", pan_tool_button);
+  builder->get_widget("ZoomToolButton", zoom_tool_button);
+  builder->get_widget("GridToolButton", grid_tool_button);
+  builder->get_widget("MoveToolButton", move_tool_button);
 
   pan_tool_button ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_pan_tool_toggled));
   zoom_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_tool_toggled));
@@ -90,23 +108,23 @@ GtkViewer::run()
   move_tool_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_move_tool_toggled));
 
   // Toolbar
-  zoom_in_button   = dynamic_cast<Gtk::ToolButton*>(xml->get_widget("zoom-in"));
-  zoom_out_button  = dynamic_cast<Gtk::ToolButton*>(xml->get_widget("zoom-out"));
-  zoom_home_button = dynamic_cast<Gtk::ToolButton*>(xml->get_widget("zoom-home"));
+  builder->get_widget("zoom-in", zoom_in_button);
+  builder->get_widget("zoom-out", zoom_out_button);
+  builder->get_widget("zoom-home", zoom_home_button);
 
   zoom_in_button->signal_clicked().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_in_clicked));
   zoom_out_button->signal_clicked().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_out_clicked));
   zoom_home_button->signal_clicked().connect(sigc::mem_fun(this, &GtkViewer::on_zoom_home_clicked));
 
-  grid_toggle     = dynamic_cast<Gtk::ToggleToolButton*>(xml->get_widget("grid-toggle"));
-  grid_pin_toggle = dynamic_cast<Gtk::ToggleToolButton*>(xml->get_widget("grid-pin-toggle"));
+  builder->get_widget("grid-toggle", grid_toggle);
+  builder->get_widget("grid-pin-toggle", grid_pin_toggle);
 
   grid_toggle->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_toggle));
   grid_pin_toggle->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_grid_pin_toggle));
 
-  layout_regular_button = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-regular"));
-  layout_tight_button   = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-tight"));
-  layout_random_button  = dynamic_cast<Gtk::RadioToolButton*>(xml->get_widget("layout-random"));
+  builder->get_widget("layout-regular", layout_regular_button);
+  builder->get_widget("layout-tight", layout_tight_button);
+  builder->get_widget("layout-random", layout_random_button);
 
   layout_regular_button->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_layout_toggle));
   layout_tight_button  ->signal_toggled().connect(sigc::mem_fun(this, &GtkViewer::on_layout_toggle));
@@ -148,7 +166,13 @@ GtkViewer::run()
   */
 
   // Run the thing
-  Gtk::Main::run(window);
+  try {
+    Gtk::Main::run(*window);
+  } catch (std::exception const& err) {
+    std::cout << "Error: " << err.what() << std::endl;
+  } catch (...) {
+    std::cout << "Error: unknown" << std::endl;
+  }
 
   // Cleanup
   for(int i = 0; i < argc; ++i) {
