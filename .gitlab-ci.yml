@@ -39,7 +39,7 @@ before_script:
     libglm-dev
     libgtest-dev
     libgtkglextmm-x11-1.2-dev
-    libgtkmm-2.4-dev
+    libgtkmm-3.0-dev
     libjpeg8-dev
     libjsoncpp-dev
     libmagick++-dev
