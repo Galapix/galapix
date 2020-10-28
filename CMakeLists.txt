@@ -101,14 +101,6 @@ function(build_dependencies)
     add_subdirectory(external/uitest/ EXCLUDE_FROM_ALL)
   endif()
 
-  if(BUILD_BENCHMARKS)
-    # build google-benchmark
-    file(GLOB BENCHMARK_SOURCES external/benchmark/src/*.cc)
-    add_library(benchmark ${BENCHMARK_SOURCES})
-    target_include_directories(benchmark SYSTEM PUBLIC
-      ${CMAKE_CURRENT_SOURCE_DIR}/external/benchmark/include)
-  endif()
-
   set(BUILD_TESTS OFF)
   add_subdirectory(external/SQLiteCpp/ EXCLUDE_FROM_ALL)
   set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
@@ -299,6 +291,8 @@ if(BUILD_TESTS)
 endif()
 
 if(BUILD_BENCHMARKS)
+  pkg_search_module(BENCHMARK REQUIRED benchmark IMPORTED_TARGET)
+
   # build benchmarks
   file(GLOB BENCHMARKSOURCES benchmarks/*.cpp)
   foreach(SOURCE ${BENCHMARKSOURCES})
@@ -306,7 +300,7 @@ if(BUILD_BENCHMARKS)
     add_executable(${SOURCE_BASENAME} ${SOURCE})
     target_link_libraries(${SOURCE_BASENAME}
       libgalapix
-      benchmark)
+      PkgConfig::BENCHMARK)
     set_target_properties(${SOURCE_BASENAME} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/benchmarks/")
     target_compile_options(${SOURCE_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
