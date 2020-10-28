@@ -31,6 +31,7 @@
              (gnu packages gcc)
              (gnu packages gl)
              (gnu packages glib)
+             (gnu packages gtk)
              (gnu packages image)
              (gnu packages imagemagick)
              (gnu packages maths)
@@ -40,6 +41,7 @@
              (gnu packages pretty-print)
              (gnu packages sdl)
              (gnu packages sqlite)
+             (gnu packages serialization)
              (gnu packages tls)
              (guix-cocfree utils))
 
@@ -54,7 +56,7 @@
     `(#:tests? #f ; no network
       #:configure-flags '("-DCMAKE_BUILD_TYPE=Release"
                           "-DBUILD_GALAPIX_SDL=ON"
-                          "-DBUILD_GALAPIX_GTK=OFF" ; no libglademm
+                          "-DBUILD_GALAPIX_GTK=ON"
                           "-DBUILD_TESTS=ON"
                           "-DBUILD_BENCHMARKS=ON"
                           "-DBUILD_EXTRAS=ON")))
@@ -78,6 +80,8 @@
       ("libsigc++" ,libsigc++)
       ("openssl" ,openssl)
       ("imagemagick" ,imagemagick)
+      ("jsoncpp" ,jsoncpp)
+      ("gtkmm" ,gtkmm)
       ("libexif" ,libexif)))
    (synopsis (synopsis-from-source %source-dir))
    (description (description-from-source %source-dir))
