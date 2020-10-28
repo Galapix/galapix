@@ -59,11 +59,20 @@ GtkViewer::run()
 
   Gtk::Main kit(&argc, &argv);
 
-  std::cout << "hele\n" << std::endl;
+  Glib::RefPtr<Gtk::IconTheme> icon_theme = Gtk::IconTheme::get_default();
+  icon_theme->append_search_path("data/icons/");
+
+  Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
+  css_provider->load_from_path("data/gtk/style.css");
+
+  Glib::RefPtr<Gtk::StyleContext> style_context = Gtk::StyleContext::create();
+  Glib::RefPtr<Gdk::Screen> screen = Gdk::Screen::get_default();
+  style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
   Glib::RefPtr<Gtk::Builder> builder;
 
   builder = Gtk::Builder::create();
-  builder->add_from_file("data/glade/galapix.xml");
+  builder->add_from_file("data/gtk/galapix.xml");
 
   // start the event loop; exit when the specified window is closed
   Gtk::Window* window = nullptr;
