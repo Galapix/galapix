@@ -16,7 +16,6 @@
 
 #include "galapix/viewer_state.hpp"
 
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/ext.hpp>
 
 #include "display/framebuffer.hpp"

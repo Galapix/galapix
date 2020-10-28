@@ -43,6 +43,8 @@ if(THREADSANITIZER)
   add_compile_options(-fsanitize=thread)
 endif()
 
+add_definitions(-DGLM_FORCE_CTOR_INIT -DGLM_ENABLE_EXPERIMENTAL)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

@@ -17,7 +17,6 @@
 #ifndef HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
 #define HEADER_GALAPIX_DISPLAY_FRAMEBUFFER_HPP
 
-#define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
 #include <geom/fwd.hpp>

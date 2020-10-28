@@ -21,7 +21,6 @@
 #include <fmt/format.h>
 #include <sstream>
 
-#define GLM_FORCE_CTOR_INIT
 #include <glm/glm.hpp>
 
 #include <geom/geom.hpp>
