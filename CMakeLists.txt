@@ -291,7 +291,7 @@ if(BUILD_TESTS)
 endif()
 
 if(BUILD_BENCHMARKS)
-  pkg_search_module(BENCHMARK REQUIRED benchmark IMPORTED_TARGET)
+  find_package(benchmark REQUIRED)
 
   # build benchmarks
   file(GLOB BENCHMARKSOURCES benchmarks/*.cpp)
@@ -300,7 +300,7 @@ if(BUILD_BENCHMARKS)
     add_executable(${SOURCE_BASENAME} ${SOURCE})
     target_link_libraries(${SOURCE_BASENAME}
       libgalapix
-      PkgConfig::BENCHMARK)
+      benchmark::benchmark)
     set_target_properties(${SOURCE_BASENAME} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/benchmarks/")
     target_compile_options(${SOURCE_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
