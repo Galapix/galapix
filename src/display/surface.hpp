@@ -17,46 +17,10 @@
 #ifndef HEADER_GALAPIX_DISPLAY_SURFACE_HPP
 #define HEADER_GALAPIX_DISPLAY_SURFACE_HPP
 
-#include <memory>
-
 #include <wstdisplay/surface.hpp>
-
-#include "math/vector2f.hpp"
-#include "math/rect.hpp"
 
 using Surface = wstdisplay::SurfacePtr;
 
-#if 0
-class SurfaceImpl;
-class Surface;
-
-class Surface
-{
-public:
-  static Surface create(surf::SoftwareSurface const& src, Rect const& srcrect);
-  static Surface create(surf::SoftwareSurface const& src);
-
-private:
-  explicit Surface(surf::SoftwareSurface const& src, Rect const& srcrect);
-  explicit Surface(surf::SoftwareSurface const& src);
-
-public:
-  Surface();
-
-  void draw(const Vector2f& pos) const;
-  void draw(const Rectf& dstrect) const;
-  void draw(const Rectf& srcrect, const Rectf& dstrect) const;
-
-  int  get_width()  const;
-  int  get_height() const;
-  Size get_size() const;
-
-  explicit operator bool() const { return m_impl != nullptr; }
-
-private:
-  std::shared_ptr<const SurfaceImpl> m_impl;
-};
 #endif
 
 /* EOF */
-#endif

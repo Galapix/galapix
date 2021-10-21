@@ -17,45 +17,9 @@
 #ifndef HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 #define HEADER_GALAPIX_DISPLAY_TEXTURE_HPP
 
-#include <memory>
-
-#include <geom/fwd.hpp>
-#include <surf/software_surface.hpp>
 #include <wstdisplay/texture.hpp>
 
-#include "math/rect.hpp"
-
-namespace surf {
-class SoftwareSurface;
-} // namespace surf
-
 using Texture = wstdisplay::TexturePtr;
-
-#if 0
-
-class Texture
-{
-public:
-  static Texture create(surf::SoftwareSurface const& src, const Rect& srcrect);
-
-public:
-  Texture();
-
-  int get_width() const;
-  int get_height() const;
-
-  void bind() const;
-
-  explicit operator bool() const { return m_impl != nullptr; }
-
-private:
-  Texture(surf::SoftwareSurface const& src, const Rect& srcrect);
-
-private:
-  std::shared_ptr<const TextureImpl> m_impl;
-};
-
-#endif
 
 #endif
 

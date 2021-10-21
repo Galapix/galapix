@@ -88,8 +88,6 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
   m_spnav_allow_rotate(false),
   m_gamecontrollers()
 {
-  Framebuffer::init();
-
   Framebuffer::reshape(m_window.get_size());
 }
 

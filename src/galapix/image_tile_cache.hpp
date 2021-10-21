@@ -27,6 +27,7 @@
 #include "galapix/tile_provider.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue2.hpp"
+#include "math/rect.hpp"
 
 // error: base class 'class std::enable_shared_from_this<>' has a non-virtual destructor
 #pragma GCC diagnostic ignored "-Weffc++"
