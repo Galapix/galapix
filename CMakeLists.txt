@@ -171,6 +171,7 @@ target_link_libraries(libgalapix PUBLIC
   sexp
   entt
   geomcpp
+  wstdisplay
   SQLiteCpp
   fmt::fmt
   PkgConfig::SIGCXX
