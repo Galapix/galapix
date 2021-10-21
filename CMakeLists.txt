@@ -112,6 +112,7 @@ function(build_dependencies)
   add_subdirectory(external/surfcpp/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/archcpp/ EXCLUDE_FROM_ALL)
   add_subdirectory(external/priocpp/ EXCLUDE_FROM_ALL)
+  add_subdirectory(external/wstdisplay/ EXCLUDE_FROM_ALL)
 endfunction()
 build_dependencies()
 

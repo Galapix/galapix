@@ -34,3 +34,6 @@
 [submodule "external/priocpp"]
 	path = external/priocpp
 	url = https://gitlab.com/grumbel/priocpp.git
+[submodule "external/wstdisplay"]
+	path = external/wstdisplay
+	url = https://gitlab.com/Windstille/wstdisplay.git
