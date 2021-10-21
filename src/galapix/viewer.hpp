@@ -22,8 +22,8 @@
 #include <vector>
 
 #include <surf/color.hpp>
+#include <wstdisplay/fwd.hpp>
 
-#include "display/surface.hpp"
 #include "galapix/viewer_state.hpp"
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"

@@ -20,8 +20,8 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <wstdisplay/surface.hpp>
 
-#include "display/surface.hpp"
 #include "galapix/tile.hpp"
 #include "galapix/tile_cache_id.hpp"
 #include "galapix/tile_provider.hpp"
@@ -49,7 +49,7 @@ public:
 
     JobHandle job_handle;
     Status status;
-    Surface surface;
+    wstdisplay::SurfacePtr surface;
 
     SurfaceStruct() :
       job_handle(JobHandle::create()),
@@ -59,7 +59,7 @@ public:
 
     SurfaceStruct(JobHandle const& job_handle_,
                   Status status_,
-                  Surface surface_) :
+                  wstdisplay::SurfacePtr surface_) :
       job_handle(job_handle_),
       status(status_),
       surface(std::move(surface_))
@@ -73,8 +73,8 @@ public:
   ImageTileCache(TileProviderPtr const& tile_provider);
 
   SurfaceStruct request_tile(int x, int y, int scale);
-  Surface get_tile(int x, int y, int scale);
-  Surface find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
+  wstdisplay::SurfacePtr get_tile(int x, int y, int scale);
+  wstdisplay::SurfacePtr find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
 
   void process_queue();
 

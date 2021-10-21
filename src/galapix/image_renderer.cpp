@@ -19,7 +19,6 @@
 #include <surf/color.hpp>
 #include <wstdisplay/graphics_context.hpp>
 
-#include "display/surface.hpp"
 #include "galapix/image.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "math/math.hpp"
@@ -64,16 +63,16 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
   else // tile not found, so find a replacement
   {
     // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
-    Surface nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
-    Surface ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
-    Surface sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
-    Surface se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
+   wstdisplay::SurfacePtr nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
+    wstdisplay::SurfacePtr ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
+    wstdisplay::SurfacePtr sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
+    wstdisplay::SurfacePtr se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
 
     if (!nw || !ne || !sw || !se)
     {
       // draw lower resolution tiles
       int downscale;
-      Surface surface = m_cache->find_smaller_tile(x, y, scale, downscale);
+      wstdisplay::SurfacePtr surface = m_cache->find_smaller_tile(x, y, scale, downscale);
 
       if (surface)
       {

@@ -32,7 +32,7 @@ ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
 {
 }
 
-Surface
+wstdisplay::SurfacePtr
 ImageTileCache::get_tile(int x, int y, int scale)
 {
   if (x < 0 || y < 0 || scale < 0)
@@ -78,7 +78,7 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
     SurfaceStruct surface_struct(job_handle,
                                  SurfaceStruct::SURFACE_REQUESTED,
-                                 Surface());
+                                 wstdisplay::SurfacePtr());
     m_cache[cache_id] = surface_struct;
     return surface_struct;
   }
@@ -121,7 +121,7 @@ ImageTileCache::cleanup()
   }
 }
 
-Surface
+wstdisplay::SurfacePtr
 ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
   int  downscale_factor = 1;

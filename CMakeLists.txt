@@ -136,7 +136,6 @@ file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/database/*.cpp
   src/database/entries/*.cpp
   src/database/tables/*.cpp
-  src/display/*.cpp
   src/galapix/*.cpp
   src/galapix/layouter/*.cpp
   src/server/*.cpp
