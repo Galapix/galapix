@@ -20,9 +20,10 @@
 #include <SDL.h>
 #include <memory>
 
+#include <wstdisplay/opengl_window.hpp>
+
 #include "math/size.hpp"
 #include "galapix/image.hpp"
-#include "sdl/sdl_window.hpp"
 
 class Viewer;
 class FileEntry;
@@ -48,7 +49,7 @@ private:
   float get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const;
 
 private:
-  SDLWindow m_window;
+  wstdisplay::OpenGLWindow m_window;
   Viewer& m_viewer;
 
   bool m_quit;

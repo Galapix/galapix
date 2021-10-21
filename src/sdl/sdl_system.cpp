@@ -25,6 +25,16 @@
 
 SDLSystem::SDLSystem()
 {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) != 0)
+  {
+    std::ostringstream os;
+    os << "unable to initialize SDL: " << SDL_GetError();
+    throw std::runtime_error(os.str());
+  }
+  else
+  {
+    atexit(SDL_Quit);
+  }
 }
 
 SDLSystem::~SDLSystem()

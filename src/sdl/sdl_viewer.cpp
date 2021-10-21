@@ -82,12 +82,15 @@ float deadzone(float value, float threshold)
 
 SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
-  m_window(geometry, fullscreen, anti_aliasing),
+  m_window("Galapix", geometry, geometry, fullscreen, anti_aliasing),
   m_viewer(viewer),
   m_quit(false),
   m_spnav_allow_rotate(false),
   m_gamecontrollers()
 {
+  Framebuffer::init();
+
+  Framebuffer::reshape(m_window.get_size());
 }
 
 SDLViewer::~SDLViewer()
@@ -424,7 +427,7 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_F11:
-          m_window.toggle_fullscreen();
+          m_window.set_fullscreen(true);
           break;
 
         case SDLK_F2:
@@ -637,7 +640,7 @@ SDLViewer::run()
       ticks = SDL_GetTicks();
     }
 
-    m_window.flip();
+    m_window.swap_buffers();
 
     // std::cout << "." << std::flush;
 
