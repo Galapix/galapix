@@ -116,20 +116,6 @@ function(build_dependencies)
 endfunction()
 build_dependencies()
 
-# turn shader soure in a .hpp file
-file(GLOB SHADER_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  src/shader/*.frag
-  src/shader/*.vert)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/src/display)
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp
-  COMMAND ${Python_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/bin2h.py
-  -o ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp
-  --namespace=shader_vfs --table
-  ${SHADER_SOURCE}
-  DEPENDS ${SHADER_SOURCE}
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
 # compile libgalapix
 file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/archive/*.cpp
@@ -151,7 +137,6 @@ file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/sqlite/*.cpp
   src/tools/*.cpp
   src/util/*.cpp)
-list(APPEND LIBGALAPIX_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/src/display/shader_vfs.hpp)
 add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
 set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
 target_compile_options(libgalapix PRIVATE ${WARNINGS_CXX_FLAGS})
