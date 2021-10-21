@@ -34,10 +34,14 @@
 using namespace surf;
 
 Size Framebuffer::size;
+
+#if 0
 GLuint Framebuffer::s_textured_prg = 0;
 GLuint Framebuffer::s_flatcolor_prg = 0;
+
 glm::mat4 Framebuffer::s_projection = glm::mat4(1);
 glm::mat4 Framebuffer::s_modelview = glm::mat4(1);
+#endif
 
 namespace {
 
@@ -83,11 +87,13 @@ Framebuffer::init()
 
   assert_gl("Framebuffer::init()");
 
+#if 0
   // FIXME: dirty, those never get deleted or anything
   s_textured_prg = create_program("src/shader/textured.vert",
                                   "src/shader/textured.frag");
   s_flatcolor_prg = create_program("src/shader/flatcolor.vert",
                                    "src/shader/flatcolor.frag");
+#endif
 
 #ifndef HAVE_OPENGLES2
   // FIXME: Dirty!
@@ -97,6 +103,7 @@ Framebuffer::init()
 #endif
 }
 
+#if 0
 void
 Framebuffer::begin_render()
 {
@@ -111,6 +118,7 @@ Framebuffer::end_render()
 {
   assert_gl("Framebuffer::end_render");
 }
+#endif
 
 void
 Framebuffer::reshape(const Size& size_)
@@ -118,11 +126,15 @@ Framebuffer::reshape(const Size& size_)
   size = size_;
 
   glViewport(0, 0, size.width(), size.height());
+
+#if 0
   s_projection = glm::ortho(0.0f, static_cast<float>(size.width()),
                             static_cast<float>(size.height()), 0.0f,
                             1000.0f, -1000.0f);
+#endif
 }
 
+#if 0
 void
 Framebuffer::clear(const Color& rgba)
 {
@@ -130,7 +142,6 @@ Framebuffer::clear(const Color& rgba)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-#if 0
 void
 Framebuffer::draw_rect(const Rectf& rect, const Color& rgb)
 {
@@ -217,7 +228,6 @@ Framebuffer::fill_rect(const Rectf& rect, const Color& rgb)
 
   assert_gl("Framebuffer::fill_rect leave");
 }
-#endif
 
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const Color& rgba)
@@ -280,6 +290,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const Color& 
 
   assert_gl("Framebuffer::draw_grid leave");
 }
+#endif
 
 int
 Framebuffer::get_width()
@@ -293,6 +304,7 @@ Framebuffer::get_height()
   return size.height();
 }
 
+#if 0
 SoftwareSurface
 Framebuffer::screenshot()
 {
@@ -307,12 +319,8 @@ void
 Framebuffer::set_modelview(const glm::mat4& modelview)
 {
   s_modelview = modelview;
-}
 
-void
-Framebuffer::apply_gamma_ramp(float contrast, float brightness, float gamma)
-{
-  log_error("not implemented: {} {} {}", contrast, brightness, gamma);
 }
+#endif
 
 /* EOF */

@@ -83,7 +83,7 @@ GridTool::draw(wstdisplay::GraphicsContext& gc)
                  viewer->get_state().screen2world(mouse_pos));
       rect = geom::normalize(rect);
 
-      Framebuffer::draw_grid(Vector2f(rect.left(), rect.top()), rect.size(), surf::Color::from_rgba8888(255, 255, 0, 255));
+      gc.draw_grid(Vector2f(rect.left(), rect.top()), rect.size(), surf::Color::from_rgba8888(255, 255, 0, 255));
     }
   }
 }

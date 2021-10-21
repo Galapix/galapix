@@ -181,9 +181,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
   modelview *= glm::scale(glm::vec3(m_state.get_scale(), m_state.get_scale(), 1.0f));
 
   gc.set_modelview(modelview);
-  Framebuffer::set_modelview(modelview);
-  Framebuffer::begin_render();
-  Framebuffer::clear(m_background_colors[static_cast<size_t>(m_background_color)]);
+  gc.clear(m_background_colors[static_cast<size_t>(m_background_color)]);
 
   if (clip_debug)
   {
@@ -196,24 +194,21 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
   left_tool->draw(gc);
   middle_tool->draw(gc);
   right_tool->draw(gc);
-  Framebuffer::end_render();
 
-  Framebuffer::set_modelview(glm::mat4(1));
-  Framebuffer::begin_render();
+  gc.set_modelview(glm::mat4(1));
   if (m_draw_grid)
   {
     if (m_pin_grid)
     {
-      Framebuffer::draw_grid(m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec(),
+      gc.draw_grid(m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec(),
                              m_grid_size * m_state.get_scale(),
                              m_grid_color);
     }
     else
     {
-      Framebuffer::draw_grid(m_grid_offset, m_grid_size, m_grid_color);
+      gc.draw_grid(m_grid_offset, m_grid_size, m_grid_color);
     }
   }
-  Framebuffer::end_render();
 }
 
 void
@@ -402,7 +397,7 @@ Viewer::increase_contrast()
   //contrast += 0.1f;
   m_contrast *= 1.1f;
   log_info("Contrast: {}", m_contrast);
-  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
+  //Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
@@ -411,7 +406,7 @@ Viewer::decrease_contrast()
   //contrast -= 0.1f;
   m_contrast /= 1.1f;
   log_info("Contrast: {}", m_contrast);
-  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
+  //Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
@@ -419,7 +414,7 @@ Viewer::increase_brightness()
 {
   m_brightness += 0.03f;
   log_info("Brightness: {}", m_brightness);
-  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
+  //Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
@@ -427,7 +422,7 @@ Viewer::decrease_brightness()
 {
   m_brightness -= 0.03f;
   log_info("Brightness: {}", m_brightness);
-  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
+  //Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
@@ -435,7 +430,7 @@ Viewer::increase_gamma()
 {
   m_gamma *= 1.1f;
   log_info("Gamma: {}", m_gamma);
-  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
+  //Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
@@ -443,7 +438,7 @@ Viewer::decrease_gamma()
 {
   m_gamma /= 1.1f;
   log_info("Gamma: {}", m_gamma);
-  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
+  //Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void
@@ -452,7 +447,7 @@ Viewer::reset_gamma()
   m_brightness = 0.0f;
   m_contrast   = 1.0f;
   m_gamma      = 1.0f;
-  Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
+  //Framebuffer::apply_gamma_ramp(m_contrast, m_brightness, m_gamma);
 }
 
 void

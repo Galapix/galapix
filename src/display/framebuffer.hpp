@@ -38,11 +38,10 @@ public:
   static int  get_height();
   static Size get_size()   { return Size(get_width(), get_height()); }
 
-  static void clear(const surf::Color& rgba);
 #if 0
+  static void clear(const surf::Color& rgba);
   static void draw_rect(const Rectf& rect, const surf::Color& rgb);
   static void fill_rect(const Rectf& rect, const surf::Color& rgb);
-#endif
   static void draw_grid(const Vector2f& offset, const Sizef& size, const surf::Color& rgba);
 
   static void set_modelview(const glm::mat4& modelview);
@@ -51,16 +50,18 @@ public:
   static void end_render();
 
   static surf::SoftwareSurface screenshot();
-  static void apply_gamma_ramp(float contrast, float brightness, float gamma);
+#endif
 
 private:
   static Size size;
 
 public:
+#if 0
   static GLuint s_textured_prg;
   static GLuint s_flatcolor_prg;
   static glm::mat4 s_projection;
   static glm::mat4 s_modelview;
+#endif
 };
 
 #endif
