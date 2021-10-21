@@ -187,7 +187,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
 
   if (clip_debug)
   {
-    Framebuffer::draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
+    gc.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
   }
 
   m_workspace->draw(gc, cliprect,

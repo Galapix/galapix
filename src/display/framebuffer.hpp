@@ -39,8 +39,10 @@ public:
   static Size get_size()   { return Size(get_width(), get_height()); }
 
   static void clear(const surf::Color& rgba);
+#if 0
   static void draw_rect(const Rectf& rect, const surf::Color& rgb);
   static void fill_rect(const Rectf& rect, const surf::Color& rgb);
+#endif
   static void draw_grid(const Vector2f& offset, const Sizef& size, const surf::Color& rgba);
 
   static void set_modelview(const glm::mat4& modelview);

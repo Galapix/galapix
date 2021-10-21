@@ -130,6 +130,7 @@ Framebuffer::clear(const Color& rgba)
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+#if 0
 void
 Framebuffer::draw_rect(const Rectf& rect, const Color& rgb)
 {
@@ -216,6 +217,7 @@ Framebuffer::fill_rect(const Rectf& rect, const Color& rgb)
 
   assert_gl("Framebuffer::fill_rect leave");
 }
+#endif
 
 void
 Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const Color& rgba)

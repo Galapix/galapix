@@ -17,6 +17,7 @@
 #include "tools/grid_tool.hpp"
 
 #include <surf/color.hpp>
+#include <wstdisplay/graphics_context.hpp>
 
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
@@ -72,7 +73,7 @@ GridTool::draw(wstdisplay::GraphicsContext& gc)
       Rectf rect(viewer->get_state().screen2world(click_pos),
                  viewer->get_state().screen2world(mouse_pos));
       rect = geom::normalize(rect);
-      Framebuffer::draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
+      gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
     }
     else
     {

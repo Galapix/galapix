@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include <surf/color.hpp>
+#include <wstdisplay/graphics_context.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"
@@ -94,8 +95,8 @@ Image::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
 {
   if (!m_provider)
   {
-    Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
-                           surf::Color::from_rgb888(255,255,0));
+    gc.fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
+                 surf::Color::from_rgb888(255,255,0));
   }
   else
   {
@@ -150,7 +151,7 @@ Image::get_url() const
 void
 Image::draw_mark(wstdisplay::GraphicsContext& gc)
 {
-  Framebuffer::draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255));
+  gc.draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255));
 }
 
 void
