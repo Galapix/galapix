@@ -18,7 +18,7 @@
 ;; guix package --install-from-file=guix.scm
 
 (set! %load-path
-  (cons* "/ipfs/QmdHSWX34MXZeAgMuDuFwrYzSPf4fknX7E7cYJ7HDxaLrZ/guix-cocfree_0.0.0-62-g3b27118"
+  (cons* "/ipfs/QmcQaosGtaQ6dsb4iykNihZ2ZTie8om2i7pgHucZ9Ranyq/guix-cocfree_0.0.0-64-gd618440"
          %load-path))
 
 (use-modules (guix build-system cmake)
@@ -26,6 +26,7 @@
              (guix packages)
              (gnu packages base)
              (gnu packages benchmark)
+             (gnu packages engineering)
              (gnu packages mcrypt)
              (gnu packages check)
              (gnu packages curl)
@@ -84,6 +85,7 @@
       ("openssl" ,openssl)
       ("python" ,python)
       ("sdl2" ,sdl2)
+      ("libspnav" ,libspnav)
       ("sqlite" ,sqlite)))
    (synopsis (synopsis-from-source %source-dir))
    (description (description-from-source %source-dir))
