@@ -19,6 +19,8 @@
 
 #include <memory>
 
+#include <wstdisplay/fwd.hpp>
+
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
@@ -32,12 +34,12 @@ public:
 
   /** Return true if something was drawn to the screen, false when
       image was outside the cliprect */
-  bool draw(const Rectf& cliprect, float zoom);
+  bool draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom);
 
 private:
   Vector2f get_vertex(int x, int y, float zoom) const;
-  void draw_tile(int x, int y, int tiledb_scale, float zoom);
-  void draw_tiles(const Rect& rect, int tiledb_scale, float zoom);
+  void draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int tiledb_scale, float zoom);
+  void draw_tiles(wstdisplay::GraphicsContext& gc, const Rect& rect, int tiledb_scale, float zoom);
 
 private:
   Image& m_image;

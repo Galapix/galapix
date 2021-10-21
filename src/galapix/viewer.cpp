@@ -23,6 +23,7 @@
 
 #include <surf/software_surface.hpp>
 #include <surf/color.hpp>
+#include <wstdisplay/graphics_context.hpp>
 
 #include "display/framebuffer.hpp"
 #include "galapix/system.hpp"
@@ -133,7 +134,7 @@ Viewer::redraw()
 }
 
 void
-Viewer::draw()
+Viewer::draw(wstdisplay::GraphicsContext& gc)
 {
   m_mark_for_redraw = false;
 
@@ -179,6 +180,7 @@ Viewer::draw()
   modelview *= glm::translate(glm::vec3(m_state.get_offset().x(), m_state.get_offset().y(), 0.0f));
   modelview *= glm::scale(glm::vec3(m_state.get_scale(), m_state.get_scale(), 1.0f));
 
+  gc.set_modelview(modelview);
   Framebuffer::set_modelview(modelview);
   Framebuffer::begin_render();
   Framebuffer::clear(m_background_colors[static_cast<size_t>(m_background_color)]);
@@ -188,12 +190,12 @@ Viewer::draw()
     Framebuffer::draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
   }
 
-  m_workspace->draw(cliprect,
+  m_workspace->draw(gc, cliprect,
                     m_state.get_scale());
 
-  left_tool->draw();
-  middle_tool->draw();
-  right_tool->draw();
+  left_tool->draw(gc);
+  middle_tool->draw(gc);
+  right_tool->draw(gc);
   Framebuffer::end_render();
 
   Framebuffer::set_modelview(glm::mat4(1));

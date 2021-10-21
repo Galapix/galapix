@@ -94,7 +94,7 @@ MoveTool::down(const Vector2i& pos)
 }
 
 void
-MoveTool::draw()
+MoveTool::draw(wstdisplay::GraphicsContext& gc)
 {
   if (drag_active)
   {

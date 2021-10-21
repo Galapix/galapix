@@ -19,10 +19,14 @@
 
 #include <memory>
 
-#include "display/texture.hpp"
+#include <wstdisplay/surface.hpp>
+
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
+using Surface = wstdisplay::SurfacePtr;
+
+#if 0
 class SurfaceImpl;
 class Surface;
 
@@ -52,7 +56,7 @@ public:
 private:
   std::shared_ptr<const SurfaceImpl> m_impl;
 };
-
 #endif
 
 /* EOF */
+#endif

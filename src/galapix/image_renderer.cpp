@@ -46,13 +46,13 @@ ImageRenderer::get_vertex(int x, int y, float zoom) const
 }
 
 void
-ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
+ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scale, float zoom)
 {
   ImageTileCache::SurfaceStruct sstruct = m_cache->request_tile(x, y, scale);
   if (sstruct.surface)
   {
-    sstruct.surface.draw(Rectf(get_vertex(x,   y,   zoom),
-                                get_vertex(x+1, y+1, zoom)));
+    sstruct.surface->draw(gc, Rectf(get_vertex(x,   y,   zoom),
+                                    get_vertex(x+1, y+1, zoom)));
 
     if ((false))
     { // draw debug rectangle that shows tiles
@@ -82,10 +82,10 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
                          Sizef(Size(256 / downscale, 256 / downscale)));
 
         subsection = geom::frect(subsection.topleft(),
-                                 geom::fpoint(std::min(subsection.right(),  static_cast<float>(surface.get_width())),
-                                              std::min(subsection.bottom(), static_cast<float>(surface.get_height()))));
+                                 geom::fpoint(std::min(subsection.right(),  surface->get_width()),
+                                              std::min(subsection.bottom(), surface->get_height())));
 
-        surface.draw(subsection,
+        surface->draw(gc, subsection,
                       Rectf(get_vertex(x,   y,   zoom),
                             get_vertex(x+1, y+1, zoom)));
       }
@@ -111,25 +111,25 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
     }
 
     // draw higher resolution tiles
-    if (nw) { nw.draw(Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f))); }
-    if (ne) { ne.draw(Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f))); }
-    if (sw) { sw.draw(Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f))); }
-    if (se) { se.draw(Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f))); }
+    if (nw) { nw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f))); }
+    if (ne) { ne->draw(gc, Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f))); }
+    if (sw) { sw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f))); }
+    if (se) { se->draw(gc, Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f))); }
   }
 }
 
 void
-ImageRenderer::draw_tiles(const Rect& rect, int scale, float zoom)
+ImageRenderer::draw_tiles(wstdisplay::GraphicsContext& gc, const Rect& rect, int scale, float zoom)
 {
   for(int y = rect.top(); y < rect.bottom(); ++y) {
     for(int x = rect.left(); x < rect.right(); ++x) {
-      draw_tile(x, y, scale, zoom);
+      draw_tile(gc, x, y, scale, zoom);
     }
   }
 }
 
 bool
-ImageRenderer::draw(const Rectf& cliprect, float zoom)
+ImageRenderer::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
 {
   Rectf image_rect = m_image.get_image_rect();
 
@@ -153,7 +153,7 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
     if (scaled_width  < 256 && scaled_height < 256)
     { // So small that only one tile is to be drawn
       m_cache->cancel_jobs(Rect(0,0,1,1), tiledb_scale);
-      draw_tile(0, 0, tiledb_scale,
+      draw_tile(gc, 0, 0, tiledb_scale,
                 static_cast<float>(scale_factor) * m_image.get_scale());
     }
     else
@@ -175,7 +175,8 @@ ImageRenderer::draw(const Rectf& cliprect, float zoom)
 
       Rect rect(start_x, start_y, end_x, end_y);
       m_cache->cancel_jobs(rect, tiledb_scale);
-      draw_tiles(rect, tiledb_scale,
+      draw_tiles(gc,
+                 rect, tiledb_scale,
                  static_cast<float>(scale_factor) * m_image.get_scale());
     }
 

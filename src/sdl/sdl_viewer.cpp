@@ -623,7 +623,7 @@ SDLViewer::run()
       update_gamecontrollers(delta);
 
       m_viewer.update(delta);
-      m_viewer.draw();
+      m_viewer.draw(m_window.get_gc());
     }
     else
     {
@@ -636,7 +636,7 @@ SDLViewer::run()
 
       // FIXME: We should try to detect if we need a redraw and
       // only draw then, else we will redraw on each mouse motion
-      m_viewer.draw();
+      m_viewer.draw(m_window.get_gc());
       ticks = SDL_GetTicks();
     }
 

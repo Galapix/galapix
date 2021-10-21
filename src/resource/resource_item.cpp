@@ -40,12 +40,12 @@ ResourceItem::on_shutdown()
 #endif
 
 void
-ResourceItem::draw(const Rectf& cliprect, float zoom)
+ResourceItem::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
 {
 }
 
 void
-ResourceItem::draw_mark()
+ResourceItem::draw_mark(wstdisplay::GraphicsContext& gc)
 {
 }
 

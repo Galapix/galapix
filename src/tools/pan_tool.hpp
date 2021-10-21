@@ -31,7 +31,7 @@ public:
   void up(const Vector2i& pos) override;
   void down(const Vector2i& pos) override;
 
-  void draw() override {}
+  void draw(wstdisplay::GraphicsContext& gc) override {}
   void update(const Vector2i& pos, float delta);
 
   bool get_trackball_mode() const;

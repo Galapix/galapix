@@ -73,7 +73,7 @@ ZoomTool::update(const Vector2i& mouse_pos, float delta)
 }
 
 void
-ZoomTool::draw()
+ZoomTool::draw(wstdisplay::GraphicsContext& gc)
 {
 }
 

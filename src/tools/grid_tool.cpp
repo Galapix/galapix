@@ -63,7 +63,7 @@ GridTool::down(const Vector2i& pos)
 }
 
 void
-GridTool::draw()
+GridTool::draw(wstdisplay::GraphicsContext& gc)
 {
   if (drag_active)
   {

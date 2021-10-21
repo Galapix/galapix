@@ -20,6 +20,8 @@
 #include <memory>
 #include <vector>
 
+#include <wstdisplay/fwd.hpp>
+
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
@@ -65,8 +67,8 @@ public:
 
   virtual Rectf get_image_rect() const;
 
-  virtual void draw(const Rectf& cliprect, float zoom) = 0;
-  virtual void draw_mark() = 0;
+  virtual void draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom) = 0;
+  virtual void draw_mark(wstdisplay::GraphicsContext& gc) = 0;
 
   virtual URL get_url() const = 0;
 

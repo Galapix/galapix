@@ -1,3 +1,4 @@
+#if 0
 // Galapix - an image viewer for large image collections
 // Copyright (C) 2008-2019 Ingo Ruhnke <grumbel@gmail.com>
 //
@@ -287,3 +288,4 @@ Surface::get_size() const
 }
 
 /* EOF */
+#endif

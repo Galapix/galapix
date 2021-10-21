@@ -90,7 +90,7 @@ Image::cache_cleanup()
 }
 
 void
-Image::draw(const Rectf& cliprect, float zoom)
+Image::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
 {
   if (!m_provider)
   {
@@ -100,7 +100,7 @@ Image::draw(const Rectf& cliprect, float zoom)
   else
   {
     m_cache->process_queue();
-    m_renderer->draw(cliprect, zoom);
+    m_renderer->draw(gc, cliprect, zoom);
   }
 }
 
@@ -148,7 +148,7 @@ Image::get_url() const
 }
 
 void
-Image::draw_mark()
+Image::draw_mark(wstdisplay::GraphicsContext& gc)
 {
   Framebuffer::draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255));
 }

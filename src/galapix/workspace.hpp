@@ -76,7 +76,7 @@ public:
 
   // ---------------------------------------------
 
-  void draw(const Rectf& cliprect, float zoom);
+  void draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom);
   void update(float delta);
 
   // ---------------------------------------------

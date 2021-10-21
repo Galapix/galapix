@@ -115,7 +115,7 @@ Workspace::layout_random()
 }
 
 void
-Workspace::draw(const Rectf& cliprect, float zoom)
+Workspace::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
 {
   for(auto& i: m_images)
   {
@@ -126,7 +126,7 @@ Workspace::draw(const Rectf& cliprect, float zoom)
         i->on_enter_screen();
       }
 
-      i->draw(cliprect, zoom);
+      i->draw(gc, cliprect, zoom);
     }
     else
     {
@@ -139,7 +139,7 @@ Workspace::draw(const Rectf& cliprect, float zoom)
 
   for(auto& i: *m_selection)
   {
-    i->draw_mark();
+    i->draw_mark(gc);
   }
 }
 

@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_TOOL_HPP
 #define HEADER_GALAPIX_GALAPIX_TOOL_HPP
 
+#include <wstdisplay/fwd.hpp>
+
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 
@@ -32,7 +34,7 @@ public:
   virtual void up  (const Vector2i& pos) =0;
   virtual void down(const Vector2i& pos) =0;
 
-  virtual void draw() =0;
+  virtual void draw(wstdisplay::GraphicsContext& gc) =0;
 
 protected:
   Viewer* viewer;

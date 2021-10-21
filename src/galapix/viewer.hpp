@@ -62,7 +62,7 @@ public:
   Viewer(System& system, Workspace* workspace);
   ~Viewer();
 
-  void draw();
+  void draw(wstdisplay::GraphicsContext& gc);
   void update(float delta);
 
   void redraw();

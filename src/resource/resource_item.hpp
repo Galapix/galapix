@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_RESOURCE_RESOURCE_ITEM_HPP
 #define HEADER_GALAPIX_RESOURCE_RESOURCE_ITEM_HPP
 
+#include <wstdisplay/fwd.hpp>
+
 #include "galapix/workspace_item.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/resource_info.hpp"
@@ -27,8 +29,8 @@ public:
   ResourceItem(const ResourceLocator& locator);
   ~ResourceItem() override;
 
-  void draw(const Rectf& cliprect, float zoom) override;
-  void draw_mark() override;
+  void draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom) override;
+  void draw_mark(wstdisplay::GraphicsContext& gc) override;
 
   ResourceInfo get_resource_info() const;
 

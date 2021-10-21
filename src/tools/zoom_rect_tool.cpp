@@ -62,7 +62,7 @@ ZoomRectTool::down(const Vector2i& pos)
 }
 
 void
-ZoomRectTool::draw()
+ZoomRectTool::draw(wstdisplay::GraphicsContext& gc)
 {
   if (drag_active)
   {

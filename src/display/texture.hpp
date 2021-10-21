@@ -21,14 +21,17 @@
 
 #include <geom/fwd.hpp>
 #include <surf/software_surface.hpp>
+#include <wstdisplay/texture.hpp>
 
 #include "math/rect.hpp"
 
 namespace surf {
 class SoftwareSurface;
 } // namespace surf
-class TextureImpl;
-class Texture;
+
+using Texture = wstdisplay::TexturePtr;
+
+#if 0
 
 class Texture
 {
@@ -51,6 +54,8 @@ private:
 private:
   std::shared_ptr<const TextureImpl> m_impl;
 };
+
+#endif
 
 #endif
 
