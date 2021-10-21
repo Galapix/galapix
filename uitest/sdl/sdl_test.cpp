@@ -18,7 +18,6 @@
 
 #include <iostream>
 
-#include "display/framebuffer.hpp"
 #include "display/surface.hpp"
 #include "math/rgb.hpp"
 #include "math/rgba.hpp"

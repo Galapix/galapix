@@ -25,7 +25,6 @@
 #include <surf/color.hpp>
 #include <wstdisplay/graphics_context.hpp>
 
-#include "display/framebuffer.hpp"
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
@@ -54,7 +53,8 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
   m_gamma(1.0f),
   m_brightness(0.0f),
   m_contrast(1.0f),
-  m_state(),
+  m_state(*this),
+  m_size(),
   keyboard_zoom_in_tool(),
   keyboard_zoom_out_tool(),
   keyboard_view_rotate_tool(),
@@ -144,25 +144,25 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
 
   if (clip_debug)
   {
-    modelview *= glm::translate(glm::vec3(static_cast<float>(Framebuffer::get_width())/2.0f,
-                                          static_cast<float>(Framebuffer::get_height())/2.0f,
+    modelview *= glm::translate(glm::vec3(static_cast<float>(m_size.width())/2.0f,
+                                          static_cast<float>(m_size.height())/2.0f,
                                           0.0f));
     modelview *= glm::scale(glm::vec3(0.5f, 0.5f, 1.0f));
-    modelview *= glm::translate(glm::vec3(-static_cast<float>(Framebuffer::get_width())/2.0f,
-                                          -static_cast<float>(Framebuffer::get_height())/2.0f,
+    modelview *= glm::translate(glm::vec3(-static_cast<float>(m_size.width())/2.0f,
+                                          -static_cast<float>(m_size.height())/2.0f,
                                           0.0f));
   }
 
-  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+  Rectf cliprect = m_state.screen2world(Rect(0, 0, m_size.width(), m_size.height()));
 
   if (m_state.get_angle() != 0.0f)
   {
-    modelview *= glm::translate(glm::vec3(static_cast<float>(Framebuffer::get_width())/2.0f,
-                                          static_cast<float>(Framebuffer::get_height())/2.0f,
+    modelview *= glm::translate(glm::vec3(static_cast<float>(m_size.width())/2.0f,
+                                          static_cast<float>(m_size.height())/2.0f,
                                           0.0f));
     modelview *= glm::rotate(glm::radians(m_state.get_angle()), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotates around 0.0
-    modelview *= glm::translate(glm::vec3(-static_cast<float>(Framebuffer::get_width())/2.0f,
-                                          -static_cast<float>(Framebuffer::get_height())/2.0f,
+    modelview *= glm::translate(glm::vec3(-static_cast<float>(m_size.width())/2.0f,
+                                          -static_cast<float>(m_size.height())/2.0f,
                                           0.0f));
 
     // FIXME: We enlarge the cliprect so much that we can rotate
@@ -460,8 +460,8 @@ Viewer::toggle_grid()
 void
 Viewer::layout_auto()
 {
-  m_workspace->layout_aspect(static_cast<float>(Framebuffer::get_width()),
-                             static_cast<float>(Framebuffer::get_height()));
+  m_workspace->layout_aspect(static_cast<float>(m_size.width()),
+                             static_cast<float>(m_size.height()));
 }
 
 void
@@ -485,8 +485,8 @@ Viewer::layout_spiral()
 void
 Viewer::layout_tight()
 {
-  m_workspace->layout_tight(static_cast<float>(Framebuffer::get_width()),
-                            static_cast<float>(Framebuffer::get_height()));
+  m_workspace->layout_tight(static_cast<float>(m_size.width()),
+                            static_cast<float>(m_size.height()));
 }
 
 void
@@ -544,13 +544,11 @@ Viewer::zoom_to_selection()
 {
   if (!m_workspace->get_selection()->empty())
   {
-    m_state.zoom_to(Framebuffer::get_size(),
-                  m_workspace->get_selection()->get_bounding_rect());
+    m_state.zoom_to(m_size, m_workspace->get_selection()->get_bounding_rect());
   }
   else
   {
-    m_state.zoom_to(Framebuffer::get_size(),
-                  m_workspace->get_bounding_rect());
+    m_state.zoom_to(m_size, m_workspace->get_bounding_rect());
   }
 }
 
@@ -672,14 +670,14 @@ Viewer::isolate_selection()
 void
 Viewer::print_images()
 {
-  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+  Rectf cliprect = m_state.screen2world(Rect(m_size));
   m_workspace->print_images(cliprect);
 }
 
 void
 Viewer::print_info()
 {
-  Rectf cliprect = m_state.screen2world(Rect(0, 0, Framebuffer::get_width(), Framebuffer::get_height()));
+  Rectf cliprect = m_state.screen2world(Rect(m_size));
   m_workspace->print_info(cliprect);
 }
 
@@ -687,6 +685,12 @@ void
 Viewer::print_state()
 {
   log_info("{} {}", m_state.get_offset(), m_state.get_scale());
+}
+
+void
+Viewer::reshape(const Size& size)
+{
+  m_size = size;
 }
 
 /* EOF */

@@ -19,7 +19,6 @@
 #include <surf/color.hpp>
 #include <wstdisplay/graphics_context.hpp>
 
-#include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 
 using namespace surf;

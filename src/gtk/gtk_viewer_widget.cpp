@@ -15,17 +15,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtkmm.h>
+#include <GL/glew.h>
 
 #include <logmich/log.hpp>
+#include <wstdisplay/graphics_context.hpp>
 
 #include "util/opengl.hpp"
-#include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
 #include "util/raise_exception.hpp"
 
 GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   : viewer(viewer_),
+    m_gc(),
     mouse_pos()
 {
 #ifdef DISABLED_FOR_GTK3
@@ -104,8 +106,7 @@ GtkViewerWidget::on_create_context()
   log_info("OpenGL: {}.{}");
   log_info("OpenGLES: {}", ctx->get_use_es());
 
-  Framebuffer::init();
-  Framebuffer::reshape(Size(get_width(), get_height()));
+  viewer->reshape(Size(get_width(), get_height()));
 
   return ctx;
 }
@@ -115,13 +116,25 @@ GtkViewerWidget::on_realize()
 {
   log_trace("GtkViewerWidget::on_realize()");
   Gtk::GLArea::on_realize();
+
+  make_current();
+
+  GLenum err = glewInit();
+  if (err != GLEW_OK)
+  {
+    std::ostringstream msg;
+    msg << "Display:: Couldn't initialize glew: " << glewGetString(err);
+    throw std::runtime_error(msg.str());
+  }
+
+  m_gc = std::make_unique<wstdisplay::GraphicsContext>();
 }
 
 void
 GtkViewerWidget::on_resize(int width, int height)
 {
   log_trace("GtkViewerWidget::on_resize({}x{})", width, height);
-  Framebuffer::reshape(Size(get_width(), get_height()));
+  viewer->reshape(Size(get_width(), get_height()));
 }
 
 bool
@@ -129,7 +142,7 @@ GtkViewerWidget::on_render(const Glib::RefPtr<Gdk::GLContext>& context)
 {
   log_trace("GtkViewerWidget::on_render()");
   Gtk::GLArea::on_render(context);
-  viewer->draw();
+  viewer->draw(*m_gc);
 
   return false;
 }

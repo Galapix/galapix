@@ -18,7 +18,6 @@
 
 #include <glm/gtc/constants.hpp>
 
-#include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 
 ViewRotateTool::ViewRotateTool(Viewer* viewer_)
@@ -33,8 +32,8 @@ ViewRotateTool::move(const Vector2i& pos, const Vector2i& rel)
 {
   if (active)
   {
-    Vector2i center(Framebuffer::get_width()/2,
-                    Framebuffer::get_height()/2);
+    Vector2i center(viewer->get_width()/2,
+                    viewer->get_height()/2);
 
     float angle = atan2f(static_cast<float>(pos.y() - center.y()),
                          static_cast<float>(pos.x() - center.x()));
@@ -55,8 +54,8 @@ ViewRotateTool::down(const Vector2i& pos)
 {
   active = true;
 
-  Vector2i center(Framebuffer::get_width()/2,
-                  Framebuffer::get_height()/2);
+  Vector2i center(viewer->get_width()/2,
+                  viewer->get_height()/2);
 
   start_angle = atan2f(static_cast<float>(pos.y() - center.y()),
                        static_cast<float>(pos.x() - center.x()));

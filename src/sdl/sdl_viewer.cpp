@@ -26,7 +26,6 @@
 #include <surf/transform.hpp>
 
 #include "database/entries/old_file_entry.hpp"
-#include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
@@ -88,7 +87,7 @@ SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
   m_spnav_allow_rotate(false),
   m_gamecontrollers()
 {
-  Framebuffer::reshape(m_window.get_size());
+  m_viewer.reshape(m_window.get_size());
 }
 
 SDLViewer::~SDLViewer()
@@ -219,7 +218,7 @@ SDLViewer::process_event(const SDL_Event& event)
       switch (event.window.event)
       {
         case SDL_WINDOWEVENT_RESIZED:
-          Framebuffer::reshape(Size(event.window.data1, event.window.data2));
+          m_viewer.reshape(Size(event.window.data1, event.window.data2));
           break;
 
         default:

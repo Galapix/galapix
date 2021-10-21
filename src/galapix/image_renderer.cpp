@@ -19,7 +19,6 @@
 #include <surf/color.hpp>
 #include <wstdisplay/graphics_context.hpp>
 
-#include "display/framebuffer.hpp"
 #include "display/surface.hpp"
 #include "galapix/image.hpp"
 #include "galapix/image_tile_cache.hpp"

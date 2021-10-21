@@ -21,7 +21,6 @@
 #include <surf/color.hpp>
 #include <wstdisplay/graphics_context.hpp>
 
-#include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
 
 using namespace surf;
@@ -50,7 +49,7 @@ ZoomRectTool::up  (const Vector2i& pos)
                viewer->get_state().screen2world(mouse_pos));
     rect = geom::normalize(rect);
 
-    viewer->get_state().zoom_to(Framebuffer::get_size(), rect);
+    viewer->get_state().zoom_to(viewer->get_size(), rect);
     std::cout << "Zooming to: " << rect << std::endl;
   }
 }

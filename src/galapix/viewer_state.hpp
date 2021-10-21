@@ -20,10 +20,12 @@
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
+class Viewer;
+
 class ViewerState
 {
 public:
-  ViewerState();
+  ViewerState(Viewer& viewer);
 
   /** Zoom the view, keeping pos on the same position of the framebuffer.
 
@@ -50,6 +52,8 @@ public:
   float    get_angle() const  { return angle; }
 
 private:
+  Viewer& m_viewer;
+
   /** scale 1.0f is neutral */
   float    scale;
 

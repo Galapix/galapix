@@ -18,9 +18,10 @@
 
 #include <glm/ext.hpp>
 
-#include "display/framebuffer.hpp"
+#include "galapix/viewer.hpp"
 
-ViewerState::ViewerState() :
+ViewerState::ViewerState(Viewer& viewer) :
+  m_viewer(viewer),
   scale{1.0f},
   angle{0.0f},
   offset{0.0f, 0.0f}
@@ -32,8 +33,8 @@ ViewerState::zoom(float factor, const Vector2i& pos)
 {
   scale *= factor;
 
-  Vector2f center(static_cast<float>(Framebuffer::get_width())  / 2.0f,
-                  static_cast<float>(Framebuffer::get_height()) / 2.0f);
+  Vector2f center(static_cast<float>(m_viewer.get_width())  / 2.0f,
+                  static_cast<float>(m_viewer.get_height()) / 2.0f);
 
   Vector2f rotated_pos(pos);
   rotated_pos = rotated_pos.as_vec() - center.as_vec();
@@ -46,8 +47,8 @@ ViewerState::zoom(float factor, const Vector2i& pos)
 void
 ViewerState::zoom(float factor)
 {
-  zoom(factor, Vector2i(Framebuffer::get_width()/2, // FIXME: Little ugly, isn't it?
-                        Framebuffer::get_height()/2));
+  zoom(factor, Vector2i(m_viewer.get_width()/2, // FIXME: Little ugly, isn't it?
+                        m_viewer.get_height()/2));
 }
 
 void

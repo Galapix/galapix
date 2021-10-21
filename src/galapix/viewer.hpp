@@ -142,6 +142,12 @@ public:
   void print_info();
   void print_state();
 
+  void reshape(const Size& size);
+
+  int get_width() const { return m_size.width(); }
+  int get_height() const { return m_size.height(); }
+  geom::isize get_size() const { return m_size; }
+
 private:
   System& m_system;
   Workspace* m_workspace;
@@ -153,6 +159,7 @@ private:
   float m_contrast;
 
   ViewerState m_state;
+  geom::isize m_size;
 
   std::unique_ptr<ZoomTool>   keyboard_zoom_in_tool;
   std::unique_ptr<ZoomTool>   keyboard_zoom_out_tool;

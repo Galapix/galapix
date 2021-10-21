@@ -35,7 +35,6 @@
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
-#include "display/framebuffer.hpp"
 #include "display/surface.hpp"
 #include "galapix/app.hpp"
 #include "galapix/arg_parser.hpp"

@@ -20,6 +20,8 @@
 #include <iostream>
 #include <gtkmm/glarea.h>
 
+#include <wstdisplay/fwd.hpp>
+
 class Viewer;
 
 class GtkViewerWidget final : public Gtk::GLArea
@@ -44,6 +46,7 @@ public:
 
 private:
   Viewer* viewer;
+  std::unique_ptr<wstdisplay::GraphicsContext> m_gc;
   Vector2i mouse_pos;
 
 private:
