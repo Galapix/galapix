@@ -16,6 +16,8 @@
 
 #include "display/texture.hpp"
 
+#include <surf/pixel_data.hpp>
+
 #include "display/framebuffer.hpp"
 #include "math/rect.hpp"
 #include "util/opengl.hpp"
@@ -38,14 +40,17 @@ public:
     glBindTexture(GL_TEXTURE_2D, handle);
 
     GLenum gl_format = GL_RGB;
+    int bytes_per_pixel = 3;
     switch(src.get_pixel_data().get_format())
     {
-      case surf::PixelFormat::RGB:
+      case surf::PixelFormat::RGB8:
         gl_format = GL_RGB;
+        bytes_per_pixel = 3;
         break;
 
-      case surf::PixelFormat::RGBA:
+      case surf::PixelFormat::RGBA8:
         gl_format = GL_RGBA;
+        bytes_per_pixel = 4;
         break;
 
       default:
@@ -64,8 +69,6 @@ public:
                  GL_UNSIGNED_BYTE,
                  subsurf.get_pixel_data().get_data());
 #else
-    PixelData const& pixel_data = src.get_pixel_data();
-
     glPixelStorei(GL_UNPACK_ROW_LENGTH, src.get_width());
 
     glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(gl_format),
@@ -73,9 +76,9 @@ public:
                  0, /* border */
                  gl_format,
                  GL_UNSIGNED_BYTE,
-                 pixel_data.get_data() +
-                 (pixel_data.get_pitch() * srcrect.top()) +
-                 (srcrect.left() * pixel_data.get_bytes_per_pixel()));
+                 static_cast<uint8_t const*>(src.get_data()) +
+                 (src.get_pitch() * srcrect.top()) +
+                 (srcrect.left() * bytes_per_pixel));
 #endif
 
     assert_gl("packing image texture");

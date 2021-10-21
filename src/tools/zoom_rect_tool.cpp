@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-#include <surf/rgb.hpp>
+#include <surf/color.hpp>
 
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
@@ -69,7 +69,7 @@ ZoomRectTool::draw()
     Rectf rect(click_pos,
                viewer->get_state().screen2world(mouse_pos));
     rect = geom::normalize(rect);
-    Framebuffer::draw_rect(rect, RGB(255, 255, 255));
+    Framebuffer::draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }
 }
 

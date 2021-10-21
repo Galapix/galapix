@@ -18,7 +18,7 @@
 
 #include <iostream>
 
-#include <surf/rgb.hpp>
+#include <surf/color.hpp>
 #include <surf/pixel_data.hpp>
 
 using namespace surf;
@@ -35,7 +35,7 @@ MandelbrotTileJob::MandelbrotTileJob(JobHandle const& job_handle, const Size& si
 void
 MandelbrotTileJob::run()
 {
-  PixelData surface(surf::PixelFormat::RGB, Size(256, 256));
+  SoftwareSurface surface = SoftwareSurface::create(surf::PixelFormat::RGB8, Size(256, 256));
 
   Size imagesize(m_size.width()  / Math::pow2(m_scale),
                  m_size.height() / Math::pow2(m_scale));
@@ -69,13 +69,13 @@ MandelbrotTileJob::run()
       }
 
       surface.put_pixel({px, py},
-                        RGB(static_cast<uint8_t>(255 * iteration / max_iteration),
-                            static_cast<uint8_t>(255 * iteration / max_iteration),
-                            static_cast<uint8_t>(255 * iteration / max_iteration)));
+                        Color::from_rgb888(static_cast<uint8_t>(255 * iteration / max_iteration),
+                                           static_cast<uint8_t>(255 * iteration / max_iteration),
+                                           static_cast<uint8_t>(255 * iteration / max_iteration)));
     }
   }
 
-  m_callback(Tile(m_scale, m_pos, SoftwareSurface(surface)));
+  m_callback(Tile(m_scale, m_pos, surface));
   get_handle().set_finished();
 }
 

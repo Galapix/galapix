@@ -22,7 +22,8 @@
 #include <logmich/log.hpp>
 #include <SDL_keycode.h>
 
-#include <surf/rgba.hpp>
+#include <surf/color.hpp>
+#include <surf/transform.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"

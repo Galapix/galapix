@@ -18,7 +18,9 @@
 
 #include <sstream>
 #include <iostream>
+
 #include <uitest/uitest.hpp>
+#include <surf/software_surface.hpp>
 
 #include "plugins/xcf.hpp"
 #include "plugins/png.hpp"

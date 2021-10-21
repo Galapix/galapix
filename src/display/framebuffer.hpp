@@ -21,16 +21,12 @@
 
 #include <geom/fwd.hpp>
 #include <surf/software_surface.hpp>
+#include <surf/fwd.hpp>
 
 #include "math/vector2f.hpp"
 #include "math/size.hpp"
 #include "math/rect.hpp"
 #include "util/opengl.hpp"
-
-namespace surf {
-class RGB;
-class RGBA;
-} // namespace surf
 
 /** Generic OpenGL helper functions */
 class Framebuffer
@@ -42,10 +38,10 @@ public:
   static int  get_height();
   static Size get_size()   { return Size(get_width(), get_height()); }
 
-  static void clear(const surf::RGBA& rgba);
-  static void draw_rect(const Rectf& rect, const surf::RGB& rgb);
-  static void fill_rect(const Rectf& rect, const surf::RGB& rgb);
-  static void draw_grid(const Vector2f& offset, const Sizef& size, const surf::RGBA& rgba);
+  static void clear(const surf::Color& rgba);
+  static void draw_rect(const Rectf& rect, const surf::Color& rgb);
+  static void fill_rect(const Rectf& rect, const surf::Color& rgb);
+  static void draw_grid(const Vector2f& offset, const Sizef& size, const surf::Color& rgba);
 
   static void set_modelview(const glm::mat4& modelview);
 

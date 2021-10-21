@@ -21,7 +21,6 @@
 
 #include <surf/software_surface_factory.hpp>
 #include <surf/software_surface.hpp>
-#include <surf/software_surface_float.hpp>
 
 #include "math/math.hpp"
 #include "util/url.hpp"
@@ -31,36 +30,31 @@ using namespace surf;
 
 namespace {
 
-void add(SoftwareSurfaceFloatPtr const& out, SoftwareSurface const& surface)
+void add(SoftwareSurface& dst, SoftwareSurface const& src)
 {
-  PixelData const& src = surface.get_pixel_data();
+  for(int y = 0; y < dst.get_height(); ++y) {
+    for(int x = 0; x < dst.get_width(); ++x) {
+      Color rgb = src.get_pixel({x, y});
+      Color rgba = dst.get_pixel({x, y});
 
-  for(int y = 0; y < out->get_height(); ++y) {
-    for(int x = 0; x < out->get_width(); ++x) {
-      RGB rgb;
-      src.get_pixel({x, y}, rgb);
-      RGBAf rgba;
-      out->get_pixel({x, y}, rgba);
+      rgba.r += powf(rgb.r, 0.4545f);
+      rgba.g += powf(rgb.g, 0.4545f);
+      rgba.b += powf(rgb.b, 0.4545f);
 
-      rgba.r += powf(static_cast<float>(rgb.r) / 255.0f, 0.4545f);
-      rgba.g += powf(static_cast<float>(rgb.g) / 255.0f, 0.4545f);
-      rgba.b += powf(static_cast<float>(rgb.b) / 255.0f, 0.4545f);
-
-      out->put_pixel({x, y}, rgba);
+      dst.put_pixel({x, y}, rgba);
     }
   }
 }
 
-void tone_map(PixelData out, SoftwareSurfaceFloatPtr const& in, float factor)
+void tone_map(SoftwareSurface& out, SoftwareSurface const& in, float factor)
 {
   for(int y = 0; y < out.get_height(); ++y) {
     for(int x = 0; x < out.get_width(); ++x) {
-      RGBAf rgba;
-      in->get_pixel({x, y}, rgba);
-      RGB rgb;
-      rgb.r = static_cast<uint8_t>(255 * std::clamp(powf(rgba.r / factor, 2.2f), 0.0f, 1.0f));
-      rgb.g = static_cast<uint8_t>(255 * std::clamp(powf(rgba.g / factor, 2.2f), 0.0f, 1.0f));
-      rgb.b = static_cast<uint8_t>(255 * std::clamp(powf(rgba.b / factor, 2.2f), 0.0f, 1.0f));
+      Color rgba = in.get_pixel({x, y});
+      Color rgb;
+      rgb.r = std::clamp(powf(rgba.r / factor, 2.2f), 0.0f, 1.0f);
+      rgb.g = std::clamp(powf(rgba.g / factor, 2.2f), 0.0f, 1.0f);
+      rgb.b = std::clamp(powf(rgba.b / factor, 2.2f), 0.0f, 1.0f);
       out.put_pixel({x, y}, rgb);
     }
   }
@@ -79,25 +73,19 @@ int main(int argc, char** argv)
   {
     SoftwareSurfaceFactory factory;
 
-    SoftwareSurfaceFloatPtr out;
+    SoftwareSurface out;
     for(int i = 1; i < argc; ++i)
     {
       std::cout << "Loading: " << argv[i] << std::endl;
       SoftwareSurface image = factory.from_file(argv[i]);
-
-      if (!out)
-      {
-        out = SoftwareSurfaceFloat::create(image.get_size());
-      }
-
       add(out, image);
     }
 
-    PixelData out_rgb(surf::PixelFormat::RGB, out->get_size());
+    SoftwareSurface out_rgb = SoftwareSurface::create(surf::PixelFormat::RGB8, out.get_size());
     tone_map(out_rgb, out, static_cast<float>(argc - 1));
 
     std::string out_filename = "/tmp/out.jpg";
-    jpeg::save(out_rgb, 100, out_filename);
+    jpeg::save(out_rgb, out_filename, 100);
     std::cout << "Wrote " << out_filename << std::endl;
     std::cout << "Done" << std::endl;
   }

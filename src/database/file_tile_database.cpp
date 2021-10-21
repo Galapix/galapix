@@ -152,11 +152,11 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
   auto surface = tile.get_surface();
   switch(surface.get_pixel_data().get_format())
   {
-    case surf::PixelFormat::RGB:
-      jpeg::save(surface, 75, filename);
+    case surf::PixelFormat::RGB8:
+      jpeg::save(surface, filename, 75);
       break;
 
-    case surf::PixelFormat::RGBA:
+    case surf::PixelFormat::RGBA8:
       png::save(surface, filename);
       break;
 

@@ -21,7 +21,9 @@
 #include <limits>
 
 #include <surf/software_surface_factory.hpp>
-#include <surf/rgb.hpp>
+#include <surf/software_surface.hpp>
+#include <surf/transform.hpp>
+#include <surf/color.hpp>
 
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
@@ -69,19 +71,12 @@ Pixel get_pixels(SoftwareSurface const& surface)
   assert(surface.get_width()  == 4);
   assert(surface.get_height() == 4);
 
-  PixelData const& src = surface.get_pixel_data();
-
-  RGB tl;
-  RGB tr;
-  RGB bl;
-  RGB br;
-
-  src.get_pixel({0, 0}, tl);
-  src.get_pixel({1, 0}, tr);
-  src.get_pixel({0, 1}, bl);
-  src.get_pixel({1, 1}, br);
-
-  return Pixel{tl.r, tr.r, bl.r, br.r};
+  return Pixel{
+    surface.get_pixel({0, 0}).r8(),
+    surface.get_pixel({1, 0}).r8(),
+    surface.get_pixel({0, 1}).r8(),
+    surface.get_pixel({1, 1}).r8()
+  };
 }
 
 SoftwareSurface find_closest_tile(std::vector<TileDBEntry>& tiledb,
@@ -126,8 +121,8 @@ int main(int argc, char* argv[])
       std::cout << y << std::endl;
       for(int x = 0; x < surface.get_width() - tile_size.width(); x += tile_size.width())
       {
-        SoftwareSurface src_tile = surface.crop(Rect(Vector2i(x, y), tile_size));
-        SoftwareSurface small = src_tile.halve();
+        SoftwareSurface src_tile = surf::crop(surface, Rect(Vector2i(x, y), tile_size));
+        SoftwareSurface small = surf::halve(src_tile);
         tiledb.push_back(TileDBEntry{get_pixels(small), small, src_tile});
       }
     }
@@ -140,7 +135,7 @@ int main(int argc, char* argv[])
   for(int i = argc-1; i < argc; ++i)
   {
     SoftwareSurface surface = surface_factory.from_file(argv[i]);
-    PixelData out_surface(surf::PixelFormat::RGB, surface.get_size() * 2);
+    SoftwareSurface out_surface = SoftwareSurface::create(surf::PixelFormat::RGB8, surface.get_size() * 2);
     Size tile_size(4, 4);
 
     for(int y = 0; y < surface.get_height() - tile_size.height(); y += tile_size.height())
@@ -148,10 +143,10 @@ int main(int argc, char* argv[])
       std::cout << y << std::endl;
       for(int x = 0; x < surface.get_width() - tile_size.width(); x += tile_size.width())
       {
-        SoftwareSurface src_tile = surface.crop(Rect(Vector2i(x, y), tile_size));
+        SoftwareSurface src_tile = surf::crop(surface, Rect(Vector2i(x, y), tile_size));
         SoftwareSurface closest_tile = find_closest_tile(tiledb, src_tile);
 
-        closest_tile.get_pixel_data().blit(out_surface, Vector2i(x*2, y*2));
+        surf::blit(closest_tile, out_surface, Vector2i(x*2, y*2));
       }
     }
 

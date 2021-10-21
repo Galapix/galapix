@@ -17,7 +17,9 @@
 */
 
 #include <iostream>
+
 #include <uitest/uitest.hpp>
+#include <surf/software_surface.hpp>
 
 #include "plugins/png.hpp"
 

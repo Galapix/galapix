@@ -21,7 +21,7 @@
 
 #include <surf/software_surface_factory.hpp>
 #include <surf/software_surface.hpp>
-#include <surf/software_surface_float.hpp>
+#include <surf/transform.hpp>
 
 #include "math/math.hpp"
 #include "util/url.hpp"
@@ -40,15 +40,15 @@ int main(int argc, char** argv)
     std::string outfile = argv[i];
     outfile += "cyber.JPG";
 
-    image = image.halve();
+    image = surf::halve(image);
 
-    PixelData const& src = image.get_pixel_data();
-    PixelData out(surf::PixelFormat::RGB, src.get_size());
+    SoftwareSurface& src = image;
+    SoftwareSurface out = SoftwareSurface::create(surf::PixelFormat::RGB8, src.get_size());
 
     for(int y = 0; y < src.get_height(); ++y)
     {
-      uint8_t const* ipixels = src.get_row_data(y);
-      uint8_t* opixels = out.get_row_data(y);
+      uint8_t const* ipixels = static_cast<uint8_t*>(src.get_row_data(y));
+      uint8_t* opixels = static_cast<uint8_t*>(out.get_row_data(y));
 
       if (y % 2 == 0)
       {
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
       }
     }
 
-    jpeg::save(out,  100, outfile);
+    jpeg::save(out, outfile, 100);
     std::cout << "Wrote: " << outfile << std::endl;
   }
 

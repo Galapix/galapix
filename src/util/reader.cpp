@@ -16,7 +16,7 @@
 
 #include "util/reader.hpp"
 
-#include <surf/rgba.hpp>
+#include <surf/color.hpp>
 
 #include "util/url.hpp"
 
@@ -100,7 +100,7 @@ bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& va
 }
 
 template<>
-bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& value_out)
+bool read_custom(ReaderMapping const& map, std::string_view key, surf::Color& value_out)
 {
   std::vector<int> v;
   if (!map.read(key, v)) {

@@ -22,8 +22,7 @@
 #include <glm/ext.hpp>
 
 #include <surf/software_surface.hpp>
-#include <surf/rgb.hpp>
-#include <surf/rgba.hpp>
+#include <surf/color.hpp>
 
 #include "display/framebuffer.hpp"
 #include "galapix/system.hpp"
@@ -99,24 +98,24 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
 
   m_background_color = 0;
   // Black to White
-  m_background_colors.push_back(RGBA(  0,   0,   0));
-  m_background_colors.push_back(RGBA( 64,  64,  64));
-  m_background_colors.push_back(RGBA(128, 128, 128));
-  m_background_colors.push_back(RGBA(255, 255, 255));
+  m_background_colors.push_back(surf::Color::from_rgb888(  0,   0,   0));
+  m_background_colors.push_back(surf::Color::from_rgb888( 64,  64,  64));
+  m_background_colors.push_back(surf::Color::from_rgb888(128, 128, 128));
+  m_background_colors.push_back(surf::Color::from_rgb888(255, 255, 255));
   // Rainbow
-  m_background_colors.push_back(RGBA(255,   0,   0));
-  m_background_colors.push_back(RGBA(255, 255,   0));
-  m_background_colors.push_back(RGBA(255,   0, 255));
-  m_background_colors.push_back(RGBA(  0, 255,   0));
-  m_background_colors.push_back(RGBA(  0, 255, 255));
-  m_background_colors.push_back(RGBA(  0,   0, 255));
+  m_background_colors.push_back(surf::Color::from_rgb888(255,   0,   0));
+  m_background_colors.push_back(surf::Color::from_rgb888(255, 255,   0));
+  m_background_colors.push_back(surf::Color::from_rgb888(255,   0, 255));
+  m_background_colors.push_back(surf::Color::from_rgb888(  0, 255,   0));
+  m_background_colors.push_back(surf::Color::from_rgb888(  0, 255, 255));
+  m_background_colors.push_back(surf::Color::from_rgb888(  0,   0, 255));
   // Dimmed Rainbow
-  m_background_colors.push_back(RGBA(128,   0,   0));
-  m_background_colors.push_back(RGBA(128, 128,   0));
-  m_background_colors.push_back(RGBA(128,   0, 128));
-  m_background_colors.push_back(RGBA(  0, 128,   0));
-  m_background_colors.push_back(RGBA(  0, 128, 128));
-  m_background_colors.push_back(RGBA(  0,   0, 128));
+  m_background_colors.push_back(surf::Color::from_rgb888(128,   0,   0));
+  m_background_colors.push_back(surf::Color::from_rgb888(128, 128,   0));
+  m_background_colors.push_back(surf::Color::from_rgb888(128,   0, 128));
+  m_background_colors.push_back(surf::Color::from_rgb888(  0, 128,   0));
+  m_background_colors.push_back(surf::Color::from_rgb888(  0, 128, 128));
+  m_background_colors.push_back(surf::Color::from_rgb888(  0,   0, 128));
 }
 
 Viewer::~Viewer()
@@ -186,7 +185,7 @@ Viewer::draw()
 
   if (clip_debug)
   {
-    Framebuffer::draw_rect(cliprect, RGB(255, 0, 255));
+    Framebuffer::draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
   }
 
   m_workspace->draw(cliprect,

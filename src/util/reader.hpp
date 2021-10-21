@@ -25,6 +25,7 @@
 #include <prio/reader_mapping.hpp>
 #include <prio/reader_object.hpp>
 #include <geom/fwd.hpp>
+#include <surf/fwd.hpp>
 
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
@@ -48,7 +49,7 @@ template<> bool read_custom(ReaderMapping const& map, std::string_view key, Vect
 template<> bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value);
 template<> bool read_custom(ReaderMapping const& map, std::string_view key, Rect& value);
 template<> bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& value);
-template<> bool read_custom(ReaderMapping const& map, std::string_view key, surf::RGBA& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, surf::Color& value);
 
 } // namespace prio
 

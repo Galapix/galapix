@@ -21,7 +21,7 @@
 #include <memory>
 #include <vector>
 
-#include <surf/rgba.hpp>
+#include <surf/color.hpp>
 
 #include "display/surface.hpp"
 #include "galapix/viewer_state.hpp"
@@ -174,11 +174,11 @@ private:
   Vector2i m_mouse_pos;
 
   int m_background_color;
-  std::vector<surf::RGBA> m_background_colors;
+  std::vector<surf::Color> m_background_colors;
 
   Vector2f m_grid_offset;
   Sizef    m_grid_size;
-  surf::RGBA     m_grid_color;
+  surf::Color m_grid_color;
 
 private:
   Viewer (const Viewer&);

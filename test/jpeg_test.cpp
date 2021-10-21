@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <surf/software_surface.hpp>
+
 #include "math/size.hpp"
 #include "plugins/jpeg.hpp"
 

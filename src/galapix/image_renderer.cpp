@@ -16,8 +16,7 @@
 
 #include "galapix/image_renderer.hpp"
 
-#include <surf/rgb.hpp>
-#include <surf/rgba.hpp>
+#include <surf/color.hpp>
 
 #include "display/framebuffer.hpp"
 #include "display/surface.hpp"
@@ -59,7 +58,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
     { // draw debug rectangle that shows tiles
       Framebuffer::draw_rect(Rectf(get_vertex(x,   y,   zoom) + geom::fsize(zoom, zoom) * 8.0f,
                                    get_vertex(x+1, y+1, zoom) - geom::fsize(zoom, zoom) * 8.0f),
-                             RGB(255, 0, 255));
+                             surf::Color::from_rgb888(255, 0, 255));
     }
   }
   else // tile not found, so find a replacement
@@ -101,7 +100,7 @@ ImageRenderer::draw_tile(int x, int y, int scale, float zoom)
           case ImageTileCache::SurfaceStruct::SURFACE_REQUESTED:
             Framebuffer::fill_rect(Rectf(get_vertex(x,   y,   zoom),
                                          get_vertex(x+1, y+1, zoom)),
-                                   RGB(155, 0, 155));
+                                   surf::Color::from_rgb888(155, 0, 155));
             break;
 
           default:

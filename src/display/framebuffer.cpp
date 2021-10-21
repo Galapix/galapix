@@ -24,8 +24,8 @@
 #include <glm/ext.hpp>
 
 #include <logmich/log.hpp>
-#include <surf/rgb.hpp>
-#include <surf/rgba.hpp>
+#include <surf/color.hpp>
+#include <surf/transform.hpp>
 
 #include "display/shader.hpp"
 #include "math/rect.hpp"
@@ -124,17 +124,14 @@ Framebuffer::reshape(const Size& size_)
 }
 
 void
-Framebuffer::clear(const RGBA& rgba)
+Framebuffer::clear(const Color& rgba)
 {
-  glClearColor(static_cast<float>(rgba.r)/255.0f,
-               static_cast<float>(rgba.g)/255.0f,
-               static_cast<float>(rgba.b)/255.0f,
-               static_cast<float>(rgba.a)/255.0f);
+  glClearColor(rgba.r, rgba.g, rgba.b, rgba.a);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void
-Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
+Framebuffer::draw_rect(const Rectf& rect, const Color& rgb)
 {
   assert_gl("Framebuffer::draw_rect enter");
 
@@ -154,7 +151,7 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
 
     glUseProgram(s_flatcolor_prg);
-    glUniform4f(color_loc, rgb.r_f(), rgb.g_f(), rgb.b_f(), 1.0f);
+    glUniform4f(color_loc, rgb.r, rgb.g, rgb.b, 1.0f);
 
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
@@ -178,7 +175,7 @@ Framebuffer::draw_rect(const Rectf& rect, const RGB& rgb)
 }
 
 void
-Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
+Framebuffer::fill_rect(const Rectf& rect, const Color& rgb)
 {
   assert_gl("Framebuffer::fill_rect enter");
 
@@ -197,7 +194,7 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
   {
     GLint color_loc = get_uniform_location(s_flatcolor_prg, "color");
     glUseProgram(s_flatcolor_prg);
-    glUniform4f(color_loc, rgb.r_f(), rgb.g_f(), rgb.b_f(), 1.0f);
+    glUniform4f(color_loc, rgb.r, rgb.g, rgb.b, 1.0f);
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "projection"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_projection));
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
@@ -221,7 +218,7 @@ Framebuffer::fill_rect(const Rectf& rect, const RGB& rgb)
 }
 
 void
-Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& rgba)
+Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const Color& rgba)
 {
   assert_gl("Framebuffer::draw_grid enter");
 
@@ -263,7 +260,7 @@ Framebuffer::draw_grid(const Vector2f& offset, const Sizef& size_, const RGBA& r
     glUniformMatrix4fv(get_uniform_location(Framebuffer::s_flatcolor_prg, "modelview"),
                        1, GL_FALSE, glm::value_ptr(Framebuffer::s_modelview));
 
-    glUniform4f(color_loc, rgba.r_f(), rgba.g_f(), rgba.b_f(), rgba.a_f());
+    glUniform4f(color_loc, rgba.r, rgba.g, rgba.b, rgba.a);
 
     GLint position_loc = get_attrib_location(Framebuffer::s_flatcolor_prg, "position");
     glEnableVertexAttribArray(position_loc);
@@ -297,11 +294,11 @@ Framebuffer::get_height()
 SoftwareSurface
 Framebuffer::screenshot()
 {
-  PixelData dst(surf::PixelFormat::RGB, get_size());
+  auto dst = surf::SoftwareSurface::create(surf::PixelFormat::RGB8, get_size());
   glPixelStorei(GL_PACK_ALIGNMENT, 1);
   glReadPixels(0, 0, dst.get_width(), dst.get_height(),
                GL_RGB, GL_UNSIGNED_BYTE, dst.get_data());
-  return flip_vertical(SoftwareSurface(std::move(dst)));
+  return surf::flip_vertical(dst);
 }
 
 void

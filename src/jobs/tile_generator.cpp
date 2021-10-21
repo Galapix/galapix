@@ -21,6 +21,7 @@
 
 #include <logmich/log.hpp>
 #include <surf/software_surface.hpp>
+#include <surf/transform.hpp>
 
 #include "galapix/app.hpp"
 #include "galapix/tile.hpp"
@@ -140,7 +141,7 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
     {
       log_debug("image doesn't match target size, doing scaling: target={} vs surface={}",
                 target_size, surface.get_size());
-      surface = surface.scale(target_size);
+      surface = surf::scale(surface, target_size);
     }
   }
 
@@ -151,15 +152,15 @@ TileGenerator::cut_into_tiles(SoftwareSurface surface,
   {
     if (scale != min_scale)
     {
-      surface = surface.halve();
+      surface = surf::halve(surface);
     }
 
     for(int y = 0; 256*y < surface.get_height(); ++y)
     {
       for(int x = 0; 256*x < surface.get_width(); ++x)
       {
-        SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
-                                                           Size(256, 256)));
+        SoftwareSurface croped_surface = surf::crop(surface, Rect(Vector2i(x * 256, y * 256),
+                                                                  Size(256, 256)));
 
         callback(Tile(scale, Vector2i(x, y), croped_surface));
       }
@@ -182,8 +183,8 @@ TileGenerator::cut_into_tiles(SoftwareSurface const& surface,
   {
     for(int x = 0; x < tile_w; ++x)
     {
-      SoftwareSurface croped_surface = surface.crop(Rect(Vector2i(x * 256, y * 256),
-                                                             Size(256, 256)));
+      SoftwareSurface croped_surface = surf::crop(surface, Rect(Vector2i(x * 256, y * 256),
+                                                                Size(256, 256)));
 
       callback(x, y, croped_surface);
     }
@@ -196,13 +197,13 @@ TileGenerator::generate(SoftwareSurface const& surface, int min_scale, int max_s
 {
   Size target_size(surface.get_width()  / Math::pow2(min_scale),
                    surface.get_height() / Math::pow2(min_scale));
-  SoftwareSurface modified_surface = surface.scale(target_size);
+  SoftwareSurface modified_surface = surf::scale(surface, target_size);
 
   for(int scale = min_scale; scale < max_scale; ++scale)
   {
     if (scale != min_scale)
     {
-      modified_surface = modified_surface.halve();
+      modified_surface = surf::halve(modified_surface);
     }
 
     cut_into_tiles(modified_surface,

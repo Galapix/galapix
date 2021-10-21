@@ -18,7 +18,7 @@
 
 #include "plugins/png.hpp"
 
-#include <surf/software_surface_float.hpp>
+#include <surf/filter.hpp>
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
 
@@ -26,14 +26,13 @@ using namespace surf;
 
 namespace {
 
-void scanlines(SoftwareSurfaceFloatPtr const& surface)
+void scanlines(SoftwareSurface& surface)
 {
-  for(int y = 0; y < surface->get_height(); ++y)
+  for(int y = 0; y < surface.get_height(); ++y)
   {
-    for(int x = 0; x < surface->get_width(); ++x)
+    for(int x = 0; x < surface.get_width(); ++x)
     {
-      RGBAf rgba;
-      surface->get_pixel({x, y}, rgba);
+      Color rgba = surface.get_pixel({x, y});
 
       int v = (x+y%3) % 3;
       if (v % 6 == 0)
@@ -57,7 +56,7 @@ void scanlines(SoftwareSurfaceFloatPtr const& surface)
 
       surf::clamp(rgba);
 
-      surface->put_pixel({x, y}, rgba);
+      surface.put_pixel({x, y}, rgba);
     }
   }
 }
@@ -72,13 +71,13 @@ int main(int argc, char** argv)
   for(int i = 1; i < argc; ++i)
   {
     SoftwareSurface surface = software_surface_factory.from_file(argv[i]);
-    SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::from_software_surface(surface);
+    SoftwareSurface surfacef = surf::convert(surface, surf::PixelFormat::RGBA32);
 
-    surfacef->apply_gamma(gamma);
+    surf::apply_gamma(surfacef, gamma);
     scanlines(surfacef);
-    surfacef->apply_gamma(1.0f/gamma);
+    apply_gamma(surfacef, 1.0f/gamma);
 
-    surface = surfacef->to_software_surface();
+    surface = surf::convert(surfacef, surf::PixelFormat::RGBA8);
     png::save(surface, "/tmp/out.png");
   }
 

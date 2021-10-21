@@ -19,7 +19,7 @@
 #include <functional>
 #include <iostream>
 
-#include <surf/rgb.hpp>
+#include <surf/color.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "display/framebuffer.hpp"
@@ -95,7 +95,7 @@ Image::draw(const Rectf& cliprect, float zoom)
   if (!m_provider)
   {
     Framebuffer::fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
-                           RGB(255,255,0));
+                           surf::Color::from_rgb888(255,255,0));
   }
   else
   {
@@ -150,7 +150,7 @@ Image::get_url() const
 void
 Image::draw_mark()
 {
-  Framebuffer::draw_rect(get_image_rect(), RGB(255, 255, 255));
+  Framebuffer::draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255));
 }
 
 void

@@ -16,7 +16,7 @@
 
 #include "tools/grid_tool.hpp"
 
-#include <surf/rgb.hpp>
+#include <surf/color.hpp>
 
 #include "display/framebuffer.hpp"
 #include "galapix/viewer.hpp"
@@ -72,7 +72,7 @@ GridTool::draw()
       Rectf rect(viewer->get_state().screen2world(click_pos),
                  viewer->get_state().screen2world(mouse_pos));
       rect = geom::normalize(rect);
-      Framebuffer::draw_rect(rect, RGB(255, 255, 255));
+      Framebuffer::draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
     }
     else
     {
@@ -82,7 +82,7 @@ GridTool::draw()
                  viewer->get_state().screen2world(mouse_pos));
       rect = geom::normalize(rect);
 
-      Framebuffer::draw_grid(Vector2f(rect.left(), rect.top()), rect.size(), RGBA(255, 255, 0, 255));
+      Framebuffer::draw_grid(Vector2f(rect.left(), rect.top()), rect.size(), surf::Color::from_rgba8888(255, 255, 0, 255));
     }
   }
 }

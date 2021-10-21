@@ -18,7 +18,9 @@
 
 #include <iostream>
 #include <stdlib.h>
+
 #include <uitest/uitest.hpp>
+#include <surf/software_surface.hpp>
 
 #include "plugins/kra.hpp"
 #include "plugins/png.hpp"

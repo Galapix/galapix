@@ -20,9 +20,9 @@
 #include <sstream>
 #include <math.h>
 
+#include <surf/convert.hpp>
 #include <surf/software_surface_factory.hpp>
 #include <surf/software_surface.hpp>
-#include <surf/software_surface_float.hpp>
 
 #include "math/math.hpp"
 #include "util/url.hpp"
@@ -47,15 +47,14 @@ int main(int argc, char** argv)
       std::cout << "Loading: " << argv[i] << std::endl;
 
       SoftwareSurface image = factory.from_file(argv[i]);
-      PixelData const& src = image.get_pixel_data();
-      PixelData out = PixelData(surf::PixelFormat::RGB, src.get_size());
+      PixelView<RGB8Pixel> const& src = image.as_pixelview<RGB8Pixel>();
+      SoftwareSurface out = SoftwareSurface::create(surf::PixelFormat::RGB8, image.get_size());
 
       std::cout << "Processing image..." << std::endl;
       for(int y = 0; y < out.get_height(); ++y) {
         for(int x = 0; x < out.get_width(); ++x)
         {
-          RGB rgb;
-          src.get_pixel({x, y}, rgb);
+          RGB8Pixel rgb = src.get_pixel({x, y});
 
           if (rgb.r & (1<<3)) {
             rgb.r = 0;
@@ -75,7 +74,7 @@ int main(int argc, char** argv)
             rgb.b = 255;
           }
 
-          out.put_pixel({x, y}, rgb);
+          out.put_pixel({x, y}, surf::convert<RGB8Pixel, Color>(rgb));
         }
       }
       std::cout << "Processing image... Done" << std::endl;

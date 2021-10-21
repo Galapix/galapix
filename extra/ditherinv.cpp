@@ -20,7 +20,7 @@
 // with a checkboard pattern of it's inverted image. This leads to a
 // grey looking image, unless the display gamma is changed.
 
-#include <surf/software_surface_float.hpp>
+#include <surf/filter.hpp>
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
 
@@ -30,18 +30,18 @@ using namespace surf;
 
 namespace {
 
-void invert(SoftwareSurfaceFloatPtr const& surface)
+void invert(SoftwareSurface& surface)
 {
-  for(int y = 0; y < surface->get_height(); ++y)
+  for(int y = 0; y < surface.get_height(); ++y)
   {
-    for(int x = y%2; x < surface->get_width(); x+=2)
+    for(int x = y%2; x < surface.get_width(); x+=2)
     {
-      RGBAf rgba;
-      surface->get_pixel({x, y}, rgba);
+      Color rgba;
+      rgba = surface.get_pixel({x, y});
       rgba.r = 1.0f - rgba.r;
       rgba.g = 1.0f - rgba.g;
       rgba.b = 1.0f - rgba.b;
-      surface->put_pixel({x, y}, rgba);
+      surface.put_pixel({x, y}, rgba);
     }
   }
 }
@@ -57,13 +57,13 @@ int main(int argc, char** argv)
   for(int i = 1; i < argc; ++i)
   {
     SoftwareSurface surface = software_surface_factory.from_file(argv[i]);
-    SoftwareSurfaceFloatPtr surfacef = SoftwareSurfaceFloat::from_software_surface(surface);
+    SoftwareSurface surfacef = surf::convert(surface, surf::PixelFormat::RGBA32);
 
-    surfacef->apply_gamma(gamma);
+    surf::apply_gamma(surfacef, gamma);
     invert(surfacef);
-    surfacef->apply_gamma(1.0f/gamma);
+    surf::apply_gamma(surfacef, 1.0f/gamma);
 
-    surface = surfacef->to_software_surface();
+    surface = surf::convert(surfacef, surf::PixelFormat::RGBA8);
     png::save(surface, "/tmp/out.png");
   }
 

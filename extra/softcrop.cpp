@@ -21,7 +21,7 @@
 
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
-#include <surf/rgb.hpp>
+#include <surf/color.hpp>
 
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
@@ -41,10 +41,10 @@ int main(int argc, char* argv[])
   std::cout << "Loading: " << in_filename << " - writing to " << out_filename << std::endl;
 
   SoftwareSurface in = factory.from_file(in_filename);
-  PixelData out(surf::PixelFormat::RGB, in.get_size());
+  SoftwareSurface out = in;
 
   //png::save(out, out_filename);
-  jpeg::save(out, 85, out_filename);
+  jpeg::save(out, out_filename, 85);
 
   return 0;
 }

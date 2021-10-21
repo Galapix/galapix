@@ -24,7 +24,7 @@
 
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
-#include <surf/rgb.hpp>
+#include <surf/color.hpp>
 
 #include "plugins/png.hpp"
 #include "plugins/jpeg.hpp"
@@ -34,16 +34,16 @@ using namespace surf;
 
 namespace {
 
-bool is_black(const RGB rgb)
+bool is_black(const RGB8Pixel rgb)
 {
   return (rgb.r < 128 ||
           rgb.g < 128 ||
           rgb.b < 128);
 }
 
-RGB blackfill_pixel(RGB p00, RGB p10, RGB p20,
-                    RGB p01, RGB p11, RGB p21,
-                    RGB p02, RGB p12, RGB p22)
+RGB8Pixel blackfill_pixel(RGB8Pixel p00, RGB8Pixel p10, RGB8Pixel p20,
+                          RGB8Pixel p01, RGB8Pixel p11, RGB8Pixel p21,
+                          RGB8Pixel p02, RGB8Pixel p12, RGB8Pixel p22)
 {
   if (
     // horz/vert
@@ -71,7 +71,7 @@ RGB blackfill_pixel(RGB p00, RGB p10, RGB p20,
     (is_black(p12) && is_black(p20))
     )
   {
-    return RGB(0, 0, 0);
+    return RGB8Pixel(0, 0, 0);
   }
   else
   {
@@ -79,29 +79,28 @@ RGB blackfill_pixel(RGB p00, RGB p10, RGB p20,
   }
 }
 
-RGB get_pixel(PixelData const& img, int x, int y)
+RGB8Pixel get_pixel(PixelView<RGB8Pixel> const& img, int x, int y)
 {
-  RGB rgb;
-  img.get_pixel({x, y}, rgb);
+  RGB8Pixel rgb = img.get_pixel({x, y});
   return rgb;
 }
 
-void blackfill(PixelData const& in,
-               PixelData& out)
+void blackfill(PixelView<RGB8Pixel> const& in,
+               PixelView<RGB8Pixel>& out)
 {
   for(int y = 0; y < in.get_height()-2; ++y) {
     for(int x = 0; x < in.get_width()-2; ++x) {
-      RGB p00 = get_pixel(in, x+0, y+0);
-      RGB p10 = get_pixel(in, x+1, y+0);
-      RGB p20 = get_pixel(in, x+2, y+0);
+      RGB8Pixel p00 = get_pixel(in, x+0, y+0);
+      RGB8Pixel p10 = get_pixel(in, x+1, y+0);
+      RGB8Pixel p20 = get_pixel(in, x+2, y+0);
 
-      RGB p01 = get_pixel(in, x+0, y+1);
-      RGB p11 = get_pixel(in, x+1, y+1);
-      RGB p21 = get_pixel(in, x+2, y+1);
+      RGB8Pixel p01 = get_pixel(in, x+0, y+1);
+      RGB8Pixel p11 = get_pixel(in, x+1, y+1);
+      RGB8Pixel p21 = get_pixel(in, x+2, y+1);
 
-      RGB p02 = get_pixel(in, x+0, y+2);
-      RGB p12 = get_pixel(in, x+1, y+2);
-      RGB p22 = get_pixel(in, x+2, y+2);
+      RGB8Pixel p02 = get_pixel(in, x+0, y+2);
+      RGB8Pixel p12 = get_pixel(in, x+1, y+2);
+      RGB8Pixel p22 = get_pixel(in, x+2, y+2);
 
       out.put_pixel({x+1, y+1},
                     blackfill_pixel(p00, p10, p20,
@@ -122,12 +121,12 @@ int main(int argc, char* argv[])
   {
     std::cout << "Loading: " << argv[i] << std::endl;
     SoftwareSurface in  = factory.from_file(argv[1]);
-    PixelData out(surf::PixelFormat::RGB, in.get_size());
+    SoftwareSurface out = SoftwareSurface::create(surf::PixelFormat::RGB8, in.get_size());
 
-    blackfill(in.get_pixel_data(), out);
+    blackfill(in.as_pixelview<RGB8Pixel>(), out.as_pixelview<RGB8Pixel>());
 
     //png::save(out, argv[2]);
-    jpeg::save(SoftwareSurface(out), 85, argv[2]);
+    jpeg::save(out, argv[2], 85);
   }
 
   return 0;
