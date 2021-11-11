@@ -18,7 +18,7 @@
 ;; guix package --install-from-file=guix.scm
 
 (set! %load-path
-  (cons* "/ipfs/QmZdLjyRm29uL4Eh4HqkZHvwMMus6zjwQ8EdBtp5JUPT99/guix-cocfree_0.0.0-52-ga8e1798"
+  (cons* "/ipfs/QmcQaosGtaQ6dsb4iykNihZ2ZTie8om2i7pgHucZ9Ranyq/guix-cocfree_0.0.0-64-gd618440"
          %load-path))
 
 (use-modules (guix build-system scons)
@@ -29,6 +29,7 @@
              (gnu packages boost)
              (gnu packages compression)
              (gnu packages curl)
+             (gnu packages engineering)
              (gnu packages gl)
              (gnu packages imagemagick)
              (gnu packages pkg-config)
@@ -72,6 +73,7 @@
       ("libmhash" ,libmhash)
       ("imagemagick" ,imagemagick)
       ("libexif" ,libexif)
+      ("libspnav" ,libspnav)
       ))
    (propagated-inputs
     `(("p7zip" ,p7zip)
