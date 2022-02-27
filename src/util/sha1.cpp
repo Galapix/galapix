@@ -27,12 +27,12 @@
 #include "util/blob.hpp"
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 std::ostream& operator<<(std::ostream& os, const galapix::SHA1& sha1)
 {
   return os << sha1.str();
 }
-
-namespace galapix {
 
 SHA1
 SHA1::from_mem(std::span<uint8_t const> data)
