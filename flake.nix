@@ -4,9 +4,76 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     flake-utils.url = "github:numtide/flake-utils";
+
+    tinycmmc.url = "gitlab:grumbel/cmake-modules";
+    tinycmmc.inputs.nixpkgs.follows = "nixpkgs";
+    tinycmmc.inputs.flake-utils.follows = "flake-utils";
+
+    geomcpp.url = "gitlab:grumbel/geomcpp";
+    geomcpp.inputs.nixpkgs.follows = "nixpkgs";
+    geomcpp.inputs.flake-utils.follows = "flake-utils";
+    geomcpp.inputs.tinycmmc.follows = "tinycmmc";
+
+    archcpp.url = "gitlab:grumbel/archcpp";
+    archcpp.inputs.nixpkgs.follows = "nixpkgs";
+    archcpp.inputs.flake-utils.follows = "flake-utils";
+    archcpp.inputs.tinycmmc.follows = "tinycmmc";
+    archcpp.inputs.logmich.follows = "logmich";
+    archcpp.inputs.uitest.follows = "uitest";
+
+    logmich.url = "gitlab:logmich/logmich";
+    logmich.inputs.nixpkgs.follows = "nixpkgs";
+    logmich.inputs.flake-utils.follows = "flake-utils";
+    logmich.inputs.tinycmmc.follows = "tinycmmc";
+
+    priocpp.url = "gitlab:grumbel/priocpp";
+    priocpp.inputs.nixpkgs.follows = "nixpkgs";
+    priocpp.inputs.flake-utils.follows = "flake-utils";
+    priocpp.inputs.tinycmmc.follows = "tinycmmc";
+    priocpp.inputs.logmich.follows = "logmich";
+    priocpp.inputs.sexpcpp.follows = "sexpcpp";
+
+    sexpcpp.url = "gitlab:lispparser/sexp-cpp";
+    sexpcpp.inputs.nixpkgs.follows = "nixpkgs";
+    sexpcpp.inputs.flake-utils.follows = "flake-utils";
+    sexpcpp.inputs.tinycmmc.follows = "tinycmmc";
+
+    strutcpp.url = "gitlab:grumbel/strutcpp";
+    strutcpp.inputs.nixpkgs.follows = "nixpkgs";
+    strutcpp.inputs.flake-utils.follows = "flake-utils";
+    strutcpp.inputs.tinycmmc.follows = "tinycmmc";
+    strutcpp.inputs.geomcpp.follows = "geomcpp";
+    strutcpp.inputs.logmich.follows = "logmich";
+
+    surfcpp.url = "gitlab:grumbel/surfcpp";
+    surfcpp.inputs.nixpkgs.follows = "nixpkgs";
+    surfcpp.inputs.flake-utils.follows = "flake-utils";
+    surfcpp.inputs.tinycmmc.follows = "tinycmmc";
+    surfcpp.inputs.geomcpp.follows = "geomcpp";
+    surfcpp.inputs.logmich.follows = "logmich";
+
+    uitest.url = "gitlab:grumbel/uitest";
+    uitest.inputs.nixpkgs.follows = "nixpkgs";
+    uitest.inputs.flake-utils.follows = "flake-utils";
+    uitest.inputs.tinycmmc.follows = "tinycmmc";
+
+    babyxml.url = "gitlab:grumbel/babyxml";
+    babyxml.inputs.nixpkgs.follows = "nixpkgs";
+    babyxml.inputs.flake-utils.follows = "flake-utils";
+    babyxml.inputs.tinycmmc.follows = "tinycmmc";
+
+    wstdisplay.url = "gitlab:windstille/wstdisplay";
+    wstdisplay.inputs.nixpkgs.follows = "nixpkgs";
+    wstdisplay.inputs.flake-utils.follows = "flake-utils";
+    wstdisplay.inputs.tinycmmc.follows = "tinycmmc";
+    wstdisplay.inputs.geomcpp.follows = "geomcpp";
+    wstdisplay.inputs.babyxml.follows = "babyxml";
+    wstdisplay.inputs.surfcpp.follows = "surfcpp";
+    wstdisplay.inputs.logmich.follows = "logmich";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils,
+              tinycmmc, archcpp, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -15,12 +82,16 @@
           galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
             version = "0.3.0";
+            meta = {
+              mainProgram = "galapix-0.3.sdl";
+            };
             src = nixpkgs.lib.cleanSource ./.;
             enableParallelBuilding = true;
+            doCheck = false;
             cmakeFlags = [
               "-DBUILD_GALAPIX_SDL=ON"
               "-DBUILD_GALAPIX_GTK=ON"
-              "-DBUILD_TESTS=ON"
+              # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DBUILD_EXTRAS=ON"
             ];
@@ -38,6 +109,20 @@
               pkgs.makeWrapper
             ];
             buildInputs = [
+              tinycmmc.defaultPackage.${system}
+              logmich.defaultPackage.${system}
+              archcpp.defaultPackage.${system}
+              geomcpp.defaultPackage.${system}
+              priocpp.defaultPackage.${system}
+              surfcpp.defaultPackage.${system}
+              babyxml.defaultPackage.${system}
+              sexpcpp.defaultPackage.${system}
+              wstdisplay.defaultPackage.${system}
+              uitest.defaultPackage.${system}
+              strutcpp.defaultPackage.${system}
+
+              pkgs.entt
+              pkgs.sqlitecpp
               pkgs.gbenchmark
               pkgs.fmt
               pkgs.glm
@@ -64,6 +149,25 @@
               pkgs.libmhash
               pkgs.libspnav
               pkgs.sqlite
+              pkgs.
+
+              # Silence pkg-config warnings
+              pkgs.pcre
+              pkgs.util-linux
+              pkgs.libselinux
+              pkgs.libsepol
+              pkgs.libunwind
+              pkgs.elfutils
+              pkgs.zstd
+              pkgs.orc
+              pkgs.libthai
+              pkgs.libdatrie
+              pkgs.libxkbcommon
+              pkgs.xorg.libXdmcp
+              pkgs.epoxy
+              pkgs.dbus-glib
+              pkgs.at-spi2-core
+              pkgs.xorg.libXtst
             ];
            };
         };
