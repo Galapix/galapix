@@ -17,7 +17,10 @@
 cmake_minimum_required(VERSION 3.6)
 project(galapix-0.3)
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/)
+set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/modules/")
+find_package(tinycmmc CONFIG)
+message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
+list(APPEND CMAKE_MODULE_PATH ${TINYCMMC_MODULE_PATH})
 
 set(PROJECT_NAME ${PROJECT_NAME} CACHE STRING "Set project name")
 
@@ -92,27 +95,69 @@ else()
   find_package(GLEW REQUIRED)
 endif()
 
-add_library(entt INTERFACE IMPORTED)
-target_include_directories(entt INTERFACE external/entt/single_include/)
+find_package(EnTT)
+if(NOT TARGET EnTT::EnTT)
+  add_library(EnTT::EnTT INTERFACE IMPORTED)
+  target_include_directories(entt INTERFACE external/entt/single_include/)
+endif()
 
 function(build_dependencies)
   if(BUILD_TESTS)
     set(BUILD_TESTS OFF)
-    add_subdirectory(external/uitest/ EXCLUDE_FROM_ALL)
+
+    find_package(uitest)
+    if(NOT TARGET uitest)
+      add_subdirectory(external/uitest/ EXCLUDE_FROM_ALL)
+    endif()
   endif()
 
   set(BUILD_TESTS OFF)
-  add_subdirectory(external/SQLiteCpp/ EXCLUDE_FROM_ALL)
-  set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
 
-  add_subdirectory(external/geomcpp/ EXCLUDE_FROM_ALL)
-  add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
-  add_subdirectory(external/sexp-cpp/ EXCLUDE_FROM_ALL)
-  add_subdirectory(external/strut/ EXCLUDE_FROM_ALL)
-  add_subdirectory(external/surfcpp/ EXCLUDE_FROM_ALL)
-  add_subdirectory(external/archcpp/ EXCLUDE_FROM_ALL)
-  add_subdirectory(external/priocpp/ EXCLUDE_FROM_ALL)
-  add_subdirectory(external/wstdisplay/ EXCLUDE_FROM_ALL)
+  find_package(SQLiteCpp)
+  if(NOT TARGET SQLiteCpp)
+    add_subdirectory(external/SQLiteCpp/ EXCLUDE_FROM_ALL)
+    set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
+  endif()
+
+  find_package(geomcpp)
+  if(NOT TARGET geomcpp)
+    add_subdirectory(external/geomcpp/ EXCLUDE_FROM_ALL)
+  endif()
+
+  find_package(logmich)
+  if(NOT TARGET logmich)
+    add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
+  endif()
+
+  find_package(sexp)
+  if(NOT TARGET sexp)
+    add_subdirectory(external/sexp-cpp/ EXCLUDE_FROM_ALL)
+  endif()
+
+  find_package(strutcpp)
+  if(NOT TARGET strut)
+    add_subdirectory(external/strut/ EXCLUDE_FROM_ALL)
+  endif()
+
+  find_package(surfcpp)
+  if(NOT TARGET surf)
+    add_subdirectory(external/surfcpp/ EXCLUDE_FROM_ALL)
+  endif()
+
+  find_package(arch)
+  if(NOT TARGET arch)
+    add_subdirectory(external/archcpp/ EXCLUDE_FROM_ALL)
+  endif()
+
+  find_package(priocpp)
+  if(NOT TARGET prio)
+    add_subdirectory(external/priocpp/ EXCLUDE_FROM_ALL)
+  endif()
+
+  find_package(wstdisplay)
+  if(NOT TARGET wstdisplay)
+    add_subdirectory(external/wstdisplay/ EXCLUDE_FROM_ALL)
+  endif()
 endfunction()
 build_dependencies()
 
@@ -153,7 +198,7 @@ target_link_libraries(libgalapix PUBLIC
   strut
   logmich
   sexp
-  entt
+  EnTT::EnTT
   geomcpp
   wstdisplay
   SQLiteCpp
