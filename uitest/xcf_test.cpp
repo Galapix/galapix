@@ -22,8 +22,8 @@
 #include <uitest/uitest.hpp>
 #include <surf/software_surface.hpp>
 
-#include "plugins/xcf.hpp"
-#include "plugins/png.hpp"
+#include <surf/plugins/xcf.hpp>
+#include <surf/plugins/png.hpp>
 
 using namespace surf;
 

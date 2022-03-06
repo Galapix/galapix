@@ -18,9 +18,9 @@
 
 #include <logmich/log.hpp>
 #include <surf/software_surface_factory.hpp>
+#include <surf/plugins/jpeg.hpp>
 
 #include "math/rect.hpp"
-#include "plugins/jpeg.hpp"
 #include "jobs/tile_generator.hpp"
 #include "database/entries/tile_entry.hpp"
 

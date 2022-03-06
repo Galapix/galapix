@@ -21,8 +21,8 @@
 #include <uitest/uitest.hpp>
 
 #include "util/blob.hpp"
-#include "plugins/pnm.hpp"
-#include "plugins/png.hpp"
+#include <surf/plugins/pnm.hpp>
+#include <surf/plugins/png.hpp>
 
 using namespace surf;
 

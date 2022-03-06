@@ -22,12 +22,12 @@
 #include <logmich/log.hpp>
 #include <surf/software_surface.hpp>
 #include <surf/transform.hpp>
+#include <surf/plugins/jpeg.hpp>
 
 #include "galapix/app.hpp"
 #include "galapix/tile.hpp"
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
-#include "plugins/jpeg.hpp"
 
 using namespace surf;
 

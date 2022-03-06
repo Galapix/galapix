@@ -28,7 +28,7 @@
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
 #include "math/rect.hpp"
-#include "plugins/png.hpp"
+#include <surf/plugins/png.hpp>
 
 using namespace surf;
 

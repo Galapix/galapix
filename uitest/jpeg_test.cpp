@@ -20,7 +20,7 @@
 #include <uitest/uitest.hpp>
 
 #include "math/size.hpp"
-#include "plugins/jpeg.hpp"
+#include <surf/plugins/jpeg.hpp>
 
 using namespace surf;
 

@@ -26,8 +26,8 @@
 
 #include "math/math.hpp"
 #include "util/url.hpp"
-#include "plugins/jpeg.hpp"
-#include "plugins/png.hpp"
+#include <surf/plugins/jpeg.hpp>
+#include <surf/plugins/png.hpp>
 
 using namespace surf;
 

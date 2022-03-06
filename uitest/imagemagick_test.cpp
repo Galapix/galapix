@@ -19,7 +19,7 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
-#include "plugins/imagemagick.hpp"
+#include <surf/plugins/imagemagick.hpp>
 
 using namespace surf;
 

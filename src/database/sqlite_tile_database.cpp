@@ -19,12 +19,12 @@
 #include <iostream>
 
 #include <surf/software_surface_factory.hpp>
+#include <surf/plugins/jpeg.hpp>
+#include <surf/plugins/png.hpp>
 
 #include "database/entries/tile_entry.hpp"
 #include "database/row_id.hpp"
 #include "database/database.hpp"
-#include "plugins/jpeg.hpp"
-#include "plugins/png.hpp"
 
 SQLiteTileDatabase::SQLiteTileDatabase(SQLite::Database& db, ResourceDatabase& files) :
   m_db(db),

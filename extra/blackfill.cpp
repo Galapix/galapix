@@ -26,8 +26,8 @@
 #include <surf/software_surface_factory.hpp>
 #include <surf/color.hpp>
 
-#include "plugins/png.hpp"
-#include "plugins/jpeg.hpp"
+#include <surf/plugins/png.hpp>
+#include <surf/plugins/jpeg.hpp>
 #include "util/url.hpp"
 
 using namespace surf;

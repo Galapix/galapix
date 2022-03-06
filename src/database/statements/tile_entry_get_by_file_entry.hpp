@@ -17,8 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_GET_BY_FILE_ENTRY_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_GET_BY_FILE_ENTRY_HPP
 
-#include "plugins/png.hpp"
-#include "plugins/jpeg.hpp"
+#include <surf/plugins/png.hpp>
+#include <surf/plugins/jpeg.hpp>
 
 class TileEntryGetByFileEntry final
 {

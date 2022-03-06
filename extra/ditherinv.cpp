@@ -24,7 +24,7 @@
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
 
-#include "plugins/png.hpp"
+#include <surf/plugins/png.hpp>
 
 using namespace surf;
 

@@ -19,12 +19,13 @@
 
 #include <iostream>
 
+#include <surf/plugins/jpeg.hpp>
+
 #include "util/url.hpp"
 #include "math/vector2i.hpp"
 #include "job/job.hpp"
 #include "galapix/tile.hpp"
 #include "network/curl.hpp"
-#include "plugins/jpeg.hpp"
 
 class ZoomifyTileJob : public Job
 {

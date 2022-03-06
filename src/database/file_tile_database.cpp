@@ -24,11 +24,11 @@
 #include <limits>
 
 #include <surf/software_surface_factory.hpp>
+#include <surf/plugins/jpeg.hpp>
+#include <surf/plugins/png.hpp>
 
 #include "database/entries/image_entry.hpp"
 #include "galapix/tile.hpp"
-#include "plugins/jpeg.hpp"
-#include "plugins/png.hpp"
 #include "util/blob.hpp"
 #include "util/filesystem.hpp"
 

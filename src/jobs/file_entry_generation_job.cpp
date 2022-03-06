@@ -18,9 +18,9 @@
 
 #include <logmich/log.hpp>
 #include <surf/software_surface_factory.hpp>
+#include <surf/plugins/jpeg.hpp>
 
 #include "jobs/tile_generator.hpp"
-#include "plugins/jpeg.hpp"
 #include "util/filesystem.hpp"
 
 FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url) :

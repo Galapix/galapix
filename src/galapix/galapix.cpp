@@ -32,6 +32,10 @@
 #include <strut/numeric_less.hpp>
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
+#include <surf/plugins/imagemagick.hpp>
+#include <surf/plugins/jpeg.hpp>
+#include <surf/plugins/png.hpp>
+#include <surf/plugins/xcf.hpp>
 
 #include "archive/archive_manager.hpp"
 #include "database/database.hpp"
@@ -52,10 +56,6 @@
 #include "math/size.hpp"
 #include "math/vector2i.hpp"
 #include "network/download_manager.hpp"
-#include "plugins/imagemagick.hpp"
-#include "plugins/jpeg.hpp"
-#include "plugins/png.hpp"
-#include "plugins/xcf.hpp"
 #include "resource/blob_manager.hpp"
 #include "resource/resource_manager.hpp"
 #include "resource/resource_metadata.hpp"

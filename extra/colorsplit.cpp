@@ -16,7 +16,7 @@
 **  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "plugins/png.hpp"
+#include <surf/plugins/png.hpp>
 
 #include <surf/filter.hpp>
 #include <surf/software_surface.hpp>

@@ -5,7 +5,7 @@
 
 #include "archive/archive_manager.hpp"
 #include "util/url.hpp"
-#include "plugins/jpeg.hpp"
+#include <surf/plugins/jpeg.hpp>
 
 using namespace surf;
 

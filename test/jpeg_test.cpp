@@ -3,7 +3,7 @@
 #include <surf/software_surface.hpp>
 
 #include "math/size.hpp"
-#include "plugins/jpeg.hpp"
+#include <surf/plugins/jpeg.hpp>
 
 using namespace surf;
 
