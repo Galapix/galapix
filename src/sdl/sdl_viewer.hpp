@@ -21,6 +21,7 @@
 #include <memory>
 
 #include <wstdisplay/opengl_window.hpp>
+#include <wstsystem/fwd.hpp>
 
 #include "math/size.hpp"
 #include "galapix/image.hpp"
@@ -49,7 +50,8 @@ private:
   float get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const;
 
 private:
-  wstdisplay::OpenGLWindow m_window;
+  std::unique_ptr<wstsys::System> m_system;
+  std::unique_ptr<wstdisplay::OpenGLWindow> m_window;
   Viewer& m_viewer;
 
   bool m_quit;

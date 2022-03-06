@@ -24,12 +24,13 @@
 
 #include <surf/color.hpp>
 #include <surf/transform.hpp>
+#include <surf/plugins/png.hpp>
+#include <wstsystem/system.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
-#include "plugins/png.hpp"
 #include "server/database_thread.hpp"
 #include "spnav/space_navigator.hpp"
 #include "util/filesystem.hpp"
@@ -79,15 +80,22 @@ float deadzone(float value, float threshold)
 
 } // namespace
 
-SDLViewer::SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
+SDLViewer::SDLViewer(const Size& size, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
-  m_window("Galapix", geometry, geometry, fullscreen, anti_aliasing),
+  m_system(std::make_unique<wstsys::System>()),
+  m_window(m_system->create_window({
+    .title = "Galapix",
+    .icon = {},
+    .size = size,
+    .mode = fullscreen ? wstdisplay::OpenGLWindow::Mode::FullscreenDesktop : wstdisplay::OpenGLWindow::Mode::Window,
+    .resizable = true,
+    .anti_aliasing = anti_aliasing})),
   m_viewer(viewer),
   m_quit(false),
   m_spnav_allow_rotate(false),
   m_gamecontrollers()
 {
-  m_viewer.reshape(m_window.get_size());
+  m_viewer.reshape(m_window->get_size());
 }
 
 SDLViewer::~SDLViewer()
@@ -336,7 +344,7 @@ SDLViewer::process_event(const SDL_Event& event)
 
         case SDLK_F12:
           {
-            SoftwareSurface surface = m_window.screenshot();
+            SoftwareSurface surface = m_window->screenshot();
             // FIXME: Could do this in a worker thread to avoid pause on screenshotting
             for(int i = 0; ; ++i)
             {
@@ -424,7 +432,7 @@ SDLViewer::process_event(const SDL_Event& event)
           break;
 
         case SDLK_F11:
-          m_window.set_fullscreen(true);
+          m_window->set_mode(wstdisplay::OpenGLWindow::Mode::FullscreenDesktop);
           break;
 
         case SDLK_F2:
@@ -620,7 +628,7 @@ SDLViewer::run()
       update_gamecontrollers(delta);
 
       m_viewer.update(delta);
-      m_viewer.draw(m_window.get_gc());
+      m_viewer.draw(m_window->get_gc());
     }
     else
     {
@@ -633,11 +641,11 @@ SDLViewer::run()
 
       // FIXME: We should try to detect if we need a redraw and
       // only draw then, else we will redraw on each mouse motion
-      m_viewer.draw(m_window.get_gc());
+      m_viewer.draw(m_window->get_gc());
       ticks = SDL_GetTicks();
     }
 
-    m_window.swap_buffers();
+    m_window->swap_buffers();
 
     // std::cout << "." << std::flush;
 
