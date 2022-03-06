@@ -15,6 +15,9 @@
           galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
             version = "0.2.2";
+            meta = {
+              mainProgram = "galapix.sdl";
+            };
             src = nixpkgs.lib.cleanSource ./.;
             enableParallelBuilding = true;
             sconsFlags = [
