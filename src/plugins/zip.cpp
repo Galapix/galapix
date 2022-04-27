@@ -154,7 +154,7 @@ std::vector<std::string>
 Zip::get_filenames(const std::string& zip_filename)
 {
   Exec unzip("unzip");
-  unzip.arg("-lqq").arg(zip_filename);
+  unzip.arg("-lqqUU").arg(zip_filename);
   int zip_return_code = unzip.exec();
   if (zip_return_code == 0)
   {
@@ -195,7 +195,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
   }
 
   Exec unzip("unzip");
-  unzip.arg("-pqq").arg(zip_filename).arg(filename);
+  unzip.arg("-pqqUU").arg(zip_filename).arg(filename);
   int zip_return_code = unzip.exec();
   if (zip_return_code == 0)
   {
