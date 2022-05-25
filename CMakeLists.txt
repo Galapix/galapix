@@ -61,6 +61,11 @@ find_package(glm REQUIRED)
 find_package(fmt REQUIRED)
 find_package(OpenSSL COMPONENTS Crypto REQUIRED)
 
+# Not using find_package(), see:
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=776832
+# find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
+pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
+
 pkg_search_module(SQLITE3 REQUIRED sqlite3 IMPORTED_TARGET)
 pkg_search_module(SIGCXX REQUIRED sigc++-2.0 IMPORTED_TARGET)
 
@@ -119,43 +124,43 @@ function(build_dependencies)
     set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
   endif()
 
-  find_package(geomcpp)
-  if(NOT TARGET geomcpp)
+  find_package(geom)
+  if(NOT TARGET geom::geom)
     add_subdirectory(external/geomcpp/ EXCLUDE_FROM_ALL)
   endif()
 
   find_package(logmich)
-  if(NOT TARGET logmich)
+  if(NOT TARGET logmich::logmich)
     add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
   endif()
 
   find_package(sexp)
-  if(NOT TARGET sexp)
+  if(NOT TARGET sexp::sexp)
     add_subdirectory(external/sexp-cpp/ EXCLUDE_FROM_ALL)
   endif()
 
-  find_package(strutcpp)
-  if(NOT TARGET strut)
+  find_package(strut)
+  if(NOT TARGET strut::strut)
     add_subdirectory(external/strut/ EXCLUDE_FROM_ALL)
   endif()
 
-  find_package(surfcpp)
-  if(NOT TARGET surf)
+  find_package(surf)
+  if(NOT TARGET surf::surf)
     add_subdirectory(external/surfcpp/ EXCLUDE_FROM_ALL)
   endif()
 
   find_package(arch)
-  if(NOT TARGET arch)
+  if(NOT TARGET arch::arch)
     add_subdirectory(external/archcpp/ EXCLUDE_FROM_ALL)
   endif()
 
-  find_package(priocpp)
-  if(NOT TARGET prio)
+  find_package(prio)
+  if(NOT TARGET prio::prio)
     add_subdirectory(external/priocpp/ EXCLUDE_FROM_ALL)
   endif()
 
   find_package(wstdisplay)
-  if(NOT TARGET wstdisplay)
+  if(NOT TARGET wstdisplay::wstdisplay)
     add_subdirectory(external/wstdisplay/ EXCLUDE_FROM_ALL)
   endif()
 endfunction()
@@ -192,17 +197,18 @@ target_include_directories(libgalapix PUBLIC
   src/
   ${CMAKE_CURRENT_BINARY_DIR}/src/)
 target_link_libraries(libgalapix PUBLIC
-  prio
-  arch
-  surf
-  strut
-  logmich
-  sexp
+  prio::prio
+  arch::arch
+  surf::surf
+  strut::strut
+  logmich::logmich
+  sexp::sexp
   EnTT::EnTT
-  geomcpp
-  wstdisplay
+  geom::geom
+  wstdisplay::wstdisplay
   SQLiteCpp
   fmt::fmt
+  PkgConfig::MAGICKXX
   PkgConfig::SIGCXX
   ${SPNAV_LIBRARIES}
   OpenSSL::Crypto

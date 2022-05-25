@@ -37,7 +37,7 @@
 #include <surf/plugins/png.hpp>
 #include <surf/plugins/xcf.hpp>
 
-#include "archive/archive_manager.hpp"
+#include "arch/archive_manager.hpp"
 #include "database/database.hpp"
 #include "galapix/app.hpp"
 #include "galapix/arg_parser.hpp"

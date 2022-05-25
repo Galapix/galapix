@@ -34,12 +34,12 @@
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
 
-#include "archive/archive_loader.hpp"
-#include "archive/archive_manager.hpp"
-#include "archive/rar.hpp"
-#include "archive/seven_zip.hpp"
-#include "archive/tar.hpp"
-#include "archive/zip.hpp"
+#include "arch/archive_loader.hpp"
+#include "arch/archive_manager.hpp"
+#include "arch/rar.hpp"
+#include "arch/seven_zip.hpp"
+#include "arch/tar.hpp"
+#include "arch/zip.hpp"
 #include "galapix/app.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"

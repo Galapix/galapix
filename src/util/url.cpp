@@ -20,11 +20,11 @@
 #include <stdexcept>
 #include <ostream>
 
-#include "archive/rar.hpp"
-#include "archive/seven_zip.hpp"
-#include "archive/tar.hpp"
-#include "archive/util.hpp"
-#include "archive/zip.hpp"
+#include "arch/rar.hpp"
+#include "arch/seven_zip.hpp"
+#include "arch/tar.hpp"
+#include "arch/util.hpp"
+#include "arch/zip.hpp"
 #include "network/curl.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"

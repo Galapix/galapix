@@ -18,7 +18,7 @@
 
 #include <fmt/format.h>
 
-#include "archive/archive_manager.hpp"
+#include "arch/archive_manager.hpp"
 #include "network/download_manager.hpp"
 #include "resource/resource_locator.hpp"
 

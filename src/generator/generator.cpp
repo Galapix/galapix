@@ -20,8 +20,8 @@
 #include <surf/software_surface_factory.hpp>
 #include <surf/software_surface_loader.hpp>
 
-#include "archive/archive_manager.hpp"
-#include "archive/extraction.hpp"
+#include "arch/archive_manager.hpp"
+#include "arch/extraction.hpp"
 #include "galapix/app.hpp"
 #include "galapix/tile.hpp"
 #include "generator/image_data.hpp"
