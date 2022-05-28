@@ -19,11 +19,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_APP_HPP
 #define HEADER_GALAPIX_GALAPIX_APP_HPP
 
-namespace surf {
-class SoftwareSurfaceFactory;
-} // namespace surf
-
-class ArchiveManager;
+#include <arxp/fwd.hpp>
+#include <surf/fwd.hpp>
 
 class App
 {
@@ -32,11 +29,11 @@ public:
   App();
 
   surf::SoftwareSurfaceFactory& surface_factory();
-  ArchiveManager& archive();
+  arxp::ArchiveManager& archive();
 
 private:
   surf::SoftwareSurfaceFactory* m_surface_factory;
-  ArchiveManager* m_archive_manager;
+  arxp::ArchiveManager* m_archive_manager;
 
 private:
   App(const App&) = delete;

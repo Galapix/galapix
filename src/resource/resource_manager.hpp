@@ -19,6 +19,8 @@
 
 #include <functional>
 
+#include <arxp/fwd.hpp>
+
 #include "job/thread.hpp"
 #include "job/thread_message_queue2.hpp"
 #include "util/async_messenger.hpp"
@@ -26,7 +28,6 @@
 #include "util/failable.hpp"
 
 class ArchiveInfo;
-class ArchiveManager;
 class BlobInfo;
 class DatabaseThread;
 class DownloadManager;
@@ -47,7 +48,7 @@ public:
   ResourceManager(DatabaseThread& database,
                   Generator& generator,
                   DownloadManager& download_mgr,
-                  ArchiveManager& archive_mgr);
+                  arxp::ArchiveManager& archive_mgr);
   ~ResourceManager();
 
   void request_resource_metadata(const ResourceLocator& locator,
@@ -63,7 +64,7 @@ private:
   DatabaseThread& m_database;
   Generator& m_generator;
   DownloadManager& m_download_mgr;
-  ArchiveManager& m_archive_mgr;
+  arxp::ArchiveManager& m_archive_mgr;
 
 private:
   ResourceManager(const ResourceManager&) = delete;

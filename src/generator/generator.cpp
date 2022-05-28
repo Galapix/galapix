@@ -20,8 +20,8 @@
 #include <surf/software_surface_factory.hpp>
 #include <surf/software_surface_loader.hpp>
 
-#include "arch/archive_manager.hpp"
-#include "arch/extraction.hpp"
+#include "arxp/archive_manager.hpp"
+#include "arxp/extraction.hpp"
 #include "galapix/app.hpp"
 #include "galapix/tile.hpp"
 #include "generator/image_data.hpp"
@@ -33,7 +33,7 @@
 
 using namespace surf;
 
-Generator::Generator(BlobManager& blob_mgr, ArchiveManager& archive_mgr) :
+Generator::Generator(BlobManager& blob_mgr, arxp::ArchiveManager& archive_mgr) :
   m_blob_mgr(blob_mgr),
   m_archive_mgr(archive_mgr),
   m_pool(4)
@@ -149,7 +149,7 @@ Generator::process_archive_resource(ResourceLocator const& locator,
   try
   {
     log_debug("-- process_archive_resource: {}", locator.str());
-    ExtractionPtr extraction = m_archive_mgr.get_extraction(blob_accessor->get_stdio_name());
+    arxp::ExtractionPtr extraction = m_archive_mgr.get_extraction(blob_accessor->get_stdio_name());
 
     log_debug("-- process_archive_resource: got extraction");
 

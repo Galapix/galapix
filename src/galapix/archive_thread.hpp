@@ -22,8 +22,9 @@
 #include <mutex>
 #include <string>
 
-#include "arch/archive_manager.hpp"
-#include "arch/extraction.hpp"
+#include <arxp/archive_manager.hpp>
+#include <arxp/extraction.hpp>
+
 #include "util/blob.hpp"
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
@@ -34,7 +35,7 @@ private:
   struct ExtractionEntry
   {
     std::mutex    mutex;
-    ExtractionPtr extraction;
+    arxp::ExtractionPtr extraction;
 
     ExtractionEntry() :
       mutex(),
@@ -49,14 +50,14 @@ public:
   void request_blob(const std::string& archive_filename, const std::string& filename,
                     const std::function<void (Failable<Blob>)>& callback);
   void request_extraction(const std::string& archive_filename,
-                          const std::function<void (Failable<ExtractionPtr>)>& callback);
+                          const std::function<void (Failable<arxp::ExtractionPtr>)>& callback);
 
 private:
   ExtractionEntry& get_and_lock_extraction_entry(const std::string& archive_filename,
                                                  std::unique_lock<std::mutex>& lock_out);
 
 private:
-  ArchiveManager m_archive_mgr;
+  arxp::ArchiveManager m_archive_mgr;
   std::mutex m_mutex;
   std::unordered_map<std::string, std::unique_ptr<ExtractionEntry> > m_extractions;
   ThreadPool m_pool;

@@ -18,12 +18,13 @@
 
 #include <fmt/format.h>
 
-#include "arch/archive_manager.hpp"
+#include <arxp/archive_manager.hpp>
+
 #include "network/download_manager.hpp"
 #include "resource/resource_locator.hpp"
 
 BlobManager::BlobManager(DownloadManager& download_mgr,
-                         ArchiveManager&  archive_mgr) :
+                         arxp::ArchiveManager&  archive_mgr) :
   m_download_mgr(download_mgr),
   m_archive_mgr(archive_mgr),
   m_pool(4),

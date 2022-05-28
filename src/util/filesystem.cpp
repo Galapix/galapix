@@ -30,16 +30,16 @@
 #include <sstream>
 #include <algorithm>
 
+#include <arxp/archive_loader.hpp>
+#include <arxp/archive_manager.hpp>
+#include <arxp/rar.hpp>
+#include <arxp/seven_zip.hpp>
+#include <arxp/tar.hpp>
+#include <arxp/zip.hpp>
 #include <logmich/log.hpp>
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
 
-#include "arch/archive_loader.hpp"
-#include "arch/archive_manager.hpp"
-#include "arch/rar.hpp"
-#include "arch/seven_zip.hpp"
-#include "arch/tar.hpp"
-#include "arch/zip.hpp"
 #include "galapix/app.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
@@ -345,7 +345,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           archive_tasks.push_back(std::async([i, url]() -> std::vector<URL> {
                 std::vector<URL> sub_file_list;
 
-                const ArchiveLoader* loader;
+                const arxp::ArchiveLoader* loader;
                 const auto& files = g_app.archive().get_filenames(*i, &loader);
                 for(const auto& file: files)
                 {

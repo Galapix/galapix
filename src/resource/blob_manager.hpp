@@ -20,13 +20,14 @@
 #include <functional>
 #include <set>
 
+#include <arxp/fwd.hpp>
+
 #include "resource/resource_locator.hpp"
 #include "resource/blob_accessor.hpp"
 #include "util/blob.hpp"
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
 
-class ArchiveManager;
 class DownloadManager;
 class ResourceLocator;
 
@@ -41,7 +42,7 @@ class BlobManager
 {
 public:
   BlobManager(DownloadManager& download_mgr,
-              ArchiveManager& archive_mgr);
+              arxp::ArchiveManager& archive_mgr);
   ~BlobManager();
 
   void request_blob(const ResourceLocator& locator,
@@ -53,7 +54,7 @@ private:
 
 private:
   DownloadManager& m_download_mgr;
-  ArchiveManager&  m_archive_mgr;
+  arxp::ArchiveManager&  m_archive_mgr;
   ThreadPool m_pool;
 
   std::mutex m_mutex;

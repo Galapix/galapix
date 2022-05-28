@@ -23,7 +23,8 @@
 
 #include <surf/software_surface_factory.hpp>
 
-#include "archive/archive_manager.hpp"
+#include <arxp/archive_manager.hpp>
+
 #include "generator/generator.hpp"
 #include "generator/generator_callbacks.hpp"
 #include "generator/image_data.hpp"
@@ -117,7 +118,7 @@ UITEST(Generator, test, "FILE...")
 
   SoftwareSurfaceFactory surface_factory;
   DownloadManager download_mgr;
-  ArchiveManager archive_mgr;
+  arxp::ArchiveManager archive_mgr;
   BlobManager blob_mgr(download_mgr, archive_mgr);
   Generator   generator(blob_mgr, archive_mgr);
 

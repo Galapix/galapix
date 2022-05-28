@@ -29,6 +29,7 @@
 #include <sqlite3.h>
 #include <Magick++.h>
 
+#include <arxp/archive_manager.hpp>
 #include <strut/numeric_less.hpp>
 #include <surf/software_surface.hpp>
 #include <surf/software_surface_factory.hpp>
@@ -37,7 +38,6 @@
 #include <surf/plugins/png.hpp>
 #include <surf/plugins/xcf.hpp>
 
-#include "arch/archive_manager.hpp"
 #include "database/database.hpp"
 #include "galapix/app.hpp"
 #include "galapix/arg_parser.hpp"
@@ -271,7 +271,7 @@ Galapix::main(int argc, char** argv)
     Magick::InitializeMagick(*argv);
 
     DownloadManager download_manager;
-    ArchiveManager archive_manager;
+    arxp::ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
 
     g_app.m_archive_manager = &archive_manager;

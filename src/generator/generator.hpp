@@ -21,6 +21,7 @@
 #include <string>
 #include <vector>
 
+#include <arxp/fwd.hpp>
 #include <surf/software_surface.hpp>
 
 #include "resource/file_info.hpp"
@@ -28,7 +29,6 @@
 #include "util/thread_pool.hpp"
 #include "generator/generator_callbacks.hpp"
 
-class ArchiveManager;
 class BlobInfo;
 class BlobManager;
 class Extraction;
@@ -39,7 +39,7 @@ class ResourceLocator;
 class Generator
 {
 public:
-  Generator(BlobManager& blob_mgr, ArchiveManager& archive_mgr);
+  Generator(BlobManager& blob_mgr, arxp::ArchiveManager& archive_mgr);
   ~Generator();
 
   void request_file_info(const std::string& path,
@@ -58,7 +58,7 @@ private:
 
 private:
   BlobManager& m_blob_mgr;
-  ArchiveManager& m_archive_mgr;
+  arxp::ArchiveManager& m_archive_mgr;
   ThreadPool m_pool;
 
 private:

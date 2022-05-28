@@ -51,7 +51,7 @@ ArchiveThread::request_blob(const std::string& archive_filename, const std::stri
 
 void
 ArchiveThread::request_extraction(const std::string& archive_filename,
-                                  const std::function<void (Failable<ExtractionPtr>)>& callback)
+                                  const std::function<void (Failable<arxp::ExtractionPtr>)>& callback)
 {
   m_pool.schedule
     ([this, archive_filename, callback]
@@ -74,7 +74,7 @@ ArchiveThread::request_extraction(const std::string& archive_filename,
        }
        catch(...)
        {
-         callback(Failable<ExtractionPtr>(std::current_exception()));
+         callback(Failable<arxp::ExtractionPtr>(std::current_exception()));
        }
      });
 }

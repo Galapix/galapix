@@ -37,7 +37,7 @@
 ResourceManager::ResourceManager(DatabaseThread& database,
                                  Generator& generator,
                                  DownloadManager& download_mgr,
-                                 ArchiveManager& archive_mgr) :
+                                 arxp::ArchiveManager& archive_mgr) :
   m_database(database),
   m_generator(generator),
   m_download_mgr(download_mgr),

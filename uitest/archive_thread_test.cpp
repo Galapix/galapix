@@ -34,11 +34,11 @@ UITEST(Archive, thread, "ARCHIVENAME...",
     std::cout << "requesting: " << arg << std::endl;
     m_archive.request_extraction
       (arg,
-       [](Failable<ExtractionPtr> fail_or_extraction)
+       [](Failable<arxp::ExtractionPtr> fail_or_extraction)
        {
          try
          {
-           ExtractionPtr extraction = fail_or_extraction.get();
+           arxp::ExtractionPtr extraction = fail_or_extraction.get();
            std::cout << "extraction received: " << extraction->get_type() << std::endl;
            for(auto&& f : extraction.get()->get_filenames())
            {

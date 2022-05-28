@@ -149,9 +149,9 @@ function(build_dependencies)
     add_subdirectory(external/surfcpp/ EXCLUDE_FROM_ALL)
   endif()
 
-  find_package(arch)
-  if(NOT TARGET arch::arch)
-    add_subdirectory(external/archcpp/ EXCLUDE_FROM_ALL)
+  find_package(arxp)
+  if(NOT TARGET arxp::arxp)
+    add_subdirectory(external/arxpcpp/ EXCLUDE_FROM_ALL)
   endif()
 
   find_package(prio)
@@ -168,7 +168,6 @@ build_dependencies()
 
 # compile libgalapix
 file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  src/archive/*.cpp
   src/database/*.cpp
   src/database/entries/*.cpp
   src/database/tables/*.cpp
@@ -198,7 +197,7 @@ target_include_directories(libgalapix PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}/src/)
 target_link_libraries(libgalapix PUBLIC
   prio::prio
-  arch::arch
+  arxp::arxp
   surf::surf
   strut::strut
   logmich::logmich

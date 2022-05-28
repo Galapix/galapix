@@ -20,11 +20,12 @@
 #include <stdexcept>
 #include <ostream>
 
-#include "arch/rar.hpp"
-#include "arch/seven_zip.hpp"
-#include "arch/tar.hpp"
-#include "arch/util.hpp"
-#include "arch/zip.hpp"
+#include <arxp/rar.hpp>
+#include <arxp/seven_zip.hpp>
+#include <arxp/tar.hpp>
+#include <arxp/util.hpp>
+#include <arxp/zip.hpp>
+
 #include "network/curl.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
@@ -128,23 +129,23 @@ URL::get_data(std::string* mime_type) const
   {
     if (m_plugin.empty())
     {
-      return read_file(m_payload);
+      return arxp::read_file(m_payload);
     }
     else if (m_plugin == "rar")
     {
-      return Rar::get_file(m_payload, m_plugin_payload);
+      return arxp::Rar::get_file(m_payload, m_plugin_payload);
     }
     else if (m_plugin == "zip")
     {
-      return Zip::get_file(m_payload, m_plugin_payload);
+      return arxp::Zip::get_file(m_payload, m_plugin_payload);
     }
     else if (m_plugin == "7zip")
     {
-      return SevenZip::get_file(m_payload, m_plugin_payload);
+      return arxp::SevenZip::get_file(m_payload, m_plugin_payload);
     }
     else if (m_plugin == "tar")
     {
-      return Tar::get_file(m_payload, m_plugin_payload);
+      return arxp::Tar::get_file(m_payload, m_plugin_payload);
     }
     else
     {

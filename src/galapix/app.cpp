@@ -35,7 +35,7 @@ App::surface_factory()
   return *m_surface_factory;
 }
 
-ArchiveManager&
+arxp::ArchiveManager&
 App::archive()
 {
   assert(m_archive_manager != nullptr);

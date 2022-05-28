@@ -14,12 +14,20 @@
     geomcpp.inputs.flake-utils.follows = "flake-utils";
     geomcpp.inputs.tinycmmc.follows = "tinycmmc";
 
-    archcpp.url = "gitlab:grumbel/archcpp";
-    archcpp.inputs.nixpkgs.follows = "nixpkgs";
-    archcpp.inputs.flake-utils.follows = "flake-utils";
-    archcpp.inputs.tinycmmc.follows = "tinycmmc";
-    archcpp.inputs.logmich.follows = "logmich";
-    archcpp.inputs.uitest.follows = "uitest";
+    exspcpp.url = "gitlab:grumbel/exspcpp";
+    exspcpp.inputs.nixpkgs.follows = "nixpkgs";
+    exspcpp.inputs.flake-utils.follows = "flake-utils";
+    exspcpp.inputs.tinycmmc.follows = "tinycmmc";
+    exspcpp.inputs.logmich.follows = "logmich";
+    exspcpp.inputs.uitest.follows = "uitest";
+
+    arxpcpp.url = "gitlab:grumbel/arxpcpp";
+    arxpcpp.inputs.nixpkgs.follows = "nixpkgs";
+    arxpcpp.inputs.flake-utils.follows = "flake-utils";
+    arxpcpp.inputs.tinycmmc.follows = "tinycmmc";
+    arxpcpp.inputs.logmich.follows = "logmich";
+    arxpcpp.inputs.exspcpp.follows = "exspcpp";
+    arxpcpp.inputs.uitest.follows = "uitest";
 
     logmich.url = "gitlab:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
@@ -73,7 +81,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils,
-              tinycmmc, archcpp, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay }:
+              tinycmmc, exspcpp, arxpcpp, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -111,7 +119,7 @@
             buildInputs = [
               tinycmmc.defaultPackage.${system}
               logmich.defaultPackage.${system}
-              archcpp.defaultPackage.${system}
+              arxpcpp.defaultPackage.${system}
               geomcpp.defaultPackage.${system}
               priocpp.defaultPackage.${system}
               surfcpp.defaultPackage.${system}

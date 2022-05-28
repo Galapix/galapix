@@ -20,7 +20,8 @@
 #include <logmich/log.hpp>
 #include <uitest/uitest.hpp>
 
-#include "archive/archive_manager.hpp"
+#include <arxp/archive_manager.hpp>
+
 #include "database/database.hpp"
 #include "generator/generator.hpp"
 #include "job/job_manager.hpp"
@@ -43,7 +44,7 @@ UITEST(ResourceManager, request_blob, "ARG...",
 
   DatabaseThread database(db, job_manager);
   DownloadManager download_mgr;
-  ArchiveManager archive_mgr;
+  arxp::ArchiveManager archive_mgr;
   BlobManager blob_mgr(download_mgr, archive_mgr);
   Generator generator(blob_mgr, archive_mgr);
 
