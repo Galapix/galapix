@@ -38,7 +38,7 @@ public:
   Blob get_blob() const;
 
   size_t size() const;
-  const uint8_t* get_data() const;
+  uint8_t const* get_data() const;
 
   BlobInfo get_blob_info() const;
 

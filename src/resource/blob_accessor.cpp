@@ -124,7 +124,7 @@ BlobAccessor::size() const
   return get_blob().size();
 }
 
-const uint8_t*
+uint8_t const*
 BlobAccessor::get_data() const
 {
   // TODO: rewrite this to handle stdio

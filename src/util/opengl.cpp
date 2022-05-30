@@ -23,10 +23,10 @@
 
 namespace {
 
-const char* gl_error_string(GLenum err)
+char const* gl_error_string(GLenum err)
 {
 #ifndef HAVE_OPENGLES2
-  return reinterpret_cast<const char*>(gluErrorString(err));
+  return reinterpret_cast<char const*>(gluErrorString(err));
 #else
   switch(err)
   {
@@ -62,7 +62,7 @@ const char* gl_error_string(GLenum err)
 
 } // namespace
 
-void assert_gl_helper(const char* filename, int line, const char* message)
+void assert_gl_helper(char const* filename, int line, char const* message)
 {
   GLenum error = glGetError();
   if(error != GL_NO_ERROR)

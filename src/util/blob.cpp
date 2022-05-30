@@ -46,7 +46,7 @@ Blob::size() const
   }
 }
 
-const uint8_t*
+uint8_t const*
 Blob::get_data() const
 {
   if (!m_data)
@@ -68,7 +68,7 @@ Blob::str() const
   }
   else
   {
-    return std::string(reinterpret_cast<const char*>(m_data->data()), m_data->size());
+    return std::string(reinterpret_cast<char const*>(m_data->data()), m_data->size());
   }
 }
 
@@ -84,7 +84,7 @@ Blob::write_to_file(const std::string& filename) const
   {
     if (m_data)
     {
-      out.write(reinterpret_cast<const char*>(m_data->data()),
+      out.write(reinterpret_cast<char const*>(m_data->data()),
                 static_cast<std::streamsize>(m_data->size()));
     }
   }

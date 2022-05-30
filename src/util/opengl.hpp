@@ -26,7 +26,7 @@
 #endif
 
 #define assert_gl(msg) assert_gl_helper(__FILE__, __LINE__, msg)
-void assert_gl_helper(const char* filename, int line, const char* message);
+void assert_gl_helper(char const* filename, int line, char const* message);
 
 #endif
 

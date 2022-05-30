@@ -52,7 +52,7 @@ Filesystem::find_exe(const std::string& name)
   char* path_c = getenv("PATH");
   if (path_c)
   {
-    const char* delim = ":";
+    char const* delim = ":";
     char* path = strdup(path_c);
     char* state;
 

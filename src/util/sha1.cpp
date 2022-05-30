@@ -48,7 +48,7 @@ SHA1::from_mem(std::span<uint8_t const> data)
 SHA1
 SHA1::from_mem(const std::string& str)
 {
-  return from_mem({reinterpret_cast<const uint8_t*>(str.data()), str.size()});
+  return from_mem({reinterpret_cast<uint8_t const*>(str.data()), str.size()});
 }
 
 SHA1

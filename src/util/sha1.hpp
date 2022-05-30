@@ -41,7 +41,7 @@ public:
   SHA1(Blob const& blob);
 
   std::string str() const;
-  const uint8_t* data() const { return m_data.data(); }
+  uint8_t const* data() const { return m_data.data(); }
   size_t size() const { return m_data.size(); }
 
   explicit operator bool() const;

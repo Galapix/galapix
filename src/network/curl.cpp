@@ -37,7 +37,7 @@ CURLHandler::get_data(const std::string& url, std::string* mime_type)
   std::vector<uint8_t> data;
 
   char errbuf[CURL_ERROR_SIZE];
-  const char* url_str = url.c_str();
+  char const* url_str = url.c_str();
   curl_easy_setopt(handle.get(), CURLOPT_WRITEFUNCTION, &my_curl_write_callback);
   curl_easy_setopt(handle.get(), CURLOPT_WRITEDATA, &data); // userdata
   curl_easy_setopt(handle.get(), CURLOPT_URL, url_str);

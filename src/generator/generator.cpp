@@ -197,7 +197,7 @@ Generator::process_image_resource(ResourceLocator const& locator,
                                   GeneratorCallbacksPtr const& callbacks)
 {
   // generate ImageData if it is an image
-  const SoftwareSurfaceLoader* loader = nullptr;
+  SoftwareSurfaceLoader const* loader = nullptr;
   if (blob_accessor->has_stdio_name())
   {
     std::string magic = Filesystem::get_magic(blob_accessor->get_stdio_name());
