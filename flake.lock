@@ -22,10 +22,12 @@
         ]
       },
       "locked": {
-        "lastModified": 1653910456,
-        "narHash": "sha256-AWCbR0R96JFgBiE5rJWe1mWLp0sE6Oz+Ufcnt1bFbX0=",
-        "type": "git",
-        "url": "file:///home/ingo/projects/arxpcpp/trunk"
+        "lastModified": 1653919963,
+        "narHash": "sha256-FprRQbu9/zTdHLMMYuf35pOStN9CBviwQN0Yxo9kbdo=",
+        "owner": "grumbel",
+        "repo": "arxpcpp",
+        "rev": "9dbb2bd79892ae29eb266ffc1aa7bf60c46d1aad",
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -47,12 +49,11 @@
       },
       "locked": {
         "lastModified": 1653511450,
-        "narHash": "sha256-++ufxsa9uaKt2Uxmf9ERnII/KfQvLxiyvW8f1OfLd34=",
-        "ref": "refs/heads/master",
+        "narHash": "sha256-CftWTY3Y7aJmRMsjR8iGB/UNGj+EUD2dMcpUya5l6cc=",
+        "owner": "grumbel",
+        "repo": "babyxml",
         "rev": "cd655ec92b2e25441d07b3251126d5edac2ecaf5",
-        "revCount": 38,
-        "type": "git",
-        "url": "file:///home/ingo/projects/babyxml/trunk/babyxml"
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -74,9 +75,11 @@
       },
       "locked": {
         "lastModified": 1653778893,
-        "narHash": "sha256-pbmResCbyp36RsUhimmGc08RsStHBelFULPxNtXjGPc=",
-        "type": "git",
-        "url": "file:///home/ingo/projects/exspcpp/trunk"
+        "narHash": "sha256-PRhYABRlUdHEhSTMdqdyrgjKB1S89PEQpCYHUb2p98o=",
+        "owner": "grumbel",
+        "repo": "exspcpp",
+        "rev": "dd7102f73990c06a268f4558b8400360629af00f",
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -114,11 +117,10 @@
       "locked": {
         "lastModified": 1653481475,
         "narHash": "sha256-xWR6T9mXh9nTeuG5WNrlP6bWeCdg46+2O7C0y8osrnM=",
-        "ref": "refs/heads/master",
+        "owner": "grumbel",
+        "repo": "geomcpp",
         "rev": "66cbc844752e39ecf80b5379f6d40e87ec5d9b9b",
-        "revCount": 94,
-        "type": "git",
-        "url": "file:///home/ingo/projects/geomcpp/trunk"
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -140,9 +142,11 @@
       },
       "locked": {
         "lastModified": 1653479858,
-        "narHash": "sha256-FQQiecDxVNkeCfWWXrgHDGEdKY84YHenhEZjs47SNR4=",
-        "type": "git",
-        "url": "file:///home/ingo/projects/logmich/trunk"
+        "narHash": "sha256-03byGgsDLaThJKrJhTvfX3+L4d9/sH9n4kgimDBy1/4=",
+        "owner": "logmich",
+        "repo": "logmich",
+        "rev": "9f61ee15a10880c8594645139b87a681934b5ccc",
+        "type": "gitlab"
       },
       "original": {
         "owner": "logmich",
@@ -187,11 +191,10 @@
       "locked": {
         "lastModified": 1653481128,
         "narHash": "sha256-Uigk7ih3sb6WkTW2L2u9MabffOnC4nIvBhHtACxrQhM=",
-        "ref": "refs/heads/master",
+        "owner": "grumbel",
+        "repo": "priocpp",
         "rev": "a6ea6f6a40396de9169c7affdcf95af6cb438be5",
-        "revCount": 132,
-        "type": "git",
-        "url": "file:///home/ingo/projects/priocpp/trunk"
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -231,9 +234,11 @@
       },
       "locked": {
         "lastModified": 1653481214,
-        "narHash": "sha256-9vbf2b2gkqKZZ+efDQdxTwToLZJJlO/dYYCQelxeP9k=",
-        "type": "git",
-        "url": "file:///home/ingo/projects/sexpcpp/trunk"
+        "narHash": "sha256-XS4cch1m0A2Wal0PieGC4OKzOozmbSnvPccxli6x0hA=",
+        "owner": "lispparser",
+        "repo": "sexp-cpp",
+        "rev": "6810961ea2c3b55d7deedcfb4c9ba0ca48529b78",
+        "type": "gitlab"
       },
       "original": {
         "owner": "lispparser",
@@ -255,9 +260,11 @@
       },
       "locked": {
         "lastModified": 1653399261,
-        "narHash": "sha256-0Z5urjL4YokTwVM+uR9u48By/3xYohtlx4SbfMW/qY8=",
-        "type": "git",
-        "url": "file:///home/ingo/projects/strutcpp/trunk"
+        "narHash": "sha256-Oe50JkhDT/b3texypfJXMy7Y9TsEBUed39bwt/udYnU=",
+        "owner": "grumbel",
+        "repo": "strutcpp",
+        "rev": "9d50ddf769dcecba985fca94f97484505561cd9c",
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -285,12 +292,11 @@
       },
       "locked": {
         "lastModified": 1653481531,
-        "narHash": "sha256-l9gDEOaoTtBEDIG3Om3gLvDDmM+U7cKoG2/6Y2Bb2no=",
-        "ref": "refs/heads/master",
+        "narHash": "sha256-5c92nkU3Ql4ISJ8B8lh09LceBC8q57WPGED+fV8WLnw=",
+        "owner": "grumbel",
+        "repo": "surfcpp",
         "rev": "c8b619d536ef132604024a1640cd60f6239d91b9",
-        "revCount": 337,
-        "type": "git",
-        "url": "file:///home/ingo/projects/surfcpp/trunk"
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -310,11 +316,10 @@
       "locked": {
         "lastModified": 1653482755,
         "narHash": "sha256-DeDWi5PpGRj14FByJhQvfzQ77po/y7QAYd5dmVY1TaM=",
-        "ref": "refs/heads/master",
+        "owner": "grumbel",
+        "repo": "cmake-modules",
         "rev": "2e80227395c6bccd215a5cf35872b86927ec5cec",
-        "revCount": 33,
-        "type": "git",
-        "url": "file:///home/ingo/projects/tinycmmc/trunk"
+        "type": "gitlab"
       },
       "original": {
         "owner": "grumbel",
@@ -335,11 +340,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1646596865,
-        "narHash": "sha256-TE8IdWdewP0ooun2UyhiIBZymsOWBJxjoC2Q50nHsFA=",
+        "lastModified": 1653919750,
+        "narHash": "sha256-SNEB1rc4EdF3fmYtqwxbgEDOWYZ/xS/DxTi3QReIu0c=",
         "owner": "grumbel",
         "repo": "uitest",
-        "rev": "728c62b0c3c93486d953c76e385ea6d2da7abd94",
+        "rev": "f673f35546773f93cac9981a68d0471b34e0f574",
         "type": "gitlab"
       },
       "original": {
@@ -375,11 +380,10 @@
       "locked": {
         "lastModified": 1653511328,
         "narHash": "sha256-xFdyiI10I/ovfQ4FxZegCg+9tgdoW/roGf13aVw1la4=",
-        "ref": "refs/heads/master",
+        "owner": "windstille",
+        "repo": "wstdisplay",
         "rev": "8c5fe246325238a40ee391ecbf104b88fba76909",
-        "revCount": 365,
-        "type": "git",
-        "url": "file:///home/ingo/projects/windstille/trunk/wstdisplay"
+        "type": "gitlab"
       },
       "original": {
         "owner": "windstille",

@@ -111,7 +111,7 @@ function(build_dependencies)
     set(BUILD_TESTS OFF)
 
     find_package(uitest)
-    if(NOT TARGET uitest)
+    if(NOT TARGET uitest::uitest)
       add_subdirectory(external/uitest/ EXCLUDE_FROM_ALL)
     endif()
   endif()
@@ -304,8 +304,8 @@ if(BUILD_TESTS)
   target_include_directories(uitest_galapix PRIVATE src/)
   target_link_libraries(uitest_galapix
     libgalapix
-    uitest
-    uitest_main)
+    uitest::uitest
+    uitest::uitest_main)
 
   if(BUILD_GALAPIX_SDL)
     file(GLOB TEST_GALAPIX_SDL_SOURCES test/sdl/*_test.cpp)
