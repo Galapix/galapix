@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  ImageTable(const ImageTable&) = delete;
-  ImageTable& operator=(const ImageTable&) = delete;
+  ImageTable(ImageTable const&) = delete;
+  ImageTable& operator=(ImageTable const&) = delete;
 };
 
 #endif

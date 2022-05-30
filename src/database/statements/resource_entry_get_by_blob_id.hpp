@@ -52,8 +52,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  ResourceEntryGetByBlobId(const ResourceEntryGetByBlobId&);
-  ResourceEntryGetByBlobId& operator=(const ResourceEntryGetByBlobId&);
+  ResourceEntryGetByBlobId(ResourceEntryGetByBlobId const&);
+  ResourceEntryGetByBlobId& operator=(ResourceEntryGetByBlobId const&);
 };
 
 #endif

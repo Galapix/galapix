@@ -17,10 +17,10 @@
 #include "network/download_transfer.hpp"
 
 DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
-                                   const std::string& url_,
-                                   const std::optional<std::string>& post_data_,
-                                   const std::function<void (const DownloadResult&)>& callback_,
-                                   const std::function<DownloadManager::ProgressFunc>& progress_callback_) :
+                                   std::string const& url_,
+                                   std::optional<std::string> const& post_data_,
+                                   const std::function<void (DownloadResult const&)>& callback_,
+                                   std::function<DownloadManager::ProgressFunc> const& progress_callback_) :
   id(id_),
   url(url_),
   handle(curl_easy_init()),

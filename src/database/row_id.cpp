@@ -18,7 +18,7 @@
 
 #include <ostream>
 
-std::ostream& operator<<(std::ostream& s, const RowId& id)
+std::ostream& operator<<(std::ostream& s, RowId const& id)
 {
   if (id)
   {

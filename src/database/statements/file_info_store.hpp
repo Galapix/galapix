@@ -25,7 +25,7 @@ public:
     m_stmt(db, "INSERT OR REPLACE INTO file (path, mtime, blob_id) SELECT ?1, ?2, blob.id FROM blob WHERE blob.sha1 = ?3;")
   {}
 
-  RowId operator()(const FileInfo& file_info)
+  RowId operator()(FileInfo const& file_info)
   {
     m_stmt.bind(1, file_info.get_path());
     m_stmt.bind(2, file_info.get_mtime());
@@ -40,8 +40,8 @@ private:
   SQLite::Statement   m_stmt;
 
 private:
-  FileInfoStore(const FileInfoStore&) = delete;
-  FileInfoStore& operator=(const FileInfoStore&) = delete;
+  FileInfoStore(FileInfoStore const&) = delete;
+  FileInfoStore& operator=(FileInfoStore const&) = delete;
 };
 
 #endif

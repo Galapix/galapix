@@ -33,7 +33,7 @@ public:
     m_stmt(db, "SELECT * FROM tile WHERE image_id = ?1;")
   {}
 
-  void operator()(const RowId& fileid, std::vector<TileEntry>& tiles)
+  void operator()(RowId const& fileid, std::vector<TileEntry>& tiles)
   {
     if (fileid)
     {
@@ -76,8 +76,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  TileEntryGetAllByFileEntry(const TileEntryGetAllByFileEntry&);
-  TileEntryGetAllByFileEntry& operator=(const TileEntryGetAllByFileEntry&);
+  TileEntryGetAllByFileEntry(TileEntryGetAllByFileEntry const&);
+  TileEntryGetAllByFileEntry& operator=(TileEntryGetAllByFileEntry const&);
 };
 
 #endif

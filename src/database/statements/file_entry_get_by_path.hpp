@@ -35,7 +35,7 @@ public:
            "  file.path = ?1;")
   {}
 
-  std::optional<FileEntry> operator()(const std::string& path)
+  std::optional<FileEntry> operator()(std::string const& path)
   {
     m_stmt.bind(1, path);
     SQLiteReader reader(m_stmt);
@@ -54,8 +54,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  FileEntryGetByPath(const FileEntryGetByPath&);
-  FileEntryGetByPath& operator=(const FileEntryGetByPath&);
+  FileEntryGetByPath(FileEntryGetByPath const&);
+  FileEntryGetByPath& operator=(FileEntryGetByPath const&);
 };
 
 #endif

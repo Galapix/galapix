@@ -28,8 +28,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  FileEntryGetByFileId(const FileEntryGetByFileId&);
-  FileEntryGetByFileId& operator=(const FileEntryGetByFileId&);
+  FileEntryGetByFileId(FileEntryGetByFileId const&);
+  FileEntryGetByFileId& operator=(FileEntryGetByFileId const&);
 };
 
 #endif

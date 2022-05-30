@@ -32,20 +32,20 @@ public:
   Galapix(System& system);
   ~Galapix();
 
-  void run(const Options& opts);
+  void run(Options const& opts);
   int  main(int argc, char** argv);
 
-  void cleanup(const std::string& database);
-  void list(const Options& opts);
-  void info(const Options& opts);
-  void export_images(const std::string& database, const std::vector<URL>& urls);
+  void cleanup(std::string const& database);
+  void list(Options const& opts);
+  void info(Options const& opts);
+  void export_images(std::string const& database, std::vector<URL> const& urls);
 
 private:
   System& m_system;
 
 private:
-  Galapix(const Galapix&) = delete;
-  Galapix& operator=(const Galapix&) = delete;
+  Galapix(Galapix const&) = delete;
+  Galapix& operator=(Galapix const&) = delete;
 };
 
 #endif

@@ -34,13 +34,13 @@ ZoomRectTool::ZoomRectTool(Viewer* viewer_)
 }
 
 void
-ZoomRectTool::move(const Vector2i& pos, const Vector2i& rel)
+ZoomRectTool::move(Vector2i const& pos, Vector2i const& rel)
 {
   mouse_pos = pos;
 }
 
 void
-ZoomRectTool::up  (const Vector2i& pos)
+ZoomRectTool::up  (Vector2i const& pos)
 {
   if (drag_active)
   {
@@ -55,7 +55,7 @@ ZoomRectTool::up  (const Vector2i& pos)
 }
 
 void
-ZoomRectTool::down(const Vector2i& pos)
+ZoomRectTool::down(Vector2i const& pos)
 {
   click_pos = viewer->get_state().screen2world(pos);
   drag_active = true;

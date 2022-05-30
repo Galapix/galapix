@@ -30,7 +30,7 @@ public:
     m_blob_info()
   {}
 
-  URLInfo(const RowId& id, const URLInfo& other) :
+  URLInfo(RowId const& id, URLInfo const& other) :
     m_id(id),
     m_url(other.m_url),
     m_mtime(other.m_mtime),
@@ -38,10 +38,10 @@ public:
     m_blob_info(other.m_blob_info)
   {}
 
-  URLInfo(const std::string& url,
+  URLInfo(std::string const& url,
           long mtime,
-          const std::string& content_type,
-          const BlobInfo& blob) :
+          std::string const& content_type,
+          BlobInfo const& blob) :
     m_id(),
     m_url(url),
     m_mtime(mtime),

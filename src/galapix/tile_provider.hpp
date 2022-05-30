@@ -35,7 +35,7 @@ public:
   TileProvider() {}
   virtual ~TileProvider() {}
 
-  virtual JobHandle request_tile(int tilescale, const Vector2i& pos,
+  virtual JobHandle request_tile(int tilescale, Vector2i const& pos,
                                  const std::function<void (Tile)>& callback) =0;
 
   virtual int get_max_scale() const =0;
@@ -45,8 +45,8 @@ public:
   virtual void refresh(const std::function<void (TileProviderPtr)>& callback) {}
 
 private:
-  TileProvider(const TileProvider&);
-  TileProvider& operator=(const TileProvider&);
+  TileProvider(TileProvider const&);
+  TileProvider& operator=(TileProvider const&);
 };
 
 #endif

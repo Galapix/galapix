@@ -23,19 +23,19 @@
 class ResourceGeneratorCallbacks : public GeneratorCallbacks
 {
 public:
-  ResourceGeneratorCallbacks(const ResourceLocator& locator);
+  ResourceGeneratorCallbacks(ResourceLocator const& locator);
   ~ResourceGeneratorCallbacks() override;
 
-  GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) override;
+  GeneratorCallbacksPtr on_child_resource(ResourceLocator const& locator) override;
 
-  void on_blob_info(const BlobInfo& blob_info) override;
-  void on_resource_name(const ResourceName& resource_name) override;
+  void on_blob_info(BlobInfo const& blob_info) override;
+  void on_resource_name(ResourceName const& resource_name) override;
 
-  void on_archive_data(const ArchiveInfo& archive_info) override;
-  void on_image_data(const ImageData& image_data) override;
+  void on_archive_data(ArchiveInfo const& archive_info) override;
+  void on_image_data(ImageData const& image_data) override;
 
   void on_status(ResourceStatus status) override;
-  void on_error(ResourceStatus status, const std::string& err) override;
+  void on_error(ResourceStatus status, std::string const& err) override;
 
 private:
   ResourceLocator m_locator;

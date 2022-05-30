@@ -34,7 +34,7 @@
 
 using namespace surf;
 
-FileTileDatabase::FileTileDatabase(const std::string& prefix) :
+FileTileDatabase::FileTileDatabase(std::string const& prefix) :
   m_prefix(prefix)
 {
   Filesystem::mkdir(prefix);
@@ -45,13 +45,13 @@ FileTileDatabase::~FileTileDatabase()
 }
 
 bool
-FileTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int scale)
+FileTileDatabase::has_tile(RowId const& image_id, Vector2i const& pos, int scale)
 {
   return Filesystem::exist(get_complete_filename(image_id, pos, scale));
 }
 
 bool
-FileTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out)
+FileTileDatabase::get_tile(RowId const& image_id, int scale, Vector2i const& pos, TileEntry& tile_out)
 {
   std::string filename = get_complete_filename(image_id, pos, scale);
   if (Filesystem::exist(filename))
@@ -79,7 +79,7 @@ FileTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos
 }
 
 void
-FileTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles)
+FileTileDatabase::get_tiles(RowId const& image_id, std::vector<TileEntry>& tiles)
 {
   std::string directory = get_complete_directory(image_id);
   std::vector<std::string> files = Filesystem::open_directory(directory);
@@ -111,7 +111,7 @@ FileTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles
 }
 
 bool
-FileTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out)
+FileTileDatabase::get_min_max_scale(RowId const& image_id, int& min_scale_out, int& max_scale_out)
 {
   min_scale_out = std::numeric_limits<int>::max();
   max_scale_out = std::numeric_limits<int>::min();
@@ -140,7 +140,7 @@ FileTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, i
 }
 
 void
-FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
+FileTileDatabase::store_tile(RowId const& image_id, Tile const& tile)
 {
   // Ensure that the directory exists, FIX
   ensure_directory_exists(image_id);
@@ -166,16 +166,16 @@ FileTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 }
 
 void
-FileTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
+FileTileDatabase::store_tiles(std::vector<TileEntry> const& tiles)
 {
-  for(const auto& tile_entry: tiles)
+  for(auto const& tile_entry: tiles)
   {
     store_tile(tile_entry.get_image_id(), Tile(tile_entry));
   }
 }
 
 void
-FileTileDatabase::delete_tiles(const RowId& image_id)
+FileTileDatabase::delete_tiles(RowId const& image_id)
 {
   // Filesystem::remove()
   // get_complete_filename()
@@ -183,7 +183,7 @@ FileTileDatabase::delete_tiles(const RowId& image_id)
 }
 
 std::string
-FileTileDatabase::get_directory(const RowId& file_id_obj)
+FileTileDatabase::get_directory(RowId const& file_id_obj)
 {
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
 
@@ -196,13 +196,13 @@ FileTileDatabase::get_directory(const RowId& file_id_obj)
 }
 
 std::string
-FileTileDatabase::get_filename(const Vector2i& pos, int scale)
+FileTileDatabase::get_filename(Vector2i const& pos, int scale)
 {
   return fmt::format("tile-{:03d}-{:03d}-{:03d}.dat", scale, pos.x(), pos.y());
 }
 
 std::string
-FileTileDatabase::get_complete_filename(const RowId& image_id, const Vector2i& pos, int scale)
+FileTileDatabase::get_complete_filename(RowId const& image_id, Vector2i const& pos, int scale)
 {
   std::ostringstream str(m_prefix);
   str << m_prefix << '/' << get_directory(image_id) << '/' << get_filename(pos, scale);
@@ -210,13 +210,13 @@ FileTileDatabase::get_complete_filename(const RowId& image_id, const Vector2i& p
 }
 
 std::string
-FileTileDatabase::get_complete_directory(const RowId& file_id)
+FileTileDatabase::get_complete_directory(RowId const& file_id)
 {
   return m_prefix + "/" + get_directory(file_id);
 }
 
 bool
-FileTileDatabase::parse_filename(const std::string& filename, Vector2i* pos_out, int* scale_out, int* format_out)
+FileTileDatabase::parse_filename(std::string const& filename, Vector2i* pos_out, int* scale_out, int* format_out)
 {
   return false;
 #if 0
@@ -246,7 +246,7 @@ FileTileDatabase::parse_filename(const std::string& filename, Vector2i* pos_out,
 }
 
 void
-FileTileDatabase::ensure_directory_exists(const RowId& file_id_obj)
+FileTileDatabase::ensure_directory_exists(RowId const& file_id_obj)
 {
   int64_t file_id = static_cast<int>(file_id_obj.get_id());
 

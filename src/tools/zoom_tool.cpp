@@ -26,24 +26,24 @@ ZoomTool::ZoomTool(Viewer* viewer_, float zoom_factor_)
 }
 
 void
-ZoomTool::move(const Vector2i& /*pos*/, const Vector2i& /*rel*/)
+ZoomTool::move(Vector2i const& /*pos*/, Vector2i const& /*rel*/)
 {
 }
 
 void
-ZoomTool::up  (const Vector2i& /*pos*/)
+ZoomTool::up  (Vector2i const& /*pos*/)
 {
   zoom_active = false;
 }
 
 void
-ZoomTool::down(const Vector2i& /*pos*/)
+ZoomTool::down(Vector2i const& /*pos*/)
 {
   zoom_active = true;
 }
 
 void
-ZoomTool::update(const Vector2i& mouse_pos, float delta)
+ZoomTool::update(Vector2i const& mouse_pos, float delta)
 {
   if (zoom_active)
   {

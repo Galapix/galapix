@@ -23,9 +23,9 @@
 
 #include "util/filesystem.hpp"
 
-ResourceURL::ResourceURL(const std::string& scheme,
-                         const std::string& authority,
-                         const std::string& path) :
+ResourceURL::ResourceURL(std::string const& scheme,
+                         std::string const& authority,
+                         std::string const& path) :
   m_scheme(scheme),
   m_authority(authority),
   m_path(path)
@@ -36,8 +36,8 @@ ResourceURL::ResourceURL(const std::string& scheme,
   }
 }
 
-ResourceURL::ResourceURL(const std::string& scheme,
-                         const std::string& path) :
+ResourceURL::ResourceURL(std::string const& scheme,
+                         std::string const& path) :
   m_scheme(scheme),
   m_authority(),
   m_path(path)
@@ -49,7 +49,7 @@ ResourceURL::ResourceURL(const std::string& scheme,
 }
 
 ResourceURL
-ResourceURL::from_string(const std::string& url)
+ResourceURL::from_string(std::string const& url)
 {
   std::string::size_type scheme_pos = url.find(':');
   if (scheme_pos == std::string::npos)
@@ -104,7 +104,7 @@ ResourceURL::str() const
 }
 
 bool
-ResourceURL::operator==(const ResourceURL& other) const
+ResourceURL::operator==(ResourceURL const& other) const
 {
   return
     std::tie(this->m_scheme, this->m_authority, this->m_path)
@@ -113,7 +113,7 @@ ResourceURL::operator==(const ResourceURL& other) const
 }
 
 bool
-ResourceURL::operator!=(const ResourceURL& other) const
+ResourceURL::operator!=(ResourceURL const& other) const
 {
   return !(*this == other);
 }
@@ -121,7 +121,7 @@ ResourceURL::operator!=(const ResourceURL& other) const
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 
 bool
-ResourceURL::operator<(const ResourceURL& other) const
+ResourceURL::operator<(ResourceURL const& other) const
 {
   return
     std::tie(this->m_scheme, this->m_authority, this->m_path)

@@ -34,8 +34,8 @@ private:
   JobHandle m_handle;
 
 private:
-  Job (const Job&);
-  Job& operator= (const Job&);
+  Job (Job const&);
+  Job& operator= (Job const&);
 };
 
 using JobPtr = std::shared_ptr<Job>;

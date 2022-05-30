@@ -25,7 +25,7 @@ public:
     m_stmt(db, "INSERT OR REPLACE INTO url (url, mtime, content_type, blob_id) SELECT ?1, ?2, ?3, blob.id FROM blob WHERE blob.sha1 = ?4;")
   {}
 
-  RowId operator()(const URLInfo& url_info)
+  RowId operator()(URLInfo const& url_info)
   {
     m_stmt.bind(1, url_info.get_url());
     m_stmt.bind(2, url_info.get_mtime());
@@ -41,8 +41,8 @@ private:
   SQLite::Statement   m_stmt;
 
 private:
-  URLInfoStore(const URLInfoStore&);
-  URLInfoStore& operator=(const URLInfoStore&);
+  URLInfoStore(URLInfoStore const&);
+  URLInfoStore& operator=(URLInfoStore const&);
 };
 
 #endif

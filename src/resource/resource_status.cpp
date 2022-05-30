@@ -18,7 +18,7 @@
 
 #include <stdexcept>
 
-ResourceStatus ResourceStatus_from_string(const std::string& value)
+ResourceStatus ResourceStatus_from_string(std::string const& value)
 {
   if (value == "unknown")
   {
@@ -58,7 +58,7 @@ ResourceStatus ResourceStatus_from_string(const std::string& value)
   }
 }
 
-std::string to_string(const ResourceStatus& value)
+std::string to_string(ResourceStatus const& value)
 {
   switch(value)
   {

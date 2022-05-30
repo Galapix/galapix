@@ -31,7 +31,7 @@ public:
     m_blob_info()
   {}
 
-  ArchiveFileInfo(const std::string& path, const BlobInfo& blob_info) :
+  ArchiveFileInfo(std::string const& path, BlobInfo const& blob_info) :
     m_id(),
     m_path(path),
     m_blob_info(blob_info)

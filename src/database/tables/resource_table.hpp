@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  ResourceTable(const ResourceTable&);
-  ResourceTable& operator=(const ResourceTable&);
+  ResourceTable(ResourceTable const&);
+  ResourceTable& operator=(ResourceTable const&);
 };
 
 #endif

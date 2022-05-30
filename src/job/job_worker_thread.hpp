@@ -59,8 +59,8 @@ private:
   bool m_abort;
 
 private:
-  JobWorkerThread (const JobWorkerThread&);
-  JobWorkerThread& operator= (const JobWorkerThread&);
+  JobWorkerThread (JobWorkerThread const&);
+  JobWorkerThread& operator= (JobWorkerThread const&);
 };
 
 using JobWorkerThreadPtr = std::shared_ptr<JobWorkerThread>;

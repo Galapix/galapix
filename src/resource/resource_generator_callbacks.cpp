@@ -24,7 +24,7 @@
 #include "resource/resource_info.hpp"
 #include "resource/resource_locator.hpp"
 
-ResourceGeneratorCallbacks::ResourceGeneratorCallbacks(const ResourceLocator& locator) :
+ResourceGeneratorCallbacks::ResourceGeneratorCallbacks(ResourceLocator const& locator) :
   m_locator(locator)
 {
 }
@@ -34,32 +34,32 @@ ResourceGeneratorCallbacks::~ResourceGeneratorCallbacks()
 }
 
 GeneratorCallbacksPtr
-ResourceGeneratorCallbacks::on_child_resource(const ResourceLocator& locator)
+ResourceGeneratorCallbacks::on_child_resource(ResourceLocator const& locator)
 {
   log_info(locator.str());
   return std::make_shared<ResourceGeneratorCallbacks>(locator);
 }
 
 void
-ResourceGeneratorCallbacks::on_blob_info(const BlobInfo& blob_info)
+ResourceGeneratorCallbacks::on_blob_info(BlobInfo const& blob_info)
 {
   log_info(blob_info.get_sha1().str());
 }
 
 void
-ResourceGeneratorCallbacks::on_resource_name(const ResourceName& resource_name)
+ResourceGeneratorCallbacks::on_resource_name(ResourceName const& resource_name)
 {
   log_info(resource_name.str());
 }
 
 void
-ResourceGeneratorCallbacks::on_archive_data(const ArchiveInfo& archive_info)
+ResourceGeneratorCallbacks::on_archive_data(ArchiveInfo const& archive_info)
 {
   log_info("{}", archive_info.get_files().size());
 }
 
 void
-ResourceGeneratorCallbacks::on_image_data(const ImageData& image_data)
+ResourceGeneratorCallbacks::on_image_data(ImageData const& image_data)
 {
   log_info("{} {}x{}",
            image_data.get_image_tiles().size(),
@@ -74,7 +74,7 @@ ResourceGeneratorCallbacks::on_status(ResourceStatus status)
 }
 
 void
-ResourceGeneratorCallbacks::on_error(ResourceStatus status, const std::string& err)
+ResourceGeneratorCallbacks::on_error(ResourceStatus status, std::string const& err)
 {
   log_info(err);
 }

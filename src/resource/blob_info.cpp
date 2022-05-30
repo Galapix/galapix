@@ -25,11 +25,11 @@ BlobInfo::from_blob(Blob const& blob)
 }
 
 BlobInfo
-BlobInfo::from_blob(const BlobAccessor& blob_accessor)
+BlobInfo::from_blob(BlobAccessor const& blob_accessor)
 {
   if (blob_accessor.has_stdio_name())
   {
-    const std::string& path = blob_accessor.get_stdio_name();
+    std::string const& path = blob_accessor.get_stdio_name();
     return BlobInfo(galapix::SHA1::from_file(path), Filesystem::get_size(path));
   }
   else
@@ -40,7 +40,7 @@ BlobInfo::from_blob(const BlobAccessor& blob_accessor)
 }
 
 BlobInfo
-BlobInfo::from_blob(const BlobAccessorPtr& blob_accessor)
+BlobInfo::from_blob(BlobAccessorPtr const& blob_accessor)
 {
   return from_blob(*blob_accessor);
 }

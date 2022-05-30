@@ -42,8 +42,8 @@ private:
   void run_wrap();
 
 private:
-  Thread (const Thread&);
-  Thread& operator= (const Thread&);
+  Thread (Thread const&);
+  Thread& operator= (Thread const&);
 };
 
 #endif

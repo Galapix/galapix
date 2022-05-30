@@ -44,7 +44,7 @@ public:
   int get_column_count();
 
 private:
-  SQLiteReader& operator=(const SQLiteReader&);
+  SQLiteReader& operator=(SQLiteReader const&);
 
 private:
   SQLite::Statement& m_stmt;

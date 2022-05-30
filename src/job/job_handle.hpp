@@ -31,7 +31,7 @@ class JobHandleImpl;
     that the Job is finished. (FIXME: Do we need that last thing for something?) */
 class JobHandle
 {
-  friend std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
+  friend std::ostream& operator<<(std::ostream& os, JobHandle const& job_handle);
 
 private:
   JobHandle();
@@ -59,7 +59,7 @@ private:
   std::shared_ptr<JobHandleImpl> impl;
 };
 
-std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle);
+std::ostream& operator<<(std::ostream& os, JobHandle const& job_handle);
 
 #endif
 

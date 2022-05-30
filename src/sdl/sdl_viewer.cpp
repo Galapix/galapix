@@ -80,7 +80,7 @@ float deadzone(float value, float threshold)
 
 } // namespace
 
-SDLViewer::SDLViewer(const Size& size, bool fullscreen, int  anti_aliasing,
+SDLViewer::SDLViewer(Size const& size, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
   m_system(std::make_unique<wstsys::System>()),
   m_window(m_system->create_window({
@@ -107,7 +107,7 @@ SDLViewer::~SDLViewer()
 }
 
 void
-SDLViewer::process_event(const SDL_Event& event)
+SDLViewer::process_event(SDL_Event const& event)
 {
   Uint8 const* keystate = SDL_GetKeyboardState(nullptr);
 

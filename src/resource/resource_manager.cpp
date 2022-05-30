@@ -51,12 +51,12 @@ ResourceManager::~ResourceManager()
 
 #if 0
 void
-ResourceManager::request_resource_metadata(const ResourceLocator& locator,
-                                           const std::function<void (const Failable<ResourceMetadata>&)>& callback)
+ResourceManager::request_resource_metadata(ResourceLocator const& locator,
+                                           const std::function<void (Failable<ResourceMetadata> const&)>& callback)
 {
   m_database.request_resource_info
     (locator, blob,
-     [this, locator, blob, callback](const std::optional<ResourceInfo>& reply)
+     [this, locator, blob, callback](std::optional<ResourceInfo> const& reply)
      {
        if (reply)
        {
@@ -75,12 +75,12 @@ ResourceManager::request_resource_metadata(const ResourceLocator& locator,
 #endif
 
 void
-ResourceManager::request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
+ResourceManager::request_resource_info(ResourceLocator const& locator, BlobInfo const& blob,
                                        const std::function<void (Failable<ResourceInfo>)>& callback)
 {
   m_database.request_resource_info
     (locator, blob,
-     [this, locator, callback](const std::optional<ResourceInfo>& reply)
+     [this, locator, callback](std::optional<ResourceInfo> const& reply)
      {
        if (reply)
        {
@@ -98,19 +98,19 @@ ResourceManager::request_resource_info(const ResourceLocator& locator, const Blo
 }
 
 void
-ResourceManager::request_resource_metadata(const ResourceLocator& locator,
-                                           const std::function<void (const Failable<ResourceMetadata>&)>& callback)
+ResourceManager::request_resource_metadata(ResourceLocator const& locator,
+                                           const std::function<void (Failable<ResourceMetadata> const&)>& callback)
 {
 #if 0
   if (locator.get_url().get_scheme() == "file")
   {
     request_file_info
       (locator.get_url().get_path(),
-       [this, locator, callback](const Failable<FileInfo>& data)
+       [this, locator, callback](Failable<FileInfo> const& data)
        {
          try
          {
-           const FileInfo& file_info = data.get();
+           FileInfo const& file_info = data.get();
            request_resource_metadata(locator, file_info.get_blob_info(), callback);
          }
          catch(...)
@@ -123,11 +123,11 @@ ResourceManager::request_resource_metadata(const ResourceLocator& locator,
   {
     request_url_info
       (locator.get_url().str(),
-       [this, locator, callback](const Failable<URLInfo>& data)
+       [this, locator, callback](Failable<URLInfo> const& data)
        {
          try
          {
-           const URLInfo& url_info = data.get();
+           URLInfo const& url_info = data.get();
            request_resource_info(locator, url_info.get_blob_info(), callback);
          }
          catch(...)
@@ -147,12 +147,12 @@ ResourceManager::request_resource_metadata(const ResourceLocator& locator,
 
 #if 0
 void
-ResourceManager::request_image_info(const ResourceInfo& resource,
-                                    const std::function<void (const Failable<ImageInfo>&)>& callback)
+ResourceManager::request_image_info(ResourceInfo const& resource,
+                                    const std::function<void (Failable<ImageInfo> const&)>& callback)
 {
   m_database.request_image_info
     (resource,
-     [this, resource, callback](const std::optional<ImageInfo>& image_info)
+     [this, resource, callback](std::optional<ImageInfo> const& image_info)
      {
        if (image_info)
        {
@@ -173,19 +173,19 @@ ResourceManager::request_image_info(const ResourceInfo& resource,
 }
 
 void
-ResourceManager::request_archive_info(const ResourceInfo& resource,
-                                      const std::function<void (const Failable<ArchiveInfo>&)>& callback)
+ResourceManager::request_archive_info(ResourceInfo const& resource,
+                                      const std::function<void (Failable<ArchiveInfo> const&)>& callback)
 {
 }
 
 void
-ResourceManager::request_tile_info(const ImageInfo& image, int scale, int x, int y,
-                                   const std::function<void (const Failable<TileInfo>&)>& callback)
+ResourceManager::request_tile_info(ImageInfo const& image, int scale, int x, int y,
+                                   const std::function<void (Failable<TileInfo> const&)>& callback)
 {
 #if 0
   m_database.request_tile(
     image.get_rowid(), scale, x, y,
-    [this](const std::optional<TileEntry>& tile_entry)
+    [this](std::optional<TileEntry> const& tile_entry)
     {
       if (!tile_entry)
       {
@@ -217,7 +217,7 @@ ResourceManager::generate_tiles()
       // once generation is complete, rerequest the tile
       m_database.request_tile(
         image.get_rowid(), scale, x, y,
-        [this](const std::optional<TileEntry>& tile_entry)
+        [this](std::optional<TileEntry> const& tile_entry)
         {
           callback(TileInfo(tile_entry));
         });

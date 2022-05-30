@@ -28,7 +28,7 @@ public:
     m_file_stmt(db, "INSERT OR REPLACE INTO file (path, mtime) VALUES (?1, ?2);")
   {}
 
-  RowId operator()(const std::string& path, long mtime)
+  RowId operator()(std::string const& path, long mtime)
   {
     m_file_stmt.bind(1, path);
     m_file_stmt.bind(2, mtime);
@@ -42,8 +42,8 @@ private:
   SQLite::Statement m_file_stmt;
 
 private:
-  FileEntryStore(const FileEntryStore&);
-  FileEntryStore& operator=(const FileEntryStore&);
+  FileEntryStore(FileEntryStore const&);
+  FileEntryStore& operator=(FileEntryStore const&);
 };
 
 #endif

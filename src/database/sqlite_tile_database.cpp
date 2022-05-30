@@ -43,13 +43,13 @@ SQLiteTileDatabase::~SQLiteTileDatabase()
 }
 
 bool
-SQLiteTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int scale)
+SQLiteTileDatabase::has_tile(RowId const& image_id, Vector2i const& pos, int scale)
 {
   return m_tile_entry_has(image_id, pos, scale);
 }
 
 void
-SQLiteTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles_out)
+SQLiteTileDatabase::get_tiles(RowId const& image_id, std::vector<TileEntry>& tiles_out)
 {
   if (image_id)
   {
@@ -58,19 +58,19 @@ SQLiteTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& til
 }
 
 bool
-SQLiteTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out)
+SQLiteTileDatabase::get_min_max_scale(RowId const& image_id, int& min_scale_out, int& max_scale_out)
 {
   return m_tile_entry_get_min_max_scale(image_id, min_scale_out, max_scale_out);
 }
 
 bool
-SQLiteTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out)
+SQLiteTileDatabase::get_tile(RowId const& image_id, int scale, Vector2i const& pos, TileEntry& tile_out)
 {
   return m_tile_entry_get_by_fileid(image_id, scale, pos, tile_out);
 }
 
 void
-SQLiteTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
+SQLiteTileDatabase::store_tile(RowId const& image_id, Tile const& tile)
 {
   if (!image_id)
   {
@@ -83,7 +83,7 @@ SQLiteTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 }
 
 void
-SQLiteTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
+SQLiteTileDatabase::store_tiles(std::vector<TileEntry> const& tiles)
 {
   m_db.exec("BEGIN;");
   for(std::vector<TileEntry>::const_iterator i = tiles.begin(); i != tiles.end(); ++i)
@@ -94,7 +94,7 @@ SQLiteTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
 }
 
 void
-SQLiteTileDatabase::delete_tiles(const RowId& image_id)
+SQLiteTileDatabase::delete_tiles(RowId const& image_id)
 {
   m_tile_entry_delete(image_id);
 }

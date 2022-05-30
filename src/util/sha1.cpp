@@ -29,7 +29,7 @@
 
 namespace galapix {
 
-std::ostream& operator<<(std::ostream& os, const galapix::SHA1& sha1)
+std::ostream& operator<<(std::ostream& os, galapix::SHA1 const& sha1)
 {
   return os << sha1.str();
 }
@@ -46,13 +46,13 @@ SHA1::from_mem(std::span<uint8_t const> data)
 }
 
 SHA1
-SHA1::from_mem(const std::string& str)
+SHA1::from_mem(std::string const& str)
 {
   return from_mem({reinterpret_cast<uint8_t const*>(str.data()), str.size()});
 }
 
 SHA1
-SHA1::from_file(const std::string& filename)
+SHA1::from_file(std::string const& filename)
 {
   SHA_CTX ctx;
   SHA1_Init(&ctx);
@@ -81,7 +81,7 @@ SHA1::from_file(const std::string& filename)
 }
 
 SHA1
-SHA1::from_string(const std::string& str)
+SHA1::from_string(std::string const& str)
 {
   auto hex2int = [str](char hex)
     {
@@ -149,13 +149,13 @@ SHA1::operator bool() const
 }
 
 bool
-SHA1::operator==(const SHA1& rhs) const
+SHA1::operator==(SHA1 const& rhs) const
 {
   return m_data == rhs.m_data;
 }
 
 bool
-SHA1::operator!=(const SHA1& rhs) const
+SHA1::operator!=(SHA1 const& rhs) const
 {
   return !operator==(rhs);
 }

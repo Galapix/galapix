@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  TileTable(const TileTable&);
-  TileTable& operator=(const TileTable&);
+  TileTable(TileTable const&);
+  TileTable& operator=(TileTable const&);
 };
 
 #endif

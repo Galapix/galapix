@@ -27,15 +27,15 @@ class MemoryTileDatabase : public TileDatabaseInterface
 public:
   MemoryTileDatabase();
 
-  bool has_tile(const RowId& image_id, const Vector2i& pos, int scale) override;
-  bool get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out) override;
-  void get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles) override;
-  bool get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out) override;
+  bool has_tile(RowId const& image_id, Vector2i const& pos, int scale) override;
+  bool get_tile(RowId const& image_id, int scale, Vector2i const& pos, TileEntry& tile_out) override;
+  void get_tiles(RowId const& image_id, std::vector<TileEntry>& tiles) override;
+  bool get_min_max_scale(RowId const& image_id, int& min_scale_out, int& max_scale_out) override;
 
-  void store_tile(const RowId& image_id, const Tile& tile) override;
-  void store_tiles(const std::vector<TileEntry>& tiles) override;
+  void store_tile(RowId const& image_id, Tile const& tile) override;
+  void store_tiles(std::vector<TileEntry> const& tiles) override;
 
-  void delete_tiles(const RowId& image_id) override;
+  void delete_tiles(RowId const& image_id) override;
 
   int  size() const { return static_cast<int>(m_cache.size()); }
   void flush(TileDatabaseInterface& tile_database);
@@ -44,8 +44,8 @@ private:
   std::vector<TileEntry> m_cache;
 
 private:
-  MemoryTileDatabase(const MemoryTileDatabase&) = delete;
-  MemoryTileDatabase& operator=(const MemoryTileDatabase&) = delete;
+  MemoryTileDatabase(MemoryTileDatabase const&) = delete;
+  MemoryTileDatabase& operator=(MemoryTileDatabase const&) = delete;
 };
 
 #endif

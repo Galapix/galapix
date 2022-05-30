@@ -39,8 +39,8 @@ private:
   int m_pipefd[2];
 
 private:
-  SpaceNavigator (const SpaceNavigator&);
-  SpaceNavigator& operator= (const SpaceNavigator&);
+  SpaceNavigator (SpaceNavigator const&);
+  SpaceNavigator& operator= (SpaceNavigator const&);
 };
 
 #endif

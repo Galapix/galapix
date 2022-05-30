@@ -29,13 +29,13 @@ public:
     m_size()
   {}
 
-  BlobEntry(const galapix::SHA1& sha1, int size) :
+  BlobEntry(galapix::SHA1 const& sha1, int size) :
     m_id(),
     m_sha1(sha1),
     m_size(size)
   {}
 
-  BlobEntry(const RowId& id, const galapix::SHA1& sha1, int size) :
+  BlobEntry(RowId const& id, galapix::SHA1 const& sha1, int size) :
     m_id(id),
     m_sha1(sha1),
     m_size(size)
@@ -43,7 +43,7 @@ public:
 
   RowId get_id() const   { return m_id;   }
   int   get_size() const { return m_size; }
-  const galapix::SHA1& get_sha1() const { return m_sha1; }
+  galapix::SHA1 const& get_sha1() const { return m_sha1; }
 
 private:
   RowId m_id;

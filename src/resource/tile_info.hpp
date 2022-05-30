@@ -23,8 +23,8 @@ public:
   TileInfo();
 
 private:
-  TileInfo(const TileInfo&);
-  TileInfo& operator=(const TileInfo&);
+  TileInfo(TileInfo const&);
+  TileInfo& operator=(TileInfo const&);
 };
 
 #endif

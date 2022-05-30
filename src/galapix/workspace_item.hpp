@@ -41,11 +41,11 @@ public:
   std::vector<WorkspaceItemPtr> get_children() const { return m_children; }
   void add_child(WorkspaceItemPtr child) { m_children.emplace_back(std::move(child)); }
 
-  virtual void     set_pos(const Vector2f& pos);
+  virtual void     set_pos(Vector2f const& pos);
   virtual Vector2f get_pos() const;
 
   virtual Vector2f get_top_left_pos() const;
-  virtual void set_top_left_pos(const Vector2f& p) ;
+  virtual void set_top_left_pos(Vector2f const& p) ;
 
   virtual void  set_scale(float f);
   virtual float get_scale() const;
@@ -67,7 +67,7 @@ public:
 
   virtual Rectf get_image_rect() const;
 
-  virtual void draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom) = 0;
+  virtual void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) = 0;
   virtual void draw_mark(wstdisplay::GraphicsContext& gc) = 0;
 
   virtual URL get_url() const = 0;
@@ -92,8 +92,8 @@ private:
   std::vector<WorkspaceItemPtr> m_children;
 
 private:
-  WorkspaceItem(const WorkspaceItem&) = delete;
-  WorkspaceItem& operator=(const WorkspaceItem&) = delete;
+  WorkspaceItem(WorkspaceItem const&) = delete;
+  WorkspaceItem& operator=(WorkspaceItem const&) = delete;
 };
 
 #endif

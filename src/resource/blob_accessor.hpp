@@ -27,7 +27,7 @@
 class BlobAccessor
 {
 public:
-  BlobAccessor(const std::string& filename);
+  BlobAccessor(std::string const& filename);
   BlobAccessor(Blob const& blob);
   BlobAccessor(std::vector<uint8_t> blob);
 
@@ -49,8 +49,8 @@ private:
   mutable std::optional<BlobInfo> m_blob_info;
 
 private:
-  BlobAccessor(const BlobAccessor&);
-  BlobAccessor& operator=(const BlobAccessor&);
+  BlobAccessor(BlobAccessor const&);
+  BlobAccessor& operator=(BlobAccessor const&);
 };
 
 using BlobAccessorPtr = std::shared_ptr<BlobAccessor>;

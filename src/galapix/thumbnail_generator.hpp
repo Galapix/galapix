@@ -26,10 +26,10 @@ class Options;
 class ThumbnailGenerator
 {
 public:
-  ThumbnailGenerator(const Options& opts);
+  ThumbnailGenerator(Options const& opts);
   ~ThumbnailGenerator();
 
-  void run(const std::vector<URL>& urls, bool generate_all_tiles);
+  void run(std::vector<URL> const& urls, bool generate_all_tiles);
 
 private:
   Database       m_database;
@@ -37,8 +37,8 @@ private:
   DatabaseThread m_database_thread;
 
 private:
-  ThumbnailGenerator(const ThumbnailGenerator&) = delete;
-  ThumbnailGenerator& operator=(const ThumbnailGenerator&) = delete;
+  ThumbnailGenerator(ThumbnailGenerator const&) = delete;
+  ThumbnailGenerator& operator=(ThumbnailGenerator const&) = delete;
 };
 
 #endif

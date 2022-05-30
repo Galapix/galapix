@@ -25,7 +25,7 @@ class Task
 {
 public:
   template<typename Functor>
-  Task(const Functor& functor) :
+  Task(Functor const& functor) :
     m_functor(functor),
     m_return_value(),
     m_exception()

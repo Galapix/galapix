@@ -32,22 +32,22 @@ private:
   static const int TILE_HEIGHT = 256;
 
 public:
-  static void generate_old(const URL& url,
+  static void generate_old(URL const& url,
                            int m_min_scale_in_db, int m_max_scale_in_db,
                            int min_scale, int max_scale,
                            const std::function<void (Tile)>& callback);
 
-  static void generate(const URL& url, int min_scale, int max_scale,
-                       const std::function<void(Tile)>& callback);
+  static void generate(URL const& url, int min_scale, int max_scale,
+                       std::function<void(Tile)> const& callback);
 
-  static surf::SoftwareSurface load_surface(const URL& url, int min_scale, Size* size);
+  static surf::SoftwareSurface load_surface(URL const& url, int min_scale, Size* size);
 
   /** Takes the given surface and cuts it into tiles which are then
       passed to callback. Surface can already be prescaled.
       min_scale/max_scale are the exact range for which tiles are
       generated. */
   static void cut_into_tiles(surf::SoftwareSurface surface,
-                             const Size& original_size,
+                             Size const& original_size,
                              int min_scale, int max_scale,
                              const std::function<void (Tile)>& callback);
 
@@ -60,8 +60,8 @@ public:
                        const std::function<void (int x, int y, int scale, surf::SoftwareSurface)>& callback);
 
 private:
-  TileGenerator(const TileGenerator&);
-  TileGenerator& operator=(const TileGenerator&);
+  TileGenerator(TileGenerator const&);
+  TileGenerator& operator=(TileGenerator const&);
 };
 
 #endif

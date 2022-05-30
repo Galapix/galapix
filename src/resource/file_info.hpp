@@ -26,7 +26,7 @@
 class FileInfo
 {
 public:
-  static FileInfo from_file(const std::string& filename);
+  static FileInfo from_file(std::string const& filename);
 
   FileInfo() :
     m_id(),
@@ -35,21 +35,21 @@ public:
     m_blob_info()
   {}
 
-  FileInfo(const RowId& id, const FileInfo& rhs) :
+  FileInfo(RowId const& id, FileInfo const& rhs) :
     m_id(id),
     m_path(rhs.m_path),
     m_mtime(rhs.m_mtime),
     m_blob_info(rhs.m_blob_info)
   {}
 
-  FileInfo(const RowId& id, const std::string& path, time_t mtime, const galapix::SHA1& sha1, size_t size) :
+  FileInfo(RowId const& id, std::string const& path, time_t mtime, galapix::SHA1 const& sha1, size_t size) :
     m_id(id),
     m_path(path),
     m_mtime(mtime),
     m_blob_info(sha1, size)
   {}
 
-  FileInfo(const std::string& path, time_t mtime, const galapix::SHA1& sha1, size_t size) :
+  FileInfo(std::string const& path, time_t mtime, galapix::SHA1 const& sha1, size_t size) :
     m_id(),
     m_path(path),
     m_mtime(mtime),

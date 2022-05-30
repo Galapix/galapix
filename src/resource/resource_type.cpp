@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& os, ResourceType type)
   }
 }
 
-ResourceType ResourceType_from_string(const std::string& value)
+ResourceType ResourceType_from_string(std::string const& value)
 {
   if (value == "blob")
   {

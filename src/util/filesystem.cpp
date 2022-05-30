@@ -47,7 +47,7 @@
 std::string Filesystem::home_directory;
 
 std::string
-Filesystem::find_exe(const std::string& name)
+Filesystem::find_exe(std::string const& name)
 {
   char* path_c = getenv("PATH");
   if (path_c)
@@ -78,13 +78,13 @@ Filesystem::find_exe(const std::string& name)
 }
 
 bool
-Filesystem::exist(const std::string& pathname)
+Filesystem::exist(std::string const& pathname)
 {
   return access(pathname.c_str(), F_OK) == 0;
 }
 
 bool
-Filesystem::is_directory(const std::string& pathname)
+Filesystem::is_directory(std::string const& pathname)
 {
   struct stat buf;
   stat(pathname.c_str(), &buf);
@@ -92,7 +92,7 @@ Filesystem::is_directory(const std::string& pathname)
 }
 
 void
-Filesystem::open_directory_recursivly(const std::string& pathname, std::vector<std::string>& lst)
+Filesystem::open_directory_recursivly(std::string const& pathname, std::vector<std::string>& lst)
 {
   DIR* dp = ::opendir(pathname.c_str());
 
@@ -134,7 +134,7 @@ Filesystem::open_directory_recursivly(const std::string& pathname, std::vector<s
 }
 
 std::vector<std::string>
-Filesystem::open_directory(const std::string& pathname)
+Filesystem::open_directory(std::string const& pathname)
 {
   std::vector<std::string> dir_list;
 
@@ -180,7 +180,7 @@ Filesystem::init()
 }
 
 void
-Filesystem::mkdir(const std::string& pathname)
+Filesystem::mkdir(std::string const& pathname)
 {
   if (!Filesystem::exist(pathname))
   {
@@ -201,7 +201,7 @@ Filesystem::deinit()
 }
 
 bool
-Filesystem::has_extension(const std::string& filename, const std::string& ext)
+Filesystem::has_extension(std::string const& filename, std::string const& ext)
 {
   if (filename.length() >= ext.length())
   {
@@ -214,7 +214,7 @@ Filesystem::has_extension(const std::string& filename, const std::string& ext)
 }
 
 std::string
-Filesystem::get_extension(const std::string& pathname)
+Filesystem::get_extension(std::string const& pathname)
 {
   // FIXME: should take '/' into account and only check the actual
   // filename, instead of the whole pathname
@@ -238,7 +238,7 @@ Filesystem::get_extension(const std::string& pathname)
 }
 
 void
-Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_filename)
+Filesystem::copy_mtime(std::string const& from_filename, std::string const& to_filename)
 {
   struct stat stat_buf;
   if (stat(from_filename.c_str(), &stat_buf) != 0)
@@ -258,7 +258,7 @@ Filesystem::copy_mtime(const std::string& from_filename, const std::string& to_f
 }
 
 std::string
-Filesystem::get_magic(const std::string& filename)
+Filesystem::get_magic(std::string const& filename)
 {
   char buf[512];
   std::ifstream in(filename, std::ios::binary);
@@ -281,7 +281,7 @@ Filesystem::get_magic(const std::string& filename)
 }
 
 size_t
-Filesystem::get_size(const std::string& filename)
+Filesystem::get_size(std::string const& filename)
 {
   struct stat stat_buf;
   if (stat(filename.c_str(), &stat_buf) != 0)
@@ -292,7 +292,7 @@ Filesystem::get_size(const std::string& filename)
 }
 
 time_t
-Filesystem::get_mtime(const std::string& filename)
+Filesystem::get_mtime(std::string const& filename)
 {
   struct stat stat_buf;
   if (stat(filename.c_str(), &stat_buf) != 0)
@@ -311,7 +311,7 @@ Filesystem::get_mtime(const std::string& filename)
 // }
 
 void
-Filesystem::generate_image_file_list(const std::string& pathname, std::vector<URL>& file_list)
+Filesystem::generate_image_file_list(std::string const& pathname, std::vector<URL>& file_list)
 {
   if (!exist(pathname))
   {
@@ -345,9 +345,9 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           archive_tasks.push_back(std::async([i, url]() -> std::vector<URL> {
                 std::vector<URL> sub_file_list;
 
-                const arxp::ArchiveLoader* loader;
-                const auto& files = g_app.archive().get_filenames(*i, &loader);
-                for(const auto& file: files)
+                arxp::ArchiveLoader const* loader;
+                auto const& files = g_app.archive().get_filenames(*i, &loader);
+                for(auto const& file: files)
                 {
                   URL archive_url = URL::from_string(url.str() + "//" + loader->str() + ":" + file);
                   if (g_app.surface_factory().has_supported_extension(archive_url.str()))
@@ -380,7 +380,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
           //log_debug << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
         }
       }
-      catch(const std::exception& err)
+      catch(std::exception const& err)
       {
         log_warn(err.what());
       }
@@ -390,10 +390,10 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
     {
       try
       {
-        const auto& sub_lst = task.get();
+        auto const& sub_lst = task.get();
         file_list.insert(file_list.end(), sub_lst.begin(), sub_lst.end());
       }
-      catch(const std::exception& err)
+      catch(std::exception const& err)
       {
         log_warn("Warning: {}", err.what());
       }
@@ -402,7 +402,7 @@ Filesystem::generate_image_file_list(const std::string& pathname, std::vector<UR
 }
 
 std::string
-Filesystem::realpath_system(const std::string& pathname)
+Filesystem::realpath_system(std::string const& pathname)
 {
   char* result = ::realpath(pathname.c_str(), nullptr);
   std::string res = result;
@@ -412,7 +412,7 @@ Filesystem::realpath_system(const std::string& pathname)
 }
 
 std::string
-Filesystem::realpath_fast(const std::string& pathname)
+Filesystem::realpath_fast(std::string const& pathname)
 {
   std::string fullpath;
   std::string drive;
@@ -484,13 +484,13 @@ Filesystem::realpath_fast(const std::string& pathname)
 }
 
 std::string
-Filesystem::realpath(const std::string& pathname)
+Filesystem::realpath(std::string const& pathname)
 {
   return realpath_fast(pathname);
 }
 
 void
-Filesystem::readlines_from_file(const std::string& pathname, std::vector<std::string>& lst)
+Filesystem::readlines_from_file(std::string const& pathname, std::vector<std::string>& lst)
 {
   std::ifstream in(pathname.c_str());
 
@@ -510,7 +510,7 @@ Filesystem::readlines_from_file(const std::string& pathname, std::vector<std::st
 }
 
 void
-Filesystem::remove(const std::string& filename)
+Filesystem::remove(std::string const& filename)
 {
   if (unlink(filename.c_str()) < 0)
   {

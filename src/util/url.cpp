@@ -43,7 +43,7 @@ URL::~URL()
 }
 
 URL
-URL::from_filename(const std::string& filename)
+URL::from_filename(std::string const& filename)
 {
   URL url;
   url.m_protocol = "file";
@@ -52,7 +52,7 @@ URL::from_filename(const std::string& filename)
 }
 
 URL
-URL::from_string(const std::string& url)
+URL::from_string(std::string const& url)
 {
   URL ret;
 
@@ -190,7 +190,7 @@ URL::get_size() const
 }
 
 bool
-URL::is_url(const std::string& url)
+URL::is_url(std::string const& url)
 {
   std::string::size_type k = url.find("://");
 
@@ -216,19 +216,19 @@ URL::is_remote() const
   return m_protocol != "file";
 }
 
-std::ostream& operator<<(std::ostream& out, const URL& url)
+std::ostream& operator<<(std::ostream& out, URL const& url)
 {
   return out << "URL(\"" << url.str() << "\")";
 }
 
 #pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 
-bool operator<(const URL& lhs, const URL& rhs)
+bool operator<(URL const& lhs, URL const& rhs)
 {
   return lhs.str() < rhs.str(); // NOLINT
 }
 
-bool operator==(const URL& lhs, const URL& rhs)
+bool operator==(URL const& lhs, URL const& rhs)
 {
   return (lhs.m_payload  == rhs.m_payload  &&
           lhs.m_protocol == rhs.m_protocol &&

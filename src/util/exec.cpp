@@ -30,7 +30,7 @@
 
 #include "util/raise_exception.hpp"
 
-Exec::Exec(const std::string& program, bool absolute_path) :
+Exec::Exec(std::string const& program, bool absolute_path) :
   m_program(program),
   m_absolute_path(absolute_path),
   m_arguments(),
@@ -41,14 +41,14 @@ Exec::Exec(const std::string& program, bool absolute_path) :
 {}
 
 Exec&
-Exec::arg(const std::string& argument)
+Exec::arg(std::string const& argument)
 {
   m_arguments.push_back(argument);
   return *this;
 }
 
 void
-Exec::set_working_directory(const std::string& path)
+Exec::set_working_directory(std::string const& path)
 {
   m_working_directory = path;
 }

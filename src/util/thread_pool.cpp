@@ -51,7 +51,7 @@ ThreadPool::~ThreadPool()
 }
 
 void
-ThreadPool::schedule(const Task& task)
+ThreadPool::schedule(Task const& task)
 {
   m_queue.try_push(task);
 }
@@ -77,7 +77,7 @@ ThreadPool::run()
         task();
       }
     }
-    catch(const std::exception& err)
+    catch(std::exception const& err)
     {
       log_error("exception while executing task: {}", err.what());
     }

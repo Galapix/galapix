@@ -34,7 +34,7 @@ OldFileEntry::from_reader(SQLiteReader& reader)
                              reader.get_int(7)));
 }
 
-std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry)
+std::ostream& operator<<(std::ostream& os, OldFileEntry const& entry)
 {
   return os << "OldFileEntry(\n"
             << "         id: " << entry.get_id() << '\n'

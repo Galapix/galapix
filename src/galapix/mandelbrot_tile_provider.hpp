@@ -32,7 +32,7 @@ public:
   MandelbrotTileProvider(JobManager& job_manager);
   ~MandelbrotTileProvider() override;
 
-  JobHandle request_tile(int tilescale, const Vector2i& pos,
+  JobHandle request_tile(int tilescale, Vector2i const& pos,
                                  const std::function<void (Tile)>& callback) override;
 
   int  get_max_scale() const override;
@@ -45,8 +45,8 @@ private:
   JobManager& m_job_manager;
 
 private:
-  MandelbrotTileProvider(const MandelbrotTileProvider&);
-  MandelbrotTileProvider& operator=(const MandelbrotTileProvider&);
+  MandelbrotTileProvider(MandelbrotTileProvider const&);
+  MandelbrotTileProvider& operator=(MandelbrotTileProvider const&);
 };
 
 #endif

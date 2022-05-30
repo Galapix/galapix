@@ -22,8 +22,8 @@ ResourceName::ResourceName() :
   m_handler()
 {}
 
-ResourceName::ResourceName(const BlobInfo& blob_info,
-                           const ResourceHandler& handler) :
+ResourceName::ResourceName(BlobInfo const& blob_info,
+                           ResourceHandler const& handler) :
   m_id(),
   m_blob_info(blob_info),
   m_handler(handler)

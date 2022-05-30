@@ -76,43 +76,43 @@ ResourceDatabase::~ResourceDatabase()
 }
 
 std::optional<ImageInfo>
-ResourceDatabase::get_image_info(const ResourceInfo& resource)
+ResourceDatabase::get_image_info(ResourceInfo const& resource)
 {
   return (*m_image_info_get)(resource);
 }
 
 RowId
-ResourceDatabase::store_image_info(const ImageInfo& image_info)
+ResourceDatabase::store_image_info(ImageInfo const& image_info)
 {
   return (*m_image_info_store)(image_info);
 }
 
 std::optional<ResourceInfo>
-ResourceDatabase::get_resource_info(const ResourceLocator& locator, const BlobInfo& blob)
+ResourceDatabase::get_resource_info(ResourceLocator const& locator, BlobInfo const& blob)
 {
   return (*m_resource_info_get)(locator, blob);
 }
 
 std::optional<ResourceInfo>
-ResourceDatabase::get_resource_info(const BlobInfo& blob)
+ResourceDatabase::get_resource_info(BlobInfo const& blob)
 {
   return (*m_resource_info_get)(blob);
 }
 
 RowId
-ResourceDatabase::store_resource_info(const ResourceInfo& info)
+ResourceDatabase::store_resource_info(ResourceInfo const& info)
 {
   return (*m_resource_info_store)(info);
 }
 
 std::optional<URLInfo>
-ResourceDatabase::get_url_info(const std::string& url)
+ResourceDatabase::get_url_info(std::string const& url)
 {
   return (*m_url_info_get)(url);
 }
 
 RowId
-ResourceDatabase::store_url_info(const URLInfo& url_info)
+ResourceDatabase::store_url_info(URLInfo const& url_info)
 {
   if (!url_info.get_blob_info().get_id())
   {
@@ -122,13 +122,13 @@ ResourceDatabase::store_url_info(const URLInfo& url_info)
 }
 
 std::optional<FileInfo>
-ResourceDatabase::get_file_info(const std::string& path)
+ResourceDatabase::get_file_info(std::string const& path)
 {
   return (*m_file_info_get_by_path)(path);
 }
 
 RowId
-ResourceDatabase::store_file_info(const FileInfo& file_info)
+ResourceDatabase::store_file_info(FileInfo const& file_info)
 {
   if (!file_info.get_blob_info().get_id())
   {
@@ -138,7 +138,7 @@ ResourceDatabase::store_file_info(const FileInfo& file_info)
 }
 
 std::optional<FileEntry>
-ResourceDatabase::get_file_entry(const std::string& path)
+ResourceDatabase::get_file_entry(std::string const& path)
 {
   return m_file_entry_get_by_path(path);
 }
@@ -150,52 +150,52 @@ ResourceDatabase::get_file_entries(std::vector<FileEntry>& entries_out)
 }
 
 void
-ResourceDatabase::get_file_entries(const std::string& pattern, std::vector<FileEntry>& entries_out)
+ResourceDatabase::get_file_entries(std::string const& pattern, std::vector<FileEntry>& entries_out)
 {
   return m_file_entry_get_by_pattern(pattern, entries_out);
 }
 
 void
-ResourceDatabase::store_file_entry(const std::string& path, int mtime)
+ResourceDatabase::store_file_entry(std::string const& path, int mtime)
 {
   m_file_entry_store(path, mtime);
 }
 
 OldFileEntry
-ResourceDatabase::store_old_file_entry(const URL& url, int size, int mtime, OldFileEntry::Handler handler)
+ResourceDatabase::store_old_file_entry(URL const& url, int size, int mtime, OldFileEntry::Handler handler)
 {
   //RowId file_id = m_file_entry_store(url, SHA1(), size, mtime, handler);
   return OldFileEntry(RowId(), url, size, mtime, handler);
 }
 
 OldFileEntry
-ResourceDatabase::store_old_file_entry(const URL& url, const SHA1& sha1, int size, int mtime, OldFileEntry::Handler handler, const RowId& archive_id)
+ResourceDatabase::store_old_file_entry(URL const& url, SHA1 const& sha1, int size, int mtime, OldFileEntry::Handler handler, RowId const& archive_id)
 {
   //RowId file_id = m_file_entry_store(url, sha1, size, mtime, handler);
   return OldFileEntry(RowId(), url, size, mtime, handler);
 }
 
 ImageEntry
-ResourceDatabase::store_image_entry(const ImageEntry& image)
+ResourceDatabase::store_image_entry(ImageEntry const& image)
 {
   m_image_entry_store(image);
   return image;
 }
 
 bool
-ResourceDatabase::get_image_entry(const OldFileEntry& entry, ImageEntry& image_out)
+ResourceDatabase::get_image_entry(OldFileEntry const& entry, ImageEntry& image_out)
 {
   return false; //m_image_entry_get(entry.get_blob_entry().get_id(), image_out);
 }
 
 bool
-ResourceDatabase::get_old_file_entry(const URL& url, OldFileEntry& entry_out)
+ResourceDatabase::get_old_file_entry(URL const& url, OldFileEntry& entry_out)
 {
   return false; //m_file_entry_get_by_url(url, entry_out);
 }
 
 void
-ResourceDatabase::get_old_file_entries(const std::string& pattern, std::vector<OldFileEntry>& entries_out)
+ResourceDatabase::get_old_file_entries(std::string const& pattern, std::vector<OldFileEntry>& entries_out)
 {
   //m_file_entry_get_by_pattern(pattern, entries_out);
 }
@@ -207,14 +207,14 @@ ResourceDatabase::get_old_file_entries(std::vector<OldFileEntry>& entries_out)
 }
 
 std::optional<ResourceEntry>
-ResourceDatabase::get_resource_entry(const RowId& blob_id)
+ResourceDatabase::get_resource_entry(RowId const& blob_id)
 {
   //m_resource_entry_get_by_blob_id();
   return std::optional<ResourceEntry>();
 }
 
 void
-ResourceDatabase::delete_old_file_entry(const RowId& file_id)
+ResourceDatabase::delete_old_file_entry(RowId const& file_id)
 {
   //m_file_entry_delete(file_id);
 }

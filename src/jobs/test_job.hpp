@@ -27,8 +27,8 @@ public:
   void run() override;
 
 private:
-  TestJob (const TestJob&);
-  TestJob& operator= (const TestJob&);
+  TestJob (TestJob const&);
+  TestJob& operator= (TestJob const&);
 };
 
 #endif

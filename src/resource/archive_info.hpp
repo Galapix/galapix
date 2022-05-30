@@ -30,7 +30,7 @@ public:
   {}
 
   ArchiveInfo(std::vector<ArchiveFileInfo> files,
-              const std::optional<std::string>& password) :
+              std::optional<std::string> const& password) :
     m_files(std::move(files)),
     m_password(password)
   {}

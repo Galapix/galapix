@@ -39,7 +39,7 @@ private:
       m_previous_tiles_count()
     {}
 
-    Info(const Size& size,
+    Info(Size const& size,
          int previous_tiles_count) :
       m_size(size),
       m_previous_tiles_count(previous_tiles_count)
@@ -47,13 +47,13 @@ private:
   };
 
 public:
-  static std::shared_ptr<ZoomifyTileProvider> create(const URL& url, JobManager& job_manager);
+  static std::shared_ptr<ZoomifyTileProvider> create(URL const& url, JobManager& job_manager);
 
 private:
-  ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize, JobManager& job_manager);
+  ZoomifyTileProvider(std::string const& basedir, Size const& size, int tilesize, JobManager& job_manager);
 
 public:
-  JobHandle request_tile(int scale, const Vector2i& pos,
+  JobHandle request_tile(int scale, Vector2i const& pos,
                          const std::function<void (Tile)>& callback) override;
 
   int  get_max_scale() const override { return m_max_scale; }
@@ -61,7 +61,7 @@ public:
   Size get_size() const override { return m_size; }
 
 private:
-  int get_tile_group(int scale, const Vector2i& pos);
+  int get_tile_group(int scale, Vector2i const& pos);
 
 private:
   Size        m_size;
@@ -72,8 +72,8 @@ private:
   JobManager& m_job_manager;
 
 private:
-  ZoomifyTileProvider(const ZoomifyTileProvider&) = delete;
-  ZoomifyTileProvider& operator=(const ZoomifyTileProvider&) = delete;
+  ZoomifyTileProvider(ZoomifyTileProvider const&) = delete;
+  ZoomifyTileProvider& operator=(ZoomifyTileProvider const&) = delete;
 };
 
 #endif

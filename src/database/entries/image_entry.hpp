@@ -31,7 +31,7 @@ public:
     m_max_scale()
   {}
 
-  ImageEntry(const RowId& id, const RowId& resource_id, int width, int height) :
+  ImageEntry(RowId const& id, RowId const& resource_id, int width, int height) :
     m_id(id),
     m_resource_id(resource_id),
     m_size(width, height),

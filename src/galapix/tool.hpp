@@ -30,9 +30,9 @@ public:
   Tool(Viewer* viewer_) : viewer(viewer_) {}
   virtual ~Tool() {}
 
-  virtual void move(const Vector2i& pos, const Vector2i& rel) =0;
-  virtual void up  (const Vector2i& pos) =0;
-  virtual void down(const Vector2i& pos) =0;
+  virtual void move(Vector2i const& pos, Vector2i const& rel) =0;
+  virtual void up  (Vector2i const& pos) =0;
+  virtual void down(Vector2i const& pos) =0;
 
   virtual void draw(wstdisplay::GraphicsContext& gc) =0;
 
@@ -40,8 +40,8 @@ protected:
   Viewer* viewer;
 
 private:
-  Tool (const Tool&);
-  Tool& operator= (const Tool&);
+  Tool (Tool const&);
+  Tool& operator= (Tool const&);
 };
 
 #endif

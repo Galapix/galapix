@@ -23,7 +23,7 @@
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
 
-ViewerCommand::ViewerCommand(System& system, const Options& opts) :
+ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
   m_opts(opts),
   m_database(Database::create(opts.database)),
@@ -45,14 +45,14 @@ ViewerCommand::~ViewerCommand()
     m_job_manager.join_thread();
     m_database_thread.join_thread();
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     log_error(err.what());
   }
 }
 
 void
-ViewerCommand::run(const std::vector<URL>& urls)
+ViewerCommand::run(std::vector<URL> const& urls)
 {
   Workspace workspace;
 

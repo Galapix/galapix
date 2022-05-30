@@ -24,7 +24,7 @@
 #include "jobs/tile_generator.hpp"
 #include "database/entries/tile_entry.hpp"
 
-TileGenerationJob::TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db) :
+TileGenerationJob::TileGenerationJob(OldFileEntry const& file_entry, int min_scale_in_db, int max_scale_in_db) :
   Job(JobHandle::create()),
   m_state_mutex(),
   m_state(kWaiting),
@@ -47,7 +47,7 @@ TileGenerationJob::~TileGenerationJob()
 }
 
 bool
-TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
+TileGenerationJob::request_tile(JobHandle const& job_handle, int scale, Vector2i const& pos,
                                 const std::function<void (Tile)>& callback)
 {
   std::unique_lock<std::mutex> lock(m_state_mutex);
@@ -112,7 +112,7 @@ TileGenerationJob::request_tile(const JobHandle& job_handle, int scale, const Ve
 }
 
 void
-TileGenerationJob::process_tile(const Tile& tile)
+TileGenerationJob::process_tile(Tile const& tile)
 {
   m_tiles.push_back(tile);
 
@@ -209,7 +209,7 @@ TileGenerationJob::run()
     TileGenerator::generate(m_url, m_min_scale, m_max_scale,
                             std::bind(&TileGenerationJob::process_tile, this, std::placeholders::_1));
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     log_error("Error while processing {}", m_file_entry);
     log_error("  Exception: {}", err.what());

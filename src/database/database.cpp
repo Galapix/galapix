@@ -22,7 +22,7 @@
 #include "util/filesystem.hpp"
 
 Database
-Database::create(const std::string& prefix)
+Database::create(std::string const& prefix)
 {
   Filesystem::mkdir(prefix);
 
@@ -61,7 +61,7 @@ Database::~Database()
 }
 
 void
-Database::delete_file_entry(const RowId& fileid)
+Database::delete_file_entry(RowId const& fileid)
 {
   std::cout << "Begin Delete" << std::endl;
   m_db->exec("BEGIN;");

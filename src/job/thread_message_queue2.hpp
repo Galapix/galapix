@@ -58,7 +58,7 @@ public:
   }
 
   /** Try to push data on the queue, if the queue is full, fail and return false */
-  bool try_push(const Data& data)
+  bool try_push(Data const& data)
   {
     std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -81,7 +81,7 @@ public:
 
   /** Push data on the queue, if the queue is currently full, wait
       till it is no longer full */
-  void wait_and_push(const Data& data)
+  void wait_and_push(Data const& data)
   {
     std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -179,8 +179,8 @@ private:
   std::condition_variable m_queue_not_full_cond;
 
 private:
-  ThreadMessageQueue2 (const ThreadMessageQueue2&);
-  ThreadMessageQueue2& operator= (const ThreadMessageQueue2&);
+  ThreadMessageQueue2 (ThreadMessageQueue2 const&);
+  ThreadMessageQueue2& operator= (ThreadMessageQueue2 const&);
 };
 
 #endif

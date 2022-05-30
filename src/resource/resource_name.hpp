@@ -42,8 +42,8 @@ class ResourceName
 {
 public:
   ResourceName();
-  ResourceName(const BlobInfo& blob_info,
-               const ResourceHandler& handler);
+  ResourceName(BlobInfo const& blob_info,
+               ResourceHandler const& handler);
 
   BlobInfo get_blob_info() const { return m_blob_info; }
   ResourceHandler get_handler() const { return m_handler; }

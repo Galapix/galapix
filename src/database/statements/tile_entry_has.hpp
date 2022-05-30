@@ -24,7 +24,7 @@ public:
     m_stmt(db, "SELECT (rowid) FROM tile WHERE image_id = ?1 AND scale = ?2 AND x = ?3 AND y = ?4;")
   {}
 
-  bool operator()(const RowId& fileid, const Vector2i& pos, int scale)
+  bool operator()(RowId const& fileid, Vector2i const& pos, int scale)
   {
     if (!fileid)
     {
@@ -54,8 +54,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  TileEntryHas(const TileEntryHas&);
-  TileEntryHas& operator=(const TileEntryHas&);
+  TileEntryHas(TileEntryHas const&);
+  TileEntryHas& operator=(TileEntryHas const&);
 };
 
 #endif

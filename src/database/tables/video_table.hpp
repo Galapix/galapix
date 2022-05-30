@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  VideoTable(const VideoTable&);
-  VideoTable& operator=(const VideoTable&);
+  VideoTable(VideoTable const&);
+  VideoTable& operator=(VideoTable const&);
 };
 
 #endif

@@ -40,7 +40,7 @@ public:
            "  resource.blob_id = ?1;")
   {}
 
-  std::optional<ResourceInfo> operator()(const BlobInfo& blob)
+  std::optional<ResourceInfo> operator()(BlobInfo const& blob)
   {
     m_blob_stmt.bind(1, blob.get_id().get_id());
 
@@ -62,7 +62,7 @@ public:
   }
 
   /** scan through all resource entries trying to find one that matches the given handler */
-  std::optional<ResourceInfo> operator()(const ResourceLocator& locator, const BlobInfo& blob)
+  std::optional<ResourceInfo> operator()(ResourceLocator const& locator, BlobInfo const& blob)
   {
     m_stmt.bind(1, blob.get_sha1().str());
 
@@ -100,8 +100,8 @@ private:
   SQLite::Statement m_blob_stmt;
 
 private:
-  ResourceInfoGet(const ResourceInfoGet&);
-  ResourceInfoGet& operator=(const ResourceInfoGet&);
+  ResourceInfoGet(ResourceInfoGet const&);
+  ResourceInfoGet& operator=(ResourceInfoGet const&);
 };
 
 #endif

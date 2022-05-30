@@ -29,8 +29,8 @@
 class MultipleTileGenerationJob : public Job
 {
 public:
-  MultipleTileGenerationJob(const JobHandle& job_handle,
-                            const URL& url,
+  MultipleTileGenerationJob(JobHandle const& job_handle,
+                            URL const& url,
                             int min_scale_in_db, int max_scale_in_db,
                             int min_scale, int max_scale,
                             const std::function<void (Tile)>& callback) :
@@ -71,8 +71,8 @@ private:
   std::function<void (Tile)> m_callback;
 
 private:
-  MultipleTileGenerationJob(const MultipleTileGenerationJob&);
-  MultipleTileGenerationJob& operator=(const MultipleTileGenerationJob&);
+  MultipleTileGenerationJob(MultipleTileGenerationJob const&);
+  MultipleTileGenerationJob& operator=(MultipleTileGenerationJob const&);
 };
 
 #endif

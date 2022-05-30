@@ -28,16 +28,16 @@ class TightLayouter : public Layouter
 public:
   TightLayouter(float w, float h);
 
-  void layout_zigzag(const ImageCollection& images) const;
-  void layout(const ImageCollection& images) override;
+  void layout_zigzag(ImageCollection const& images) const;
+  void layout(ImageCollection const& images) override;
 
 private:
   float m_aspect_w;
   float m_aspect_h;
 
 private:
-  TightLayouter(const TightLayouter&);
-  TightLayouter& operator=(const TightLayouter&);
+  TightLayouter(TightLayouter const&);
+  TightLayouter& operator=(TightLayouter const&);
 };
 
 #endif

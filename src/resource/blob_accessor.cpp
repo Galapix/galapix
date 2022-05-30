@@ -20,7 +20,7 @@
 
 #include "util/path.hpp"
 
-BlobAccessor::BlobAccessor(const std::string& filename) :
+BlobAccessor::BlobAccessor(std::string const& filename) :
   m_mutex(),
   m_filename(filename),
   m_blob(),

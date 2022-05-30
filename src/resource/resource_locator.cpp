@@ -20,7 +20,7 @@
 #include <logmich/log.hpp>
 
 ResourceLocator
-ResourceLocator::from_string(const std::string& locator)
+ResourceLocator::from_string(std::string const& locator)
 {
   std::string::size_type skip = 0;
   if      (locator.starts_with("file://" )) { skip = 7; }
@@ -93,7 +93,7 @@ ResourceLocator::get_blob_locator() const
 }
 
 bool
-ResourceLocator::is_parent_of(const ResourceLocator& other) const
+ResourceLocator::is_parent_of(ResourceLocator const& other) const
 {
   /*
     Problem:
@@ -136,7 +136,7 @@ ResourceLocator::str() const
 {
   std::ostringstream out;
   out << m_url.str();
-  for(const auto& handler : m_handler)
+  for(auto const& handler : m_handler)
   {
     out << "//" << handler.get_type() << "-" << handler.get_name();
     if (!handler.get_args().empty())

@@ -39,10 +39,10 @@ class Image;
 class Image final : public WorkspaceItem
 {
 public:
-  Image(const URL& url, TileProviderPtr provider = {});
+  Image(URL const& url, TileProviderPtr provider = {});
   ~Image() override;
 
-  void draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom) override;
+  void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) override;
   void draw_mark(wstdisplay::GraphicsContext& gc) override;
 
   // Used for sorting and debugging

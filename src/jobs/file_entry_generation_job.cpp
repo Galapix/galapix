@@ -23,7 +23,7 @@
 #include "jobs/tile_generator.hpp"
 #include "util/filesystem.hpp"
 
-FileEntryGenerationJob::FileEntryGenerationJob(const JobHandle& job_handle, const URL& url) :
+FileEntryGenerationJob::FileEntryGenerationJob(JobHandle const& job_handle, URL const& url) :
   Job(job_handle),
   m_url(url),
   m_sig_file_callback()
@@ -86,12 +86,12 @@ FileEntryGenerationJob::run()
     m_sig_file_callback(file_entry);
 
     TileGenerator::cut_into_tiles(surface, size, min_scale, max_scale,
-                                  [this](const Tile& tile){
+                                  [this](Tile const& tile){
                                     m_sig_tile_callback(tile);
                                   });
 #endif
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     log_error("Error while processing {}", m_url);
     log_error("  Exception: {}", err.what());

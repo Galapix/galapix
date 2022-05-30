@@ -43,7 +43,7 @@ public:
   int get_width()  const { return width; }
   int get_height() const { return height; }
 
-  const T& operator()(int x, int y) const {
+  T const& operator()(int x, int y) const {
     assert(y >= 0 && y < rows.size());
     assert(x >= 0 && x < rows[y].size());
     return rows[y][x];
@@ -55,7 +55,7 @@ public:
     return rows[y][x];
   }
 
-  void resize(int w, int h, const T& t = T())
+  void resize(int w, int h, T const& t = T())
   {
     for(typename Rows::iterator i = rows.begin(); i != rows.end(); ++i)
       i->resize(w);

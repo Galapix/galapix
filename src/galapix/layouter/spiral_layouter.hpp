@@ -28,7 +28,7 @@ class SpiralLayouter : public Layouter
 public:
   SpiralLayouter();
 
-  void layout(const ImageCollection& images) override;
+  void layout(ImageCollection const& images) override;
   void reset();
   void layout(WorkspaceItem& item);
 
@@ -49,8 +49,8 @@ private:
   Direction m_direction;
 
 private:
-  SpiralLayouter(const SpiralLayouter&);
-  SpiralLayouter& operator=(const SpiralLayouter&);
+  SpiralLayouter(SpiralLayouter const&);
+  SpiralLayouter& operator=(SpiralLayouter const&);
 };
 
 #endif

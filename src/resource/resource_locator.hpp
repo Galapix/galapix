@@ -41,7 +41,7 @@ class ResourceLocator
 public:
   /** Takes a filename in the form of a string and transforms it into
       a ResourceLocator */
-  static ResourceLocator from_string(const std::string& locator);
+  static ResourceLocator from_string(std::string const& locator);
 
 public:
   ResourceLocator() : m_url(), m_handler() {}
@@ -51,11 +51,11 @@ public:
   {}
 
   ResourceLocator get_blob_locator() const;
-  const ResourceURL& get_url() const { return m_url; }
-  const std::vector<ResourceHandler>& get_handler() const { return m_handler; }
+  ResourceURL const& get_url() const { return m_url; }
+  std::vector<ResourceHandler> const& get_handler() const { return m_handler; }
   std::string get_type() const;
 
-  bool is_parent_of(const ResourceLocator& other) const;
+  bool is_parent_of(ResourceLocator const& other) const;
 
   std::string str() const;
 

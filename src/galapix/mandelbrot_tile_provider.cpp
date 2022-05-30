@@ -39,7 +39,7 @@ MandelbrotTileProvider::~MandelbrotTileProvider()
 }
 
 JobHandle
-MandelbrotTileProvider::request_tile(int scale, const Vector2i& pos,
+MandelbrotTileProvider::request_tile(int scale, Vector2i const& pos,
                                      const std::function<void (Tile)>& callback)
 {
   //std::cout << "MandelbrotTileProvider::request_tile(): " << scale << " " << pos << std::endl;

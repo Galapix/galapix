@@ -19,7 +19,7 @@
 #include <sstream>
 
 ResourceHandler
-ResourceHandler::from_string(const std::string& handler)
+ResourceHandler::from_string(std::string const& handler)
 {
   std::string::size_type p = handler.find(':');
 
@@ -57,7 +57,7 @@ ResourceHandler::str() const
 }
 
 bool
-ResourceHandler::operator==(const ResourceHandler& other) const
+ResourceHandler::operator==(ResourceHandler const& other) const
 {
   return
     m_type == other.m_type &&
@@ -66,7 +66,7 @@ ResourceHandler::operator==(const ResourceHandler& other) const
 }
 
 bool
-ResourceHandler::operator!=(const ResourceHandler& other) const
+ResourceHandler::operator!=(ResourceHandler const& other) const
 {
   return !(*this == other);
 }

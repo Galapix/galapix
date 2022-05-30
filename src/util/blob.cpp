@@ -73,7 +73,7 @@ Blob::str() const
 }
 
 void
-Blob::write_to_file(const std::string& filename) const
+Blob::write_to_file(std::string const& filename) const
 {
   std::ofstream out(filename.c_str(), std::ios::binary);
   if (!out)
@@ -91,7 +91,7 @@ Blob::write_to_file(const std::string& filename) const
 }
 
 Blob
-Blob::from_file(const std::string& filename)
+Blob::from_file(std::string const& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::binary);
   if (!in)

@@ -31,7 +31,7 @@ WorkspaceItem::~WorkspaceItem()
 }
 
 void
-WorkspaceItem::set_pos(const Vector2f& pos)
+WorkspaceItem::set_pos(Vector2f const& pos)
 {
   m_pos = pos;
 }
@@ -49,7 +49,7 @@ WorkspaceItem::get_top_left_pos() const
 }
 
 void
-WorkspaceItem::set_top_left_pos(const Vector2f& p)
+WorkspaceItem::set_top_left_pos(Vector2f const& p)
 {
   m_pos = p + geom::fsize(get_scaled_width()/2, get_scaled_height()/2);
 }

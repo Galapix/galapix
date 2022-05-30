@@ -29,7 +29,7 @@ public:
   static FileEntry from_reader(SQLiteReader& reader);
 
   FileEntry(RowId id,
-            const std::string& path,
+            std::string const& path,
             long mtime,
             RowId blob_id) :
     m_id(id),

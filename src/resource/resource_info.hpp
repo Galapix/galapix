@@ -33,9 +33,9 @@ class ResourceInfo
 {
 public:
   ResourceInfo();
-  ResourceInfo(const RowId& id, const ResourceInfo& other);
-  ResourceInfo(const RowId& id, const ResourceName& name, ResourceStatus status);
-  ResourceInfo(const ResourceName& name, ResourceStatus status);
+  ResourceInfo(RowId const& id, ResourceInfo const& other);
+  ResourceInfo(RowId const& id, ResourceName const& name, ResourceStatus status);
+  ResourceInfo(ResourceName const& name, ResourceStatus status);
 
   RowId get_id() const { return m_id; }
 

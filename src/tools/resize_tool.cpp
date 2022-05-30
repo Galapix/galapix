@@ -29,7 +29,7 @@ ResizeTool::ResizeTool(Viewer* viewer_)
 }
 
 void
-ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
+ResizeTool::move(Vector2i const& pos, Vector2i const& /*rel*/)
 {
   if (resize_active)
   {
@@ -48,14 +48,14 @@ ResizeTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
 }
 
 void
-ResizeTool::up(const Vector2i& /*pos*/)
+ResizeTool::up(Vector2i const& /*pos*/)
 {
   resize_active = false;
   old_scale = 1.0f;
 }
 
 void
-ResizeTool::down(const Vector2i& pos)
+ResizeTool::down(Vector2i const& pos)
 {
   resize_active    = true;
   resize_center    = viewer->get_state().screen2world(pos);

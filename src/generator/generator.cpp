@@ -46,8 +46,8 @@ Generator::~Generator()
 }
 
 void
-Generator::request_file_info(const std::string& path,
-                             const std::function<void (const Failable<FileInfo>&)>& callback)
+Generator::request_file_info(std::string const& path,
+                             const std::function<void (Failable<FileInfo> const&)>& callback)
 {
   log_info(path);
 
@@ -74,12 +74,12 @@ Generator::request_file_info(const std::string& path,
 }
 
 void
-Generator::request_resource_processing(const ResourceLocator& locator,
+Generator::request_resource_processing(ResourceLocator const& locator,
                                        GeneratorCallbacksPtr const & callbacks)
 {
   m_blob_mgr.request_blob
     (locator,
-     [this, locator, callbacks](const Failable<BlobAccessorPtr>& result)
+     [this, locator, callbacks](Failable<BlobAccessorPtr> const& result)
      {
        try
        {
@@ -91,13 +91,13 @@ Generator::request_resource_processing(const ResourceLocator& locator,
               {
                 process_resource(locator, blob, callbacks);
               }
-              catch(const std::exception& err)
+              catch(std::exception const& err)
               {
                 callbacks->on_error(ResourceStatus::AccessError, err.what());
               }
             });
        }
-       catch(const std::exception& err)
+       catch(std::exception const& err)
        {
          callbacks->on_error(ResourceStatus::AccessError, err.what());
        }
@@ -154,7 +154,7 @@ Generator::process_archive_resource(ResourceLocator const& locator,
     log_debug("-- process_archive_resource: got extraction");
 
     std::vector<ArchiveFileInfo> files;
-    for(const auto& filename : extraction->get_filenames())
+    for(auto const& filename : extraction->get_filenames())
     {
       log_debug("-- process_archive_resource: file: {}", filename);
       BlobAccessorPtr child_blob = std::make_shared<BlobAccessor>(extraction->get_file(filename));
@@ -183,7 +183,7 @@ Generator::process_archive_resource(ResourceLocator const& locator,
 
     return true;
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     callbacks->on_error(ResourceStatus::HandlerError, err.what());
   }
@@ -240,7 +240,7 @@ Generator::process_image_resource(ResourceLocator const& locator,
       callbacks->on_status(ResourceStatus::Success);
       return true;
     }
-    catch(const std::exception& err)
+    catch(std::exception const& err)
     {
       callbacks->on_error(ResourceStatus::AccessError, err.what());
       return false;

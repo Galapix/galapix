@@ -30,15 +30,15 @@ public:
   CachedTileDatabase(std::unique_ptr<TileDatabaseInterface> tile_database);
   ~CachedTileDatabase() override;
 
-  bool has_tile(const RowId& image_id, const Vector2i& pos, int scale) override;
-  bool get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out) override;
-  void get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles) override;
-  bool get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out) override;
+  bool has_tile(RowId const& image_id, Vector2i const& pos, int scale) override;
+  bool get_tile(RowId const& image_id, int scale, Vector2i const& pos, TileEntry& tile_out) override;
+  void get_tiles(RowId const& image_id, std::vector<TileEntry>& tiles) override;
+  bool get_min_max_scale(RowId const& image_id, int& min_scale_out, int& max_scale_out) override;
 
-  void store_tile(const RowId& image_id, const Tile& tile) override;
-  void store_tiles(const std::vector<TileEntry>& tiles) override;
+  void store_tile(RowId const& image_id, Tile const& tile) override;
+  void store_tiles(std::vector<TileEntry> const& tiles) override;
 
-  void delete_tiles(const RowId& image_id) override;
+  void delete_tiles(RowId const& image_id) override;
   void flush_cache();
 
 private:
@@ -46,8 +46,8 @@ private:
   std::unique_ptr<TileDatabaseInterface> m_tile_database;
 
 private:
-  CachedTileDatabase(const CachedTileDatabase&) = delete;
-  CachedTileDatabase& operator=(const CachedTileDatabase&) = delete;
+  CachedTileDatabase(CachedTileDatabase const&) = delete;
+  CachedTileDatabase& operator=(CachedTileDatabase const&) = delete;
 };
 
 #endif

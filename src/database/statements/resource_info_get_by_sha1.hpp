@@ -30,7 +30,7 @@ public:
            "  resource.blob_id = blob.id AND blob.sha1 = ?;")
   {}
 
-  std::optional<ResourceInfo> operator()(const SHA1& sha1)
+  std::optional<ResourceInfo> operator()(SHA1 const& sha1)
   {
     m_stmt.bind(1, path);
     SQLiteReader reader(m_stmt);
@@ -51,8 +51,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  ResourceInfoGetBySHA1(const ResourceInfoGetBySHA1&);
-  ResourceInfoGetBySHA1& operator=(const ResourceInfoGetBySHA1&);
+  ResourceInfoGetBySHA1(ResourceInfoGetBySHA1 const&);
+  ResourceInfoGetBySHA1& operator=(ResourceInfoGetBySHA1 const&);
 };
 
 #endif

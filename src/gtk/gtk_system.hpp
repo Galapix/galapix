@@ -31,8 +31,8 @@ public:
   void set_trackball_mode(bool active) override;
 
 private:
-  GtkSystem(const GtkSystem&) = delete;
-  GtkSystem& operator=(const GtkSystem&) = delete;
+  GtkSystem(GtkSystem const&) = delete;
+  GtkSystem& operator=(GtkSystem const&) = delete;
 };
 
 #endif

@@ -26,7 +26,7 @@ public:
            "INSERT INTO resource (blob_id, type, handler, arguments, status) VALUES (?1, ?2, ?3, ?4, ?5);")
   {}
 
-  RowId operator()(const ResourceInfo& info)
+  RowId operator()(ResourceInfo const& info)
   {
     m_stmt.bind(1, info.get_name().get_blob_info().get_id().get_id());
     m_stmt.bind(2, info.get_handler().get_type());
@@ -43,8 +43,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  ResourceInfoStore(const ResourceInfoStore&);
-  ResourceInfoStore& operator=(const ResourceInfoStore&);
+  ResourceInfoStore(ResourceInfoStore const&);
+  ResourceInfoStore& operator=(ResourceInfoStore const&);
 };
 
 #endif

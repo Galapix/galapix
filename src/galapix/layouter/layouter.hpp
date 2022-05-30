@@ -29,11 +29,11 @@ public:
   Layouter() {}
   virtual ~Layouter() {}
 
-  virtual void layout(const ImageCollection& images) =0;
+  virtual void layout(ImageCollection const& images) =0;
 
 private:
-  Layouter(const Layouter&);
-  Layouter& operator=(const Layouter&);
+  Layouter(Layouter const&);
+  Layouter& operator=(Layouter const&);
 };
 
 using LayouterPtr = std::shared_ptr<Layouter>;

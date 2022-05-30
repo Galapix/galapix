@@ -32,14 +32,14 @@ public:
     m_valid(false)
   {}
 
-  Tile(const TileEntry& tile_entry) :
+  Tile(TileEntry const& tile_entry) :
     m_scale(tile_entry.get_scale()),
     m_pos(tile_entry.get_pos()),
     m_surface(tile_entry.get_surface()),
     m_valid(tile_entry)
   {}
 
-  Tile(int scale, const Vector2i& pos, surf::SoftwareSurface const& surface) :
+  Tile(int scale, Vector2i const& pos, surf::SoftwareSurface const& surface) :
     m_scale(scale),
     m_pos(pos),
     m_surface(surface),

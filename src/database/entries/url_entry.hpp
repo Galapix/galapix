@@ -29,12 +29,12 @@ public:
   static URLEntry from_reader(SQLiteReader& reader);
 
 public:
-  URLEntry(const RowId& id,
-           const std::string& host,
-           const std::string& path,
-           const std::string& content_type,
+  URLEntry(RowId const& id,
+           std::string const& host,
+           std::string const& path,
+           std::string const& content_type,
            long mtime,
-           const RowId& blob_id) :
+           RowId const& blob_id) :
     m_id(id),
     m_host(host),
     m_path(path),

@@ -54,8 +54,8 @@ public:
     m_parent()
   {}
 
-  OldFileEntry(const RowId& id,
-            const URL& url,
+  OldFileEntry(RowId const& id,
+            URL const& url,
             int size,
             int mtime,
             Handler handler) :
@@ -67,12 +67,12 @@ public:
     m_parent()
   {}
 
-  OldFileEntry(const RowId& id,
-            const URL& url,
+  OldFileEntry(RowId const& id,
+            URL const& url,
             int mtime,
             Handler handler,
-            const RowId& parent,
-            const BlobEntry& blob_entry) :
+            RowId const& parent,
+            BlobEntry const& blob_entry) :
     m_id(id),
     m_url(url),
     m_mtime(mtime),
@@ -85,7 +85,7 @@ public:
   URL     get_url()     const { return m_url;    }
   int     get_mtime()   const { return m_mtime;  }
   Handler get_handler() const { return m_handler; }
-  const BlobEntry& get_blob_entry() const { return m_blob_entry; }
+  BlobEntry const& get_blob_entry() const { return m_blob_entry; }
   RowId   get_parent() const { return m_parent; }
 
 private:
@@ -107,7 +107,7 @@ private:
   RowId m_parent;
 };
 
-std::ostream& operator<<(std::ostream& os, const OldFileEntry& entry);
+std::ostream& operator<<(std::ostream& os, OldFileEntry const& entry);
 
 #endif
 

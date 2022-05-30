@@ -23,13 +23,13 @@ Selection::Selection() :
 }
 
 void
-Selection::add_image(const WorkspaceItemPtr& image)
+Selection::add_image(WorkspaceItemPtr const& image)
 {
   m_images.add(image);
 }
 
 void
-Selection::add_images(const ImageCollection& images)
+Selection::add_images(ImageCollection const& images)
 {
   for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i) {
     m_images.add(*i);
@@ -37,7 +37,7 @@ Selection::add_images(const ImageCollection& images)
 }
 
 void
-Selection::remove_image(const WorkspaceItemPtr& image)
+Selection::remove_image(WorkspaceItemPtr const& image)
 {
   m_images.remove(image);
 }
@@ -55,7 +55,7 @@ Selection::scale(float factor)
 }
 
 bool
-Selection::has(const WorkspaceItemPtr& image) const
+Selection::has(WorkspaceItemPtr const& image) const
 {
   for(ImageCollection::const_iterator i = m_images.begin(); i != m_images.end(); ++i)
   {
@@ -140,7 +140,7 @@ Selection::get_bounding_rect() const
 
     for(ImageCollection::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
-      const Rectf& image_rect = (*i)->get_image_rect();
+      Rectf const& image_rect = (*i)->get_image_rect();
 
       rect = geom::frect(std::min(rect.left(),   image_rect.left()),
                          std::min(rect.top(),    image_rect.top()),

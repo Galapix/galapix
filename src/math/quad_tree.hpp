@@ -57,7 +57,7 @@ private:
   std::unique_ptr<QuadTreeNode<C> > m_se;
 
 public:
-  QuadTreeNode(int depth, const Rectf& bounding_rect) :
+  QuadTreeNode(int depth, Rectf const& bounding_rect) :
     m_bounding_rect(bounding_rect),
     m_center(geom::center(bounding_rect).as_vec()),
     m_items(),
@@ -69,7 +69,7 @@ public:
   {
   }
 
-  void add(const Rectf& rect, const C& c)
+  void add(Rectf const& rect, C const& c)
   {
     if (m_depth > 8) // FIXME: max_depth shouldn't be hardcode
     {
@@ -146,7 +146,7 @@ public:
     }
   }
 
-  void get_items_at(const Rectf& rect, std::vector<C>& out_items) const
+  void get_items_at(Rectf const& rect, std::vector<C>& out_items) const
   {
     // If rect overlaps with the given quadrant, recursivly check the quadrant
     if (m_nw.get() &&
@@ -195,17 +195,17 @@ private:
   std::unique_ptr<QuadTreeNode<C> > m_main_node;
 
 public:
-  QuadTree(const Rectf& bounding_rect) :
+  QuadTree(Rectf const& bounding_rect) :
     m_main_node(new QuadTreeNode<C>(0, bounding_rect))
   {
   }
 
-  void add(const Rectf& rect, const C& c)
+  void add(Rectf const& rect, C const& c)
   {
     m_main_node->add(rect, c);
   }
 
-  std::vector<C> get_items_at(const Rectf& rect)
+  std::vector<C> get_items_at(Rectf const& rect)
   {
     std::vector<C> items;
     m_main_node->get_items_at(rect, items);

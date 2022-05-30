@@ -18,7 +18,7 @@
 
 #include <logmich/log.hpp>
 
-ArchiveThread::ArchiveThread(const std::string& tmpdir) :
+ArchiveThread::ArchiveThread(std::string const& tmpdir) :
   m_archive_mgr(tmpdir),
   m_mutex(),
   m_extractions(),
@@ -31,7 +31,7 @@ ArchiveThread::~ArchiveThread()
 }
 
 void
-ArchiveThread::request_blob(const std::string& archive_filename, const std::string& filename,
+ArchiveThread::request_blob(std::string const& archive_filename, std::string const& filename,
                             const std::function<void (Failable<Blob>)>& callback)
 {
   m_pool.schedule
@@ -50,7 +50,7 @@ ArchiveThread::request_blob(const std::string& archive_filename, const std::stri
 }
 
 void
-ArchiveThread::request_extraction(const std::string& archive_filename,
+ArchiveThread::request_extraction(std::string const& archive_filename,
                                   const std::function<void (Failable<arxp::ExtractionPtr>)>& callback)
 {
   m_pool.schedule
@@ -80,7 +80,7 @@ ArchiveThread::request_extraction(const std::string& archive_filename,
 }
 
 ArchiveThread::ExtractionEntry&
-ArchiveThread::get_and_lock_extraction_entry(const std::string& archive_filename,
+ArchiveThread::get_and_lock_extraction_entry(std::string const& archive_filename,
                                              std::unique_lock<std::mutex>& lock_out)
 {
   std::lock_guard<std::mutex> lock(m_mutex);

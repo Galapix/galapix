@@ -30,7 +30,7 @@ public:
            "  url.url = ?1 AND blob.id = url.blob_id;")
   {}
 
-  std::optional<URLInfo> operator()(const std::string& url)
+  std::optional<URLInfo> operator()(std::string const& url)
   {
     m_stmt.bind(1, url);
     SQLiteReader reader(m_stmt);
@@ -56,8 +56,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  URLInfoGet(const URLInfoGet&);
-  URLInfoGet& operator=(const URLInfoGet&);
+  URLInfoGet(URLInfoGet const&);
+  URLInfoGet& operator=(URLInfoGet const&);
 };
 
 #endif

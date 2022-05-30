@@ -28,7 +28,7 @@ public:
     m_stmt(db, "INSERT INTO blob (sha1, size) VALUES (?1, ?2);")
   {}
 
-  RowId operator()(const BlobInfo& blob_info)
+  RowId operator()(BlobInfo const& blob_info)
   {
     m_stmt.bind(1, blob_info.get_sha1().str());
     m_stmt.bind(2, static_cast<int64_t>(blob_info.get_size()));
@@ -42,8 +42,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  BlobInfoStore(const BlobInfoStore&);
-  BlobInfoStore& operator=(const BlobInfoStore&);
+  BlobInfoStore(BlobInfoStore const&);
+  BlobInfoStore& operator=(BlobInfoStore const&);
 };
 
 #endif

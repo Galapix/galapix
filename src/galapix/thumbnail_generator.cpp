@@ -19,7 +19,7 @@
 #include "galapix/options.hpp"
 #include "job/job_handle_group.hpp"
 
-ThumbnailGenerator::ThumbnailGenerator(const Options& opts) :
+ThumbnailGenerator::ThumbnailGenerator(Options const& opts) :
   m_database(Database::create(opts.database)),
   m_job_manager(opts.threads),
   m_database_thread(m_database, m_job_manager)
@@ -38,24 +38,24 @@ ThumbnailGenerator::~ThumbnailGenerator()
     m_job_manager.join_thread();
     m_database_thread.join_thread();
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     log_error(err.what());
   }
 }
 
 void
-ThumbnailGenerator::run(const std::vector<URL>& urls, bool generate_all_tiles)
+ThumbnailGenerator::run(std::vector<URL> const& urls, bool generate_all_tiles)
 {
   std::vector<OldFileEntry> file_entries;
 
   JobHandleGroup job_handle_group;
 
   // gather FileEntries
-  for(const auto& url : urls)
+  for(auto const& url : urls)
   {
     job_handle_group.add(m_database_thread.request_file(url,
-                                                        [&file_entries](const OldFileEntry& entry) {
+                                                        [&file_entries](OldFileEntry const& entry) {
                                                           file_entries.push_back(entry);
                                                         }));
   }

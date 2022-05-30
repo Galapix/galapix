@@ -73,13 +73,13 @@ public:
   void on_key_up(Key key);
   void on_key_down(Key key);
 
-  void on_mouse_motion(const Vector2i& pos, const Vector2i& rel);
-  void on_mouse_button_down(const Vector2i& pos, MouseButton btn);
-  void on_mouse_button_up(const Vector2i& pos, MouseButton btn);
+  void on_mouse_motion(Vector2i const& pos, Vector2i const& rel);
+  void on_mouse_button_down(Vector2i const& pos, MouseButton btn);
+  void on_mouse_button_up(Vector2i const& pos, MouseButton btn);
 
   bool is_active() const;
 
-  void set_grid(const Vector2f& offset, const Sizef& size);
+  void set_grid(Vector2f const& offset, Sizef const& size);
 
   // Tool Controls
   void set_pan_tool();
@@ -142,7 +142,7 @@ public:
   void print_info();
   void print_state();
 
-  void reshape(const Size& size);
+  void reshape(Size const& size);
 
   int get_width() const { return m_size.width(); }
   int get_height() const { return m_size.height(); }
@@ -188,8 +188,8 @@ private:
   surf::Color m_grid_color;
 
 private:
-  Viewer (const Viewer&);
-  Viewer& operator= (const Viewer&);
+  Viewer (Viewer const&);
+  Viewer& operator= (Viewer const&);
 };
 
 #endif

@@ -31,8 +31,8 @@ public:
   void set_trackball_mode(bool active) override;
 
 private:
-  SDLSystem(const SDLSystem&) = delete;
-  SDLSystem& operator=(const SDLSystem&) = delete;
+  SDLSystem(SDLSystem const&) = delete;
+  SDLSystem& operator=(SDLSystem const&) = delete;
 };
 
 #endif

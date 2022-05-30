@@ -20,7 +20,7 @@
 class TileCacheId
 {
 public:
-  TileCacheId(const Vector2i& pos, int scale) :
+  TileCacheId(Vector2i const& pos, int scale) :
     m_pos(pos),
     m_scale(scale)
   {}
@@ -28,7 +28,7 @@ public:
   int get_scale() const { return m_scale; }
   Vector2i get_pos() const { return m_pos; }
 
-  bool operator<(const TileCacheId& rhs) const
+  bool operator<(TileCacheId const& rhs) const
   {
     if (m_scale < rhs.m_scale)
     {

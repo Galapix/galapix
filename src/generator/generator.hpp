@@ -42,17 +42,17 @@ public:
   Generator(BlobManager& blob_mgr, arxp::ArchiveManager& archive_mgr);
   ~Generator();
 
-  void request_file_info(const std::string& path,
-                         const std::function<void (const Failable<FileInfo>&)>& callback);
+  void request_file_info(std::string const& path,
+                         const std::function<void (Failable<FileInfo> const&)>& callback);
 
-  void request_resource_processing(const ResourceLocator& locator,
+  void request_resource_processing(ResourceLocator const& locator,
                                    GeneratorCallbacksPtr const& callbacks);
 
 private:
   void process_resource(ResourceLocator const& locator, BlobAccessorPtr const& blob_accessor, GeneratorCallbacksPtr const& callbacks);
-  bool process_image_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor, const BlobInfo& blob_info,
+  bool process_image_resource(ResourceLocator const& locator, BlobAccessorPtr const& blob_accessor, BlobInfo const& blob_info,
                               GeneratorCallbacksPtr const& callbacks);
-  bool process_archive_resource(const ResourceLocator& locator, const BlobAccessorPtr& blob_accessor,
+  bool process_archive_resource(ResourceLocator const& locator, BlobAccessorPtr const& blob_accessor,
                                 GeneratorCallbacksPtr const& callbacks);
   void process_image_tiling(surf::SoftwareSurface const&  surface, GeneratorCallbacksPtr const& callbacks);
 
@@ -62,8 +62,8 @@ private:
   ThreadPool m_pool;
 
 private:
-  Generator(const Generator&) = delete;
-  Generator& operator=(const Generator&) = delete;
+  Generator(Generator const&) = delete;
+  Generator& operator=(Generator const&) = delete;
 };
 
 #endif

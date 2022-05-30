@@ -36,14 +36,14 @@ public:
     m_height(height)
   {}
 
-  ImageInfo(const RowId& id, const RowId& resource_id, int width, int height) :
+  ImageInfo(RowId const& id, RowId const& resource_id, int width, int height) :
     m_id(id),
     m_resource_id(resource_id),
     m_width(width),
     m_height(height)
   {}
 
-  ImageInfo(const RowId& id, const ImageInfo& image_info) :
+  ImageInfo(RowId const& id, ImageInfo const& image_info) :
     m_id(id),
     m_resource_id(image_info.m_resource_id),
     m_width(image_info.m_width),

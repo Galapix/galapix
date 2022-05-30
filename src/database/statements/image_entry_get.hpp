@@ -29,7 +29,7 @@ public:
     m_stmt(db, "SELECT id, resource_id, width, height FROM image WHERE id = ?1;")
   {}
 
-  bool operator()(const RowId& image_id, ImageEntry& image_out)
+  bool operator()(RowId const& image_id, ImageEntry& image_out)
   {
     log_debug("looking up: %d", image_id);
     m_stmt.bind(1, image_id.get_id());
@@ -54,8 +54,8 @@ private:
   SQLite::Statement   m_stmt;
 
 private:
-  ImageEntryGet(const ImageEntryGet&);
-  ImageEntryGet& operator=(const ImageEntryGet&);
+  ImageEntryGet(ImageEntryGet const&);
+  ImageEntryGet& operator=(ImageEntryGet const&);
 };
 
 #endif

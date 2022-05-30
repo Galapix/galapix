@@ -38,7 +38,7 @@ MoveTool::~MoveTool()
 }
 
 void
-MoveTool::move(const Vector2i& pos, const Vector2i& rel)
+MoveTool::move(Vector2i const& pos, Vector2i const& rel)
 {
   mouse_pos = pos;
 
@@ -50,7 +50,7 @@ MoveTool::move(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-MoveTool::up(const Vector2i& /*pos*/)
+MoveTool::up(Vector2i const& /*pos*/)
 {
   if (drag_active)
   {
@@ -67,7 +67,7 @@ MoveTool::up(const Vector2i& /*pos*/)
 }
 
 void
-MoveTool::down(const Vector2i& pos)
+MoveTool::down(Vector2i const& pos)
 {
   click_pos = viewer->get_state().screen2world(pos);
 

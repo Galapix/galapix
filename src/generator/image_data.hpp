@@ -28,14 +28,14 @@ public:
     m_image_tiles()
   {}
 
-  ImageData(const ImageInfo& image_info,
+  ImageData(ImageInfo const& image_info,
             std::vector<Tile> image_tiles) :
     m_image_info(image_info),
     m_image_tiles(std::move(image_tiles))
   {}
 
   ImageInfo get_image_info() const { return m_image_info; }
-  const std::vector<Tile>& get_image_tiles() const { return m_image_tiles; }
+  std::vector<Tile> const& get_image_tiles() const { return m_image_tiles; }
 
 private:
   // ResourceLocator m_locator;
@@ -44,8 +44,8 @@ private:
   std::vector<Tile> m_image_tiles;
 
 private:
-  ImageData(const ImageData&) = delete;
-  ImageData& operator=(const ImageData&) = delete;
+  ImageData(ImageData const&) = delete;
+  ImageData& operator=(ImageData const&) = delete;
 };
 
 #endif

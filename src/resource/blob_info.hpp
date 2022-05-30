@@ -41,15 +41,15 @@ public:
     m_size()
   {}
 
-  BlobInfo(const RowId& id,
-           const galapix::SHA1& sha1,
+  BlobInfo(RowId const& id,
+           galapix::SHA1 const& sha1,
            size_t size) :
     m_id(id),
     m_sha1(sha1),
     m_size(size)
   {}
 
-  BlobInfo(const galapix::SHA1& sha1,
+  BlobInfo(galapix::SHA1 const& sha1,
            size_t size) :
     m_id(),
     m_sha1(sha1),

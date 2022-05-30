@@ -44,16 +44,16 @@ private:
   };
 
 public:
-  ArchiveThread(const std::string& tmpdir);
+  ArchiveThread(std::string const& tmpdir);
   ~ArchiveThread();
 
-  void request_blob(const std::string& archive_filename, const std::string& filename,
+  void request_blob(std::string const& archive_filename, std::string const& filename,
                     const std::function<void (Failable<Blob>)>& callback);
-  void request_extraction(const std::string& archive_filename,
+  void request_extraction(std::string const& archive_filename,
                           const std::function<void (Failable<arxp::ExtractionPtr>)>& callback);
 
 private:
-  ExtractionEntry& get_and_lock_extraction_entry(const std::string& archive_filename,
+  ExtractionEntry& get_and_lock_extraction_entry(std::string const& archive_filename,
                                                  std::unique_lock<std::mutex>& lock_out);
 
 private:
@@ -63,8 +63,8 @@ private:
   ThreadPool m_pool;
 
 private:
-  ArchiveThread(const ArchiveThread&) = delete;
-  ArchiveThread& operator=(const ArchiveThread&) = delete;
+  ArchiveThread(ArchiveThread const&) = delete;
+  ArchiveThread& operator=(ArchiveThread const&) = delete;
 };
 
 #endif

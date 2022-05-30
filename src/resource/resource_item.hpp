@@ -26,10 +26,10 @@
 class ResourceItem : public WorkspaceItem
 {
 public:
-  ResourceItem(const ResourceLocator& locator);
+  ResourceItem(ResourceLocator const& locator);
   ~ResourceItem() override;
 
-  void draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom) override;
+  void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) override;
   void draw_mark(wstdisplay::GraphicsContext& gc) override;
 
   ResourceInfo get_resource_info() const;
@@ -39,15 +39,15 @@ public:
   URL get_url() const override { return {}; }
 
 private:
-  void receive_resource_info(const ResourceInfo& resource_info);
+  void receive_resource_info(ResourceInfo const& resource_info);
 
 private:
   ResourceLocator m_locator;
   ResourceInfo m_resource_info;
 
 private:
-  ResourceItem(const ResourceItem&);
-  ResourceItem& operator=(const ResourceItem&);
+  ResourceItem(ResourceItem const&);
+  ResourceItem& operator=(ResourceItem const&);
 };
 
 #endif

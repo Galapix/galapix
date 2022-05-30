@@ -36,8 +36,8 @@ private:
   arxp::ArchiveManager* m_archive_manager;
 
 private:
-  App(const App&) = delete;
-  App& operator=(const App&) = delete;
+  App(App const&) = delete;
+  App& operator=(App const&) = delete;
 };
 
 extern App g_app;

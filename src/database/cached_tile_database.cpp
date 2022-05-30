@@ -33,7 +33,7 @@ CachedTileDatabase::~CachedTileDatabase()
 }
 
 bool
-CachedTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int scale)
+CachedTileDatabase::has_tile(RowId const& image_id, Vector2i const& pos, int scale)
 {
   return
     m_tile_cache->has_tile(image_id, pos, scale) ||
@@ -41,7 +41,7 @@ CachedTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int sca
 }
 
 bool
-CachedTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out)
+CachedTileDatabase::get_tile(RowId const& image_id, int scale, Vector2i const& pos, TileEntry& tile_out)
 {
   if (image_id)
   {
@@ -61,14 +61,14 @@ CachedTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& p
 }
 
 void
-CachedTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles)
+CachedTileDatabase::get_tiles(RowId const& image_id, std::vector<TileEntry>& tiles)
 {
   m_tile_cache->get_tiles(image_id, tiles);
   m_tile_database->get_tiles(image_id, tiles);
 }
 
 bool
-CachedTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out)
+CachedTileDatabase::get_min_max_scale(RowId const& image_id, int& min_scale_out, int& max_scale_out)
 {
   if (image_id)
   {
@@ -99,7 +99,7 @@ CachedTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out,
 }
 
 void
-CachedTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
+CachedTileDatabase::store_tile(RowId const& image_id, Tile const& tile)
 {
   if (!image_id)
   {
@@ -117,13 +117,13 @@ CachedTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
 }
 
 void
-CachedTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
+CachedTileDatabase::store_tiles(std::vector<TileEntry> const& tiles)
 {
   m_tile_database->store_tiles(tiles);
 }
 
 void
-CachedTileDatabase::delete_tiles(const RowId& image_id)
+CachedTileDatabase::delete_tiles(RowId const& image_id)
 {
   m_tile_cache->delete_tiles(image_id);
   m_tile_database->delete_tiles(image_id);

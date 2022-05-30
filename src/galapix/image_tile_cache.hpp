@@ -86,9 +86,9 @@ public:
 
   /** \a rect and \a scale are the currently visible area, everything
       not in there will be canceled */
-  void cancel_jobs(const Rect& rect, int scale);
+  void cancel_jobs(Rect const& rect, int scale);
 
-  void receive_tile(const Tile& tile);
+  void receive_tile(Tile const& tile);
 
   int get_max_scale() const { return m_max_scale; }
 
@@ -106,8 +106,8 @@ public:
   int m_min_keep_scale;
 
 private:
-  ImageTileCache(const ImageTileCache&);
-  ImageTileCache& operator=(const ImageTileCache&);
+  ImageTileCache(ImageTileCache const&);
+  ImageTileCache& operator=(ImageTileCache const&);
 };
 
 #endif

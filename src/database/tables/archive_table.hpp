@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  ArchiveTable(const ArchiveTable&);
-  ArchiveTable& operator=(const ArchiveTable&);
+  ArchiveTable(ArchiveTable const&);
+  ArchiveTable& operator=(ArchiveTable const&);
 };
 
 #endif

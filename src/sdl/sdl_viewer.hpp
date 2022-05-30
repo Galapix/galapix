@@ -34,14 +34,14 @@ class Workspace;
 class SDLViewer
 {
 public:
-  SDLViewer(const Size& geometry, bool fullscreen, int  anti_aliasing,
+  SDLViewer(Size const& geometry, bool fullscreen, int  anti_aliasing,
             Viewer& viewer);
   ~SDLViewer();
 
   void run();
 
 private:
-  void process_event(const SDL_Event& event);
+  void process_event(SDL_Event const& event);
   void update_gamecontrollers(float delta);
 
   void add_gamecontroller(int joy_id);
@@ -60,8 +60,8 @@ private:
   std::vector<SDL_GameController*> m_gamecontrollers;
 
 private:
-  SDLViewer (const SDLViewer&);
-  SDLViewer& operator= (const SDLViewer&);
+  SDLViewer (SDLViewer const&);
+  SDLViewer& operator= (SDLViewer const&);
 };
 
 #endif

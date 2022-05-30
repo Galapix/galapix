@@ -32,8 +32,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  TileEntryGetAll(const TileEntryGetAll&);
-  TileEntryGetAll& operator=(const TileEntryGetAll&);
+  TileEntryGetAll(TileEntryGetAll const&);
+  TileEntryGetAll& operator=(TileEntryGetAll const&);
 };
 
 #endif

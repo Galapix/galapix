@@ -45,8 +45,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  FileEntryGetAll(const FileEntryGetAll&);
-  FileEntryGetAll& operator=(const FileEntryGetAll&);
+  FileEntryGetAll(FileEntryGetAll const&);
+  FileEntryGetAll& operator=(FileEntryGetAll const&);
 };
 
 #endif

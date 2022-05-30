@@ -54,18 +54,18 @@ public:
 
   // Image Query Functions (dangerous: need to now when Image position
   // changes) -> Return "const Image"? -> can't do breaks due to impl
-  ImageCollection get_images(const Rectf& rect) const;
-  WorkspaceItemPtr get_image(const Vector2f& pos) const;
+  ImageCollection get_images(Rectf const& rect) const;
+  WorkspaceItemPtr get_image(Vector2f const& pos) const;
 
   // ---------------------------------------------
-  void add_image(const WorkspaceItemPtr& image);
+  void add_image(WorkspaceItemPtr const& image);
 
   // Selection Commands
   SelectionPtr get_selection() const { return m_selection; }
-  bool selection_clicked(const Vector2f& pos) const;
-  void select_images(const ImageCollection& images);
+  bool selection_clicked(Vector2f const& pos) const;
+  void select_images(ImageCollection const& images);
   void clear_selection();
-  void move_selection(const Vector2f& rel);
+  void move_selection(Vector2f const& rel);
   void clear();
 
   /** Delete all images that aren't in the selection */
@@ -76,7 +76,7 @@ public:
 
   // ---------------------------------------------
 
-  void draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom);
+  void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom);
   void update(float delta);
 
   // ---------------------------------------------
@@ -84,11 +84,11 @@ public:
   // Debug stuff
   void clear_cache();
   void cache_cleanup();
-  void print_info(const Rectf& rect) const;
-  void print_images(const Rectf& rect) const;
+  void print_info(Rectf const& rect) const;
+  void print_images(Rectf const& rect) const;
 
   // ---------------------------------------------
-  void load(const std::string& filename);
+  void load(std::string const& filename);
   void save(std::ostream& out);
 
   Rectf get_bounding_rect() const;
@@ -102,8 +102,8 @@ private:
   LayouterPtr m_layouter;
 
 private:
-  Workspace (const Workspace&) = delete;
-  Workspace& operator= (const Workspace&) = delete;
+  Workspace (Workspace const&) = delete;
+  Workspace& operator= (Workspace const&) = delete;
 };
 
 #endif

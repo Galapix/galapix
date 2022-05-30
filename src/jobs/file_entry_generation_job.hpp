@@ -28,7 +28,7 @@
 class FileEntryGenerationJob : public Job
 {
 public:
-  FileEntryGenerationJob(const JobHandle& job_handle, const URL& url);
+  FileEntryGenerationJob(JobHandle const& job_handle, URL const& url);
 
   void run() override;
 
@@ -39,8 +39,8 @@ private:
   sigc::signal<void (OldFileEntry)> m_sig_file_callback;
 
 private:
-  FileEntryGenerationJob(const FileEntryGenerationJob&);
-  FileEntryGenerationJob& operator=(const FileEntryGenerationJob&);
+  FileEntryGenerationJob(FileEntryGenerationJob const&);
+  FileEntryGenerationJob& operator=(FileEntryGenerationJob const&);
 };
 
 #endif

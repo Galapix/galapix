@@ -24,12 +24,12 @@ class ResizeTool : public Tool
 public:
   ResizeTool(Viewer* viewer);
 
-  void move(const Vector2i& pos, const Vector2i& rel) override;
-  void up(const Vector2i& pos) override;
-  void down(const Vector2i& pos) override;
+  void move(Vector2i const& pos, Vector2i const& rel) override;
+  void up(Vector2i const& pos) override;
+  void down(Vector2i const& pos) override;
 
   void draw(wstdisplay::GraphicsContext& gc) override {}
-  void update(const Vector2i& pos, float delta);
+  void update(Vector2i const& pos, float delta);
 
 private:
   bool     resize_active;

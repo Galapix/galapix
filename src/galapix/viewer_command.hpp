@@ -28,10 +28,10 @@ class System;
 class ViewerCommand
 {
 public:
-  ViewerCommand(System& system, const Options& opts);
+  ViewerCommand(System& system, Options const& opts);
   ~ViewerCommand();
 
-  void run(const std::vector<URL>& urls);
+  void run(std::vector<URL> const& urls);
 
 private:
   System& m_system;
@@ -43,8 +43,8 @@ private:
   std::vector<std::string> m_patterns;
 
 private:
-  ViewerCommand(const ViewerCommand&) = delete;
-  ViewerCommand& operator=(const ViewerCommand&) = delete;
+  ViewerCommand(ViewerCommand const&) = delete;
+  ViewerCommand& operator=(ViewerCommand const&) = delete;
 };
 
 #endif

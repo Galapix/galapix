@@ -34,7 +34,7 @@ RotateTool::RotateTool(Viewer* viewer_)
 }
 
 void
-RotateTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
+RotateTool::move(Vector2i const& pos, Vector2i const& /*rel*/)
 {
   if (rotate_active)
   {
@@ -53,13 +53,13 @@ RotateTool::move(const Vector2i& pos, const Vector2i& /*rel*/)
 }
 
 void
-RotateTool::up  (const Vector2i& /*pos*/)
+RotateTool::up  (Vector2i const& /*pos*/)
 {
   rotate_active = false;
 }
 
 void
-RotateTool::down(const Vector2i& pos)
+RotateTool::down(Vector2i const& pos)
 {
   Vector2f mouse_pos = viewer->get_state().screen2world(pos);
 

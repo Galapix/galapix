@@ -27,8 +27,8 @@ public:
   static void parse_args(int argc, char** argv, Options& opts);
 
 private:
-  ArgParser(const ArgParser&) = delete;
-  ArgParser& operator=(const ArgParser&) = delete;
+  ArgParser(ArgParser const&) = delete;
+  ArgParser& operator=(ArgParser const&) = delete;
 };
 
 #endif

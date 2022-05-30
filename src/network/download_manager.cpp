@@ -71,7 +71,7 @@ DownloadManager::~DownloadManager()
   {
     m_thread.join();
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     log_error(err.what());
   }
@@ -266,9 +266,9 @@ DownloadManager::generate_transfer_handle()
 }
 
 DownloadManager::TransferHandle
-DownloadManager::request_get(const std::string& url,
+DownloadManager::request_get(std::string const& url,
                              const std::function<void (DownloadResult)>& callback,
-                             const std::function<ProgressFunc>& progress_callback)
+                             std::function<ProgressFunc> const& progress_callback)
 {
   TransferHandle uuid = generate_transfer_handle();
 
@@ -296,10 +296,10 @@ DownloadManager::request_get(const std::string& url,
 }
 
 DownloadManager::TransferHandle
-DownloadManager::request_post(const std::string& url,
-                              const std::string& post_data,
+DownloadManager::request_post(std::string const& url,
+                              std::string const& post_data,
                               const std::function<void (DownloadResult)>& callback,
-                              const std::function<ProgressFunc>& progress_callback)
+                              std::function<ProgressFunc> const& progress_callback)
 {
   TransferHandle uuid = generate_transfer_handle();
 

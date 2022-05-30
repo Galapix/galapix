@@ -32,19 +32,19 @@ public:
   TileDatabaseInterface() {}
   virtual ~TileDatabaseInterface() {}
 
-  virtual bool has_tile(const RowId& fileid, const Vector2i& pos, int scale) =0;
-  virtual bool get_tile(const RowId& fileid, int scale, const Vector2i& pos, TileEntry& tile_out) =0;
-  virtual void get_tiles(const RowId& fileid, std::vector<TileEntry>& tiles) =0;
-  virtual bool get_min_max_scale(const RowId& fileid, int& min_scale_out, int& max_scale_out) =0;
+  virtual bool has_tile(RowId const& fileid, Vector2i const& pos, int scale) =0;
+  virtual bool get_tile(RowId const& fileid, int scale, Vector2i const& pos, TileEntry& tile_out) =0;
+  virtual void get_tiles(RowId const& fileid, std::vector<TileEntry>& tiles) =0;
+  virtual bool get_min_max_scale(RowId const& fileid, int& min_scale_out, int& max_scale_out) =0;
 
-  virtual void store_tile(const RowId& fileid, const Tile& tile) =0;
-  virtual void store_tiles(const std::vector<TileEntry>& tiles) =0;
+  virtual void store_tile(RowId const& fileid, Tile const& tile) =0;
+  virtual void store_tiles(std::vector<TileEntry> const& tiles) =0;
 
-  virtual void delete_tiles(const RowId& fileid) =0;
+  virtual void delete_tiles(RowId const& fileid) =0;
 
 private:
-  TileDatabaseInterface(const TileDatabaseInterface&);
-  TileDatabaseInterface& operator=(const TileDatabaseInterface&);
+  TileDatabaseInterface(TileDatabaseInterface const&);
+  TileDatabaseInterface& operator=(TileDatabaseInterface const&);
 };
 
 #endif

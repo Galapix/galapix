@@ -28,13 +28,13 @@ TightLayouter::TightLayouter(float w, float h) :
 }
 
 void
-TightLayouter::layout(const ImageCollection& images)
+TightLayouter::layout(ImageCollection const& images)
 {
   float spacing = 24.0f;
 
   float width = 0;
   // calculate the total width
-  for(const auto& image: images)
+  for(auto const& image: images)
   {
     const float scale = (1000.0f + spacing) / static_cast<float>(image->get_original_height());
     width += static_cast<float>(image->get_original_width()) * scale;
@@ -63,14 +63,14 @@ TightLayouter::layout(const ImageCollection& images)
   };
 
   std::vector<WorkspaceItemPtr> row;
-  for(const auto& image: images)
+  for(auto const& image: images)
   {
     row.push_back(image);
 
     const float scale = 1000.0f / static_cast<float>(image->get_original_height());
     image->set_scale(scale);
 
-    auto set_pos = [&](const Vector2f& p){
+    auto set_pos = [&](Vector2f const& p){
       last_pos = p;
       image->set_pos(p + geom::fsize(static_cast<float>(image->get_original_width()),
                                      static_cast<float>(image->get_original_height())) * scale / 2.0f);
@@ -123,13 +123,13 @@ TightLayouter::layout(const ImageCollection& images)
 }
 
 void
-TightLayouter::layout_zigzag(const ImageCollection& images) const
+TightLayouter::layout_zigzag(ImageCollection const& images) const
 {
   float spacing = 24.0f;
 
   float width = 0;
   // calculate the total width
-  for(const auto& image: images)
+  for(auto const& image: images)
   {
     const float scale = (1000.0f + spacing) / static_cast<float>(image->get_original_height());
     width += static_cast<float>(image->get_original_width()) * scale;
@@ -141,12 +141,12 @@ TightLayouter::layout_zigzag(const ImageCollection& images) const
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
 
-  for(const auto& image: images)
+  for(auto const& image: images)
   {
     const float scale = 1000.0f / static_cast<float>(image->get_original_height());
     image->set_scale(scale);
 
-    auto set_pos = [&](const Vector2f& p){
+    auto set_pos = [&](Vector2f const& p){
         last_pos = p;
         image->set_pos(p + geom::fsize(static_cast<float>(image->get_original_width()),
                                        static_cast<float>(image->get_original_height())) * scale / 2.0f);

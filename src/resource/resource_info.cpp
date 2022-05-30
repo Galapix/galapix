@@ -22,21 +22,21 @@ ResourceInfo::ResourceInfo() :
   m_status()
 {}
 
-ResourceInfo::ResourceInfo(const RowId& id, const ResourceInfo& other) :
+ResourceInfo::ResourceInfo(RowId const& id, ResourceInfo const& other) :
   m_id(id),
   m_name(other.m_name),
   m_status(other.m_status)
 {}
 
-ResourceInfo::ResourceInfo(const RowId& id,
-                           const ResourceName& name,
+ResourceInfo::ResourceInfo(RowId const& id,
+                           ResourceName const& name,
                            ResourceStatus status) :
   m_id(id),
   m_name(name),
   m_status(status)
 {}
 
-ResourceInfo::ResourceInfo(const ResourceName& name,
+ResourceInfo::ResourceInfo(ResourceName const& name,
                            ResourceStatus status) :
   m_id(),
   m_name(name),

@@ -39,8 +39,8 @@ private:
   fd_set m_readfds;
 
 private:
-  Select(const Select&);
-  Select& operator=(const Select&);
+  Select(Select const&);
+  Select& operator=(Select const&);
 };
 
 #endif

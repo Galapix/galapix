@@ -78,7 +78,7 @@ Galapix::~Galapix()
 }
 
 void
-Galapix::export_images(const std::string& database, const std::vector<URL>& url)
+Galapix::export_images(std::string const& database, std::vector<URL> const& url)
 {
 #if 0
   Database db(database);
@@ -125,7 +125,7 @@ Galapix::export_images(const std::string& database, const std::vector<URL>& url)
 }
 
 void
-Galapix::cleanup(const std::string& database)
+Galapix::cleanup(std::string const& database)
 {
   Database db = Database::create(database);
   std::cout << "Running database cleanup routines, this process can take multiple minutes." << std::endl;
@@ -135,7 +135,7 @@ Galapix::cleanup(const std::string& database)
 }
 
 void
-Galapix::info(const Options& opts)
+Galapix::info(Options const& opts)
 {
   Database db = Database::create(opts.database);
   JobManager job_manager(4);
@@ -154,9 +154,9 @@ Galapix::info(const Options& opts)
 
   std::atomic_int count = 0;
   auto files = std::vector<std::string>(opts.rest.begin() + 1, opts.rest.end());
-  for(const auto& filename : files)
+  for(auto const& filename : files)
   {
-    auto callback = [&count, filename](const Failable<ResourceMetadata>& data)
+    auto callback = [&count, filename](Failable<ResourceMetadata> const& data)
       {
 #if 0
         try
@@ -180,7 +180,7 @@ Galapix::info(const Options& opts)
             std::cout << "--URL--" << std::endl;
           }
         }
-        catch(const std::exception& err)
+        catch(std::exception const& err)
         {
           std::cout << "error: " << err.what() << std::endl;
         }
@@ -209,7 +209,7 @@ Galapix::info(const Options& opts)
 }
 
 void
-Galapix::list(const Options& opts)
+Galapix::list(Options const& opts)
 {
   Database db = Database::create(opts.database);
 
@@ -281,7 +281,7 @@ Galapix::main(int argc, char** argv)
 
     return EXIT_SUCCESS;
   }
-  catch(const std::exception& err)
+  catch(std::exception const& err)
   {
     std::cout << "Exception:\n";
     print_exception(err);
@@ -290,7 +290,7 @@ Galapix::main(int argc, char** argv)
 }
 
 void
-Galapix::run(const Options& opts)
+Galapix::run(Options const& opts)
 {
   std::cout << "Using database: " << (opts.database.empty() ? "memory" : opts.database) << std::endl;
 
@@ -322,14 +322,14 @@ Galapix::run(const Options& opts)
           }
         }
         std::sort(urls.begin(), urls.end(),
-                  [](const URL& lhs, const URL& rhs) {
+                  [](URL const& lhs, URL const& rhs) {
                     return strut::numeric_less(lhs.str(), rhs.str());
                   });
         std::cout << urls.size() << " files found." << std::endl;
         return urls;
       };
 
-    const std::string& command = opts.rest.front();
+    std::string const& command = opts.rest.front();
 
     if (command == "view")
     {

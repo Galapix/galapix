@@ -50,7 +50,7 @@ JobWorkerThread::run()
         {
           task.job->run();
         }
-        catch(const std::exception& err)
+        catch(std::exception const& err)
         {
           std::cout << "JobWorkerThread:run: Job failed: " << err.what() << std::endl;
         }

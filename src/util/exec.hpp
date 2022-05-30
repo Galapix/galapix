@@ -38,17 +38,17 @@ public:
       path, if false $PATH will be searched for an application with
       the given name
   */
-  Exec(const std::string& program, bool absolute_path = false);
+  Exec(std::string const& program, bool absolute_path = false);
 
   /** Add an argument to the list of arguments which will be used on execution
 
       @param argument The argument to be passed, spaces and other
       special characters are allow, shell escaping is not needed
    */
-  Exec& arg(const std::string& argument);
+  Exec& arg(std::string const& argument);
 
   /** Set the working directory for executing the process */
-  void set_working_directory(const std::string& path);
+  void set_working_directory(std::string const& path);
 
   /** Set what will be passed to the process on stdin
 
@@ -97,8 +97,8 @@ private:
   Blob m_stdin_data;
 
 private:
-  Exec (const Exec&);
-  Exec& operator= (const Exec&);
+  Exec (Exec const&);
+  Exec& operator= (Exec const&);
 };
 
 #endif

@@ -67,8 +67,8 @@ private:
   std::vector<ResourceName> m_children;
 
 private:
-  ResourceMetadata(const ResourceMetadata&) = delete;
-  ResourceMetadata& operator=(const ResourceMetadata&) = delete;
+  ResourceMetadata(ResourceMetadata const&) = delete;
+  ResourceMetadata& operator=(ResourceMetadata const&) = delete;
 };
 
 #endif

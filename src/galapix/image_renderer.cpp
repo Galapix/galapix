@@ -118,7 +118,7 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
 }
 
 void
-ImageRenderer::draw_tiles(wstdisplay::GraphicsContext& gc, const Rect& rect, int scale, float zoom)
+ImageRenderer::draw_tiles(wstdisplay::GraphicsContext& gc, Rect const& rect, int scale, float zoom)
 {
   for(int y = rect.top(); y < rect.bottom(); ++y) {
     for(int x = rect.left(); x < rect.right(); ++x) {
@@ -128,7 +128,7 @@ ImageRenderer::draw_tiles(wstdisplay::GraphicsContext& gc, const Rect& rect, int
 }
 
 bool
-ImageRenderer::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
+ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
   Rectf image_rect = m_image.get_image_rect();
 

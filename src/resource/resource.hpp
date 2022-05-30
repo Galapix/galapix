@@ -23,8 +23,8 @@ public:
   Resource();
 
 private:
-  Resource(const Resource&);
-  Resource& operator=(const Resource&);
+  Resource(Resource const&);
+  Resource& operator=(Resource const&);
 };
 
 #endif

@@ -24,12 +24,12 @@ class ZoomRectTool : public Tool
 public:
   ZoomRectTool(Viewer* viewer);
 
-  void move(const Vector2i& pos, const Vector2i& rel) override;
-  void up(const Vector2i& pos) override;
-  void down(const Vector2i& pos) override;
+  void move(Vector2i const& pos, Vector2i const& rel) override;
+  void up(Vector2i const& pos) override;
+  void down(Vector2i const& pos) override;
 
   void draw(wstdisplay::GraphicsContext& gc) override;
-  void update(const Vector2i& pos, float delta);
+  void update(Vector2i const& pos, float delta);
 
 private:
   Vector2i mouse_pos;
@@ -37,8 +37,8 @@ private:
   Vector2f click_pos;
 
 private:
-  ZoomRectTool (const ZoomRectTool&);
-  ZoomRectTool& operator= (const ZoomRectTool&);
+  ZoomRectTool (ZoomRectTool const&);
+  ZoomRectTool& operator= (ZoomRectTool const&);
 };
 
 #endif

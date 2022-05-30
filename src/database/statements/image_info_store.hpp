@@ -25,7 +25,7 @@ public:
     m_stmt(db, "INSERT OR REPLACE INTO image (resource_id, width, height) SELECT ?1, ?2, ?3;")
   {}
 
-  RowId operator()(const ImageInfo& image_info)
+  RowId operator()(ImageInfo const& image_info)
   {
     m_stmt.bind(1, image_info.get_resource_id().get_id());
     m_stmt.bind(2, image_info.get_width());
@@ -40,8 +40,8 @@ private:
   SQLite::Statement   m_stmt;
 
 private:
-  ImageInfoStore(const ImageInfoStore&) = delete;
-  ImageInfoStore& operator=(const ImageInfoStore&) = delete;
+  ImageInfoStore(ImageInfoStore const&) = delete;
+  ImageInfoStore& operator=(ImageInfoStore const&) = delete;
 };
 
 #endif

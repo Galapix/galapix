@@ -31,7 +31,7 @@ PanTool::~PanTool()
 }
 
 void
-PanTool::move(const Vector2i& pos, const Vector2i& rel)
+PanTool::move(Vector2i const& pos, Vector2i const& rel)
 {
   mouse_pos = pos;
 
@@ -48,14 +48,14 @@ PanTool::move(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-PanTool::up(const Vector2i& pos)
+PanTool::up(Vector2i const& pos)
 {
   mouse_pos   = pos;
   move_active = false;
 }
 
 void
-PanTool::down(const Vector2i& pos)
+PanTool::down(Vector2i const& pos)
 {
   mouse_pos   = pos;
   move_active = true;

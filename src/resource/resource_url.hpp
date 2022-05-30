@@ -23,17 +23,17 @@ class ResourceURL
 {
 public:
   /** scheme ":" [ "//" authority ] path */
-  static ResourceURL from_string(const std::string& url);
+  static ResourceURL from_string(std::string const& url);
 
 public:
   ResourceURL() : m_scheme(), m_authority(), m_path() {}
 
-  ResourceURL(const std::string& scheme,
-              const std::string& authority,
-              const std::string& path);
+  ResourceURL(std::string const& scheme,
+              std::string const& authority,
+              std::string const& path);
 
-  ResourceURL(const std::string& scheme,
-              const std::string& path);
+  ResourceURL(std::string const& scheme,
+              std::string const& path);
 
   /** Usually "http" or "file" */
   std::string get_scheme() const { return m_scheme; }
@@ -46,9 +46,9 @@ public:
 
   std::string str() const;
 
-  bool operator==(const ResourceURL& other) const;
-  bool operator!=(const ResourceURL& other) const;
-  bool operator<(const ResourceURL& other) const;
+  bool operator==(ResourceURL const& other) const;
+  bool operator!=(ResourceURL const& other) const;
+  bool operator<(ResourceURL const& other) const;
 
 private:
   std::string m_scheme;

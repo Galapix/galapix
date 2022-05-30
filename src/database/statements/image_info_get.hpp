@@ -30,7 +30,7 @@ public:
            "  image.resource_id = ?;")
   {}
 
-  std::optional<ImageInfo> operator()(const ResourceInfo& resource_info)
+  std::optional<ImageInfo> operator()(ResourceInfo const& resource_info)
   {
     m_stmt.bind(1, resource_info.get_id().get_id());
     SQLiteReader reader(m_stmt);
@@ -52,8 +52,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  ImageInfoGet(const ImageInfoGet&) = delete;
-  ImageInfoGet& operator=(const ImageInfoGet&) = delete;
+  ImageInfoGet(ImageInfoGet const&) = delete;
+  ImageInfoGet& operator=(ImageInfoGet const&) = delete;
 };
 
 #endif

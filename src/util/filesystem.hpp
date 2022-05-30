@@ -25,37 +25,37 @@ private:
   static std::string home_directory;
 
 public:
-  static std::string find_exe(const std::string& name);
+  static std::string find_exe(std::string const& name);
 
-  static bool is_directory(const std::string& pathname);
-  static bool exist(const std::string& pathname);
-  static void mkdir(const std::string& pathname);
-  static void remove(const std::string& filename);
-  static std::vector<std::string> open_directory(const std::string& pathname);
+  static bool is_directory(std::string const& pathname);
+  static bool exist(std::string const& pathname);
+  static void mkdir(std::string const& pathname);
+  static void remove(std::string const& filename);
+  static std::vector<std::string> open_directory(std::string const& pathname);
 
-  static void open_directory_recursivly(const std::string& pathname, std::vector<std::string>& lst);
+  static void open_directory_recursivly(std::string const& pathname, std::vector<std::string>& lst);
 
-  static void readlines_from_file(const std::string& pathname, std::vector<std::string>& lst);
+  static void readlines_from_file(std::string const& pathname, std::vector<std::string>& lst);
 
-  static std::string getxattr(const std::string& pathname);
+  static std::string getxattr(std::string const& pathname);
   static std::string get_home() { return home_directory; }
 
-  static std::string realpath_system(const std::string& pathname);
-  static std::string realpath_fast(const std::string& pathname);
-  static std::string realpath(const std::string& pathname);
+  static std::string realpath_system(std::string const& pathname);
+  static std::string realpath_fast(std::string const& pathname);
+  static std::string realpath(std::string const& pathname);
 
-  static std::string get_extension(const std::string& pathname);
-  static bool has_extension(const std::string& filename, const std::string& ext);
-  static void copy_mtime(const std::string& from_filename, const std::string& to_filename);
+  static std::string get_extension(std::string const& pathname);
+  static bool has_extension(std::string const& filename, std::string const& ext);
+  static void copy_mtime(std::string const& from_filename, std::string const& to_filename);
 
   /** read the first 512 bytes of the archive for magic detection */
-  static std::string  get_magic(const std::string& filename);
+  static std::string  get_magic(std::string const& filename);
 
-  static time_t get_mtime(const std::string& filename);
-  static size_t get_size(const std::string& filename);
+  static time_t get_mtime(std::string const& filename);
+  static size_t get_size(std::string const& filename);
 
   /** Generate a recursive list of all images in pathname */
-  static void generate_image_file_list(const std::string& pathname, std::vector<URL>& file_list);
+  static void generate_image_file_list(std::string const& pathname, std::vector<URL>& file_list);
 
   static void init();
   static void deinit();

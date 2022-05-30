@@ -28,7 +28,7 @@
 class Database
 {
 public:
-  static Database create(const std::string& prefix);
+  static Database create(std::string const& prefix);
 
 public:
   Database(std::unique_ptr<SQLite::Database> db,
@@ -41,7 +41,7 @@ public:
   ResourceDatabase& get_resources() { return *m_resources; }
   TileDatabaseInterface& get_tiles() { return *m_tiles; }
 
-  void delete_file_entry(const RowId& fileid);
+  void delete_file_entry(RowId const& fileid);
 
   void cleanup();
 
@@ -53,8 +53,8 @@ private:
   std::unique_ptr<TileDatabaseInterface> m_tiles;
 
 private:
-  Database(const Database&) = delete;
-  Database& operator=(const Database&) = delete;
+  Database(Database const&) = delete;
+  Database& operator=(Database const&) = delete;
 };
 
 #endif

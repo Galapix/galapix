@@ -48,22 +48,22 @@ public:
       containing a file, then this callback gets called. The user
       needs to return a GeneratorCallbacksPtr that is applied to the
       child resource */
-  virtual GeneratorCallbacksPtr on_child_resource(const ResourceLocator& locator) = 0;
+  virtual GeneratorCallbacksPtr on_child_resource(ResourceLocator const& locator) = 0;
 
   /** Once the file is opened and the SHA1 calculated, the BlobInfo is returned */
-  virtual void on_blob_info (const BlobInfo& blob_info) = 0;
+  virtual void on_blob_info (BlobInfo const& blob_info) = 0;
 
   /** This function gets called as soon as the generator has
       determined the resource type of the given locator. */
-  virtual void on_resource_name (const ResourceName& resource_name) = 0;
+  virtual void on_resource_name (ResourceName const& resource_name) = 0;
 
   /** Called only on archives and contains info on the files within an
       archive */
-  virtual void on_archive_data (const ArchiveInfo& archive_info) = 0;
+  virtual void on_archive_data (ArchiveInfo const& archive_info) = 0;
 
   /** Called only for images and contains information on width/height
       as well as the actual image tiles */
-  virtual void on_image_data (const ImageData& image_data) = 0;
+  virtual void on_image_data (ImageData const& image_data) = 0;
 
   /** Called when the status changes, the status indicates if
       generation was done completely or incrementally. */
@@ -71,7 +71,7 @@ public:
 
   /** Called when an error occured, no further processing will be done
       after this point. */
-  virtual void on_error(ResourceStatus status, const std::string& err) = 0;
+  virtual void on_error(ResourceStatus status, std::string const& err) = 0;
 };
 
 #endif

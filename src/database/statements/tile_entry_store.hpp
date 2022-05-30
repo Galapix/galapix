@@ -27,7 +27,7 @@ public:
     // FIXME: This is brute force and doesn't handle collisions
   {}
 
-  void operator()(const TileEntry& tile_)
+  void operator()(TileEntry const& tile_)
   {
     TileEntry tile = tile_;
 
@@ -78,8 +78,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  TileEntryStore(const TileEntryStore&);
-  TileEntryStore& operator=(const TileEntryStore&);
+  TileEntryStore(TileEntryStore const&);
+  TileEntryStore& operator=(TileEntryStore const&);
 };
 
 #endif

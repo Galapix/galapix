@@ -53,8 +53,8 @@ private:
   JobHandles m_job_handles;
 
 private:
-  JobHandleGroup(const JobHandleGroup&);
-  JobHandleGroup& operator=(const JobHandleGroup&);
+  JobHandleGroup(JobHandleGroup const&);
+  JobHandleGroup& operator=(JobHandleGroup const&);
 };
 
 #endif

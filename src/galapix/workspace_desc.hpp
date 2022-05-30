@@ -30,7 +30,7 @@ public:
 class WorkspaceDesc
 {
 public:
-  void add_image(const std::string& filename);
+  void add_image(std::string const& filename);
 
 public:
   std::vector<ImageDesc> images;

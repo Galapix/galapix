@@ -138,7 +138,7 @@ GtkViewerWidget::on_resize(int width, int height)
 }
 
 bool
-GtkViewerWidget::on_render(const Glib::RefPtr<Gdk::GLContext>& context)
+GtkViewerWidget::on_render(Glib::RefPtr<Gdk::GLContext> const& context)
 {
   log_trace("GtkViewerWidget::on_render()");
   Gtk::GLArea::on_render(context);

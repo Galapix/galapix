@@ -30,7 +30,7 @@
 
 namespace {
 
-int get_max_scale(const Size& size, int tilesize)
+int get_max_scale(Size const& size, int tilesize)
 {
   int width = std::max(size.width(), size.height());
   int i = 0;
@@ -46,7 +46,7 @@ int get_max_scale(const Size& size, int tilesize)
 
 } // namespace
 
-ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size& size, int tilesize,
+ZoomifyTileProvider::ZoomifyTileProvider(std::string const& basedir, Size const& size, int tilesize,
                                          JobManager& job_manager) :
   m_size(size),
   m_tilesize(tilesize),
@@ -75,7 +75,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(const std::string& basedir, const Size&
 }
 
 std::shared_ptr<ZoomifyTileProvider>
-ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
+ZoomifyTileProvider::create(URL const& url, JobManager& job_manager)
 {
   std::string content = url.get_blob().str();
 
@@ -104,7 +104,7 @@ ZoomifyTileProvider::create(const URL& url, JobManager& job_manager)
 }
 
 int
-ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
+ZoomifyTileProvider::get_tile_group(int scale, Vector2i const& pos)
 {
   int tilenum = (m_info[static_cast<size_t>(scale)].m_size.width() * pos.y() + pos.x()) +
     m_info[static_cast<size_t>(scale)].m_previous_tiles_count;
@@ -113,7 +113,7 @@ ZoomifyTileProvider::get_tile_group(int scale, const Vector2i& pos)
 }
 
 JobHandle
-ZoomifyTileProvider::request_tile(int scale, const Vector2i& pos,
+ZoomifyTileProvider::request_tile(int scale, Vector2i const& pos,
                                   const std::function<void (Tile)>& callback)
 {
   int tile_group = get_tile_group(scale, pos);

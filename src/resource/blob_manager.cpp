@@ -39,7 +39,7 @@ BlobManager::~BlobManager()
 }
 
 void
-BlobManager::request_blob(const ResourceLocator& locator,
+BlobManager::request_blob(ResourceLocator const& locator,
                           const std::function<void (Failable<BlobAccessorPtr>)>& callback)
 {
   // register_request()
@@ -53,7 +53,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
          try
          {
            BlobAccessorPtr blob = std::make_shared<BlobAccessor>(url.get_path());
-           for(const auto& handler : locator.get_handler())
+           for(auto const& handler : locator.get_handler())
            {
              assert(blob->has_stdio_name());
              blob = std::make_unique<BlobAccessor>(m_archive_mgr.get_file(blob->get_stdio_name(),
@@ -89,7 +89,7 @@ BlobManager::request_blob(const ResourceLocator& locator,
                 try
                 {
                   BlobAccessorPtr blob = std::make_shared<BlobAccessor>(std::move(result.data));
-                  for(const auto& handler : locator.get_handler())
+                  for(auto const& handler : locator.get_handler())
                   {
                     assert(blob->has_stdio_name());
                     blob = std::make_shared<BlobAccessor>(m_archive_mgr.get_file(blob->get_stdio_name(),

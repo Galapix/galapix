@@ -27,7 +27,7 @@ MemoryTileDatabase::MemoryTileDatabase() :
 }
 
 bool
-MemoryTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int scale)
+MemoryTileDatabase::has_tile(RowId const& image_id, Vector2i const& pos, int scale)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
@@ -43,7 +43,7 @@ MemoryTileDatabase::has_tile(const RowId& image_id, const Vector2i& pos, int sca
 }
 
 bool
-MemoryTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out)
+MemoryTileDatabase::get_tile(RowId const& image_id, int scale, Vector2i const& pos, TileEntry& tile_out)
 {
   for(std::vector<TileEntry>::iterator i = m_cache.begin(); i != m_cache.end(); ++i)
   {
@@ -61,9 +61,9 @@ MemoryTileDatabase::get_tile(const RowId& image_id, int scale, const Vector2i& p
 }
 
 void
-MemoryTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles_out)
+MemoryTileDatabase::get_tiles(RowId const& image_id, std::vector<TileEntry>& tiles_out)
 {
-  for(const auto& tile_entry : m_cache)
+  for(auto const& tile_entry : m_cache)
   {
     if (tile_entry.get_image_id() == image_id)
     {
@@ -73,7 +73,7 @@ MemoryTileDatabase::get_tiles(const RowId& image_id, std::vector<TileEntry>& til
 }
 
 bool
-MemoryTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out)
+MemoryTileDatabase::get_min_max_scale(RowId const& image_id, int& min_scale_out, int& max_scale_out)
 {
   int min_scale = -1;
   int max_scale = -1;
@@ -115,22 +115,22 @@ MemoryTileDatabase::get_min_max_scale(const RowId& image_id, int& min_scale_out,
 }
 
 void
-MemoryTileDatabase::store_tile(const RowId& image_id, const Tile& tile)
+MemoryTileDatabase::store_tile(RowId const& image_id, Tile const& tile)
 {
   m_cache.push_back(TileEntry(image_id, tile.get_scale(), tile.get_pos(), tile.get_surface()));
 }
 
 void
-MemoryTileDatabase::store_tiles(const std::vector<TileEntry>& tiles)
+MemoryTileDatabase::store_tiles(std::vector<TileEntry> const& tiles)
 {
   m_cache.insert(m_cache.end(), tiles.begin(), tiles.end());
 }
 
 void
-MemoryTileDatabase::delete_tiles(const RowId& image_id)
+MemoryTileDatabase::delete_tiles(RowId const& image_id)
 {
   m_cache.erase(std::remove_if(m_cache.begin(), m_cache.end(),
-                               [&](const TileEntry& tile_entry) {
+                               [&](TileEntry const& tile_entry) {
                                  return tile_entry.get_image_id() == image_id;
                                }),
                 m_cache.end());

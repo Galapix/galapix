@@ -37,10 +37,10 @@ public:
     m_password()
   {}
 
-  ArchiveEntry(const RowId& id,
-               const RowId& blob_id,
+  ArchiveEntry(RowId const& id,
+               RowId const& blob_id,
                Handler handler;
-               const std::string& password) :
+               std::string const& password) :
     m_id(id),
     m_blob_id(blob_id),
     m_handler(handler),
@@ -58,8 +58,8 @@ private:
   std::string m_password;
 
 private:
-  ArchiveEntry(const ArchiveEntry&);
-  ArchiveEntry& operator=(const ArchiveEntry&);
+  ArchiveEntry(ArchiveEntry const&);
+  ArchiveEntry& operator=(ArchiveEntry const&);
 };
 
 #endif

@@ -18,7 +18,7 @@
 
 #include <logmich/log.hpp>
 
-DownloadCache::DownloadCache(const std::string& cache_directory) :
+DownloadCache::DownloadCache(std::string const& cache_directory) :
   m_cache_directory(cache_directory)
 {
 
@@ -30,7 +30,7 @@ DownloadCache::~DownloadCache()
 }
 
 std::optional<DownloadResult>
-DownloadCache::get(const std::string& url)
+DownloadCache::get(std::string const& url)
 {
   // cache download results in SQLite
   //
@@ -43,7 +43,7 @@ DownloadCache::get(const std::string& url)
 }
 
 void
-DownloadCache::store(const std::string& url, const DownloadResult& result)
+DownloadCache::store(std::string const& url, DownloadResult const& result)
 {
   log_error("not implemented: {}", url);
 }

@@ -24,7 +24,7 @@ class Failable
 {
 public:
   template<typename E>
-  static Failable<T> from_exception(const E& e)
+  static Failable<T> from_exception(E const& e)
   {
     return Failable<T>(std::make_exception_ptr(e));
   }
@@ -35,20 +35,20 @@ public:
   {
   }
 
-  Failable(const std::exception_ptr& eptr) :
+  Failable(std::exception_ptr const& eptr) :
     m_initialized(false),
     m_eptr(eptr)
   {
   }
 
-  Failable(const T& obj) :
+  Failable(T const& obj) :
     m_initialized(false),
     m_eptr()
   {
     construct(obj);
   }
 
-  Failable(const Failable& rhs) :
+  Failable(Failable const& rhs) :
     m_initialized(false),
     m_eptr(rhs.m_eptr)
   {
@@ -58,7 +58,7 @@ public:
     }
   }
 
-  Failable& operator=(const Failable& rhs)
+  Failable& operator=(Failable const& rhs)
   {
     if (this != &rhs)
     {
@@ -94,12 +94,12 @@ public:
     destroy();
   }
 
-  void reset(const T& data)
+  void reset(T const& data)
   {
     assign(data);
   }
 
-  const T&  get() const
+  T const&  get() const
   {
     if (m_eptr != nullptr)
     {
@@ -124,7 +124,7 @@ public:
   }
 
 private:
-  void construct(const T& rhs)
+  void construct(T const& rhs)
   {
     assert(m_initialized == false);
 
@@ -132,7 +132,7 @@ private:
     m_initialized = true;
   }
 
-  void assign(const T& rhs)
+  void assign(T const& rhs)
   {
     if (is_initialized())
     {

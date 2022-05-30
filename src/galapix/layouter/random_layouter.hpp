@@ -28,11 +28,11 @@ class RandomLayouter : public Layouter
 public:
   RandomLayouter();
 
-  void layout(const ImageCollection& images) override;
+  void layout(ImageCollection const& images) override;
 
 private:
-  RandomLayouter(const RandomLayouter&);
-  RandomLayouter& operator=(const RandomLayouter&);
+  RandomLayouter(RandomLayouter const&);
+  RandomLayouter& operator=(RandomLayouter const&);
 };
 
 #endif

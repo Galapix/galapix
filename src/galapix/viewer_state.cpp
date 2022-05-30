@@ -29,7 +29,7 @@ ViewerState::ViewerState(Viewer& viewer) :
 }
 
 void
-ViewerState::zoom(float factor, const Vector2i& pos)
+ViewerState::zoom(float factor, Vector2i const& pos)
 {
   scale *= factor;
 
@@ -64,7 +64,7 @@ ViewerState::set_angle(float r)
 }
 
 void
-ViewerState::set_offset(const Vector2f& o)
+ViewerState::set_offset(Vector2f const& o)
 {
   offset = o;
 }
@@ -76,7 +76,7 @@ ViewerState::set_scale(float s)
 }
 
 void
-ViewerState::move(const Vector2f& pos)
+ViewerState::move(Vector2f const& pos)
 {
   // FIXME: Implement a proper 2D Matrix instead of this hackery
   offset = Vector2f(offset.x() + (pos.x() * cosf(angle/180.0f*glm::pi<float>()) + pos.y() * sinf(angle/180.0f*glm::pi<float>())),
@@ -84,13 +84,13 @@ ViewerState::move(const Vector2f& pos)
 }
 
 Vector2f
-ViewerState::screen2world(const Vector2i& pos) const
+ViewerState::screen2world(Vector2i const& pos) const
 {
   return (Vector2f(pos).as_vec() - offset.as_vec()) / scale;
 }
 
 Rectf
-ViewerState::screen2world(const Rect& rect) const
+ViewerState::screen2world(Rect const& rect) const
 {
   return Rectf((static_cast<float>(rect.left())   - offset.x()) / scale,
                (static_cast<float>(rect.top())    - offset.y()) / scale,
@@ -99,7 +99,7 @@ ViewerState::screen2world(const Rect& rect) const
 }
 
 void
-ViewerState::zoom_to(const Size& display_, const Rectf& rect)
+ViewerState::zoom_to(Size const& display_, Rectf const& rect)
 {
   assert(rect);
 

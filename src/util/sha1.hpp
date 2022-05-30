@@ -31,9 +31,9 @@ class SHA1
 {
 public:
   static SHA1 from_mem(std::span<uint8_t const> data);
-  static SHA1 from_mem(const std::string& str);
-  static SHA1 from_file(const std::string& filename);
-  static SHA1 from_string(const std::string& str);
+  static SHA1 from_mem(std::string const& str);
+  static SHA1 from_file(std::string const& filename);
+  static SHA1 from_string(std::string const& str);
 
 public:
   SHA1();
@@ -46,14 +46,14 @@ public:
 
   explicit operator bool() const;
 
-  bool operator==(const SHA1& rhs) const;
-  bool operator!=(const SHA1& rhs) const;
+  bool operator==(SHA1 const& rhs) const;
+  bool operator!=(SHA1 const& rhs) const;
 
 private:
   std::array<uint8_t, 20> m_data;
 };
 
-std::ostream& operator<<(std::ostream& os, const SHA1& sha1);
+std::ostream& operator<<(std::ostream& os, SHA1 const& sha1);
 
 } // namespace galapix
 

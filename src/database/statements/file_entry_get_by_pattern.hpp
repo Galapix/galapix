@@ -32,7 +32,7 @@ public:
            "  file.path GLOB ?1;")
   {}
 
-  void operator()(const std::string& pattern, std::vector<FileEntry>& entries_out)
+  void operator()(std::string const& pattern, std::vector<FileEntry>& entries_out)
   {
     m_stmt.bind(1, pattern);
     SQLiteReader reader(m_stmt);
@@ -45,8 +45,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  FileEntryGetByPattern(const FileEntryGetByPattern&);
-  FileEntryGetByPattern& operator=(const FileEntryGetByPattern&);
+  FileEntryGetByPattern(FileEntryGetByPattern const&);
+  FileEntryGetByPattern& operator=(FileEntryGetByPattern const&);
 };
 
 #endif

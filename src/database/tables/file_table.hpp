@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  FileTable(const FileTable&);
-  FileTable& operator=(const FileTable&);
+  FileTable(FileTable const&);
+  FileTable& operator=(FileTable const&);
 };
 
 #endif

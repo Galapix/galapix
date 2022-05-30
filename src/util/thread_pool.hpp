@@ -37,7 +37,7 @@ public:
   ThreadPool(int num_threads = 4, ShutdownPolicy shutdown_policy = kWaitForAllTasks);
   ~ThreadPool();
 
-  void schedule(const Task& task);
+  void schedule(Task const& task);
   void abort();
 
   bool is_shutting_down() const { return m_shutdown; }
@@ -55,8 +55,8 @@ private:
   ThreadMessageQueue2<Task> m_queue;
 
 private:
-  ThreadPool(const ThreadPool&) = delete;
-  ThreadPool& operator=(const ThreadPool&) = delete;
+  ThreadPool(ThreadPool const&) = delete;
+  ThreadPool& operator=(ThreadPool const&) = delete;
 };
 
 #endif

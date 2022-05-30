@@ -35,8 +35,8 @@ public:
   virtual void set_trackball_mode(bool active) = 0;
 
 private:
-  System(const System&) = delete;
-  System& operator=(const System&) = delete;
+  System(System const&) = delete;
+  System& operator=(System const&) = delete;
 };
 
 #endif

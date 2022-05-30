@@ -32,7 +32,7 @@
 
 using namespace surf;
 
-Image::Image(const URL& url, TileProviderPtr provider) :
+Image::Image(URL const& url, TileProviderPtr provider) :
   m_url(url),
   m_provider(std::move(provider)),
   m_cache(),
@@ -90,7 +90,7 @@ Image::cache_cleanup()
 }
 
 void
-Image::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
+Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
   if (!m_provider)
   {

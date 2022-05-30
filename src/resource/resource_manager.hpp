@@ -51,13 +51,13 @@ public:
                   arxp::ArchiveManager& archive_mgr);
   ~ResourceManager();
 
-  void request_resource_metadata(const ResourceLocator& locator,
-                                 const std::function<void (const Failable<ResourceMetadata>&)>& callback);
+  void request_resource_metadata(ResourceLocator const& locator,
+                                 const std::function<void (Failable<ResourceMetadata> const&)>& callback);
 
-  void request_tile_info(const ImageInfo& image, int scale, int x, int y,
-                         const std::function<void (const Failable<TileInfo>&)>& callback);
+  void request_tile_info(ImageInfo const& image, int scale, int x, int y,
+                         const std::function<void (Failable<TileInfo> const&)>& callback);
 
-  void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
+  void request_resource_info(ResourceLocator const& locator, BlobInfo const& blob,
                              const std::function<void (Failable<ResourceInfo>)>& callback);
 
 private:
@@ -67,8 +67,8 @@ private:
   arxp::ArchiveManager& m_archive_mgr;
 
 private:
-  ResourceManager(const ResourceManager&) = delete;
-  ResourceManager& operator=(const ResourceManager&) = delete;
+  ResourceManager(ResourceManager const&) = delete;
+  ResourceManager& operator=(ResourceManager const&) = delete;
 };
 
 #endif

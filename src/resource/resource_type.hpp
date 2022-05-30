@@ -27,7 +27,7 @@ enum class ResourceType
   Unknown, Blob, Image, Video, Archive, Collection
 };
 
-ResourceType ResourceType_from_string(const std::string& value);
+ResourceType ResourceType_from_string(std::string const& value);
 std::ostream& operator<<(std::ostream& os, ResourceType type);
 
 #endif

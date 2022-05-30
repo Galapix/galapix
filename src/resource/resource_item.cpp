@@ -16,7 +16,7 @@
 
 #include "resource_item.hpp"
 
-ResourceItem::ResourceItem(const ResourceLocator& locator) :
+ResourceItem::ResourceItem(ResourceLocator const& locator) :
   m_locator(locator),
   m_resource_info()
 {
@@ -40,7 +40,7 @@ ResourceItem::on_shutdown()
 #endif
 
 void
-ResourceItem::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
+ResourceItem::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
 }
 
@@ -50,7 +50,7 @@ ResourceItem::draw_mark(wstdisplay::GraphicsContext& gc)
 }
 
 void
-ResourceItem::receive_resource_info(const ResourceInfo& resource_info)
+ResourceItem::receive_resource_info(ResourceInfo const& resource_info)
 {
   // store resource_info
   m_resource_info = resource_info;

@@ -19,7 +19,7 @@
 #include "util/filesystem.hpp"
 
 FileInfo
-FileInfo::from_file(const std::string& filename)
+FileInfo::from_file(std::string const& filename)
 {
   return FileInfo(filename,
                   Filesystem::get_mtime(filename),

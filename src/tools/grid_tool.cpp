@@ -32,13 +32,13 @@ GridTool::GridTool(Viewer* viewer_)
 }
 
 void
-GridTool::move(const Vector2i& pos, const Vector2i& rel)
+GridTool::move(Vector2i const& pos, Vector2i const& rel)
 {
   mouse_pos = pos;
 }
 
 void
-GridTool::up  (const Vector2i& pos)
+GridTool::up  (Vector2i const& pos)
 {
   if (drag_active)
   {
@@ -56,7 +56,7 @@ GridTool::up  (const Vector2i& pos)
 }
 
 void
-GridTool::down(const Vector2i& pos)
+GridTool::down(Vector2i const& pos)
 {
   click_pos = pos;
   drag_active = true;

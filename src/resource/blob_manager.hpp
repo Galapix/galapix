@@ -45,12 +45,12 @@ public:
               arxp::ArchiveManager& archive_mgr);
   ~BlobManager();
 
-  void request_blob(const ResourceLocator& locator,
+  void request_blob(ResourceLocator const& locator,
                     const std::function<void (Failable<BlobAccessorPtr>)>& callback);
 
 private:
-  void register_request(const ResourceLocator& locator);
-  void unregister_request(const ResourceLocator& locator);
+  void register_request(ResourceLocator const& locator);
+  void unregister_request(ResourceLocator const& locator);
 
 private:
   DownloadManager& m_download_mgr;
@@ -61,8 +61,8 @@ private:
   std::vector<BlobRequest> m_requests;
 
 private:
-  BlobManager(const BlobManager&) = delete;
-  BlobManager& operator=(const BlobManager&) = delete;
+  BlobManager(BlobManager const&) = delete;
+  BlobManager& operator=(BlobManager const&) = delete;
 };
 
 #endif

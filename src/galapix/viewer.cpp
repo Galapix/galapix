@@ -224,7 +224,7 @@ Viewer::update(float delta)
 }
 
 void
-Viewer::on_mouse_motion(const Vector2i& pos, const Vector2i& rel)
+Viewer::on_mouse_motion(Vector2i const& pos, Vector2i const& rel)
 {
   m_mouse_pos = pos;
 
@@ -236,7 +236,7 @@ Viewer::on_mouse_motion(const Vector2i& pos, const Vector2i& rel)
 }
 
 void
-Viewer::on_mouse_button_down(const Vector2i& pos, MouseButton btn)
+Viewer::on_mouse_button_down(Vector2i const& pos, MouseButton btn)
 {
   m_mouse_pos = pos;
 
@@ -257,7 +257,7 @@ Viewer::on_mouse_button_down(const Vector2i& pos, MouseButton btn)
 }
 
 void
-Viewer::on_mouse_button_up(const Vector2i& pos, MouseButton btn)
+Viewer::on_mouse_button_up(Vector2i const& pos, MouseButton btn)
 {
   m_mouse_pos = pos;
 
@@ -332,7 +332,7 @@ Viewer::is_active() const
 }
 
 void
-Viewer::set_grid(const Vector2f& offset, const Sizef& size)
+Viewer::set_grid(Vector2f const& offset, Sizef const& size)
 {
   if (m_pin_grid)
   {
@@ -688,7 +688,7 @@ Viewer::print_state()
 }
 
 void
-Viewer::reshape(const Size& size)
+Viewer::reshape(Size const& size)
 {
   m_size = size;
 }

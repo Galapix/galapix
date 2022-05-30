@@ -30,10 +30,10 @@ private:
 
 public:
   DownloadTransfer(DownloadManager::TransferHandle id,
-                   const std::string& url,
-                   const std::optional<std::string>& post_data,
-                   const std::function<void (const DownloadResult&)>& callback,
-                   const std::function<DownloadManager::ProgressFunc>& progress_callback);
+                   std::string const& url,
+                   std::optional<std::string> const& post_data,
+                   const std::function<void (DownloadResult const&)>& callback,
+                   std::function<DownloadManager::ProgressFunc> const& progress_callback);
   ~DownloadTransfer();
 
 public:
@@ -46,12 +46,12 @@ public:
 
   DownloadProgress progress;
 
-  std::function<void (const DownloadResult&)> callback;
+  std::function<void (DownloadResult const&)> callback;
   std::function<DownloadManager::ProgressFunc> progress_callback;
 
 private:
-  DownloadTransfer(const DownloadTransfer&) = delete;
-  DownloadTransfer& operator=(const DownloadTransfer&) = delete;
+  DownloadTransfer(DownloadTransfer const&) = delete;
+  DownloadTransfer& operator=(DownloadTransfer const&) = delete;
 };
 
 #endif

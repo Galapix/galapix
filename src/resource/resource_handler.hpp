@@ -27,7 +27,7 @@ public:
     m_type(), m_name(), m_args()
   {}
 
-  ResourceHandler(const std::string& type, const std::string& name, const std::string& args = std::string()) :
+  ResourceHandler(std::string const& type, std::string const& name, std::string const& args = std::string()) :
     m_type(type), m_name(name), m_args(args)
   {}
 
@@ -37,10 +37,10 @@ public:
 
   std::string str() const;
 
-  static ResourceHandler from_string(const std::string& handler);
+  static ResourceHandler from_string(std::string const& handler);
 
-  bool operator==(const ResourceHandler& other) const;
-  bool operator!=(const ResourceHandler& other) const;
+  bool operator==(ResourceHandler const& other) const;
+  bool operator!=(ResourceHandler const& other) const;
 
 private:
   std::string m_type;

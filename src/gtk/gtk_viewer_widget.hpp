@@ -34,7 +34,7 @@ public:
   bool on_timeout();
   Glib::RefPtr<Gdk::GLContext> on_create_context() override;
   void on_resize(int width, int height) override;
-  bool on_render(const Glib::RefPtr<Gdk::GLContext>& context) override;
+  bool on_render(Glib::RefPtr<Gdk::GLContext> const& context) override;
 
   bool mouse_move(GdkEventMotion* event);
   bool mouse_down (GdkEventButton* event);
@@ -50,8 +50,8 @@ private:
   Vector2i mouse_pos;
 
 private:
-  GtkViewerWidget (const GtkViewerWidget&);
-  GtkViewerWidget& operator= (const GtkViewerWidget&);
+  GtkViewerWidget (GtkViewerWidget const&);
+  GtkViewerWidget& operator= (GtkViewerWidget const&);
 };
 
 #endif

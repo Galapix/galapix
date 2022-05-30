@@ -32,10 +32,10 @@
 using namespace surf;
 
 void
-TileGenerator::generate_old(const URL& url,
+TileGenerator::generate_old(URL const& url,
                             int m_min_scale_in_db, int m_max_scale_in_db,
                             int min_scale, int max_scale,
-                            const std::function<void(Tile)>& callback)
+                            std::function<void(Tile)> const& callback)
 {
   if ((true)) // verbose
   {
@@ -64,8 +64,8 @@ TileGenerator::generate_old(const URL& url,
 }
 
 void
-TileGenerator::generate(const URL& url, int min_scale, int max_scale,
-                        const std::function<void(Tile)>& callback)
+TileGenerator::generate(URL const& url, int min_scale, int max_scale,
+                        std::function<void(Tile)> const& callback)
 {
   // Load the image, try to load an already downsized version if possible
   Size original_size;
@@ -74,7 +74,7 @@ TileGenerator::generate(const URL& url, int min_scale, int max_scale,
 }
 
 SoftwareSurface
-TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
+TileGenerator::load_surface(URL const& url, int min_scale, Size* size)
 {
   // Load the image
   if (jpeg::filename_is_jpeg(url.str())) // FIXME: filename_is_jpeg() is ugly
@@ -115,7 +115,7 @@ TileGenerator::load_surface(const URL& url, int min_scale, Size* size)
 
 void
 TileGenerator::cut_into_tiles(SoftwareSurface surface,
-                              const Size& original_size,
+                              Size const& original_size,
                               int min_scale, int max_scale,
                               const std::function<void (Tile)>& callback)
 {

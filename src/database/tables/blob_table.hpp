@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  BlobTable(const BlobTable&) = delete;
-  BlobTable& operator=(const BlobTable&) = delete;
+  BlobTable(BlobTable const&) = delete;
+  BlobTable& operator=(BlobTable const&) = delete;
 };
 
 #endif

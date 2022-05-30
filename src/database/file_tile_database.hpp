@@ -24,39 +24,39 @@
 class FileTileDatabase : public TileDatabaseInterface
 {
 public:
-  FileTileDatabase(const std::string& prefix);
+  FileTileDatabase(std::string const& prefix);
   ~FileTileDatabase() override;
 
-  bool has_tile(const RowId& image_id, const Vector2i& pos, int scale) override;
-  bool get_tile(const RowId& image_id, int scale, const Vector2i& pos, TileEntry& tile_out) override;
-  void get_tiles(const RowId& image_id, std::vector<TileEntry>& tiles) override;
-  bool get_min_max_scale(const RowId& image_id, int& min_scale_out, int& max_scale_out) override;
+  bool has_tile(RowId const& image_id, Vector2i const& pos, int scale) override;
+  bool get_tile(RowId const& image_id, int scale, Vector2i const& pos, TileEntry& tile_out) override;
+  void get_tiles(RowId const& image_id, std::vector<TileEntry>& tiles) override;
+  bool get_min_max_scale(RowId const& image_id, int& min_scale_out, int& max_scale_out) override;
 
-  void store_tile(const RowId& image_id, const Tile& tile) override;
-  void store_tiles(const std::vector<TileEntry>& tiles) override;
+  void store_tile(RowId const& image_id, Tile const& tile) override;
+  void store_tiles(std::vector<TileEntry> const& tiles) override;
 
-  void delete_tiles(const RowId& image_id) override;
+  void delete_tiles(RowId const& image_id) override;
 
   void check() {}
 
   void flush_cache() {}
 
 private:
-  std::string get_directory(const RowId& file_id);
-  std::string get_filename(const Vector2i& pos, int scale);
+  std::string get_directory(RowId const& file_id);
+  std::string get_filename(Vector2i const& pos, int scale);
 
-  std::string get_complete_filename(const RowId& image_id, const Vector2i& pos, int scale);
-  std::string get_complete_directory(const RowId& file_id);
+  std::string get_complete_filename(RowId const& image_id, Vector2i const& pos, int scale);
+  std::string get_complete_directory(RowId const& file_id);
 
-  bool parse_filename(const std::string& filename, Vector2i* pos_out, int* scale_out, int* format);
-  void ensure_directory_exists(const RowId& file_id);
+  bool parse_filename(std::string const& filename, Vector2i* pos_out, int* scale_out, int* format);
+  void ensure_directory_exists(RowId const& file_id);
 
 private:
   std::string m_prefix;
 
 private:
-  FileTileDatabase(const FileTileDatabase&);
-  FileTileDatabase& operator=(const FileTileDatabase&);
+  FileTileDatabase(FileTileDatabase const&);
+  FileTileDatabase& operator=(FileTileDatabase const&);
 };
 
 #endif

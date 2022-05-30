@@ -28,7 +28,7 @@ public:
     m_stmt(db, "DELETE FROM file WHERE id = ?1;")
   {}
 
-  void operator()(const RowId& fileid)
+  void operator()(RowId const& fileid)
   {
     assert(fileid);
     m_stmt.bind(1, fileid.get_id());
@@ -40,8 +40,8 @@ private:
   SQLite::Statement m_stmt;
 
 private:
-  FileEntryDelete(const FileEntryDelete&);
-  FileEntryDelete& operator=(const FileEntryDelete&);
+  FileEntryDelete(FileEntryDelete const&);
+  FileEntryDelete& operator=(FileEntryDelete const&);
 };
 
 #endif

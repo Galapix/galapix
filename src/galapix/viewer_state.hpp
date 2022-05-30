@@ -31,21 +31,21 @@ public:
 
       @param zoom  amount by which should be zoomed
       @param pos   position in framebuffer coordinates */
-  void zoom(float factor, const Vector2i& pos);
+  void zoom(float factor, Vector2i const& pos);
   void zoom(float factor);
 
   /** pos is in screen coordinates */
-  void move(const Vector2f& pos);
+  void move(Vector2f const& pos);
 
   void rotate(float r);
   void set_angle(float r);
-  void set_offset(const Vector2f& o);
+  void set_offset(Vector2f const& o);
   void set_scale(float s);
 
-  void zoom_to(const Size& display, const Rectf& rect);
+  void zoom_to(Size const& display, Rectf const& rect);
 
-  Vector2f screen2world(const Vector2i& pos) const;
-  Rectf    screen2world(const Rect& rect) const;
+  Vector2f screen2world(Vector2i const& pos) const;
+  Rectf    screen2world(Rect const& rect) const;
 
   Vector2f get_offset() const { return offset; }
   float    get_scale()  const { return scale; }

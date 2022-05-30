@@ -30,7 +30,7 @@ public:
            "  file.path = ?1 AND blob.id = file.blob_id;")
   {}
 
-  std::optional<FileInfo> operator()(const std::string& path)
+  std::optional<FileInfo> operator()(std::string const& path)
   {
     m_stmt.bind(1, path);
     SQLiteReader reader(m_stmt);
@@ -55,8 +55,8 @@ private:
   SQLite::Statement   m_stmt;
 
 private:
-  FileInfoGetByPath(const FileInfoGetByPath&);
-  FileInfoGetByPath& operator=(const FileInfoGetByPath&);
+  FileInfoGetByPath(FileInfoGetByPath const&);
+  FileInfoGetByPath& operator=(FileInfoGetByPath const&);
 };
 
 #endif

@@ -108,7 +108,7 @@ JobHandle::wait()
   }
 }
 
-std::ostream& operator<<(std::ostream& os, const JobHandle& job_handle)
+std::ostream& operator<<(std::ostream& os, JobHandle const& job_handle)
 {
   return os << "JobHandle(this=" << job_handle.impl.get()
             << ", aborted=" << job_handle.is_aborted()

@@ -36,7 +36,7 @@ public:
     return m_id;
   }
 
-  bool operator==(const RowId& rhs) const
+  bool operator==(RowId const& rhs) const
   {
     if (m_id == 0 || rhs.m_id == 0)
     {
@@ -57,7 +57,7 @@ private:
   int64_t m_id;
 };
 
-std::ostream& operator<<(std::ostream& s, const RowId& id);
+std::ostream& operator<<(std::ostream& s, RowId const& id);
 
 #endif
 

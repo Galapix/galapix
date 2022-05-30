@@ -72,8 +72,8 @@ private:
   std::unique_ptr<Viewer> viewer;
 
 private:
-  GtkViewer (const GtkViewer&);
-  GtkViewer& operator= (const GtkViewer&);
+  GtkViewer (GtkViewer const&);
+  GtkViewer& operator= (GtkViewer const&);
 };
 
 #endif

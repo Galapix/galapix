@@ -117,10 +117,10 @@ SpiralLayouter::layout(WorkspaceItem& item)
 }
 
 void
-SpiralLayouter::layout(const ImageCollection& images)
+SpiralLayouter::layout(ImageCollection const& images)
 {
   reset();
-  for(const auto& i: images)
+  for(auto const& i: images)
   {
     layout(*i);
   }

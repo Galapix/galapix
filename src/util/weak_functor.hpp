@@ -37,7 +37,7 @@ template<typename F, typename C>
 class WeakFunctor
 {
 public:
-  WeakFunctor(const F& func, const C& obj) :
+  WeakFunctor(F const& func, C const& obj) :
     m_func(func),
     m_obj(obj)
   {}

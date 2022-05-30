@@ -54,10 +54,10 @@ public:
   const_reverse_iterator rend() const;
 
   WorkspaceItemPtr& front() { return m_images.front(); }
-  const WorkspaceItemPtr& front() const { return m_images.front(); }
+  WorkspaceItemPtr const& front() const { return m_images.front(); }
 
   WorkspaceItemPtr& back() { return m_images.back(); }
-  const WorkspaceItemPtr& back() const { return m_images.back(); }
+  WorkspaceItemPtr const& back() const { return m_images.back(); }
 
   size_type size() const;
   bool empty() const;
@@ -65,7 +65,7 @@ public:
   void erase(iterator first, iterator last) { m_images.erase(first, last); }
 
   WorkspaceItemPtr& operator[](size_type i) { return m_images[i]; }
-  const WorkspaceItemPtr& operator[](size_type i) const { return m_images[i]; }
+  WorkspaceItemPtr const& operator[](size_type i) const { return m_images[i]; }
 
 private:
   Images m_images;

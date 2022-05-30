@@ -28,8 +28,8 @@ private:
   SQLite::Database& m_db;
 
 private:
-  URLTable(const URLTable&) = delete;
-  URLTable& operator=(const URLTable&) = delete;
+  URLTable(URLTable const&) = delete;
+  URLTable& operator=(URLTable const&) = delete;
 };
 
 #endif

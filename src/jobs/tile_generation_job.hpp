@@ -31,13 +31,13 @@
 class TileGenerationJob : public Job
 {
 public:
-  TileGenerationJob(const OldFileEntry& file_entry, int min_scale_in_db, int max_scale_in_db);
+  TileGenerationJob(OldFileEntry const& file_entry, int min_scale_in_db, int max_scale_in_db);
   ~TileGenerationJob() override;
 
   /** Request a tile to be generated, returns true if the request will
       be honored, false if the tile generation is already in progress
       and the request has to be discarded */
-  bool request_tile(const JobHandle& job_handle, int scale, const Vector2i& pos,
+  bool request_tile(JobHandle const& job_handle, int scale, Vector2i const& pos,
                     const std::function<void (Tile)>& callback);
   void run() override;
 
@@ -45,10 +45,10 @@ public:
 
   bool is_aborted() override;
 
-  sigc::signal<void (const RowId&, const Tile&)>& sig_tile_callback() { return m_sig_tile_callback; }
+  sigc::signal<void (RowId const&, Tile const&)>& sig_tile_callback() { return m_sig_tile_callback; }
 
 private:
-  void process_tile(const Tile& tile);
+  void process_tile(Tile const& tile);
 
 private:
   struct TileRequest
@@ -58,8 +58,8 @@ private:
     Vector2i  pos;
     std::function<void (Tile)> callback;
 
-    TileRequest(const JobHandle& job_handle_,
-                int scale_, const Vector2i& pos_,
+    TileRequest(JobHandle const& job_handle_,
+                int scale_, Vector2i const& pos_,
                 const std::function<void (Tile)>& callback_) :
       job_handle(job_handle_),
       scale(scale_), pos(pos_),
@@ -98,7 +98,7 @@ private:
   using Tiles = std::vector<Tile>;
   Tiles m_tiles;
 
-  sigc::signal<void (const RowId&, const Tile&)> m_sig_tile_callback;
+  sigc::signal<void (RowId const&, Tile const&)> m_sig_tile_callback;
 };
 
 #endif

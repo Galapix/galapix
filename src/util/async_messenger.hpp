@@ -37,8 +37,8 @@ private:
   ThreadMessageQueue2<std::function<void ()> > m_queue;
 
 private:
-  AsyncMessenger(const AsyncMessenger&);
-  AsyncMessenger& operator=(const AsyncMessenger&);
+  AsyncMessenger(AsyncMessenger const&);
+  AsyncMessenger& operator=(AsyncMessenger const&);
 };
 
 #endif

@@ -39,14 +39,14 @@ public:
   DownloadManager();
   ~DownloadManager();
 
-  TransferHandle request_get(const std::string& url,
+  TransferHandle request_get(std::string const& url,
                              const std::function<void (DownloadResult)>& callback,
-                             const std::function<ProgressFunc>& progress_callback = {});
+                             std::function<ProgressFunc> const& progress_callback = {});
 
-  TransferHandle request_post(const std::string& url,
-                              const std::string& data,
+  TransferHandle request_post(std::string const& url,
+                              std::string const& data,
                               const std::function<void (DownloadResult)>& callback,
-                              const std::function<ProgressFunc>& progress_callback = {});
+                              std::function<ProgressFunc> const& progress_callback = {});
 
   void cancel_transfer(TransferHandle id);
   void cancel_all_transfers();
@@ -78,8 +78,8 @@ private:
   std::atomic<TransferHandle> m_next_transfer_handle;
 
 private:
-  DownloadManager(const DownloadManager&);
-  DownloadManager& operator=(const DownloadManager&);
+  DownloadManager(DownloadManager const&);
+  DownloadManager& operator=(DownloadManager const&);
 };
 
 #endif

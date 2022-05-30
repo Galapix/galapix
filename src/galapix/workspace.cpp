@@ -38,10 +38,10 @@ Workspace::Workspace() :
 }
 
 ImageCollection
-Workspace::get_images(const Rectf& rect) const
+Workspace::get_images(Rectf const& rect) const
 {
   ImageCollection result;
-  for(const auto& i: m_images)
+  for(auto const& i: m_images)
   {
     if (geom::contains(rect, i->get_image_rect()))
     {
@@ -52,7 +52,7 @@ Workspace::get_images(const Rectf& rect) const
 }
 
 WorkspaceItemPtr
-Workspace::get_image(const Vector2f& pos) const
+Workspace::get_image(Vector2f const& pos) const
 {
   for(ImageCollection::const_reverse_iterator i = m_images.rbegin(); i != m_images.rend(); ++i)
   {
@@ -66,7 +66,7 @@ Workspace::get_image(const Vector2f& pos) const
 }
 
 void
-Workspace::add_image(const WorkspaceItemPtr& image)
+Workspace::add_image(WorkspaceItemPtr const& image)
 {
   m_images.add(image);
 }
@@ -115,7 +115,7 @@ Workspace::layout_random()
 }
 
 void
-Workspace::draw(wstdisplay::GraphicsContext& gc, const Rectf& cliprect, float zoom)
+Workspace::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
   for(auto& i: m_images)
   {
@@ -161,7 +161,7 @@ void
 Workspace::sort()
 {
   std::sort(m_images.begin(), m_images.end(),
-            [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
+            [](WorkspaceItemPtr const& lhs, WorkspaceItemPtr const& rhs) {
               return strut::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
   relayout();
@@ -171,7 +171,7 @@ void
 Workspace::sort_reverse()
 {
   std::sort(m_images.rbegin(), m_images.rend(),
-            [](const WorkspaceItemPtr& lhs, const WorkspaceItemPtr& rhs) {
+            [](WorkspaceItemPtr const& lhs, WorkspaceItemPtr const& rhs) {
               return strut::numeric_less(lhs->get_url().str(), rhs->get_url().str());
             });
   relayout();
@@ -203,11 +203,11 @@ Workspace::cache_cleanup()
 }
 
 void
-Workspace::print_info(const Rectf& rect) const
+Workspace::print_info(Rectf const& rect) const
 {
   std::cout << "-------------------------------------------------------" << std::endl;
   std::cout << "Workspace Info:" << std::endl;
-  for(const auto& img: get_images(rect))
+  for(auto const& img: get_images(rect))
   {
     img->print_info();
   }
@@ -216,7 +216,7 @@ Workspace::print_info(const Rectf& rect) const
 }
 
 void
-Workspace::print_images(const Rectf& rect) const
+Workspace::print_images(Rectf const& rect) const
 {
   std::cout << "-- Visible images --------------------------------------" << std::endl;
   for(auto& img: get_images(rect))
@@ -229,14 +229,14 @@ Workspace::print_images(const Rectf& rect) const
 }
 
 void
-Workspace::select_images(const ImageCollection& images)
+Workspace::select_images(ImageCollection const& images)
 {
   m_selection->clear();
   m_selection->add_images(images);
 }
 
 bool
-Workspace::selection_clicked(const Vector2f& pos) const
+Workspace::selection_clicked(Vector2f const& pos) const
 {
   for(auto& i: *m_selection)
   {
@@ -261,7 +261,7 @@ Workspace::clear()
 }
 
 void
-Workspace::move_selection(const Vector2f& rel)
+Workspace::move_selection(Vector2f const& rel)
 {
   for(auto& i: *m_selection)
   {
@@ -280,7 +280,7 @@ void
 Workspace::delete_selection()
 {
   m_images.erase(std::remove_if(m_images.begin(), m_images.end(),
-                                [this](const WorkspaceItemPtr& image)->bool{
+                                [this](WorkspaceItemPtr const& image)->bool{
                                   for(auto& i: *m_selection)
                                   {
                                     if (i == image) {
@@ -342,7 +342,7 @@ Workspace::save(std::ostream& out)
   out << "(galapix-workspace\n"
       << "  (images\n";
 
-  for(const auto& i: m_images)
+  for(auto const& i: m_images)
   {
     // FIXME: Must escape the filename!
     out  << "    (image (url   \"" << i->get_url() << "\")\n"
@@ -358,7 +358,7 @@ Workspace::save(std::ostream& out)
 }
 
 void
-Workspace::load(const std::string& filename)
+Workspace::load(std::string const& filename)
 {
   auto doc = ReaderDocument::from_file(filename);
 
@@ -410,7 +410,7 @@ Workspace::get_bounding_rect() const
 
     for(ImageCollection::const_iterator i = m_images.begin()+1; i != m_images.end(); ++i)
     {
-      const Rectf& image_rect = (*i)->get_image_rect();
+      Rectf const& image_rect = (*i)->get_image_rect();
 
       rect = geom::frect(std::min(rect.left(),   image_rect.left()),
                          std::min(rect.top(),    image_rect.top()),

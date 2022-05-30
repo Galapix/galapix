@@ -59,77 +59,77 @@ public:
 
   void request_resource_metadata();
 
-  void request_image_info(const ResourceInfo& resource, const std::function<void (const std::optional<ImageInfo>&)>& callback);
-  void store_image_info(const ImageInfo& image_info,
-                       const std::function<void (const Failable<ImageInfo>&)>& callback);
+  void request_image_info(ResourceInfo const& resource, const std::function<void (std::optional<ImageInfo> const&)>& callback);
+  void store_image_info(ImageInfo const& image_info,
+                       const std::function<void (Failable<ImageInfo> const&)>& callback);
 
-  void request_resource_info(const ResourceLocator& locator, const BlobInfo& blob,
-                             const std::function<void (const std::optional<ResourceInfo>&)>& callback);
-  void store_resource_info(const ResourceInfo& resource_info,
-                           const std::function<void (const Failable<ResourceInfo>&)>& callback);
+  void request_resource_info(ResourceLocator const& locator, BlobInfo const& blob,
+                             const std::function<void (std::optional<ResourceInfo> const&)>& callback);
+  void store_resource_info(ResourceInfo const& resource_info,
+                           const std::function<void (Failable<ResourceInfo> const&)>& callback);
 
-  void request_file_info(const std::string& path, const std::function<void (const std::optional<FileInfo>&)>& callback);
-  void store_file_info(const FileInfo& file_info,
-                       const std::function<void (const Failable<FileInfo>&)>& callback);
+  void request_file_info(std::string const& path, const std::function<void (std::optional<FileInfo> const&)>& callback);
+  void store_file_info(FileInfo const& file_info,
+                       const std::function<void (Failable<FileInfo> const&)>& callback);
 
-  void request_url_info(const std::string& url, const std::function<void (const std::optional<URLInfo>&)>& callback);
-  void store_url_info(const URLInfo& url_info,
-                      const std::function<void (const Failable<URLInfo>&)>& callback);
+  void request_url_info(std::string const& url, const std::function<void (std::optional<URLInfo> const&)>& callback);
+  void store_url_info(URLInfo const& url_info,
+                      const std::function<void (Failable<URLInfo> const&)>& callback);
 
   /* @{ */ // syncronized functions to be used by other threads
   /**
    *  Request the tile from the database, if not in the database the
    *  tile will be generated from the source image
    */
-  JobHandle request_tile(const OldFileEntry& file_entry, int tilescale, const Vector2i& pos,
+  JobHandle request_tile(OldFileEntry const& file_entry, int tilescale, Vector2i const& pos,
                          const std::function<void (Tile)>& callback);
 
-  JobHandle request_tiles(const OldFileEntry& file_entry, int min_scale, int max_scale,
+  JobHandle request_tiles(OldFileEntry const& file_entry, int min_scale, int max_scale,
                           const std::function<void (Tile)>& callback);
 
   void request_job_removal(std::shared_ptr<Job> const& job, bool unused);
 
   /** Request the OldFileEntry for \a filename */
-  JobHandle request_file(const URL& url,
+  JobHandle request_file(URL const& url,
                          const std::function<void (OldFileEntry)>& file_callback);
 
   /** Request OldFileEntrys by glob pattern from the database */
-  void request_files_by_pattern(const std::function<void (OldFileEntry)>& callback, const std::string& pattern);
+  void request_files_by_pattern(const std::function<void (OldFileEntry)>& callback, std::string const& pattern);
 
   /** Request all OldFileEntrys available in the database */
   void request_all_files(const std::function<void (OldFileEntry)>& callback);
 
-  void store_file_entry(const JobHandle& job_handle,
-                        const URL& url, int size, int mtime, OldFileEntry::Handler handler,
+  void store_file_entry(JobHandle const& job_handle,
+                        URL const& url, int size, int mtime, OldFileEntry::Handler handler,
                         const std::function<void (OldFileEntry)>& callback);
 
   /** Delete the given OldFileEntry along with all TileEntry refering to it */
-  void      delete_file_entry(const RowId& fileid);
+  void      delete_file_entry(RowId const& fileid);
   /* @} */
 
-  void request_resource_entry(const RowId& blob_id,
-                              const std::function<void (const std::optional<ResourceEntry>&)>& callback);
+  void request_resource_entry(RowId const& blob_id,
+                              const std::function<void (std::optional<ResourceEntry> const&)>& callback);
 
 private:
   void remove_job(std::shared_ptr<Job> const& job);
 
   /** Generates the requested tile from its original image */
-  void generate_tiles(const JobHandle& job_handle, const OldFileEntry& file_entry,
+  void generate_tiles(JobHandle const& job_handle, OldFileEntry const& file_entry,
                       int min_scale, int max_scale,
                       const std::function<void (Tile)>& callback);
 
   /** Generates the requested tile from its original image */
-  void generate_tile(const JobHandle& job_handle,
-                     const OldFileEntry& file_entry, int tilescale, const Vector2i& pos,
+  void generate_tile(JobHandle const& job_handle,
+                     OldFileEntry const& file_entry, int tilescale, Vector2i const& pos,
                      const std::function<void (Tile)>& callback);
 
-  void generate_file_entry(const JobHandle& job_handle, const URL& url,
+  void generate_file_entry(JobHandle const& job_handle, URL const& url,
                            const std::function<void (OldFileEntry)>& file_callback);
 
   /** Place tile into the database */
-  void receive_tile(const RowId& fileid, const Tile& tile);
-  void receive_file(const OldFileEntry& file_entry);
-  void receive_tiles(const std::vector<TileEntry>& tiles);
+  void receive_tile(RowId const& fileid, Tile const& tile);
+  void receive_file(OldFileEntry const& file_entry);
+  void receive_tiles(std::vector<TileEntry> const& tiles);
 
   void process_queue(ThreadMessageQueue2<std::function<void()>>& queue) const;
 
@@ -149,8 +149,8 @@ private:
   std::list<std::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
 
 private:
-  DatabaseThread (const DatabaseThread&);
-  DatabaseThread& operator= (const DatabaseThread&);
+  DatabaseThread (DatabaseThread const&);
+  DatabaseThread& operator= (DatabaseThread const&);
 };
 
 #endif

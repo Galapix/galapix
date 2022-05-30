@@ -31,17 +31,17 @@
  */
 class URL
 {
-  friend bool operator==(const URL& lhs, const URL& rhs);
+  friend bool operator==(URL const& lhs, URL const& rhs);
 
 public:
-  static bool is_url(const std::string& url);
+  static bool is_url(std::string const& url);
 
   /** Create a URL from a normal filename */
-  static URL from_filename(const std::string& filename);
+  static URL from_filename(std::string const& filename);
 
   /** Create a URL object from a URL string as returned from
       get_url() */
-  static URL from_string(const std::string& url);
+  static URL from_string(std::string const& url);
 
 public:
   URL();
@@ -80,9 +80,9 @@ private:
   std::string m_plugin_payload;
 };
 
-std::ostream& operator<<(std::ostream& out, const URL& url);
-bool operator<(const URL& lhs, const URL& rhs);
-bool operator==(const URL& lhs, const URL& rhs);
+std::ostream& operator<<(std::ostream& out, URL const& url);
+bool operator<(URL const& lhs, URL const& rhs);
+bool operator==(URL const& lhs, URL const& rhs);
 
 #endif
 

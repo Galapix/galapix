@@ -173,14 +173,14 @@ ImageTileCache::process_queue()
 
 struct TileReqestIsAborted
 {
-  bool operator()(const ImageTileCache::SurfaceStruct& request)
+  bool operator()(ImageTileCache::SurfaceStruct const& request)
   {
     return request.job_handle.is_aborted();
   }
 };
 
 void
-ImageTileCache::cancel_jobs(const Rect& rect, int scale)
+ImageTileCache::cancel_jobs(Rect const& rect, int scale)
 {
   if (!m_cache.empty())
   {
@@ -201,7 +201,7 @@ ImageTileCache::cancel_jobs(const Rect& rect, int scale)
 }
 
 void
-ImageTileCache::receive_tile(const Tile& tile)
+ImageTileCache::receive_tile(Tile const& tile)
 {
   m_tile_queue.wait_and_push(tile);
 

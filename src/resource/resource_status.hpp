@@ -49,8 +49,8 @@ enum class ResourceStatus
   Incremental
 };
 
-ResourceStatus ResourceStatus_from_string(const std::string& value);
-std::string to_string(const ResourceStatus& value);
+ResourceStatus ResourceStatus_from_string(std::string const& value);
+std::string to_string(ResourceStatus const& value);
 
 #endif
 

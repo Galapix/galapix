@@ -45,8 +45,8 @@ public:
   std::string get_path() const { return m_path; }
 
 private:
-  ArchiveFileEntry(const ArchiveFileEntry&);
-  ArchiveFileEntry& operator=(const ArchiveFileEntry&);
+  ArchiveFileEntry(ArchiveFileEntry const&);
+  ArchiveFileEntry& operator=(ArchiveFileEntry const&);
 };
 
 #endif

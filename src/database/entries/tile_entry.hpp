@@ -50,7 +50,7 @@ public:
     m_format()
   {}
 
-  TileEntry(const RowId& image_id, int scale, const Vector2i& pos, surf::SoftwareSurface const& surface) :
+  TileEntry(RowId const& image_id, int scale, Vector2i const& pos, surf::SoftwareSurface const& surface) :
     m_image_id(image_id),
     m_scale(scale),
     m_pos(pos),
@@ -59,7 +59,7 @@ public:
     m_format(UNKNOWN_FORMAT)
   {}
 
-  TileEntry(const RowId& image_id, int scale, const Vector2i& pos, Blob const& blob, Format format) :
+  TileEntry(RowId const& image_id, int scale, Vector2i const& pos, Blob const& blob, Format format) :
     m_image_id(image_id),
     m_scale(scale),
     m_pos(pos),
@@ -75,7 +75,7 @@ public:
   Vector2i  get_pos()    const { return m_pos; }
   Format    get_format() const { return m_format; }
 
-  void set_image_id(const RowId& image_id) { m_image_id = image_id; }
+  void set_image_id(RowId const& image_id) { m_image_id = image_id; }
   void set_surface(surf::SoftwareSurface surface)  { m_surface = std::move(surface); }
   void set_blob(Blob const& blob) { m_blob = blob; }
   void set_format(Format format) { m_format = format; }

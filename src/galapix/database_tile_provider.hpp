@@ -27,13 +27,13 @@
 class DatabaseTileProvider : public TileProvider
 {
 public:
-  DatabaseTileProvider(const OldFileEntry& file_entry,
-                       const ImageEntry& image_entry) :
+  DatabaseTileProvider(OldFileEntry const& file_entry,
+                       ImageEntry const& image_entry) :
     m_file_entry(file_entry),
     m_image_entry(image_entry)
   {}
 
-  JobHandle request_tile(int tilescale, const Vector2i& pos,
+  JobHandle request_tile(int tilescale, Vector2i const& pos,
                          const std::function<void (Tile)>& callback) override
   {
     return DatabaseThread::current()->request_tile(m_file_entry, tilescale, pos, callback);
@@ -72,8 +72,8 @@ private:
   ImageEntry m_image_entry;
 
 private:
-  DatabaseTileProvider(const DatabaseTileProvider&) = delete;
-  DatabaseTileProvider& operator=(const DatabaseTileProvider&) = delete;
+  DatabaseTileProvider(DatabaseTileProvider const&) = delete;
+  DatabaseTileProvider& operator=(DatabaseTileProvider const&) = delete;
 };
 
 #endif

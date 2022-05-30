@@ -25,7 +25,7 @@ public:
     m_stmt(db, "DELETE FROM tile WHERE image_id = ?1;")
   {}
 
-  void operator()(const RowId& image_id)
+  void operator()(RowId const& image_id)
   {
     assert(image_id);
     m_stmt.bind(1, image_id.get_id());
@@ -37,8 +37,8 @@ private:
   SQLite::Statement   m_stmt;
 
 private:
-  TileEntryDelete(const TileEntryDelete&);
-  TileEntryDelete& operator=(const TileEntryDelete&);
+  TileEntryDelete(TileEntryDelete const&);
+  TileEntryDelete& operator=(TileEntryDelete const&);
 };
 
 #endif
