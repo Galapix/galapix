@@ -19,6 +19,8 @@
 
 #include "util/url.hpp"
 
+namespace galapix {
+
 class Filesystem
 {
 private:
@@ -60,6 +62,8 @@ public:
   static void init();
   static void deinit();
 };
+
+} // namespace galapix
 
 #endif
 

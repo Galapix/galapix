@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_RESOURCE_TILE_INFO_HPP
 #define HEADER_GALAPIX_RESOURCE_TILE_INFO_HPP
 
+namespace galapix {
+
 class TileInfo
 {
 public:
@@ -26,6 +28,8 @@ private:
   TileInfo(TileInfo const&);
   TileInfo& operator=(TileInfo const&);
 };
+
+} // namespace galapix
 
 #endif
 

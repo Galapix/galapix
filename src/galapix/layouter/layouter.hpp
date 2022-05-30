@@ -19,6 +19,8 @@
 
 #include <memory>
 
+namespace galapix {
+
 class ImageCollection;
 
 class Layouter
@@ -37,6 +39,8 @@ private:
 };
 
 using LayouterPtr = std::shared_ptr<Layouter>;
+
+} // namespace galapix
 
 #endif
 

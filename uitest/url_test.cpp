@@ -21,6 +21,8 @@
 
 #include "util/url.hpp"
 
+using namespace galapix;
+
 UITEST(URL, test, "")
 {
   std::string url_str = "file://Test Foo/bla/boing";

@@ -20,6 +20,8 @@
 #include <iostream>
 #include <assert.h>
 
+namespace galapix {
+
 class FileEntryStore
 {
 public:
@@ -45,6 +47,8 @@ private:
   FileEntryStore(FileEntryStore const&);
   FileEntryStore& operator=(FileEntryStore const&);
 };
+
+} // namespace galapix
 
 #endif
 

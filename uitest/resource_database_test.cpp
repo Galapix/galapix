@@ -25,6 +25,8 @@
 #include "util/filesystem.hpp"
 #include "util/sha1.hpp"
 
+using namespace galapix;
+
 UITEST(ResourceDatabase, test, "")
 {
   SQLite::Database db(":memory:", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE); //("/tmp/resource_database_test.sqlite3");

@@ -21,6 +21,8 @@
 
 #include "sqlite/reader.hpp"
 
+namespace galapix {
+
 OldFileEntry
 OldFileEntry::from_reader(SQLiteReader& reader)
 {
@@ -47,5 +49,7 @@ std::ostream& operator<<(std::ostream& os, OldFileEntry const& entry)
             << "  blob_size: " << entry.get_blob_entry().get_size() << '\n'
             << ")";
 }
+
+} // namespace galapix
 
 /* EOF */

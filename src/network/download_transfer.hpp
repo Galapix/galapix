@@ -20,6 +20,8 @@
 #include "network/download_manager.hpp"
 #include "network/download_progress.hpp"
 
+namespace galapix {
+
 struct DownloadResult;
 
 class DownloadTransfer
@@ -53,6 +55,8 @@ private:
   DownloadTransfer(DownloadTransfer const&) = delete;
   DownloadTransfer& operator=(DownloadTransfer const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

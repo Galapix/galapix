@@ -28,6 +28,8 @@
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
 
+namespace galapix {
+
 class DownloadManager;
 class ResourceLocator;
 
@@ -64,6 +66,8 @@ private:
   BlobManager(BlobManager const&) = delete;
   BlobManager& operator=(BlobManager const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

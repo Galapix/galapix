@@ -19,6 +19,8 @@
 
 #include "resource/blob_info.hpp"
 
+namespace galapix {
+
 class URLInfo
 {
 public:
@@ -61,6 +63,8 @@ private:
   std::string m_content_type;
   BlobInfo m_blob_info;
 };
+
+} // namespace galapix
 
 #endif
 

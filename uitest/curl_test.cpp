@@ -25,6 +25,8 @@
 
 #include "network/curl.hpp"
 
+using namespace galapix;
+
 UITEST(CURL, test, "URL...",
        "Download a URL")
 {

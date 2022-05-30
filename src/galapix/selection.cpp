@@ -17,6 +17,8 @@
 #include "math/rect.hpp"
 #include "galapix/selection.hpp"
 
+namespace galapix {
+
 Selection::Selection() :
   m_images()
 {
@@ -151,5 +153,7 @@ Selection::get_bounding_rect() const
     return rect;
   }
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -20,6 +20,8 @@
 #include "galapix/image.hpp"
 #include "math/math.hpp"
 
+namespace galapix {
+
 RegularLayouter::RegularLayouter(float aspect_w, float aspect_h) :
   m_aspect_w(aspect_w),
   m_aspect_h(aspect_h)
@@ -53,5 +55,7 @@ RegularLayouter::layout(ImageCollection const& images)
     }
   }
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+namespace galapix {
+
 namespace {
 
 char const* gl_error_string(GLenum err)
@@ -72,5 +74,7 @@ void assert_gl_helper(char const* filename, int line, char const* message)
     abort();
   }
 }
+
+} // namespace galapix
 
 /* EOF */

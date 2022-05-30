@@ -19,6 +19,8 @@
 
 #include <string>
 
+namespace galapix {
+
 class ResourceURL
 {
 public:
@@ -55,6 +57,8 @@ private:
   std::string m_authority;
   std::string m_path;
 };
+
+} // namespace galapix
 
 #endif
 

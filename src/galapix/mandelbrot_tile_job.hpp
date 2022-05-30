@@ -24,6 +24,8 @@
 #include "math/vector2i.hpp"
 #include "galapix/tile.hpp"
 
+namespace galapix {
+
 class MandelbrotTileJob final : public Job
 {
 public:
@@ -38,6 +40,8 @@ private:
   Vector2i m_pos;
   std::function<void (Tile)> m_callback;
 };
+
+} // namespace galapix
 
 #endif
 

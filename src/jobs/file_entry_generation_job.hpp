@@ -25,6 +25,8 @@
 #include "database/entries/old_file_entry.hpp"
 #include "galapix/tile.hpp"
 
+namespace galapix {
+
 class FileEntryGenerationJob : public Job
 {
 public:
@@ -42,6 +44,8 @@ private:
   FileEntryGenerationJob(FileEntryGenerationJob const&);
   FileEntryGenerationJob& operator=(FileEntryGenerationJob const&);
 };
+
+} // namespace galapix
 
 #endif
 

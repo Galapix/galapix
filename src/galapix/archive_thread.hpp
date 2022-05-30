@@ -29,6 +29,8 @@
 #include "util/failable.hpp"
 #include "util/thread_pool.hpp"
 
+namespace galapix {
+
 class ArchiveThread final
 {
 private:
@@ -66,6 +68,8 @@ private:
   ArchiveThread(ArchiveThread const&) = delete;
   ArchiveThread& operator=(ArchiveThread const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

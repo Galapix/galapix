@@ -16,6 +16,8 @@
 
 #include "resource_table.hpp"
 
+namespace galapix {
+
 ResourceTable::ResourceTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -30,5 +32,7 @@ ResourceTable::ResourceTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
 }
+
+} // namespace galapix
 
 /* EOF */

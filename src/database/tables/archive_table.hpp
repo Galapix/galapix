@@ -19,6 +19,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 class ArchiveTable
 {
 public:
@@ -31,6 +33,8 @@ private:
   ArchiveTable(ArchiveTable const&);
   ArchiveTable& operator=(ArchiveTable const&);
 };
+
+} // namespace galapix
 
 #endif
 

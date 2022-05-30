@@ -19,6 +19,8 @@
 
 #include <assert.h>
 
+namespace galapix {
+
 template<typename T>
 class Failable
 {
@@ -162,6 +164,8 @@ private:
 
   std::exception_ptr m_eptr;
 };
+
+} // namespace galapix
 
 #endif
 

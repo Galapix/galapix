@@ -25,6 +25,8 @@
 #include "resource/image_info.hpp"
 #include "resource/archive_info.hpp"
 
+namespace galapix {
+
 class ResourceCacheState
 {
 public:
@@ -37,6 +39,8 @@ public:
 
   std::vector<ResourceCacheState> get_children() const;
 };
+
+} // namespace galapix
 
 #endif
 

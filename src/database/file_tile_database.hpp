@@ -21,6 +21,8 @@
 
 #include <string>
 
+namespace galapix {
+
 class FileTileDatabase : public TileDatabaseInterface
 {
 public:
@@ -58,6 +60,8 @@ private:
   FileTileDatabase(FileTileDatabase const&);
   FileTileDatabase& operator=(FileTileDatabase const&);
 };
+
+} // namespace galapix
 
 #endif
 

@@ -20,6 +20,8 @@
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
+namespace galapix {
+
 class Viewer;
 
 class ViewerState
@@ -63,6 +65,8 @@ private:
   /** top right of the view in scaled inverse world co! (-offset/scale -> WO) */
   Vector2f offset;
 };
+
+} // namespace galapix
 
 #endif
 

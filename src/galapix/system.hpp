@@ -19,6 +19,8 @@
 
 #include "system.hpp"
 
+namespace galapix {
+
 class Workspace;
 class Options;
 
@@ -38,6 +40,8 @@ private:
   System(System const&) = delete;
   System& operator=(System const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

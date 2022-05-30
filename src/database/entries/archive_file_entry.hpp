@@ -20,6 +20,8 @@
 #include <string>
 #include "database/row_id.hpp"
 
+namespace galapix {
+
 class ArchiveFileEntry
 {
 private:
@@ -48,6 +50,8 @@ private:
   ArchiveFileEntry(ArchiveFileEntry const&);
   ArchiveFileEntry& operator=(ArchiveFileEntry const&);
 };
+
+} // namespace galapix
 
 #endif
 

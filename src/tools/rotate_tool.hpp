@@ -19,6 +19,8 @@
 
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class RotateTool : public Tool
 {
 public:
@@ -36,6 +38,8 @@ private:
   Vector2f selection_center;
   float start_angle;
 };
+
+} // namespace galapix
 
 #endif
 

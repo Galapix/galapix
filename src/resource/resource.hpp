@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_RESOURCE_RESOURCE_HPP
 #define HEADER_GALAPIX_RESOURCE_RESOURCE_HPP
 
+namespace galapix {
+
 class Resource
 {
 public:
@@ -26,6 +28,8 @@ private:
   Resource(Resource const&);
   Resource& operator=(Resource const&);
 };
+
+} // namespace galapix
 
 #endif
 

@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_GET_ALL_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_GET_ALL_HPP
 
+namespace galapix {
+
 class TileEntryGetAll final
 {
 public:
@@ -35,6 +37,8 @@ private:
   TileEntryGetAll(TileEntryGetAll const&);
   TileEntryGetAll& operator=(TileEntryGetAll const&);
 };
+
+} // namespace galapix
 
 #endif
 

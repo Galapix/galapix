@@ -3,6 +3,8 @@
 
 #include "resource/resource_locator.hpp"
 
+using namespace galapix;
+
 UITEST_S(ResourceLocator, test, "TEXT")
 {
   try

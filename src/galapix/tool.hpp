@@ -22,6 +22,8 @@
 #include "math/vector2i.hpp"
 #include "math/vector2f.hpp"
 
+namespace galapix {
+
 class Viewer;
 
 class Tool
@@ -43,6 +45,8 @@ private:
   Tool (Tool const&);
   Tool& operator= (Tool const&);
 };
+
+} // namespace galapix
 
 #endif
 

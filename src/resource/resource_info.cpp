@@ -16,6 +16,8 @@
 
 #include "resource/resource_info.hpp"
 
+namespace galapix {
+
 ResourceInfo::ResourceInfo() :
   m_id(),
   m_name(),
@@ -48,5 +50,7 @@ ResourceInfo::get_type() const
 {
   return ResourceType_from_string(m_name.get_handler().get_type());
 }
+
+} // namespace galapix
 
 /* EOF */

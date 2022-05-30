@@ -22,6 +22,8 @@
 #include "galapix/image.hpp"
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class MoveTool : public Tool
 {
 public:
@@ -46,6 +48,8 @@ private:
   MoveTool (MoveTool const&);
   MoveTool& operator= (MoveTool const&);
 };
+
+} // namespace galapix
 
 #endif
 

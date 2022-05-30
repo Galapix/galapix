@@ -25,9 +25,13 @@
 
 #include <geom/geom.hpp>
 
+namespace galapix {
+
 using Vector2i = geom::ipoint;
 
 // std::ostream& operator<<(std::ostream& s, const Vector2i& v);
+
+} // namespace galapix
 
 #endif
 

@@ -18,6 +18,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 ArchiveTable::ArchiveTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -30,5 +32,7 @@ ArchiveTable::ArchiveTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE INDEX IF NOT EXISTS archive_index ON archive ( id, file_id );");
 }
+
+} // namespace galapix
 
 /* EOF */

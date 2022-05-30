@@ -21,6 +21,8 @@
 
 #include "math/vector2i.hpp"
 
+namespace galapix {
+
 class WorkspaceItem;
 
 class SpiralLayouter : public Layouter
@@ -52,6 +54,8 @@ private:
   SpiralLayouter(SpiralLayouter const&);
   SpiralLayouter& operator=(SpiralLayouter const&);
 };
+
+} // namespace galapix
 
 #endif
 

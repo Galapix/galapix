@@ -21,6 +21,8 @@
 
 #include <logmich/log.hpp>
 
+namespace galapix {
+
 class ImageEntryGet final
 {
 public:
@@ -57,6 +59,8 @@ private:
   ImageEntryGet(ImageEntryGet const&);
   ImageEntryGet& operator=(ImageEntryGet const&);
 };
+
+} // namespace galapix
 
 #endif
 

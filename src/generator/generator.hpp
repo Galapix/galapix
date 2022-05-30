@@ -29,6 +29,8 @@
 #include "util/thread_pool.hpp"
 #include "generator/generator_callbacks.hpp"
 
+namespace galapix {
+
 class BlobInfo;
 class BlobManager;
 class Extraction;
@@ -65,6 +67,8 @@ private:
   Generator(Generator const&) = delete;
   Generator& operator=(Generator const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

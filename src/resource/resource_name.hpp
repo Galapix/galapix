@@ -23,6 +23,8 @@
 #include "resource/blob_info.hpp"
 #include "resource/resource_handler.hpp"
 
+namespace galapix {
+
 /** The ResourceName uniquely identifies a resource. Resources stored
     in different places will have the same ResourceName when they
     contain the same content.
@@ -55,6 +57,8 @@ private:
   BlobInfo m_blob_info;
   ResourceHandler m_handler;
 };
+
+} // namespace galapix
 
 #endif
 

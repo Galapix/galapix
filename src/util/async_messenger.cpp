@@ -18,6 +18,8 @@
 
 #include <logmich/log.hpp>
 
+namespace galapix {
+
 AsyncMessenger::AsyncMessenger() :
   m_quit(false),
   m_queue()
@@ -61,5 +63,7 @@ AsyncMessenger::queue(const std::function<void ()>& message)
 {
   m_queue.wait_and_push(message);
 }
+
+} // namespace galapix
 
 /* EOF */

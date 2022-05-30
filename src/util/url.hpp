@@ -24,6 +24,8 @@
 
 #include "util/blob.hpp"
 
+namespace galapix {
+
 /** Use Cases:
     - normal system filename
     - filename inside an archive file
@@ -83,6 +85,8 @@ private:
 std::ostream& operator<<(std::ostream& out, URL const& url);
 bool operator<(URL const& lhs, URL const& rhs);
 bool operator==(URL const& lhs, URL const& rhs);
+
+} // namespace galapix
 
 #endif
 

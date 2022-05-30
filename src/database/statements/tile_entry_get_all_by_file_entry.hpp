@@ -26,6 +26,8 @@
 #include "database/entries/old_file_entry.hpp"
 #include "database/entries/tile_entry.hpp"
 
+namespace galapix {
+
 class TileEntryGetAllByFileEntry final
 {
 public:
@@ -79,6 +81,8 @@ private:
   TileEntryGetAllByFileEntry(TileEntryGetAllByFileEntry const&);
   TileEntryGetAllByFileEntry& operator=(TileEntryGetAllByFileEntry const&);
 };
+
+} // namespace galapix
 
 #endif
 

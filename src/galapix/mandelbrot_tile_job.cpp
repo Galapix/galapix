@@ -21,6 +21,8 @@
 #include <surf/color.hpp>
 #include <surf/pixel_data.hpp>
 
+namespace galapix {
+
 using namespace surf;
 
 MandelbrotTileJob::MandelbrotTileJob(JobHandle const& job_handle, Size const& size, int scale, Vector2i const& pos,
@@ -78,5 +80,7 @@ MandelbrotTileJob::run()
   m_callback(Tile(m_scale, m_pos, surface));
   get_handle().set_finished();
 }
+
+} // namespace galapix
 
 /* EOF */

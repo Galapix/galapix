@@ -16,5 +16,9 @@
 
 #include "database/entries/image_entry.hpp"
 
+namespace galapix {
+
+
+} // namespace galapix
 
 /* EOF */

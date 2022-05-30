@@ -23,6 +23,8 @@
 
 #include "util/blob.hpp"
 
+namespace galapix {
+
 class SQLiteReader
 {
 public:
@@ -49,6 +51,8 @@ private:
 private:
   SQLite::Statement& m_stmt;
 };
+
+} // namespace galapix
 
 #endif
 

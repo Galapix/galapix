@@ -19,6 +19,8 @@
 #include "galapix/options.hpp"
 #include "job/job_handle_group.hpp"
 
+namespace galapix {
+
 ThumbnailGenerator::ThumbnailGenerator(Options const& opts) :
   m_database(Database::create(opts.database)),
   m_job_manager(opts.threads),
@@ -82,5 +84,7 @@ ThumbnailGenerator::run(std::vector<URL> const& urls, bool generate_all_tiles)
   job_handle_group.wait();
   job_handle_group.clear();
 }
+
+} // namespace galapix
 
 /* EOF */

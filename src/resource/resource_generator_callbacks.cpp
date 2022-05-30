@@ -24,6 +24,8 @@
 #include "resource/resource_info.hpp"
 #include "resource/resource_locator.hpp"
 
+namespace galapix {
+
 ResourceGeneratorCallbacks::ResourceGeneratorCallbacks(ResourceLocator const& locator) :
   m_locator(locator)
 {
@@ -78,5 +80,7 @@ ResourceGeneratorCallbacks::on_error(ResourceStatus status, std::string const& e
 {
   log_info(err);
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -27,6 +27,8 @@
 #include "galapix/tile.hpp"
 #include "network/curl.hpp"
 
+namespace galapix {
+
 class ZoomifyTileJob : public Job
 {
 public:
@@ -73,6 +75,8 @@ private:
   Vector2i m_pos;
   std::function<void (Tile)> m_callback;
 };
+
+} // namespace galapix
 
 #endif
 

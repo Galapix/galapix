@@ -22,6 +22,8 @@
 #include <vector>
 #include <stdint.h>
 
+namespace galapix {
+
 /** A Blob a simple wrapper around an read-only array holding raw
     binary data. It is ref counted and provides convinient functions
     to be read and written to a file */
@@ -57,6 +59,8 @@ public:
 private:
   std::shared_ptr<std::vector<uint8_t> const> m_data;
 };
+
+} // namespace galapix
 
 #endif
 

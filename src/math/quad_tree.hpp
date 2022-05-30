@@ -22,6 +22,8 @@
 
 #include "math/rect.hpp"
 
+namespace galapix {
+
 /**
     +----+----+
     | nw | ne |
@@ -212,6 +214,8 @@ public:
     return items;
   }
 };
+
+} // namespace galapix
 
 #endif
 

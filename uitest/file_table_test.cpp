@@ -29,6 +29,8 @@
 #include "database/statements/file_entry_get_by_file_id.hpp"
 #include "database/statements/file_entry_get_by_pattern.hpp"
 
+using namespace galapix;
+
 UITEST(FileTable, test, "",
        "FileTable test")
 {

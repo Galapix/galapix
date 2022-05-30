@@ -39,7 +39,11 @@
 #include <geom/size.hpp>
 #include <geom/io.hpp>
 
+namespace galapix {
+
 using Sizef = geom::fsize;
 using Size = geom::isize;
+
+} // namespace galapix
 
 #endif

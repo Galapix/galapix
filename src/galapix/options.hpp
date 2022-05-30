@@ -22,6 +22,8 @@
 
 #include "math/size.hpp"
 
+namespace galapix {
+
 class Options
 {
 public:
@@ -46,6 +48,8 @@ public:
   int         threads;
   std::vector<std::string> rest;
 };
+
+} // namespace galapix
 
 #endif
 

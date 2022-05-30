@@ -22,6 +22,8 @@
 
 #include "network/download_result.hpp"
 
+namespace galapix {
+
 class DownloadCache
 {
 public:
@@ -38,6 +40,8 @@ private:
   DownloadCache(DownloadCache const&);
   DownloadCache& operator=(DownloadCache const&);
 };
+
+} // namespace galapix
 
 #endif
 

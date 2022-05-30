@@ -18,6 +18,8 @@
 
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 FileInfo
 FileInfo::from_file(std::string const& filename)
 {
@@ -26,5 +28,7 @@ FileInfo::from_file(std::string const& filename)
                   galapix::SHA1::from_file(filename),
                   Filesystem::get_size(filename));
 }
+
+} // namespace galapix
 
 /* EOF */

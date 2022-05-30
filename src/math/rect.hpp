@@ -40,8 +40,12 @@
 #include "math/size.hpp"
 #include "math/math.hpp"
 
+namespace galapix {
+
 using Rectf = geom::frect;
 using Rect = geom::irect;
+
+} // namespace galapix
 
 #endif
 

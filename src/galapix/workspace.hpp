@@ -29,6 +29,8 @@
 #include "util/url.hpp"
 #include "math/rect.hpp"
 
+namespace galapix {
+
 class Layouter;
 
 /** The Workspace houses all the images, the current selection and
@@ -105,6 +107,8 @@ private:
   Workspace (Workspace const&) = delete;
   Workspace& operator= (Workspace const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

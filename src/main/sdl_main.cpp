@@ -19,8 +19,8 @@
 
 int main(int argc, char** argv)
 {
-  SDLSystem sdl_system;
-  Galapix app(sdl_system);
+  galapix::SDLSystem sdl_system;
+  galapix::Galapix app(sdl_system);
   return app.main(argc, argv);
 }
 

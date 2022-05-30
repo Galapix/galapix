@@ -20,6 +20,8 @@
 #include "generator/generator_callbacks.hpp"
 #include "resource/resource_locator.hpp"
 
+namespace galapix {
+
 class ResourceGeneratorCallbacks : public GeneratorCallbacks
 {
 public:
@@ -40,6 +42,8 @@ public:
 private:
   ResourceLocator m_locator;
 };
+
+} // namespace galapix
 
 #endif
 

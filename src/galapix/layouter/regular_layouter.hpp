@@ -19,6 +19,8 @@
 
 #include "galapix/layouter/layouter.hpp"
 
+namespace galapix {
+
 class RegularLayouter : public Layouter
 {
 public:
@@ -34,6 +36,8 @@ private:
   RegularLayouter(RegularLayouter const&);
   RegularLayouter& operator=(RegularLayouter const&);
 };
+
+} // namespace galapix
 
 #endif
 

@@ -27,6 +27,8 @@
 #include "resource/url_info.hpp"
 #include "util/sha1.hpp"
 
+namespace galapix {
+
 class ResourceMetadata
 {
 public:
@@ -70,6 +72,8 @@ private:
   ResourceMetadata(ResourceMetadata const&) = delete;
   ResourceMetadata& operator=(ResourceMetadata const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

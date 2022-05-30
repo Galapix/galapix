@@ -19,6 +19,8 @@
 
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class GridTool : public Tool
 {
 public:
@@ -40,6 +42,8 @@ private:
   GridTool (GridTool const&);
   GridTool& operator= (GridTool const&);
 };
+
+} // namespace galapix
 
 #endif
 

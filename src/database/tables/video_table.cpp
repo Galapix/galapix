@@ -16,6 +16,8 @@
 
 #include "database/tables/video_table.hpp"
 
+namespace galapix {
+
 VideoTable::VideoTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -30,5 +32,7 @@ VideoTable::VideoTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS video_index ON video ( id, file_id, width, height, duration );");
 }
+
+} // namespace galapix
 
 /* EOF */

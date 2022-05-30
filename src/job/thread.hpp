@@ -19,6 +19,8 @@
 
 #include <thread>
 
+namespace galapix {
+
 class Thread
 {
 public:
@@ -45,6 +47,8 @@ private:
   Thread (Thread const&);
   Thread& operator= (Thread const&);
 };
+
+} // namespace galapix
 
 #endif
 

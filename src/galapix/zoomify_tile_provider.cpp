@@ -28,6 +28,8 @@
 #include "network/curl.hpp"
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 namespace {
 
 int get_max_scale(Size const& size, int tilesize)
@@ -51,7 +53,7 @@ ZoomifyTileProvider::ZoomifyTileProvider(std::string const& basedir, Size const&
   m_size(size),
   m_tilesize(tilesize),
   m_basedir(basedir),
-  m_max_scale(::get_max_scale(size, tilesize)),
+  m_max_scale(galapix::get_max_scale(size, tilesize)),
   m_info(static_cast<size_t>(m_max_scale + 1)),
   m_job_manager(job_manager)
 {
@@ -127,5 +129,7 @@ ZoomifyTileProvider::request_tile(int scale, Vector2i const& pos,
   m_job_manager.request(std::make_shared<ZoomifyTileJob>(job_handle, URL::from_string(out.str()), scale, pos, callback));
   return job_handle;
 }
+
+} // namespace galapix
 
 /* EOF */

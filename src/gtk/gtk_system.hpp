@@ -19,6 +19,8 @@
 
 #include "galapix/system.hpp"
 
+namespace galapix {
+
 class GtkSystem final : public System
 {
 public:
@@ -34,6 +36,8 @@ private:
   GtkSystem(GtkSystem const&) = delete;
   GtkSystem& operator=(GtkSystem const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

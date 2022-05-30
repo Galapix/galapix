@@ -19,6 +19,8 @@
 
 #include "galapix/system.hpp"
 
+namespace galapix {
+
 class SDLSystem : public System
 {
 public:
@@ -34,6 +36,8 @@ private:
   SDLSystem(SDLSystem const&) = delete;
   SDLSystem& operator=(SDLSystem const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

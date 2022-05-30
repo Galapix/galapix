@@ -24,6 +24,8 @@
 #include "galapix/tile_provider.hpp"
 #include "server/database_thread.hpp"
 
+namespace galapix {
+
 class DatabaseTileProvider : public TileProvider
 {
 public:
@@ -75,6 +77,8 @@ private:
   DatabaseTileProvider(DatabaseTileProvider const&) = delete;
   DatabaseTileProvider& operator=(DatabaseTileProvider const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

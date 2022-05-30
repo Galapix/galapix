@@ -20,6 +20,8 @@
 
 #include "job/job_handle.hpp"
 
+namespace galapix {
+
 class JobHandleImpl
 {
 public:
@@ -114,5 +116,7 @@ std::ostream& operator<<(std::ostream& os, JobHandle const& job_handle)
             << ", aborted=" << job_handle.is_aborted()
             << ", done=" << job_handle.is_finished() << ")";
 }
+
+} // namespace galapix
 
 /* EOF */

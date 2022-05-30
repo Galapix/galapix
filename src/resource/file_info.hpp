@@ -23,6 +23,8 @@
 #include "database/row_id.hpp"
 #include "resource/blob_info.hpp"
 
+namespace galapix {
+
 class FileInfo
 {
 public:
@@ -70,6 +72,8 @@ private:
   time_t m_mtime;
   BlobInfo m_blob_info;
 };
+
+} // namespace galapix
 
 #endif
 

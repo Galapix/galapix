@@ -21,6 +21,8 @@
 
 #include "galapix/viewer.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 GridTool::GridTool(Viewer* viewer_)
@@ -86,5 +88,7 @@ GridTool::draw(wstdisplay::GraphicsContext& gc)
     }
   }
 }
+
+} // namespace galapix
 
 /* EOF */

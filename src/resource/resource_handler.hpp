@@ -19,6 +19,8 @@
 
 #include <string>
 
+namespace galapix {
+
 // FIXME: rename ResourceHandler to BlobHandler?
 class ResourceHandler
 {
@@ -47,6 +49,8 @@ private:
   std::string m_name;
   std::string m_args;
 };
+
+} // namespace galapix
 
 #endif
 

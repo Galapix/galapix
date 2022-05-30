@@ -22,6 +22,8 @@
 #include "galapix/image.hpp"
 #include "galapix/image_collection.hpp"
 
+namespace galapix {
+
 class Selection;
 
 using SelectionPtr = std::shared_ptr<Selection>;
@@ -61,6 +63,8 @@ public:
 private:
   ImageCollection m_images;
 };
+
+} // namespace galapix
 
 #endif
 

@@ -21,6 +21,8 @@
 #include <assert.h>
 #include <vector>
 
+namespace galapix {
+
 /** A std::vector like class that gives you a 2d grid into which you
     can place your elements: "grid(x,y) = value;"
  */
@@ -80,6 +82,8 @@ private:
   int height;
   Rows rows;
 };
+
+} // namespace galapix
 
 #endif
 

@@ -20,6 +20,8 @@
 #include "resource/image_info.hpp"
 #include "galapix/tile.hpp"
 
+namespace galapix {
+
 class ImageData
 {
 public:
@@ -47,6 +49,8 @@ private:
   ImageData(ImageData const&) = delete;
   ImageData& operator=(ImageData const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

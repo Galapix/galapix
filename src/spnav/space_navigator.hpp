@@ -19,6 +19,8 @@
 
 #include <thread>
 
+namespace galapix {
+
 class Viewer;
 
 class SpaceNavigator
@@ -42,6 +44,8 @@ private:
   SpaceNavigator (SpaceNavigator const&);
   SpaceNavigator& operator= (SpaceNavigator const&);
 };
+
+} // namespace galapix
 
 #endif
 

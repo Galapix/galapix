@@ -21,6 +21,8 @@
 #include "math/size.hpp"
 #include "database/row_id.hpp"
 
+namespace galapix {
+
 class ImageEntry final
 {
 public:
@@ -62,6 +64,8 @@ private:
 
   int m_max_scale;
 };
+
+} // namespace galapix
 
 #endif
 

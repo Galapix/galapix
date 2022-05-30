@@ -31,6 +31,8 @@
 #include "resource/resource_cache_state.hpp"
 #include "resource/resource_status.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 Generator::Generator(BlobManager& blob_mgr, arxp::ArchiveManager& archive_mgr) :
@@ -279,5 +281,7 @@ Generator::process_image_tiling(SoftwareSurface const& surface, GeneratorCallbac
                        std::move(tiles));
   callbacks->on_image_data(image_data);
 }
+
+} // namespace galapix
 
 /* EOF */

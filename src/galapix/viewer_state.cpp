@@ -20,6 +20,8 @@
 
 #include "galapix/viewer.hpp"
 
+namespace galapix {
+
 ViewerState::ViewerState(Viewer& viewer) :
   m_viewer(viewer),
   scale{1.0f},
@@ -120,5 +122,7 @@ ViewerState::zoom_to(Size const& display_, Rectf const& rect)
                       -rect.top()  * scale);
   }
 }
+
+} // namespace galapix
 
 /* EOF */

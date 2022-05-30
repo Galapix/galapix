@@ -23,6 +23,8 @@
 #include "util/url.hpp"
 #include "math/size.hpp"
 
+namespace galapix {
+
 class Options;
 class System;
 
@@ -47,6 +49,8 @@ private:
   Galapix(Galapix const&) = delete;
   Galapix& operator=(Galapix const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

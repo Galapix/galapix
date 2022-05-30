@@ -19,6 +19,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 class ResourceTable
 {
 public:
@@ -31,6 +33,8 @@ private:
   ResourceTable(ResourceTable const&);
   ResourceTable& operator=(ResourceTable const&);
 };
+
+} // namespace galapix
 
 #endif
 

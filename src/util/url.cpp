@@ -30,6 +30,8 @@
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 URL::URL() :
   m_protocol(),
   m_payload(),
@@ -235,5 +237,7 @@ bool operator==(URL const& lhs, URL const& rhs)
           lhs.m_plugin   == rhs.m_plugin   &&
           lhs.m_plugin_payload == rhs.m_plugin_payload);
 }
+
+} // namespace galapix
 
 /* EOF */

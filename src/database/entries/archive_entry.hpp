@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_ENTRIES_ARCHIVE_ENTRY_HPP
 #define HEADER_GALAPIX_DATABASE_ENTRIES_ARCHIVE_ENTRY_HPP
 
+namespace galapix {
+
 class ArchiveEntry
 {
 public:
@@ -61,6 +63,8 @@ private:
   ArchiveEntry(ArchiveEntry const&);
   ArchiveEntry& operator=(ArchiveEntry const&);
 };
+
+} // namespace galapix
 
 #endif
 

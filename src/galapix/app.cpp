@@ -20,6 +20,8 @@
 
 #include <assert.h>
 
+namespace galapix {
+
 App g_app;
 
 App::App() :
@@ -41,5 +43,7 @@ App::archive()
   assert(m_archive_manager != nullptr);
   return *m_archive_manager;
 }
+
+} // namespace galapix
 
 /* EOF */

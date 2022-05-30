@@ -22,6 +22,8 @@
 
 #include <wstdisplay/fwd.hpp>
 
+namespace galapix {
+
 class Viewer;
 
 class GtkViewerWidget final : public Gtk::GLArea
@@ -53,6 +55,8 @@ private:
   GtkViewerWidget (GtkViewerWidget const&);
   GtkViewerWidget& operator= (GtkViewerWidget const&);
 };
+
+} // namespace galapix
 
 #endif
 

@@ -23,6 +23,8 @@
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 
+namespace galapix {
+
 class TileProvider;
 
 using TileProviderPtr = std::shared_ptr<TileProvider>;
@@ -48,6 +50,8 @@ private:
   TileProvider(TileProvider const&);
   TileProvider& operator=(TileProvider const&);
 };
+
+} // namespace galapix
 
 #endif
 

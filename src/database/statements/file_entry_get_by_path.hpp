@@ -22,6 +22,8 @@
 #include "util/url.hpp"
 #include "database/entries/old_file_entry.hpp"
 
+namespace galapix {
+
 class FileEntryGetByPath
 {
 public:
@@ -57,6 +59,8 @@ private:
   FileEntryGetByPath(FileEntryGetByPath const&);
   FileEntryGetByPath& operator=(FileEntryGetByPath const&);
 };
+
+} // namespace galapix
 
 #endif
 

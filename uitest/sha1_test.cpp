@@ -22,6 +22,8 @@
 
 #include "util/sha1.hpp"
 
+using namespace galapix;
+
 UITEST_S(SHA1, test, "FILE", "")
 {
   std::cout << galapix::SHA1::from_file(arg).str() << "  " << arg << std::endl;

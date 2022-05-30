@@ -23,6 +23,8 @@
 #include "resource/resource_locator.hpp"
 #include "resource/resource_info.hpp"
 
+namespace galapix {
+
 class ResourceItem : public WorkspaceItem
 {
 public:
@@ -49,6 +51,8 @@ private:
   ResourceItem(ResourceItem const&);
   ResourceItem& operator=(ResourceItem const&);
 };
+
+} // namespace galapix
 
 #endif
 

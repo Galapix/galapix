@@ -23,6 +23,8 @@
 #include "gtk/gtk_viewer_widget.hpp"
 #include "gtk/gtk_viewer.hpp"
 
+namespace galapix {
+
 GtkViewer::GtkViewer(System& system) :
   m_system(system),
   workspace(),
@@ -254,5 +256,7 @@ GtkViewer::on_menu_file_new()
 {
 
 }
+
+} // namespace galapix
 
 /* EOF */

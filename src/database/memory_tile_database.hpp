@@ -22,6 +22,8 @@
 #include "database/entries/tile_entry.hpp"
 #include "database/tile_database_interface.hpp"
 
+namespace galapix {
+
 class MemoryTileDatabase : public TileDatabaseInterface
 {
 public:
@@ -47,6 +49,8 @@ private:
   MemoryTileDatabase(MemoryTileDatabase const&) = delete;
   MemoryTileDatabase& operator=(MemoryTileDatabase const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

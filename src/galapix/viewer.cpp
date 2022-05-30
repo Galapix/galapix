@@ -40,6 +40,8 @@
 #include "tools/zoom_tool.hpp"
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 Viewer* Viewer::current_ = nullptr;
@@ -692,5 +694,7 @@ Viewer::reshape(Size const& size)
 {
   m_size = size;
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_NETWORK_DOWNLOAD_PROGRESS_HPP
 #define HEADER_GALAPIX_NETWORK_DOWNLOAD_PROGRESS_HPP
 
+namespace galapix {
+
 struct DownloadProgress final
 {
   double dltotal = 0.0;
@@ -24,6 +26,8 @@ struct DownloadProgress final
   double ultotal = 0.0;
   double ulnow = 0.0;
 };
+
+} // namespace galapix
 
 #endif
 

@@ -20,6 +20,8 @@
 
 #include "job/job.hpp"
 
+namespace galapix {
+
 JobWorkerThread::JobWorkerThread()
   : m_queue(),
     m_quit(false),
@@ -102,5 +104,7 @@ JobWorkerThread::request(std::shared_ptr<Job> const& job, const std::function<vo
 
   return handle;
 }
+
+} // namespace galapix
 
 /* EOF */

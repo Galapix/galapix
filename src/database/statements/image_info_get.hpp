@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_IMAGE_INFO_GET_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_IMAGE_INFO_GET_HPP
 
+namespace galapix {
+
 class ImageInfoGet
 {
 public:
@@ -55,6 +57,8 @@ private:
   ImageInfoGet(ImageInfoGet const&) = delete;
   ImageInfoGet& operator=(ImageInfoGet const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

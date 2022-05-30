@@ -18,6 +18,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 URLTable::URLTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -31,5 +33,7 @@ URLTable::URLTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS url_index ON url ( id, blob_id, width, height, handler );");
 }
+
+} // namespace galapix
 
 /* EOF */

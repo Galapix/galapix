@@ -18,6 +18,8 @@
 
 #include "gtk/gtk_viewer.hpp"
 
+namespace galapix {
+
 GtkSystem::GtkSystem()
 {
 }
@@ -53,5 +55,7 @@ void
 GtkSystem::set_trackball_mode(bool active)
 {
 }
+
+} // namespace galapix
 
 /* EOF */

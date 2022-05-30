@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_URL_INFO_STORE_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_URL_INFO_STORE_HPP
 
+namespace galapix {
+
 class URLInfoStore
 {
 public:
@@ -44,6 +46,8 @@ private:
   URLInfoStore(URLInfoStore const&);
   URLInfoStore& operator=(URLInfoStore const&);
 };
+
+} // namespace galapix
 
 #endif
 

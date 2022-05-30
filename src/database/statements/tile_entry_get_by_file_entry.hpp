@@ -20,6 +20,8 @@
 #include <surf/plugins/png.hpp>
 #include <surf/plugins/jpeg.hpp>
 
+namespace galapix {
+
 class TileEntryGetByFileEntry final
 {
 public:
@@ -82,6 +84,8 @@ private:
   TileEntryGetByFileEntry(TileEntryGetByFileEntry const&);
   TileEntryGetByFileEntry& operator=(TileEntryGetByFileEntry const&);
 };
+
+} // namespace galapix
 
 #endif
 

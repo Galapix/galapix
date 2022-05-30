@@ -24,6 +24,7 @@
 #include <surf/plugins/pnm.hpp>
 #include <surf/plugins/png.hpp>
 
+using namespace galapix;
 using namespace surf;
 
 UITEST(PNM, test, "FILE...",

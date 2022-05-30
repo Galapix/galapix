@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_RESOURCE_VIDEO_INFO_HPP
 #define HEADER_GALAPIX_RESOURCE_VIDEO_INFO_HPP
 
+namespace galapix {
+
 class VideoInfo
 {
 public:
@@ -38,6 +40,8 @@ private:
   float m_duration;
   float m_aspect_ratio;
 };
+
+} // namespace galapix
 
 #endif
 

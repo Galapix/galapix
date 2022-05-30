@@ -20,6 +20,8 @@
 #include <gtkmm.h>
 #include <memory>
 
+namespace galapix {
+
 class System;
 class Viewer;
 class Workspace;
@@ -75,6 +77,8 @@ private:
   GtkViewer (GtkViewer const&);
   GtkViewer& operator= (GtkViewer const&);
 };
+
+} // namespace galapix
 
 #endif
 

@@ -27,6 +27,8 @@
 #include "resource/resource_status.hpp"
 #include "resource/resource_type.hpp"
 
+namespace galapix {
+
 /** ResourceInfo provides access to all the meta data related to a
     given ResourceLocator, such as the name, status */
 class ResourceInfo
@@ -52,6 +54,8 @@ private:
   ResourceName    m_name;
   ResourceStatus  m_status;
 };
+
+} // namespace galapix
 
 #endif
 

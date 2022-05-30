@@ -19,6 +19,8 @@
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 
+namespace galapix {
+
 ResizeTool::ResizeTool(Viewer* viewer_)
   : Tool(viewer_),
     resize_active(false),
@@ -61,5 +63,7 @@ ResizeTool::down(Vector2i const& pos)
   resize_center    = viewer->get_state().screen2world(pos);
   selection_center = viewer->get_workspace()->get_selection()->get_center();
 }
+
+} // namespace galapix
 
 /* EOF */

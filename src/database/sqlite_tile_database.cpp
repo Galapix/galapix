@@ -26,6 +26,8 @@
 #include "database/row_id.hpp"
 #include "database/database.hpp"
 
+namespace galapix {
+
 SQLiteTileDatabase::SQLiteTileDatabase(SQLite::Database& db, ResourceDatabase& files) :
   m_db(db),
   //m_files(files),
@@ -98,5 +100,7 @@ SQLiteTileDatabase::delete_tiles(RowId const& image_id)
 {
   m_tile_entry_delete(image_id);
 }
+
+} // namespace galapix
 
 /* EOF */

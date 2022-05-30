@@ -21,6 +21,8 @@
 
 #include "galapix/workspace_item.hpp"
 
+namespace galapix {
+
 /** A wrapper around a std::vector<> */
 class ImageCollection
 {
@@ -70,6 +72,8 @@ public:
 private:
   Images m_images;
 };
+
+} // namespace galapix
 
 #endif
 

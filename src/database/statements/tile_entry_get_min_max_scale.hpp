@@ -19,6 +19,8 @@
 
 #include <assert.h>
 
+namespace galapix {
+
 class TileEntryGetMinMaxScale final
 {
 public:
@@ -59,6 +61,8 @@ private:
   TileEntryGetMinMaxScale(TileEntryGetMinMaxScale const&);
   TileEntryGetMinMaxScale& operator=(TileEntryGetMinMaxScale const&);
 };
+
+} // namespace galapix
 
 #endif
 

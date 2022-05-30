@@ -28,6 +28,10 @@ void write_custom(prio::Writer& writer, std::string_view key, geom::isize const&
 
 #include <prio/writer.hpp>
 
+namespace galapix {
+
+} // namespace galapix
+
 #endif
 
 /* EOF */

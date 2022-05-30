@@ -21,6 +21,8 @@
 
 #include "resource/resource_name.hpp"
 
+using namespace galapix;
+
 UITEST(ResourceName, test, "")
 {
   ResourceName res_name(BlobInfo(galapix::SHA1::from_mem(std::span<uint8_t const>()), 0),

@@ -25,6 +25,8 @@
 #include "job/thread_message_queue2.hpp"
 #include "network/download_cache.hpp"
 
+namespace galapix {
+
 struct DownloadProgress;
 struct DownloadResult;
 class DownloadTransfer;
@@ -81,6 +83,8 @@ private:
   DownloadManager(DownloadManager const&);
   DownloadManager& operator=(DownloadManager const&);
 };
+
+} // namespace galapix
 
 #endif
 

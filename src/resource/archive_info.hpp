@@ -21,6 +21,8 @@
 
 #include "resource/archive_file_info.hpp"
 
+namespace galapix {
+
 class ArchiveInfo
 {
 public:
@@ -42,6 +44,8 @@ private:
   std::vector<ArchiveFileInfo> m_files;
   std::optional<std::string> m_password;
 };
+
+} // namespace galapix
 
 #endif
 

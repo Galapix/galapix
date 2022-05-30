@@ -22,6 +22,8 @@
 #include "galapix/workspace.hpp"
 #include "galapix/viewer.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 MoveTool::MoveTool(Viewer* viewer_)
@@ -104,5 +106,7 @@ MoveTool::draw(wstdisplay::GraphicsContext& gc)
     gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }
 }
+
+} // namespace galapix
 
 /* EOF */

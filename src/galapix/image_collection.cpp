@@ -18,6 +18,8 @@
 
 #include <algorithm>
 
+namespace galapix {
+
 ImageCollection::ImageCollection() :
   m_images()
 {
@@ -99,5 +101,7 @@ ImageCollection::empty() const
 {
   return m_images.empty();
 }
+
+} // namespace galapix
 
 /* EOF */

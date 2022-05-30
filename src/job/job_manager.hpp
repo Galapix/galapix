@@ -24,6 +24,8 @@
 
 #include "job/job_handle.hpp"
 
+namespace galapix {
+
 class JobWorkerThread;
 class Job;
 
@@ -50,6 +52,8 @@ private:
 
   std::mutex mutex;
 };
+
+} // namespace galapix
 
 #endif
 

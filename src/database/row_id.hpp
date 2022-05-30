@@ -24,6 +24,8 @@
 #include <fmt/ostream.h>
 #include <sstream>
 
+namespace galapix {
+
 class RowId
 {
 public:
@@ -58,6 +60,8 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& s, RowId const& id);
+
+} // namespace galapix
 
 #endif
 

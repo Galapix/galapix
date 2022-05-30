@@ -21,6 +21,8 @@
 #include "database/cached_tile_database.hpp"
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 Database
 Database::create(std::string const& prefix)
 {
@@ -76,5 +78,7 @@ Database::cleanup()
 {
   m_db->exec("VACUUM;");
 }
+
+} // namespace galapix
 
 /* EOF */

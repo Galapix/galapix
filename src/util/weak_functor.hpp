@@ -22,6 +22,8 @@
 
 #include <logmich/log.hpp>
 
+namespace galapix {
+
 /**
  *  WeakFunctor allows you to create functors from objects that are
  *  stored in a shared_ptr<> by using a weak_ptr<>. When the object
@@ -66,6 +68,8 @@ WeakFunctor<F, C> weak(F func, C obj)
 {
   return WeakFunctor<F, C>(func, obj);
 }
+
+} // namespace galapix
 
 #endif
 

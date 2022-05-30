@@ -21,6 +21,8 @@
 
 #include "resource/resource_status.hpp"
 
+namespace galapix {
+
 class ArchiveData;
 class ArchiveFileInfo;
 class ArchiveInfo;
@@ -73,6 +75,8 @@ public:
       after this point. */
   virtual void on_error(ResourceStatus status, std::string const& err) = 0;
 };
+
+} // namespace galapix
 
 #endif
 

@@ -21,6 +21,8 @@
 
 #include "math/vector2i.hpp"
 
+namespace galapix {
+
 class FileEntry;
 class TileEntry;
 class Tile;
@@ -46,6 +48,8 @@ private:
   TileDatabaseInterface(TileDatabaseInterface const&);
   TileDatabaseInterface& operator=(TileDatabaseInterface const&);
 };
+
+} // namespace galapix
 
 #endif
 

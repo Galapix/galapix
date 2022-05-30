@@ -20,6 +20,8 @@
 #include <exception>
 #include <functional>
 
+namespace galapix {
+
 template<typename ReturnType>
 class Task
 {
@@ -87,6 +89,8 @@ private:
   ReturnType m_return_value;
   std::exception_ptr m_exception;
 };
+
+} // namespace galapix
 
 #endif
 

@@ -21,6 +21,8 @@
 
 #include "database/tile_database_interface.hpp"
 
+namespace galapix {
+
 class MemoryTileDatabase;
 class Database;
 
@@ -49,6 +51,8 @@ private:
   CachedTileDatabase(CachedTileDatabase const&) = delete;
   CachedTileDatabase& operator=(CachedTileDatabase const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

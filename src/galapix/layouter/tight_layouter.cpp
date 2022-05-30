@@ -21,6 +21,8 @@
 #include "galapix/image.hpp"
 #include "galapix/image_collection.hpp"
 
+namespace galapix {
+
 TightLayouter::TightLayouter(float w, float h) :
   m_aspect_w(w),
   m_aspect_h(h)
@@ -193,5 +195,7 @@ TightLayouter::layout_zigzag(ImageCollection const& images) const
     }
   }
 }
+
+} // namespace galapix
 
 /* EOF */

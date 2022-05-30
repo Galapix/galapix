@@ -19,6 +19,8 @@
 
 #include <string>
 
+namespace galapix {
+
 class ImageDesc
 {
 public:
@@ -35,6 +37,8 @@ public:
 public:
   std::vector<ImageDesc> images;
 };
+
+} // namespace galapix
 
 #endif
 

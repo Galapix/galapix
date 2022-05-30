@@ -16,6 +16,8 @@
 
 #include "network/download_transfer.hpp"
 
+namespace galapix {
+
 DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
                                    std::string const& url_,
                                    std::optional<std::string> const& post_data_,
@@ -98,5 +100,7 @@ DownloadTransfer::progress_callback_wrap(void* userdata, double dltotal, double 
     return false;
   }
 }
+
+} // namespace galapix
 
 /* EOF */

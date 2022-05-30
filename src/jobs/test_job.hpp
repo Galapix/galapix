@@ -19,6 +19,8 @@
 
 #include "job/job.hpp"
 
+namespace galapix {
+
 class TestJob : public Job
 {
 public:
@@ -30,6 +32,8 @@ private:
   TestJob (TestJob const&);
   TestJob& operator= (TestJob const&);
 };
+
+} // namespace galapix
 
 #endif
 

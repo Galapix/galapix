@@ -19,6 +19,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 class BlobTable final
 {
 public:
@@ -31,6 +33,8 @@ private:
   BlobTable(BlobTable const&) = delete;
   BlobTable& operator=(BlobTable const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

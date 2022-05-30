@@ -23,6 +23,8 @@
 
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 Blob::Blob() :
   m_data()
 {
@@ -123,5 +125,7 @@ Blob::copy(std::vector<uint8_t> data)
 {
   return Blob(std::move(data));
 }
+
+} // namespace galapix
 
 /* EOF */

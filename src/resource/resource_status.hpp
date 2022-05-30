@@ -20,6 +20,8 @@
 #include <string>
 #include <assert.h>
 
+namespace galapix {
+
 enum class ResourceStatus
 {
   /** ResourceStatus has not been set */
@@ -51,6 +53,8 @@ enum class ResourceStatus
 
 ResourceStatus ResourceStatus_from_string(std::string const& value);
 std::string to_string(ResourceStatus const& value);
+
+} // namespace galapix
 
 #endif
 

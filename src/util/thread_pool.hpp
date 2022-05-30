@@ -23,6 +23,8 @@
 
 #include "job/thread_message_queue2.hpp"
 
+namespace galapix {
+
 class ThreadPool
 {
 public:
@@ -58,6 +60,8 @@ private:
   ThreadPool(ThreadPool const&) = delete;
   ThreadPool& operator=(ThreadPool const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

@@ -24,6 +24,8 @@
 #include "galapix/options.hpp"
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 void
 ArgParser::print_usage()
 {
@@ -192,5 +194,7 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
     }
   }
 }
+
+} // namespace galapix
 
 /* EOF */

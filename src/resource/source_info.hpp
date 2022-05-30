@@ -20,6 +20,8 @@
 #include "resource/file_info.hpp"
 #include "resource/url_info.hpp"
 
+namespace galapix {
+
 enum class SourceType { URL, File, Unknown };
 
 class SourceInfo
@@ -33,6 +35,8 @@ public:
 
   BlobInfo get_blob_info() const;
 };
+
+} // namespace galapix
 
 #endif
 

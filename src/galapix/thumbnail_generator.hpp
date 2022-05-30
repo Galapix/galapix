@@ -21,6 +21,8 @@
 #include "job/job_manager.hpp"
 #include "server/database_thread.hpp"
 
+namespace galapix {
+
 class Options;
 
 class ThumbnailGenerator
@@ -40,6 +42,8 @@ private:
   ThumbnailGenerator(ThumbnailGenerator const&) = delete;
   ThumbnailGenerator& operator=(ThumbnailGenerator const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

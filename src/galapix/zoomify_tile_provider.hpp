@@ -21,6 +21,8 @@
 #include "galapix/zoomify_tile_job.hpp"
 #include "galapix/tile_provider.hpp"
 
+namespace galapix {
+
 class JobManager;
 
 class ZoomifyTileProvider final : public TileProvider
@@ -56,7 +58,7 @@ public:
   JobHandle request_tile(int scale, Vector2i const& pos,
                          const std::function<void (Tile)>& callback) override;
 
-  int  get_max_scale() const override { return m_max_scale; }
+  int get_max_scale() const override { return m_max_scale; }
   int  get_tilesize() const override { return m_tilesize; }
   Size get_size() const override { return m_size; }
 
@@ -75,6 +77,8 @@ private:
   ZoomifyTileProvider(ZoomifyTileProvider const&) = delete;
   ZoomifyTileProvider& operator=(ZoomifyTileProvider const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

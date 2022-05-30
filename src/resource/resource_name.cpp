@@ -16,6 +16,8 @@
 
 #include "resource/resource_name.hpp"
 
+namespace galapix {
+
 ResourceName::ResourceName() :
   m_id(),
   m_blob_info(),
@@ -36,5 +38,7 @@ ResourceName::str() const
   os << "sha1:" << m_blob_info.get_sha1().str() << "-" << m_blob_info.get_size() << "//" << m_handler.str();
   return os.str();
 }
+
+} // namespace galapix
 
 /* EOF */

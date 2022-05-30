@@ -23,6 +23,8 @@
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
 
+namespace galapix {
+
 ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
   m_opts(opts),
@@ -160,5 +162,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
   m_system.launch_viewer(workspace, m_opts);
   log_info("viewer done");
 }
+
+} // namespace galapix
 
 /* EOF */

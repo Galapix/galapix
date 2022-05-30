@@ -13,6 +13,8 @@
 #include "resource/resource_manager.hpp"
 #include "server/database_thread.hpp"
 
+using namespace galapix;
+
 UITEST(ResourceManager, request_file_info, "FILE...")
 {
   logmich::set_log_level(logmich::LogLevel::DEBUG);

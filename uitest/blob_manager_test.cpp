@@ -7,6 +7,8 @@
 #include "resource/blob_manager.hpp"
 #include "resource/resource_locator.hpp"
 
+using namespace galapix;
+
 UITEST(BlobManager, request_blob, "BLOB...",
        "Request a blob")
 {

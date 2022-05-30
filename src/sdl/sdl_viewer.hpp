@@ -26,6 +26,8 @@
 #include "math/size.hpp"
 #include "galapix/image.hpp"
 
+namespace galapix {
+
 class Viewer;
 class FileEntry;
 class Image;
@@ -63,6 +65,8 @@ private:
   SDLViewer (SDLViewer const&);
   SDLViewer& operator= (SDLViewer const&);
 };
+
+} // namespace galapix
 
 #endif
 

@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_TILE_CACHE_ID_HPP
 #define HEADER_GALAPIX_GALAPIX_TILE_CACHE_ID_HPP
 
+namespace galapix {
+
 class TileCacheId
 {
 public:
@@ -59,6 +61,8 @@ private:
   Vector2i m_pos;
   int m_scale;
 };
+
+} // namespace galapix
 
 #endif
 

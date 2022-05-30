@@ -22,6 +22,8 @@
 
 #include "util/filesystem.hpp"
 
+using namespace galapix;
+
 UITEST(Filesystem, test, "FILE...")
 {
   for(const auto& arg : rest)

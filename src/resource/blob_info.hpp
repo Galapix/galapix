@@ -24,6 +24,8 @@
 #include "util/sha1.hpp"
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 class BlobAccessor;
 using BlobAccessorPtr = std::shared_ptr<BlobAccessor>;
 
@@ -65,6 +67,8 @@ private:
   galapix::SHA1 m_sha1;
   size_t  m_size;
 };
+
+} // namespace galapix
 
 #endif
 

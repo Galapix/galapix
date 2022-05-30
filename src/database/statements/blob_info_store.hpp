@@ -20,6 +20,8 @@
 #include <SQLiteCpp/Database.h>
 #include <SQLiteCpp/Statement.h>
 
+namespace galapix {
+
 class BlobInfoStore
 {
 public:
@@ -45,6 +47,8 @@ private:
   BlobInfoStore(BlobInfoStore const&);
   BlobInfoStore& operator=(BlobInfoStore const&);
 };
+
+} // namespace galapix
 
 #endif
 

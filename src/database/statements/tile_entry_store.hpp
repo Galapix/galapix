@@ -19,6 +19,8 @@
 
 #include <iostream>
 
+namespace galapix {
+
 class TileEntryStore
 {
 public:
@@ -81,6 +83,8 @@ private:
   TileEntryStore(TileEntryStore const&);
   TileEntryStore& operator=(TileEntryStore const&);
 };
+
+} // namespace galapix
 
 #endif
 

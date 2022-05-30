@@ -25,6 +25,8 @@
 #include "galapix/workspace.hpp"
 #include "math/math.hpp"
 
+namespace galapix {
+
 RotateTool::RotateTool(Viewer* viewer_)
   : Tool(viewer_),
     rotate_active(false),
@@ -69,5 +71,7 @@ RotateTool::down(Vector2i const& pos)
   start_angle = atan2f(selection_center.y() - mouse_pos.y(),
                        selection_center.x() - mouse_pos.x());
 }
+
+} // namespace galapix
 
 /* EOF */

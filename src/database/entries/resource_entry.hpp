@@ -21,6 +21,8 @@
 
 #include "database/row_id.hpp"
 
+namespace galapix {
+
 class ResourceEntry
 {
 public:
@@ -52,6 +54,8 @@ private:
   RowId m_blob_id;
   std::string m_arguments;
 };
+
+} // namespace galapix
 
 #endif
 

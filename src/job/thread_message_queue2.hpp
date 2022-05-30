@@ -23,6 +23,8 @@
 #include <mutex>
 #include <queue>
 
+namespace galapix {
+
 template<typename Data>
 class ThreadMessageQueue2
 {
@@ -182,6 +184,8 @@ private:
   ThreadMessageQueue2 (ThreadMessageQueue2 const&);
   ThreadMessageQueue2& operator= (ThreadMessageQueue2 const&);
 };
+
+} // namespace galapix
 
 #endif
 

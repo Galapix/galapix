@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_INFO_GET_BY_SHA1_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_INFO_GET_BY_SHA1_HPP
 
+namespace galapix {
+
 class ResourceInfoGetBySHA1
 {
 public:
@@ -54,6 +56,8 @@ private:
   ResourceInfoGetBySHA1(ResourceInfoGetBySHA1 const&);
   ResourceInfoGetBySHA1& operator=(ResourceInfoGetBySHA1 const&);
 };
+
+} // namespace galapix
 
 #endif
 

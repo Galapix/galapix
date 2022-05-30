@@ -23,6 +23,8 @@
 #include "galapix/workspace.hpp"
 #include "sdl/sdl_viewer.hpp"
 
+namespace galapix {
+
 SDLSystem::SDLSystem()
 {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) != 0)
@@ -81,5 +83,7 @@ SDLSystem::set_trackball_mode(bool active)
     SDL_SetRelativeMouseMode(SDL_FALSE);
   }
 }
+
+} // namespace galapix
 
 /* EOF */

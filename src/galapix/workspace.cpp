@@ -30,6 +30,8 @@
 #include "server/database_thread.hpp"
 #include "util/reader.hpp"
 
+namespace galapix {
+
 Workspace::Workspace() :
   m_images(),
   m_selection(Selection::create()),
@@ -421,5 +423,7 @@ Workspace::get_bounding_rect() const
     return rect;
   }
 }
+
+} // namespace galapix
 
 /* EOF */

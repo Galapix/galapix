@@ -25,6 +25,8 @@
 #include "database/resource_database.hpp"
 #include "database/tile_database_interface.hpp"
 
+namespace galapix {
+
 class Database
 {
 public:
@@ -56,6 +58,8 @@ private:
   Database(Database const&) = delete;
   Database& operator=(Database const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

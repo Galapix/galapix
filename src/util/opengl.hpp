@@ -26,7 +26,11 @@
 #endif
 
 #define assert_gl(msg) assert_gl_helper(__FILE__, __LINE__, msg)
+
+namespace galapix {
 void assert_gl_helper(char const* filename, int line, char const* message);
+
+} // namespace galapix
 
 #endif
 

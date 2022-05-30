@@ -20,6 +20,8 @@
 #include "galapix/image_collection.hpp"
 #include "math/math.hpp"
 
+namespace galapix {
+
 SpiralLayouter::SpiralLayouter() :
   m_pos(1, 0),
   m_ring(0),
@@ -125,5 +127,7 @@ SpiralLayouter::layout(ImageCollection const& images)
     layout(*i);
   }
 }
+
+} // namespace galapix
 
 /* EOF */

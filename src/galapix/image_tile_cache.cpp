@@ -23,6 +23,8 @@
 #include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
 
+namespace galapix {
+
 ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_cache(),
   m_tile_queue(),
@@ -207,5 +209,7 @@ ImageTileCache::receive_tile(Tile const& tile)
 
   Viewer::current()->redraw();
 }
+
+} // namespace galapix
 
 /* EOF */

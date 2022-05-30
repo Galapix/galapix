@@ -23,6 +23,8 @@
 
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 ResourceURL::ResourceURL(std::string const& scheme,
                          std::string const& authority,
                          std::string const& path) :
@@ -128,5 +130,7 @@ ResourceURL::operator<(ResourceURL const& other) const
     < // NOLINT
     std::tie(other.m_scheme, other.m_authority, other.m_path);
 }
+
+} // namespace galapix
 
 /* EOF */

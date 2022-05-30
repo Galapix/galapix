@@ -21,6 +21,8 @@
 
 #include "util/exec.hpp"
 
+using namespace galapix;
+
 UITEST(Exec, test, "PROGRAM [ARGUMENT]...")
 {
   Exec prgn(args[0]);

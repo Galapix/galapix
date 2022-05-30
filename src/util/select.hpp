@@ -21,6 +21,8 @@
 
 #include <sys/select.h>
 
+namespace galapix {
+
 /** Little class around select(), not full featured, just readfds are
     supported right nowx */
 class Select
@@ -42,6 +44,8 @@ private:
   Select(Select const&);
   Select& operator=(Select const&);
 };
+
+} // namespace galapix
 
 #endif
 

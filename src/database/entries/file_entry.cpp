@@ -18,6 +18,8 @@
 
 #include "sqlite/reader.hpp"
 
+namespace galapix {
+
 FileEntry
 FileEntry::from_reader(SQLiteReader& reader)
 {
@@ -28,5 +30,7 @@ FileEntry::from_reader(SQLiteReader& reader)
     RowId(reader.get_int64(3)) // rowid
     );
 }
+
+} // namespace galapix
 
 /* EOF */

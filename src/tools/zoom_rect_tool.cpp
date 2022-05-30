@@ -23,6 +23,8 @@
 
 #include "galapix/viewer.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 ZoomRectTool::ZoomRectTool(Viewer* viewer_)
@@ -72,5 +74,7 @@ ZoomRectTool::draw(wstdisplay::GraphicsContext& gc)
     gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }
 }
+
+} // namespace galapix
 
 /* EOF */

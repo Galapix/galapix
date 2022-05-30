@@ -16,6 +16,8 @@
 
 #include "database/tables/archive_file_table.hpp"
 
+namespace galapix {
+
 ArchiveFileTable::ArchiveFileTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -26,5 +28,7 @@ ArchiveFileTable::ArchiveFileTable(SQLite::Database& db) :
             "  blob_id    INTEGER\n"
             ");");
 }
+
+} // namespace galapix
 
 /* EOF */

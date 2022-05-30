@@ -44,6 +44,8 @@
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 std::string Filesystem::home_directory;
 
 std::string
@@ -519,5 +521,7 @@ Filesystem::remove(std::string const& filename)
     raise_runtime_error(str.str());
   }
 }
+
+} // namespace galapix
 
 /* EOF */

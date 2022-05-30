@@ -32,6 +32,10 @@
 
 #include <geom/origin.hpp>
 
+namespace galapix {
+
 using Origin = geom::origin;
+
+} // namespace galapix
 
 #endif

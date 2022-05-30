@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_URL_INFO_GET_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_URL_INFO_GET_HPP
 
+namespace galapix {
+
 class URLInfoGet
 {
 public:
@@ -59,6 +61,8 @@ private:
   URLInfoGet(URLInfoGet const&);
   URLInfoGet& operator=(URLInfoGet const&);
 };
+
+} // namespace galapix
 
 #endif
 

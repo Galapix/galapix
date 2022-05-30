@@ -23,6 +23,8 @@
 
 #include "util/blob.hpp"
 
+namespace galapix {
+
 /** The Exec class allows to call external applications in a
     conventient vasion. */
 class Exec
@@ -100,6 +102,8 @@ private:
   Exec (Exec const&);
   Exec& operator= (Exec const&);
 };
+
+} // namespace galapix
 
 #endif
 

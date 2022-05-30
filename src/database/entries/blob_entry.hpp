@@ -20,6 +20,8 @@
 #include "database/row_id.hpp"
 #include "util/sha1.hpp"
 
+namespace galapix {
+
 class BlobEntry
 {
 public:
@@ -50,6 +52,8 @@ private:
   galapix::SHA1  m_sha1;
   int   m_size;
 };
+
+} // namespace galapix
 
 #endif
 

@@ -18,6 +18,8 @@
 
 #include <sstream>
 
+namespace galapix {
+
 ResourceHandler
 ResourceHandler::from_string(std::string const& handler)
 {
@@ -70,5 +72,7 @@ ResourceHandler::operator!=(ResourceHandler const& other) const
 {
   return !(*this == other);
 }
+
+} // namespace galapix
 
 /* EOF */

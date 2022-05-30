@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+namespace galapix {
+
 class CURLHandler
 {
 public:
@@ -27,6 +29,8 @@ public:
       provided, the returned mime_type is stored therein. */
   static std::vector<uint8_t> get_data(std::string const& url, std::string* mime_type = nullptr);
 };
+
+} // namespace galapix
 
 #endif
 

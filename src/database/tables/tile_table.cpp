@@ -18,6 +18,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 TileTable::TileTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -33,5 +35,7 @@ TileTable::TileTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE INDEX IF NOT EXISTS tile_index ON tile ( image_id, scale, x, y );");
 }
+
+} // namespace galapix
 
 /* EOF */

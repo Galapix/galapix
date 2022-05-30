@@ -32,6 +32,8 @@
 #include "database/tables/tile_table.hpp"
 #include "galapix/tile.hpp"
 
+namespace galapix {
+
 class Database;
 class ResourceDatabase;
 class FileEntry;
@@ -69,6 +71,8 @@ private:
   SQLiteTileDatabase (SQLiteTileDatabase const&) = delete;
   SQLiteTileDatabase& operator= (SQLiteTileDatabase const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

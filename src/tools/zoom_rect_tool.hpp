@@ -19,6 +19,8 @@
 
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class ZoomRectTool : public Tool
 {
 public:
@@ -40,6 +42,8 @@ private:
   ZoomRectTool (ZoomRectTool const&);
   ZoomRectTool& operator= (ZoomRectTool const&);
 };
+
+} // namespace galapix
 
 #endif
 

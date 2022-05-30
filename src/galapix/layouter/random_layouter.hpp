@@ -21,6 +21,8 @@
 
 #include "math/rect.hpp"
 
+namespace galapix {
+
 class Image;
 
 class RandomLayouter : public Layouter
@@ -34,6 +36,8 @@ private:
   RandomLayouter(RandomLayouter const&);
   RandomLayouter& operator=(RandomLayouter const&);
 };
+
+} // namespace galapix
 
 #endif
 

@@ -21,6 +21,8 @@
 
 #include "job/job_handle.hpp"
 
+namespace galapix {
+
 class JobHandleGroup
 {
 public:
@@ -56,6 +58,8 @@ private:
   JobHandleGroup(JobHandleGroup const&);
   JobHandleGroup& operator=(JobHandleGroup const&);
 };
+
+} // namespace galapix
 
 #endif
 

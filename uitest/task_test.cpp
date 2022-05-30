@@ -23,6 +23,8 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
+using namespace galapix;
+
 UITEST(Task, test, "")
 {
   Task<int> task{[]() -> int {

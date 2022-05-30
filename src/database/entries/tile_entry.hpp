@@ -22,6 +22,8 @@
 #include "math/vector2i.hpp"
 #include "database/entries/old_file_entry.hpp"
 
+namespace galapix {
+
 class TileEntry
 {
 public:
@@ -85,6 +87,8 @@ public:
     return static_cast<bool>(m_image_id);
   }
 };
+
+} // namespace galapix
 
 #endif
 

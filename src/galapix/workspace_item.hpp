@@ -26,6 +26,8 @@
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
 
+namespace galapix {
+
 class WorkspaceItem;
 
 using WorkspaceItemWPtr = std::weak_ptr<WorkspaceItem>;
@@ -95,6 +97,8 @@ private:
   WorkspaceItem(WorkspaceItem const&) = delete;
   WorkspaceItem& operator=(WorkspaceItem const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

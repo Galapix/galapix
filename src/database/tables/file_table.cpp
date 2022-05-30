@@ -18,6 +18,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 FileTable::FileTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -30,5 +32,7 @@ FileTable::FileTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE INDEX IF NOT EXISTS file_index ON file ( url, mtime, handler, blob_id );");
 }
+
+} // namespace galapix
 
 /* EOF */

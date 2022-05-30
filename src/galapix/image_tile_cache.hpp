@@ -29,6 +29,8 @@
 #include "job/thread_message_queue2.hpp"
 #include "math/rect.hpp"
 
+namespace galapix {
+
 // error: base class 'class std::enable_shared_from_this<>' has a non-virtual destructor
 #pragma GCC diagnostic ignored "-Weffc++"
 
@@ -109,6 +111,8 @@ private:
   ImageTileCache(ImageTileCache const&);
   ImageTileCache& operator=(ImageTileCache const&);
 };
+
+} // namespace galapix
 
 #endif
 

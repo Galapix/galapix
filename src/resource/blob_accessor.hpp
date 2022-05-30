@@ -24,6 +24,8 @@
 #include "util/blob.hpp"
 #include "resource/blob_info.hpp"
 
+namespace galapix {
+
 class BlobAccessor
 {
 public:
@@ -54,6 +56,8 @@ private:
 };
 
 using BlobAccessorPtr = std::shared_ptr<BlobAccessor>;
+
+} // namespace galapix
 
 #endif
 

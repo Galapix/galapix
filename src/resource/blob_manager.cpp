@@ -23,6 +23,8 @@
 #include "network/download_manager.hpp"
 #include "resource/resource_locator.hpp"
 
+namespace galapix {
+
 BlobManager::BlobManager(DownloadManager& download_mgr,
                          arxp::ArchiveManager&  archive_mgr) :
   m_download_mgr(download_mgr),
@@ -113,5 +115,7 @@ BlobManager::request_blob(ResourceLocator const& locator,
     callback(failable);
   }
 }
+
+} // namespace galapix
 
 /* EOF */

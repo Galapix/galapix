@@ -20,6 +20,8 @@
 
 #include "util/url.hpp"
 
+using namespace galapix;
+
 namespace prio {
 
 template<>

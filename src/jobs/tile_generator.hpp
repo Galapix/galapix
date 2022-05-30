@@ -23,6 +23,8 @@
 
 #include "galapix/tile.hpp"
 
+namespace galapix {
+
 class FileEntry;
 
 class TileGenerator
@@ -63,6 +65,8 @@ private:
   TileGenerator(TileGenerator const&);
   TileGenerator& operator=(TileGenerator const&);
 };
+
+} // namespace galapix
 
 #endif
 

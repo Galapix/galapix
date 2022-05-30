@@ -18,6 +18,8 @@
 
 #include <logmich/log.hpp>
 
+namespace galapix {
+
 ArchiveThread::ArchiveThread(std::string const& tmpdir) :
   m_archive_mgr(tmpdir),
   m_mutex(),
@@ -102,5 +104,7 @@ ArchiveThread::get_and_lock_extraction_entry(std::string const& archive_filename
     return *it->second;
   }
 }
+
+} // namespace galapix
 
 /* EOF */

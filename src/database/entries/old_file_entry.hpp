@@ -31,6 +31,8 @@
 #include "math/size.hpp"
 #include "util/url.hpp"
 
+namespace galapix {
+
 class OldFileEntry final
 {
 public:
@@ -108,6 +110,8 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, OldFileEntry const& entry);
+
+} // namespace galapix
 
 #endif
 

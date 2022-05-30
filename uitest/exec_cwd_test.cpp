@@ -21,6 +21,8 @@
 
 #include "util/exec.hpp"
 
+using namespace galapix;
+
 UITEST(Exec, cwd, "WORKINGDIR PROGRAM [ARGUMENTS]...")
 {
   Exec prgn(args[1]);

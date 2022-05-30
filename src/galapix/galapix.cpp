@@ -64,6 +64,8 @@
 #include "util/raise_exception.hpp"
 #include "util/url.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 Galapix::Galapix(System& system) :
@@ -373,5 +375,7 @@ Galapix::run(Options const& opts)
     }
   }
 }
+
+} // namespace galapix
 
 /* EOF */

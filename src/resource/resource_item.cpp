@@ -16,6 +16,8 @@
 
 #include "resource_item.hpp"
 
+namespace galapix {
+
 ResourceItem::ResourceItem(ResourceLocator const& locator) :
   m_locator(locator),
   m_resource_info()
@@ -63,5 +65,7 @@ ResourceItem::receive_resource_info(ResourceInfo const& resource_info)
 
   //m_renderer = Renderer::from_resource_info(m_resource_info);
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -19,6 +19,8 @@
 
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class ViewRotateTool : public Tool
 {
 public:
@@ -35,6 +37,8 @@ private:
   bool active;
   float start_angle;
 };
+
+} // namespace galapix
 
 #endif
 

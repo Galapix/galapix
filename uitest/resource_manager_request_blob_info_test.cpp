@@ -32,6 +32,8 @@
 #include "resource/resource_manager.hpp"
 #include "server/database_thread.hpp"
 
+using namespace galapix;
+
 UITEST(ResourceManager, request_blob, "ARG...",
        "")
 {

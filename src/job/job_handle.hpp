@@ -23,6 +23,8 @@
 #include <sstream>
 #include <iosfwd>
 
+namespace galapix {
+
 class JobHandleImpl;
 
 /** A JobHandle should be returend whenever one thread makes a request
@@ -60,6 +62,8 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, JobHandle const& job_handle);
+
+} // namespace galapix
 
 #endif
 

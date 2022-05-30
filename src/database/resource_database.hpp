@@ -44,6 +44,8 @@
 #include "resource/resource_info.hpp"
 #include "resource/url_info.hpp"
 
+namespace galapix {
+
 class BlobInfoStore;
 class FileInfoGetByPath;
 class FileInfoStore;
@@ -61,10 +63,7 @@ class ImageInfoGet;
 class ImageInfoStore;
 class ResourceInfoGet;
 class ResourceInfoStore;
-
-namespace galapix {
 class SHA1;
-} // namespace galapix
 
 /** The ResourceDatabase keeps a record of all files that have been
     viewed. It keeps information on the last modification time and
@@ -158,6 +157,8 @@ private:
   ResourceDatabase (ResourceDatabase const&);
   ResourceDatabase& operator= (ResourceDatabase const&);
 };
+
+} // namespace galapix
 
 #endif
 

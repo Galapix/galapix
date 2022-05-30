@@ -24,6 +24,8 @@
 #include "jobs/tile_generator.hpp"
 #include "database/entries/tile_entry.hpp"
 
+namespace galapix {
+
 TileGenerationJob::TileGenerationJob(OldFileEntry const& file_entry, int min_scale_in_db, int max_scale_in_db) :
   Job(JobHandle::create()),
   m_state_mutex(),
@@ -237,5 +239,7 @@ TileGenerationJob::run()
   }
 #endif
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -20,6 +20,8 @@
 
 #include <random>
 
+namespace galapix {
+
 std::filesystem::path unique_path()
 {
   const char charset[] =
@@ -38,5 +40,7 @@ std::filesystem::path unique_path()
 
   return str;
 }
+
+} // namespace galapix
 
 /* EOF */

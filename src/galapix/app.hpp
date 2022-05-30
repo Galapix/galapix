@@ -22,6 +22,8 @@
 #include <arxp/fwd.hpp>
 #include <surf/fwd.hpp>
 
+namespace galapix {
+
 class App
 {
   friend class Galapix;
@@ -41,6 +43,8 @@ private:
 };
 
 extern App g_app;
+
+} // namespace galapix
 
 #endif
 

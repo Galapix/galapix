@@ -16,6 +16,8 @@
 
 #include "resource/resource_cache_state.hpp"
 
+namespace galapix {
+
 ResourceCacheState::ResourceCacheState()
 {
 }
@@ -49,5 +51,7 @@ ResourceCacheState::get_children() const
 {
   return {};
 }
+
+} // namespace galapix
 
 /* EOF */

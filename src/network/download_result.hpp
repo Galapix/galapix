@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 
+namespace galapix {
+
 struct DownloadResult
 {
 public:
@@ -37,6 +39,8 @@ public:
   long mtime = {};
   long response_code = {};
 };
+
+} // namespace galapix
 
 #endif
 

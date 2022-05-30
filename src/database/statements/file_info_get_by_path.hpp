@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_GET_BY_PATH_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_GET_BY_PATH_HPP
 
+namespace galapix {
+
 class FileInfoGetByPath
 {
 public:
@@ -58,6 +60,8 @@ private:
   FileInfoGetByPath(FileInfoGetByPath const&);
   FileInfoGetByPath& operator=(FileInfoGetByPath const&);
 };
+
+} // namespace galapix
 
 #endif
 

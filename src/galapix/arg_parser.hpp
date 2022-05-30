@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_GALAPIX_ARG_PARSER_HPP
 #define HEADER_GALAPIX_GALAPIX_ARG_PARSER_HPP
 
+namespace galapix {
+
 class Options;
 
 class ArgParser
@@ -30,6 +32,8 @@ private:
   ArgParser(ArgParser const&) = delete;
   ArgParser& operator=(ArgParser const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

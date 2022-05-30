@@ -18,6 +18,8 @@
 
 #include <ostream>
 
+namespace galapix {
+
 std::ostream& operator<<(std::ostream& s, RowId const& id)
 {
   if (id)
@@ -29,5 +31,7 @@ std::ostream& operator<<(std::ostream& s, RowId const& id)
     return s << "RowId(none)";
   }
 }
+
+} // namespace galapix
 
 /* EOF */

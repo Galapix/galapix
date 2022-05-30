@@ -31,9 +31,7 @@
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
-namespace surf {
-class RGBA;
-} // namespace surf
+namespace galapix {
 
 class URL;
 
@@ -42,12 +40,14 @@ using ReaderDocument = prio::ReaderDocument;
 using ReaderMapping = prio::ReaderMapping;
 using ReaderObject = prio::ReaderObject;
 
+} // namespace galapix
+
 namespace prio {
 
-template<> bool read_custom(ReaderMapping const& map, std::string_view key, URL& value);
-template<> bool read_custom(ReaderMapping const& map, std::string_view key, Vector2i& value);
-template<> bool read_custom(ReaderMapping const& map, std::string_view key, Vector2f& value);
-template<> bool read_custom(ReaderMapping const& map, std::string_view key, Rect& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, galapix::URL& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, galapix::Vector2i& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, galapix::Vector2f& value);
+template<> bool read_custom(ReaderMapping const& map, std::string_view key, galapix::Rect& value);
 template<> bool read_custom(ReaderMapping const& map, std::string_view key, geom::isize& value);
 template<> bool read_custom(ReaderMapping const& map, std::string_view key, surf::Color& value);
 

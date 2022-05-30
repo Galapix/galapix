@@ -24,6 +24,8 @@
 #include "math/math.hpp"
 #include "math/rect.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr const& cache) :
@@ -182,5 +184,7 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
     return true;
   }
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -22,6 +22,8 @@
 #include "database/entries/tile_entry.hpp"
 #include "math/vector2i.hpp"
 
+namespace galapix {
+
 class Tile
 {
 public:
@@ -61,6 +63,8 @@ private:
   surf::SoftwareSurface m_surface;
   bool m_valid;
 };
+
+} // namespace galapix
 
 #endif
 

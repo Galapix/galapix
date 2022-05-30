@@ -30,6 +30,10 @@
 
 #define raise_runtime_error(expr) raise_exception(std::runtime_error, expr)
 
+namespace galapix {
+
+} // namespace galapix
+
 #endif
 
 /* EOF */

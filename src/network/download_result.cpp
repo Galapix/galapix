@@ -16,6 +16,8 @@
 
 #include "network/download_result.hpp"
 
+namespace galapix {
+
 DownloadResult
 DownloadResult::from_curl(CURL* handle, std::vector<uint8_t> data)
 {
@@ -35,5 +37,7 @@ DownloadResult::from_curl(CURL* handle, std::vector<uint8_t> data)
 
   return result;
 }
+
+} // namespace galapix
 
 /* EOF */

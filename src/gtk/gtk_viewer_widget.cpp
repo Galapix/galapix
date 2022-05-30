@@ -25,6 +25,8 @@
 #include "gtk/gtk_viewer_widget.hpp"
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
   : viewer(viewer_),
     m_gc(),
@@ -238,5 +240,7 @@ GtkViewerWidget::key_release(GdkEventKey* ev)
   // ev->hardware_keycode
   return true;
 }
+
+} // namespace galapix
 
 /* EOF */

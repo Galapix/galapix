@@ -18,6 +18,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 BlobTable::BlobTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -29,5 +31,7 @@ BlobTable::BlobTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE INDEX IF NOT EXISTS blob_index ON blob ( sha1, size );");
 }
+
+} // namespace galapix
 
 /* EOF */

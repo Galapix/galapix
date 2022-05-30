@@ -24,6 +24,8 @@
 #include "math/vector2f.hpp"
 #include "math/rect.hpp"
 
+namespace galapix {
+
 class Image;
 class ImageTileCache;
 
@@ -49,6 +51,8 @@ private:
   ImageRenderer(ImageRenderer const&);
   ImageRenderer& operator=(ImageRenderer const&);
 };
+
+} // namespace galapix
 
 #endif
 

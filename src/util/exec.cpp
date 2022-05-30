@@ -30,6 +30,8 @@
 
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 Exec::Exec(std::string const& program, bool absolute_path) :
   m_program(program),
   m_absolute_path(absolute_path),
@@ -286,5 +288,7 @@ Exec::str() const
 
   return out.str();
 }
+
+} // namespace galapix
 
 /* EOF */

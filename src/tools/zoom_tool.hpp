@@ -19,6 +19,8 @@
 
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class ZoomTool : public Tool
 {
 public:
@@ -37,6 +39,8 @@ private:
   bool zoom_active;
   float zoom_factor;
 };
+
+} // namespace galapix
 
 #endif
 

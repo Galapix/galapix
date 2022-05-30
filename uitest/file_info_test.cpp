@@ -21,6 +21,8 @@
 
 #include "resource/file_info.hpp"
 
+using namespace galapix;
+
 UITEST(FileInfo, test, "FILE...")
 {
   for(const auto& arg : rest)

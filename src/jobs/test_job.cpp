@@ -19,6 +19,8 @@
 
 #include "jobs/test_job.hpp"
 
+namespace galapix {
+
 TestJob::TestJob() :
   Job(JobHandle::create())
 {
@@ -33,5 +35,7 @@ TestJob::run()
     usleep(100000);
   }
 }
+
+} // namespace galapix
 
 /* EOF */

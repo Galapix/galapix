@@ -19,6 +19,8 @@
 
 #include "job/job_handle.hpp"
 
+namespace galapix {
+
 class Job
 {
 public:
@@ -39,6 +41,8 @@ private:
 };
 
 using JobPtr = std::shared_ptr<Job>;
+
+} // namespace galapix
 
 #endif
 

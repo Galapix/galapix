@@ -3,6 +3,8 @@
 
 #include "database/database.hpp"
 
+using namespace galapix;
+
 class DatabaseTest : public testing::Test
 {
 protected:

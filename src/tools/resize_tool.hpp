@@ -19,6 +19,8 @@
 
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class ResizeTool : public Tool
 {
 public:
@@ -37,6 +39,8 @@ private:
   Vector2f selection_center;
   float    old_scale;
 };
+
+} // namespace galapix
 
 #endif
 

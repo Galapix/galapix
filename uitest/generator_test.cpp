@@ -33,6 +33,7 @@
 #include "resource/blob_manager.hpp"
 #include "resource/resource_info.hpp"
 
+using namespace galapix;
 using namespace surf;
 
 class TestGeneratorCallbacks final : public GeneratorCallbacks

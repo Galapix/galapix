@@ -19,6 +19,8 @@
 
 #include <SQLiteCpp/Database.h>
 
+namespace galapix {
+
 class URLTable
 {
 public:
@@ -31,6 +33,8 @@ private:
   URLTable(URLTable const&) = delete;
   URLTable& operator=(URLTable const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

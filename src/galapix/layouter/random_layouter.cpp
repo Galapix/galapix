@@ -19,6 +19,8 @@
 #include "galapix/image.hpp"
 #include "galapix/image_collection.hpp"
 
+namespace galapix {
+
 RandomLayouter::RandomLayouter()
 {
 }
@@ -37,5 +39,7 @@ RandomLayouter::layout(ImageCollection const& images)
     (*i)->set_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f);
   }
 }
+
+} // namespace galapix
 
 /* EOF */

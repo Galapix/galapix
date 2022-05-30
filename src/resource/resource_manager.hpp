@@ -27,6 +27,8 @@
 #include "util/blob.hpp"
 #include "util/failable.hpp"
 
+namespace galapix {
+
 class ArchiveInfo;
 class BlobInfo;
 class DatabaseThread;
@@ -70,6 +72,8 @@ private:
   ResourceManager(ResourceManager const&) = delete;
   ResourceManager& operator=(ResourceManager const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

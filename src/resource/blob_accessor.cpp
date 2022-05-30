@@ -20,6 +20,8 @@
 
 #include "util/path.hpp"
 
+namespace galapix {
+
 BlobAccessor::BlobAccessor(std::string const& filename) :
   m_mutex(),
   m_filename(filename),
@@ -130,5 +132,7 @@ BlobAccessor::get_data() const
   // TODO: rewrite this to handle stdio
   return get_blob().get_data();
 }
+
+} // namespace galapix
 
 /* EOF */

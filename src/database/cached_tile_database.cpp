@@ -21,6 +21,8 @@
 #include "database/memory_tile_database.hpp"
 #include "database/database.hpp"
 
+namespace galapix {
+
 CachedTileDatabase::CachedTileDatabase(std::unique_ptr<TileDatabaseInterface> tile_database) :
   m_tile_cache(std::make_unique<MemoryTileDatabase>()),
   m_tile_database(std::move(tile_database))
@@ -135,5 +137,7 @@ CachedTileDatabase::flush_cache()
   log_debug("CachedTileDatabase::flush_cache(): {}", m_tile_cache->size());
   m_tile_cache->flush(*m_tile_database);
 }
+
+} // namespace galapix
 
 /* EOF */

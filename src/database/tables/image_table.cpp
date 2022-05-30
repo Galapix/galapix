@@ -16,6 +16,8 @@
 
 #include "database/tables/image_table.hpp"
 
+namespace galapix {
+
 ImageTable::ImageTable(SQLite::Database& db) :
   m_db(db)
 {
@@ -28,5 +30,7 @@ ImageTable::ImageTable(SQLite::Database& db) :
 
   //m_db.exec("CREATE UNIQUE INDEX IF NOT EXISTS image_index ON image ( id, blob_id, width, height, handler );");
 }
+
+} // namespace galapix
 
 /* EOF */

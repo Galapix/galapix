@@ -21,7 +21,11 @@
 
 #include <filesystem>
 
+namespace galapix {
+
 std::filesystem::path unique_path();
+
+} // namespace galapix
 
 #endif
 

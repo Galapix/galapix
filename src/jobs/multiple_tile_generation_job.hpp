@@ -22,6 +22,8 @@
 #include "jobs/tile_generator.hpp"
 #include "job/job.hpp"
 
+namespace galapix {
+
 /**
  * Simple Job for generating a range of Tiles, it doesn't allow any
  * way to add late Jobs like TileGenerationJob does
@@ -74,6 +76,8 @@ private:
   MultipleTileGenerationJob(MultipleTileGenerationJob const&);
   MultipleTileGenerationJob& operator=(MultipleTileGenerationJob const&);
 };
+
+} // namespace galapix
 
 #endif
 

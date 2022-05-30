@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_INFO_STORE_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_RESOURCE_INFO_STORE_HPP
 
+namespace galapix {
+
 class ResourceInfoStore
 {
 public:
@@ -46,6 +48,8 @@ private:
   ResourceInfoStore(ResourceInfoStore const&);
   ResourceInfoStore& operator=(ResourceInfoStore const&);
 };
+
+} // namespace galapix
 
 #endif
 

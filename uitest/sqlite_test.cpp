@@ -25,6 +25,8 @@
 
 #include "sqlite/reader.hpp"
 
+using namespace galapix;
+
 UITEST(SQLite, test, "SQLITEDATABASE TABLE")
 {
   while(true)

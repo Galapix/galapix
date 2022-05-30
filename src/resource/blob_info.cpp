@@ -18,6 +18,8 @@
 
 #include "resource/blob_accessor.hpp"
 
+namespace galapix {
+
 BlobInfo
 BlobInfo::from_blob(Blob const& blob)
 {
@@ -44,5 +46,7 @@ BlobInfo::from_blob(BlobAccessorPtr const& blob_accessor)
 {
   return from_blob(*blob_accessor);
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -23,6 +23,8 @@
 #include "jobs/tile_generator.hpp"
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 FileEntryGenerationJob::FileEntryGenerationJob(JobHandle const& job_handle, URL const& url) :
   Job(job_handle),
   m_url(url),
@@ -97,5 +99,7 @@ FileEntryGenerationJob::run()
     log_error("  Exception: {}", err.what());
   }
 }
+
+} // namespace galapix
 
 /* EOF */

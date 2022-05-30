@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_DELETE_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_DELETE_HPP
 
+namespace galapix {
+
 class TileEntryDelete final
 {
 public:
@@ -40,6 +42,8 @@ private:
   TileEntryDelete(TileEntryDelete const&);
   TileEntryDelete& operator=(TileEntryDelete const&);
 };
+
+} // namespace galapix
 
 #endif
 

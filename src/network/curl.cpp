@@ -22,6 +22,8 @@
 
 #include <curl/curl.h>
 
+namespace galapix {
+
 static size_t my_curl_write_callback(void* ptr, size_t size, size_t nmemb, void* userdata)
 {
   std::vector<uint8_t>* data = static_cast<std::vector<uint8_t>*>(userdata);
@@ -85,5 +87,7 @@ CURLHandler::get_data(std::string const& url, std::string* mime_type)
     throw std::runtime_error("CURLHandler::get_data(): " + std::string(errbuf));
   }
 }
+
+} // namespace galapix
 
 /* EOF */

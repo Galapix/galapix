@@ -20,6 +20,8 @@
 #include "job/thread.hpp"
 #include "job/thread_message_queue2.hpp"
 
+namespace galapix {
+
 class AsyncMessenger : public Thread
 {
 public:
@@ -40,6 +42,8 @@ private:
   AsyncMessenger(AsyncMessenger const&);
   AsyncMessenger& operator=(AsyncMessenger const&);
 };
+
+} // namespace galapix
 
 #endif
 

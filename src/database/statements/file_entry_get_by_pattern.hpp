@@ -19,6 +19,8 @@
 
 #include "database/entries/file_entry.hpp"
 
+namespace galapix {
+
 class FileEntryGetByPattern
 {
 public:
@@ -48,6 +50,8 @@ private:
   FileEntryGetByPattern(FileEntryGetByPattern const&);
   FileEntryGetByPattern& operator=(FileEntryGetByPattern const&);
 };
+
+} // namespace galapix
 
 #endif
 

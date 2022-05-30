@@ -20,6 +20,8 @@
 #include "database/row_id.hpp"
 #include <SQLiteCpp/Statement.h>
 
+namespace galapix {
+
 class FileEntryDelete
 {
 public:
@@ -43,6 +45,8 @@ private:
   FileEntryDelete(FileEntryDelete const&);
   FileEntryDelete& operator=(FileEntryDelete const&);
 };
+
+} // namespace galapix
 
 #endif
 

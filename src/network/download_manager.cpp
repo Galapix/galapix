@@ -29,6 +29,8 @@
 #include "network/download_transfer.hpp"
 #include "network/download_result.hpp"
 
+namespace galapix {
+
 DownloadManager::DownloadManager() :
   m_cache("/tmp/cachdir"),
   m_thread(),
@@ -316,5 +318,7 @@ DownloadManager::request_post(std::string const& url,
 
   return uuid;
 }
+
+} // namespace galapix
 
 /* EOF */

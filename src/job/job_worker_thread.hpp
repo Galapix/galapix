@@ -24,6 +24,8 @@
 #include "job/thread.hpp"
 #include "job/job_handle.hpp"
 
+namespace galapix {
+
 class Job;
 
 class JobWorkerThread : public Thread
@@ -64,6 +66,8 @@ private:
 };
 
 using JobWorkerThreadPtr = std::shared_ptr<JobWorkerThread>;
+
+} // namespace galapix
 
 #endif
 

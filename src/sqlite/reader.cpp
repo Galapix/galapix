@@ -22,6 +22,8 @@
 
 #include "util/raise_exception.hpp"
 
+namespace galapix {
+
 SQLiteReader::SQLiteReader(SQLite::Statement& stmt) :
   m_stmt(stmt)
 {
@@ -99,5 +101,7 @@ SQLiteReader::get_column_count()
 {
   return m_stmt.getColumnCount();
 }
+
+} // namespace galapix
 
 /* EOF */

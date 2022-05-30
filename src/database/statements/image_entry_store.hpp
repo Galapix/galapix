@@ -22,6 +22,8 @@
 
 #include "database/entries/image_entry.hpp"
 
+namespace galapix {
+
 class ImageEntryStore final
 {
 public:
@@ -49,6 +51,8 @@ private:
   ImageEntryStore(ImageEntryStore const&);
   ImageEntryStore& operator=(ImageEntryStore const&);
 };
+
+} // namespace galapix
 
 #endif
 

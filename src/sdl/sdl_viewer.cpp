@@ -35,6 +35,8 @@
 #include "spnav/space_navigator.hpp"
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 #ifdef HAVE_SPACE_NAVIGATOR
 #  include <spnav.h>
 #endif
@@ -661,5 +663,7 @@ SDLViewer::run()
 
   log_info("done");
 }
+
+} // namespace galapix
 
 /* EOF */

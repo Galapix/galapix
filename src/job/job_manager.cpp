@@ -21,6 +21,8 @@
 #include "job/job.hpp"
 #include "job/job_worker_thread.hpp"
 
+namespace galapix {
+
 JobManager::JobManager(int num_threads) :
   threads(),
   next_thread(0),
@@ -99,5 +101,7 @@ JobManager::request(std::shared_ptr<Job> const& job,
 
   return handle;
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -18,6 +18,8 @@
 
 #include <stdexcept>
 
+namespace galapix {
+
 std::ostream& operator<<(std::ostream& os, ResourceType type)
 {
   switch(type)
@@ -69,5 +71,7 @@ ResourceType ResourceType_from_string(std::string const& value)
     throw std::invalid_argument("can't convert '" + value + "' to ResourceType");
   }
 }
+
+} // namespace galapix
 
 /* EOF */

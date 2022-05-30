@@ -18,6 +18,8 @@
 
 #include <stdexcept>
 
+namespace galapix {
+
 ResourceStatus ResourceStatus_from_string(std::string const& value)
 {
   if (value == "unknown")
@@ -88,5 +90,7 @@ std::string to_string(ResourceStatus const& value)
       break;
   }
 }
+
+} // namespace galapix
 
 /* EOF */

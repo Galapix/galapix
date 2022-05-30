@@ -28,6 +28,8 @@
 #include "network/download_progress.hpp"
 #include "network/download_result.hpp"
 
+using namespace galapix;
+
 namespace {
 
 void run_repl()

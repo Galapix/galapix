@@ -25,6 +25,8 @@
 
 #include "util/select.hpp"
 
+namespace galapix {
+
 SpaceNavigator::SpaceNavigator() :
   m_quit{true},
   m_thread{},
@@ -126,5 +128,7 @@ SpaceNavigator::stop_thread()
 
   m_thread.join();
 }
+
+} // namespace galapix
 
 /* EOF */

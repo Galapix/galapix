@@ -16,6 +16,8 @@
 
 #include "galapix/workspace_item.hpp"
 
+namespace galapix {
+
 WorkspaceItem::WorkspaceItem() :
   m_pos(0.0f, 0.0f),
   m_scale(1.0f),
@@ -96,5 +98,7 @@ WorkspaceItem::get_image_rect() const
   return Rectf(get_top_left_pos(),
                Sizef(get_scaled_width(), get_scaled_height()));
 }
+
+} // namespace galapix
 
 /* EOF */

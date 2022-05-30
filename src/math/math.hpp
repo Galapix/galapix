@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <string>
 
+namespace galapix {
+
 namespace Math {
 
 /** Calculates 2^n */
@@ -37,6 +39,8 @@ inline int ceil_div(int a, int b)
 }
 
 } // namespace Math
+
+} // namespace galapix
 
 #endif
 

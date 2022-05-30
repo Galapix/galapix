@@ -22,6 +22,8 @@
 
 #include "galapix/archive_thread.hpp"
 
+using namespace galapix;
+
 UITEST(Archive, thread, "ARCHIVENAME...",
        "Produce an Extraction object")
 {

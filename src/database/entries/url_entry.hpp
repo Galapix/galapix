@@ -23,6 +23,8 @@
 
 #include "database/row_id.hpp"
 
+namespace galapix {
+
 class URLEntry
 {
 public:
@@ -58,6 +60,8 @@ private:
   long m_mtime;
   RowId m_blob_id;
 };
+
+} // namespace galapix
 
 #endif
 

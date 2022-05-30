@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_INFO_STORE_HPP
 
+namespace galapix {
+
 class FileInfoStore
 {
 public:
@@ -43,6 +45,8 @@ private:
   FileInfoStore(FileInfoStore const&) = delete;
   FileInfoStore& operator=(FileInfoStore const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

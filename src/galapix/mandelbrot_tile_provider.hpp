@@ -24,6 +24,8 @@
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 
+namespace galapix {
+
 class JobManager;
 
 class MandelbrotTileProvider : public TileProvider
@@ -48,6 +50,8 @@ private:
   MandelbrotTileProvider(MandelbrotTileProvider const&);
   MandelbrotTileProvider& operator=(MandelbrotTileProvider const&);
 };
+
+} // namespace galapix
 
 #endif
 

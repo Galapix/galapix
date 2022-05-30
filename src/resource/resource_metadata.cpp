@@ -16,6 +16,8 @@
 
 #include "resource/resource_metadata.hpp"
 
+namespace galapix {
+
 SourceType
 ResourceMetadata::get_source_type() const
 {
@@ -64,5 +66,7 @@ ResourceMetadata::get_type() const
 {
   return ResourceType_from_string(m_info.get_name().get_handler().get_type());
 }
+
+} // namespace galapix
 
 /* EOF */

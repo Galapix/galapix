@@ -2,6 +2,8 @@
 
 #include "network/download_manager.hpp"
 
+using namespace galapix;
+
 TEST(DownloadManagerTest, request_get) {
   bool success = false;
   {

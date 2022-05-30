@@ -29,6 +29,8 @@
 #include "math/rect.hpp"
 #include "math/vector2i.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 void
@@ -213,5 +215,7 @@ TileGenerator::generate(SoftwareSurface const& surface, int min_scale, int max_s
                    });
   }
 }
+
+} // namespace galapix
 
 /* EOF */

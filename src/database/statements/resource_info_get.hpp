@@ -20,6 +20,8 @@
 #include "resource/resource_info.hpp"
 #include "resource/resource_locator.hpp"
 
+namespace galapix {
+
 class ResourceInfoGet
 {
 public:
@@ -103,6 +105,8 @@ private:
   ResourceInfoGet(ResourceInfoGet const&);
   ResourceInfoGet& operator=(ResourceInfoGet const&);
 };
+
+} // namespace galapix
 
 #endif
 

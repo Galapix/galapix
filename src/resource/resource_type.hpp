@@ -22,6 +22,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+namespace galapix {
+
 enum class ResourceType
 {
   Unknown, Blob, Image, Video, Archive, Collection
@@ -29,6 +31,8 @@ enum class ResourceType
 
 ResourceType ResourceType_from_string(std::string const& value);
 std::ostream& operator<<(std::ostream& os, ResourceType type);
+
+} // namespace galapix
 
 #endif
 

@@ -21,6 +21,8 @@
 #include <uitest/uitest.hpp>
 #include <iostream>
 
+using namespace galapix;
+
 UITEST(ResourceStatus, test, "")
 {
   ResourceStatus status = ResourceStatus::AccessError;

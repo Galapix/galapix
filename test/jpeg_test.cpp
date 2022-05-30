@@ -5,6 +5,7 @@
 #include "math/size.hpp"
 #include <surf/plugins/jpeg.hpp>
 
+using namespace galapix;
 using namespace surf;
 
 TEST(JPEGTest, get_size)

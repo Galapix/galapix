@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_HAS_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_TILE_ENTRY_HAS_HPP
 
+namespace galapix {
+
 class TileEntryHas final
 {
 public:
@@ -57,6 +59,8 @@ private:
   TileEntryHas(TileEntryHas const&);
   TileEntryHas& operator=(TileEntryHas const&);
 };
+
+} // namespace galapix
 
 #endif
 

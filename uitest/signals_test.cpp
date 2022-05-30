@@ -23,6 +23,8 @@
 
 #include "util/weak_functor.hpp"
 
+using namespace galapix;
+
 class Foobar
 {
 public:

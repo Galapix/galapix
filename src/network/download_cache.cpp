@@ -18,6 +18,8 @@
 
 #include <logmich/log.hpp>
 
+namespace galapix {
+
 DownloadCache::DownloadCache(std::string const& cache_directory) :
   m_cache_directory(cache_directory)
 {
@@ -47,5 +49,7 @@ DownloadCache::store(std::string const& url, DownloadResult const& result)
 {
   log_error("not implemented: {}", url);
 }
+
+} // namespace galapix
 
 /* EOF */

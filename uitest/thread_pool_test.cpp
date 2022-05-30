@@ -21,6 +21,8 @@
 
 #include "util/thread_pool.hpp"
 
+using namespace galapix;
+
 UITEST(ThreadPool, test, "")
 {
   {

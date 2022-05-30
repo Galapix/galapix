@@ -19,6 +19,8 @@
 
 #include <optional>
 
+namespace galapix {
+
 class ResourceEntryGetByBlobId final
 {
 public:
@@ -55,6 +57,8 @@ private:
   ResourceEntryGetByBlobId(ResourceEntryGetByBlobId const&);
   ResourceEntryGetByBlobId& operator=(ResourceEntryGetByBlobId const&);
 };
+
+} // namespace galapix
 
 #endif
 

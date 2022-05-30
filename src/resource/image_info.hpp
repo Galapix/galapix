@@ -19,6 +19,8 @@
 
 #include "database/row_id.hpp"
 
+namespace galapix {
+
 class ImageInfo
 {
 public:
@@ -61,6 +63,8 @@ private:
   int m_width;
   int m_height;
 };
+
+} // namespace galapix
 
 #endif
 

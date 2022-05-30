@@ -21,6 +21,8 @@
 
 #include "math/vector2f.hpp"
 
+namespace galapix {
+
 class Image;
 
 class TightLayouter : public Layouter
@@ -39,6 +41,8 @@ private:
   TightLayouter(TightLayouter const&);
   TightLayouter& operator=(TightLayouter const&);
 };
+
+} // namespace galapix
 
 #endif
 

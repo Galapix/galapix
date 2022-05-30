@@ -29,6 +29,8 @@
 #include "job/thread_message_queue2.hpp"
 #include "util/failable.hpp"
 
+namespace galapix {
+
 class BlobInfo;
 class Database;
 class DatabaseMessage;
@@ -152,6 +154,8 @@ private:
   DatabaseThread (DatabaseThread const&);
   DatabaseThread& operator= (DatabaseThread const&);
 };
+
+} // namespace galapix
 
 #endif
 

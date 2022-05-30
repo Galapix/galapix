@@ -21,6 +21,8 @@
 #include "database/tile_database_interface.hpp"
 #include "galapix/tile.hpp"
 
+namespace galapix {
+
 MemoryTileDatabase::MemoryTileDatabase() :
   m_cache()
 {
@@ -145,5 +147,7 @@ MemoryTileDatabase::flush(TileDatabaseInterface& tile_database)
     m_cache.clear();
   }
 }
+
+} // namespace galapix
 
 /* EOF */

@@ -19,6 +19,8 @@
 #include <sstream>
 #include <logmich/log.hpp>
 
+namespace galapix {
+
 ResourceLocator
 ResourceLocator::from_string(std::string const& locator)
 {
@@ -146,5 +148,7 @@ ResourceLocator::str() const
   }
   return out.str();
 }
+
+} // namespace galapix
 
 /* EOF */

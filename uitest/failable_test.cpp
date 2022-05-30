@@ -22,6 +22,8 @@
 
 #include "util/failable.hpp"
 
+using namespace galapix;
+
 namespace {
 
 class Foo

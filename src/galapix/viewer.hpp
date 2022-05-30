@@ -28,6 +28,8 @@
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"
 
+namespace galapix {
+
 class GridTool;
 class MoveTool;
 class PanTool;
@@ -191,6 +193,8 @@ private:
   Viewer (Viewer const&);
   Viewer& operator= (Viewer const&);
 };
+
+} // namespace galapix
 
 #endif
 

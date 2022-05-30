@@ -21,6 +21,8 @@
 #include <SQLiteCpp/Statement.h>
 #include "database/entries/file_entry.hpp"
 
+namespace galapix {
+
 class FileEntryGetAll
 {
 public:
@@ -48,6 +50,8 @@ private:
   FileEntryGetAll(FileEntryGetAll const&);
   FileEntryGetAll& operator=(FileEntryGetAll const&);
 };
+
+} // namespace galapix
 
 #endif
 

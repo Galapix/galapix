@@ -31,6 +31,7 @@
 #include <surf/plugins/png.hpp>
 
 using namespace surf;
+using namespace galapix;
 
 namespace {
 

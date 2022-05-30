@@ -31,6 +31,8 @@
 #include "resource/resource_locator.hpp"
 #include "resource/url_info.hpp"
 
+namespace galapix {
+
 DatabaseThread* DatabaseThread::current_ = nullptr;
 
 DatabaseThread::DatabaseThread(Database& database,
@@ -509,5 +511,7 @@ DatabaseThread::receive_file(OldFileEntry const& file_entry)
                                               file_entry.get_handler());
     });
 }
+
+} // namespace galapix
 
 /* EOF */

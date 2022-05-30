@@ -23,6 +23,8 @@
 #include "resource/resource_handler.hpp"
 #include "resource/resource_url.hpp"
 
+namespace galapix {
+
 /** The ResourceLocator provides a path to a retrievable resource, most
     commonly this will be a file path or web URL. The {handler} part
     allows to dig into a resource and address child objects, such as
@@ -63,6 +65,8 @@ private:
   ResourceURL m_url;
   std::vector<ResourceHandler> m_handler;
 };
+
+} // namespace galapix
 
 #endif
 

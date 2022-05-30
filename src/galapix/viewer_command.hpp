@@ -23,6 +23,8 @@
 
 #include "galapix/options.hpp"
 
+namespace galapix {
+
 class System;
 
 class ViewerCommand
@@ -46,6 +48,8 @@ private:
   ViewerCommand(ViewerCommand const&) = delete;
   ViewerCommand& operator=(ViewerCommand const&) = delete;
 };
+
+} // namespace galapix
 
 #endif
 

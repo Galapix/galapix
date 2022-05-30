@@ -19,6 +19,8 @@
 #include <assert.h>
 #include <logmich/log.hpp>
 
+namespace galapix {
+
 ThreadPool::ThreadPool(int num_threads, ShutdownPolicy shutdown_policy) :
   m_shutdown_policy(shutdown_policy),
   m_shutdown(false),
@@ -87,5 +89,7 @@ ThreadPool::run()
     }
   }
 }
+
+} // namespace galapix
 
 /* EOF */

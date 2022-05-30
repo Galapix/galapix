@@ -31,6 +31,8 @@
 #include "galapix/workspace_item.hpp"
 #include "math/rect.hpp"
 
+namespace galapix {
+
 class ImageTileCache;
 class ImageRenderer;
 class TileEntry;
@@ -68,6 +70,8 @@ private:
   std::shared_ptr<ImageTileCache> m_cache;
   std::unique_ptr<ImageRenderer>  m_renderer;
 };
+
+} // namespace galapix
 
 #endif
 

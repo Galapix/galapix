@@ -19,6 +19,8 @@
 
 #include "galapix/tool.hpp"
 
+namespace galapix {
+
 class Viewer;
 
 class PanTool : public Tool
@@ -43,6 +45,8 @@ private:
 
   Vector2i mouse_pos;
 };
+
+} // namespace galapix
 
 #endif
 

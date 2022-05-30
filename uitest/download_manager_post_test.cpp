@@ -25,6 +25,8 @@
 #include "network/download_result.hpp"
 #include <logmich/log.hpp>
 
+using namespace galapix;
+
 UITEST(DownloadManager, post, "URL...",
        "Post to an URL")
 {

@@ -30,6 +30,8 @@
 #include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 Image::Image(URL const& url, TileProviderPtr provider) :
@@ -159,5 +161,7 @@ Image::on_leave_screen()
   WorkspaceItem::on_leave_screen();
   cache_cleanup();
 }
+
+} // namespace galapix
 
 /* EOF */

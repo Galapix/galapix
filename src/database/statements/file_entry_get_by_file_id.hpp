@@ -17,6 +17,8 @@
 #ifndef HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_GET_BY_FILE_ID_HPP
 #define HEADER_GALAPIX_DATABASE_STATEMENTS_FILE_ENTRY_GET_BY_FILE_ID_HPP
 
+namespace galapix {
+
 class FileEntryGetByFileId
 {
 public:
@@ -31,6 +33,8 @@ private:
   FileEntryGetByFileId(FileEntryGetByFileId const&);
   FileEntryGetByFileId& operator=(FileEntryGetByFileId const&);
 };
+
+} // namespace galapix
 
 #endif
 

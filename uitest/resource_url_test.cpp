@@ -3,6 +3,8 @@
 
 #include "resource/resource_url.hpp"
 
+using namespace galapix;
+
 UITEST(ResourceURL, test, "URL...")
 {
   for(const auto& arg : rest)

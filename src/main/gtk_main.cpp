@@ -19,8 +19,8 @@
 
 int main(int argc, char** argv)
 {
-  GtkSystem gtk_system;
-  Galapix app(gtk_system);
+  galapix::GtkSystem gtk_system;
+  galapix::Galapix app(gtk_system);
   return app.main(argc, argv);
 }
 

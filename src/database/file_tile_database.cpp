@@ -32,6 +32,8 @@
 #include "util/blob.hpp"
 #include "util/filesystem.hpp"
 
+namespace galapix {
+
 using namespace surf;
 
 FileTileDatabase::FileTileDatabase(std::string const& prefix) :
@@ -267,5 +269,7 @@ FileTileDatabase::ensure_directory_exists(RowId const& file_id_obj)
   str << '/' << fmt::format("{:03x}", part3);
   Filesystem::mkdir(str.str());
 }
+
+} // namespace galapix
 
 /* EOF */

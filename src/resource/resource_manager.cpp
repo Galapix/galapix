@@ -34,6 +34,8 @@
 #include "resource/url_info.hpp"
 #include "server/database_thread.hpp"
 
+namespace galapix {
+
 ResourceManager::ResourceManager(DatabaseThread& database,
                                  Generator& generator,
                                  DownloadManager& download_mgr,
@@ -224,5 +226,7 @@ ResourceManager::generate_tiles()
     });
 }
 #endif
+
+} // namespace galapix
 
 /* EOF */

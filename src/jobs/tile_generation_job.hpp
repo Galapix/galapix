@@ -28,6 +28,8 @@
 #include "job/job.hpp"
 #include "math/vector2i.hpp"
 
+namespace galapix {
+
 class TileGenerationJob : public Job
 {
 public:
@@ -100,6 +102,8 @@ private:
 
   sigc::signal<void (RowId const&, Tile const&)> m_sig_tile_callback;
 };
+
+} // namespace galapix
 
 #endif
 
