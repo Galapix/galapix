@@ -147,7 +147,6 @@
 
               pkgs.SDL2
               pkgs.SDL2_image
-              pkgs.boost
               pkgs.curl
               pkgs.glew
               pkgs.imagemagick6

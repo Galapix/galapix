@@ -291,11 +291,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1654004153,
-        "narHash": "sha256-w/RwSUlDBCGbCAlHhKW3sly5lKRj20w9+vLpA1dh9fk=",
+        "lastModified": 1655143609,
+        "narHash": "sha256-sTC/nQ4tsnxYeBdERKu6QhJPzhY5qtjs+R+w4HS1va4=",
         "owner": "grumbel",
         "repo": "surfcpp",
-        "rev": "44ff4d6697999528c7b888c396577dacbccadd73",
+        "rev": "49959b6cc407254a7429a5ddb0ce074fb1d76a3b",
         "type": "github"
       },
       "original": {
