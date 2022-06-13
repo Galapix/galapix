@@ -17,28 +17,12 @@
 cmake_minimum_required(VERSION 3.6)
 project(galapix-0.3)
 
-set(TINYCMMC_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/external/cmake-modules/modules/")
-find_package(tinycmmc CONFIG)
-message(STATUS "tinycmmc module path: ${TINYCMMC_MODULE_PATH}")
-list(APPEND CMAKE_MODULE_PATH ${TINYCMMC_MODULE_PATH})
+include(mk/cmake/TinyCMMC.cmake)
 
-set(PROJECT_NAME ${PROJECT_NAME} CACHE STRING "Set project name")
-
-if(POLICY CMP0072)
-  # FindOpenGL prefers GLVND by default when available
-  cmake_policy(SET CMP0072 NEW)
-endif()
-
-include(GetProjectVersion)
-include(GNUInstallDirs)
 include(CheckIncludeFile)
-include(MaximumWarnings)
-include(ClangTidy)
 
 option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
 option(BUILD_GALAPIX_GTK "Build galapix.gtk" OFF)
-option(BUILD_TESTS "Build tests" OFF)
-option(BUILD_EXTRA "Build extra apps" OFF)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 
@@ -46,18 +30,10 @@ if(THREADSANITIZER)
   add_compile_options(-fsanitize=thread)
 endif()
 
-add_definitions(-DGLM_ENABLE_EXPERIMENTAL)
-
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
 find_package(PkgConfig REQUIRED)
 find_package(Python)
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
-find_package(glm REQUIRED)
 find_package(fmt REQUIRED)
 find_package(OpenSSL COMPONENTS Crypto REQUIRED)
 
@@ -94,26 +70,16 @@ if(USE_OPENGLES2 OR HAVE_BCMHOST)
   add_library(OpenGL::GLU INTERFACE IMPORTED)
   add_library(GLEW::GLEW INTERFACE IMPORTED)
 else()
+  set(OpenGL_GL_PREFERENCE "GLVND")
   find_package(OpenGL REQUIRED)
   find_package(GLEW REQUIRED)
-endif()
-
-find_package(EnTT)
-if(NOT TARGET EnTT::EnTT)
-  add_library(EnTT::EnTT INTERFACE IMPORTED)
-  target_include_directories(entt INTERFACE external/entt/single_include/)
 endif()
 
 function(build_dependencies)
   if(BUILD_TESTS)
     set(BUILD_TESTS OFF)
-
-    find_package(uitest)
-    if(NOT TARGET uitest::uitest)
-      add_subdirectory(external/uitest/ EXCLUDE_FROM_ALL)
-    endif()
+    tinycmmc_find_dependency(uitest)
   endif()
-
   set(BUILD_TESTS OFF)
 
   find_package(SQLiteCpp)
@@ -122,45 +88,20 @@ function(build_dependencies)
     set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
   endif()
 
-  find_package(geom)
-  if(NOT TARGET geom::geom)
-    add_subdirectory(external/geomcpp/ EXCLUDE_FROM_ALL)
+  find_package(EnTT)
+  if(NOT TARGET EnTT::EnTT)
+    add_library(EnTT::EnTT INTERFACE IMPORTED)
+    target_include_directories(entt INTERFACE external/entt/single_include/)
   endif()
 
-  find_package(logmich)
-  if(NOT TARGET logmich::logmich)
-    add_subdirectory(external/logmich/ EXCLUDE_FROM_ALL)
-  endif()
-
-  find_package(sexp)
-  if(NOT TARGET sexp::sexp)
-    add_subdirectory(external/sexp-cpp/ EXCLUDE_FROM_ALL)
-  endif()
-
-  find_package(strut)
-  if(NOT TARGET strut::strut)
-    add_subdirectory(external/strut/ EXCLUDE_FROM_ALL)
-  endif()
-
-  find_package(surf)
-  if(NOT TARGET surf::surf)
-    add_subdirectory(external/surfcpp/ EXCLUDE_FROM_ALL)
-  endif()
-
-  find_package(arxp)
-  if(NOT TARGET arxp::arxp)
-    add_subdirectory(external/arxpcpp/ EXCLUDE_FROM_ALL)
-  endif()
-
-  find_package(prio)
-  if(NOT TARGET prio::prio)
-    add_subdirectory(external/priocpp/ EXCLUDE_FROM_ALL)
-  endif()
-
-  find_package(wstdisplay)
-  if(NOT TARGET wstdisplay::wstdisplay)
-    add_subdirectory(external/wstdisplay/ EXCLUDE_FROM_ALL)
-  endif()
+  tinycmmc_find_dependency(geom)
+  tinycmmc_find_dependency(logmich)
+  tinycmmc_find_dependency(sexp)
+  tinycmmc_find_dependency(strut)
+  tinycmmc_find_dependency(surf)
+  tinycmmc_find_dependency(arxp)
+  tinycmmc_find_dependency(prio)
+  tinycmmc_find_dependency(wstdisplay)
 endfunction()
 build_dependencies()
 
@@ -186,7 +127,7 @@ file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/util/*.cpp)
 add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
 set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
-target_compile_options(libgalapix PRIVATE ${WARNINGS_CXX_FLAGS})
+target_compile_options(libgalapix PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 target_compile_definitions(libgalapix PUBLIC
   -DPROJECT_VERSION="${PROJECT_VERSION}"
   -DPROJECT_NAME="${PROJECT_NAME}")
@@ -225,7 +166,7 @@ if(BUILD_GALAPIX_SDL)
   file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
   list(APPEND LIBGALAPIX_SDL_SOURCES ${GALAPIX_SPNAV_SOURCES})
   add_library(libgalapix_sdl STATIC ${LIBGALAPIX_SDL_SOURCES})
-  target_compile_options(libgalapix_sdl PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(libgalapix_sdl PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_link_libraries(libgalapix_sdl PUBLIC
     libgalapix
     PkgConfig::SDL2)
@@ -233,7 +174,7 @@ if(BUILD_GALAPIX_SDL)
 
   add_executable(galapix.sdl src/main/sdl_main.cpp)
   set_target_properties(galapix.sdl PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.sdl")
-  target_compile_options(galapix.sdl PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(galapix.sdl PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL ${GALAPIX_SPNAV_DEFINES})
   target_link_libraries(galapix.sdl PRIVATE libgalapix_sdl)
 
@@ -247,7 +188,7 @@ if(BUILD_GALAPIX_GTK)
 
   file(GLOB LIBGALAPIX_GTK_SOURCES src/gtk/*.cpp)
   add_library(libgalapix_gtk SHARED ${LIBGALAPIX_GTK_SOURCES})
-  target_compile_options(libgalapix_gtk PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(libgalapix_gtk PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_compile_definitions(libgalapix_gtk PRIVATE -DGALAPIX_GTK)
   target_link_libraries(libgalapix_gtk PUBLIC
     libgalapix
@@ -255,7 +196,7 @@ if(BUILD_GALAPIX_GTK)
 
   add_executable(galapix.gtk src/main/gtk_main.cpp)
   set_target_properties(galapix.gtk PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.gtk")
-  target_compile_options(galapix.gtk PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(galapix.gtk PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_compile_definitions(galapix.gtk PRIVATE -DGALAPIX_GTK)
   target_link_libraries(galapix.gtk PRIVATE libgalapix_gtk)
 
@@ -272,13 +213,13 @@ if(BUILD_EXTRA)
   foreach(SRC ${EXTRA_SOURCES})
     get_filename_component(SRC_BASENAME ${SRC} NAME_WE)
     add_executable(${SRC_BASENAME} ${SRC})
-    target_compile_options("${SRC_BASENAME}" PRIVATE ${WARNINGS_CXX_FLAGS})
+    target_compile_options("${SRC_BASENAME}" PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
     # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
     target_link_libraries(${SRC_BASENAME} libgalapix)
   endforeach(SRC)
 
   add_executable(imagescaler ${CMAKE_CURRENT_SOURCE_DIR}/extra/imagescaler/imagescaler.cpp)
-  target_compile_options(imagescaler PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(imagescaler PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_link_libraries(imagescaler libgalapix)
 endif()
 
@@ -289,7 +230,7 @@ if(BUILD_TESTS)
   # build automatic tests
   file(GLOB TEST_GALAPIX_SOURCES test/*_test.cpp)
   add_executable(test_galapix ${TEST_GALAPIX_SOURCES})
-  target_compile_options(test_galapix PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(test_galapix PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_link_libraries(test_galapix
     GTest::GTest
     GTest::Main
@@ -298,7 +239,7 @@ if(BUILD_TESTS)
   # build interactive tests
   file(GLOB UITEST_GALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} uitest/*_test.cpp)
   add_executable(uitest_galapix ${UITEST_GALAPIX_SOURCES})
-  target_compile_options(uitest_galapix PRIVATE ${WARNINGS_CXX_FLAGS})
+  target_compile_options(uitest_galapix PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   target_include_directories(uitest_galapix PRIVATE src/)
   target_link_libraries(uitest_galapix
     libgalapix
@@ -310,7 +251,7 @@ if(BUILD_TESTS)
     foreach(SRC ${TEST_GALAPIX_SDL_SOURCES})
       get_filename_component(SRC_BASENAME ${SRC} NAME_WE)
       add_executable(${SRC_BASENAME} ${SRC})
-      target_compile_options(${SRC_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
+      target_compile_options(${SRC_BASENAME} PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
       set_target_properties(${SRC_BASENAME} PROPERTIES OUTPUT_NAME "extra/${SRC_BASENAME}")
       target_link_libraries(${SRC_BASENAME} libgalapix)
       # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
@@ -337,7 +278,7 @@ if(BUILD_BENCHMARKS)
       benchmark::benchmark)
     set_target_properties(${SOURCE_BASENAME} PROPERTIES
       RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/benchmarks/")
-    target_compile_options(${SOURCE_BASENAME} PRIVATE ${WARNINGS_CXX_FLAGS})
+    target_compile_options(${SOURCE_BASENAME} PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
   endforeach(SOURCE)
 endif()
 
