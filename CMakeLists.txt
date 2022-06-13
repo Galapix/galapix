@@ -61,6 +61,16 @@ find_package(glm REQUIRED)
 find_package(fmt REQUIRED)
 find_package(OpenSSL COMPONENTS Crypto REQUIRED)
 
+find_package(spnav)
+if(SPNAV_FOUND)
+  message(STATUS "Enabling Space Navigator support")
+  set(GALAPIX_SPNAV_LIBRARIES spnav::spnav)
+  set(GALAPIX_SPNAV_DEFINES -DHAVE_SPACE_NAVIGATOR)
+  file(GLOB GALAPIX_SPNAV_SOURCES src/spnav/space_navigator.cpp)
+else()
+  message(WARNING "Disabling Space Navigator support")
+endif()
+
 # Not using find_package(), see:
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=776832
 # find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
@@ -68,18 +78,6 @@ pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
 
 pkg_search_module(SQLITE3 REQUIRED sqlite3 IMPORTED_TARGET)
 pkg_search_module(SIGCXX REQUIRED sigc++-2.0 IMPORTED_TARGET)
-
-check_include_file(spnav.h HAVE_SPNAV)
-find_library(SPNAV spnav)
-if(SPNAV AND HAVE_SPNAV)
-  message(STATUS "enabling Space Navigator support")
-  set(SPNAV_CFLAGS_OTHER -DHAVE_SPACE_NAVIGATOR)
-  set(SPNAV_LIBRARIES ${SPNAV})
-  file(GLOB SPNAV_SOURCES src/spnav/space_navigator.cpp)
-else()
-  set(SPNAV_LIBRARIES)
-  set(SPNAV_CFLAGS_OTHER)
-endif()
 
 check_include_file(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
 if(USE_OPENGLES2 OR HAVE_BCMHOST)
@@ -209,7 +207,7 @@ target_link_libraries(libgalapix PUBLIC
   fmt::fmt
   PkgConfig::MAGICKXX
   PkgConfig::SIGCXX
-  ${SPNAV_LIBRARIES}
+  ${GALAPIX_SPNAV_LIBRARIES}
   OpenSSL::Crypto
   OpenGL::GL
   OpenGL::GLU
@@ -225,7 +223,7 @@ if(BUILD_GALAPIX_SDL)
   pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
 
   file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
-  list(APPEND LIBGALAPIX_SDL_SOURCES ${SPNAV_SOURCES})
+  list(APPEND LIBGALAPIX_SDL_SOURCES ${GALAPIX_SPNAV_SOURCES})
   add_library(libgalapix_sdl STATIC ${LIBGALAPIX_SDL_SOURCES})
   target_compile_options(libgalapix_sdl PRIVATE ${WARNINGS_CXX_FLAGS})
   target_link_libraries(libgalapix_sdl PUBLIC
@@ -236,7 +234,7 @@ if(BUILD_GALAPIX_SDL)
   add_executable(galapix.sdl src/main/sdl_main.cpp)
   set_target_properties(galapix.sdl PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.sdl")
   target_compile_options(galapix.sdl PRIVATE ${WARNINGS_CXX_FLAGS})
-  target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL ${SPNAV_CFLAGS_OTHER})
+  target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL ${GALAPIX_SPNAV_DEFINES})
   target_link_libraries(galapix.sdl PRIVATE libgalapix_sdl)
 
   install(TARGETS galapix.sdl

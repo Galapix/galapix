@@ -1,6 +1,6 @@
 [submodule "external/uitest"]
 	path = external/uitest
-	url = https://gitlab.com/Grumbel/uitest.git
+	url = https://gitlab.com/grumbel/uitest.git
 [submodule "external/logmich"]
 	path = external/logmich
 	url = https://gitlab.com/logmich/logmich.git
@@ -16,8 +16,8 @@
 [submodule "external/geomcpp"]
 	path = external/geomcpp
 	url = https://gitlab.com/grumbel/geomcpp.git
-[submodule "external/cmake-modules"]
-	path = external/cmake-modules
+[submodule "external/tinycmmc"]
+	path = external/tinycmmc
 	url = https://gitlab.com/grumbel/cmake-modules.git
 [submodule "external/strut"]
 	path = external/strut
@@ -33,4 +33,19 @@
 	url = https://gitlab.com/grumbel/priocpp.git
 [submodule "external/wstdisplay"]
 	path = external/wstdisplay
-	url = https://gitlab.com/Windstille/wstdisplay.git
+	url = https://gitlab.com/windstille/wstdisplay.git
+[submodule "external/arxpcpp"]
+	path = external/arxpcpp
+	url = https://gitlab.com/grumbel/arxpcpp.git
+[submodule "external/babyxml"]
+	path = external/babyxml
+	url = https://gitlab.com/grumbel/babyxml.git
+[submodule "external/exspcpp"]
+	path = external/exspcpp
+	url = https://gitlab.com/grumbel/exspcpp.git
+[submodule "external/sexpcpp"]
+	path = external/sexpcpp
+	url = https://gitlab.com/lispparser/sexp-cpp.git
+[submodule "external/strutcpp"]
+	path = external/strutcpp
+	url = https://gitlab.com/grumbel/strutcpp.git

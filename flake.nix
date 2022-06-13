@@ -2,26 +2,26 @@
   description = "An image viewer for large image collections";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     flake-utils.url = "github:numtide/flake-utils";
 
-    tinycmmc.url = "gitlab:grumbel/cmake-modules";
+    tinycmmc.url = "github:grumbel/tinycmmc";
     tinycmmc.inputs.nixpkgs.follows = "nixpkgs";
     tinycmmc.inputs.flake-utils.follows = "flake-utils";
 
-    geomcpp.url = "gitlab:grumbel/geomcpp";
+    geomcpp.url = "github:grumbel/geomcpp";
     geomcpp.inputs.nixpkgs.follows = "nixpkgs";
     geomcpp.inputs.flake-utils.follows = "flake-utils";
     geomcpp.inputs.tinycmmc.follows = "tinycmmc";
 
-    exspcpp.url = "gitlab:grumbel/exspcpp";
+    exspcpp.url = "github:grumbel/exspcpp";
     exspcpp.inputs.nixpkgs.follows = "nixpkgs";
     exspcpp.inputs.flake-utils.follows = "flake-utils";
     exspcpp.inputs.tinycmmc.follows = "tinycmmc";
     exspcpp.inputs.logmich.follows = "logmich";
     exspcpp.inputs.uitest.follows = "uitest";
 
-    arxpcpp.url = "gitlab:grumbel/arxpcpp";
+    arxpcpp.url = "github:grumbel/arxpcpp";
     arxpcpp.inputs.nixpkgs.follows = "nixpkgs";
     arxpcpp.inputs.flake-utils.follows = "flake-utils";
     arxpcpp.inputs.tinycmmc.follows = "tinycmmc";
@@ -29,48 +29,48 @@
     arxpcpp.inputs.exspcpp.follows = "exspcpp";
     arxpcpp.inputs.uitest.follows = "uitest";
 
-    logmich.url = "gitlab:logmich/logmich";
+    logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
     logmich.inputs.flake-utils.follows = "flake-utils";
     logmich.inputs.tinycmmc.follows = "tinycmmc";
 
-    priocpp.url = "gitlab:grumbel/priocpp";
+    priocpp.url = "github:grumbel/priocpp";
     priocpp.inputs.nixpkgs.follows = "nixpkgs";
     priocpp.inputs.flake-utils.follows = "flake-utils";
     priocpp.inputs.tinycmmc.follows = "tinycmmc";
     priocpp.inputs.logmich.follows = "logmich";
     priocpp.inputs.sexpcpp.follows = "sexpcpp";
 
-    sexpcpp.url = "gitlab:lispparser/sexp-cpp";
+    sexpcpp.url = "github:lispparser/sexp-cpp";
     sexpcpp.inputs.nixpkgs.follows = "nixpkgs";
     sexpcpp.inputs.flake-utils.follows = "flake-utils";
     sexpcpp.inputs.tinycmmc.follows = "tinycmmc";
 
-    strutcpp.url = "gitlab:grumbel/strutcpp";
+    strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
     strutcpp.inputs.flake-utils.follows = "flake-utils";
     strutcpp.inputs.tinycmmc.follows = "tinycmmc";
     strutcpp.inputs.geomcpp.follows = "geomcpp";
     strutcpp.inputs.logmich.follows = "logmich";
 
-    surfcpp.url = "gitlab:grumbel/surfcpp";
+    surfcpp.url = "github:grumbel/surfcpp";
     surfcpp.inputs.nixpkgs.follows = "nixpkgs";
     surfcpp.inputs.flake-utils.follows = "flake-utils";
     surfcpp.inputs.tinycmmc.follows = "tinycmmc";
     surfcpp.inputs.geomcpp.follows = "geomcpp";
     surfcpp.inputs.logmich.follows = "logmich";
 
-    uitest.url = "gitlab:grumbel/uitest";
+    uitest.url = "github:grumbel/uitest";
     uitest.inputs.nixpkgs.follows = "nixpkgs";
     uitest.inputs.flake-utils.follows = "flake-utils";
     uitest.inputs.tinycmmc.follows = "tinycmmc";
 
-    babyxml.url = "gitlab:grumbel/babyxml";
+    babyxml.url = "github:grumbel/babyxml";
     babyxml.inputs.nixpkgs.follows = "nixpkgs";
     babyxml.inputs.flake-utils.follows = "flake-utils";
     babyxml.inputs.tinycmmc.follows = "tinycmmc";
 
-    wstdisplay.url = "gitlab:windstille/wstdisplay";
+    wstdisplay.url = "github:WindstilleTeam/wstdisplay";
     wstdisplay.inputs.nixpkgs.follows = "nixpkgs";
     wstdisplay.inputs.flake-utils.follows = "flake-utils";
     wstdisplay.inputs.tinycmmc.follows = "tinycmmc";
