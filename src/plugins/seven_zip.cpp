@@ -21,6 +21,7 @@
 #include <stdexcept>
 
 #include "util/exec.hpp"
+#include "util/filesystem.hpp"
 
 namespace {
 bool has_prefix(const std::string& lhs, const std::string rhs)
@@ -37,7 +38,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
 {
   std::vector<std::string> lst;
 
-  Exec zip("7zr");
+  Exec zip(Filesystem::find_exe("7zr", "GALAPIX_7ZR"));
   zip.arg("l").arg("-slt");
   zip.arg(zip_filename);
 
@@ -82,7 +83,7 @@ SevenZip::get_filenames(const std::string& zip_filename)
 BlobPtr
 SevenZip::get_file(const std::string& zip_filename, const std::string& filename)
 {
-  Exec zip("7zr");
+  Exec zip(Filesystem::find_exe("7zr", "GALAPIX_7ZR"));
   zip.arg("x").arg("-so");
   zip.arg(zip_filename);
   zip.arg(filename);

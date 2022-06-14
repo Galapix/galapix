@@ -31,7 +31,7 @@ RSVG::is_available()
 {
   try 
   {
-    std::string exe = Filesystem::find_exe("rsvg");
+    std::string exe = Filesystem::find_exe("rsvg", "GALAPIX_RSVG");
     log_info << "found " << exe << std::endl;
     return true;
   }
@@ -45,7 +45,7 @@ RSVG::is_available()
 SoftwareSurfacePtr
 RSVG::load_from_file(const std::string& filename)
 {
-  Exec rsvg("rsvg");
+  Exec rsvg(Filesystem::find_exe("rsvg", "GALAPIX_RSVG"));
 
   rsvg.arg("--format").arg("png");
   rsvg.arg(filename);

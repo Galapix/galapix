@@ -31,7 +31,7 @@ UFRaw::is_available()
 {
   try 
   {
-    std::string exe = Filesystem::find_exe("ufraw-batch");
+    std::string exe = Filesystem::find_exe("ufraw-batch", "GALAPIX_UFRAW_BATCH");
     log_info << "found " << exe << std::endl;
     return true;
   }
@@ -45,7 +45,7 @@ UFRaw::is_available()
 SoftwareSurfacePtr
 UFRaw::load_from_file(const std::string& filename)
 {
-  Exec ufraw("ufraw-batch");
+  Exec ufraw(Filesystem::find_exe("ufraw-batch", "GALAPIX_UFRAW_BATCH"));
   ufraw
     .arg(filename)
     .arg("--silent")

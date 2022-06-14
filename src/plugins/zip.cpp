@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include "util/exec.hpp"
+#include "util/filesystem.hpp"
 
 std::string zip_error_to_string(int err)
 {
@@ -153,7 +154,7 @@ void unzip_parse_output(std::vector<char>::const_iterator start, std::vector<cha
 std::vector<std::string>
 Zip::get_filenames(const std::string& zip_filename)
 {
-  Exec unzip("unzip");
+  Exec unzip(Filesystem::find_exe("unzip", "GALAPIX_UNZIP"));
   unzip.arg("-lqqUU").arg(zip_filename);
   int zip_return_code = unzip.exec();
   if (zip_return_code == 0)
@@ -194,7 +195,7 @@ Zip::get_file(const std::string& zip_filename, const std::string& filename_in)
     }
   }
 
-  Exec unzip("unzip");
+  Exec unzip(Filesystem::find_exe("unzip", "GALAPIX_UNZIP"));
   unzip.arg("-pqqUU").arg(zip_filename).arg(filename);
   int zip_return_code = unzip.exec();
   if (zip_return_code == 0)

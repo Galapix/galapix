@@ -28,6 +28,7 @@ private:
 
 public:
   static std::string find_exe(const std::string& name);
+  static std::string find_exe(const std::string& name_in_path, const std::string& envvar);
 
   static bool is_directory(const std::string& pathname);
   static bool exist(const std::string& pathname);

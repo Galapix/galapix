@@ -21,11 +21,12 @@
 #include <stdexcept>
 
 #include "util/exec.hpp"
+#include "util/filesystem.hpp"
 
 std::vector<std::string>
 Tar::get_filenames(const std::string& tar_filename)
 {
-  Exec tar("tar");
+  Exec tar(Filesystem::find_exe("tar", "GALAPIX_TAR"));
   tar.arg("--list").arg("--file").arg(tar_filename);
   if (tar.exec() == 0)
   {
@@ -52,7 +53,7 @@ Tar::get_filenames(const std::string& tar_filename)
 BlobPtr
 Tar::get_file(const std::string& tar_filename, const std::string& filename)
 {
-  Exec tar("tar");
+  Exec tar(Filesystem::find_exe("tar", "GALAPIX_TAR"));
   tar.arg("--extract").arg("--to-stdout").arg("--file").arg(tar_filename).arg(filename);
   if (tar.exec() == 0)
   {

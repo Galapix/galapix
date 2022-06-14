@@ -31,7 +31,7 @@ VidThumb::is_available()
 {
   try 
   {
-    std::string exe = Filesystem::find_exe("vidthumb");
+    std::string exe = Filesystem::find_exe("vidthumb", "GALAPIX_VIDTHUMB");
     log_info << "found " << exe << std::endl;
     return true;
   }
@@ -45,7 +45,7 @@ VidThumb::is_available()
 SoftwareSurfacePtr
 VidThumb::load_from_file(const std::string& filename)
 {
-  Exec vidthumb("vidthumb");
+  Exec vidthumb(Filesystem::find_exe("vidthumb", "GALAPIX_VIDTHUMB"));
 
   std::ostringstream out;
   out << "/tmp/vidthumb.tmp." << rand() << ".png";

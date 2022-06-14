@@ -21,11 +21,12 @@
 #include <stdexcept>
 
 #include "util/exec.hpp"
+#include "util/filesystem.hpp"
 
 std::vector<std::string>
 Rar::get_filenames(const std::string& rar_filename)
 {
-  Exec rar("rar");
+  Exec rar(Filesystem::find_exe("rar", "GALAPIX_RAR"));
   rar.arg("vb").arg("-p-").arg(rar_filename);
   if (rar.exec() == 0)
   {
@@ -52,7 +53,7 @@ Rar::get_filenames(const std::string& rar_filename)
 BlobPtr
 Rar::get_file(const std::string& rar_filename, const std::string& filename)
 {
-  Exec rar("rar");
+  Exec rar(Filesystem::find_exe("rar", "GALAPIX_RAR"));
   rar.arg("p").arg("-inul").arg("-p-").arg(rar_filename).arg(filename);
   if (rar.exec() == 0)
   {

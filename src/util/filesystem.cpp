@@ -46,6 +46,17 @@
 std::string Filesystem::home_directory;
 
 std::string
+Filesystem::find_exe(const std::string& name_in_path, const std::string& envvar)
+{
+  char* const envvar_exe = getenv(envvar.c_str());
+  if (envvar_exe != nullptr) {
+    return envvar_exe;
+  } else {
+    return find_exe(name_in_path);
+  }
+}
+
+std::string
 Filesystem::find_exe(const std::string& name)
 {
   char* path_c = getenv("PATH");
@@ -61,10 +72,11 @@ Filesystem::find_exe(const std::string& name)
       fullpath << p << "/" << name;
       if (access(fullpath.str().c_str(), X_OK) == 0)
       {
+        free(path);
         return fullpath.str();
       }
     }
-      
+
     free(path);
 
     throw std::runtime_error("Filesystem::find_exe(): Couldn't find " + name + " in PATH");

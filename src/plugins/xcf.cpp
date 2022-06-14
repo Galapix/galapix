@@ -81,8 +81,8 @@ XCF::is_available()
 {
   try 
   {
-    std::string xcfinfo_exe = Filesystem::find_exe("xcfinfo");
-    std::string xcf2png_exe = Filesystem::find_exe("xcf2png");
+    std::string xcfinfo_exe = Filesystem::find_exe("xcfinfo", "GALAPIX_XCFINFO");
+    std::string xcf2png_exe = Filesystem::find_exe("xcf2png", "GALAPIX_XCF2PNG");
     log_info << "found " << xcfinfo_exe << ", " << xcf2png_exe << std::endl;
     return true;
   }
@@ -96,7 +96,7 @@ XCF::is_available()
 std::vector<std::string>
 XCF::get_layers(const URL& url)
 {
-  Exec xcfinfo("xcfinfo");
+  Exec xcfinfo(Filesystem::find_exe("xcfinfo", "GALAPIX_XCFINFO"));
 
   if (url.has_stdio_name())
     xcfinfo.arg(url.get_stdio_name());
@@ -127,7 +127,7 @@ XCF::get_layers(const URL& url)
 bool
 XCF::get_size(const std::string& filename, Size& size)
 {
-  Exec xcfinfo("xcfinfo");
+  Exec xcfinfo(Filesystem::find_exe("xcfinfo", "GALAPIX_XCFINFO"));
   xcfinfo.arg(filename);
   if (xcfinfo.exec() == 0)
   {
@@ -165,7 +165,7 @@ XCF::get_size(const std::string& filename, Size& size)
 SoftwareSurfacePtr
 XCF::load_from_file(const std::string& filename)
 {
-  Exec xcf2png("xcf2png");
+  Exec xcf2png(Filesystem::find_exe("xcf2png", "GALAPIX_XCF2PNG"));
   xcf2png.arg(filename);
   if (xcf2png.exec() != 0)
   {
@@ -181,7 +181,7 @@ XCF::load_from_file(const std::string& filename)
 SoftwareSurfacePtr
 XCF::load_from_mem(void* data, int len)
 {
-  Exec xcf2png("xcf2png");
+  Exec xcf2png(Filesystem::find_exe("xcf2png", "GALAPIX_XCF2PNG"));
   xcf2png.arg("-"); // Read from stdin
   xcf2png.set_stdin(Blob::copy(data, len));
   if (xcf2png.exec() != 0)

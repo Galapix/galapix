@@ -28,7 +28,7 @@ KRA::is_available()
 {    
   try 
   {
-    std::string exe = Filesystem::find_exe("koconverter");
+    std::string exe = Filesystem::find_exe("koconverter", "GALAPIX_KOCONVERTER");
     log_info << "found " << exe << std::endl;
     return true;
   }
@@ -43,7 +43,7 @@ SoftwareSurfacePtr
 KRA::load_from_file(const std::string& filename)
 {
   // koconverter --batch --mimetype image/png sketch39.kra /dev/stdout  > /tmp/test.png
-  Exec koconverter("koconverter");
+  Exec koconverter(Filesystem::find_exe("koconverter", "GALAPIX_KOCONVERTER"));
   koconverter.arg("--batch").arg("--mimetype").arg("image/png");
   koconverter.arg(filename).arg("/dev/stdout");
   koconverter.exec();
@@ -55,7 +55,7 @@ KRA::load_from_file(const std::string& filename)
 // SoftwareSurface
 // KRA::load_from_mem(const uint8_t* data, int len)
 // {
-//   Exec koconverter("koconverter");
+//   Exec koconverter(Filesystem::find_exe("koconverter", "GALAPIX_KOCONVERTER"));
 //   koconverter.arg("--batch").arg("--mimetype").arg("image/png");
 //   koconverter.arg("/dev/stdin").arg("/dev/stdout");
 //   koconverter.set_stdin(Blob(data, len));
