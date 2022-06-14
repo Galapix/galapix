@@ -2,11 +2,11 @@
   "nodes": {
     "flake-utils": {
       "locked": {
-        "lastModified": 1644229661,
-        "narHash": "sha256-1YdnJAsNy69bpcjuoKdOYQX0YxZBiCYZo4Twxerqv7k=",
+        "lastModified": 1653893745,
+        "narHash": "sha256-0jntwV3Z8//YwuOjzhV2sgJJPt+HY6KhU7VZUL0fKZQ=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "3cecb5b042f7f209c56ffd8371b2711a290ec797",
+        "rev": "1ed9fb1935d260de5fe1c2f7ee0ebaae17ed2fa1",
         "type": "github"
       },
       "original": {
@@ -15,18 +15,63 @@
         "type": "github"
       }
     },
+    "gstreamer-fix": {
+      "locked": {
+        "lastModified": 1651597463,
+        "narHash": "sha256-GnK8qUGNRdAwaNHS3OuAi6VrgicsPU9gSVzoglx8MaM=",
+        "owner": "milahu",
+        "repo": "nixpkgs",
+        "rev": "c9cb28e97cfe0320459f0364c6f3484cb69a7abb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "milahu",
+        "ref": "patch-22",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "logmich": {
+      "inputs": {
+        "flake-utils": [
+          "vidthumb",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "vidthumb",
+          "nixpkgs"
+        ],
+        "tinycmmc": [
+          "vidthumb",
+          "tinycmmc"
+        ]
+      },
+      "locked": {
+        "lastModified": 1653991001,
+        "narHash": "sha256-JWlI7nJykeXPkeq4zdUOvcScMnp386UW3tyRQgkxMtk=",
+        "owner": "logmich",
+        "repo": "logmich",
+        "rev": "866b33191bc9378191519b0342ebb1da66142ac2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "logmich",
+        "repo": "logmich",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1645885043,
-        "narHash": "sha256-wDATA3Tks+fG91q3XL673rPQDl58zLRmjdJXpmrUwXU=",
+        "lastModified": 1655096306,
+        "narHash": "sha256-3B3zBaQVLL956deZgmucouvkZroObQ4JKHzbIfFS9/c=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "1622abf0e7890a3dac995f6eb5a92f56819ae38e",
+        "rev": "a119e218ad27bea32057a3463e3694a61c9e3802",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-21.11",
+        "ref": "nixos-22.05",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -34,7 +79,59 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "vidthumb": "vidthumb"
+      }
+    },
+    "tinycmmc": {
+      "inputs": {
+        "flake-utils": [
+          "vidthumb",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "vidthumb",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1655130564,
+        "narHash": "sha256-bifHHWrPsUhCe5uh5oQzdd95tdpkpySz+o+PvXBXWGE=",
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "rev": "47da91f484162d6efe9d9a6ee9e77afdbf55dee9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "type": "github"
+      }
+    },
+    "vidthumb": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "gstreamer-fix": "gstreamer-fix",
+        "logmich": "logmich",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "tinycmmc": "tinycmmc"
+      },
+      "locked": {
+        "lastModified": 1655195279,
+        "narHash": "sha256-rSX9jUCnOO4+E54vM9OAvN83qk2ije8qHDIqAVbI/PA=",
+        "owner": "grumbel",
+        "repo": "vidthumb",
+        "rev": "c0cc2fee29cd21e1db13a583b030aa478bf168e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "vidthumb",
+        "type": "github"
       }
     }
   },
