@@ -108,12 +108,58 @@
                   --prefix LIBGL_DRIVERS_PATH ":" "${pkgs.mesa.drivers}/lib/dri" \
                   --prefix LD_LIBRARY_PATH ":" "${pkgs.mesa.drivers}/lib"
             '';
-            nativeBuildInputs = [
-              pkgs.cmake
-              pkgs.pkgconfig
-              pkgs.makeWrapper
+            nativeBuildInputs = with pkgs; [
+              cmake
+              pkgconfig
+              makeWrapper
             ];
-            buildInputs = [
+            buildInputs = with pkgs; [
+              entt
+              sqlitecpp
+              gbenchmark
+              fmt
+              glm
+              gtest
+              gtkmm3
+              jsoncpp
+              libexif
+              libjpeg
+              libpng
+              libsigcxx
+              mesa
+              openssl
+              python3
+
+              SDL2
+              SDL2_image
+              curl
+              glew
+              imagemagick6
+              libGL
+              libGLU
+              libexif
+              libmhash
+              libspnav
+              sqlite
+
+              # Silence pkg-config warnings
+              pcre
+              util-linux
+              libselinux
+              libsepol
+              libunwind
+              elfutils
+              zstd
+              orc
+              libthai
+              libdatrie
+              libxkbcommon
+              xorg.libXdmcp
+              epoxy
+              dbus-glib
+              at-spi2-core
+              xorg.libXtst
+            ] ++ [
               tinycmmc.defaultPackage.${system}
               logmich.defaultPackage.${system}
               arxpcpp.defaultPackage.${system}
@@ -125,53 +171,6 @@
               wstdisplay.defaultPackage.${system}
               uitest.defaultPackage.${system}
               strutcpp.defaultPackage.${system}
-
-              pkgs.entt
-              pkgs.sqlitecpp
-              pkgs.gbenchmark
-              pkgs.fmt
-              pkgs.glm
-              pkgs.gtest
-              pkgs.gtkmm3
-              pkgs.jsoncpp
-              pkgs.libexif
-              pkgs.libjpeg
-              pkgs.libpng
-              pkgs.libsigcxx
-              pkgs.mesa
-              pkgs.openssl
-              pkgs.python3
-
-              pkgs.SDL2
-              pkgs.SDL2_image
-              pkgs.curl
-              pkgs.glew
-              pkgs.imagemagick6
-              pkgs.libGL
-              pkgs.libGLU
-              pkgs.libexif
-              pkgs.libmhash
-              pkgs.libspnav
-              pkgs.sqlite
-              pkgs.
-
-              # Silence pkg-config warnings
-              pkgs.pcre
-              pkgs.util-linux
-              pkgs.libselinux
-              pkgs.libsepol
-              pkgs.libunwind
-              pkgs.elfutils
-              pkgs.zstd
-              pkgs.orc
-              pkgs.libthai
-              pkgs.libdatrie
-              pkgs.libxkbcommon
-              pkgs.xorg.libXdmcp
-              pkgs.epoxy
-              pkgs.dbus-glib
-              pkgs.at-spi2-core
-              pkgs.xorg.libXtst
             ];
           };
           default = galapix;
