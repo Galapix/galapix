@@ -90,9 +90,6 @@
           galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
             version = "0.3.0";
-            meta = {
-              mainProgram = "galapix-0.3.sdl";
-            };
             src = nixpkgs.lib.cleanSource ./.;
             enableParallelBuilding = true;
             doCheck = false;
@@ -176,8 +173,20 @@
               pkgs.at-spi2-core
               pkgs.xorg.libXtst
             ];
-           };
+          };
+          default = galapix;
         };
-        defaultPackage = packages.galapix;
-      });
+        apps = rec {
+          galapix_sdl = flake-utils.lib.mkApp {
+            drv = packages.galapix;
+            exePath = "/bin/galapix-0.3.sdl";
+          };
+          galapix_gtk = flake-utils.lib.mkApp {
+            drv = packages.galapix;
+            exePath = "/bin/galapix-0.3.gtk";
+          };
+          default = galapix_sdl;
+        };
+      }
+    );
 }
