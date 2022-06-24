@@ -89,8 +89,11 @@
         packages = flake-utils.lib.flattenTree rec {
           galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
-            version = "0.3.0";
+            version = tinycmmc.lib.versionFromFile self;
             src = nixpkgs.lib.cleanSource ./.;
+            postPatch = ''
+              echo "v${tinycmmc.lib.versionFromFile self}" > VERSION
+            '';
             enableParallelBuilding = true;
             doCheck = false;
             cmakeFlags = [
