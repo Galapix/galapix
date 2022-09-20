@@ -86,16 +86,23 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in rec {
-        packages = flake-utils.lib.flattenTree rec {
+        packages = rec {
+          default = galapix;
+
           galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
             version = tinycmmc.lib.versionFromFile self;
+
             src = nixpkgs.lib.cleanSource ./.;
+
             postPatch = ''
               echo "v${tinycmmc.lib.versionFromFile self}" > VERSION
             '';
+
             enableParallelBuilding = true;
+
             doCheck = false;
+
             cmakeFlags = [
               "-DBUILD_GALAPIX_SDL=ON"
               "-DBUILD_GALAPIX_GTK=ON"
@@ -103,6 +110,7 @@
               "-DBUILD_BENCHMARKS=ON"
               "-DBUILD_EXTRAS=ON"
             ];
+
             postFixup = ''
                 wrapProgram $out/bin/galapix-0.3.sdl \
                   --prefix LIBGL_DRIVERS_PATH ":" "${pkgs.mesa.drivers}/lib/dri" \
@@ -111,16 +119,18 @@
                   --prefix LIBGL_DRIVERS_PATH ":" "${pkgs.mesa.drivers}/lib/dri" \
                   --prefix LD_LIBRARY_PATH ":" "${pkgs.mesa.drivers}/lib"
             '';
+
             nativeBuildInputs = with pkgs; [
               cmake
               pkgconfig
               makeWrapper
             ];
+
             buildInputs = with pkgs; [
               entt
               sqlitecpp
               gbenchmark
-              fmt
+              fmt_8
               glm
               gtest
               gtkmm3
@@ -163,31 +173,33 @@
               at-spi2-core
               xorg.libXtst
             ] ++ [
-              tinycmmc.defaultPackage.${system}
-              logmich.defaultPackage.${system}
-              arxpcpp.defaultPackage.${system}
-              geomcpp.defaultPackage.${system}
-              priocpp.defaultPackage.${system}
-              surfcpp.defaultPackage.${system}
-              babyxml.defaultPackage.${system}
-              sexpcpp.defaultPackage.${system}
-              wstdisplay.defaultPackage.${system}
-              uitest.defaultPackage.${system}
-              strutcpp.defaultPackage.${system}
+              tinycmmc.packages.${system}.default
+              logmich.packages.${system}.default
+              arxpcpp.packages.${system}.default
+              geomcpp.packages.${system}.default
+              priocpp.packages.${system}.default
+              surfcpp.packages.${system}.default
+              babyxml.packages.${system}.default
+              sexpcpp.packages.${system}.default
+              wstdisplay.packages.${system}.default
+              uitest.packages.${system}.default
+              strutcpp.packages.${system}.default
             ];
           };
-          default = galapix;
         };
+
         apps = rec {
+          default = galapix_sdl;
+
           galapix_sdl = flake-utils.lib.mkApp {
             drv = packages.galapix;
             exePath = "/bin/galapix-0.3.sdl";
           };
+
           galapix_gtk = flake-utils.lib.mkApp {
             drv = packages.galapix;
             exePath = "/bin/galapix-0.3.gtk";
           };
-          default = galapix_sdl;
         };
       }
     );
