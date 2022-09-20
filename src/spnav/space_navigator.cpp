@@ -16,11 +16,14 @@
 
 #include "spnav/space_navigator.hpp"
 
-#include <SDL.h>
 #include <assert.h>
+#include <functional>
 #include <iostream>
-#include <spnav.h>
 #include <unistd.h>
+
+#include <SDL.h>
+#include <spnav.h>
+
 #include <logmich/log.hpp>
 
 #include "util/select.hpp"
