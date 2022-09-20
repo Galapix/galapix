@@ -19,19 +19,23 @@
           config = { allowUnfree = true; };
         };
       in rec {
-        packages = flake-utils.lib.flattenTree {
-          galapix = pkgs.stdenv.mkDerivation {
+        packages = rec {
+          galapix = pkgs.ccacheStdenv.mkDerivation {
             pname = "galapix";
             version = "0.2.2";
-            meta = {
-              mainProgram = "galapix.sdl";
-            };
             src = nixpkgs.lib.cleanSource ./.;
             enableParallelBuilding = true;
             sconsFlags = [
               "GALAPIX_SDL=True"
               "GALAPIX_GTK=False"
             ];
+            preConfigure = ''
+              export CCACHE_DIR=/nix/var/cache/ccache
+              export CCACHE_UMASK=007
+              if [ ! -d "''${CCACHE_DIR}" ]; then
+                export CCACHE_DISABLE=1
+              fi
+            '';
             installPhase = ''
               mkdir -p $out/bin
               cp build/galapix.sdl $out/bin/
@@ -47,32 +51,44 @@
                   --set GALAPIX_7ZR "${pkgs.p7zip}/bin/7zr" \
                   --set GALAPIX_TAR "${pkgs.gnutar}/bin/tar" \
                   --set GALAPIX_UFRAW_BATCH "${pkgs.nufraw}/bin/nufraw-batch" \
-                  --set GALAPIX_VIDTHUMB "${vidthumb.defaultPackage.${system}}/bin/vidthumb" \
+                  --set GALAPIX_VIDTHUMB "${vidthumb.packages.${system}.default}/bin/vidthumb" \
                   --set GALAPIX_XCFINFO "${pkgs.xcftools}/bin/xcfinfo" \
                   --set GALAPIX_XCF2PNG "${pkgs.xcftools}/bin/xcf2png" \
                   --set GALAPIX_UNZIP "${pkgs.unzip}/bin/unzip"
             '';
-            nativeBuildInputs = [
-              pkgs.scons
-              pkgs.pkgconfig
-              pkgs.makeWrapper
+            nativeBuildInputs = with pkgs; [
+              scons
+              pkgconfig
+              makeWrapper
             ];
-            buildInputs = [
-              pkgs.SDL2
-              pkgs.SDL2_image
-              pkgs.boost
-              pkgs.curl
-              pkgs.glew
-              pkgs.imagemagick6
-              pkgs.libGL
-              pkgs.libGLU
-              pkgs.libexif
-              pkgs.libmhash
-              pkgs.libspnav
-              pkgs.sqlite
+            buildInputs = with pkgs; [
+              SDL2
+              SDL2_image
+              boost
+              curl
+              glew
+              imagemagick6
+              libGL
+              libGLU
+              libexif
+              libmhash
+              libspnav
+              sqlite
             ];
            };
+          default = galapix;
         };
-        defaultPackage = packages.galapix;
-      });
+        apps = rec {
+          galapix_sdl = flake-utils.lib.mkApp {
+            drv = packages.galapix;
+            exePath = "/bin/galapix.sdl";
+          };
+          galapix_gtk = flake-utils.lib.mkApp {
+            drv = packages.galapix;
+            exePath = "/bin/galapix.gtk";
+          };
+          default = galapix_sdl;
+        };
+      }
+    );
 }
