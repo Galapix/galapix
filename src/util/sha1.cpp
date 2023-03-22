@@ -22,7 +22,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <openssl/sha.h>
+#include <openssl/evp.h>
 
 #include "util/blob.hpp"
 #include "util/raise_exception.hpp"
@@ -37,11 +37,13 @@ std::ostream& operator<<(std::ostream& os, galapix::SHA1 const& sha1)
 SHA1
 SHA1::from_mem(std::span<uint8_t const> data)
 {
-  SHA_CTX ctx;
-  SHA1_Init(&ctx);
-  SHA1_Update(&ctx, data.data(), data.size());
+  EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+  EVP_DigestInit_ex(ctx, EVP_sha1(), nullptr);
+  EVP_DigestUpdate(ctx, data.data(), data.size());
+
   SHA1 sha1;
-  SHA1_Final(sha1.m_data.data(), &ctx);
+  EVP_DigestFinal_ex(ctx, sha1.m_data.data(), nullptr);
+  EVP_MD_CTX_free(ctx);
   return sha1;
 }
 
@@ -54,30 +56,29 @@ SHA1::from_mem(std::string const& str)
 SHA1
 SHA1::from_file(std::string const& filename)
 {
-  SHA_CTX ctx;
-  SHA1_Init(&ctx);
-
-  const unsigned int buf_size = 32768;
-  char buf[buf_size];
   std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
-  if (!in)
-  {
-    raise_runtime_error("Couldn't open file " + filename);
+  if (!in) {
+    throw std::runtime_error(fmt::format("Couldn't open file {}", filename));
   }
-  else
+
+  EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+  EVP_DigestInit_ex(ctx, EVP_sha1(), nullptr);
+
+  while(!in.eof())
   {
-    while(!in.eof())
-    {
-      in.read(buf, buf_size);
-      SHA1_Update(&ctx, buf, in.gcount());
-    }
+    constexpr unsigned int buf_size = 32768;
+    char buf[buf_size];
 
-    in.close();
-
-    SHA1 sha1;
-    SHA1_Final(sha1.m_data.data(), &ctx);
-    return sha1;
+    in.read(buf, buf_size);
+    EVP_DigestUpdate(ctx, buf, in.gcount());
   }
+
+  in.close();
+
+  SHA1 sha1;
+  EVP_DigestFinal_ex(ctx, sha1.m_data.data(), nullptr);
+  EVP_MD_CTX_free(ctx);
+  return sha1;
 }
 
 SHA1
