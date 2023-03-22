@@ -2,7 +2,7 @@
   description = "An image viewer for large image collections";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     flake-utils.url = "github:numtide/flake-utils";
 
     tinycmmc.url = "github:grumbel/tinycmmc";
@@ -11,15 +11,12 @@
 
     geomcpp.url = "github:grumbel/geomcpp";
     geomcpp.inputs.nixpkgs.follows = "nixpkgs";
-    geomcpp.inputs.flake-utils.follows = "flake-utils";
     geomcpp.inputs.tinycmmc.follows = "tinycmmc";
 
     exspcpp.url = "github:grumbel/exspcpp";
     exspcpp.inputs.nixpkgs.follows = "nixpkgs";
-    exspcpp.inputs.flake-utils.follows = "flake-utils";
     exspcpp.inputs.tinycmmc.follows = "tinycmmc";
-    exspcpp.inputs.logmich.follows = "logmich";
-    exspcpp.inputs.uitest.follows = "uitest";
+    exspcpp.inputs.flake-utils.follows = "flake-utils";
 
     arxpcpp.url = "github:grumbel/arxpcpp";
     arxpcpp.inputs.nixpkgs.follows = "nixpkgs";
@@ -31,7 +28,6 @@
 
     logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
-    logmich.inputs.flake-utils.follows = "flake-utils";
     logmich.inputs.tinycmmc.follows = "tinycmmc";
 
     priocpp.url = "github:grumbel/priocpp";
@@ -48,14 +44,10 @@
 
     strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
-    strutcpp.inputs.flake-utils.follows = "flake-utils";
     strutcpp.inputs.tinycmmc.follows = "tinycmmc";
-    strutcpp.inputs.geomcpp.follows = "geomcpp";
-    strutcpp.inputs.logmich.follows = "logmich";
 
     surfcpp.url = "github:grumbel/surfcpp";
     surfcpp.inputs.nixpkgs.follows = "nixpkgs";
-    surfcpp.inputs.flake-utils.follows = "flake-utils";
     surfcpp.inputs.tinycmmc.follows = "tinycmmc";
     surfcpp.inputs.geomcpp.follows = "geomcpp";
     surfcpp.inputs.logmich.follows = "logmich";
@@ -67,12 +59,10 @@
 
     babyxml.url = "github:grumbel/babyxml";
     babyxml.inputs.nixpkgs.follows = "nixpkgs";
-    babyxml.inputs.flake-utils.follows = "flake-utils";
     babyxml.inputs.tinycmmc.follows = "tinycmmc";
 
     wstdisplay.url = "github:WindstilleTeam/wstdisplay";
     wstdisplay.inputs.nixpkgs.follows = "nixpkgs";
-    wstdisplay.inputs.flake-utils.follows = "flake-utils";
     wstdisplay.inputs.tinycmmc.follows = "tinycmmc";
     wstdisplay.inputs.geomcpp.follows = "geomcpp";
     wstdisplay.inputs.babyxml.follows = "babyxml";
@@ -89,7 +79,7 @@
         packages = rec {
           default = galapix;
 
-          galapix = pkgs.stdenv.mkDerivation {
+          galapix = pkgs.gcc12Stdenv.mkDerivation {
             pname = "galapix";
             version = tinycmmc.lib.versionFromFile self;
 
