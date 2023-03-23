@@ -3,6 +3,8 @@
 #include <vector>
 #include <benchmark/benchmark.h>
 
+namespace {
+
 constexpr int N = 1000;
 
 // Results
@@ -49,6 +51,8 @@ void bm_stdcopy_n(benchmark::State& state)
     std::copy_n(a.begin(), N, r.begin());
   }
 }
+
+} // namespace
 
 BENCHMARK(bm_memcpy);
 BENCHMARK(bm_stdcopy);

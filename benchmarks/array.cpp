@@ -2,6 +2,8 @@
 #include <vector>
 #include <benchmark/benchmark.h>
 
+namespace {
+
 void foo(benchmark::State& state)
 {
   const int n = static_cast<int>(state.range(0));
@@ -28,6 +30,8 @@ void bar(benchmark::State& state)
         a[n * j + i] = i * j;
   }
 }
+
+} // namespace
 
 BENCHMARK(bar)
 //->Arg(740)
