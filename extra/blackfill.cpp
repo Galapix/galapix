@@ -71,7 +71,7 @@ RGB8Pixel blackfill_pixel(RGB8Pixel p00, RGB8Pixel p10, RGB8Pixel p20,
     (is_black(p12) && is_black(p20))
     )
   {
-    return RGB8Pixel(0, 0, 0);
+    return RGB8Pixel{0, 0, 0};
   }
   else
   {
