@@ -88,6 +88,7 @@ Imagemagick::get_supported_extensions()
     lst.push_back("pbm");
     lst.push_back("ppm");
     lst.push_back("pgm");
+    lst.push_back("webp");
 
     return lst;
   }
@@ -103,22 +104,24 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
   int height = image.rows();
   int shift = image.depth() - 8;
 
-  if (image.matte())
+  if (image.alpha())
   {
     surface = SoftwareSurface::create(SoftwareSurface::RGBA_FORMAT, 
                                       Size(width, height));
 
     for(int y = 0; y < height; ++y)
     {
-      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
+      Magick::Quantum const* src_pixel = image.getConstPixels(0, y, width, 1);
       uint8_t* dst_pixels = surface->get_row_data(y);
 
       for(int x = 0; x < width; ++x)
       {
-        dst_pixels[4*x + 0] = static_cast<uint8_t>(src_pixels[x].red   >> shift);
-        dst_pixels[4*x + 1] = static_cast<uint8_t>(src_pixels[x].green >> shift);
-        dst_pixels[4*x + 2] = static_cast<uint8_t>(src_pixels[x].blue  >> shift);
-        dst_pixels[4*x + 3] = static_cast<uint8_t>(255 - (src_pixels[x].opacity >> shift));
+        dst_pixels[4*x + 0] = static_cast<uint8_t>(255.0f * MagickCore::GetPixelRed(image.constImage(), src_pixel) / QuantumRange);
+        dst_pixels[4*x + 1] = static_cast<uint8_t>(255.0f * MagickCore::GetPixelGreen(image.constImage(), src_pixel) / QuantumRange);
+        dst_pixels[4*x + 2] = static_cast<uint8_t>(255.0f * MagickCore::GetPixelBlue(image.constImage(), src_pixel) / QuantumRange);
+        dst_pixels[4*x + 3] = static_cast<uint8_t>(255.0f * MagickCore::GetPixelAlpha(image.constImage(), src_pixel) / QuantumRange);
+
+        src_pixel += image.channels();
       }
     }
   }
@@ -128,14 +131,16 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
                                       Size(width, height));
     for(int y = 0; y < height; ++y)
     {
+      Magick::Quantum const* src_pixel = image.getConstPixels(0, y, width, 1);
       uint8_t* dst_pixels = surface->get_row_data(y);
-      const Magick::PixelPacket* src_pixels = image.getConstPixels(0, y, width, 1);
 
       for(int x = 0; x < width; ++x)
       {
-        dst_pixels[3*x + 0] = static_cast<uint8_t>(src_pixels[x].red   >> shift);
-        dst_pixels[3*x + 1] = static_cast<uint8_t>(src_pixels[x].green >> shift);
-        dst_pixels[3*x + 2] = static_cast<uint8_t>(src_pixels[x].blue  >> shift);
+        dst_pixels[3*x + 0] = static_cast<uint8_t>(255.0f * MagickCore::GetPixelRed(image.constImage(), src_pixel) / QuantumRange);
+        dst_pixels[3*x + 1] = static_cast<uint8_t>(255.0f * MagickCore::GetPixelGreen(image.constImage(), src_pixel) / QuantumRange);
+        dst_pixels[3*x + 2] = static_cast<uint8_t>(255.0f * MagickCore::GetPixelBlue(image.constImage(), src_pixel) / QuantumRange);
+
+        src_pixel += image.channels();
       }
     }
   }  

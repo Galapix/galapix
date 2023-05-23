@@ -69,7 +69,7 @@
               boost
               curl
               glew
-              imagemagick6
+              imagemagick7
               libGL
               libGLU
               libexif
