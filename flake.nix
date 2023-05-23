@@ -2,7 +2,7 @@
   description = "An image viewer for large image collections";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     flake-utils.url = "github:numtide/flake-utils";
 
     vidthumb.url = "github:grumbel/vidthumb";
@@ -20,6 +20,8 @@
         };
       in rec {
         packages = rec {
+          default = galapix;
+
           galapix = pkgs.ccacheStdenv.mkDerivation {
             pname = "galapix";
             version = "0.2.2";
@@ -76,7 +78,6 @@
               sqlite
             ];
            };
-          default = galapix;
         };
         apps = rec {
           galapix_sdl = flake-utils.lib.mkApp {
