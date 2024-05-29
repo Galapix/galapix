@@ -2,7 +2,7 @@
   description = "An image viewer for large image collections";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.05";
     flake-utils.url = "github:numtide/flake-utils";
 
     vidthumb.url = "github:grumbel/vidthumb";
@@ -62,7 +62,7 @@
             '';
             nativeBuildInputs = with pkgs; [
               scons
-              pkgconfig
+              pkg-config
               makeWrapper
             ];
             buildInputs = with pkgs; [
