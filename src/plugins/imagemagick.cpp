@@ -111,6 +111,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
 
     for(int y = 0; y < height; ++y)
     {
+      using Magick::Quantum; // FIXME: Seriously? There must be a better way to get QuantumRange to work
       Magick::Quantum const* src_pixel = image.getConstPixels(0, y, width, 1);
       uint8_t* dst_pixels = surface->get_row_data(y);
 
@@ -131,6 +132,7 @@ MagickImage2SoftwareSurface(const Magick::Image& image)
                                       Size(width, height));
     for(int y = 0; y < height; ++y)
     {
+      using Magick::Quantum;
       Magick::Quantum const* src_pixel = image.getConstPixels(0, y, width, 1);
       uint8_t* dst_pixels = surface->get_row_data(y);
 
