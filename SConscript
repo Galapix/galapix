@@ -72,11 +72,6 @@ class Project:
             print("Error: C++ compiler missing")
             Exit(1)
 
-        if conf.CheckLibWithHeader("spnav", "spnav.h", "c++"):
-            self.optional_sources += ['src/spnav/space_navigator.cpp']
-            self.optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
-            self.optional_libs    += ['spnav']
-
         # if not conf.CheckLibWithHeader("boost_thread", "boost/thread.hpp", "c++", autoadd=0):
         #     print "Error: boost_thread is missing"
         #     Exit(1)
@@ -104,6 +99,11 @@ class Project:
         if not conf.CheckLibWithHeader("GLEW", "GL/glew.h", "c++", autoadd=0):
             print("Error: libGLEW is missing")
             Exit(1)
+
+        if conf.CheckLibWithHeader("spnav", "spnav.h", "c++"):
+            self.optional_sources += ['src/spnav/space_navigator.cpp']
+            self.optional_defines += [('HAVE_SPACE_NAVIGATOR', 1)]
+            self.optional_libs    += ['spnav']
 
         self.env = conf.Finish()
 
