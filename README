@@ -153,7 +153,7 @@ memory only.
 
 As a special gimmick you can run:
 
-  build/galapix.gtk view buildin://mandelbrot
+  build/galapix.gtk view builtin://mandelbrot
 
 To get a classic Mandelbrot set.
 

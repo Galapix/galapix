@@ -392,7 +392,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       // FIXME: Right place for this?
       workspace.load(i->get_stdio_name());
     }
-    else if (i->get_protocol() == "buildin")
+    else if (i->get_protocol() == "builtin" || i->get_protocol() == "buildin")
     {
       if (i->get_payload() == "mandelbrot")
       {
@@ -400,7 +400,7 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
       }
       else
       {
-        std::cout << "Galapix::view(): unknown buildin:// requested: " << *i << " ignoring" << std::endl;
+        std::cout << "Galapix::view(): unknown builtin:// requested: " << *i << " ignoring" << std::endl;
       }
     }
     else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
