@@ -53,8 +53,8 @@ class Project:
             'src/sdl/sdl_window.cpp',
             'src/sdl/sdl_viewer.cpp'
         ]
-        
-    def configure(self):       
+
+    def configure(self):
         if 'BUILD' in self.env:
             print("Build type: %s" % self.env['BUILD'])
             self.env.Append(CXXFLAGS  = preset_cxxflags[self.env['BUILD']],
@@ -75,7 +75,7 @@ class Project:
         # if not conf.CheckLibWithHeader("boost_thread", "boost/thread.hpp", "c++", autoadd=0):
         #     print "Error: boost_thread is missing"
         #     Exit(1)
-            
+
         if not conf.CheckHeader("boost/signals2/signal.hpp", "<>", "c++"):
             print("Error: boost_signals2 is missing")
             Exit(1)
@@ -123,7 +123,7 @@ class Project:
         opts.Update(self.env)
 
         self.configure()
-        
+
         self.build_libgalapix();
 
         if self.env['GALAPIX_SDL']:
@@ -146,14 +146,14 @@ class Project:
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
         self.libgalapix_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
-        
+
         self.libgalapix_util = self.libgalapix_env.StaticLibrary('galapix_util',
                                                                  Glob("src/util/*.cpp") + \
                                                                  Glob("src/plugins/*.cpp") + \
                                                                  Glob("src/lisp/*.cpp") + \
                                                                  Glob("src/math/*.cpp"))
-        
-        self.libgalapix = self.libgalapix_env.StaticLibrary('galapix.sdl', 
+
+        self.libgalapix = self.libgalapix_env.StaticLibrary('galapix.sdl',
                                                             Glob("src/database/*.cpp") + \
                                                             Glob("src/display/*.cpp") + \
                                                             Glob("src/galapix/*.cpp") + \
@@ -172,7 +172,7 @@ class Project:
         sdl_env.ParseConfig('pkg-config --cflags --libs sdl2 | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
         sdl_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
-        sdl_env.Program('galapix.sdl', 
+        sdl_env.Program('galapix.sdl',
                         self.sdl_sources + \
                         self.galapix_sources + \
                         self.optional_sources)
@@ -189,7 +189,7 @@ class Project:
         gtk_env.ParseConfig('pkg-config --cflags --libs Magick++ | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs libcurl | sed "s/-I/-isystem/g"')
         gtk_env.ParseConfig('pkg-config --cflags --libs gtkmm-2.4 libglademm-2.4 gtkglextmm-1.2 | sed "s/-I/-isystem/g"')
-        gtk_env.Program('galapix.gtk', 
+        gtk_env.Program('galapix.gtk',
                         ['src/gtk/gtk_viewer.cpp',
                          'src/gtk/gtk_viewer_widget.cpp'] + \
                         self.galapix_sources + \
@@ -208,7 +208,7 @@ class Project:
             libgalapix_extra_apps_env.Program(filename[:-4], filename)
 
         libgalapix_extra_apps_env.Program("extra/imagescaler/imagescaler", Glob("extra/imagescaler/imagescaler.cpp"))
-                    
+
 project = Project()
 project.build()
 
