@@ -330,6 +330,7 @@ Galapix::thumbgen(const Options& opts,
 void
 Galapix::view(const Options& opts, const std::vector<URL>& urls)
 {
+  try {
   Database       database(opts.database);
   JobManager     job_manager(opts.threads);
   DatabaseThread database_thread(database, job_manager);
@@ -457,6 +458,15 @@ Galapix::view(const Options& opts, const std::vector<URL>& urls)
 
   job_manager.join_thread();
   database_thread.join_thread();
+  }
+  catch(std::exception const& err)
+  {
+    std::cout << err.what() << std::endl;
+  }
+  catch(...)
+  {
+     std::cout << "exception" << std::endl;
+  }
 }
 
 void
