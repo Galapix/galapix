@@ -2,7 +2,7 @@
   description = "An image viewer for large image collections";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
 
     vidthumb.url = "github:grumbel/vidthumb";
@@ -71,7 +71,7 @@
               boost
               curl
               glew
-              imagemagick7
+              imagemagick
               libGL
               libGLU
               libexif
