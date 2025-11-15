@@ -2,7 +2,7 @@
   description = "An image viewer for large image collections";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
     vidthumb.url = "github:grumbel/vidthumb";

@@ -30,11 +30,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1684870196,
-        "narHash": "sha256-5Y5FfBXM53OBSJzO6q+7M3Fj1KsusJcFg3cAfnFAWcA=",
+        "lastModified": 1753120025,
+        "narHash": "sha256-e8k/ZzPAfLgNF30wmXHDX5ovK/msTH6sgzxWKzZhtOY=",
         "owner": "logmich",
         "repo": "logmich",
-        "rev": "5924b2beabd2169a077ae57401bdd3cd8ebfba7d",
+        "rev": "c73c7b7d6cd050d1bcc42d522ce80a2eb86da5c8",
         "type": "github"
       },
       "original": {
@@ -45,16 +45,16 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1745487689,
-        "narHash": "sha256-FQoi3R0NjQeBAsEOo49b5tbDPcJSMWc3QhhaIi9eddw=",
+        "lastModified": 1762977756,
+        "narHash": "sha256-4PqRErxfe+2toFJFgcRKZ0UI9NSIOJa+7RXVtBhy4KE=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "5630cf13cceac06cefe9fc607e8dfa8fb342dde3",
+        "rev": "c5ae371f1a6a7fd27823bc500d9390b38c05fa55",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-24.11",
+        "ref": "nixos-unstable",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -93,11 +93,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1684952066,
-        "narHash": "sha256-yS8/+TOL2OA7f/RQs1Zr20mmlPFIVvFOgWShLAQvH8w=",
+        "lastModified": 1762385311,
+        "narHash": "sha256-B3XPPjn9S1YpIZmHyBBbXwaP0JVKBhYvCmNt6oauj+M=",
         "owner": "grumbel",
         "repo": "tinycmmc",
-        "rev": "01fe277570a290837726de6eb3c16d617bfda28c",
+        "rev": "2ad2d2ab7dce012bb1c9d1dbb8bdb5abd9232ecd",
         "type": "github"
       },
       "original": {
@@ -118,11 +118,11 @@
         "tinycmmc": "tinycmmc"
       },
       "locked": {
-        "lastModified": 1687597541,
-        "narHash": "sha256-sI9iLSn23N2eHLn+IKMpMhvGF/NvU1Xs0vEwkLhUPsc=",
+        "lastModified": 1763249563,
+        "narHash": "sha256-USJo2EpWXLuK/70Lm5eIAETkOgFrllOyuODEpqbsJCY=",
         "owner": "grumbel",
         "repo": "vidthumb",
-        "rev": "8e1339f1d9225bded77d493a064bed9154c5ed26",
+        "rev": "296274981be6ca39a68c8b6e47662d777c12770b",
         "type": "github"
       },
       "original": {
