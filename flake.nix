@@ -47,8 +47,6 @@
             # --set GALAPIX_KOCONVERTER "${pkgs.calligra}/bin/koconverter"
             postFixup = ''
                 wrapProgram $out/bin/galapix.sdl \
-                  --prefix LIBGL_DRIVERS_PATH ":" "${pkgs.mesa.drivers}/lib/dri" \
-                  --prefix LD_LIBRARY_PATH ":" "${pkgs.mesa.drivers}/lib" \
                   --set LIBGL_DRIVERS_PATH "${pkgs.mesa.drivers}/lib/dri" \
                   --set GALAPIX_RAR "${pkgs.rar}/bin/rar" \
                   --set GALAPIX_RSVG "${pkgs.librsvg}/bin/rsvg" \
