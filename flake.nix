@@ -101,15 +101,6 @@
               "-DBUILD_EXTRAS=ON"
             ];
 
-            postFixup = ''
-                wrapProgram $out/bin/galapix-0.3.sdl \
-                  --prefix LIBGL_DRIVERS_PATH ":" "${pkgs.mesa.drivers}/lib/dri" \
-                  --prefix LD_LIBRARY_PATH ":" "${pkgs.mesa.drivers}/lib"
-                wrapProgram $out/bin/galapix-0.3.gtk \
-                  --prefix LIBGL_DRIVERS_PATH ":" "${pkgs.mesa.drivers}/lib/dri" \
-                  --prefix LD_LIBRARY_PATH ":" "${pkgs.mesa.drivers}/lib"
-            '';
-
             nativeBuildInputs = with pkgs; [
               cmake
               pkgconfig
