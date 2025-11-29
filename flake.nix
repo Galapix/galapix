@@ -22,26 +22,10 @@
         packages = rec {
           default = galapix;
 
-          galapix = pkgs.ccacheStdenv.mkDerivation {
+          galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
             version = "0.2.2";
             src = nixpkgs.lib.cleanSource ./.;
-            enableParallelBuilding = true;
-            sconsFlags = [
-              "GALAPIX_SDL=True"
-              "GALAPIX_GTK=False"
-            ];
-            preConfigure = ''
-              export CCACHE_DIR=/nix/var/cache/ccache
-              export CCACHE_UMASK=007
-              if [ ! -d "''${CCACHE_DIR}" ]; then
-                export CCACHE_DISABLE=1
-              fi
-            '';
-            installPhase = ''
-              mkdir -p $out/bin
-              cp build/galapix.sdl $out/bin/
-            '';
 
             # Disabled due to insecure qtwebkit dependency
             # --set GALAPIX_KOCONVERTER "${pkgs.calligra}/bin/koconverter"
@@ -57,11 +41,13 @@
                   --set GALAPIX_XCF2PNG "${pkgs.xcftools}/bin/xcf2png" \
                   --set GALAPIX_UNZIP "${pkgs.unzip}/bin/unzip"
             '';
+
             nativeBuildInputs = with pkgs; [
-              scons
+              cmake
               pkg-config
               makeWrapper
             ];
+
             buildInputs = with pkgs; [
               SDL2
               SDL2_image
