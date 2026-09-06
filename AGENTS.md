@@ -93,6 +93,12 @@ size checks) after decode.
   **glViewport** updates on resize.
 - On `sig_resized`, call `GraphicsContext::set_ortho` and `Viewer::reshape`.
 - GL loaded via **glad** (aligned with wstdisplay), not GLEW.
+- Tile upload uses half-texel UV inset (`ImageTileCache`) so LINEAR does not
+  sample past content (dark seams / black borders). WRAP is already
+  `GL_CLAMP_TO_EDGE` in wstdisplay.
+- **Texture arrays / atlas batching** (one draw call for many tiles) is a
+  worthwhile future optimization in wstdisplay + ImageRenderer; not required
+  for correctness. Prefer fixing seams/filters first.
 
 ## Build
 

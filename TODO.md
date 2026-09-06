@@ -11,6 +11,8 @@ Galapix ToDo
 * [x] Default-on when HAVE_THUMTOO; `--no-thumtoo` forces SQLite tiles
 * [x] Pure thumtoo view: no cache4_tiles.sqlite3, no DatabaseTileProvider fallback
 * [x] GUI-thread Executor (ThumtooCallbackQueue pumped from Viewer::draw)
+* [x] Tile UV half-texel inset (LINEAR seam / black border)
+* [ ] Optional: texture array / atlas batching for fewer draw calls
 
 Galapix ToDo
 ============
