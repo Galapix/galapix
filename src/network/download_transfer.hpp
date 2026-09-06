@@ -28,7 +28,9 @@ class DownloadTransfer
 {
 private:
   static size_t write_callback_wrap(void* ptr, size_t size, size_t nmemb, void* userdata);
-  static int progress_callback_wrap(void* userdata, double dltotal, double dlnow, double ultotal, double ulnow);
+  static int xferinfo_callback_wrap(void* userdata,
+                                  curl_off_t dltotal, curl_off_t dlnow,
+                                  curl_off_t ultotal, curl_off_t ulnow);
 
 public:
   DownloadTransfer(DownloadManager::TransferHandle id,

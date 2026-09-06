@@ -44,9 +44,9 @@ DownloadTransfer::DownloadTransfer(DownloadManager::TransferHandle id_,
     curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, &DownloadTransfer::write_callback_wrap);
     curl_easy_setopt(handle, CURLOPT_WRITEDATA, this); // userdata
 
-    curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0);
-    curl_easy_setopt(handle, CURLOPT_PROGRESSFUNCTION, &DownloadTransfer::progress_callback_wrap);
-    curl_easy_setopt(handle, CURLOPT_PROGRESSDATA, this);
+    curl_easy_setopt(handle, CURLOPT_NOPROGRESS, 0L);
+    curl_easy_setopt(handle, CURLOPT_XFERINFOFUNCTION, &DownloadTransfer::xferinfo_callback_wrap);
+    curl_easy_setopt(handle, CURLOPT_XFERINFODATA, this);
 
     curl_easy_setopt(handle, CURLOPT_ERRORBUFFER, errbuf);
 
@@ -84,20 +84,23 @@ DownloadTransfer::write_callback_wrap(void* ptr, size_t size, size_t nmemb, void
 }
 
 int
-DownloadTransfer::progress_callback_wrap(void* userdata, double dltotal, double dlnow, double ultotal, double ulnow)
+DownloadTransfer::xferinfo_callback_wrap(void* userdata,
+                                         curl_off_t dltotal, curl_off_t dlnow,
+                                         curl_off_t ultotal, curl_off_t ulnow)
 {
   DownloadTransfer& transfer = *static_cast<DownloadTransfer*>(userdata);
 
-  transfer.progress.dlnow = dlnow;
-  transfer.progress.dltotal = dltotal;
+  transfer.progress.dlnow = static_cast<double>(dlnow);
+  transfer.progress.dltotal = static_cast<double>(dltotal);
 
-  transfer.progress.ulnow = ulnow;
-  transfer.progress.ultotal = ultotal;
+  transfer.progress.ulnow = static_cast<double>(ulnow);
+  transfer.progress.ultotal = static_cast<double>(ultotal);
 
   if (transfer.progress_callback) {
-    return transfer.progress_callback(transfer.progress);
+    // Non-zero return aborts the transfer (curl convention).
+    return transfer.progress_callback(transfer.progress) ? 1 : 0;
   } else {
-    return false;
+    return 0;
   }
 }
 
