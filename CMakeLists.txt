@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.16...3.31)
 project(galapix-0.3)
 
 include(mk/cmake/TinyCMMC.cmake)

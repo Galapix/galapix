@@ -98,6 +98,8 @@
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
               "-DTHUMTOO_DIR=${thumtooSrc}"
+              # SQLiteCpp ships a deprecation note on SQLite::SQLite3 (upstream).
+              "-Wno-dev"
             ];
 
             nativeBuildInputs = with pkgs; [
@@ -207,7 +209,8 @@
                   -DBUILD_GALAPIX_GTK=ON \
                   -DBUILD_BENCHMARKS=OFF \
                   -DWITH_THUMTOO=ON \
-                  -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}"
+                  -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}" \
+                  -Wno-dev
               ''
             );
             galapixBuild = pkgs.writeShellScriptBin "galapix-build" (
