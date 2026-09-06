@@ -18,11 +18,10 @@
 #define HEADER_GALAPIX_DATABASE_ENTRIES_OLD_FILE_ENTRY_HPP
 
 #include <memory>
+#include <format>
 #include <assert.h>
 #include <sstream>
 
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 #include "sqlite/reader.hpp"
 
 #include "database/entries/blob_entry.hpp"
@@ -112,6 +111,17 @@ private:
 std::ostream& operator<<(std::ostream& os, OldFileEntry const& entry);
 
 } // namespace galapix
+
+template<>
+struct std::formatter<galapix::OldFileEntry>
+{
+  constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+
+  auto format(galapix::OldFileEntry const& entry, std::format_context& ctx) const
+  {
+    return std::format_to(ctx.out(), "OldFileEntry({})", entry.get_url());
+  }
+};
 
 #endif
 

@@ -78,8 +78,7 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
 #else
   if (m_opts.use_thumtoo) {
     std::cerr << "Warning: --thumtoo requested but galapix was built without "
-                 "HAVE_THUMTOO; using SQLite tiles.
-";
+                 "HAVE_THUMTOO; using SQLite tiles.\n";
   }
 #endif
 }

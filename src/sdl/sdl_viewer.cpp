@@ -16,9 +16,9 @@
 
 #include "sdl/sdl_viewer.hpp"
 
+#include <format>
 #include <iostream>
 #include <thread>
-#include <fmt/format.h>
 #include <logmich/log.hpp>
 #include <SDL_keycode.h>
 
@@ -129,7 +129,7 @@ SDLViewer::process_event(SDL_Event const& event)
             {
               if (false)
               {
-                log_debug("MotionEvent: (%s, %s, %s) (%s, %s, %s)",
+                log_debug("MotionEvent: ({}, {}, {}) ({}, {}, {})",
                           spnav_ev->motion.x,
                           spnav_ev->motion.y,
                           spnav_ev->motion.z,
@@ -350,7 +350,7 @@ SDLViewer::process_event(SDL_Event const& event)
             // FIXME: Could do this in a worker thread to avoid pause on screenshotting
             for(int i = 0; ; ++i)
             {
-              std::string outfile = fmt::format("/tmp/galapix-screenshot-{:04d}.png", i);
+              std::string outfile = std::format("/tmp/galapix-screenshot-{:04d}.png", i);
               if (!Filesystem::exist(outfile))
               {
                 png::save(surface, outfile);

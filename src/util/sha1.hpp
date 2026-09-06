@@ -19,8 +19,6 @@
 
 #include <array>
 #include <string>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <sstream>
 
 #include "util/blob.hpp"

@@ -16,8 +16,7 @@
 
 #include "resource/blob_manager.hpp"
 
-#include <fmt/format.h>
-
+#include <format>
 #include <arxp/archive_manager.hpp>
 
 #include "network/download_manager.hpp"
@@ -80,7 +79,7 @@ BlobManager::request_blob(ResourceLocator const& locator,
        {
          if (!result.success())
          {
-           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(fmt::format("{}: error: invalid response code: {}",
+           callback(Failable<BlobAccessorPtr>::from_exception(std::runtime_error(std::format("{}: error: invalid response code: {}",
                                                                                              url.str(), result.response_code))));
          }
          else
@@ -110,7 +109,7 @@ BlobManager::request_blob(ResourceLocator const& locator,
   else
   {
     Failable<BlobAccessorPtr> failable;
-    failable.set_exception(std::make_exception_ptr(std::runtime_error(fmt::format("{}: error: unsupported URL scheme: {}",
+    failable.set_exception(std::make_exception_ptr(std::runtime_error(std::format("{}: error: unsupported URL scheme: {}",
                                                                                   locator.str(), url.get_scheme()))));
     callback(failable);
   }

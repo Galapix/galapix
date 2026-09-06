@@ -35,7 +35,6 @@
 
 #include <iosfwd>
 #include <sstream>
-#include <fmt/format.h>
 #include <geom/size.hpp>
 #include <geom/io.hpp>
 

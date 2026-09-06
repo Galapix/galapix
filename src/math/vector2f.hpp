@@ -19,8 +19,6 @@
 
 #include <iosfwd>
 #include <sstream>
-#include <fmt/format.h>
-
 #include <glm/glm.hpp>
 
 #include <geom/geom.hpp>

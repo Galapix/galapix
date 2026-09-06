@@ -16,6 +16,7 @@
 
 #include "network/download_manager.hpp"
 
+#include <format>
 #include <algorithm>
 #include <assert.h>
 #include <curl/curl.h>
@@ -45,7 +46,7 @@ DownloadManager::DownloadManager() :
   int ret = pipe(m_pipefd);
   if (ret < 0)
   {
-    throw std::runtime_error(fmt::format("pipe() failed: {}", strerror(errno)));
+    throw std::runtime_error(std::format("pipe() failed: {}", strerror(errno)));
   }
 
   if (curl_global_init(CURL_GLOBAL_ALL) != 0)

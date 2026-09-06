@@ -31,8 +31,6 @@
 #define __MATH_RECT_HPP__
 
 #include <math.h>
-#include <fmt/format.h>
-
 #include <geom/geom.hpp>
 #include "math/origin.hpp"
 #include "math/vector2f.hpp"

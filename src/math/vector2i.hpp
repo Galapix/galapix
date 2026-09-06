@@ -18,7 +18,6 @@
 #define HEADER_GALAPIX_MATH_VECTOR2I_HPP
 
 #include <iosfwd>
-#include <fmt/format.h>
 #include <sstream>
 
 #include <glm/glm.hpp>

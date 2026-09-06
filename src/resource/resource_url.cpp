@@ -16,11 +16,10 @@
 
 #include "resource/resource_url.hpp"
 
+#include <format>
 #include <stdexcept>
 #include <sstream>
 #include <tuple>
-#include <fmt/format.h>
-
 #include "util/filesystem.hpp"
 
 namespace galapix {
@@ -56,7 +55,7 @@ ResourceURL::from_string(std::string const& url)
   std::string::size_type scheme_pos = url.find(':');
   if (scheme_pos == std::string::npos)
   {
-    throw std::runtime_error(fmt::format("not a valid url: {}", url));
+    throw std::runtime_error(std::format("not a valid url: {}", url));
   }
   else
   {

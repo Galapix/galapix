@@ -18,8 +18,7 @@
 #define HEADER_GALAPIX_UTIL_URL_HPP
 
 #include <string>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
+#include <format>
 #include <sstream>
 
 #include "util/blob.hpp"
@@ -87,6 +86,17 @@ bool operator<(URL const& lhs, URL const& rhs);
 bool operator==(URL const& lhs, URL const& rhs);
 
 } // namespace galapix
+
+template<>
+struct std::formatter<galapix::URL>
+{
+  constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+
+  auto format(galapix::URL const& url, std::format_context& ctx) const
+  {
+    return std::format_to(ctx.out(), "URL({})", url.str());
+  }
+};
 
 #endif
 

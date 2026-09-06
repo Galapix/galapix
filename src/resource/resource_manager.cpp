@@ -18,8 +18,6 @@
 
 #include <future>
 #include <logmich/log.hpp>
-#include <fmt/format.h>
-
 #include "generator/generator.hpp"
 #include "network/download_manager.hpp"
 #include "network/download_result.hpp"

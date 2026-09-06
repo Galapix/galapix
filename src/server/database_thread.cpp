@@ -307,7 +307,7 @@ DatabaseThread::request_files_by_pattern(const std::function<void (OldFileEntry)
 void
 DatabaseThread::receive_tile(RowId const& fileid, Tile const& tile)
 {
-  log_info("%s Tile(%s, %s)", fileid, tile.get_scale(), tile.get_pos());
+  log_info("{} Tile({}, {})", fileid, tile.get_scale(), tile.get_pos());
 
   m_receive_queue.wait_and_push([this, fileid, tile](){
       // FIXME: Make some better error checking in case of loading failure

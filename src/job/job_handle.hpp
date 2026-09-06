@@ -18,8 +18,6 @@
 #define HEADER_GALAPIX_JOB_JOB_HANDLE_HPP
 
 #include <memory>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <sstream>
 #include <iosfwd>
 

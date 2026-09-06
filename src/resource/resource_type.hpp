@@ -19,9 +19,6 @@
 
 #include <ostream>
 #include <sstream>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-
 namespace galapix {
 
 enum class ResourceType

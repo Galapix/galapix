@@ -16,6 +16,7 @@
 
 #include "util/sha1.hpp"
 
+#include <format>
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -58,7 +59,7 @@ SHA1::from_file(std::string const& filename)
 {
   std::ifstream in(filename.c_str(), std::ios::in | std::ios::binary);
   if (!in) {
-    throw std::runtime_error(fmt::format("Couldn't open file {}", filename));
+    throw std::runtime_error(std::format("Couldn't open file {}", filename));
   }
 
   EVP_MD_CTX* ctx = EVP_MD_CTX_new();

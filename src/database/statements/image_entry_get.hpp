@@ -33,7 +33,7 @@ public:
 
   bool operator()(RowId const& image_id, ImageEntry& image_out)
   {
-    log_debug("looking up: %d", image_id);
+    log_debug("looking up: {}", image_id);
     m_stmt.bind(1, image_id.get_id());
 
     SQLiteReader reader(m_stmt);

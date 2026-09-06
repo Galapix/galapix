@@ -20,9 +20,8 @@
 #include <stdint.h>
 #include <assert.h>
 #include <iosfwd>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <sstream>
+#include <format>
 
 namespace galapix {
 
@@ -62,6 +61,20 @@ private:
 std::ostream& operator<<(std::ostream& s, RowId const& id);
 
 } // namespace galapix
+
+template<>
+struct std::formatter<galapix::RowId>
+{
+  constexpr auto parse(std::format_parse_context& ctx) { return ctx.begin(); }
+
+  auto format(galapix::RowId const& id, std::format_context& ctx) const
+  {
+    if (id) {
+      return std::format_to(ctx.out(), "RowId({})", id.get_id());
+    }
+    return std::format_to(ctx.out(), "RowId(none)");
+  }
+};
 
 #endif
 
