@@ -25,6 +25,8 @@ option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
 option(BUILD_GALAPIX_GTK "Build galapix.gtk" OFF)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
+option(WITH_THUMTOO "Use thumtoo as tile cache backend" OFF)
+set(THUMTOO_DIR "" CACHE PATH "thumtoo source tree or install prefix")
 
 if(THREADSANITIZER)
   add_compile_options(-fsanitize=thread)
@@ -159,6 +161,45 @@ target_link_libraries(libgalapix PUBLIC
 
 install(TARGETS libgalapix
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+
+# Optional thumtoo tile backend (Galapix-compatible 256² JPEG pyramid).
+if(WITH_THUMTOO)
+  if(NOT THUMTOO_DIR)
+    message(FATAL_ERROR "WITH_THUMTOO requires THUMTOO_DIR (source or prefix)")
+  endif()
+  if(EXISTS "${THUMTOO_DIR}/CMakeLists.txt")
+    # Build against a thumtoo source checkout.
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    add_subdirectory("${THUMTOO_DIR}" "${CMAKE_BINARY_DIR}/thumtoo" EXCLUDE_FROM_ALL)
+    if(TARGET thumtoo)
+      set(THUMTOO_TARGET thumtoo)
+    elseif(TARGET thumtoo::thumtoo)
+      set(THUMTOO_TARGET thumtoo::thumtoo)
+    else()
+      message(FATAL_ERROR "thumtoo CMake target not found in ${THUMTOO_DIR}")
+    endif()
+  else()
+    find_path(THUMTOO_INCLUDE_DIR thumtoo/client.hpp
+      HINTS "${THUMTOO_DIR}/include" "${THUMTOO_DIR}")
+    find_library(THUMTOO_LIBRARY NAMES thumtoo
+      HINTS "${THUMTOO_DIR}/lib" "${THUMTOO_DIR}")
+    if(NOT THUMTOO_INCLUDE_DIR OR NOT THUMTOO_LIBRARY)
+      message(FATAL_ERROR "Could not find thumtoo in ${THUMTOO_DIR}")
+    endif()
+    add_library(thumtoo_imported UNKNOWN IMPORTED)
+    set_target_properties(thumtoo_imported PROPERTIES
+      IMPORTED_LOCATION "${THUMTOO_LIBRARY}"
+      INTERFACE_INCLUDE_DIRECTORIES "${THUMTOO_INCLUDE_DIR}")
+    set(THUMTOO_TARGET thumtoo_imported)
+  endif()
+
+  target_sources(libgalapix PRIVATE
+    src/thumtoo/thumtoo_tile_provider.cpp)
+  target_compile_definitions(libgalapix PUBLIC HAVE_THUMTOO=1)
+  target_link_libraries(libgalapix PUBLIC ${THUMTOO_TARGET})
+  message(STATUS "thumtoo tile backend enabled (${THUMTOO_DIR})")
+endif()
 
 if(BUILD_GALAPIX_SDL)
   pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
