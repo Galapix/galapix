@@ -187,6 +187,114 @@
             exePath = "/bin/galapix-0.3.gtk";
           };
         };
+
+        # Out-of-tree debug workflow (see biltoo-style helpers).
+        devShells.default =
+          let
+            galapixDevPreamble = ''
+              set -euo pipefail
+              if [ -z "''${GALAPIX_SOURCE:-}" ]; then
+                echo "$0: GALAPIX_SOURCE is not set (enter the shell with: nix develop)" >&2
+                exit 1
+              fi
+              GALAPIX_BUILD_DIR="''${GALAPIX_BUILD_DIR:-/tmp/galapix-build}"
+            '';
+            galapixConfigure = pkgs.writeShellScriptBin "galapix-configure" (
+              galapixDevPreamble
+              + ''
+                cmake -S "$GALAPIX_SOURCE" -B "$GALAPIX_BUILD_DIR" -G Ninja \
+                  -DCMAKE_BUILD_TYPE="''${CMAKE_BUILD_TYPE:-Debug}" \
+                  -DBUILD_GALAPIX_SDL=ON \
+                  -DBUILD_GALAPIX_GTK=ON \
+                  -DBUILD_BENCHMARKS=OFF \
+                  -DBUILD_EXTRAS=OFF \
+                  -DWITH_THUMTOO=ON \
+                  -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}"
+              ''
+            );
+            galapixBuild = pkgs.writeShellScriptBin "galapix-build" (
+              galapixDevPreamble
+              + ''
+                if [ ! -f "$GALAPIX_BUILD_DIR/build.ninja" ] && [ ! -f "$GALAPIX_BUILD_DIR/Makefile" ]; then
+                  galapix-configure || exit 1
+                fi
+                cmake --build "$GALAPIX_BUILD_DIR" "$@"
+              ''
+            );
+            # SDL binary is OUTPUT_NAME "${PROJECT_NAME}.sdl" → galapix-0.3.sdl
+            galapixRun = pkgs.writeShellScriptBin "galapix-run" (
+              galapixDevPreamble
+              + ''
+                galapix-build || exit 1
+                bin="$GALAPIX_BUILD_DIR/galapix-0.3.sdl"
+                if [ ! -x "$bin" ]; then
+                  echo "galapix-run: $bin missing after build" >&2
+                  exit 1
+                fi
+                # No exec: return to interactive shell when typed by hand.
+                "$bin" "$@"
+              ''
+            );
+            galapixRunGtk = pkgs.writeShellScriptBin "galapix-run-gtk" (
+              galapixDevPreamble
+              + ''
+                galapix-build || exit 1
+                bin="$GALAPIX_BUILD_DIR/galapix-0.3.gtk"
+                if [ ! -x "$bin" ]; then
+                  echo "galapix-run-gtk: $bin missing after build" >&2
+                  exit 1
+                fi
+                "$bin" "$@"
+              ''
+            );
+            galapixRunGdb = pkgs.writeShellScriptBin "galapix-run-gdb" (
+              galapixDevPreamble
+              + ''
+                galapix-build || exit 1
+                bin="$GALAPIX_BUILD_DIR/galapix-0.3.sdl"
+                if [ ! -x "$bin" ]; then
+                  echo "galapix-run-gdb: $bin missing after build" >&2
+                  exit 1
+                fi
+                if ! command -v gdb >/dev/null 2>&1; then
+                  echo "galapix-run-gdb: gdb not found (should be in the nix develop shell)" >&2
+                  exit 1
+                fi
+                gdb --args "$bin" "$@"
+              ''
+            );
+          in
+          pkgs.mkShell {
+            inputsFrom = [ packages.galapix ];
+            packages = (with pkgs; [
+              cmake
+              ninja
+              gdb
+              pkg-config
+            ]) ++ [
+              galapixConfigure
+              galapixBuild
+              galapixRun
+              galapixRunGtk
+              galapixRunGdb
+            ];
+            CMAKE_BUILD_TYPE = "Debug";
+            shellHook = ''
+              export GALAPIX_SOURCE="$PWD"
+              export GALAPIX_BUILD_DIR="''${GALAPIX_BUILD_DIR:-/tmp/galapix-build}"
+              export THUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}"
+              echo "galapix dev shell (CMAKE_BUILD_TYPE=''${CMAKE_BUILD_TYPE:-Debug})"
+              echo "  build dir: $GALAPIX_BUILD_DIR"
+              echo "  THUMTOO_DIR=$THUMTOO_DIR"
+              echo "  galapix-configure     # cmake -S . -B \$GALAPIX_BUILD_DIR -G Ninja (+ thumtoo)"
+              echo "  galapix-build         # incremental cmake --build"
+              echo "  galapix-run [args]    # build + run galapix-0.3.sdl"
+              echo "  galapix-run-gtk [args]# build + run galapix-0.3.gtk"
+              echo "  galapix-run-gdb [args]# build + gdb --args galapix-0.3.sdl"
+              echo "  nix build             # packaged RelWithDebInfo-style derivation"
+              echo "  also: nix develop -c galapix-run view /tmp/*.jpg"
+            '';
+          };
       }
     );
 }

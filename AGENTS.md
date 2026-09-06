@@ -97,15 +97,24 @@ size checks) after decode.
 ## Build
 
 ```bash
-# Nix (thumtoo enabled in flake)
+# Nix package (thumtoo enabled in flake)
 nix build
+
+# Dev shell (out-of-tree Debug + helpers)
+nix develop
+galapix-configure   # cmake -G Ninja -DWITH_THUMTOO=ON …
+galapix-build
+galapix-run view /tmp/*.jpg --verbose --debug
+# galapix-run-gtk …   # GTK frontend
+# galapix-run-gdb …   # gdb --args galapix-0.3.sdl
+# Override: GALAPIX_BUILD_DIR=… THUMTOO_DIR=… CMAKE_BUILD_TYPE=…
 
 # Manual
 cmake -B build -DWITH_THUMTOO=ON -DTHUMTOO_DIR=/path/to/thumtoo …
 cmake --build build
 ```
 
-Run:
+Packaged run:
 
 ```bash
 result/bin/galapix-0.3.sdl view /path/to/images… --verbose --debug
