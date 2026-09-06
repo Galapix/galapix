@@ -2,7 +2,7 @@
   description = "An image viewer for large image collections";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
     tinycmmc.url = "github:grumbel/tinycmmc";
@@ -79,7 +79,7 @@
         packages = rec {
           default = galapix;
 
-          galapix = pkgs.gcc12Stdenv.mkDerivation {
+          galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
             version = tinycmmc.lib.versionFromFile self;
 
@@ -103,7 +103,7 @@
 
             nativeBuildInputs = with pkgs; [
               cmake
-              pkgconfig
+              pkg-config
               makeWrapper
             ];
 
@@ -111,7 +111,7 @@
               entt
               sqlitecpp
               gbenchmark
-              fmt_8
+              fmt
               glm
               gtest
               gtkmm3
@@ -128,7 +128,7 @@
               SDL2_image
               curl
               glew
-              imagemagick7
+              imagemagick
               libGL
               libGLU
               libexif
@@ -149,7 +149,7 @@
               libdatrie
               libxkbcommon
               xorg.libXdmcp
-              epoxy
+              libepoxy
               dbus-glib
               at-spi2-core
               xorg.libXtst
@@ -162,7 +162,7 @@
               surfcpp.packages.${system}.default
               babyxml.packages.${system}.default
               sexpcpp.packages.${system}.default
-              wstdisplay.packages.${system}.default
+              #wstdisplay.packages.${system}.default
               uitest.packages.${system}.default
               strutcpp.packages.${system}.default
             ];
