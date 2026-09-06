@@ -5,6 +5,12 @@ tile cache instead of (or alongside) its SQLite `tiles` table.
 
 ## Build
 
+Nix (develop / default package) enables thumtoo via flake input and
+`-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…`.
+
+Manual CMake:
+
+
 ```bash
 cmake -B build \
   -DWITH_THUMTOO=ON \

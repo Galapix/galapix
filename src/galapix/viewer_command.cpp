@@ -91,11 +91,13 @@ ViewerCommand::make_file_tile_provider(URL const& url,
 #ifdef HAVE_THUMTOO
   if (m_thumtoo) {
     std::string const uri = thumtoo_uri_from_url(url);
-    if (!uri.empty()) {
-      if (auto p = ThumtooTileProvider::create(m_thumtoo, uri)) {
-        return p;
-      }
-      log_warn("thumtoo provider failed; falling back to database tiles");
+    if (uri.empty()) {
+      log_warn("thumtoo: cannot map URL to URI: {}", url);
+    } else if (auto p = ThumtooTileProvider::create(m_thumtoo, uri)) {
+      return p;
+    } else {
+      log_warn("thumtoo provider failed for {}; falling back to database tiles",
+               uri);
     }
   }
 #endif

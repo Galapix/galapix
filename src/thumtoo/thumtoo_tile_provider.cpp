@@ -62,14 +62,16 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
   }
 
   // Ensure size is known (synchronous probe via request + drain).
+  // Default Executor runs callbacks inline from the worker; drain() waits until
+  // the queue and in-flight jobs are idle.
   if (!client->get_size(uri)) {
     bool done = false;
     client->request_size(uri, [&](std::string, std::optional<thumtoo::Size>) {
       done = true;
     });
     client->drain();
-    if (!done && !client->get_size(uri)) {
-      log_error("ThumtooTileProvider: size probe failed for " + uri);
+    if (!done) {
+      log_error("ThumtooTileProvider: size probe did not complete for " + uri);
       return {};
     }
   }
@@ -85,6 +87,9 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
     // Prefer stored pyramid range when present.
     max_scale = std::max(max_scale, cov->max_scale);
   }
+
+  log_info("ThumtooTileProvider: {} {}x{} max_scale={}",
+           uri, sz->width, sz->height, max_scale);
 
   return std::make_shared<ThumtooTileProvider>(
     std::move(client), std::move(uri),

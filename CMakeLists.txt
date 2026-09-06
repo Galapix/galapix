@@ -169,6 +169,8 @@ if(WITH_THUMTOO)
   if(EXISTS "${THUMTOO_DIR}/CMakeLists.txt")
     # Build against a thumtoo source checkout.
     set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    set(THUMTOO_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(THUMTOO_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
     add_subdirectory("${THUMTOO_DIR}" "${CMAKE_BINARY_DIR}/thumtoo" EXCLUDE_FROM_ALL)
     if(TARGET thumtoo)
       set(THUMTOO_TARGET thumtoo)

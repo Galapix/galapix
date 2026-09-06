@@ -58,6 +58,7 @@
     wstdisplay.inputs.babyxml.follows = "babyxml";
     wstdisplay.inputs.surfcpp.follows = "surfcpp";
     wstdisplay.inputs.logmich.follows = "logmich";
+
   };
 
   outputs = { self, nixpkgs, flake-utils,
@@ -65,6 +66,13 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        # thumtoo Phase 4 grid tiles (get_tile / request_tile).
+        thumtooSrc = pkgs.fetchFromGitHub {
+          owner = "Grumbel";
+          repo = "thumtoo";
+          rev = "8fe7e9f63cd74ad58d9d2c28f312fc2ccceaef53";
+          hash = "sha256-fE5S9OpkGSnohhlAQdejw9aAlfKU2t5VEMQaDO3P43o=";
+        };
       in rec {
         packages = rec {
           default = galapix;
@@ -89,6 +97,8 @@
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DBUILD_EXTRAS=ON"
+              "-DWITH_THUMTOO=ON"
+              "-DTHUMTOO_DIR=${thumtooSrc}"
             ];
 
             nativeBuildInputs = with pkgs; [
@@ -124,6 +134,12 @@
               libmhash
               libspnav
               sqlite
+
+              # thumtoo (via add_subdirectory): vips ladder + JPEG tiles + archives
+              vips
+              libjxl
+              libarchive
+              poppler
 
               # Silence pkg-config warnings
               pcre
