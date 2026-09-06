@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <optional>
 #include <logmich/log.hpp>
+#include <surf/convert.hpp>
+#include <surf/pixel_format.hpp>
 #include <surf/plugins/jpeg.hpp>
 
 #include "job/job_handle.hpp"
@@ -29,15 +31,27 @@ namespace galapix {
 namespace {
 
 /** Decode JPEG tile bytes. Returns nullopt on empty payload or decode error.
- *  SoftwareSurface is not contextual-bool convertible. */
+ *
+ *  Converts to RGBA8 so row pitch is width*4 (multiple of 4). wstdisplay
+ *  Texture upload uses GL_UNPACK_ALIGNMENT=4; tightly packed RGB8 rows with
+ *  width not divisible by 4 (common for edge tiles) otherwise shear and look
+ *  like scrambled greyscale.
+ */
 std::optional<surf::SoftwareSurface> surface_from_tile_blob(thumtoo::TileBlob const& tb)
 {
   if (tb.bytes.empty()) {
     return std::nullopt;
   }
-  Blob blob = Blob::copy(std::span<uint8_t const>(tb.bytes.data(), tb.bytes.size()));
   try {
-    return surf::jpeg::load_from_mem(blob);
+    auto surface = surf::jpeg::load_from_mem(
+      std::span<uint8_t const>(tb.bytes.data(), tb.bytes.size()));
+    if (surface.get_format() != surf::PixelFormat::RGBA8) {
+      surface = surf::convert(surface, surf::PixelFormat::RGBA8);
+    }
+    return surface;
+  } catch (std::exception const& err) {
+    log_error("ThumtooTileProvider: JPEG decode failed: {}", err.what());
+    return std::nullopt;
   } catch (...) {
     log_error("ThumtooTileProvider: JPEG decode failed");
     return std::nullopt;
