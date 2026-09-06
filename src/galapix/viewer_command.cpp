@@ -58,7 +58,16 @@ std::filesystem::path default_thumtoo_cache()
 ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
   m_opts(opts),
-  m_database(Database::create(opts.database)),
+  // Pure thumtoo view: keep resource DB for -p patterns, skip Galapix tile SQLite.
+  // Only when HAVE_THUMTOO and use_thumtoo; otherwise keep historical tile DB.
+  m_database(Database::create(
+    opts.database,
+#ifdef HAVE_THUMTOO
+    /*sqlite_tiles=*/!opts.use_thumtoo
+#else
+    /*sqlite_tiles=*/true
+#endif
+  )),
   m_job_manager(opts.threads),
   m_database_thread(m_database, m_job_manager),
   m_patterns(opts.patterns)
@@ -73,7 +82,8 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
                                     ? default_thumtoo_cache()
                                     : std::filesystem::path(m_opts.thumtoo_cache);
     m_thumtoo = thumtoo::Client::open(cache);
-    std::cout << "Using thumtoo cache: " << cache << std::endl;
+    std::cout << "Using thumtoo cache: " << cache
+              << " (Galapix SQLite tiles disabled)" << std::endl;
   }
 #else
   if (m_opts.use_thumtoo) {
@@ -96,9 +106,10 @@ ViewerCommand::make_file_tile_provider(URL const& url,
     } else if (auto p = ThumtooTileProvider::create(m_thumtoo, uri)) {
       return p;
     } else {
-      log_warn("thumtoo provider failed for {}; falling back to database tiles",
-               uri);
+      // Pure thumtoo: do not fall back to Galapix SQLite tiles.
+      log_warn("thumtoo provider failed for {}; no SQLite tile fallback", uri);
     }
+    return {};
   }
 #endif
   if (file_entry && image_entry) {

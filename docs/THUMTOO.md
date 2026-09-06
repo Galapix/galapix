@@ -70,4 +70,4 @@ historical SQLite tile path.
 - [x] `--thumtoo` / `--thumtoo-cache` CLI
 - [x] ViewerCommand image-open path
 - [x] Default-on when `HAVE_THUMTOO` (`--no-thumtoo` to disable)
-- [ ] Pure thumtoo mode (no Galapix SQLite tiles at all)
+- [x] Pure thumtoo view: memory-only Galapix tile DB; no SQLite tile fallback

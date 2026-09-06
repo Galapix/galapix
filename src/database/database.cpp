@@ -24,23 +24,27 @@
 namespace galapix {
 
 Database
-Database::create(std::string const& prefix)
+Database::create(std::string const& prefix, bool sqlite_tiles)
 {
   Filesystem::mkdir(prefix);
 
   auto db = std::make_unique<SQLite::Database>(prefix + "/cache4.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-  auto tile_db = std::make_unique<SQLite::Database>(prefix + "/cache4_tiles.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-
   auto resources = std::make_unique<ResourceDatabase>(*db);
 
-  std::unique_ptr<CachedTileDatabase> tiles;
-  if ((true))
+  std::unique_ptr<SQLite::Database> tile_db;
+  std::unique_ptr<TileDatabaseInterface> tiles;
+
+  if (sqlite_tiles)
   {
-    tiles = std::make_unique<CachedTileDatabase>(std::make_unique<SQLiteTileDatabase>(*tile_db, *resources));
+    tile_db = std::make_unique<SQLite::Database>(prefix + "/cache4_tiles.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+    tiles = std::make_unique<CachedTileDatabase>(
+      std::make_unique<SQLiteTileDatabase>(*tile_db, *resources));
   }
   else
   {
-    tiles = std::make_unique<CachedTileDatabase>(std::make_unique<FileTileDatabase>(prefix + "/tiles"));
+    // Pure thumtoo (or tests): no durable Galapix tile file; keep interface alive.
+    tiles = std::make_unique<CachedTileDatabase>(
+      std::make_unique<MemoryTileDatabase>());
   }
 
   return Database(std::move(db), std::move(tile_db), std::move(resources), std::move(tiles));

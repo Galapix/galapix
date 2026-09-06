@@ -30,7 +30,9 @@ namespace galapix {
 class Database
 {
 public:
-  static Database create(std::string const& prefix);
+  /** Open resource DB under prefix. When sqlite_tiles is false, tile storage is
+   *  in-memory only (no cache4_tiles.sqlite3) — used for pure thumtoo view. */
+  static Database create(std::string const& prefix, bool sqlite_tiles = true);
 
 public:
   Database(std::unique_ptr<SQLite::Database> db,
