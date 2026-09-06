@@ -26,6 +26,8 @@
 #include <surf/transform.hpp>
 #include <surf/plugins/png.hpp>
 #include <wstsystem/system.hpp>
+#include <wstdisplay/graphics_context.hpp>
+#include <wstdisplay/opengl_window.hpp>
 
 #include "database/entries/old_file_entry.hpp"
 #include "galapix/viewer.hpp"
@@ -97,6 +99,11 @@ SDLViewer::SDLViewer(Size const& size, bool fullscreen, int  anti_aliasing,
   m_spnav_allow_rotate(false),
   m_gamecontrollers()
 {
+  // OpenGLWindow::handle_event updates glViewport; keep ortho + Viewer in sync.
+  m_window->sig_resized.connect([this](geom::isize const& size) {
+    m_window->get_gc().set_ortho(size);
+    m_viewer.reshape(size);
+  });
   m_viewer.reshape(m_window->get_size());
 }
 
@@ -225,15 +232,8 @@ SDLViewer::process_event(SDL_Event const& event)
       //break;
 
     case SDL_WINDOWEVENT:
-      switch (event.window.event)
-      {
-        case SDL_WINDOWEVENT_RESIZED:
-          m_viewer.reshape(Size(event.window.data1, event.window.data2));
-          break;
-
-        default:
-          break;
-      }
+      // Forwards RESIZED → glViewport + sig_resized (ortho + Viewer::reshape).
+      m_window->handle_event(event.window);
       break;
 
     case SDL_MOUSEMOTION:

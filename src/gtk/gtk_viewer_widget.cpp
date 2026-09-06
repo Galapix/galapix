@@ -137,7 +137,12 @@ void
 GtkViewerWidget::on_resize(int width, int height)
 {
   log_trace("GtkViewerWidget::on_resize({}x{})", width, height);
-  viewer->reshape(Size(get_width(), get_height()));
+  Size const size(width, height);
+  glViewport(0, 0, size.width(), size.height());
+  if (m_gc) {
+    m_gc->set_ortho(size);
+  }
+  viewer->reshape(size);
 }
 
 bool
