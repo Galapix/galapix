@@ -1,7 +1,21 @@
 Galapix ToDo
 ============
 
+## Priority: merge develop → master
+
+Make **develop** the branch that becomes **master**. See
+[docs/DEVELOP_VS_MASTER.md](docs/DEVELOP_VS_MASTER.md).
+
+* [ ] Decide fate of master-only CLI: `prepare`, `filegen`, `check`, `merge`
+      (reimplement on develop, or document replacement via thumtoo / drop)
+* [ ] Document or implement cache3 → cache4 migration (DBs are incompatible)
+* [ ] Release checklist: SDL view smoke (zoom, edge tiles, resize), flake package
+* [ ] NEWS entry for architecture move (wstdisplay/surfcpp, thumtoo, no Boost/GLEW)
+* [ ] Merge develop into master (or retarget default branch after tag)
+
 ## thumtoo integration
+
+
 
 * [x] Optional ThumtooTileProvider (WITH_THUMTOO / THUMTOO_DIR)
 * [x] Wire provider into image open path (`--thumtoo`)
