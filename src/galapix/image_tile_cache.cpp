@@ -29,10 +29,10 @@ namespace galapix {
 
 namespace {
 
-/** Upload a tile SoftwareSurface with UVs that match the real image region
- *  (if the GL texture was rounded up) and inset by half a texel so LINEAR
- *  filtering does not sample outside the content and produce dark seams /
- *  black borders between tiles.
+/** Upload a tile SoftwareSurface with UVs limited to the real image region
+ *  when the GL texture is larger (POT padding). Do not half-texel-inset: that
+ *  leaves a dark fringe at the outer image edge against the clear colour.
+ *  WRAP is CLAMP_TO_EDGE; LINEAR samples the edge texel there.
  */
 wstdisplay::SurfacePtr
 surface_from_software(surf::SoftwareSurface const& image)
@@ -42,12 +42,9 @@ surface_from_software(surf::SoftwareSurface const& image)
   float const th = static_cast<float>(texture->get_height());
   float const maxu = static_cast<float>(image.get_width())  / tw;
   float const maxv = static_cast<float>(image.get_height()) / th;
-  float const iu = 0.5f / tw;
-  float const iv = 0.5f / th;
-  // Keep LINEAR (matches historical look); WRAP is already CLAMP_TO_EDGE.
   return wstdisplay::Surface::create(
     texture,
-    geom::frect(iu, iv, maxu - iu, maxv - iv),
+    geom::frect(0.0f, 0.0f, maxu, maxv),
     geom::fsize(image.get_size()));
 }
 
@@ -92,7 +89,15 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
   Cache::iterator i = m_cache.find(cache_id);
 
-  if (i == m_cache.end())
+  // Re-request when a previous attempt failed (e.g. scale outside provider
+  // range before max_scale was fixed, or transient decode error).
+  bool const need_request =
+    (i == m_cache.end()) ||
+    (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+     i->second.job_handle.is_failed() &&
+     !i->second.surface);
+
+  if (need_request)
   {
     JobHandle job_handle = m_tile_provider->request_tile(
       scale, Vector2i(x, y),

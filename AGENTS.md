@@ -93,9 +93,10 @@ size checks) after decode.
   **glViewport** updates on resize.
 - On `sig_resized`, call `GraphicsContext::set_ortho` and `Viewer::reshape`.
 - GL loaded via **glad** (aligned with wstdisplay), not GLEW.
-- Tile upload uses half-texel UV inset (`ImageTileCache`) so LINEAR does not
-  sample past content (dark seams / black borders). WRAP is already
-  `GL_CLAMP_TO_EDGE` in wstdisplay.
+- Tile upload maps UV to the real image region (`maxu`/`maxv`) when the GL
+  texture is larger than the surface. WRAP is `GL_CLAMP_TO_EDGE`.
+- `ThumtooTileProvider` max_scale must match thumtoo (until image fits in one
+  256² tile), not ImageEntry’s ≤8px pyramid depth.
 - **Texture arrays / atlas batching** (one draw call for many tiles) is a
   worthwhile future optimization in wstdisplay + ImageRenderer; not required
   for correctness. Prefer fixing seams/filters first.

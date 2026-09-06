@@ -80,3 +80,10 @@ GUI thread so JPEG decode delivery and `ImageTileCache::receive_tile` run
 there (same model as biltoo’s Qt queued connection). Size probes during
 image open call `drain()` then `pump()` so layout size is available before
 the viewer starts.
+
+## Scale range
+
+thumtoo only builds scales until the image fits in **one 256×256 tile**
+(`while (w > 256 || h > 256) shrink`). Galapix `ThumtooTileProvider::get_max_scale()`
+must use that same range. The historical ImageEntry formula (halve until edge ≤ 8)
+requests scales thumtoo will never produce (`min_scale > computed_max` → empty blob).

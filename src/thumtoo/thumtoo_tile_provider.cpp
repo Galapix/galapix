@@ -58,13 +58,20 @@ std::optional<surf::SoftwareSurface> surface_from_tile_blob(thumtoo::TileBlob co
   }
 }
 
+/** Max scale at which the image still fits in a single kTileSize (256) tile.
+ *  Must match thumtoo::Client::get_tile_coverage theoretical range and
+ *  cut_pyramid_from_vips — NOT Galapix ImageEntry (which continues to ≤8px).
+ *  Requesting higher scales yields empty TileBlob (min_scale > computed_max).
+ */
 int max_scale_for_size(int width, int height)
 {
-  // Match ImageEntry: keep halving until max edge <= 8.
-  int s = std::max(width, height);
+  int w = width;
+  int h = height;
   int max_scale = 0;
-  while (s > 8) {
-    s /= 2;
+  // Same loop as thumtoo (TILES.md / get_tile_coverage).
+  while (w > 256 || h > 256) {
+    w = (w + 1) / 2;
+    h = (h + 1) / 2;
     ++max_scale;
   }
   return max_scale;
@@ -103,10 +110,10 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
     return {};
   }
 
+  // Prefer theoretical/stored coverage from thumtoo; fall back to local formula.
   int max_scale = max_scale_for_size(sz->width, sz->height);
   if (auto cov = client->get_tile_coverage(uri)) {
-    // Prefer stored pyramid range when present.
-    max_scale = std::max(max_scale, cov->max_scale);
+    max_scale = cov->max_scale;
   }
 
   log_info("ThumtooTileProvider: {} {}x{} max_scale={}",
@@ -135,16 +142,21 @@ ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
   const int x = pos.x();
   const int y = pos.y();
 
-  auto deliver = [job_handle, callback, tilescale, pos](std::optional<thumtoo::TileBlob> tb) mutable {
+  auto deliver = [job_handle, callback, tilescale, pos, uri = m_uri](
+                   std::optional<thumtoo::TileBlob> tb) mutable {
     if (job_handle.is_aborted()) {
       return;
     }
-    if (!tb) {
+    if (!tb || tb->bytes.empty()) {
+      log_error("ThumtooTileProvider: no tile {} scale={} pos=({},{})",
+                uri, tilescale, pos.x(), pos.y());
       job_handle.set_failed();
       return;
     }
     auto surface = surface_from_tile_blob(*tb);
     if (!surface) {
+      log_error("ThumtooTileProvider: decode failed {} scale={} pos=({},{})",
+                uri, tilescale, pos.x(), pos.y());
       job_handle.set_failed();
       return;
     }
