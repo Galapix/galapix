@@ -32,6 +32,7 @@ rendering, layout tools, and (historically) its own SQLite tile tables.
 | [README.md](README.md) | Feature overview, dependencies |
 | [TODO.md](TODO.md) | Historical backlog + **thumtoo integration** checklist |
 | [docs/THUMTOO.md](docs/THUMTOO.md) | Build flags, CLI, pure mode, threading |
+| [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) | Dep audit / what thumtoo does not replace |
 | [NEWS.md](NEWS.md) | Release notes |
 | thumtoo [INTEGRATION_GALAPIX.md](https://github.com/Grumbel/thumtoo/blob/master/INTEGRATION_GALAPIX.md) | Library-side mapping |
 | thumtoo [TILES.md](https://github.com/Grumbel/thumtoo/blob/master/TILES.md) | Scale/tile conventions |
