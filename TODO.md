@@ -10,7 +10,7 @@ Galapix ToDo
 * [x] Align size probe with Client::drain / get_size after request_size
 * [x] Default-on when HAVE_THUMTOO; `--no-thumtoo` forces SQLite tiles
 * [x] Pure thumtoo view: no cache4_tiles.sqlite3, no DatabaseTileProvider fallback
-* [ ] GUI-thread Executor for tile callbacks (today: default inline worker)
+* [x] GUI-thread Executor (ThumtooCallbackQueue pumped from Viewer::draw)
 
 Galapix ToDo
 ============

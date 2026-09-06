@@ -195,6 +195,7 @@ if(WITH_THUMTOO)
   endif()
 
   target_sources(libgalapix PRIVATE
+    src/thumtoo/thumtoo_callback_queue.cpp
     src/thumtoo/thumtoo_tile_provider.cpp
     src/thumtoo/thumtoo_uri.cpp)
   target_compile_definitions(libgalapix PUBLIC HAVE_THUMTOO=1)

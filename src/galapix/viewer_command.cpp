@@ -29,6 +29,7 @@
 #include "galapix/zoomify_tile_provider.hpp"
 
 #ifdef HAVE_THUMTOO
+#  include "thumtoo/thumtoo_callback_queue.hpp"
 #  include "thumtoo/thumtoo_tile_provider.hpp"
 #  include "thumtoo/thumtoo_uri.hpp"
 #  include <thumtoo/client.hpp>
@@ -81,7 +82,8 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
     std::filesystem::path cache = m_opts.thumtoo_cache.empty()
                                     ? default_thumtoo_cache()
                                     : std::filesystem::path(m_opts.thumtoo_cache);
-    m_thumtoo = thumtoo::Client::open(cache);
+    m_thumtoo = thumtoo::Client::open(
+      cache, ThumtooCallbackQueue::instance().make_executor());
     std::cout << "Using thumtoo cache: " << cache
               << " (Galapix SQLite tiles disabled)" << std::endl;
   }

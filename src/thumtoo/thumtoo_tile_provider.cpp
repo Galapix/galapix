@@ -8,6 +8,8 @@
 
 #include "thumtoo/thumtoo_tile_provider.hpp"
 
+#include "thumtoo/thumtoo_callback_queue.hpp"
+
 #include <algorithm>
 #include <optional>
 #include <logmich/log.hpp>
@@ -73,6 +75,8 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
       done = true;
     });
     client->drain();
+    // Executor posts to the main-thread queue; run it before we continue.
+    ThumtooCallbackQueue::instance().pump();
     if (!done) {
       log_error("ThumtooTileProvider: size probe did not complete for " + uri);
       return {};

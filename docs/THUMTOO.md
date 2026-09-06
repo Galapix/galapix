@@ -71,3 +71,12 @@ historical SQLite tile path.
 - [x] ViewerCommand image-open path
 - [x] Default-on when `HAVE_THUMTOO` (`--no-thumtoo` to disable)
 - [x] Pure thumtoo view: memory-only Galapix tile DB; no SQLite tile fallback
+
+## Threading
+
+`thumtoo::Client` is opened with a Galapix `Executor` that posts completion
+callbacks onto `ThumtooCallbackQueue`. `Viewer::draw` pumps the queue on the
+GUI thread so JPEG decode delivery and `ImageTileCache::receive_tile` run
+there (same model as biltoo’s Qt queued connection). Size probes during
+image open call `drain()` then `pump()` so layout size is available before
+the viewer starts.

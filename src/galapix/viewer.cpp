@@ -27,6 +27,10 @@
 
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
+
+#ifdef HAVE_THUMTOO
+#  include "thumtoo/thumtoo_callback_queue.hpp"
+#endif
 #include "galapix/workspace.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
@@ -138,6 +142,9 @@ Viewer::redraw()
 void
 Viewer::draw(wstdisplay::GraphicsContext& gc)
 {
+#ifdef HAVE_THUMTOO
+  ThumtooCallbackQueue::instance().pump();
+#endif
   m_mark_for_redraw = false;
 
   bool clip_debug = false;
