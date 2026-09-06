@@ -36,7 +36,6 @@ find_package(PkgConfig REQUIRED)
 find_package(Python)
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
-find_package(fmt REQUIRED)
 find_package(OpenSSL COMPONENTS Crypto REQUIRED)
 
 find_package(spnav)
@@ -147,7 +146,6 @@ target_link_libraries(libgalapix PUBLIC
   geom::geom
   wstdisplay::wstdisplay
   SQLiteCpp
-  fmt::fmt
   PkgConfig::MAGICKXX
   PkgConfig::SIGCXX
   ${GALAPIX_SPNAV_LIBRARIES}

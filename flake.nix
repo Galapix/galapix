@@ -101,7 +101,6 @@
               entt
               sqlitecpp
               gbenchmark
-              fmt
               glm
               gtest
               gtkmm3
@@ -152,7 +151,7 @@
               surfcpp.packages.${system}.default
               babyxml.packages.${system}.default
               sexpcpp.packages.${system}.default
-              #wstdisplay.packages.${system}.default
+              wstdisplay.packages.${system}.default
               uitest.packages.${system}.default
               strutcpp.packages.${system}.default
             ];
