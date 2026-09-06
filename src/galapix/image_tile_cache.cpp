@@ -17,7 +17,13 @@
 #include "galapix/image_tile_cache.hpp"
 
 #include <assert.h>
+#include <cstring>
 
+#include <glad/gl.h>
+#include <surf/blit.hpp>
+#include <surf/fill.hpp>
+#include <surf/pixel.hpp>
+#include <surf/software_surface.hpp>
 #include <wstdisplay/texture.hpp>
 
 #include "galapix/viewer.hpp"
@@ -29,23 +35,83 @@ namespace galapix {
 
 namespace {
 
-/** Upload a tile SoftwareSurface with UVs limited to the real image region
- *  when the GL texture is larger (POT padding). Do not half-texel-inset: that
- *  leaves a dark fringe at the outer image edge against the clear colour.
- *  WRAP is CLAMP_TO_EDGE; LINEAR samples the edge texel there.
+/** Pad a partial edge tile to tile_size² by repeating the last row/column
+ *  (edge-clamp). LINEAR filtering near UV boundaries then samples content
+ *  instead of undefined / black texels — fixes the black bottom row on
+ *  right-edge tiles.
  */
+surf::SoftwareSurface
+pad_tile_edge_clamp(surf::SoftwareSurface const& src, int tile_size)
+{
+  int const w = src.get_width();
+  int const h = src.get_height();
+  if (w <= 0 || h <= 0) {
+    return src;
+  }
+  if (w >= tile_size && h >= tile_size) {
+    return src;
+  }
+
+  auto dst = surf::SoftwareSurface::create(
+    surf::PixelFormat::RGBA8, geom::isize(tile_size, tile_size));
+  // Source may be RGB8 or RGBA8; blit converts as needed.
+  surf::blit(src, dst, geom::ipoint(0, 0));
+
+  auto& view = dst.as_pixelview<surf::RGBA8Pixel>();
+
+  // Extend right: copy last valid column.
+  if (w < tile_size) {
+    for (int y = 0; y < h; ++y) {
+      surf::RGBA8Pixel* row = view.get_row(y);
+      for (int x = w; x < tile_size; ++x) {
+        row[x] = row[w - 1];
+      }
+    }
+  }
+
+  // Extend bottom: copy last valid row (already right-extended if needed).
+  if (h < tile_size) {
+    surf::RGBA8Pixel const* src_row = view.get_row(h - 1);
+    for (int y = h; y < tile_size; ++y) {
+      std::memcpy(view.get_row(y), src_row,
+                  static_cast<size_t>(tile_size) * sizeof(surf::RGBA8Pixel));
+    }
+  }
+
+  return dst;
+}
+
+/** Upload tile without mipmaps; pad edge tiles so LINEAR never hits black. */
 wstdisplay::SurfacePtr
 surface_from_software(surf::SoftwareSurface const& image)
 {
-  auto texture = wstdisplay::Texture::create(image);
+  constexpr int kTile = 256;
+  int const content_w = image.get_width();
+  int const content_h = image.get_height();
+
+  surf::SoftwareSurface upload = image;
+  if (content_w < kTile || content_h < kTile) {
+    upload = pad_tile_edge_clamp(image, kTile);
+  }
+
+  // Texture::create(SoftwareSurface) uses gluBuild2DMipmaps; edge tiles have
+  // shown a black bottom row with that path. Allocate empty + put level 0 only.
+  auto texture = wstdisplay::Texture::create(
+    GL_TEXTURE_2D, upload.get_size());
+  texture->put(upload, 0, 0);
+  texture->set_filter(GL_LINEAR);
+
   float const tw = static_cast<float>(texture->get_width());
   float const th = static_cast<float>(texture->get_height());
-  float const maxu = static_cast<float>(image.get_width())  / tw;
-  float const maxv = static_cast<float>(image.get_height()) / th;
+  // UV covers only the real content; padding is filter apron.
+  float const maxu = static_cast<float>(content_w) / tw;
+  float const maxv = static_cast<float>(content_h) / th;
+
   return wstdisplay::Surface::create(
     texture,
     geom::frect(0.0f, 0.0f, maxu, maxv),
-    geom::fsize(image.get_size()));
+    geom::fsize(static_cast<float>(content_w),
+                static_cast<float>(content_h)));
 }
 
 } // namespace
