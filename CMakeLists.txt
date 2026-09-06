@@ -195,7 +195,8 @@ if(WITH_THUMTOO)
   endif()
 
   target_sources(libgalapix PRIVATE
-    src/thumtoo/thumtoo_tile_provider.cpp)
+    src/thumtoo/thumtoo_tile_provider.cpp
+    src/thumtoo/thumtoo_uri.cpp)
   target_compile_definitions(libgalapix PUBLIC HAVE_THUMTOO=1)
   target_link_libraries(libgalapix PUBLIC ${THUMTOO_TARGET})
   message(STATUS "thumtoo tile backend enabled (${THUMTOO_DIR})")

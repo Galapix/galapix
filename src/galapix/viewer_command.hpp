@@ -23,9 +23,19 @@
 
 #include "galapix/options.hpp"
 
+#include <memory>
+#include <string>
+
+#include "galapix/tile_provider.hpp"
+
+namespace thumtoo { class Client; }
+
 namespace galapix {
 
 class System;
+class URL;
+class OldFileEntry;
+class ImageEntry;
 
 class ViewerCommand
 {
@@ -43,6 +53,15 @@ private:
   JobManager m_job_manager;
   DatabaseThread m_database_thread;
   std::vector<std::string> m_patterns;
+
+#ifdef HAVE_THUMTOO
+  std::shared_ptr<thumtoo::Client> m_thumtoo;
+#endif
+
+  /** Prefer thumtoo provider when enabled; otherwise DatabaseTileProvider. */
+  TileProviderPtr make_file_tile_provider(URL const& url,
+                                          OldFileEntry const* file_entry = nullptr,
+                                          ImageEntry const* image_entry = nullptr);
 
 private:
   ViewerCommand(ViewerCommand const&) = delete;

@@ -35,7 +35,9 @@ public:
     database(),
     patterns(),
     threads(),
-    rest()
+    rest(),
+    use_thumtoo(false),
+    thumtoo_cache()
   {}
 
 public:
@@ -47,6 +49,11 @@ public:
   std::vector<std::string> patterns;
   int         threads;
   std::vector<std::string> rest;
+
+  /** When true and built with HAVE_THUMTOO, use ThumtooTileProvider for files. */
+  bool use_thumtoo;
+  /** thumtoo cache root; empty → $XDG_CACHE_HOME/thumtoo or ~/.cache/thumtoo */
+  std::string thumtoo_cache;
 };
 
 } // namespace galapix

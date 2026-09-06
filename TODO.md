@@ -4,8 +4,8 @@ Galapix ToDo
 ## thumtoo integration
 
 * [x] Optional ThumtooTileProvider (WITH_THUMTOO / THUMTOO_DIR)
-* [ ] Wire provider into image open path when HAVE_THUMTOO
-* [ ] Session default cache root ($XDG_CACHE_HOME/thumtoo)
+* [x] Wire provider into image open path (`--thumtoo`)
+* [x] Session default cache root ($XDG_CACHE_HOME/thumtoo)
 * [ ] Replace SQLiteTileDatabase path for pure thumtoo mode
 
 Galapix ToDo

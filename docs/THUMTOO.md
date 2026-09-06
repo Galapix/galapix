@@ -39,8 +39,23 @@ image.set_tile_provider(provider);
 thumtoo-prepare --tiles /path/to/images…
 ```
 
+## Runtime
+
+```bash
+galapix.sdl --thumtoo [files…]
+galapix.sdl --thumtoo --thumtoo-cache ~/.cache/thumtoo [files…]
+```
+
+When `--thumtoo` is set (and `HAVE_THUMTOO` was enabled at build time),
+`ViewerCommand` opens a shared `thumtoo::Client` and uses `ThumtooTileProvider`
+for local files and archive members (Galapix `//rar:` / `//zip:` → thumtoo
+`//archive:`). Falls back to `DatabaseTileProvider` if size probe fails.
+
+Without `--thumtoo`, behaviour is unchanged (SQLite tiles).
+
 ## Status
 
-Adapter is library-side only; the main galapix UI still constructs
-`DatabaseTileProvider` by default. Wire `ThumtooTileProvider` where images are
-created from local paths when `HAVE_THUMTOO` is set.
+- [x] `ThumtooTileProvider` + URI conversion
+- [x] `--thumtoo` / `--thumtoo-cache` CLI
+- [x] ViewerCommand image-open path
+- [ ] Pure thumtoo mode (no Galapix SQLite tiles at all)

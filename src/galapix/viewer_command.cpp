@@ -16,14 +16,44 @@
 
 #include "galapix/viewer_command.hpp"
 
+#include <filesystem>
+#include <iostream>
+
 #include "galapix/database_tile_provider.hpp"
+#include "database/entries/old_file_entry.hpp"
+#include "database/entries/image_entry.hpp"
 #include "galapix/mandelbrot_tile_provider.hpp"
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
 
+#ifdef HAVE_THUMTOO
+#  include "thumtoo/thumtoo_tile_provider.hpp"
+#  include "thumtoo/thumtoo_uri.hpp"
+#  include <thumtoo/client.hpp>
+#  include <thumtoo/image.hpp>
+#  include <cstdlib>
+#endif
+
 namespace galapix {
+
+namespace {
+
+#ifdef HAVE_THUMTOO
+std::filesystem::path default_thumtoo_cache()
+{
+  if (char const* xdg = std::getenv("XDG_CACHE_HOME"); xdg && *xdg) {
+    return std::filesystem::path(xdg) / "thumtoo";
+  }
+  if (char const* home = std::getenv("HOME"); home && *home) {
+    return std::filesystem::path(home) / ".cache" / "thumtoo";
+  }
+  return std::filesystem::path(".cache") / "thumtoo";
+}
+#endif
+
+} // namespace
 
 ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
@@ -35,6 +65,45 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
 {
   m_job_manager.start_thread();
   m_database_thread.start_thread();
+
+#ifdef HAVE_THUMTOO
+  if (m_opts.use_thumtoo) {
+    thumtoo::image_library_init();
+    std::filesystem::path cache = m_opts.thumtoo_cache.empty()
+                                    ? default_thumtoo_cache()
+                                    : std::filesystem::path(m_opts.thumtoo_cache);
+    m_thumtoo = thumtoo::Client::open(cache);
+    std::cout << "Using thumtoo cache: " << cache << std::endl;
+  }
+#else
+  if (m_opts.use_thumtoo) {
+    std::cerr << "Warning: --thumtoo requested but galapix was built without "
+                 "HAVE_THUMTOO; using SQLite tiles.
+";
+  }
+#endif
+}
+
+TileProviderPtr
+ViewerCommand::make_file_tile_provider(URL const& url,
+                                       OldFileEntry const* file_entry,
+                                       ImageEntry const* image_entry)
+{
+#ifdef HAVE_THUMTOO
+  if (m_thumtoo) {
+    std::string const uri = thumtoo_uri_from_url(url);
+    if (!uri.empty()) {
+      if (auto p = ThumtooTileProvider::create(m_thumtoo, uri)) {
+        return p;
+      }
+      log_warn("thumtoo provider failed; falling back to database tiles");
+    }
+  }
+#endif
+  if (file_entry && image_entry) {
+    return std::make_shared<DatabaseTileProvider>(*file_entry, *image_entry);
+  }
+  return {};
 }
 
 ViewerCommand::~ViewerCommand()
@@ -86,7 +155,8 @@ ViewerCommand::run(std::vector<URL> const& urls)
       }
       else
       {
-        workspace.add_image(std::make_shared<Image>(i->get_url(), std::make_shared<DatabaseTileProvider>(*i, image_entry)));
+        workspace.add_image(std::make_shared<Image>(i->get_url(),
+                                          make_file_tile_provider(i->get_url(), &*i, &image_entry)));
 
         // print progress
         size_t n = static_cast<size_t>(i - file_entries.begin()) + 1;
@@ -135,7 +205,11 @@ ViewerCommand::run(std::vector<URL> const& urls)
       OldFileEntry file_entry;
       if (!m_database.get_resources().get_old_file_entry(*i, file_entry))
       {
-        workspace.add_image(std::make_shared<Image>(*i));
+        if (auto provider = make_file_tile_provider(*i)) {
+          workspace.add_image(std::make_shared<Image>(*i, provider));
+        } else {
+          workspace.add_image(std::make_shared<Image>(*i));
+        }
       }
       else
       {
@@ -146,8 +220,9 @@ ViewerCommand::run(std::vector<URL> const& urls)
         }
         else
         {
-          workspace.add_image(std::make_shared<Image>(file_entry.get_url(),
-                                                      std::make_shared<DatabaseTileProvider>(file_entry, image_entry)));
+          workspace.add_image(std::make_shared<Image>(
+            file_entry.get_url(),
+            make_file_tile_provider(file_entry.get_url(), &file_entry, &image_entry)));
         }
       }
     }

@@ -42,6 +42,8 @@ ArgParser::print_usage()
             << "\n"
             << "Options:\n"
             << "  -d, --database FILE    Use FILE has database (default: none)\n"
+            << "      --thumtoo          Use thumtoo tile cache for local files\n"
+            << "      --thumtoo-cache DIR  thumtoo cache root (default: ~/.cache/thumtoo)\n"
             << "  -f, --fullscreen       Start in fullscreen mode\n"
             << "  -t, --threads          Number of worker threads (default: 2)\n"
             << "  -F, --files-from FILE  Get urls from FILE\n"
@@ -182,6 +184,19 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
                strcmp(argv[i], "-f") == 0)
       {
         opts.fullscreen = true;
+      }
+      else if (strcmp(argv[i], "--thumtoo") == 0)
+      {
+        opts.use_thumtoo = true;
+      }
+      else if (strcmp(argv[i], "--thumtoo-cache") == 0)
+      {
+        ++i;
+        if (i < argc) {
+          opts.thumtoo_cache = argv[i];
+        } else {
+          raise_runtime_error(std::string(argv[i-1]) + " requires an argument");
+        }
       }
       else
       {
