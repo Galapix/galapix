@@ -5,8 +5,8 @@ tile cache instead of (or alongside) its SQLite `tiles` table.
 
 ## Build
 
-Nix (develop / default package) enables thumtoo via flake input and
-`-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…`.
+Nix default package enables thumtoo (`fetchFromGitHub` pin +
+`-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…`).
 
 Manual CMake:
 
@@ -48,20 +48,26 @@ thumtoo-prepare --tiles /path/to/images…
 ## Runtime
 
 ```bash
-galapix.sdl --thumtoo [files…]
-galapix.sdl --thumtoo --thumtoo-cache ~/.cache/thumtoo [files…]
+# HAVE_THUMTOO builds default to thumtoo for local files:
+galapix.sdl view [files…]
+galapix.sdl view --thumtoo-cache ~/.cache/thumtoo [files…]
+
+# Force legacy SQLite tiles:
+galapix.sdl view --no-thumtoo [files…]
 ```
 
-When `--thumtoo` is set (and `HAVE_THUMTOO` was enabled at build time),
+When thumtoo is enabled (`HAVE_THUMTOO` and not `--no-thumtoo`),
 `ViewerCommand` opens a shared `thumtoo::Client` and uses `ThumtooTileProvider`
 for local files and archive members (Galapix `//rar:` / `//zip:` → thumtoo
 `//archive:`). Falls back to `DatabaseTileProvider` if size probe fails.
 
-Without `--thumtoo`, behaviour is unchanged (SQLite tiles).
+With `--no-thumtoo` (or a build without `HAVE_THUMTOO`), behaviour is the
+historical SQLite tile path.
 
 ## Status
 
 - [x] `ThumtooTileProvider` + URI conversion
 - [x] `--thumtoo` / `--thumtoo-cache` CLI
 - [x] ViewerCommand image-open path
+- [x] Default-on when `HAVE_THUMTOO` (`--no-thumtoo` to disable)
 - [ ] Pure thumtoo mode (no Galapix SQLite tiles at all)

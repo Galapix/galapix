@@ -8,8 +8,8 @@ Galapix ToDo
 * [x] Session default cache root ($XDG_CACHE_HOME/thumtoo)
 * [x] Flake: enable WITH_THUMTOO against thumtoo (tile API commit)
 * [x] Align size probe with Client::drain / get_size after request_size
+* [x] Default-on when HAVE_THUMTOO; `--no-thumtoo` forces SQLite tiles
 * [ ] Replace SQLiteTileDatabase path for pure thumtoo mode
-* [ ] Optional: default to thumtoo when HAVE_THUMTOO without `--thumtoo`
 * [ ] GUI-thread Executor for tile callbacks (today: default inline worker)
 
 Galapix ToDo

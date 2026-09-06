@@ -36,7 +36,12 @@ public:
     patterns(),
     threads(),
     rest(),
+#ifdef HAVE_THUMTOO
+    // Prefer thumtoo tiles when the binary was built with the backend.
+    use_thumtoo(true),
+#else
     use_thumtoo(false),
+#endif
     thumtoo_cache()
   {}
 

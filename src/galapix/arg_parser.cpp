@@ -43,6 +43,8 @@ ArgParser::print_usage()
             << "Options:\n"
             << "  -d, --database FILE    Use FILE has database (default: none)\n"
             << "      --thumtoo          Use thumtoo tile cache for local files\n"
+            << "                         (default when built with HAVE_THUMTOO)\n"
+            << "      --no-thumtoo       Force Galapix SQLite tiles (disable thumtoo)\n"
             << "      --thumtoo-cache DIR  thumtoo cache root (default: ~/.cache/thumtoo)\n"
             << "  -f, --fullscreen       Start in fullscreen mode\n"
             << "  -t, --threads          Number of worker threads (default: 2)\n"
@@ -188,6 +190,10 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
       else if (strcmp(argv[i], "--thumtoo") == 0)
       {
         opts.use_thumtoo = true;
+      }
+      else if (strcmp(argv[i], "--no-thumtoo") == 0)
+      {
+        opts.use_thumtoo = false;
       }
       else if (strcmp(argv[i], "--thumtoo-cache") == 0)
       {
