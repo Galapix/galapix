@@ -136,9 +136,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "tinycmmc": [
-          "tinycmmc"
-        ]
+        "tinycmmc": "tinycmmc"
       },
       "locked": {
         "lastModified": 1763254272,
@@ -341,7 +339,7 @@
           "wstdisplay",
           "nixpkgs"
         ],
-        "tinycmmc": "tinycmmc_2"
+        "tinycmmc": "tinycmmc_3"
       },
       "locked": {
         "lastModified": 1716729375,
@@ -470,7 +468,7 @@
         "sexpcpp": "sexpcpp",
         "strutcpp": "strutcpp",
         "surfcpp": "surfcpp",
-        "tinycmmc": "tinycmmc",
+        "tinycmmc": "tinycmmc_2",
         "uitest": "uitest",
         "wstdisplay": "wstdisplay"
       }
@@ -700,6 +698,31 @@
     "tinycmmc": {
       "inputs": {
         "flake-utils": [
+          "exspcpp",
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "exspcpp",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1762385311,
+        "narHash": "sha256-B3XPPjn9S1YpIZmHyBBbXwaP0JVKBhYvCmNt6oauj+M=",
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "rev": "2ad2d2ab7dce012bb1c9d1dbb8bdb5abd9232ecd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "grumbel",
+        "repo": "tinycmmc",
+        "type": "github"
+      }
+    },
+    "tinycmmc_2": {
+      "inputs": {
+        "flake-utils": [
           "flake-utils"
         ],
         "nixpkgs": [
@@ -720,7 +743,7 @@
         "type": "github"
       }
     },
-    "tinycmmc_2": {
+    "tinycmmc_3": {
       "inputs": {
         "flake-utils": "flake-utils_10",
         "nixpkgs": [

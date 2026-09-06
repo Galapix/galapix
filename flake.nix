@@ -11,11 +11,9 @@
 
     geomcpp.url = "github:grumbel/geomcpp";
     geomcpp.inputs.nixpkgs.follows = "nixpkgs";
-    geomcpp.inputs.tinycmmc.follows = "tinycmmc";
 
     exspcpp.url = "github:grumbel/exspcpp";
     exspcpp.inputs.nixpkgs.follows = "nixpkgs";
-    exspcpp.inputs.tinycmmc.follows = "tinycmmc";
     exspcpp.inputs.flake-utils.follows = "flake-utils";
 
     arxpcpp.url = "github:grumbel/arxpcpp";
@@ -28,42 +26,34 @@
 
     logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
-    logmich.inputs.tinycmmc.follows = "tinycmmc";
 
     priocpp.url = "github:grumbel/priocpp";
     priocpp.inputs.nixpkgs.follows = "nixpkgs";
     priocpp.inputs.flake-utils.follows = "flake-utils";
-    priocpp.inputs.tinycmmc.follows = "tinycmmc";
     priocpp.inputs.logmich.follows = "logmich";
     priocpp.inputs.sexpcpp.follows = "sexpcpp";
 
     sexpcpp.url = "github:lispparser/sexp-cpp";
     sexpcpp.inputs.nixpkgs.follows = "nixpkgs";
     sexpcpp.inputs.flake-utils.follows = "flake-utils";
-    sexpcpp.inputs.tinycmmc.follows = "tinycmmc";
 
     strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
-    strutcpp.inputs.tinycmmc.follows = "tinycmmc";
 
     surfcpp.url = "github:grumbel/surfcpp";
     surfcpp.inputs.nixpkgs.follows = "nixpkgs";
-    surfcpp.inputs.tinycmmc.follows = "tinycmmc";
     surfcpp.inputs.geomcpp.follows = "geomcpp";
     surfcpp.inputs.logmich.follows = "logmich";
 
     uitest.url = "github:grumbel/uitest";
     uitest.inputs.nixpkgs.follows = "nixpkgs";
     uitest.inputs.flake-utils.follows = "flake-utils";
-    uitest.inputs.tinycmmc.follows = "tinycmmc";
 
     babyxml.url = "github:grumbel/babyxml";
     babyxml.inputs.nixpkgs.follows = "nixpkgs";
-    babyxml.inputs.tinycmmc.follows = "tinycmmc";
 
     wstdisplay.url = "github:WindstilleTeam/wstdisplay";
     wstdisplay.inputs.nixpkgs.follows = "nixpkgs";
-    wstdisplay.inputs.tinycmmc.follows = "tinycmmc";
     wstdisplay.inputs.geomcpp.follows = "geomcpp";
     wstdisplay.inputs.babyxml.follows = "babyxml";
     wstdisplay.inputs.surfcpp.follows = "surfcpp";
