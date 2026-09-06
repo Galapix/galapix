@@ -27,9 +27,6 @@ namespace {
 
 char const* gl_error_string(GLenum err)
 {
-#ifndef HAVE_OPENGLES2
-  return reinterpret_cast<char const*>(gluErrorString(err));
-#else
   switch(err)
   {
     case GL_NO_ERROR:
@@ -37,29 +34,22 @@ char const* gl_error_string(GLenum err)
 
     case GL_INVALID_ENUM :
       return "GL_INVALID_ENUM";
-      break;
 
     case GL_INVALID_VALUE :
       return "GL_INVALID_VALUE";
-      break;
 
     case GL_INVALID_OPERATION :
       return "GL_INVALID_OPERATION";
-      break;
 
     case GL_INVALID_FRAMEBUFFER_OPERATION :
       return "GL_INVALID_FRAMEBUFFER_OPERATION";
-      break;
 
     case GL_OUT_OF_MEMORY :
       return "GL_OUT_OF_MEMORY";
-      break;
 
     default:
-      return"unknown OpenGL error";
-      break;
-  };
-#endif
+      return "unknown OpenGL error";
+  }
 }
 
 } // namespace

@@ -15,8 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <gtkmm.h>
-#include <GL/glew.h>
+#include <dlfcn.h>
 
+#include <glad/gl.h>
 #include <logmich/log.hpp>
 #include <wstdisplay/graphics_context.hpp>
 
@@ -105,7 +106,7 @@ GtkViewerWidget::on_create_context()
 
   int major, minor;
   ctx->get_version(major, minor);
-  log_info("OpenGL: {}.{}");
+  log_info("OpenGL: {}.{}", major, minor);
   log_info("OpenGLES: {}", ctx->get_use_es());
 
   viewer->reshape(Size(get_width(), get_height()));
@@ -121,12 +122,12 @@ GtkViewerWidget::on_realize()
 
   make_current();
 
-  GLenum err = glewInit();
-  if (err != GLEW_OK)
-  {
-    std::ostringstream msg;
-    msg << "Display:: Couldn't initialize glew: " << glewGetString(err);
-    throw std::runtime_error(msg.str());
+  // Load GL entry points via glad (same loader stack as wstdisplay/SDL).
+  auto load = [](char const* name) -> GLADapiproc {
+    return reinterpret_cast<GLADapiproc>(dlsym(RTLD_DEFAULT, name));
+  };
+  if (!gladLoadGL(load)) {
+    throw std::runtime_error("Display:: Couldn't initialize glad");
   }
 
   m_gc = std::make_unique<wstdisplay::GraphicsContext>();
