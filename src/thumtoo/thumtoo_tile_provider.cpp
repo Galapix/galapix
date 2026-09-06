@@ -9,6 +9,7 @@
 #include "thumtoo/thumtoo_tile_provider.hpp"
 
 #include <algorithm>
+#include <optional>
 #include <logmich/log.hpp>
 #include <surf/plugins/jpeg.hpp>
 
@@ -25,17 +26,19 @@ namespace galapix {
 
 namespace {
 
-surf::SoftwareSurface surface_from_tile_blob(thumtoo::TileBlob const& tb)
+/** Decode JPEG tile bytes. Returns nullopt on empty payload or decode error.
+ *  SoftwareSurface is not contextual-bool convertible. */
+std::optional<surf::SoftwareSurface> surface_from_tile_blob(thumtoo::TileBlob const& tb)
 {
   if (tb.bytes.empty()) {
-    return {};
+    return std::nullopt;
   }
   Blob blob = Blob::copy(std::span<uint8_t const>(tb.bytes.data(), tb.bytes.size()));
   try {
     return surf::jpeg::load_from_mem(blob);
   } catch (...) {
     log_error("ThumtooTileProvider: JPEG decode failed");
-    return {};
+    return std::nullopt;
   }
 }
 
@@ -127,7 +130,7 @@ ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
       job_handle.set_failed();
       return;
     }
-    callback(Tile(tilescale, pos, surface));
+    callback(Tile(tilescale, pos, *surface));
     job_handle.set_finished();
   };
 
