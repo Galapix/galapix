@@ -168,7 +168,7 @@ DownloadManager::process_curl_data()
         break;
 
       default:
-        log_error("unhandled cURL message: {}", msg->msg);
+        log_error("unhandled cURL message: {}", static_cast<int>(msg->msg));
         break;
     }
   }

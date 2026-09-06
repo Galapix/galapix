@@ -19,6 +19,7 @@
 
 #include <curl/curl.h>
 #include <string>
+#include <cstdint>
 #include <vector>
 
 namespace galapix {

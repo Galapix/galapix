@@ -17,6 +17,7 @@
 #include "galapix/workspace.hpp"
 
 #include <algorithm>
+#include <random>
 #include <iostream>
 
 #include <logmich/log.hpp>
@@ -182,7 +183,7 @@ Workspace::sort_reverse()
 void
 Workspace::random_shuffle()
 {
-  std::random_shuffle(m_images.begin(), m_images.end());
+  std::shuffle(m_images.begin(), m_images.end(), std::mt19937{std::random_device{}()});
   relayout();
 }
 

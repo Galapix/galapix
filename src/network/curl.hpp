@@ -18,6 +18,7 @@
 #define HEADER_GALAPIX_NETWORK_CURL_HPP
 
 #include <string>
+#include <cstdint>
 #include <vector>
 
 namespace galapix {
