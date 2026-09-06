@@ -69,11 +69,10 @@ if(USE_OPENGLES2 OR HAVE_BCMHOST)
     target_link_directories(OpenGL::GL INTERFACE /opt/vc/lib)
   endif()
   add_library(OpenGL::GLU INTERFACE IMPORTED)
-  add_library(GLEW::GLEW INTERFACE IMPORTED)
 else()
   set(OpenGL_GL_PREFERENCE "GLVND")
   find_package(OpenGL REQUIRED)
-  find_package(GLEW REQUIRED)
+  # GL entry points via glad (wstdisplay); do not link GLEW.
 endif()
 
 function(build_dependencies)
@@ -152,7 +151,6 @@ target_link_libraries(libgalapix PUBLIC
   OpenSSL::Crypto
   OpenGL::GL
   OpenGL::GLU
-  GLEW::GLEW
   PkgConfig::SQLITE3
   CURL::libcurl
   Threads::Threads)

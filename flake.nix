@@ -96,7 +96,6 @@
               "-DBUILD_GALAPIX_GTK=ON"
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
-              "-DBUILD_EXTRAS=ON"
               "-DWITH_THUMTOO=ON"
               "-DTHUMTOO_DIR=${thumtooSrc}"
             ];
@@ -126,7 +125,6 @@
               SDL2
               SDL2_image
               curl
-              glew
               imagemagick
               libGL
               libGLU
@@ -142,6 +140,7 @@
               poppler
 
               # Silence pkg-config warnings
+              libsysprof-capture
               pcre
               util-linux
               libselinux
@@ -153,11 +152,11 @@
               libthai
               libdatrie
               libxkbcommon
-              xorg.libXdmcp
+              libxdmcp
               libepoxy
               dbus-glib
               at-spi2-core
-              xorg.libXtst
+              libxtst
             ] ++ [
               tinycmmc.packages.${system}.default
               logmich.packages.${system}.default
@@ -207,7 +206,6 @@
                   -DBUILD_GALAPIX_SDL=ON \
                   -DBUILD_GALAPIX_GTK=ON \
                   -DBUILD_BENCHMARKS=OFF \
-                  -DBUILD_EXTRAS=OFF \
                   -DWITH_THUMTOO=ON \
                   -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}"
               ''
