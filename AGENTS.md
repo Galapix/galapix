@@ -153,7 +153,6 @@ nix develop
 galapix-configure   # cmake -G Ninja -DWITH_THUMTOO=ON …
 galapix-build
 galapix-run /tmp/*.jpg --verbose --debug
-# galapix-run-gtk …   # GTK frontend (abandoned; BUILD_GALAPIX_GTK=OFF)
 # galapix-run-gdb …   # gdb --args galapix-0.3.sdl
 # Override: GALAPIX_BUILD_DIR=… THUMTOO_DIR=… CMAKE_BUILD_TYPE=…
 

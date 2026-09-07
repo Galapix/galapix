@@ -1,11 +1,10 @@
 
-## Gtk3 frontend restored (2026-09-07)
+## GTK removed (2026-09-07) — SDL only
 
-* `Gtk::Application` (no `Gtk::Main`); Builder UI + CSS via `GALAPIX_DATADIR`
-* `Gtk::GLArea` only (dead gtkglext path removed)
-* CMake installs `data/gtk` + `data/icons` under `share/galapix`
-* Flake: `BUILD_GALAPIX_GTK=ON`; `nix run .#galapix_gtk`; wrap sets `GALAPIX_DATADIR`
-* Still incomplete vs SDL (no ImGui, limited keys); for inspection / optional use
+* Deleted `src/gtk/`, `src/main/gtk_main.cpp`, `data/gtk/`
+* CMake: no `BUILD_GALAPIX_GTK` / gtkmm; flake: no `galapix_gtk` app, no gtkmm3
+* **Kept** `data/icons/hicolor/24x24/actions/*.png` (toolbar glyphs from the old UI)
+* Next: repaint as SVG sources, optional PNG at build time, wire into ImGui tool chrome
 
 Galapix ToDo
 ============
@@ -777,7 +776,7 @@ Random Notes
 ### Done this arc (Galapix)
 * Thumtoo flake input (`flake = false` source tree); **no** in-tree `patches/thumtoo-*.patch`
 * Policy: future thumtoo forks → **git subtree**, upstream in batches ([AGENTS.md](AGENTS.md))
-* SDL focus; GTK abandoned (`BUILD_GALAPIX_GTK=OFF`)
+* SDL focus; GTK removed from tree
 * Tile miss: request overview + coarser parent; cancel keeps coarser jobs
 * `ImageOverview` (stdio files, libjpeg scale via `TileGenerator::load_surface`); archives skip overview
 * Console status key **`l`** (stdout); overview counts in `print_state`

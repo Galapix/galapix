@@ -59,7 +59,6 @@ Features
 Required Libraries and Tools:
 -----------------------------
 
-* [gtkmm](http://www.gtkmm.org/en/)
 * [SDL2](https://libsdl.org/)
 * [OpenGL](http://www.opengl.org/)
 * [SQlite3](http://www.sqlite.org/)

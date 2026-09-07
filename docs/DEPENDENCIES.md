@@ -44,7 +44,6 @@ and CMake once a clean build confirms nothing else pulls them in.
 | **gtest** | `BUILD_TESTS` | Not required for the viewer package. |
 | **gbenchmark** | `BUILD_BENCHMARKS` | Flake package may enable; `galapix-configure` defaults OFF. |
 | **uitest** | `BUILD_TESTS` | Test-only. |
-| **gtkmm3** | `BUILD_GALAPIX_GTK` | CMake default **OFF**; flake currently forces **ON**. SDL-only package can omit GTK. |
 | **libspnav** | `find_package(spnav)` | SpaceNavigator; soft-optional. |
 
 ## Feature-sized removals (need product or code work)
@@ -82,7 +81,6 @@ Plus the usual pkg-config “silence” inputs in the flake when `.pc` files sti
 ## Suggested reduction order
 
 1. Remove **libmhash**, **jsoncpp**, **EnTT**, **python3** from flake/CMake; rebuild.
-2. Default package: **SDL only** (`BUILD_GALAPIX_GTK=OFF`), tests/benchmarks off.
 3. Optional build flags for Magick, curl, spnav if a minimal viewer is desired.
 4. Larger projects: optional resource DB, archive via thumtoo, hash without OpenSSL.
 

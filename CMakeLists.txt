@@ -102,7 +102,6 @@ message(STATUS "Galapix version: ${PROJECT_VERSION_FULL} (CMake PROJECT_VERSION=
 include(CheckIncludeFile)
 
 option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
-option(BUILD_GALAPIX_GTK "Build galapix.gtk" OFF)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 option(WITH_THUMTOO "Use thumtoo as tile cache backend" OFF)
@@ -317,27 +316,6 @@ if(BUILD_GALAPIX_SDL)
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
-if(BUILD_GALAPIX_GTK)
-  pkg_search_module(GTKMM REQUIRED gtkmm-3.0 IMPORTED_TARGET)
-
-  file(GLOB LIBGALAPIX_GTK_SOURCES src/gtk/*.cpp)
-  add_library(libgalapix_gtk SHARED ${LIBGALAPIX_GTK_SOURCES})
-  target_compile_options(libgalapix_gtk PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-  target_compile_definitions(libgalapix_gtk PRIVATE -DGALAPIX_GTK)
-  target_link_libraries(libgalapix_gtk PUBLIC
-    libgalapix
-    PkgConfig::GTKMM)
-
-  add_executable(galapix.gtk src/main/gtk_main.cpp)
-  set_target_properties(galapix.gtk PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.gtk")
-  target_compile_options(galapix.gtk PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-  target_compile_definitions(galapix.gtk PRIVATE -DGALAPIX_GTK)
-  target_link_libraries(galapix.gtk PRIVATE libgalapix_gtk)
-
-  install(TARGETS libgalapix_gtk galapix.gtk
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-endif()
 
 # compile extra
 if(BUILD_EXTRA)
@@ -424,8 +402,8 @@ install(FILES
   galapix.desktop
   DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-# GTK UI (Builder XML, CSS, toolbar icons) — used when BUILD_GALAPIX_GTK=ON
-install(DIRECTORY data/gtk data/icons
+# Toolbar/tool icons (PNG for now; planned SVG sources + ImGui)
+install(DIRECTORY data/icons
   DESTINATION ${CMAKE_INSTALL_DATADIR}/galapix)
 
 # EOF #

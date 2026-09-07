@@ -101,22 +101,8 @@
 
             doCheck = false;
 
-            postInstall = ''
-              if [ ! -x "$out/bin/galapix-0.3.gtk" ]; then
-                echo "error: galapix-0.3.gtk missing (BUILD_GALAPIX_GTK?)" >&2
-                exit 1
-              fi
-              wrapProgram "$out/bin/galapix-0.3.gtk" \
-                --set GALAPIX_DATADIR "$out/share/galapix"
-              if [ -x "$out/bin/galapix-0.3.sdl" ]; then
-                wrapProgram "$out/bin/galapix-0.3.sdl" \
-                  --set GALAPIX_DATADIR "$out/share/galapix" || true
-              fi
-            '';
-
             cmakeFlags = [
               "-DBUILD_GALAPIX_SDL=ON"
-              "-DBUILD_GALAPIX_GTK=ON"
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
@@ -138,7 +124,6 @@
               gbenchmark
               glm
               gtest
-              gtkmm3
               jsoncpp
               libexif
               libjpeg
@@ -207,10 +192,6 @@
             exePath = "/bin/galapix-0.3.sdl";
           };
 
-          galapix_gtk = flake-utils.lib.mkApp {
-            drv = packages.galapix;
-            exePath = "/bin/galapix-0.3.gtk";
-          };
         };
 
         # Out-of-tree debug workflow (see biltoo-style helpers).
@@ -230,8 +211,7 @@
                 cmake -S "$GALAPIX_SOURCE" -B "$GALAPIX_BUILD_DIR" -G Ninja \
                   -DCMAKE_BUILD_TYPE="''${CMAKE_BUILD_TYPE:-Debug}" \
                   -DBUILD_GALAPIX_SDL=ON \
-                  -DBUILD_GALAPIX_GTK=ON \
-                  -DBUILD_BENCHMARKS=OFF \
+                                    -DBUILD_BENCHMARKS=OFF \
                   -DWITH_THUMTOO=ON \
                   -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}" \
                   -Wno-dev
@@ -257,18 +237,6 @@
                   exit 1
                 fi
                 # No exec: return to interactive shell when typed by hand.
-                "$bin" "$@"
-              ''
-            );
-            galapixRunGtk = pkgs.writeShellScriptBin "galapix-run-gtk" (
-              galapixDevPreamble
-              + ''
-                galapix-build || exit 1
-                bin="$GALAPIX_BUILD_DIR/galapix-0.3.gtk"
-                if [ ! -x "$bin" ]; then
-                  echo "galapix-run-gtk: $bin missing after build" >&2
-                  exit 1
-                fi
                 "$bin" "$@"
               ''
             );
@@ -300,7 +268,6 @@
               galapixConfigure
               galapixBuild
               galapixRun
-              galapixRunGtk
               galapixRunGdb
             ];
             CMAKE_BUILD_TYPE = "Debug";
@@ -315,7 +282,6 @@
 echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-build         # incremental cmake --build"
               echo "  galapix-run [args]    # build + run galapix-0.3.sdl"
-              echo "  galapix-run-gtk [args]# build + run galapix-0.3.gtk"
               echo "  galapix-run-gdb [args]# build + gdb --args galapix-0.3.sdl"
               echo "  nix build             # packaged RelWithDebInfo-style derivation"
               echo "  also: nix develop -c galapix-run /tmp/*.jpg"

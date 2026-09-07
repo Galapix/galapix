@@ -24,7 +24,7 @@ namespace galapix {
 class Workspace;
 class Options;
 
-/** This is a fudge class to handle differences between Gtk and SDL */
+/** Platform backend (SDL viewer). */
 class System
 {
 public:
