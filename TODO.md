@@ -1,3 +1,8 @@
+## thumtoo-016 Location URI API (2026-09-07)
+
+* Apply **thumtoo-016.bundle** (or newer) for parse_location / list_locators
+* Galapix can adopt helpers gradually; no forced API break this session
+
 ## Dead code candidates after tile removal (2026-09-07)
 
 * Removed unused `DownloadManager` construction from `galapix.cpp` (Zoomify uses
@@ -838,7 +843,8 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-047.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-048.bundle`** (or later). CLI trimmed; viewer default.
+* Thumtoo tip: apply **`thumtoo-016.bundle`** (Location URI API).
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
