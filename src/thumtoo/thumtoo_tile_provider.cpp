@@ -131,7 +131,11 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
   }
 
   // PDF pages can region-render sharper than layout; raster stays at 0.
-  constexpr int kPdfMinLiveTileScale = -4;  // 144 * 16 ≈ 2304 dpi
+  // dpi = kPdfLayoutDpi * 2^{-scale} (thumtoo). Live path is O(tile) memory
+  // so deep zoom is cheap; the previous −4 floor (~2304 dpi) stopped refining
+  // around “one tile ≈ one character”. −8 ≈ 36.8k dpi is well past readable
+  // text; thumtoo does not durable-cache below kPdfMinDurableTileScale (−2).
+  constexpr int kPdfMinLiveTileScale = -8;  // 144 * 256 ≈ 36864 dpi
   int min_scale = 0;
   if (thumtoo::is_pdf_page_uri(uri)) {
     min_scale = kPdfMinLiveTileScale;

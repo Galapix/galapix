@@ -1,3 +1,22 @@
+## PDF live zoom floor raised to scale −8 (2026-09-07) — tip **galapix-064**
+
+`ThumtooTileProvider` clamped PDF `min_scale` at **−4** (≈2304 dpi). Past that
+ImageRenderer kept requesting scale −4 and upscaled tiles — hard ceiling around
+“one tile ≈ one glyph”.
+
+| scale | dpi (layout 144) |
+|------:|-----------------:|
+| 0 | 144 |
+| −2 | 576 (durable floor) |
+| −4 | 2304 (old live floor) |
+| −6 | 9216 |
+| −8 | 36864 (new live floor) |
+
+thumtoo region path has no DPI clamp (full-page fallback still clamps 2400).
+Live memory is O(tile). Change: `kPdfMinLiveTileScale = -8`.
+
+---
+
 ## Live PDF tiles investigation (2026-09-07) — tip **galapix-063**
 
 ### Symptom
@@ -10,7 +29,7 @@ returns **`codec=rgb888`** — stay purple or never refine.
 | Piece | Status |
 |-------|--------|
 | `surface_from_tile_blob` | Branches on `codec == "rgb888"` → RGBA8; else JPEG |
-| `get_min_scale()` | PDF `//page:` → **−4** (2304 dpi); raster stays 0 |
+| `get_min_scale()` | PDF `//page:` → **−8** (was −4; see tip 064) |
 | ImageRenderer scale | `floor(log2(1/(zoom·s)))` + `ldexp` for scale_factor &lt; 1 |
 | Tile grid math | `itilesize = 256 · 2^{scale}` matches thumtoo region geometry |
 | flake.lock thumtoo | Pins tip with live rgb888 + durable floor −2 |
@@ -47,14 +66,14 @@ Cached JPEG hits complete quickly on the first try → rarely hit the race.
   periodic retry or clear-on-zoom-in later.
 * Overview still skips non-stdio URLs (`//page:` has plugin) — intentional;
   grid tiles are the only PDF preview.
-* TODO text previously said min_scale −8; code uses −4 (enough for 2304 dpi).
+* Live floor is now −8 (tip 064); durable store still only ≥ −2 in thumtoo.
 
 ---
 
 ## get_min_scale for PDF negative tiles (2026-09-07)
 
 Not a boolean flag: **`TileProvider::get_min_scale()`** (default 0) is the
-range bound the cache/renderer need. PDF via thumtoo: min_scale = **−4**.
+range bound the cache/renderer need. PDF via thumtoo: min_scale = **−8**.
 ImageRenderer uses float `ldexp` for scale_factor so scale < 0 works.
 
 Pairs with thumtoo-030 region PDF tiles + live rgb888.
