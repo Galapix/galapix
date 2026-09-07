@@ -205,7 +205,6 @@ target_link_libraries(libgalapix PUBLIC
   ${GALAPIX_SPNAV_LIBRARIES}
   OpenGL::GL
   OpenGL::GLU
-  PkgConfig::SQLITE3
   CURL::libcurl
   Threads::Threads)
 

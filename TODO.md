@@ -1,3 +1,10 @@
+## CMake: drop PkgConfig::SQLITE3 from libgalapix (2026-09-07) — tip **galapix-070**
+
+Flake provides sqlite for thumtoo’s own CMake; Galapix must not link
+`PkgConfig::SQLITE3` (find was removed with ResourceDatabase).
+
+---
+
 ## flake: keep sqlite for thumtoo (2026-09-07) — tip **galapix-069**
 
 Removing Galapix SQLiteCpp dropped `sqlite` from flake `buildInputs`, but
