@@ -22,6 +22,8 @@
 
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
+#include "math/size.hpp"
+#include "math/vector2i.hpp"
 
 namespace galapix {
 

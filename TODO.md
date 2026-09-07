@@ -1,3 +1,10 @@
+## Fix includes after ResourceDatabase removal (2026-09-07) — tip **galapix-071**
+
+`Size` / `Math` were previously included transitively via database headers.
+Add direct includes in `tile_provider.hpp` and Mandelbrot translation units.
+
+---
+
 ## CMake: drop PkgConfig::SQLITE3 from libgalapix (2026-09-07) — tip **galapix-070**
 
 Flake provides sqlite for thumtoo’s own CMake; Galapix must not link

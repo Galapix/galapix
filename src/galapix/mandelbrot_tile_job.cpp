@@ -16,6 +16,8 @@
 
 #include "galapix/mandelbrot_tile_job.hpp"
 
+#include "math/math.hpp"
+
 #include <iostream>
 
 #include <surf/color.hpp>

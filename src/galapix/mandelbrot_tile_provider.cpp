@@ -22,6 +22,8 @@
 #include "job/job_manager.hpp"
 #include "galapix/mandelbrot_tile_job.hpp"
 
+#include "math/math.hpp"
+
 namespace galapix {
 
 // 20 is the maximum value allowed on 32bit, larger values will make
