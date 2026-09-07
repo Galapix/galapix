@@ -129,11 +129,17 @@ override the flake input to a checkout that has the fix.
 MIME types in `galapix.desktop` align with `thumtoo::media_mime_types()` plus
 Galapix-only types (SVG, XCF, workspace).
 
-## Library query (future, not Galapix SQL)
+## Library query (`-p` / `--pattern`)
 
-Galapix `-p` / `cache4.sqlite3` resource patterns are transitional. Richer
-listing, filtering, and collection queries should land in **thumtoo** so
-Galapix, biltoo, and dirtoo share one backend. Galapix’s long-term “dataverse”
+`-p` / `--pattern` lists **cache-only** locators via thumtoo
+(`list_locators`, `list_locators_by_outer_path_prefix`, `list_locators_like`)
+and opens matching images with `ThumtooTileProvider`. Patterns:
+
+* `*` — all locators (capped)
+* absolute path or `file://…` — outer_path prefix
+* otherwise SQL LIKE (`%` / `_`); legacy GLOB `*` / `?` are accepted as synonyms
+
+Richer tags/collections remain thumtoo work. Galapix’s long-term “dataverse”
 UI is separate and much later; it should consume thumtoo, not revive cache4.
 
 ## Data retrieval / flexible URIs (future — thumtoo)
@@ -190,9 +196,10 @@ Zoomify remains a separate provider.
 
 ## Session handoff (2026-09-07)
 
-See repository [TODO.md](../TODO.md). Galapix tip **galapix-055**; pair with **thumtoo-024+**.
+See repository [TODO.md](../TODO.md). Galapix tip **galapix-059**; pair with **thumtoo-026+** (locator query).
 
 ## Locator query (thumtoo-026+)
 
 `Client::list_locators_by_uri_prefix` / `list_locators_by_outer_path_prefix` /
-`list_locators_like` — cache-only. Galapix `-p` can migrate here later.
+`list_locators_like` — cache-only. **Galapix `-p` uses these APIs** (see
+ViewerCommand pattern block).

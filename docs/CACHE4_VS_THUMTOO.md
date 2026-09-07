@@ -26,7 +26,7 @@ Galapix opens two SQLite files under the database prefix (`Options::database`):
 
 | File | Role | Pure thumtoo view (`use_thumtoo`) |
 |------|------|----------------------------------|
-| **`cache4.sqlite3`** | **Resource** index: files, URLs, blobs, images, archives, video stubs; pattern search (`-p`); mtime/size | **Still opened** (patterns / optional metadata) |
+| **`cache4.sqlite3`** | **Resource** index: files, URLs, blobs, images, archives, video stubs; mtime/size (pattern search moved to thumtoo) | **Still opened** (optional metadata; patterns use thumtoo) |
 | **`cache4_tiles.sqlite3`** | **Tile** store: 256² JPEG cells keyed by image row + scale + (x,y) | **Not created**; `MemoryTileDatabase` stub only |
 
 `Database::create(prefix)` opens **resource** `cache4.sqlite3` only, plus an
@@ -44,7 +44,7 @@ providers. Galapix SQLite tile generation was removed (Phase 2).
 | Progressive coarser stand-in on miss | Galapix `ImageTileCache` + parent requests | Same cache logic + thumtoo single-scale | Covered on Galapix side |
 | Fast **overview** (not a grid tile) | Historically mixed into gen; now `ImageOverview` + `TileGenerator::load_surface` (libjpeg scale) | Not tile API; Galapix owns overview | **Keep** overview path; not a tile-DB feature |
 | Full-pyramid batch generate | `request_tiles` / multi-scale jobs | `request_tile_pyramid` / `thumtoo-prepare` | Prefer thumtoo CLI |
-| Pattern list (`-p`) / known files | **Resource** DB | Not a substitute | **Keep resource DB** until redesigned |
+| Pattern list (`-p`) / known files | **Resource** DB (legacy, stubs) | `list_locators_*` | **Done:** `-p` uses thumtoo cache |
 | Image size without opening file | `ImageEntry` in resource DB | `get_size` / `request_size` | thumtoo sufficient on pure view |
 | Archive member images | arxp + resource + tiles | libarchive + URI `…//archive:…` | Prefer thumtoo; **arxp** still in tree for `ArchiveThread` |
 | PDF pages | Weak / external tools historically | poppler via thumtoo | Prefer thumtoo |
@@ -63,7 +63,7 @@ providers. Galapix SQLite tile generation was removed (Phase 2).
 
 ### What still needs *some* Galapix DB or equivalent
 
-* **`-p` pattern** and “open from previous index” flows → resource tables.
+* **`-p` pattern** → thumtoo locator list APIs (cache-only).
 * Optional local metadata (mtime checks before regen) → resource tables or replace with thumtoo + filesystem.
 
 ## Code surface (tile side)
@@ -133,10 +133,10 @@ smoke confidence is high.
 
 ### Phase 3 — resource DB slim / replace (thumtoo query)
 
-* **Do not** expand Galapix `-p` / SQL patterns. Better library query belongs in
-  **thumtoo** (shared by viewers and file tools).
-* When thumtoo can list/filter a cache or tree, Galapix becomes a consumer of
-  that API; then drop or hollow out `cache4.sqlite3` resource tables.
+* **`-p` migrated** to thumtoo locator list APIs. Do not grow Galapix SQL
+  patterns further. Tags/collections still belong in thumtoo.
+* Resource `cache4.sqlite3` is no longer required for pattern open; keep only
+  while other metadata consumers remain.
 * Archive: prefer thumtoo URIs; keep arxp only while Galapix `ArchiveThread` remains.
 * **Dataverse** (browsable self-contained corpus UI) is a **much later** Galapix
   product layer on top of thumtoo data — not a reason to keep cache4 SQL.
@@ -151,8 +151,8 @@ smoke confidence is high.
 1. **Tiles:** thumtoo already owns the pure view path; invest in thumtoo gaps
    (single-cell cut, archive coalesce) rather than new cache4 tile features.
 2. **Query / library index:** implement in **thumtoo**, not more Galapix SQL.
-3. **Resource `cache4.sqlite3`:** keep only until thumtoo query replaces `-p`;
-   do not remove in the same change set as tile SQLite (Phase 2).
+3. **Resource `cache4.sqlite3`:** `-p` no longer depends on it; keep only while
+   other metadata consumers remain (do not remove casually).
 4. **Dataverse** vision: defer design; Galapix remains a spatial viewer until then.
 
 ## Related code entry points
