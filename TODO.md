@@ -1,3 +1,10 @@
+## Keyboard shortcuts vs ImGui focus (2026-09-07)
+
+* Bug: after clicking toolbar/Help, Viewer keys (p/z/1–6/…) stopped working
+  until the canvas was clicked again (`WantCaptureKeyboard` stayed true).
+* Fix: do not use `NavEnableKeyboard`; only swallow keys when `WantTextInput`
+  (text fields). Mouse capture unchanged so chrome still blocks pan/zoom.
+
 ## Help panel + clickable shortcuts (2026-09-07)
 
 * Split former **Status / Help** into two panels:

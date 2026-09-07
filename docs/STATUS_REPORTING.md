@@ -42,8 +42,9 @@ v1.91.6). Toggle the whole chrome with **Tab** or **F1**.
   (tools, layouts, selection, cache, debug print). Chrome-only keys (Tab/F1,
   F11 fullscreen, F12 screenshot, Esc quit) and pure mouse bindings are listed
   but not clickable.
-* Input: `WantCaptureMouse` / `WantCaptureKeyboard` gate viewer tools so
-  pan/zoom still work outside ImGui windows.
+* Input: `WantCaptureMouse` gates pan/zoom over chrome. Keyboard is only
+  swallowed when ImGui needs text input (`WantTextInput`); toolbar/Help
+  focus must not block Viewer shortcuts.
 * Application state stays in `Viewer` / `Workspace`; ImGui displays and
   forwards commands — do not bury logic in widgets.
 

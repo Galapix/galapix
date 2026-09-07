@@ -195,7 +195,10 @@ ImguiOverlay::init(SDL_Window* window, SDL_GLContext gl_context)
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
-  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  // Do not enable keyboard nav: it sets WantCaptureKeyboard whenever an
+  // ImGui window is focused (e.g. after a toolbar/help click) and would
+  // swallow Viewer shortcuts until the user clicks the canvas again.
+  io.ConfigFlags &= ~ImGuiConfigFlags_NavEnableKeyboard;
 
   ImGui::StyleColorsDark();
   ImGuiStyle& style = ImGui::GetStyle();
@@ -246,9 +249,14 @@ ImguiOverlay::process_event(SDL_Event const& event)
       event.type == SDL_MOUSEBUTTONUP || event.type == SDL_MOUSEWHEEL) {
     return m_visible && io.WantCaptureMouse;
   }
-  if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP ||
-      event.type == SDL_TEXTINPUT) {
-    return m_visible && io.WantCaptureKeyboard;
+  // Only swallow keyboard when ImGui actually needs text entry (none yet).
+  // WantCaptureKeyboard alone is true after focusing toolbar/help windows and
+  // would block Viewer shortcuts (p/z/1–6/…) until the canvas is re-clicked.
+  if (event.type == SDL_TEXTINPUT) {
+    return m_visible && io.WantTextInput;
+  }
+  if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
+    return m_visible && io.WantTextInput;
   }
   return false;
 }
@@ -570,7 +578,7 @@ ImguiOverlay::want_capture_mouse() const
 bool
 ImguiOverlay::want_capture_keyboard() const
 {
-  return m_initialized && m_visible && ImGui::GetIO().WantCaptureKeyboard;
+  return m_initialized && m_visible && ImGui::GetIO().WantTextInput;
 }
 
 } // namespace galapix
