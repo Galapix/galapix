@@ -112,8 +112,6 @@ std::vector<URL> expand_thumtoo_urls(URL const& url)
 ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
   m_opts(opts),
-  // Resource DB still opened (schema / optional tools). View tiles: thumtoo.
-  m_database(Database::create(opts.database)),
   m_job_manager(opts.threads),
   m_patterns(opts.patterns)
 {
@@ -372,11 +370,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
     }
     else
     {
-      // View path: sizes and tiles come from thumtoo (or empty provider).
-      // ResourceDatabase (cache4.sqlite3) is not consulted — its file/image
-      // rows only mirrored width/height/mtime/sha1, all covered by thumtoo
-      // locators + content. A partial cache4 hit without ImageEntry used to
-      // skip the image entirely; always try the provider instead.
+      // Sizes and tiles from thumtoo (or empty provider).
       if (auto provider = make_file_tile_provider(*i)) {
         workspace.add_image(std::make_shared<Image>(*i, provider, &m_job_manager));
       } else {

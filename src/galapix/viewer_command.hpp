@@ -17,7 +17,6 @@
 #ifndef HEADER_GALAPIX_GALAPIX_VIEWER_COMMAND_HPP
 #define HEADER_GALAPIX_GALAPIX_VIEWER_COMMAND_HPP
 
-#include "database/database.hpp"
 #include "job/job_manager.hpp"
 
 #include "galapix/options.hpp"
@@ -46,9 +45,6 @@ private:
   System& m_system;
   Options m_opts;
 
-  /** Still constructed (opens cache4.sqlite3) so schema stays available;
-      the view path no longer reads ResourceDatabase rows. */
-  Database   m_database;
   JobManager m_job_manager;
   std::vector<std::string> m_patterns;
 

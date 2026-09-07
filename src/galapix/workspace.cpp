@@ -23,7 +23,6 @@
 #include <logmich/log.hpp>
 #include <strut/numeric_less.hpp>
 
-#include "database/entries/old_file_entry.hpp"
 #include "galapix/layouter/random_layouter.hpp"
 #include "galapix/layouter/regular_layouter.hpp"
 #include "galapix/layouter/spiral_layouter.hpp"

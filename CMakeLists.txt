@@ -113,7 +113,6 @@ endif()
 find_package(PkgConfig REQUIRED)
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
-find_package(OpenSSL COMPONENTS Crypto REQUIRED)
 
 find_package(spnav)
 if(SPNAV_FOUND)
@@ -130,7 +129,6 @@ endif()
 # find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
 pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
 
-pkg_search_module(SQLITE3 REQUIRED sqlite3 IMPORTED_TARGET)
 pkg_search_module(SIGCXX REQUIRED sigc++-2.0 IMPORTED_TARGET)
 
 check_include_file(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
@@ -159,11 +157,6 @@ function(build_dependencies)
   endif()
   set(BUILD_TESTS OFF)
 
-  find_package(SQLiteCpp)
-  if(NOT TARGET SQLiteCpp)
-    add_subdirectory(external/SQLiteCpp/ EXCLUDE_FROM_ALL)
-    set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
-  endif()
 
 
   tinycmmc_find_dependency(geom)
@@ -179,22 +172,15 @@ build_dependencies()
 
 # compile libgalapix
 file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-  src/database/*.cpp
-  src/database/entries/*.cpp
-  src/database/tables/*.cpp
   src/galapix/*.cpp
   src/galapix/layouter/*.cpp
-  src/server/*.cpp
-  src/generator/*.cpp
   src/job/*.cpp
   src/jobs/*.cpp
   src/lisp/*.cpp
   src/math/*.cpp
   src/network/*.cpp
   src/plugins/*.cpp
-  src/resource/*.cpp
   src/surface/*.cpp
-  src/sqlite/*.cpp
   src/tools/*.cpp
   src/util/*.cpp)
 add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
@@ -214,11 +200,9 @@ target_link_libraries(libgalapix PUBLIC
   sexp::sexp
   geom::geom
   wstdisplay::wstdisplay
-  SQLiteCpp
   PkgConfig::MAGICKXX
   PkgConfig::SIGCXX
   ${GALAPIX_SPNAV_LIBRARIES}
-  OpenSSL::Crypto
   OpenGL::GL
   OpenGL::GLU
   PkgConfig::SQLITE3

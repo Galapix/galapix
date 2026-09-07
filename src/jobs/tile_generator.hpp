@@ -25,7 +25,6 @@
 
 namespace galapix {
 
-class FileEntry;
 
 class TileGenerator
 {

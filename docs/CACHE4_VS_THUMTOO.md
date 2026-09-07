@@ -3,6 +3,11 @@ SPDX-FileCopyrightText: 2008-2026 Ingo Ruhnke <grumbel@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
+
+> **Status (galapix-068):** Galapix resource `cache4.sqlite3` / ResourceDatabase
+> stack **removed**. Gaps (archive passwords, video aspect, HTTP validators)
+> tracked on **thumtoo** TODO — do not reintroduce cache4 here.
+
 # cache4 vs thumtoo — feature audit and removal plan
 
 Investigation (2026-09-07) for retiring Galapix’s historical **cache4** tile
@@ -163,8 +168,9 @@ current viewer.
 
 * **Removed (galapix-067):** `DatabaseThread`, `FileEntryGenerationJob`,
   `CachedTileDatabase` / `MemoryTileDatabase` / `TileDatabaseInterface`.
-* **Still idle / optional:** `src/generator/` + much of `src/resource/`;
-  `Database`/`ResourceDatabase` still constructed but not read for view.
+* **Removed (galapix-068):** entire ResourceDatabase / cache4 resource index,
+  `src/resource/`, `src/generator/`, SHA1 helper, SQLiteCpp dependency.
+* Gaps (archive passwords, video aspect, HTTP validators) → **thumtoo TODO**.
 * Archive: prefer thumtoo URIs on open; `Filesystem` still uses **arxpcpp** when
   scanning directories. `ArchiveThread` has no remaining callers outside itself.
 * **Dataverse** (browsable self-contained corpus UI) is a **much later** Galapix

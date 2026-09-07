@@ -125,7 +125,6 @@
 
             buildInputs = with pkgs; [
               # Removed (unused by Galapix sources): entt, python3, libmhash, jsoncpp
-              sqlitecpp
               gbenchmark
               glm
               gtest
@@ -133,7 +132,6 @@
               libpng
               libsigcxx
               mesa
-              openssl
 
               SDL2
               SDL2_image
@@ -143,7 +141,6 @@
               libGLU
               # libexif: no direct Galapix refs; drop unless surfcpp needs it at link time
               libspnav
-              sqlite
 
               # thumtoo (via add_subdirectory): vips ladder + JPEG tiles + archives
               vips

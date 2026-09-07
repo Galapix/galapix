@@ -40,7 +40,7 @@ ArgParser::print_usage()
             << "(see thumtoo-prepare and the thumtoo CLI).\n"
             << "\n"
             << "Options:\n"
-            << "  -d, --database FILE    Resource DB prefix (default: ~/.galapix/cache4); tiles use thumtoo\n"
+            << "  -d, --database FILE    Deprecated no-op (resource DB removed; thumtoo owns cache)\n"
             << "      --thumtoo-cache DIR  thumtoo cache root (default: ~/.cache/thumtoo)\n"
             << "                         (tiles always use thumtoo when built with HAVE_THUMTOO)\n"
             << "  -f, --fullscreen       Start in fullscreen mode\n"
@@ -94,6 +94,8 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
         if (i < argc)
         {
           opts.database = argv[i];
+          std::cerr << "Warning: -d/--database is ignored "
+                       "(Galapix resource DB removed; use thumtoo cache)\n";
         }
         else
         {

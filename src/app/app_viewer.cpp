@@ -30,7 +30,6 @@
 #include <wstdisplay/graphics_context.hpp>
 #include <wstdisplay/opengl_window.hpp>
 
-#include "database/entries/old_file_entry.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer_state.hpp"

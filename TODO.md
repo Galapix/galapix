@@ -1,3 +1,28 @@
+## Remove ResourceDatabase / cache4 resource index (2026-09-07) — tip **galapix-068**
+
+### Removed from Galapix
+* `Database` / `ResourceDatabase` and all `src/database/**`
+* `src/sqlite/**`, `src/resource/**`, `src/generator/**` (idle, only served DB)
+* `util/sha1` + OpenSSL Crypto link (only used for cache4 blob ids)
+* SQLiteCpp / sqlite3 package deps from CMake and flake
+* ViewerCommand no longer opens `~/.galapix/cache4`
+* `-d/--database` kept as **deprecated no-op** (warns) for old scripts
+
+### Not removed
+* Workspace `.galapix` files (layout) — independent of cache4
+* arxpcpp directory scan (`Filesystem` / `App::archive`)
+* Overview / `TileGenerator` (stdio soft preview)
+* Zoomify / Mandelbrot
+
+### Unfinished Galapix features → thumtoo TODO
+Documented in **thumtoo** tip notes (thumtoo-034): archive passwords, richer
+video meta, HTTP content-type/validators, avoid resurrecting handler graph.
+
+On-disk `~/.galapix/cache4.sqlite3` is orphaned; safe to delete manually.
+No automatic migration (view path already used thumtoo only).
+
+---
+
 ## Remove idle DatabaseThread + tile stubs (2026-09-07) — tip **galapix-067**
 
 * Dropped `DatabaseThread` from `ViewerCommand` (was start/join only).

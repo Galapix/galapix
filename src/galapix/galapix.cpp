@@ -21,7 +21,6 @@
 #include <string>
 #include <vector>
 
-#include <sqlite3.h>
 #include <Magick++.h>
 
 #include <arxp/archive_manager.hpp>
@@ -80,13 +79,7 @@ Galapix::main(int argc, char** argv)
   {
     Options opts;
     opts.threads  = 2;
-    opts.database = Filesystem::get_home() + "/.galapix/cache4";
     ArgParser::parse_args(argc, argv, opts);
-
-    if (!sqlite3_threadsafe())
-    {
-      raise_runtime_error("Error: SQLite must be compiled with SQLITE_THREADSAFE");
-    }
 
     Magick::InitializeMagick(*argv);
 
@@ -111,8 +104,6 @@ Galapix::main(int argc, char** argv)
 void
 Galapix::run(Options const& opts)
 {
-  std::cout << "Using database: " << (opts.database.empty() ? "memory" : opts.database) << std::endl;
-
   // Subcommands (view / thumbgen / list / cleanup / …) are gone. Non-option
   // arguments are files or URLs. A leading "view" is still accepted for
   // backwards compatibility with old scripts and docs.

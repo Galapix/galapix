@@ -5,21 +5,12 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef HEADER_GALAPIX_GALAPIX_TILE_HPP
 #define HEADER_GALAPIX_GALAPIX_TILE_HPP
 
 #include <surf/software_surface.hpp>
 
-#include "database/entries/tile_entry.hpp"
 #include "math/vector2i.hpp"
 
 namespace galapix {
@@ -32,13 +23,6 @@ public:
     m_pos(),
     m_surface(),
     m_valid(false)
-  {}
-
-  Tile(TileEntry const& tile_entry) :
-    m_scale(tile_entry.get_scale()),
-    m_pos(tile_entry.get_pos()),
-    m_surface(tile_entry.get_surface()),
-    m_valid(tile_entry)
   {}
 
   Tile(int scale, Vector2i const& pos, surf::SoftwareSurface const& surface) :
