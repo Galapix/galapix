@@ -844,7 +844,7 @@ Random Notes
 
 ### Bundles / tips
 * Galapix develop tip: apply **`galapix-048.bundle`** (or later). CLI trimmed; viewer default.
-* Thumtoo tip: apply **`thumtoo-016.bundle`** (Location URI API).
+* Thumtoo tip: apply **`thumtoo-017.bundle`** (Location URI API).
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
