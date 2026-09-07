@@ -37,11 +37,6 @@ public:
   void run(Options const& opts);
   int  main(int argc, char** argv);
 
-  void cleanup(std::string const& database);
-  void list(Options const& opts);
-  void info(Options const& opts);
-  void export_images(std::string const& database, std::vector<URL> const& urls);
-
 private:
   System& m_system;
 
