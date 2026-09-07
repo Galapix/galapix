@@ -321,6 +321,13 @@ foreach(_name ${_galapix_icon_names})
 endforeach()
 
 add_custom_target(galapix_icons ALL DEPENDS ${GALAPIX_ICON_PNGS})
+
+# String path for ImGui icon loader (avoid fragile -DSTRING= macros).
+set(GALAPIX_DEFAULT_DATADIR "${CMAKE_BINARY_DIR}/share/galapix")
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/app/galapix_paths.hpp.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/app/galapix_paths.hpp"
+  @ONLY)
 if(GALAPIX_RSVG_CONVERT)
   message(STATUS "Tool icons: SVG→PNG via ${GALAPIX_RSVG_CONVERT}")
 else()
@@ -348,7 +355,8 @@ target_compile_options(libgalapix_app PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 set_source_files_properties(${IMGUI_SOURCES} PROPERTIES COMPILE_FLAGS "-w")
 target_include_directories(libgalapix_app PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui
-  ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends)
+  ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends
+  ${CMAKE_CURRENT_BINARY_DIR}/src)
 target_link_libraries(libgalapix_app PUBLIC
   libgalapix
   PkgConfig::SDL2
@@ -359,9 +367,6 @@ add_dependencies(galapix galapix_icons)
 target_compile_options(galapix PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 target_compile_definitions(galapix PRIVATE ${GALAPIX_SPNAV_DEFINES})
 target_link_libraries(galapix PRIVATE libgalapix_app)
-# Default icon/data root: build tree share, overridden by GALAPIX_DATADIR env.
-target_compile_definitions(libgalapix_app PRIVATE
-  "GALAPIX_DEFAULT_DATADIR="${CMAKE_BINARY_DIR}/share/galapix"")
 
 install(TARGETS galapix
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

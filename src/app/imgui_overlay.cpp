@@ -8,6 +8,8 @@
 
 #include "app/imgui_overlay.hpp"
 
+#include "app/galapix_paths.hpp"
+
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
