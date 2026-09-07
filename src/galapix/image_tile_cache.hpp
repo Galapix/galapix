@@ -117,6 +117,10 @@ public:
   int m_min_keep_scale;
 
 private:
+  /** Issue a provider request if this cell is not already in the cache.
+      Does not recurse into stand-in requests (unlike request_tile). */
+  void queue_tile_request(int x, int y, int scale);
+
   ImageTileCache(ImageTileCache const&);
   ImageTileCache& operator=(ImageTileCache const&);
 };

@@ -148,6 +148,35 @@ ImageTileCache::get_tile(int x, int y, int scale)
   }
 }
 
+void
+ImageTileCache::queue_tile_request(int x, int y, int scale)
+{
+  if (x < 0 || y < 0 || scale < 0 || scale > m_max_scale) {
+    return;
+  }
+
+  TileCacheId cache_id(Vector2i(x, y), scale);
+  Cache::iterator i = m_cache.find(cache_id);
+
+  bool const need_request =
+    (i == m_cache.end()) ||
+    (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+     i->second.job_handle.is_failed() &&
+     !i->second.surface);
+
+  if (!need_request) {
+    return;
+  }
+
+  JobHandle job_handle = m_tile_provider->request_tile(
+    scale, Vector2i(x, y),
+    weak(std::mem_fn(&ImageTileCache::receive_tile), shared_from_this()));
+
+  m_cache[cache_id] = SurfaceStruct(job_handle,
+                                    SurfaceStruct::SURFACE_REQUESTED,
+                                    wstdisplay::SurfacePtr());
+}
+
 ImageTileCache::SurfaceStruct
 ImageTileCache::request_tile(int x, int y, int scale)
 {
@@ -165,23 +194,19 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
   if (need_request)
   {
-    JobHandle job_handle = m_tile_provider->request_tile(
-      scale, Vector2i(x, y),
-      weak(std::mem_fn(&ImageTileCache::receive_tile), shared_from_this()));
+    // First paint: queue coarser stand-ins before the target so FIFO workers
+    // tend to produce a full-image overview (max_scale) and one parent cell
+    // before the high-res tile. find_smaller_tile can then draw something
+    // while the target is still loading. cancel_jobs keeps coarser requests.
+    if (scale < m_max_scale) {
+      queue_tile_request(0, 0, m_max_scale);
+      queue_tile_request(x / 2, y / 2, scale + 1);
+    }
 
-    // FIXME: Something to try: Request the next smaller tile too,
-    // so we get a lower quality image fast and a higher quality one
-    // soon after FIXME: Its unclear if this actually improves
-    // things, also the order of request gets mungled in the
-    // DatabaseThread, we should request the whole group of lower
-    // res tiles at once, instead of one by one, since that eats up
-    // the possible speed up
+    queue_tile_request(x, y, scale);
 
-    SurfaceStruct surface_struct(job_handle,
-                                 SurfaceStruct::SURFACE_REQUESTED,
-                                 wstdisplay::SurfacePtr());
-    m_cache[cache_id] = surface_struct;
-    return surface_struct;
+    i = m_cache.find(cache_id);
+    return i->second;
   }
   else
   {
@@ -295,12 +320,27 @@ struct TileReqestIsAborted
 void
 ImageTileCache::cancel_jobs(Rect const& rect, int scale)
 {
+  // scale 0 = full resolution, higher = coarser.
+  // Drop obsolete work when the view moves:
+  //  - finer than the current view scale (user zoomed out)
+  //  - same scale but outside the visible tile rect
+  // Keep coarser REQUESTED jobs (scale > view scale): they are stand-ins /
+  // overview while high-res tiles load and are cheap to finish.
   if (!m_cache.empty())
   {
     for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
     {
-      if (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
-          (scale != i->first.get_scale() || !geom::contains(rect, i->first.get_pos())))
+      if (i->second.status != SurfaceStruct::SURFACE_REQUESTED) {
+        ++i;
+        continue;
+      }
+
+      int const job_scale = i->first.get_scale();
+      bool const finer_than_view = job_scale < scale;
+      bool const same_scale_outside =
+        job_scale == scale && !geom::contains(rect, i->first.get_pos());
+
+      if (finer_than_view || same_scale_outside)
       {
         i->second.job_handle.set_aborted();
         m_cache.erase(i++);
