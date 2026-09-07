@@ -27,15 +27,12 @@ thumtoo brings its own stack when `WITH_THUMTOO=ON`: **vips**, **libjxl**,
 
 ## Candidates to drop (low risk)
 
-No Galapix `src/` usage found; safe to remove from the default flake/`buildInputs`
-and CMake once a clean build confirms nothing else pulls them in.
+**Done (2026-09-07):** removed unused **libmhash**, **jsoncpp**, **EnTT**, and
+idle CMake `find_package(Python)` from the default flake/CMake wiring. Hashing
+remains **OpenSSL EVP** (`src/util/sha1.cpp`).
 
-| Dependency | Notes |
-|------------|--------|
-| **libmhash** | Unused. Content hashing uses **OpenSSL EVP** (`src/util/sha1.cpp`). |
-| **jsoncpp** | No includes or link use under `src/`. |
-| **EnTT** | Linked in CMake (`EnTT::EnTT`); no entity/registry usage in `src/`. |
-| **python3** | Only `find_package(Python)` — nothing consumes the interpreter. |
+See [CACHE4_VS_THUMTOO.md](CACHE4_VS_THUMTOO.md) for tile vs resource DB removal
+phases (SQLiteCpp stays until resource DB goes).
 
 ## Optional / already feature-gated
 

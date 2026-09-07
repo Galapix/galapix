@@ -1,3 +1,13 @@
+## cache4 vs thumtoo audit (2026-09-07)
+
+* Full matrix + removal phases: [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md)
+* **Tiles** (`cache4_tiles.sqlite3`): already skipped in pure thumtoo view; legacy
+  path remains for `--no-thumtoo` / non-HAVE_THUMTOO builds
+* **Resource** (`cache4.sqlite3`): still required for `-p` / file index
+* Phase 0 done: deleted dead `FileTileDatabase`; dropped unused libmhash, jsoncpp, EnTT, Python find
+* Next: deprecate `--no-thumtoo` after UI smoke; then Phase 2 delete SQLite tile stack
+* Do **not** delete resource DB in the same change as tiles
+
 ## Keyboard shortcuts vs ImGui focus (2026-09-07)
 
 * Bug: after clicking toolbar/Help, Viewer keys (p/z/1–6/…) stopped working
@@ -790,7 +800,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-036.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-038.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
