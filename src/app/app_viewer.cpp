@@ -283,14 +283,25 @@ AppViewer::process_event(SDL_Event const& event)
       break;
 
     case SDL_MOUSEWHEEL:
-      for(int i = event.wheel.y; i < 0; ++i)
       {
-        m_viewer.get_state().zoom(1.1f, Vector2i(event.button.x, event.button.y));
-      }
-
-      for(int i = event.wheel.y; i > 0; --i)
-      {
-        m_viewer.get_state().zoom(1.0f/1.1f, Vector2i(event.button.x, event.button.y));
+        // SDL_MOUSEWHEEL does not carry coordinates in event.button (union
+        // garbage / zeros → zoom pinned to top-left). Use current pointer.
+        int mx = 0;
+        int my = 0;
+        SDL_GetMouseState(&mx, &my);
+#if SDL_VERSION_ATLEAST(2, 26, 0)
+        if (event.wheel.mouseX != 0 || event.wheel.mouseY != 0) {
+          mx = event.wheel.mouseX;
+          my = event.wheel.mouseY;
+        }
+#endif
+        Vector2i const pos(mx, my);
+        for (int i = event.wheel.y; i < 0; ++i) {
+          m_viewer.get_state().zoom(1.1f, pos);
+        }
+        for (int i = event.wheel.y; i > 0; --i) {
+          m_viewer.get_state().zoom(1.0f / 1.1f, pos);
+        }
       }
       break;
 
