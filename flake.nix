@@ -155,7 +155,8 @@
 
               # Silence pkg-config warnings
               libsysprof-capture
-              pcre
+              pcre2
+              cfitsio
               util-linux
               libselinux
               libsepol
