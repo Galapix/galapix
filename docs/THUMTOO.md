@@ -191,3 +191,8 @@ Zoomify remains a separate provider.
 ## Session handoff (2026-09-07)
 
 See repository [TODO.md](../TODO.md). Galapix tip **galapix-055**; pair with **thumtoo-024+**.
+
+## Locator query (thumtoo-026+)
+
+`Client::list_locators_by_uri_prefix` / `list_locators_by_outer_path_prefix` /
+`list_locators_like` — cache-only. Galapix `-p` can migrate here later.
