@@ -78,9 +78,11 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     return;
   }
 
-  // Prefer paths TileGenerator can open cheaply (stdio JPEG or blob).
-  if (!url.has_stdio_name() && url.get_protocol() != "file") {
-    // Still try — get_blob works for some archive URLs but is expensive.
+  // Cheap path only: local stdio files. Archive members need a coalesced
+  // size+overview pass in thumtoo (libarchive seek is expensive).
+  if (!url.has_stdio_name()) {
+    m_state = State::Failed;
+    return;
   }
 
   m_state = State::Loading;

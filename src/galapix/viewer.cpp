@@ -708,6 +708,13 @@ Viewer::print_state()
     std::cout << "  tiles: pending_requests=" << requests
               << "  pending_uploads=" << uploads
               << "  cache_entries=" << cache_entries << std::endl;
+    int ov_idle = 0, ov_loading = 0, ov_ready = 0, ov_failed = 0;
+    m_workspace->overview_stats(ov_idle, ov_loading, ov_ready, ov_failed);
+    std::cout << "  overview: idle=" << ov_idle
+              << "  loading=" << ov_loading
+              << "  ready=" << ov_ready
+              << "  failed=" << ov_failed
+              << "  (stdio files only; archives skip)" << std::endl;
   } else {
     std::cout << "  workspace: (none)" << std::endl;
   }

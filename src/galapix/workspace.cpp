@@ -249,6 +249,27 @@ Workspace::tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_e
 }
 
 void
+Workspace::overview_stats(int& out_idle, int& out_loading, int& out_ready, int& out_failed) const
+{
+  out_idle = 0;
+  out_loading = 0;
+  out_ready = 0;
+  out_failed = 0;
+  for (auto const& item : m_images) {
+    auto image = std::dynamic_pointer_cast<Image>(item);
+    if (!image) {
+      continue;
+    }
+    switch (image->overview_state()) {
+      case ImageOverview::State::Idle:    ++out_idle; break;
+      case ImageOverview::State::Loading: ++out_loading; break;
+      case ImageOverview::State::Ready:   ++out_ready; break;
+      case ImageOverview::State::Failed:  ++out_failed; break;
+    }
+  }
+}
+
+void
 Workspace::select_images(ImageCollection const& images)
 {
   m_selection->clear();

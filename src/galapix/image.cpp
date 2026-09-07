@@ -156,6 +156,16 @@ Image::print_info() const
               << "  pending uploads: " << m_cache->pending_upload_count()
               << std::endl;
   }
+  if (m_overview) {
+    char const* ov = "idle";
+    switch (m_overview->state()) {
+      case ImageOverview::State::Idle:    ov = "idle"; break;
+      case ImageOverview::State::Loading: ov = "loading"; break;
+      case ImageOverview::State::Ready:   ov = "ready"; break;
+      case ImageOverview::State::Failed:  ov = "failed"; break;
+    }
+    std::cout << "    Overview: " << ov << std::endl;
+  }
 }
 
 int

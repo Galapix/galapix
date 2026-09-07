@@ -70,6 +70,9 @@ public:
 
   ImageOverview& overview() { return *m_overview; }
   ImageOverview const& overview() const { return *m_overview; }
+  ImageOverview::State overview_state() const {
+    return m_overview ? m_overview->state() : ImageOverview::State::Idle;
+  }
   JobManager* job_manager() const { return m_job_manager; }
 
 private:
