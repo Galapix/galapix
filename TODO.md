@@ -1,3 +1,43 @@
+## Obsolete-cruft audit after thumtoo (2026-09-07) — tip **galapix-065**
+
+### Already gone (Phases 0–2)
+`cache4_tiles.sqlite3`, `SQLiteTileDatabase`, `DatabaseTileProvider`,
+`TileGenerationJob` / `MultipleTileGenerationJob`, tile SQL statements/tables,
+`FileTileDatabase`. CMake no longer pulls mhash/jsoncpp/EnTT/Python.
+
+### Applied this tip
+* flake: remove residual **entt**, **python3**, **libexif** from `buildInputs`
+* docs: DEPENDENCIES + CACHE4 Phase 3 inventory of **idle** vs **still live** code
+* options.hpp comment: no legacy SQLite tile path when `HAVE_THUMTOO`
+
+### Still live (do not delete yet)
+| Piece | Why |
+|-------|-----|
+| `cache4.sqlite3` / `ResourceDatabase` | Open path `get_old_file_entry`; optional size cache |
+| `TileGenerator` + `OverviewLoadJob` | Soft stdio overview under tiles |
+| Zoomify / Mandelbrot providers | Non-thumtoo sources |
+| arxpcpp via `Filesystem` / `App::archive` | Directory scan of archives |
+| SQLiteCpp, Magick, curl, OpenSSL | Resource DB / loaders / network / SHA1 |
+
+### Idle call graph (next deletion candidates)
+| Piece | Evidence |
+|-------|----------|
+| `DatabaseThread` | Only `start`/`abort`/`join` from `ViewerCommand`; no `request_*` callers |
+| `FileEntryGenerationJob` | Only reached from that thread; still cuts Galapix tiles into resource DB |
+| `MemoryTileDatabase` / `CachedTileDatabase` | No view-path readers; only `delete_file_entry` → `delete_tiles` |
+| `ArchiveThread` | No external request callers |
+| `src/generator/`, most of `src/resource/` | Not on thumtoo view path |
+
+### Recommended next commits (small, ordered)
+1. Stop constructing/starting `DatabaseThread` when `HAVE_THUMTOO` (or entirely).
+2. Open path: always thumtoo provider when `HAVE_THUMTOO` (skip resource probe).
+3. Delete tile-stub classes + `FileEntryGenerationJob` if still unreferenced.
+4. Later: arxp / resource DB / SQLiteCpp once scans and metadata move fully to thumtoo.
+
+Do **not** remove Magick/curl/arxp in the same pass as (1)–(3); separate product decisions.
+
+---
+
 ## PDF live zoom floor raised to scale −8 (2026-09-07) — tip **galapix-064**
 
 `ThumtooTileProvider` clamped PDF `min_scale` at **−4** (≈2304 dpi). Past that

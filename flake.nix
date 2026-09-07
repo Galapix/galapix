@@ -124,18 +124,16 @@
             ];
 
             buildInputs = with pkgs; [
-              entt
+              # Removed (unused by Galapix sources): entt, python3, libmhash, jsoncpp
               sqlitecpp
               gbenchmark
               glm
               gtest
-              libexif
               libjpeg
               libpng
               libsigcxx
               mesa
               openssl
-              python3
 
               SDL2
               SDL2_image
@@ -143,7 +141,7 @@
               imagemagick
               libGL
               libGLU
-              libexif
+              # libexif: no direct Galapix refs; drop unless surfcpp needs it at link time
               libspnav
               sqlite
 

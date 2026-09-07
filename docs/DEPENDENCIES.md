@@ -15,9 +15,10 @@ Primary packaging is `flake.nix` + `CMakeLists.txt`.
 
 | Area | Backend after thumtoo |
 |------|------------------------|
-| Multi-scale **tiles** (view path) | thumtoo (`HAVE_THUMTOO`) or legacy SQLite tiles (`--no-thumtoo`) |
-| Resource / file index | Still **`cache4.sqlite3`** via SQLiteCpp |
-| Archive collections in Galapix UI | Still **arxpcpp** (`ArchiveThread`) |
+| Multi-scale **tiles** (view path) | **thumtoo only** when `HAVE_THUMTOO` (`--no-thumtoo` rejected) |
+| Resource / file index | Still **`cache4.sqlite3`** via SQLiteCpp (optional size cache on open) |
+| Archive listing when scanning dirs | Still **arxpcpp** (`Filesystem` / `App::archive`) |
+| PDF / archive **open** | thumtoo expands `//page:` / `//archive:` |
 | HTTP(S) / Zoomify download | Still **libcurl** |
 | Broad format decode (XCF, …) | Still **ImageMagick** via surfcpp plugin |
 
@@ -27,9 +28,11 @@ thumtoo brings its own stack when `WITH_THUMTOO=ON`: **vips**, **libjxl**,
 
 ## Candidates to drop (low risk)
 
-**Done (2026-09-07):** removed unused **libmhash**, **jsoncpp**, **EnTT**, and
-idle CMake `find_package(Python)` from the default flake/CMake wiring. Hashing
-remains **OpenSSL EVP** (`src/util/sha1.cpp`).
+**Done (2026-09-07):** CMake no longer finds **libmhash**, **jsoncpp**, **EnTT**,
+or idle **Python**. Hashing remains **OpenSSL EVP** (`src/util/sha1.cpp`).
+
+**Done (galapix-065):** flake `buildInputs` also dropped residual **entt**,
+**python3**, and unused **libexif** (no Galapix source refs).
 
 See [CACHE4_VS_THUMTOO.md](CACHE4_VS_THUMTOO.md) for tile vs resource DB removal
 phases (SQLiteCpp stays until resource DB goes).
@@ -47,14 +50,13 @@ phases (SQLiteCpp stays until resource DB goes).
 
 | Dependency | Tied to | To remove it |
 |------------|---------|----------------|
-| **SQLiteCpp** (+ **sqlite3**) | Resource DB: file/image entries, `-p` patterns, workspace metadata | Redesign or drop `cache4.sqlite3`. **`cache4_tiles.sqlite3` removed** (Phase 2); resource DB remains. |
-| **arxpcpp** | Archive listing/extraction in the Galapix workspace | Drop archive collections or reimplement on thumtoo/libarchive. |
-| **exspcpp** | Not used by Galapix | Transitive **arxpcpp** flake input only; goes away with arxpcpp. |
+| **SQLiteCpp** (+ **sqlite3**) | Resource DB + idle `DatabaseThread` / `MemoryTileDatabase` stub | Drop after open path never touches `get_old_file_entry` and `-p` is thumtoo-only (already is). |
+| **arxpcpp** | `Filesystem` archive scan, `App::archive`, `ArchiveThread` (mostly idle) | Prefer thumtoo archive expand on open; then delete arxp wiring. |
+| **exspcpp** | Transitive of arxpcpp only | Goes away with arxpcpp. |
 | **ImageMagick** / GraphicsMagick | surfcpp `imagemagick` plugin; `Magick::InitializeMagick` | Keep JPEG/PNG via surfcpp; lose Magick-backed formats unless another loader is wired. |
 | **libcurl** | `DownloadManager`, remote URLs, Zoomify | Local-file / thumtoo-only builds can drop network. |
 | **OpenSSL** | `SHA1::from_*` for resource/blob identity | Replace with another SHA-1 (or share thumtoo hashing). |
 | **libGLU** | **wstdisplay** still uses `gluBuild2DMipmaps` on some uploads | Galapix tile path already avoids mipmap upload; full removal needs wstdisplay changes. |
-| **libexif** | No direct Galapix references | Likely residual or surfcpp-related; verify before dropping. |
 
 ## Keep for a normal SDL + thumtoo viewer
 
@@ -77,9 +79,17 @@ Plus the usual pkg-config “silence” inputs in the flake when `.pc` files sti
 
 ## Suggested reduction order
 
-1. Remove **libmhash**, **jsoncpp**, **EnTT**, **python3** from flake/CMake; rebuild.
-3. Optional build flags for Magick, curl, spnav if a minimal viewer is desired.
-4. Larger projects: optional resource DB, archive via thumtoo, hash without OpenSSL.
+1. ~~flake/CMake unused packages~~ (mhash, jsoncpp, EnTT, python3, libexif).
+2. **Dead call graph** (no product behaviour change if careful):
+   - `DatabaseThread` is started/joined but **no viewer code posts jobs** to it.
+   - `FileEntryGenerationJob` still cuts Galapix tiles into the resource DB — only
+     reachable via that idle thread.
+   - `CachedTileDatabase` / `MemoryTileDatabase` only back `Database::get_tiles()`
+     (no view path readers after Phase 2).
+3. Slim open path: with `HAVE_THUMTOO`, skip `get_old_file_entry` and always
+   `ThumtooTileProvider` (resource DB becomes optional for view).
+4. Optional build flags for Magick, curl, spnav if a minimal viewer is desired.
+5. Larger projects: delete resource DB + SQLiteCpp; archive via thumtoo only.
 
 ## Related docs
 

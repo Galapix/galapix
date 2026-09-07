@@ -131,20 +131,31 @@ smoke confidence is high.
 * Builds without `HAVE_THUMTOO` can still open Zoomify/Mandelbrot; plain files
   need thumtoo.
 
-### Phase 3 — resource DB slim / replace (thumtoo query)
+### Phase 3 — resource DB slim / replace (thumtoo query) — **partial**
 
 * **`-p` migrated** to thumtoo locator list APIs. Do not grow Galapix SQL
   patterns further. Tags/collections still belong in thumtoo.
-* Resource `cache4.sqlite3` is no longer required for pattern open; keep only
-  while other metadata consumers remain.
-* Archive: prefer thumtoo URIs; keep arxp only while Galapix `ArchiveThread` remains.
+* Resource `cache4.sqlite3` is no longer required for pattern open.
+* **Open path** still probes `get_old_file_entry` then falls back to thumtoo;
+  with a warm cache4 it can still attach `ImageEntry` sizes (redundant with
+  thumtoo `get_size`).
+* **Idle stack (safe next deletes once smoke-tested):**
+  - `DatabaseThread` — started/joined, **zero** external `request_*` callers
+  - `FileEntryGenerationJob` — legacy tile cut into resource DB
+  - `CachedTileDatabase` / `MemoryTileDatabase` / `TileDatabaseInterface` —
+    only `Database::delete_file_entry` → `delete_tiles` (itself unused from UI)
+  - `src/generator/` + much of `src/resource/` — not on the view path
+* Archive: prefer thumtoo URIs on open; `Filesystem` still uses **arxpcpp** when
+  scanning directories. `ArchiveThread` has no remaining callers outside itself.
 * **Dataverse** (browsable self-contained corpus UI) is a **much later** Galapix
   product layer on top of thumtoo data — not a reason to keep cache4 SQL.
 
 ### Phase 4 — dependency wins after Phase 2–3
 
+* Flake: dropped residual **entt** / **python3** / **libexif** (galapix-065).
 * No immediate Magick/curl removal from tile retirement alone.
-* arxp only if archive UI is thumtoo-only and `ArchiveThread` is gone.
+* arxp only if archive UI is thumtoo-only and `Filesystem` archive scan is gone.
+* SQLiteCpp only after resource DB + idle tile stub are deleted.
 
 ## Recommendation
 
