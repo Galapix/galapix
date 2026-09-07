@@ -699,11 +699,11 @@
     "thumtoo": {
       "flake": false,
       "locked": {
-        "lastModified": 1788804986,
-        "narHash": "sha256-oUTU4NbChacxTBDXlHpIIfecq5ONQIvXVmKdPPIY1Zk=",
+        "lastModified": 1788806915,
+        "narHash": "sha256-0uRS/0ExDoCOFN23AlmpDsd2x1BMkyqXFMIHwjtT/sI=",
         "owner": "Grumbel",
         "repo": "thumtoo",
-        "rev": "d599c8cb65b5fefed305e6fe784040e02f658607",
+        "rev": "32bb12a8e05956ac0eac8ab4849ce2eb17462df8",
         "type": "github"
       },
       "original": {
