@@ -58,6 +58,12 @@ public:
   void cache_cleanup() override;
   void print_info() const override;
 
+  /** Outstanding tile jobs for this image (0 if no cache yet). */
+  int pending_tile_requests() const;
+  /** Decoded tiles waiting for GL upload. */
+  int pending_tile_uploads() const;
+  int tile_cache_entries() const;
+
   void on_leave_screen() override;
 
 private:

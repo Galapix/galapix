@@ -86,8 +86,11 @@ public:
   // Debug stuff
   void clear_cache();
   void cache_cleanup();
-  void print_info(Rectf const& rect) const;
+    void print_info(Rectf const& rect) const;
   void print_images(Rectf const& rect) const;
+
+  /** Aggregate tile job / upload backlog across all images (for status). */
+  void tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_entries) const;
 
   // ---------------------------------------------
   void load(std::string const& filename);

@@ -325,6 +325,24 @@ ImageTileCache::receive_tile(Tile const& tile)
   }
 }
 
+int
+ImageTileCache::pending_request_count() const
+{
+  int n = 0;
+  for (auto const& entry : m_cache) {
+    if (entry.second.status == SurfaceStruct::SURFACE_REQUESTED) {
+      ++n;
+    }
+  }
+  return n;
+}
+
+int
+ImageTileCache::pending_upload_count() const
+{
+  return m_tile_queue.size();
+}
+
 } // namespace galapix
 
 /* EOF */

@@ -94,6 +94,15 @@ public:
 
   int get_max_scale() const { return m_max_scale; }
 
+  /** Tiles with an outstanding provider job (SURFACE_REQUESTED). */
+  int pending_request_count() const;
+
+  /** Decoded tiles waiting for OpenGL upload (m_tile_queue). */
+  int pending_upload_count() const;
+
+  /** Entries currently held in the surface cache (any status). */
+  int cache_entry_count() const { return static_cast<int>(m_cache.size()); }
+
 public:
   Cache m_cache;
 

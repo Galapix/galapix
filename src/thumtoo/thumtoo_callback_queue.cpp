@@ -43,6 +43,12 @@ ThumtooCallbackQueue::pump()
   }
 }
 
+int
+ThumtooCallbackQueue::size() const
+{
+  return m_queue.size();
+}
+
 } // namespace galapix
 
 /* EOF */

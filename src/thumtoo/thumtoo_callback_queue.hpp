@@ -33,6 +33,9 @@ public:
   /** Run all queued callbacks on the calling thread (viewer/main). */
   void pump();
 
+  /** Number of callbacks waiting for pump() (0 with default inline executor). */
+  int size() const;
+
 private:
   ThumtooCallbackQueue() = default;
 

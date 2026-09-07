@@ -232,6 +232,23 @@ Workspace::print_images(Rectf const& rect) const
 }
 
 void
+Workspace::tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_entries) const
+{
+  out_requests = 0;
+  out_uploads = 0;
+  out_cache_entries = 0;
+  for (auto const& item : m_images) {
+    auto image = std::dynamic_pointer_cast<Image>(item);
+    if (!image) {
+      continue;
+    }
+    out_requests += image->pending_tile_requests();
+    out_uploads += image->pending_tile_uploads();
+    out_cache_entries += image->tile_cache_entries();
+  }
+}
+
+void
 Workspace::select_images(ImageCollection const& images)
 {
   m_selection->clear();

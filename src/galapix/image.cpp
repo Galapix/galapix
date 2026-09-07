@@ -139,8 +139,30 @@ void
 Image::print_info() const
 {
   std::cout << "  Image: " << this << std::endl;
-  //std::cout << "    Cache Size: " << m_cache.size() << std::endl;
-  //std::cout << "    Job Size:   " << m_jobs.size() << std::endl;
+  if (m_cache) {
+    std::cout << "    Tile cache entries: " << m_cache->cache_entry_count()
+              << "  pending requests: " << m_cache->pending_request_count()
+              << "  pending uploads: " << m_cache->pending_upload_count()
+              << std::endl;
+  }
+}
+
+int
+Image::pending_tile_requests() const
+{
+  return m_cache ? m_cache->pending_request_count() : 0;
+}
+
+int
+Image::pending_tile_uploads() const
+{
+  return m_cache ? m_cache->pending_upload_count() : 0;
+}
+
+int
+Image::tile_cache_entries() const
+{
+  return m_cache ? m_cache->cache_entry_count() : 0;
 }
 
 URL

@@ -693,7 +693,19 @@ Viewer::print_info()
 void
 Viewer::print_state()
 {
-  log_info("{} {}", m_state.get_offset(), m_state.get_scale());
+  log_info("view offset={} scale={}", m_state.get_offset(), m_state.get_scale());
+  if (m_workspace) {
+    int requests = 0;
+    int uploads = 0;
+    int cache_entries = 0;
+    m_workspace->tile_load_stats(requests, uploads, cache_entries);
+    log_info("tiles: pending_requests={} pending_uploads={} cache_entries={}",
+             requests, uploads, cache_entries);
+  }
+#if defined(HAVE_THUMTOO)
+  log_info("thumtoo callback queue size={}",
+           ThumtooCallbackQueue::instance().size());
+#endif
 }
 
 void
