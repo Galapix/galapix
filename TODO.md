@@ -1,3 +1,7 @@
+## thumtoo-018 read_source_bytes (2026-09-07)
+
+* Source bytes by location or content-id (file/archive); not PDF/http yet
+
 ## thumtoo-016 Location URI API (2026-09-07)
 
 * Apply **thumtoo-016.bundle** (or newer) for parse_location / list_locators
@@ -844,7 +848,7 @@ Random Notes
 
 ### Bundles / tips
 * Galapix develop tip: apply **`galapix-048.bundle`** (or later). CLI trimmed; viewer default.
-* Thumtoo tip: apply **`thumtoo-017.bundle`** (Location URI API).
+* Thumtoo tip: apply **`thumtoo-018.bundle`** (Location URI API).
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)

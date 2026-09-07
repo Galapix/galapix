@@ -162,7 +162,8 @@ archive paths, but new work should prefer extending thumtoo URIs.
 **thumtoo-016+:** `parse_location` / `format_location`, nested pipes.
 **thumtoo-017+:** `Client::resolve_content_id`, `list_uris_for_content_id`,
 `get_meta("sha256:…")` — content-id as URI (cache only). Network fetch and
-content-id → source bytes still future.
+**thumtoo-018+:** `Client::read_source_bytes` for file/archive (and via content-id).
+PDF pages and http(s) fetch still future.
 
 ## Live / procedural tiles (future — thumtoo)
 
