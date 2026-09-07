@@ -104,6 +104,12 @@ size checks) after decode.
   worthwhile future optimization in wstdisplay + ImageRenderer; not required
   for correctness. Prefer fixing seams/filters first.
 
+## thumtoo patches
+
+`patches/thumtoo-request-tile-single-scale.patch` is applied in `flake.nix` via
+`applyPatches` so interactive `request_tile` builds only the requested scale
+(not a full pyramid). Prefer upstreaming to thumtoo when possible.
+
 ## Version
 
 `VERSION` holds the base (e.g. `0.3.0-dev`). CMake and the flake append

@@ -342,3 +342,29 @@ work on Client worker threads instead of serializing drain boundaries.
 - Defer size until first layout / first visible image (open viewer immediately).
 - Header-only JPEG size (SOF) without full content-id hash when acceptable.
 - Do not SHA1 whole files on Galapix open path for pure thumtoo view.
+
+
+## Implementation status (Galapix develop)
+
+| Item | Status |
+|------|--------|
+| No interactive full-pyramid on tile miss | **Patched** in-tree: `patches/thumtoo-request-tile-single-scale.patch` sets `tile_max_scale = scale` (still encodes all cells at that scale after shrink chain) |
+| `request_tile_pyramid` / prepare for batch | Unchanged (explicit batch OK) |
+| Missing tile → coarser tile | Present (`find_smaller_tile`) |
+| Fast overview ≠ tile store | **Not done** — need separate overview layer |
+| libjpeg / EXIF overview | **Not done** |
+| Archive same-member coalesce | **Not done** (thumtoo) |
+| Single **cell** only (not full scale grid) | **Not done** (thumtoo cut API) |
+| Drop Galapix SQLite tile DB | Pure thumtoo view already skips `cache4_tiles`; resource DB remains for patterns / metadata |
+
+### Feature gaps vs old Galapix tile cache (spirit)
+
+| Old Galapix | thumtoo (+ patch) | Gap? |
+|-------------|-------------------|------|
+| Per-scale generation with progressive jobs | Single-scale on demand | Smaller gap after patch |
+| libjpeg 1/2/4/8 overview | — | **Yes** — overview path |
+| SQLite tile identity (SHA1) | sha256 content id | Fine (improved) |
+| Archive browse via arxp | libarchive in thumtoo | Coalesce / seek still weak |
+| `prepare` CLI | `thumtoo-prepare` | Policy: use thumtoo |
+
+Galapix legacy **tile** tables can stay unused in pure thumtoo mode; do not invest in new SQLite tile features.

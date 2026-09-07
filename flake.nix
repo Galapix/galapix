@@ -67,11 +67,17 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         # thumtoo Phase 4 grid tiles (get_tile / request_tile).
-        thumtooSrc = pkgs.fetchFromGitHub {
+        thumtooUnpatched = pkgs.fetchFromGitHub {
           owner = "Grumbel";
           repo = "thumtoo";
           rev = "8fe7e9f63cd74ad58d9d2c28f312fc2ccceaef53";
           hash = "sha256-fE5S9OpkGSnohhlAQdejw9aAlfKU2t5VEMQaDO3P43o=";
+        };
+        # Interactive request_tile: only requested scale (not full pyramid).
+        thumtooSrc = pkgs.applyPatches {
+          name = "thumtoo-single-scale";
+          src = thumtooUnpatched;
+          patches = [ ./patches/thumtoo-request-tile-single-scale.patch ];
         };
         # Match biltoo: VERSION file + flake revCount/shortRev (not git-describe).
         versionBase = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./VERSION);

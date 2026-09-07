@@ -39,7 +39,8 @@ Make **develop** the branch that becomes **master**. See
 * [x] Offload tile JPEG decode off GUI; limit GL uploads per frame
 * [x] Batch thumtoo size probes at view open (Processing URLs)
 * [ ] Tile load policy ([docs/TILE_LOADING.md](docs/TILE_LOADING.md)): no interactive pyramid batch; overview ≠ tiles; archive coalesce
-* [ ] thumtoo: single-tile generation; optional same-archive request coalesce
+* [x] thumtoo: single-scale on request_tile (in-tree patch; not full pyramid)
+* [ ] thumtoo: single-cell cut + same-archive request coalesce (upstream)
 * [ ] Fast overview path (libjpeg/EXIF) with separate cache identity
 * [ ] Benchmark: split vs merged size+overview for archive members
 * [ ] Optional: texture array / atlas batching for fewer draw calls
