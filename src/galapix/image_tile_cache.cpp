@@ -172,13 +172,10 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
   TileCacheId cache_id(Vector2i(x, y), scale);
   Cache::iterator i = m_cache.find(cache_id);
 
-  bool const need_request =
-    (i == m_cache.end()) ||
-    (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
-     i->second.job_handle.is_failed() &&
-     !i->second.surface);
-
-  if (!need_request) {
+  // Only start a new job for unknown cells. Failed jobs are left as-is so a
+  // permanent provider miss (e.g. bad PDF page) does not re-burn CPU every
+  // frame; cancel_jobs / clear will drop them when the view moves on.
+  if (i != m_cache.end()) {
     return;
   }
 
@@ -198,34 +195,26 @@ ImageTileCache::request_tile(int x, int y, int scale)
 
   Cache::iterator i = m_cache.find(cache_id);
 
-  // Re-request when a previous attempt failed (e.g. scale outside provider
-  // range before max_scale was fixed, or transient decode error).
-  bool const need_request =
-    (i == m_cache.end()) ||
-    (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
-     i->second.job_handle.is_failed() &&
-     !i->second.surface);
-
-  if (need_request)
-  {
-    // First paint: queue coarser stand-ins before the target so FIFO workers
-    // tend to produce a full-image overview (max_scale) and one parent cell
-    // before the high-res tile. find_smaller_tile can then draw something
-    // while the target is still loading. cancel_jobs keeps coarser requests.
-    if (scale < m_max_scale) {
-      queue_tile_request(0, 0, m_max_scale);
-      queue_tile_request(x / 2, y / 2, scale + 1);
-    }
-
-    queue_tile_request(x, y, scale);
-
-    i = m_cache.find(cache_id);
+  if (i != m_cache.end()) {
     return i->second;
   }
-  else
-  {
+
+  // First paint: queue coarser stand-ins before the target so FIFO workers
+  // tend to produce a full-image overview (max_scale) and one parent cell
+  // before the high-res tile. find_smaller_tile can then draw something
+  // while the target is still loading. cancel_jobs keeps coarser requests.
+  if (scale < m_max_scale) {
+    queue_tile_request(0, 0, m_max_scale);
+    queue_tile_request(x / 2, y / 2, scale + 1);
+  }
+
+  queue_tile_request(x, y, scale);
+
+  i = m_cache.find(cache_id);
+  if (i != m_cache.end()) {
     return i->second;
   }
+  return SurfaceStruct();
 }
 
 void

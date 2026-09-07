@@ -97,7 +97,7 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
 
   // PDF pages (and similar) can region-render sharper than layout size.
   // Soft floor only — each tile is still ≤256²; not a full-page RAM cap.
-  constexpr int kPdfMinTileScale = -8;
+  constexpr int kPdfMinTileScale = -4;  // 144*16 ≈ 2304 dpi
   int min_scale = 0;
   if (thumtoo::is_pdf_page_uri(uri)) {
     min_scale = kPdfMinTileScale;
