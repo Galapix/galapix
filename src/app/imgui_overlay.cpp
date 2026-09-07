@@ -513,6 +513,7 @@ ImguiOverlay::draw_help_panel(Viewer& viewer)
     action_row("Up / Down", "Reset view rotation", [&] { viewer.reset_view_rotation(); });
     info_row("Numpad 8/2/4/6", "Nudge view");
     info_row("Numpad +/-", "Zoom in/out (center)");
+    info_row("v", "Tile debug overlay (green/cyan/yellow/red)");
     info_row("F11", "Toggle fullscreen");
     action_row("t", "Toggle trackball mode", [&] { viewer.toggle_trackball_mode(); });
 

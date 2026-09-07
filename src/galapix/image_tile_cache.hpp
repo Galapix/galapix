@@ -61,11 +61,15 @@ public:
 
     SurfaceStruct(JobHandle const& job_handle_,
                   Status status_,
-                  wstdisplay::SurfacePtr surface_) :
+                  wstdisplay::SurfacePtr surface_,
+                  int attempts_ = 1) :
       job_handle(job_handle_),
       status(status_),
-      surface(std::move(surface_))
+      surface(std::move(surface_)),
+      attempts(attempts_)
     {}
+
+    int attempts = 0;
   };
 
 private:
@@ -97,6 +101,9 @@ public:
 
   int get_max_scale() const { return m_max_scale; }
   int get_min_scale() const { return m_min_scale; }
+
+  static void set_tile_debug(bool on) { s_tile_debug = on; }
+  static bool tile_debug() { return s_tile_debug; }
 
   /** Tiles with an outstanding provider job (SURFACE_REQUESTED). */
   int pending_request_count() const;
@@ -130,6 +137,8 @@ private:
 
   ImageTileCache(ImageTileCache const&);
   ImageTileCache& operator=(ImageTileCache const&);
+
+  static bool s_tile_debug;
 };
 
 } // namespace galapix

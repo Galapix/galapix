@@ -51,16 +51,16 @@ void
 ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scale, float zoom)
 {
   ImageTileCache::SurfaceStruct sstruct = m_cache->request_tile(x, y, scale);
+  Rectf const tile_rect(get_vertex(x,   y,   zoom),
+                        get_vertex(x+1, y+1, zoom));
   if (sstruct.surface)
   {
-    sstruct.surface->draw(gc, Rectf(get_vertex(x,   y,   zoom),
-                                    get_vertex(x+1, y+1, zoom)));
+    sstruct.surface->draw(gc, tile_rect);
 
-    if ((false))
-    { // draw debug rectangle that shows tiles
-      gc.draw_rect(Rectf(get_vertex(x,   y,   zoom) + geom::fsize(zoom, zoom) * 8.0f,
-                         get_vertex(x+1, y+1, zoom) - geom::fsize(zoom, zoom) * 8.0f),
-                   surf::Color::from_rgb888(255, 0, 255));
+    if (ImageTileCache::tile_debug())
+    {
+      // Green: pixel data at the requested scale is on screen.
+      gc.draw_rect(tile_rect, surf::Color::from_rgb888(0, 220, 0));
     }
   }
   else // tile not found, so find a replacement
@@ -87,9 +87,11 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
                                  geom::fpoint(std::min(subsection.right(),  surface->get_width()),
                                               std::min(subsection.bottom(), surface->get_height())));
 
-        surface->draw(gc, subsection,
-                      Rectf(get_vertex(x,   y,   zoom),
-                            get_vertex(x+1, y+1, zoom)));
+        surface->draw(gc, subsection, tile_rect);
+        if (ImageTileCache::tile_debug()) {
+          // Cyan: showing coarser stand-in (not the requested scale) — upscaled.
+          gc.draw_rect(tile_rect, surf::Color::from_rgb888(0, 200, 255));
+        }
       }
       else // draw replacement rect when no tile could be loaded
       {

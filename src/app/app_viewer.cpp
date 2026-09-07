@@ -32,6 +32,7 @@
 
 #include "database/entries/old_file_entry.hpp"
 #include "galapix/viewer.hpp"
+#include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
 #include "server/database_thread.hpp"
@@ -485,6 +486,16 @@ AppViewer::process_event(SDL_Event const& event)
 
         case SDLK_c:
           m_viewer.clear_cache();
+          break;
+
+        case SDLK_v:
+          {
+            bool on = !galapix::ImageTileCache::tile_debug();
+            galapix::ImageTileCache::set_tile_debug(on);
+            std::cout << "Tile debug: " << (on ? "ON" : "OFF")
+                      << " (green=at requested scale, cyan=upscaled stand-in, "
+                      << "yellow=loading, red=failed)\n";
+          }
           break;
 
         case SDLK_F5:

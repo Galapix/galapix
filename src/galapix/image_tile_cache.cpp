@@ -35,6 +35,8 @@
 
 namespace galapix {
 
+bool ImageTileCache::s_tile_debug = false;
+
 namespace {
 
 /** Pad a partial edge tile to tile_size² by repeating the last row/column
@@ -172,11 +174,19 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
   TileCacheId cache_id(Vector2i(x, y), scale);
   Cache::iterator i = m_cache.find(cache_id);
 
-  // Only start a new job for unknown cells. Failed jobs are left as-is so a
-  // permanent provider miss (e.g. bad PDF page) does not re-burn CPU every
-  // frame; cancel_jobs / clear will drop them when the view moves on.
+  constexpr int kMaxTileAttempts = 3;
+  int next_attempts = 1;
   if (i != m_cache.end()) {
-    return;
+    // Retry failed cells a few times (PDF region render can flake), then stop.
+    if (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+        i->second.job_handle.is_failed() &&
+        !i->second.surface &&
+        i->second.attempts < kMaxTileAttempts) {
+      next_attempts = i->second.attempts + 1;
+      m_cache.erase(i);
+    } else {
+      return;
+    }
   }
 
   JobHandle job_handle = m_tile_provider->request_tile(
@@ -185,7 +195,8 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
 
   m_cache[cache_id] = SurfaceStruct(job_handle,
                                     SurfaceStruct::SURFACE_REQUESTED,
-                                    wstdisplay::SurfacePtr());
+                                    wstdisplay::SurfacePtr(),
+                                    next_attempts);
 }
 
 ImageTileCache::SurfaceStruct
