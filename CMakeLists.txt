@@ -285,8 +285,22 @@ if(BUILD_GALAPIX_SDL)
 
   file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
   list(APPEND LIBGALAPIX_SDL_SOURCES ${GALAPIX_SPNAV_SOURCES})
+  # Dear ImGui (vendored) — pure OpenGL chrome overlay for the SDL viewer.
+  set(IMGUI_SOURCES
+    external/imgui/imgui.cpp
+    external/imgui/imgui_draw.cpp
+    external/imgui/imgui_tables.cpp
+    external/imgui/imgui_widgets.cpp
+    external/imgui/backends/imgui_impl_sdl2.cpp
+    external/imgui/backends/imgui_impl_opengl3.cpp)
+  list(APPEND LIBGALAPIX_SDL_SOURCES ${IMGUI_SOURCES})
   add_library(libgalapix_sdl STATIC ${LIBGALAPIX_SDL_SOURCES})
   target_compile_options(libgalapix_sdl PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+  # ImGui is third-party; do not apply project warning flags to it.
+  set_source_files_properties(${IMGUI_SOURCES} PROPERTIES COMPILE_FLAGS "-w")
+  target_include_directories(libgalapix_sdl PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui
+    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends)
   target_link_libraries(libgalapix_sdl PUBLIC
     libgalapix
     PkgConfig::SDL2)

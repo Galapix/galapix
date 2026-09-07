@@ -106,10 +106,17 @@ SDLViewer::SDLViewer(Size const& size, bool fullscreen, int  anti_aliasing,
     m_viewer.reshape(size);
   });
   m_viewer.reshape(m_window->get_size());
+
+  SDL_Window* sdl_window = SDL_GetWindowFromID(m_window->get_id());
+  SDL_GLContext glctx = SDL_GL_GetCurrentContext();
+  if (!m_imgui.init(sdl_window, glctx)) {
+    log_warn("ImGui overlay init failed; continuing without HUD");
+  }
 }
 
 SDLViewer::~SDLViewer()
 {
+  m_imgui.shutdown();
   for(SDL_GameController* gamecontroller: m_gamecontrollers)
   {
     SDL_GameControllerClose(gamecontroller);
@@ -119,6 +126,17 @@ SDLViewer::~SDLViewer()
 void
 SDLViewer::process_event(SDL_Event const& event)
 {
+  // F1 always toggles chrome, even when ImGui wants keyboard focus.
+  if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F1) {
+    m_imgui.toggle();
+    return;
+  }
+
+  // Feed ImGui; skip viewer handling when it wants capture.
+  if (m_imgui.process_event(event)) {
+    return;
+  }
+
   Uint8 const* keystate = SDL_GetKeyboardState(nullptr);
 
   switch(event.type)
@@ -635,6 +653,9 @@ SDLViewer::run()
 
       m_viewer.update(delta);
       m_viewer.draw(m_window->get_gc());
+      m_imgui.begin_frame();
+      m_imgui.draw_status(m_viewer);
+      m_imgui.end_frame();
     }
     else
     {
@@ -648,6 +669,9 @@ SDLViewer::run()
       // FIXME: We should try to detect if we need a redraw and
       // only draw then, else we will redraw on each mouse motion
       m_viewer.draw(m_window->get_gc());
+      m_imgui.begin_frame();
+      m_imgui.draw_status(m_viewer);
+      m_imgui.end_frame();
       ticks = SDL_GetTicks();
     }
 

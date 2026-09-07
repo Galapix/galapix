@@ -20,6 +20,8 @@
 #include <SDL.h>
 #include <memory>
 
+#include "sdl/imgui_overlay.hpp"
+
 #include <wstdisplay/opengl_window.hpp>
 #include <wstsystem/fwd.hpp>
 
@@ -59,6 +61,8 @@ private:
   bool m_quit;
   bool m_fullscreen;
   bool m_spnav_allow_rotate;
+
+  ImguiOverlay m_imgui;
 
   std::vector<SDL_GameController*> m_gamecontrollers;
 
