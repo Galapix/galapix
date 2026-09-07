@@ -38,6 +38,12 @@
 #include <arxp/zip.hpp>
 #include <logmich/log.hpp>
 #include <surf/software_surface.hpp>
+
+#ifdef HAVE_THUMTOO
+#  include <thumtoo/archive.hpp>
+#  include <thumtoo/pdf.hpp>
+#endif
+
 #include <surf/software_surface_factory.hpp>
 
 #include "galapix/app.hpp"
@@ -377,6 +383,15 @@ Filesystem::generate_image_file_list(std::string const& pathname, std::vector<UR
         {
           file_list.push_back(url);
         }
+#ifdef HAVE_THUMTOO
+        // PDF pages / archive members are expanded later in ViewerCommand when
+        // thumtoo is enabled. surface_factory only knows raster formats.
+        else if (thumtoo::is_likely_pdf_path(*i) ||
+                 thumtoo::is_likely_archive_path(*i))
+        {
+          file_list.push_back(url);
+        }
+#endif
         else
         {
           //log_debug << "Filesystem::generate_image_file_list(): ignoring " << *i << std::endl;
