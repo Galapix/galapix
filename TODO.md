@@ -1,3 +1,12 @@
+## Fix gallery LOD gate (2026-09-07) — tip **galapix-086**
+
+screen_long*zoom LOD never tripped; gallery already used the one-tile branch
+(`scaled_width < 256`) which still called `draw_tile` → 1064 requests / ~3s.
+
+Now that branch is overview-first (wait / ready); tile only if overview Failed.
+
+---
+
 ## Gallery LOD: overview-only under 256px on screen (2026-09-07) — tip **galapix-085**
 
 When long edge on screen &lt; 256px:

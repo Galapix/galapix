@@ -153,33 +153,6 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
       m_image.get_original_height());
     m_image.overview().draw(gc, image_rect);
 
-    // On-screen size: image_rect is world space; zoom is ViewerState scale
-    // applied via the modelview (same factor as screen2world).
-    float const screen_long =
-      std::max(image_rect.width(), image_rect.height()) * zoom;
-
-    // Gallery / far zoom: soft overview is enough. Only skip the tile pyramid
-    // when overview is drawable — never leave a black rect while Loading/Failed.
-    // Measured: 1064 warm max_scale tile requests took ~3s; this avoids that
-    // stampede when thumbs are small on screen.
-    constexpr float kOverviewOnlyScreenPx = 256.0f;
-    if (screen_long < kOverviewOnlyScreenPx) {
-      auto const& ov = m_image.overview();
-      if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
-        return true;
-      }
-      // Idle/Loading: wait for soft overview; do not also enqueue 1000 tile
-      // jobs (that was the ~3s warm-cache fill). Failed: one coarse tile.
-      if (ov.state() != ImageOverview::State::Failed) {
-        return true;
-      }
-      int const coarse = m_cache->get_max_scale();
-      float const scale_factor = std::ldexp(1.0f, coarse);
-      m_cache->cancel_jobs(Rect(0, 0, 1, 1), coarse);
-      draw_tile(gc, 0, 0, coarse, scale_factor * m_image.get_scale());
-      return true;
-    }
-
     // scale factor for requesting tiles: scale 0 = nominal size; negative =
     // denser than layout (PDF). Raster providers report min_scale == 0.
     // floor so zooming in switches to sharper (more negative) scales promptly;
@@ -200,7 +173,18 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
     float const scaled_height = static_cast<float>(m_image.get_original_height()) / scale_factor;
 
     if (scaled_width  < 256.0f && scaled_height < 256.0f)
-    { // So small that only one tile is to be drawn
+    {
+      // Whole image fits in one grid cell at the view scale (typical gallery
+      // / fit-all). Prefer soft overview — do not enqueue a thumtoo tile per
+      // image (1064 warm requests was ~3s). Same geometry as this branch
+      // always used; the previous screen_px LOD never matched.
+      auto const& ov = m_image.overview();
+      if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
+        return true;
+      }
+      if (ov.state() != ImageOverview::State::Failed) {
+        return true;
+      }
       m_cache->cancel_jobs(Rect(0,0,1,1), tiledb_scale);
       draw_tile(gc, 0, 0, tiledb_scale,
                 scale_factor * m_image.get_scale());
