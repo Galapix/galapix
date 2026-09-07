@@ -27,6 +27,58 @@ full archive extract or a complete multi-scale cut is not.
 
 ---
 
+
+## Canonical pipeline (target)
+
+Three kinds of work, in order. Later steps must not block earlier paint.
+
+### Pass 1 — Size / orientation (cheap)
+
+- Header-only or thumtoo `request_size` (batched, one drain).
+- Enough to place images on the workspace and pick `tilescale`.
+- **No** full decode, **no** full-file hash on the critical path if avoidable
+  (provisional content id until hash is needed).
+
+### Pass 2 — Fast overview (optional but important for JPEG)
+
+- Prefer **libjpeg scaled decode** (1/2/4/8) and/or embedded EXIF thumbnail.
+- Produce **one coarse stand-in** (often a single tile at high scale, or a
+  soft full-image texture) so the user sees something immediately.
+- Still off the GUI thread; upload with the per-frame budget.
+
+### Pass 3 — Grid tiles (authoritative)
+
+Two modes, both valid:
+
+| Mode | When | Behaviour |
+|------|------|-----------|
+| **On demand** | Interactive `view` | Generate only **visible** `(scale,x,y)` (or that scale); return ASAP |
+| **Batch** | Idle / `thumtoo-prepare` | Full pyramid or archive set in the background |
+
+Never make interactive view wait for a full-pyramid batch.
+
+### Fallback when a tile is missing
+
+```text
+requested tile (scale, x, y)
+    → if present: draw it
+    → else: find_smaller_tile / parent scales (stretch)
+    → else: placeholder (e.g. solid colour)
+```
+
+`ImageRenderer` / `ImageTileCache::find_smaller_tile` already implement the
+“next lower res” idea on develop; keep that path strong while Pass 3 fills in.
+
+### Mapping to current code
+
+| Step | Today | Gap |
+|------|--------|-----|
+| Pass 1 | Batched thumtoo size probe at open | Defer until after window open; header-only JPEG |
+| Pass 2 | Missing for pure thumtoo (vips path only) | libjpeg scale / EXIF overview into cache |
+| Pass 3 on demand | thumtoo `request_tile` often builds whole pyramid | Single-tile / single-scale generation |
+| Pass 3 batch | `thumtoo-prepare` | OK as offline tool |
+| Lower-res fallback | `find_smaller_tile` | Keep; ensure coarse tiles exist early (Pass 2) |
+
 ## What master did well
 
 ### On-demand, per tile
