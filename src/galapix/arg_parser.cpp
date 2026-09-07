@@ -40,15 +40,15 @@ ArgParser::print_usage()
             << "(see thumtoo-prepare and the thumtoo CLI).\n"
             << "\n"
             << "Options:\n"
-            << "  -d, --database FILE    Use FILE as database (default: ~/.galapix/cache4)\n"
+            << "  -d, --database FILE    Resource DB prefix (default: ~/.galapix/cache4); tiles use thumtoo\n"
             << "      --thumtoo          Use thumtoo tile cache for local files\n"
             << "                         (default when built with HAVE_THUMTOO)\n"
-            << "      --no-thumtoo       Force Galapix SQLite tiles (disable thumtoo)\n"
+            << "      --no-thumtoo       Force Galapix SQLite tiles (deprecated)\n"
             << "      --thumtoo-cache DIR  thumtoo cache root (default: ~/.cache/thumtoo)\n"
             << "  -f, --fullscreen       Start in fullscreen mode\n"
             << "  -t, --threads N        Number of worker threads (default: 2)\n"
             << "  -F, --files-from FILE  Get URLs from FILE\n"
-            << "  -p, --pattern GLOB     Select files from the database via globbing pattern\n"
+            << "  -p, --pattern GLOB     Select files from the resource DB (legacy; query → thumtoo later)\n"
             << "  -g, --geometry WxH     Start with window size WxH\n"
             << "  -a, --anti-aliasing N  Anti-aliasing factor 0,2,4 (default: 0)\n"
             << "  -h, --help             Show this help\n"
@@ -195,6 +195,12 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
       else if (strcmp(argv[i], "--no-thumtoo") == 0)
       {
         opts.use_thumtoo = false;
+#ifdef HAVE_THUMTOO
+        std::cerr
+          << "Warning: --no-thumtoo is deprecated; Galapix SQLite tiles "
+             "(cache4_tiles.sqlite3) will be removed. Prefer thumtoo "
+             "(default) or build without HAVE_THUMTOO for the legacy path.\n";
+#endif
       }
       else if (strcmp(argv[i], "--thumtoo-cache") == 0)
       {

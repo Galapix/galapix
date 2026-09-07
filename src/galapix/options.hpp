@@ -55,7 +55,8 @@ public:
   int         threads;
   std::vector<std::string> rest;
 
-  /** When true and built with HAVE_THUMTOO, use ThumtooTileProvider for files. */
+  /** When true and built with HAVE_THUMTOO, use ThumtooTileProvider for files.
+      false is deprecated (--no-thumtoo); legacy cache4_tiles path. */
   bool use_thumtoo;
   /** thumtoo cache root; empty → $XDG_CACHE_HOME/thumtoo or ~/.cache/thumtoo */
   std::string thumtoo_cache;

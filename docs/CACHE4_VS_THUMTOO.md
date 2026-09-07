@@ -9,6 +9,17 @@ Investigation (2026-09-07) for retiring Galapix’s historical **cache4** tile
 stack once thumtoo covers the view path. Related: [THUMTOO.md](THUMTOO.md),
 [TILE_LOADING.md](TILE_LOADING.md), [DEPENDENCIES.md](DEPENDENCIES.md).
 
+## Product direction (near → far)
+
+| Horizon | Owner | Role |
+|---------|-------|------|
+| **Now** | Galapix | Zoomable **viewer** + workspace layout; tiles from **thumtoo** |
+| **Near** | thumtoo | Durable pixels **and** richer **query / library** APIs (patterns, collections, metadata) — do not grow Galapix resource SQL for this |
+| **Later** | Galapix (+ thumtoo) | Browsable self-contained **dataverse** (explore a corpus as a place, not only open a file list). Spec deliberately deferred; avoid premature architecture in Galapix |
+
+`-p` / resource-DB listing is **transitional**. New query features belong in **thumtoo** so multiple tools (Galapix, biltoo, dirtoo) share one index.
+
+
 ## What “cache4” is
 
 Galapix opens two SQLite files under the database prefix (`Options::database`):
@@ -97,18 +108,18 @@ Removing **only** the tile SQLite path does **not** drop SQLiteCpp. Removing the
 Do **not** delete the legacy viewer path in one shot; keep `--no-thumtoo` until
 smoke confidence is high.
 
-### Phase 0 — prepare (safe now)
+### Phase 0 — prepare (**done** 2026-09-07)
 
 * Document this matrix (this file).
-* Delete **dead** `FileTileDatabase` (never selected in `Database::create`).
-* Drop unused package deps: **libmhash**, **jsoncpp**, **EnTT**, idle **Python** find.
+* Deleted **dead** `FileTileDatabase` (never selected in `Database::create`).
+* Dropped unused package deps: **libmhash**, **jsoncpp**, **EnTT**, idle **Python** find.
 * Keep `MemoryTileDatabase` while anything still calls `get_tiles()` under pure thumtoo.
 
-### Phase 1 — default-only thumtoo (product)
+### Phase 1 — default-only thumtoo (**in progress**)
 
-* Treat `use_thumtoo` as the only supported interactive tile backend when
-  `HAVE_THUMTOO`.
-* Keep `--no-thumtoo` behind a deprecation warning; CI builds with thumtoo on.
+* `use_thumtoo` is the supported interactive tile backend when `HAVE_THUMTOO`.
+* `--no-thumtoo` prints a **deprecation** warning; startup notes legacy tile SQLite.
+* CI / daily use: build with thumtoo on; do not invest in cache4 tile features.
 
 ### Phase 2 — remove Galapix tile SQLite
 
@@ -118,11 +129,15 @@ smoke confidence is high.
 * **Split** `TileGenerator`: keep overview helpers; drop full pyramid write-to-DB path.
 * Simplify `Database::create` to resource DB (+ optional null tile interface).
 
-### Phase 3 — resource DB slim / replace (optional, larger)
+### Phase 3 — resource DB slim / replace (thumtoo query)
 
-* Replace `-p` and file index with thumtoo listing or a thin index.
-* Then reconsider SQLiteCpp / entire `src/database` resource half.
-* Archive: either finish on thumtoo URIs only or keep a minimal arxp bridge.
+* **Do not** expand Galapix `-p` / SQL patterns. Better library query belongs in
+  **thumtoo** (shared by viewers and file tools).
+* When thumtoo can list/filter a cache or tree, Galapix becomes a consumer of
+  that API; then drop or hollow out `cache4.sqlite3` resource tables.
+* Archive: prefer thumtoo URIs; keep arxp only while Galapix `ArchiveThread` remains.
+* **Dataverse** (browsable self-contained corpus UI) is a **much later** Galapix
+  product layer on top of thumtoo data — not a reason to keep cache4 SQL.
 
 ### Phase 4 — dependency wins after Phase 2–3
 
@@ -133,9 +148,10 @@ smoke confidence is high.
 
 1. **Tiles:** thumtoo already owns the pure view path; invest in thumtoo gaps
    (single-cell cut, archive coalesce) rather than new cache4 tile features.
-2. **Do not** remove resource `cache4.sqlite3` in the same change set as tiles.
-3. Start with Phase 0 cleanups, then deprecate `--no-thumtoo` once UI smoke is
-   green on thumtoo-only builds.
+2. **Query / library index:** implement in **thumtoo**, not more Galapix SQL.
+3. **Resource `cache4.sqlite3`:** keep only until thumtoo query replaces `-p`;
+   do not remove in the same change set as tile SQLite (Phase 2).
+4. **Dataverse** vision: defer design; Galapix remains a spatial viewer until then.
 
 ## Related code entry points
 

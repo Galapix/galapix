@@ -133,6 +133,10 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_database_thread.start_thread();
 
 #ifdef HAVE_THUMTOO
+  if (!m_opts.use_thumtoo) {
+    std::cerr << "Using legacy Galapix SQLite tiles (cache4_tiles.sqlite3); "
+                 "this path is deprecated.\n";
+  }
   if (m_opts.use_thumtoo) {
     thumtoo::image_library_init();
     std::filesystem::path cache = m_opts.thumtoo_cache.empty()

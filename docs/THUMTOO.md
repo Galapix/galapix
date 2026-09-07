@@ -128,3 +128,11 @@ override the flake input to a checkout that has the fix.
 
 MIME types in `galapix.desktop` align with `thumtoo::media_mime_types()` plus
 Galapix-only types (SVG, XCF, workspace).
+
+## Library query (future, not Galapix SQL)
+
+Galapix `-p` / `cache4.sqlite3` resource patterns are transitional. Richer
+listing, filtering, and collection queries should land in **thumtoo** so
+Galapix, biltoo, and dirtoo share one backend. Galapix’s long-term “dataverse”
+UI is separate and much later; it should consume thumtoo, not revive cache4.
+

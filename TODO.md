@@ -1,3 +1,11 @@
+## Phase 1: deprecate Galapix SQLite tiles (2026-09-07)
+
+* `--no-thumtoo` → deprecation warning (HAVE_THUMTOO builds)
+* Product: library **query** → thumtoo later; Galapix stays viewer + workspace
+* **Dataverse** (browsable corpus) = much later; do not design cache4 for it
+* Phase 2 still open: delete `cache4_tiles` stack after smoke confidence
+* See [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md)
+
 ## cache4 vs thumtoo audit (2026-09-07)
 
 * Full matrix + removal phases: [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md)
@@ -800,7 +808,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-038.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-039.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
