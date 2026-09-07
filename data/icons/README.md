@@ -1,23 +1,17 @@
 # Tool icons
 
-Canonical sources: `svg/*.svg` (colored 24×24 glyphs).
+**Source of truth:** `svg/*.svg` (colored 24×24 glyphs).
 
-Raster for ImGui: `hicolor/24x24/actions/*.png` (RGBA, from ImageMagick).
+**PNG at build time:** CMake runs `rsvg-convert` (preferred) or ImageMagick
+`convert` and writes:
 
-```bash
-for f in data/icons/svg/*.svg; do
-  convert -background none -density 192 "$f" -resize 24x24 \
-    PNG32:"data/icons/hicolor/24x24/actions/$(basename "$f" .svg).png"
-done
+```
+${CMAKE_BINARY_DIR}/share/galapix/icons/hicolor/24x24/actions/*.png
 ```
 
-Color roles (roughly):
+ImGui loads those PNGs via SDL_image (no SVG at runtime).
 
-| Icon | Hue |
-|------|-----|
-| pan | blue |
-| zoom rect | amber / orange |
-| grid tool | green |
-| move | purple |
-| grid / grid pin | cyan (+ red pin) |
-| layouts | multi-color tiles |
+`GALAPIX_DATADIR` overrides the data root; otherwise the build-tree path from
+`GALAPIX_DEFAULT_DATADIR` or `$prefix/share/galapix` is used.
+
+Do not commit generated PNGs.

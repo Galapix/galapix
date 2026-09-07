@@ -278,6 +278,55 @@ if(WITH_THUMTOO)
   message(STATUS "thumtoo tile backend enabled (${THUMTOO_DIR})")
 endif()
 
+
+# --- Tool icons: SVG → PNG at build time (ImGui loads PNG via SDL_image) ---
+set(GALAPIX_ICON_SVG_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/icons/svg")
+set(GALAPIX_ICON_PNG_DIR "${CMAKE_BINARY_DIR}/share/galapix/icons/hicolor/24x24/actions")
+file(MAKE_DIRECTORY "${GALAPIX_ICON_PNG_DIR}")
+
+set(_galapix_icon_names
+  pan_tool zoom_rect_tool grid_tool move_tool
+  grid grid_pin
+  layout_regular layout_tight layout_random)
+
+find_program(GALAPIX_RSVG_CONVERT NAMES rsvg-convert)
+find_program(GALAPIX_IM_CONVERT NAMES magick convert)
+
+set(GALAPIX_ICON_PNGS "")
+foreach(_name ${_galapix_icon_names})
+  set(_svg "${GALAPIX_ICON_SVG_DIR}/${_name}.svg")
+  set(_png "${GALAPIX_ICON_PNG_DIR}/${_name}.png")
+  if(NOT EXISTS "${_svg}")
+    message(FATAL_ERROR "Missing tool icon SVG: ${_svg}")
+  endif()
+  if(GALAPIX_RSVG_CONVERT)
+    add_custom_command(
+      OUTPUT "${_png}"
+      COMMAND "${GALAPIX_RSVG_CONVERT}" -w 24 -h 24 -f png -o "${_png}" "${_svg}"
+      DEPENDS "${_svg}"
+      COMMENT "Rasterize ${_name}.svg (rsvg-convert)"
+      VERBATIM)
+  elseif(GALAPIX_IM_CONVERT)
+    add_custom_command(
+      OUTPUT "${_png}"
+      COMMAND "${GALAPIX_IM_CONVERT}" -background none -density 192 "${_svg}" -resize 24x24 "PNG32:${_png}"
+      DEPENDS "${_svg}"
+      COMMENT "Rasterize ${_name}.svg (ImageMagick)"
+      VERBATIM)
+  else()
+    message(FATAL_ERROR
+      "Need rsvg-convert or ImageMagick convert to build tool icons from SVG")
+  endif()
+  list(APPEND GALAPIX_ICON_PNGS "${_png}")
+endforeach()
+
+add_custom_target(galapix_icons ALL DEPENDS ${GALAPIX_ICON_PNGS})
+if(GALAPIX_RSVG_CONVERT)
+  message(STATUS "Tool icons: SVG→PNG via ${GALAPIX_RSVG_CONVERT}")
+else()
+  message(STATUS "Tool icons: SVG→PNG via ${GALAPIX_IM_CONVERT}")
+endif()
+
 # Application shell (SDL2 window + ImGui chrome). Always built.
 pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
 pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image IMPORTED_TARGET)
@@ -306,9 +355,13 @@ target_link_libraries(libgalapix_app PUBLIC
   PkgConfig::SDL2_IMAGE)
 
 add_executable(galapix src/main/main.cpp)
+add_dependencies(galapix galapix_icons)
 target_compile_options(galapix PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 target_compile_definitions(galapix PRIVATE ${GALAPIX_SPNAV_DEFINES})
 target_link_libraries(galapix PRIVATE libgalapix_app)
+# Default icon/data root: build tree share, overridden by GALAPIX_DATADIR env.
+target_compile_definitions(libgalapix_app PRIVATE
+  "GALAPIX_DEFAULT_DATADIR="${CMAKE_BINARY_DIR}/share/galapix"")
 
 install(TARGETS galapix
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
@@ -397,8 +450,11 @@ install(FILES
   galapix.desktop
   DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
-# Toolbar/tool icons (PNG for now; planned SVG sources + ImGui)
-install(DIRECTORY data/icons
-  DESTINATION ${CMAKE_INSTALL_DATADIR}/galapix)
+# Tool icons: SVG sources + build-time PNG (see galapix_icons target)
+install(DIRECTORY data/icons/svg
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/galapix/icons)
+install(DIRECTORY "${GALAPIX_ICON_PNG_DIR}/"
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/galapix/icons/hicolor/24x24/actions
+  OPTIONAL)
 
 # EOF #

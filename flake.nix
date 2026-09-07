@@ -120,6 +120,7 @@
               cmake
               pkg-config
               makeWrapper
+              librsvg # rsvg-convert for tool icons SVG→PNG
             ];
 
             buildInputs = with pkgs; [
@@ -267,6 +268,7 @@
               ninja
               gdb
               pkg-config
+              librsvg
             ]) ++ [
               galapixConfigure
               galapixBuild

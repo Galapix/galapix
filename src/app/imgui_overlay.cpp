@@ -72,6 +72,15 @@ ImguiOverlay::data_root()
   if (char const* env = std::getenv("GALAPIX_DATADIR"); env && *env) {
     return env;
   }
+  // Build-tree default from CMake (generated PNG icons live here).
+#ifdef GALAPIX_DEFAULT_DATADIR
+  {
+    std::filesystem::path const built = GALAPIX_DEFAULT_DATADIR;
+    if (std::filesystem::is_directory(built / "icons" / "hicolor")) {
+      return built.string();
+    }
+  }
+#endif
   if (char const* src = std::getenv("GALAPIX_SOURCE"); src && *src) {
     std::filesystem::path p = std::filesystem::path(src) / "data";
     if (std::filesystem::is_directory(p / "icons")) {
@@ -81,7 +90,7 @@ ImguiOverlay::data_root()
   if (std::filesystem::is_directory("data/icons")) {
     return "data";
   }
-  // nix/package: $out/bin/galapix → $out/share/galapix
+  // Installed package: $prefix/bin/galapix → $prefix/share/galapix
   std::filesystem::path const exe = executable_dir();
   if (!exe.empty()) {
     std::filesystem::path const share = exe.parent_path() / "share" / "galapix";
