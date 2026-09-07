@@ -38,6 +38,8 @@ Make **develop** the branch that becomes **master**. See
 * [x] Optional ThumtooTileProvider (WITH_THUMTOO / THUMTOO_DIR)
 * [x] Wire provider into image open path (`--thumtoo`)
 * [x] Session default cache root ($XDG_CACHE_HOME/thumtoo)
+* [x] Prefetch overview + request coarser stand-ins in find_smaller_tile
+      (reduce purple loading tiles on fast zoom)
 * [x] Flake: enable WITH_THUMTOO against thumtoo (tile API commit)
 * [x] Align size probe with Client::drain / get_size after request_size
 * [x] Default-on when HAVE_THUMTOO; `--no-thumtoo` forces SQLite tiles

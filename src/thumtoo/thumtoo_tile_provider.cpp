@@ -162,7 +162,8 @@ ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
       return;
     }
     if (!tb || tb->bytes.empty()) {
-      log_error("ThumtooTileProvider: no tile {} scale={} pos=({},{})",
+      // Common while generating; stand-ins cover the cell until retry succeeds.
+      log_debug("ThumtooTileProvider: no tile {} scale={} pos=({},{})",
                 uri, tilescale, pos.x(), pos.y());
       job_handle.set_failed();
       return;
@@ -178,8 +179,9 @@ ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
     job_handle.set_finished();
   };
 
-  // Always go through request_tile so load + JPEG decode run on a Client
-  // worker (inline executor). Never decode on the GUI thread during draw.
+  // Always complete on a Client worker (inline executor): never JPEG-decode on
+  // the GUI thread during draw. Durable cache hits are still handled inside
+  // Client::request_tile via get_tile (no re-encode).
   m_client->request_tile(
     m_uri, tilescale, x, y,
     [deliver = std::move(deliver)](std::string, int, int, int,

@@ -16,6 +16,8 @@
 
 #include "galapix/image_tile_cache.hpp"
 
+#include <algorithm>
+
 #include <assert.h>
 #include <cstring>
 
@@ -123,6 +125,11 @@ ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_max_scale(m_tile_provider->get_max_scale()),
   m_min_keep_scale(m_max_scale - 2)
 {
+  // Prefetch full-image overview so find_smaller_tile has a stand-in before
+  // the user zooms into fine scales (avoids purple "loading" cells).
+  if (m_max_scale >= 0) {
+    queue_tile_request(0, 0, m_max_scale);
+  }
 }
 
 wstdisplay::SurfacePtr
@@ -256,8 +263,11 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
   {
     downscale_out = Math::pow2(downscale_factor);
 
-    TileCacheId cache_id(Vector2i(x / downscale_out, y / downscale_out),
-                         tiledb_scale+downscale_factor);
+    int const cx = x / downscale_out;
+    int const cy = y / downscale_out;
+    int const cscale = tiledb_scale + downscale_factor;
+
+    TileCacheId cache_id(Vector2i(cx, cy), cscale);
 
     Cache::iterator i = m_cache.find(cache_id);
     if (i != m_cache.end() && i->second.surface)
@@ -265,7 +275,16 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
       return i->second.surface;
     }
 
+    // Not in memory yet — make sure a request is in flight (idempotent).
+    queue_tile_request(cx, cy, cscale);
+
     downscale_factor += 1;
+  }
+
+  // Ensure overview is loading; do not draw it with parent-tile UV math
+  // (one full-image tile is not a grid parent of (x,y)).
+  if (m_max_scale > tiledb_scale) {
+    queue_tile_request(0, 0, m_max_scale);
   }
 
   return {};
