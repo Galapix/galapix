@@ -33,7 +33,6 @@
 #include "galapix/options.hpp"
 #include "galapix/system.hpp"
 #include "galapix/viewer_command.hpp"
-#include "network/download_manager.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 #include "util/url.hpp"
@@ -91,7 +90,6 @@ Galapix::main(int argc, char** argv)
 
     Magick::InitializeMagick(*argv);
 
-    DownloadManager download_manager;
     arxp::ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
 

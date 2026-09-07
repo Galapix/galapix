@@ -1,3 +1,5 @@
+<!-- Note (2026-09-07): Galapix SQLite `TileGenerationJob` path removed; file tiles use thumtoo. Overview still uses TileGenerator::load_surface. -->
+
 <!--
 SPDX-FileCopyrightText: 2008-2026 Ingo Ruhnke <grumbel@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later

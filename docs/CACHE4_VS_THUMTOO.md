@@ -160,5 +160,5 @@ smoke confidence is high.
 * `Database::create` — `src/database/database.cpp`
 * `ViewerCommand` open path — `src/galapix/viewer_command.cpp`
 * `ThumtooTileProvider` — `src/thumtoo/`
-* `DatabaseTileProvider` — `src/galapix/database_tile_provider.hpp`
+* ~~`DatabaseTileProvider`~~ — removed (Phase 2)
 * `DatabaseThread` — `src/server/database_thread.*`

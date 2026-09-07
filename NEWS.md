@@ -1,3 +1,10 @@
+## 0.3.0-dev (unreleased)
+
+* **HAVE_THUMTOO builds:** durable tiles only via thumtoo; Galapix
+  `cache4_tiles.sqlite3` and SQLite tile generation removed.
+* Resource DB (`cache4.sqlite3`) remains for `-p` until thumtoo query exists.
+* `--no-thumtoo` is no longer supported.
+
 ## Unreleased
 
 * Product binary is **`galapix`** (was `galapix-0.3.sdl` / dual SDL|GTK names)

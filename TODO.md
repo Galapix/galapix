@@ -1,3 +1,12 @@
+## Dead code candidates after tile removal (2026-09-07)
+
+* Removed unused `DownloadManager` construction from `galapix.cpp` (Zoomify uses
+  `network/curl.hpp` directly)
+* Deleted never-wired `ResourceManager` (old tile/resource bridge)
+* Still compile but unused from the viewer path: `Generator`, `BlobManager`,
+  most of `src/resource/*` except types still used by ResourceDatabase —
+  trim carefully later; long-term retrieval → thumtoo
+
 ## thumtoo direction: retrieval URIs + live PDF (2026-09-07)
 
 * **Not Galapix work now** — document only; implement in thumtoo when ready
@@ -25,14 +34,13 @@
 * `--no-thumtoo` → deprecation warning (HAVE_THUMTOO builds)
 * Product: library **query** → thumtoo later; Galapix stays viewer + workspace
 * **Dataverse** (browsable corpus) = much later; do not design cache4 for it
-* Phase 2 still open: delete `cache4_tiles` stack after smoke confidence
+* Phase 2 **done**: SQLite tile stack deleted (see Phase 2 note above)
 * See [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md)
 
 ## cache4 vs thumtoo audit (2026-09-07)
 
 * Full matrix + removal phases: [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md)
-* **Tiles** (`cache4_tiles.sqlite3`): already skipped in pure thumtoo view; legacy
-  path remains for `--no-thumtoo` / non-HAVE_THUMTOO builds
+* **Tiles:** Galapix SQLite tile stack removed; file tiles need thumtoo
 * **Resource** (`cache4.sqlite3`): still required for `-p` / file index
 * Phase 0 done: deleted dead `FileTileDatabase`; dropped unused libmhash, jsoncpp, EnTT, Python find
 * Next: deprecate `--no-thumtoo` after UI smoke; then Phase 2 delete SQLite tile stack
@@ -830,7 +838,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-046.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-047.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)

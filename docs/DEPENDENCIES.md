@@ -47,7 +47,7 @@ phases (SQLiteCpp stays until resource DB goes).
 
 | Dependency | Tied to | To remove it |
 |------------|---------|----------------|
-| **SQLiteCpp** (+ **sqlite3**) | Resource DB: file/image entries, `-p` patterns, workspace metadata | Redesign or drop `cache4.sqlite3`. Pure thumtoo only skips **`cache4_tiles.sqlite3`**. |
+| **SQLiteCpp** (+ **sqlite3**) | Resource DB: file/image entries, `-p` patterns, workspace metadata | Redesign or drop `cache4.sqlite3`. **`cache4_tiles.sqlite3` removed** (Phase 2); resource DB remains. |
 | **arxpcpp** | Archive listing/extraction in the Galapix workspace | Drop archive collections or reimplement on thumtoo/libarchive. |
 | **exspcpp** | Not used by Galapix | Transitive **arxpcpp** flake input only; goes away with arxpcpp. |
 | **ImageMagick** / GraphicsMagick | surfcpp `imagemagick` plugin; `Magick::InitializeMagick` | Keep JPEG/PNG via surfcpp; lose Magick-backed formats unless another loader is wired. |

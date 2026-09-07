@@ -61,7 +61,6 @@ CLI (files / URLs; optional leading "view" for old scripts)
 | Class | Backend |
 |-------|---------|
 | `ThumtooTileProvider` | thumtoo `get_tile` / `request_tile` (HAVE_THUMTOO) |
-| `DatabaseTileProvider` | Galapix SQLite tiles via DatabaseThread |
 | `ZoomifyTileProvider` | Zoomify ImageProperties.xml |
 | `MandelbrotTileProvider` | Procedural |
 
@@ -85,7 +84,7 @@ flake input `thumtoo`). Defines `HAVE_THUMTOO=1`.
 | Default | `Options::use_thumtoo` true when `HAVE_THUMTOO` |
 | Opt out | `--no-thumtoo` → historical SQLite tiles |
 | Cache root | `--thumtoo-cache` or `$XDG_CACHE_HOME/thumtoo` |
-| Pure view | No `cache4_tiles.sqlite3`; no `DatabaseTileProvider` fallback |
+| Pure view | No `cache4_tiles.sqlite3`; file tiles via thumtoo only |
 | Threading | `ThumtooCallbackQueue` + Executor; pumped in `Viewer::draw` |
 | Size probe | `request_size` + `drain` + `pump` before provider construct |
 
