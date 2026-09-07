@@ -166,7 +166,8 @@ archive paths, but new work should prefer extending thumtoo URIs.
 PDF pages: **thumtoo-019** uses kPdfLayoutDpi (144) for size + on-demand
 tile rasterize (live-style). **thumtoo-021+:** optional libcurl (`THUMTOO_HAVE_CURL`) for http(s)
 probe / tiles / pixels / `read_source_bytes`. **thumtoo-022:** in-process
-HTTP body cache (512 MiB session); durable disk cache still future.
+HTTP body cache: session RAM + **thumtoo-025** durable `http_bodies` in
+`blobs.sqlite` (default 7-day TTL).
 
 ## Live / procedural tiles (future — thumtoo)
 

@@ -1,11 +1,11 @@
-## Session handoff (2026-09-07) — tip **galapix-055** / thumtoo **024**
+## Session handoff (2026-09-07) — tip **galapix-055** / thumtoo **025**
 
 ### Tip bundles (apply latest; stack cleanly)
 
 | Project | Tip bundle | Tip commit (subject) |
 |---------|------------|----------------------|
-| **galapix** | **`galapix-055.bundle`** | session handoff doc; stacks on 054 |
-| **thumtoo** | **`thumtoo-024.bundle`** | declare `fetch_http_cached`; HTTP stack 021–022 |
+| **galapix** | **`galapix-056.bundle`** | session handoff doc; stacks on 054 |
+| **thumtoo** | **`thumtoo-025.bundle`** | declare `fetch_http_cached`; HTTP stack 021–022 |
 
 Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer  
 `Co-authored-by: Grok <grok@x.ai>`. Bundles use **HEAD** as ref, full history from first checkout, continuously numbered.
@@ -63,6 +63,7 @@ Galapix flake already lists `curl` in build inputs; update flake input when publ
 
 ### Next suggested work
 
+0. thumtoo-025 durable HTTP body cache (pair tip)
 1. Smoke: local file, PDF page, archive member, `http(s)://` image with thumtoo-024  
 2. Point galapix `flake` `thumtoo` input at published tip with curl  
 3. Optional: delete/gate `Generator` / `BlobManager` if still unreferenced  
