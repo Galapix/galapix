@@ -1,6 +1,21 @@
 Galapix ToDo
 ============
 
+
+## Merge master (v0.2.2) → develop → master (2026-09-07)
+
+History diverged for years (~675 develop-only commits; master still Boost/GLEW/SCons→CMake line).
+A content merge of master into develop is not viable.
+
+**Strategy:**
+1. Port useful master-only changes onto develop (controller tweaks from c709bb83).
+2. `git merge -s ours origin/master` on develop — records master ancestry, **keeps develop tree**.
+3. Merge develop into master (fast-forward or normal merge) so master tip == develop.
+4. Delete `develop` branch; single line of history on `master`.
+5. Tag later as 0.3.0 when ready (VERSION remains 0.3.0-dev until then).
+
+Master v0.2.2 is the last public Boost-era / SDL-only Nix line.
+
 ## Priority: merge develop → master
 
 Make **develop** the branch that becomes **master**. See

@@ -19,6 +19,7 @@
 #include <format>
 #include <iostream>
 #include <thread>
+#include <cmath>
 #include <logmich/log.hpp>
 #include <SDL_keycode.h>
 
@@ -533,6 +534,7 @@ SDLViewer::process_event(SDL_Event const& event)
 float
 SDLViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const
 {
+  const float threshold = 0.002f; // was 0.25f; lower deadzone for finer stick control
   int value = SDL_GameControllerGetAxis(gamecontroller, axis);
   if (value == 0)
   {
@@ -540,11 +542,11 @@ SDLViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis a
   }
   else if (value > 0)
   {
-    return deadzone(static_cast<float>(value) / 32767.0f, 0.25f);
+    return deadzone(static_cast<float>(value) / 32767.0f, threshold);
   }
   else // if (value < 0)
   {
-    return deadzone(static_cast<float>(value) / 32768.0f, 0.25f);
+    return deadzone(static_cast<float>(value) / 32768.0f, threshold);
   }
 }
 
@@ -589,6 +591,10 @@ SDLViewer::update_gamecontrollers(float delta)
     float rotate_left_value = (get_axis(gamecontroller, rotate_left_axis) + 1.0f) / 2.0f * 180.0f;
     float rotate_right_value = (get_axis(gamecontroller, rotate_right_axis) + 1.0f) / 2.0f * 180.0f;
 
+    // Response curve: more precision near center, stronger at edges
+    x_value = std::copysign(std::pow(std::abs(x_value), 2.0f), x_value);
+    y_value = std::copysign(std::pow(std::abs(y_value), 2.0f), y_value);
+
     { // zoom
       zoom_value *= 4.0f;
 
@@ -603,8 +609,8 @@ SDLViewer::update_gamecontrollers(float delta)
     }
 
     { // move
-      x_value *= 2048.0f;
-      y_value *= 2048.0f;
+      x_value *= 1524.0f; // was 2048.0f
+      y_value *= 1524.0f;
 
       if (x_value != 0.0f || y_value != 0.0f)
       {
@@ -621,6 +627,10 @@ SDLViewer::update_gamecontrollers(float delta)
     { // rotate right
       rotate_right_value *= 2.0f;
       m_viewer.get_state().rotate(-rotate_right_value * delta);
+    }
+
+    if (SDL_GameControllerGetButton(gamecontroller, SDL_CONTROLLER_BUTTON_BACK)) {
+      m_viewer.get_state().set_angle(0.0f);
     }
   }
 }
