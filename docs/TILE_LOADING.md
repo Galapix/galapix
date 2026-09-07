@@ -356,6 +356,8 @@ work on Client worker threads instead of serializing drain boundaries.
 | Archive same-member coalesce | **Not done** (thumtoo) |
 | Single **cell** only (not full scale grid) | **Not done** (thumtoo cut API) |
 | Drop Galapix SQLite tile DB | Pure thumtoo view already skips `cache4_tiles`; resource DB remains for patterns / metadata |
+| Console tile backlog stats (`l`) | **Done** — pending requests/uploads/cache entries + thumtoo callback queue (see [STATUS_REPORTING.md](STATUS_REPORTING.md)) |
+| On-screen status HUD | **Not done** — blocked on text rendering library choice |
 
 ### Feature gaps vs old Galapix tile cache (spirit)
 

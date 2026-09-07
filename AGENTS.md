@@ -35,6 +35,7 @@ rendering, layout tools, and (historically) its own SQLite tile tables.
 | [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md) | Dep audit / what thumtoo does not replace |
 | [docs/DEVELOP_VS_MASTER.md](docs/DEVELOP_VS_MASTER.md) | develop vs master feature gap / merge |
 | [docs/TILE_LOADING.md](docs/TILE_LOADING.md) | Viewport-first tile load strategy |
+| [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md) | Console/HUD status; text library options |
 | [NEWS.md](NEWS.md) | Release notes |
 | thumtoo [INTEGRATION_GALAPIX.md](https://github.com/Grumbel/thumtoo/blob/master/INTEGRATION_GALAPIX.md) | Library-side mapping |
 | thumtoo [TILES.md](https://github.com/Grumbel/thumtoo/blob/master/TILES.md) | Scale/tile conventions |

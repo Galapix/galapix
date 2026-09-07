@@ -44,6 +44,8 @@ Make **develop** the branch that becomes **master**. See
 * [ ] Fast overview path (libjpeg/EXIF) with separate cache identity
 * [ ] Benchmark: split vs merged size+overview for archive members
 * [ ] Optional: texture array / atlas batching for fewer draw calls
+* [x] Console tile load stats (`l` / `print_state`: pending requests, uploads, cache entries, thumtoo callback queue)
+* [ ] On-screen status overlay (needs text rendering; see [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md))
 
 Galapix ToDo
 ============
