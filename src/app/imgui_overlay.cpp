@@ -6,7 +6,7 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-#include "sdl/imgui_overlay.hpp"
+#include "app/imgui_overlay.hpp"
 
 #include <cstdlib>
 #include <filesystem>

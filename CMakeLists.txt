@@ -101,7 +101,6 @@ message(STATUS "Galapix version: ${PROJECT_VERSION_FULL} (CMake PROJECT_VERSION=
 
 include(CheckIncludeFile)
 
-option(BUILD_GALAPIX_SDL "Build galapix (SDL viewer)" ON)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 option(WITH_THUMTOO "Use thumtoo as tile cache backend" OFF)
@@ -279,44 +278,41 @@ if(WITH_THUMTOO)
   message(STATUS "thumtoo tile backend enabled (${THUMTOO_DIR})")
 endif()
 
-if(BUILD_GALAPIX_SDL)
-  pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
-  pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image IMPORTED_TARGET)
+# Application shell (SDL2 window + ImGui chrome). Always built.
+pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
+pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image IMPORTED_TARGET)
 
-  file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
-  list(APPEND LIBGALAPIX_SDL_SOURCES ${GALAPIX_SPNAV_SOURCES})
-  # Dear ImGui (vendored) — pure OpenGL chrome overlay for the SDL viewer.
-  set(IMGUI_SOURCES
-    external/imgui/imgui.cpp
-    external/imgui/imgui_draw.cpp
-    external/imgui/imgui_tables.cpp
-    external/imgui/imgui_widgets.cpp
-    external/imgui/backends/imgui_impl_sdl2.cpp
-    external/imgui/backends/imgui_impl_opengl3.cpp)
-  list(APPEND LIBGALAPIX_SDL_SOURCES ${IMGUI_SOURCES})
-  add_library(libgalapix_sdl STATIC ${LIBGALAPIX_SDL_SOURCES})
-  target_compile_options(libgalapix_sdl PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-  # ImGui is third-party; do not apply project warning flags to it.
-  set_source_files_properties(${IMGUI_SOURCES} PROPERTIES COMPILE_FLAGS "-w")
-  target_include_directories(libgalapix_sdl PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui
-    ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends)
-  target_link_libraries(libgalapix_sdl PUBLIC
-    libgalapix
-    PkgConfig::SDL2
-    PkgConfig::SDL2_IMAGE)
-  target_compile_definitions(libgalapix_sdl PRIVATE -DGALAPIX_SDL)
+file(GLOB LIBGALAPIX_APP_SOURCES src/app/*.cpp)
+list(APPEND LIBGALAPIX_APP_SOURCES ${GALAPIX_SPNAV_SOURCES})
+# Dear ImGui (vendored) — chrome overlay for the viewer.
+set(IMGUI_SOURCES
+  external/imgui/imgui.cpp
+  external/imgui/imgui_draw.cpp
+  external/imgui/imgui_tables.cpp
+  external/imgui/imgui_widgets.cpp
+  external/imgui/backends/imgui_impl_sdl2.cpp
+  external/imgui/backends/imgui_impl_opengl3.cpp)
+list(APPEND LIBGALAPIX_APP_SOURCES ${IMGUI_SOURCES})
+add_library(libgalapix_app STATIC ${LIBGALAPIX_APP_SOURCES})
+target_compile_options(libgalapix_app PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+# ImGui is third-party; do not apply project warning flags to it.
+set_source_files_properties(${IMGUI_SOURCES} PROPERTIES COMPILE_FLAGS "-w")
+target_include_directories(libgalapix_app PUBLIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui
+  ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends)
+target_link_libraries(libgalapix_app PUBLIC
+  libgalapix
+  PkgConfig::SDL2
+  PkgConfig::SDL2_IMAGE)
 
-  add_executable(galapix_bin src/main/sdl_main.cpp)
-  set_target_properties(galapix_bin PROPERTIES OUTPUT_NAME "galapix")
-  target_compile_options(galapix_bin PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-  target_compile_definitions(galapix_bin PRIVATE -DGALAPIX_SDL ${GALAPIX_SPNAV_DEFINES})
-  target_link_libraries(galapix_bin PRIVATE libgalapix_sdl)
+add_executable(galapix src/main/main.cpp)
+target_compile_options(galapix PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+target_compile_definitions(galapix PRIVATE ${GALAPIX_SPNAV_DEFINES})
+target_link_libraries(galapix PRIVATE libgalapix_app)
 
-  install(TARGETS galapix_bin
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
-endif()
+install(TARGETS galapix
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 
 # compile extra
@@ -328,7 +324,7 @@ if(BUILD_EXTRA)
     get_filename_component(SRC_BASENAME ${SRC} NAME_WE)
     add_executable(${SRC_BASENAME} ${SRC})
     target_compile_options("${SRC_BASENAME}" PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-    # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
+    # use=(["galapix", "galapix_app"] + galapix_app_deps + galapix_deps))
     target_link_libraries(${SRC_BASENAME} libgalapix)
   endforeach(SRC)
 
@@ -360,17 +356,14 @@ if(BUILD_TESTS)
     uitest::uitest
     uitest::uitest_main)
 
-  if(BUILD_GALAPIX_SDL)
-    file(GLOB TEST_GALAPIX_SDL_SOURCES test/sdl/*_test.cpp)
-    foreach(SRC ${TEST_GALAPIX_SDL_SOURCES})
-      get_filename_component(SRC_BASENAME ${SRC} NAME_WE)
-      add_executable(${SRC_BASENAME} ${SRC})
-      target_compile_options(${SRC_BASENAME} PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-      set_target_properties(${SRC_BASENAME} PROPERTIES OUTPUT_NAME "extra/${SRC_BASENAME}")
-      target_link_libraries(${SRC_BASENAME} libgalapix)
-      # use=(["galapix", "galapix_sdl"] + galapix_sdl_deps + galapix_deps))
-    endforeach()
-  endif()
+  file(GLOB TEST_GALAPIX_APP_SOURCES test/app/*_test.cpp test/sdl/*_test.cpp)
+  foreach(SRC ${TEST_GALAPIX_APP_SOURCES})
+    get_filename_component(SRC_BASENAME ${SRC} NAME_WE)
+    add_executable(${SRC_BASENAME} ${SRC})
+    target_compile_options(${SRC_BASENAME} PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+    set_target_properties(${SRC_BASENAME} PROPERTIES OUTPUT_NAME "extra/${SRC_BASENAME}")
+    target_link_libraries(${SRC_BASENAME} libgalapix)
+  endforeach()
 
   # add 'make test' target, use 'make test ARGS="-V"' or 'ctest -V' for verbose
   enable_testing()

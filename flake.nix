@@ -102,7 +102,6 @@
             doCheck = false;
 
             cmakeFlags = [
-              "-DBUILD_GALAPIX_SDL=ON"  # single viewer binary
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
@@ -185,14 +184,12 @@
         };
 
         apps = rec {
-          default = galapix_app;
+          default = galapix;
 
-          galapix_app = flake-utils.lib.mkApp {
+          galapix = flake-utils.lib.mkApp {
             drv = packages.galapix;
             exePath = "/bin/galapix";
           };
-          # Alias kept for muscle memory
-          galapix_sdl = galapix_app;
 
         };
 
@@ -212,7 +209,6 @@
               + ''
                 cmake -S "$GALAPIX_SOURCE" -B "$GALAPIX_BUILD_DIR" -G Ninja \
                   -DCMAKE_BUILD_TYPE="''${CMAKE_BUILD_TYPE:-Debug}" \
-                  -DBUILD_GALAPIX_SDL=ON \
                                     -DBUILD_BENCHMARKS=OFF \
                   -DWITH_THUMTOO=ON \
                   -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}" \

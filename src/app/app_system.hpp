@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_GALAPIX_SDL_SDL_SYSTEM_HPP
-#define HEADER_GALAPIX_SDL_SDL_SYSTEM_HPP
+#ifndef HEADER_GALAPIX_APP_SYSTEM_HPP
+#define HEADER_GALAPIX_APP_SYSTEM_HPP
 
 #include "galapix/system.hpp"
 
 namespace galapix {
 
-class SDLSystem : public System
+class AppSystem : public System
 {
 public:
-  SDLSystem();
-  ~SDLSystem() override;
+  AppSystem();
+  ~AppSystem() override;
 
   void launch_viewer(Workspace& workspace, Options& opts) override;
   bool requires_command_line_args() override;
@@ -33,8 +33,8 @@ public:
   void set_trackball_mode(bool active) override;
 
 private:
-  SDLSystem(SDLSystem const&) = delete;
-  SDLSystem& operator=(SDLSystem const&) = delete;
+  AppSystem(AppSystem const&) = delete;
+  AppSystem& operator=(AppSystem const&) = delete;
 };
 
 } // namespace galapix

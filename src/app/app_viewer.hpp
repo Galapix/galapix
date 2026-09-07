@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef HEADER_GALAPIX_SDL_SDL_VIEWER_HPP
-#define HEADER_GALAPIX_SDL_SDL_VIEWER_HPP
+#ifndef HEADER_GALAPIX_APP_VIEWER_HPP
+#define HEADER_GALAPIX_APP_VIEWER_HPP
 
 #include <SDL.h>
 #include <memory>
 
-#include "sdl/imgui_overlay.hpp"
+#include "app/imgui_overlay.hpp"
 
 #include <wstdisplay/opengl_window.hpp>
 #include <wstsystem/fwd.hpp>
@@ -35,12 +35,12 @@ class FileEntry;
 class Image;
 class Workspace;
 
-class SDLViewer
+class AppViewer
 {
 public:
-  SDLViewer(Size const& geometry, bool fullscreen, int  anti_aliasing,
+  AppViewer(Size const& geometry, bool fullscreen, int  anti_aliasing,
             Viewer& viewer);
-  ~SDLViewer();
+  ~AppViewer();
 
   void run();
 
@@ -67,8 +67,8 @@ private:
   std::vector<SDL_GameController*> m_gamecontrollers;
 
 private:
-  SDLViewer (SDLViewer const&);
-  SDLViewer& operator= (SDLViewer const&);
+  AppViewer (AppViewer const&);
+  AppViewer& operator= (AppViewer const&);
 };
 
 } // namespace galapix

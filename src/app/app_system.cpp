@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "sdl/sdl_system.hpp"
+#include "app/app_system.hpp"
 
 #include <SDL.h>
 
 #include "galapix/options.hpp"
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
-#include "sdl/sdl_viewer.hpp"
+#include "app/app_viewer.hpp"
 
 namespace galapix {
 
-SDLSystem::SDLSystem()
+AppSystem::AppSystem()
 {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) != 0)
   {
@@ -39,28 +39,28 @@ SDLSystem::SDLSystem()
   }
 }
 
-SDLSystem::~SDLSystem()
+AppSystem::~AppSystem()
 {
 }
 
 void
-SDLSystem::launch_viewer(Workspace& workspace, Options& opts)
+AppSystem::launch_viewer(Workspace& workspace, Options& opts)
 {
   Viewer viewer(*this, &workspace);
-  SDLViewer sdl_viewer(opts.geometry, opts.fullscreen, opts.anti_aliasing, viewer);
+  AppViewer app_viewer(opts.geometry, opts.fullscreen, opts.anti_aliasing, viewer);
   viewer.layout_tight();
   viewer.zoom_to_selection();
-  sdl_viewer.run();
+  app_viewer.run();
 }
 
 bool
-SDLSystem::requires_command_line_args()
+AppSystem::requires_command_line_args()
 {
   return true;
 }
 
 void
-SDLSystem::trigger_redraw()
+AppSystem::trigger_redraw()
 {
   SDL_Event event;
   event.type = SDL_USEREVENT;
@@ -72,7 +72,7 @@ SDLSystem::trigger_redraw()
 }
 
 void
-SDLSystem::set_trackball_mode(bool active)
+AppSystem::set_trackball_mode(bool active)
 {
   if (active)
   {

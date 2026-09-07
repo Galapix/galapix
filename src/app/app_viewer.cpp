@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "sdl/sdl_viewer.hpp"
+#include "app/app_viewer.hpp"
 
 #include <format>
 #include <iostream>
@@ -85,7 +85,7 @@ float deadzone(float value, float threshold)
 
 } // namespace
 
-SDLViewer::SDLViewer(Size const& size, bool fullscreen, int  anti_aliasing,
+AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
   m_system(std::make_unique<wstsys::System>()),
   m_window(m_system->create_window({
@@ -115,7 +115,7 @@ SDLViewer::SDLViewer(Size const& size, bool fullscreen, int  anti_aliasing,
   }
 }
 
-SDLViewer::~SDLViewer()
+AppViewer::~AppViewer()
 {
   m_imgui.shutdown();
   for(SDL_GameController* gamecontroller: m_gamecontrollers)
@@ -125,7 +125,7 @@ SDLViewer::~SDLViewer()
 }
 
 void
-SDLViewer::process_event(SDL_Event const& event)
+AppViewer::process_event(SDL_Event const& event)
 {
   // Tab / F1 always toggle chrome, even when ImGui wants keyboard focus.
   // (H remains zoom-home; do not steal it for UI hide.)
@@ -536,7 +536,7 @@ SDLViewer::process_event(SDL_Event const& event)
 }
 
 float
-SDLViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const
+AppViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const
 {
   const float threshold = 0.002f; // was 0.25f; lower deadzone for finer stick control
   int value = SDL_GameControllerGetAxis(gamecontroller, axis);
@@ -555,7 +555,7 @@ SDLViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis a
 }
 
 void
-SDLViewer::add_gamecontroller(int joy_id)
+AppViewer::add_gamecontroller(int joy_id)
 {
   SDL_GameController* gamecontroller = SDL_GameControllerOpen(joy_id);
   if (gamecontroller)
@@ -565,7 +565,7 @@ SDLViewer::add_gamecontroller(int joy_id)
 }
 
 void
-SDLViewer::remove_gamecontroller(int joy_id)
+AppViewer::remove_gamecontroller(int joy_id)
 {
   auto gamecontroller_it = std::find_if(m_gamecontrollers.begin(), m_gamecontrollers.end(),
                                         [joy_id](SDL_GameController* gamecontroller)
@@ -579,7 +579,7 @@ SDLViewer::remove_gamecontroller(int joy_id)
 }
 
 void
-SDLViewer::update_gamecontrollers(float delta)
+AppViewer::update_gamecontrollers(float delta)
 {
   const auto move_x_axis = SDL_CONTROLLER_AXIS_LEFTX;
   const auto move_y_axis = SDL_CONTROLLER_AXIS_LEFTY;
@@ -640,7 +640,7 @@ SDLViewer::update_gamecontrollers(float delta)
 }
 
 void
-SDLViewer::run()
+AppViewer::run()
 {
   Uint32 ticks = SDL_GetTicks();
 

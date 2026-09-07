@@ -15,12 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "galapix/galapix.hpp"
-#include "sdl/sdl_system.hpp"
+#include "app/app_system.hpp"
 
 int main(int argc, char** argv)
 {
-  galapix::SDLSystem sdl_system;
-  galapix::Galapix app(sdl_system);
+  galapix::AppSystem app_system;
+  galapix::Galapix app(app_system);
   return app.main(argc, argv);
 }
 

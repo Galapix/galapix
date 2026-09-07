@@ -6,8 +6,8 @@
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
-#ifndef HEADER_GALAPIX_SDL_IMGUI_OVERLAY_HPP
-#define HEADER_GALAPIX_SDL_IMGUI_OVERLAY_HPP
+#ifndef HEADER_GALAPIX_APP_IMGUI_OVERLAY_HPP
+#define HEADER_GALAPIX_APP_IMGUI_OVERLAY_HPP
 
 #include <SDL.h>
 #include <array>
