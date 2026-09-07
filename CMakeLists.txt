@@ -111,7 +111,6 @@ if(THREADSANITIZER)
 endif()
 
 find_package(PkgConfig REQUIRED)
-find_package(Python)
 find_package(Threads REQUIRED)
 find_package(CURL REQUIRED)
 find_package(OpenSSL COMPONENTS Crypto REQUIRED)
@@ -166,11 +165,6 @@ function(build_dependencies)
     set_target_properties(SQLiteCpp PROPERTIES CXX_CLANG_TIDY "")
   endif()
 
-  find_package(EnTT)
-  if(NOT TARGET EnTT::EnTT)
-    add_library(EnTT::EnTT INTERFACE IMPORTED)
-    target_include_directories(entt INTERFACE external/entt/single_include/)
-  endif()
 
   tinycmmc_find_dependency(geom)
   tinycmmc_find_dependency(logmich)
@@ -218,7 +212,6 @@ target_link_libraries(libgalapix PUBLIC
   strut::strut
   logmich::logmich
   sexp::sexp
-  EnTT::EnTT
   geom::geom
   wstdisplay::wstdisplay
   SQLiteCpp

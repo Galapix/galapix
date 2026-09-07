@@ -129,7 +129,6 @@
               gbenchmark
               glm
               gtest
-              jsoncpp
               libexif
               libjpeg
               libpng
@@ -145,7 +144,6 @@
               libGL
               libGLU
               libexif
-              libmhash
               libspnav
               sqlite
 

@@ -16,7 +16,6 @@
 
 #include "database/database.hpp"
 
-#include "database/file_tile_database.hpp"
 #include "database/sqlite_tile_database.hpp"
 #include "database/cached_tile_database.hpp"
 #include "util/filesystem.hpp"
