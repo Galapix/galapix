@@ -11,6 +11,9 @@ Make **develop** the branch that becomes **master**. See
 * **GTK frontend is abandoned** — keep `BUILD_GALAPIX_GTK=OFF` (flake and
   default CMake). Remove `src/gtk/` once the SDL viewer has any remaining
   GUI features that still lived only on GTK. All new UI work is **SDL only**.
+* **thumtoo local changes:** if patching is needed again, **vendor with
+  `git subtree`** (not floating `patches/*.patch`); upstream in larger
+  batches. See AGENTS.md.
 
 
 * Master-only CLI (`prepare`, `filegen`, `check`, `merge`) → **not** ported;

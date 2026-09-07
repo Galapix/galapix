@@ -24,6 +24,16 @@ prefix (`include/thumtoo/…`, `lib/libthumtoo.a`).
 
 Defines `HAVE_THUMTOO=1` on `libgalapix`.
 
+## Dependency / local forks
+
+The Nix flake pulls **thumtoo source** as a locked flake input (`flake =
+false`) and passes it as `THUMTOO_DIR`.
+
+If you must change thumtoo for Galapix before upstream accepts the work, use
+**`git subtree`** (see AGENTS.md — thumtoo dependency policy). Do not grow a
+pile of `patches/thumtoo-*.patch` files applied via `pkgs.applyPatches`.
+Upstream in batches, then switch back to the flake input.
+
 ## API
 
 `galapix::ThumtooTileProvider` implements `TileProvider`:

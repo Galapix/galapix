@@ -106,9 +106,26 @@ size checks) after decode.
   worthwhile future optimization in wstdisplay + ImageRenderer; not required
   for correctness. Prefer fixing seams/filters first.
 
-## thumtoo patches
+## thumtoo dependency policy
 
-Interactive `request_tile` only builds the requested scale (upstream thumtoo).
+**Default:** flake input `thumtoo` (`flake = false`) → source path for
+`THUMTOO_DIR` / `add_subdirectory`. Prefer upstream thumtoo master; do not
+carry long-lived `patches/*.patch` + `pkgs.applyPatches` for thumtoo.
+
+**If Galapix needs thumtoo changes again** (before they can land upstream):
+
+1. **Vendor with `git subtree`** under e.g. `third_party/thumtoo` (or
+   `external/thumtoo`), not a stack of floating patch files.
+2. Point `THUMTOO_DIR` / the flake at that tree while the fork diverges.
+3. Develop and test against the subtree; **upstream in larger batches**
+   (squash or topic PR to [thumtoo](https://github.com/Grumbel/thumtoo)), then
+   drop the subtree and return to the flake input.
+4. Avoid `pkgs.applyPatches` / in-repo `patches/thumtoo-*.patch` for ongoing
+   work — they are hard to iterate on and easy to leave stale in `flake.nix`.
+
+Interactive `request_tile` only builds the requested scale (upstream thumtoo
+as of the single-scale change). Full pyramids: `request_tile_pyramid` /
+`thumtoo-prepare`.
 
 ## Version
 

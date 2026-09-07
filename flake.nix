@@ -61,7 +61,9 @@
 
     # Tile backend source tree (CMake add_subdirectory via THUMTOO_DIR).
     # flake=false: input is the checkout path, not thumtoo's package outputs.
-    # Locked in flake.lock like any other input; single-scale request_tile is upstream.
+    # Locked in flake.lock like any other input.
+    # If Galapix must diverge from upstream again, vendor via git subtree
+    # (see AGENTS.md); do not reintroduce pkgs.applyPatches + patches/*.patch.
     thumtoo = {
       url = "github:Grumbel/thumtoo";
       flake = false;
