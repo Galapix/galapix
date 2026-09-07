@@ -6,16 +6,16 @@ SPDX-License-Identifier: GPL-3.0-or-later
 # Status reporting
 
 Operators need to know **what the app is doing**: how many tiles are queued,
-whether thumtoo is still cutting, size probes still running, etc. Today most of
-that is only visible in the log.
+whether thumtoo is still cutting, size probes still running, etc.
 
-## Current (console)
+## Console
 
 | Action | Key | Output |
 |--------|-----|--------|
 | Print visible image URLs | `Space` | stdout |
 | Print tile / view load stats | `l` | stdout (`print_state`) |
 | Print per-image info | `0` | stdout |
+| Toggle ImGui status panel | `F1` | on-screen |
 
 `Viewer::print_state` (key **`l`**) writes to **stdout** (not `log_info` — that is silent without `--verbose`) and reports:
 
@@ -27,33 +27,23 @@ that is only visible in the log.
 * **thumtoo callback queue** depth when `HAVE_THUMTOO` (usually 0 with the
   default inline executor)
 
-`Image::print_info` also prints per-image tile cache counters.
+`Image::print_info` also prints per-image tile cache counters and overview state.
 
-This is enough for debugging load policy without on-screen text.
+## On-screen overlay (Dear ImGui)
 
-## On-screen overlay (not implemented)
+**Dear ImGui** is the SDL/OpenGL chrome overlay (vendored under `external/imgui`,
+v1.91.6). Toggle with **F1**.
 
-Needs **text rendering** in the SDL/OpenGL path (wstdisplay). Options, ordered
-for this codebase’s preference for small dependency surface:
+* Pure OpenGL draw (no native widgets) — temporary shell while the long-term
+  UI stays spatial on the canvas.
+* Same counters as key **`l`**: view scale/offset, tile backlog, overview state.
+* Input: `WantCaptureMouse` / `WantCaptureKeyboard` gate viewer tools so
+  pan/zoom still work outside ImGui windows.
+* Application state stays in `Viewer` / `Workspace`; ImGui only displays and
+  may later send commands (do not bury logic in widgets).
 
-| Library | Pros | Cons | Fit |
-|---------|------|------|-----|
-| **stb_truetype** (+ optional **stb_easy_font**) | Single header, no pkg, atlas easy | You own layout/atlas/kerning | **Best first step** for debug HUD |
-| **FreeType** | Full TTF, nixpkgs-friendly | Extra dep; still need atlas + GL upload | Good if quality/i18n matters |
-| **SDL_ttf** | Simple API | Surface-oriented; less natural for pure GL path | OK for SDL-only experiments |
-| **Dear ImGui** | Full debug UI, queues, plots | Heavier; another interaction model | Overkill unless we want a real debug panel |
-| **Pango/Cairo** | High quality | Tied to GTK stack; wrong for default SDL package | Only if GTK frontend drives UI |
-
-Recommendation: start with **stb_truetype** (or a tiny fixed bitmap font) drawn
-into a GL texture each frame or on change. Keep the same counters already
-exposed for `print_state`. Do **not** pull ImGui until a richer debug UI is an
-explicit goal.
-
-Possible HUD lines:
-
-```text
-tiles req=12 up=3 cache=480  thumtoo_q=0  scale=0.42
-```
+stb_truetype is available inside ImGui (`imstb_truetype.h`) if custom text is
+needed later; a separate stb-only HUD is not required.
 
 ## thumtoo-side stats (future)
 
@@ -67,3 +57,4 @@ next to the tile counters above. Archive coalesce and single-cell cut remain
 * [TILE_LOADING.md](TILE_LOADING.md) — load policy and feature gaps
 * [THUMTOO.md](THUMTOO.md) — backend flags and threading
 * TODO.md — checklist items for overlay / queue visibility
+* `external/imgui/README.galapix.md` — vendor note
