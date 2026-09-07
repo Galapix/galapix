@@ -1,3 +1,16 @@
+## Frame drops on zoom — thumtoo request_tile (2026-09-07)
+
+Root cause was **thumtoo** `Client::request_tile` synchronous `get_tile` on the
+caller (GUI) plus inline Executor decode. Fixed in **thumtoo-035** (always
+enqueue). Rebuild Galapix against that thumtoo tip.
+
+Remaining Galapix-side costs (follow-ups if still janky):
+* `cancel_jobs` O(cache) every draw while zooming
+* `find_smaller_tile` queues many parent requests per visible cell
+* GL upload cap is already 4/frame in `process_queue`
+
+---
+
 ## More transitive-include fixes (2026-09-07) — tip **galapix-072**
 
 * `viewer_command.cpp`: `util/filesystem.hpp`
