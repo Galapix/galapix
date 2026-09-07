@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <filesystem>
 #include <string>
+#include <unistd.h>
+#include <vector>
 
 #include <SDL_image.h>
 #include <glad/gl.h>
@@ -43,6 +45,18 @@ char const* icon_file(int index)
   return names[index];
 }
 
+std::filesystem::path
+executable_dir()
+{
+  char buf[4096];
+  ssize_t const n = ::readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+  if (n <= 0) {
+    return {};
+  }
+  buf[n] = '\0';
+  return std::filesystem::path(buf).parent_path();
+}
+
 } // namespace
 
 ImguiOverlay::ImguiOverlay() = default;
@@ -58,8 +72,22 @@ ImguiOverlay::data_root()
   if (char const* env = std::getenv("GALAPIX_DATADIR"); env && *env) {
     return env;
   }
+  if (char const* src = std::getenv("GALAPIX_SOURCE"); src && *src) {
+    std::filesystem::path p = std::filesystem::path(src) / "data";
+    if (std::filesystem::is_directory(p / "icons")) {
+      return p.string();
+    }
+  }
   if (std::filesystem::is_directory("data/icons")) {
     return "data";
+  }
+  // nix/package: $out/bin/galapix → $out/share/galapix
+  std::filesystem::path const exe = executable_dir();
+  if (!exe.empty()) {
+    std::filesystem::path const share = exe.parent_path() / "share" / "galapix";
+    if (std::filesystem::is_directory(share / "icons")) {
+      return share.string();
+    }
   }
   return "/usr/local/share/galapix";
 }
@@ -67,7 +95,7 @@ ImguiOverlay::data_root()
 bool
 ImguiOverlay::load_icon_png(IconId id, std::string const& filename)
 {
-  std::filesystem::path path =
+  std::filesystem::path const path =
     std::filesystem::path(data_root()) / "icons" / "hicolor" / "24x24" / "actions" / filename;
 
   SDL_Surface* surface = IMG_Load(path.string().c_str());
@@ -90,15 +118,18 @@ ImguiOverlay::load_icon_png(IconId id, std::string const& filename)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgba->w, rgba->h, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, rgba->pixels);
+  glBindTexture(GL_TEXTURE_2D, 0);
 
   Icon& icon = m_icons[static_cast<size_t>(id)];
   icon.id = tex;
   icon.w = rgba->w;
   icon.h = rgba->h;
   SDL_FreeSurface(rgba);
+  log_info("ImGui icon loaded: {} ({}x{}, tex={})", path.string(), icon.w, icon.h, icon.id);
   return true;
 }
 
@@ -114,6 +145,9 @@ ImguiOverlay::load_icons()
     }
   }
   m_icons_loaded = any;
+  if (!any) {
+    log_warn("ImGui: no tool icons loaded (data_root={})", data_root());
+  }
   return any;
 }
 
@@ -144,8 +178,11 @@ ImguiOverlay::init(SDL_Window* window, SDL_GLContext gl_context)
 
   ImGui::StyleColorsDark();
   ImGuiStyle& style = ImGui::GetStyle();
-  style.WindowRounding = 6.0f;
+  style.WindowRounding = 0.0f;
   style.FrameRounding = 4.0f;
+  style.WindowBorderSize = 0.0f;
+  style.WindowPadding = ImVec2(6.0f, 8.0f);
+  style.ItemSpacing = ImVec2(4.0f, 6.0f);
 
   if (!ImGui_ImplSDL2_InitForOpenGL(window, gl_context)) {
     ImGui::DestroyContext();
@@ -157,6 +194,7 @@ ImguiOverlay::init(SDL_Window* window, SDL_GLContext gl_context)
     return false;
   }
 
+  // GL context is current; upload icon textures now.
   load_icons();
   m_initialized = true;
   return true;
@@ -212,27 +250,35 @@ ImguiOverlay::draw_status(Viewer& viewer)
     return;
   }
 
-  // --- Tools (replaces old GTK toolbar) ---
-  ImGui::SetNextWindowPos(ImVec2(12.0f, 12.0f), ImGuiCond_FirstUseEver);
-  if (ImGui::Begin("Tools", nullptr,
-                   ImGuiWindowFlags_AlwaysAutoResize |
-                   ImGuiWindowFlags_NoCollapse)) {
+  ImGuiIO const& io = ImGui::GetIO();
+  float const bar_w = 48.0f;
+
+  // --- Left vertical toolbar ---
+  ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+  ImGui::SetNextWindowSize(ImVec2(bar_w, io.DisplaySize.y), ImGuiCond_Always);
+  ImGuiWindowFlags const tb_flags =
+    ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+    ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+    ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoCollapse |
+    ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
+
+  ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.08f, 0.08f, 0.10f, 0.92f));
+  if (ImGui::Begin("##toolbar", nullptr, tb_flags)) {
     auto tool_btn = [&](IconId id, char const* tip, auto&& action) {
       Icon const& icon = m_icons[static_cast<size_t>(id)];
       ImGui::PushID(static_cast<int>(id));
       bool pressed = false;
+      ImVec2 const sz(32.0f, 32.0f);
       if (icon.id) {
-        // ImTextureID is ImU64 here; open GLuint via uintptr_t (not intptr_t).
         ImTextureID const tex_id =
           static_cast<ImTextureID>(static_cast<std::uintptr_t>(icon.id));
-        pressed = ImGui::ImageButton(
-          tip,
-          tex_id,
-          ImVec2(static_cast<float>(icon.w), static_cast<float>(icon.h)));
+        pressed = ImGui::ImageButton(tip, tex_id, sz);
       } else {
-        pressed = ImGui::Button(tip, ImVec2(28.0f, 28.0f));
+        // Fallback: first letter of tip
+        char label[2] = { tip[0], '\0' };
+        pressed = ImGui::Button(label, sz);
       }
-      if (ImGui::IsItemHovered()) {
+      if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
         ImGui::SetTooltip("%s", tip);
       }
       if (pressed) {
@@ -242,31 +288,30 @@ ImguiOverlay::draw_status(Viewer& viewer)
     };
 
     tool_btn(IconId::Pan, "Pan (p)", [&] { viewer.set_pan_tool(); });
-    ImGui::SameLine();
     tool_btn(IconId::ZoomRect, "Zoom rect (z)", [&] { viewer.set_zoom_tool(); });
-    ImGui::SameLine();
     tool_btn(IconId::GridTool, "Grid tool (y)", [&] { viewer.set_grid_tool(); });
-    ImGui::SameLine();
     tool_btn(IconId::Move, "Move/resize (m)", [&] { viewer.set_move_resize_tool(); });
 
+    ImGui::Spacing();
     ImGui::Separator();
+    ImGui::Spacing();
 
     tool_btn(IconId::Grid, "Toggle grid (g)", [&] { viewer.toggle_grid(); });
-    ImGui::SameLine();
     tool_btn(IconId::GridPin, "Pin grid (f)", [&] { viewer.toggle_pinned_grid(); });
 
+    ImGui::Spacing();
     ImGui::Separator();
+    ImGui::Spacing();
 
     tool_btn(IconId::LayoutRegular, "Layout regular (1)", [&] { viewer.layout_auto(); });
-    ImGui::SameLine();
     tool_btn(IconId::LayoutTight, "Layout tight (2)", [&] { viewer.layout_tight(); });
-    ImGui::SameLine();
     tool_btn(IconId::LayoutRandom, "Layout random (3)", [&] { viewer.layout_random(); });
   }
   ImGui::End();
+  ImGui::PopStyleColor();
 
-  // --- Status ---
-  ImGui::SetNextWindowPos(ImVec2(12.0f, 120.0f), ImGuiCond_FirstUseEver);
+  // --- Status (offset past toolbar) ---
+  ImGui::SetNextWindowPos(ImVec2(bar_w + 12.0f, 12.0f), ImGuiCond_FirstUseEver);
   ImGui::SetNextWindowSize(ImVec2(360.0f, 0.0f), ImGuiCond_FirstUseEver);
   if (!ImGui::Begin("Galapix status", &m_visible, ImGuiWindowFlags_NoCollapse)) {
     ImGui::End();

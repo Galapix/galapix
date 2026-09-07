@@ -101,6 +101,11 @@
 
             doCheck = false;
 
+            postInstall = ''
+              wrapProgram "$out/bin/galapix" \
+                --set GALAPIX_DATADIR "$out/share/galapix"
+            '';
+
             cmakeFlags = [
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
@@ -271,6 +276,7 @@
             CMAKE_BUILD_TYPE = "Debug";
             shellHook = ''
               export GALAPIX_SOURCE="$PWD"
+              export GALAPIX_DATADIR="''${GALAPIX_DATADIR:-$PWD/data}"
               export GALAPIX_BUILD_DIR="''${GALAPIX_BUILD_DIR:-/tmp/galapix-build}"
               export THUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}"
               echo "galapix dev shell (CMAKE_BUILD_TYPE=''${CMAKE_BUILD_TYPE:-Debug})"
