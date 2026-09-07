@@ -15,7 +15,7 @@ whether thumtoo is still cutting, size probes still running, etc.
 | Print visible image URLs | `Space` | stdout |
 | Print tile / view load stats | `l` | stdout (`print_state`) |
 | Print per-image info | `0` | stdout |
-| Toggle ImGui status panel | `F1` | on-screen |
+| Toggle ImGui chrome (tools + status) | `Tab` / `F1` | on-screen |
 
 `Viewer::print_state` (key **`l`**) writes to **stdout** (not `log_info` — that is silent without `--verbose`) and reports:
 
@@ -32,7 +32,7 @@ whether thumtoo is still cutting, size probes still running, etc.
 ## On-screen overlay (Dear ImGui)
 
 **Dear ImGui** is the SDL/OpenGL chrome overlay (vendored under `external/imgui`,
-v1.91.6). Toggle with **F1**.
+v1.91.6). Toggle with **Tab** or **F1**.
 
 * Pure OpenGL draw (no native widgets) — temporary shell while the long-term
   UI stays spatial on the canvas.
