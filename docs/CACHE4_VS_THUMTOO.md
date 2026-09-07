@@ -136,9 +136,31 @@ smoke confidence is high.
 * **`-p` migrated** to thumtoo locator list APIs. Do not grow Galapix SQL
   patterns further. Tags/collections still belong in thumtoo.
 * Resource `cache4.sqlite3` is no longer required for pattern open.
-* **Open path** still probes `get_old_file_entry` then falls back to thumtoo;
-  with a warm cache4 it can still attach `ImageEntry` sizes (redundant with
-  thumtoo `get_size`).
+* **Open path (galapix-066):** does **not** read ResourceDatabase. Sizes/tiles
+  come only from thumtoo. Avoids skipping images that had a file row but no
+  `ImageEntry`.
+
+#### ResourceDatabase ↔ thumtoo coverage
+
+| cache4 table / field | Meaning | thumtoo coverage |
+|----------------------|---------|------------------|
+| `file.path`, `mtime` | Path + mtime | `locators.outer_path`, `mtime_ns` |
+| `blob.sha1`, `size` | Content identity | `content_id` (sha256 preferred), locator `size` |
+| `image.width/height` | Pixel size | `content.width/height` + `get_size` |
+| computed max_scale | Pyramid depth | `get_tile_coverage` / size-based max_scale |
+| `archive` / `archive_file` | Archive TOC + members | `archive_entries` + `//archive:` URIs |
+| `url` | Remote URL + content-type | `locators` + HTTP fetch (when curl built) |
+| `video.*` | Duration / aspect | `content.duration_ms`, `still_count` (partial; not aspect) |
+| `resource.type/handler/status` | Galapix pipeline state | `content.status`, `format`, `error_code` |
+| `archive.password` | Archive password | **Not in thumtoo** (unused by view path today) |
+
+**Workspace layout** (`.galapix` files) is separate from ResourceDatabase.
+
+**Not a reason to keep cache4 for viewing:** every field the open path used
+(`OldFileEntry` URL, `ImageEntry` WxH) is supplied by thumtoo. Residual
+unique-ish fields (archive password, video aspect) are not read by the
+current viewer.
+
 * **Idle stack (safe next deletes once smoke-tested):**
   - `DatabaseThread` — started/joined, **zero** external `request_*` callers
   - `FileEntryGenerationJob` — legacy tile cut into resource DB
@@ -162,8 +184,10 @@ smoke confidence is high.
 1. **Tiles:** thumtoo already owns the pure view path; invest in thumtoo gaps
    (single-cell cut, archive coalesce) rather than new cache4 tile features.
 2. **Query / library index:** implement in **thumtoo**, not more Galapix SQL.
-3. **Resource `cache4.sqlite3`:** `-p` no longer depends on it; keep only while
-   other metadata consumers remain (do not remove casually).
+3. **Resource `cache4.sqlite3`:** view path no longer reads it (galapix-066).
+   Safe to stop constructing `Database` / SQLiteCpp once workspace tools and
+   any offline scripts are confirmed independent. Do not delete the on-disk
+   user DB without a migration notice.
 4. **Dataverse** vision: defer design; Galapix remains a spatial viewer until then.
 
 ## Related code entry points

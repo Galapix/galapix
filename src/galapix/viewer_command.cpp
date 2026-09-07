@@ -19,8 +19,6 @@
 #include <filesystem>
 #include <iostream>
 
-#include "database/entries/old_file_entry.hpp"
-#include "database/entries/image_entry.hpp"
 #include "galapix/mandelbrot_tile_provider.hpp"
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
@@ -145,9 +143,7 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
 }
 
 TileProviderPtr
-ViewerCommand::make_file_tile_provider(URL const& url,
-                                       OldFileEntry const* file_entry,
-                                       ImageEntry const* image_entry)
+ViewerCommand::make_file_tile_provider(URL const& url)
 {
 #ifdef HAVE_THUMTOO
   if (m_thumtoo) {
@@ -169,8 +165,7 @@ ViewerCommand::make_file_tile_provider(URL const& url,
     return {};
   }
 #endif
-  (void)file_entry;
-  (void)image_entry;
+  (void)url;
   return {};
 }
 
@@ -382,29 +377,15 @@ ViewerCommand::run(std::vector<URL> const& urls)
     }
     else
     {
-      OldFileEntry file_entry;
-      if (!m_database.get_resources().get_old_file_entry(*i, file_entry))
-      {
-        if (auto provider = make_file_tile_provider(*i)) {
-          workspace.add_image(std::make_shared<Image>(*i, provider, &m_job_manager));
-        } else {
-          workspace.add_image(std::make_shared<Image>(*i, TileProviderPtr{}, &m_job_manager));
-        }
-      }
-      else
-      {
-        ImageEntry image_entry;
-        if (!m_database.get_resources().get_image_entry(file_entry, image_entry))
-        {
-          log_warn("no ImageEntry for {}", *i);
-        }
-        else
-        {
-          workspace.add_image(std::make_shared<Image>(
-            file_entry.get_url(),
-            make_file_tile_provider(file_entry.get_url(), &file_entry, &image_entry),
-            &m_job_manager));
-        }
+      // View path: sizes and tiles come from thumtoo (or empty provider).
+      // ResourceDatabase (cache4.sqlite3) is not consulted — its file/image
+      // rows only mirrored width/height/mtime/sha1, all covered by thumtoo
+      // locators + content. A partial cache4 hit without ImageEntry used to
+      // skip the image entirely; always try the provider instead.
+      if (auto provider = make_file_tile_provider(*i)) {
+        workspace.add_image(std::make_shared<Image>(*i, provider, &m_job_manager));
+      } else {
+        workspace.add_image(std::make_shared<Image>(*i, TileProviderPtr{}, &m_job_manager));
       }
     }
   }

@@ -34,8 +34,6 @@ namespace galapix {
 
 class System;
 class URL;
-class OldFileEntry;
-class ImageEntry;
 
 class ViewerCommand
 {
@@ -49,8 +47,11 @@ private:
   System& m_system;
   Options m_opts;
 
+  /** Still constructed (opens cache4.sqlite3) so schema stays available;
+      the view path no longer reads ResourceDatabase rows. */
   Database   m_database;
   JobManager m_job_manager;
+  /** Idle under the thumtoo view path (no request_* callers). */
   DatabaseThread m_database_thread;
   std::vector<std::string> m_patterns;
 
@@ -59,9 +60,7 @@ private:
 #endif
 
   /** Thumtoo TileProvider when HAVE_THUMTOO; else empty for plain files. */
-  TileProviderPtr make_file_tile_provider(URL const& url,
-                                          OldFileEntry const* file_entry = nullptr,
-                                          ImageEntry const* image_entry = nullptr);
+  TileProviderPtr make_file_tile_provider(URL const& url);
 
 private:
   ViewerCommand(ViewerCommand const&) = delete;

@@ -1,3 +1,36 @@
+## View path ignores ResourceDatabase (2026-09-07) — tip **galapix-066**
+
+### Concern
+Does `ResourceDatabase` still hold information thumtoo does not cover?
+
+### Answer (view path)
+**No.** The open path only ever needed URL + pixel size for
+`ThumtooTileProvider`. `make_file_tile_provider` already ignored
+`OldFileEntry` / `ImageEntry` under `HAVE_THUMTOO`. Coverage matrix:
+
+| ResourceDatabase | thumtoo |
+|------------------|---------|
+| path, mtime | locators |
+| sha1 blob id | content_id (sha256) |
+| image WxH | content / get_size |
+| archive TOC | archive_entries |
+| URL rows | locators + HTTP |
+| video duration | duration_ms / stills (partial) |
+| archive password | **not covered** (also unused by view) |
+
+Workspace `.galapix` files are independent of cache4.
+
+### Change
+* Open path always uses `make_file_tile_provider(url)` — no
+  `get_old_file_entry` / `get_image_entry`.
+* Fixes: file row present but missing `ImageEntry` no longer drops the image.
+* `Database` / `DatabaseThread` still constructed (schema + idle thread) for a
+  later deletion pass; not read for viewing.
+
+See [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md) Phase 3 matrix.
+
+---
+
 ## Obsolete-cruft audit after thumtoo (2026-09-07) — tip **galapix-065**
 
 ### Already gone (Phases 0–2)
