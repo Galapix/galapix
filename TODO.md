@@ -1,3 +1,11 @@
+## Faster initial gallery fill (2026-09-07) — tip **galapix-081**
+
+* GL uploads per image/frame: **2 → 16** (cache-hit overviews were stuck behind a tiny upload budget)
+* Scale debounce: only for **adjacent** scale steps (50ms); multi-level jumps
+  (open/layout/zoom-to-fit) apply immediately
+
+---
+
 ## Keep full tile scale range in memory cache (2026-09-07) — tip **galapix-080**
 
 `cleanup()` (off-screen each frame) used `min_keep_scale = max_scale - 2`, so

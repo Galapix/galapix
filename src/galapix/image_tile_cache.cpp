@@ -312,7 +312,10 @@ int
 ImageTileCache::stable_request_scale(int desired_scale)
 {
   using clock = std::chrono::steady_clock;
-  constexpr auto kHold = std::chrono::milliseconds(80);
+  // Only damp *adjacent* scale steps (continuous wheel). Large jumps
+  // (layout, zoom-to-fit, multi-notch wheel) commit immediately so initial
+  // gallery fill is not delayed 80ms per level.
+  constexpr auto kHold = std::chrono::milliseconds(50);
 
   if (!m_have_stable_scale) {
     m_have_stable_scale = true;
@@ -327,8 +330,17 @@ ImageTileCache::stable_request_scale(int desired_scale)
     return m_stable_scale;
   }
 
-  // Desired moved: restart hold timer on each change so continuous zoom
-  // never commits intermediate scales.
+  int const delta = desired_scale > m_stable_scale
+                      ? desired_scale - m_stable_scale
+                      : m_stable_scale - desired_scale;
+  if (delta > 1) {
+    m_stable_scale = desired_scale;
+    m_pending_scale = desired_scale;
+    m_pending_since = clock::now();
+    return m_stable_scale;
+  }
+
+  // Adjacent step: hold until desired stays put briefly.
   if (desired_scale != m_pending_scale) {
     m_pending_scale = desired_scale;
     m_pending_since = clock::now();
@@ -344,9 +356,10 @@ ImageTileCache::stable_request_scale(int desired_scale)
 void
 ImageTileCache::process_queue()
 {
-  // Cap GL uploads per frame so fast zoom never stalls the UI. Remaining
-  // tiles stay queued; receive_tile / this function request another redraw.
-  constexpr int kMaxUploadsPerFrame = 2;
+  // Cap GL uploads per image per frame. Was 2 and starved gallery fill when
+  // many overview tiles were already decoded. Higher budget drains the
+  // receive queue faster when thumbnails are cache hits.
+  constexpr int kMaxUploadsPerFrame = 16;
 
   int uploaded = 0;
   Tile tile;
