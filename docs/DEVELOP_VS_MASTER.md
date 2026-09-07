@@ -3,6 +3,12 @@ SPDX-FileCopyrightText: 2008-2026 Ingo Ruhnke <grumbel@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
+> **Status (2026-09-07):** `master` has absorbed `develop` (merge commit
+> `11c7c3a2` on the former develop tip; strategy was port master-only fixes,
+> then `merge -s ours` of v0.2.2 master into develop, then fast-forward master).
+> Delete the remote `develop` branch when ready; single line is `master` at
+> `0.3.0-dev`. Historical comparison below remains for context.
+
 # develop vs master
 
 In-depth comparison of Galapix **`develop`** (this tree) and **`master`**
