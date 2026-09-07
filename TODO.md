@@ -1,3 +1,14 @@
+## Keep full tile scale range in memory cache (2026-09-07) — tip **galapix-080**
+
+`cleanup()` (off-screen each frame) used `min_keep_scale = max_scale - 2`, so
+only the coarsest ~3 pyramid levels survived. Fine tiles were dropped on pan
+→ entry counts stuck around ~1k for galleries.
+
+Now: keep all SUCCEEDED tiles; only abort REQUESTED when off-screen.
+No hard entry cap yet (memory grows with browsing; `clear_cache` still wipes).
+
+---
+
 ## Remove concurrent tile-request cap (2026-09-07) — tip **galapix-079**
 
 The REQUESTED-job cap (24 then 64) was meant to limit zoom thrash. It is

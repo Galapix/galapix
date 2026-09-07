@@ -125,7 +125,10 @@ ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_tile_provider(tile_provider),
   m_max_scale(m_tile_provider->get_max_scale()),
   m_min_scale(m_tile_provider->get_min_scale()),
-  m_min_keep_scale(m_max_scale - 2),
+  // Keep all scales that successfully loaded. Previously max_scale-2 dropped
+  // almost everything on pan-off (cleanup), so only ~overview tiles survived
+  // (~1k entries for large galleries).
+  m_min_keep_scale(m_min_scale),
   m_have_last_cancel(false),
   m_last_cancel_scale(0),
   m_last_cancel_rect(),
@@ -258,17 +261,14 @@ ImageTileCache::clear()
 void
 ImageTileCache::cleanup()
 {
-  // Cancel all jobs and remove tiles smaller m_min_keep_scale
-  for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
+  // Off-screen / explicit cache_cleanup: abort in-flight requests only.
+  // Retain every SUCCEEDED tile (full scale range). Memory grows with browsed
+  // content; clear_cache() / Image reset still wipe everything.
+  for (Cache::iterator i = m_cache.begin(); i != m_cache.end();)
   {
     if (i->second.status == SurfaceStruct::SURFACE_REQUESTED)
     {
       i->second.job_handle.set_aborted();
-      m_cache.erase(i++);
-    }
-    else if (i->second.status == SurfaceStruct::SURFACE_SUCCEEDED &&
-             i->first.get_scale() < m_min_keep_scale)
-    {
       m_cache.erase(i++);
     }
     else

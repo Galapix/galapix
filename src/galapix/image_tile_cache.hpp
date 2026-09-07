@@ -133,7 +133,7 @@ public:
   /** Finest scale the provider allows (0 for raster; may be negative for PDF). */
   int m_min_scale;
 
-  /** The smallest scale that is stored permanently */
+  /** Finest scale retained by cleanup(); set to min_scale to keep all. */
   int m_min_keep_scale;
 
   /** Last cancel_jobs args — skip O(cache) walk when unchanged. */
