@@ -1,3 +1,10 @@
+## More transitive-include fixes (2026-09-07) — tip **galapix-072**
+
+* `viewer_command.cpp`: `util/filesystem.hpp`
+* `tile_generator.hpp`: `math/size.hpp`, `util/url.hpp`
+
+---
+
 ## Fix includes after ResourceDatabase removal (2026-09-07) — tip **galapix-071**
 
 `Size` / `Math` were previously included transitively via database headers.

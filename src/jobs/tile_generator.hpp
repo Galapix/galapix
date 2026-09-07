@@ -22,6 +22,8 @@
 #include <surf/software_surface_factory.hpp>
 
 #include "galapix/tile.hpp"
+#include "math/size.hpp"
+#include "util/url.hpp"
 
 namespace galapix {
 

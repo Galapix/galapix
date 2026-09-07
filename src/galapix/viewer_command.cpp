@@ -24,6 +24,7 @@
 #include "galapix/viewer.hpp"
 #include "galapix/workspace.hpp"
 #include "galapix/zoomify_tile_provider.hpp"
+#include "util/filesystem.hpp"
 
 #ifdef HAVE_THUMTOO
 #  include "thumtoo/thumtoo_callback_queue.hpp"
