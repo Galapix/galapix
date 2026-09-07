@@ -63,7 +63,7 @@ and CMake once a clean build confirms nothing else pulls them in.
 
 | Dependency | Role |
 |------------|------|
-| **SDL2** | Window / input (`galapix.sdl`) |
+| **SDL2** | Window / input (product binary `galapix`) |
 | **OpenGL / mesa / libGL** | Rendering (glad via wstdisplay) |
 | **glm** | Viewer transforms |
 | **surfcpp** | Software surfaces, JPEG/PNG, etc. |

@@ -86,8 +86,8 @@ if(NOT _project_version_cmake)
   set(_project_version_cmake "0.0.0")
 endif()
 
-# Keep historical PROJECT_NAME (binary OUTPUT_NAME galapix-0.3.sdl).
-project(galapix-0.3 VERSION ${_project_version_cmake} LANGUAGES CXX C)
+# Single product binary: `galapix` (version lives in VERSION / --version).
+project(galapix VERSION ${_project_version_cmake} LANGUAGES CXX C)
 
 include(mk/cmake/TinyCMMC.cmake)
 
@@ -101,7 +101,7 @@ message(STATUS "Galapix version: ${PROJECT_VERSION_FULL} (CMake PROJECT_VERSION=
 
 include(CheckIncludeFile)
 
-option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
+option(BUILD_GALAPIX_SDL "Build galapix (SDL viewer)" ON)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 option(WITH_THUMTOO "Use thumtoo as tile cache backend" OFF)
@@ -307,13 +307,13 @@ if(BUILD_GALAPIX_SDL)
     PkgConfig::SDL2_IMAGE)
   target_compile_definitions(libgalapix_sdl PRIVATE -DGALAPIX_SDL)
 
-  add_executable(galapix.sdl src/main/sdl_main.cpp)
-  set_target_properties(galapix.sdl PROPERTIES OUTPUT_NAME "${PROJECT_NAME}.sdl")
-  target_compile_options(galapix.sdl PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-  target_compile_definitions(galapix.sdl PRIVATE -DGALAPIX_SDL ${GALAPIX_SPNAV_DEFINES})
-  target_link_libraries(galapix.sdl PRIVATE libgalapix_sdl)
+  add_executable(galapix_bin src/main/sdl_main.cpp)
+  set_target_properties(galapix_bin PROPERTIES OUTPUT_NAME "galapix")
+  target_compile_options(galapix_bin PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
+  target_compile_definitions(galapix_bin PRIVATE -DGALAPIX_SDL ${GALAPIX_SPNAV_DEFINES})
+  target_link_libraries(galapix_bin PRIVATE libgalapix_sdl)
 
-  install(TARGETS galapix.sdl
+  install(TARGETS galapix_bin
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()

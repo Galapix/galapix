@@ -60,11 +60,11 @@ thumtoo-prepare --tiles /path/to/images…
 
 ```bash
 # HAVE_THUMTOO builds default to thumtoo for local files:
-galapix.sdl [files…]
-galapix.sdl --thumtoo-cache ~/.cache/thumtoo [files…]
+galapix [files…]
+galapix --thumtoo-cache ~/.cache/thumtoo [files…]
 
 # Force legacy SQLite tiles:
-galapix.sdl --no-thumtoo [files…]
+galapix --no-thumtoo [files…]
 ```
 
 When thumtoo is enabled (`HAVE_THUMTOO` and not `--no-thumtoo`),

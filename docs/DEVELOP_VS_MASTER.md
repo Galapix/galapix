@@ -87,7 +87,7 @@ Offline tile build is **thumtoo**’s job.
 - AGENTS.md, docs/THUMTOO.md, docs/DEPENDENCIES.md
 - Workspace reader/writer via **priocpp**
 - Numeric path sort (strut)
-- GTK as optional (`BUILD_GALAPIX_GTK` default OFF in CMake; flake may still enable)
+- GTK removed from tree (historical note only)
 
 ## Features on master that are missing, reduced, or moved on develop
 

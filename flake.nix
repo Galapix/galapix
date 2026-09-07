@@ -102,7 +102,7 @@
             doCheck = false;
 
             cmakeFlags = [
-              "-DBUILD_GALAPIX_SDL=ON"
+              "-DBUILD_GALAPIX_SDL=ON"  # single viewer binary
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
@@ -185,12 +185,14 @@
         };
 
         apps = rec {
-          default = galapix_sdl;
+          default = galapix_app;
 
-          galapix_sdl = flake-utils.lib.mkApp {
+          galapix_app = flake-utils.lib.mkApp {
             drv = packages.galapix;
-            exePath = "/bin/galapix-0.3.sdl";
+            exePath = "/bin/galapix";
           };
+          # Alias kept for muscle memory
+          galapix_sdl = galapix_app;
 
         };
 
@@ -226,12 +228,12 @@
                 cmake --build "$GALAPIX_BUILD_DIR" "$@"
               ''
             );
-            # SDL binary is OUTPUT_NAME "${PROJECT_NAME}.sdl" → galapix-0.3.sdl
+            # Product binary is `galapix`
             galapixRun = pkgs.writeShellScriptBin "galapix-run" (
               galapixDevPreamble
               + ''
                 galapix-build || exit 1
-                bin="$GALAPIX_BUILD_DIR/galapix-0.3.sdl"
+                bin="$GALAPIX_BUILD_DIR/galapix"
                 if [ ! -x "$bin" ]; then
                   echo "galapix-run: $bin missing after build" >&2
                   exit 1
@@ -244,7 +246,7 @@
               galapixDevPreamble
               + ''
                 galapix-build || exit 1
-                bin="$GALAPIX_BUILD_DIR/galapix-0.3.sdl"
+                bin="$GALAPIX_BUILD_DIR/galapix"
                 if [ ! -x "$bin" ]; then
                   echo "galapix-run-gdb: $bin missing after build" >&2
                   exit 1
@@ -281,8 +283,8 @@
               echo "  galapix-configure     # cmake -S . -B \$GALAPIX_BUILD_DIR -G Ninja (+ thumtoo)"
 echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-build         # incremental cmake --build"
-              echo "  galapix-run [args]    # build + run galapix-0.3.sdl"
-              echo "  galapix-run-gdb [args]# build + gdb --args galapix-0.3.sdl"
+              echo "  galapix-run [args]    # build + run galapix"
+              echo "  galapix-run-gdb [args]# build + gdb --args galapix"
               echo "  nix build             # packaged RelWithDebInfo-style derivation"
               echo "  also: nix develop -c galapix-run /tmp/*.jpg"
             '';

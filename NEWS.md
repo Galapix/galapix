@@ -1,3 +1,8 @@
+## Unreleased
+
+* Product binary is **`galapix`** (was `galapix-0.3.sdl` / dual SDL|GTK names)
+* GTK frontend removed; desktop file and docs updated accordingly
+
 <!--
 SPDX-FileCopyrightText: 2008-2026 Ingo Ruhnke <grumbel@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later

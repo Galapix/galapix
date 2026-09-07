@@ -9,7 +9,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 **galapix** is a zoomable **image collection viewer**: large libraries and
 gigapixel images, multi-scale tiles, interactive layout. It is a GUI app
-(SDL and optional GTK), not a thumbnail library.
+(SDL viewer), not a thumbnail library.
 
 Durable multi-resolution **pixels** for shared use across *too apps belong in
 [thumtoo](https://github.com/Grumbel/thumtoo). Galapix owns workspace, OpenGL
@@ -153,7 +153,7 @@ nix develop
 galapix-configure   # cmake -G Ninja -DWITH_THUMTOO=ON …
 galapix-build
 galapix-run /tmp/*.jpg --verbose --debug
-# galapix-run-gdb …   # gdb --args galapix-0.3.sdl
+# galapix-run-gdb …   # gdb --args galapix
 # Override: GALAPIX_BUILD_DIR=… THUMTOO_DIR=… CMAKE_BUILD_TYPE=…
 
 # Manual
@@ -164,9 +164,9 @@ cmake --build build
 Packaged run:
 
 ```bash
-result/bin/galapix-0.3.sdl /path/to/images… --verbose --debug
+result/bin/galapix /path/to/images… --verbose --debug
 # or force SQLite tiles:
-result/bin/galapix-0.3.sdl --no-thumtoo …
+result/bin/galapix --no-thumtoo …
 ```
 
 ## Coding conventions

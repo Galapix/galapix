@@ -37,9 +37,7 @@ Make **develop** the branch that becomes **master**. See
 
 ### Policy
 
-* **GTK frontend is abandoned** — keep `BUILD_GALAPIX_GTK=OFF` (flake and
-  default CMake). Remove `src/gtk/` once the SDL viewer has any remaining
-  GUI features that still lived only on GTK. All new UI work is **SDL only**.
+* **GTK frontend removed** — single binary `galapix` (SDL + ImGui). All new UI is SDL.
 * **thumtoo local changes:** if patching is needed again, **vendor with
   `git subtree`** (not floating `patches/*.patch`); upstream in larger
   batches. See AGENTS.md.
@@ -808,7 +806,6 @@ Random Notes
 ### Do not
 * Reintroduce `pkgs.applyPatches` for thumtoo
 * Put business logic inside ImGui callbacks
-* Revive GTK as primary UI
 * Re-add Galapix thumbgen/list/cleanup CLI (belongs in thumtoo)
 
 ## CLI trimming ([x] done, 2026-09-07)
@@ -830,7 +827,7 @@ to thumtoo.
 **Touched:**
 * `src/galapix/arg_parser.cpp`, `galapix.cpp`, `galapix.hpp`
 * Removed `thumbnail_generator.{hpp,cpp}`
-* `galapix.desktop` — Exec=`galapix-0.3.sdl %F`; image MimeTypes
+* `galapix.desktop` — Exec=`galapix %F`; image MimeTypes
 * AGENTS.md, README.md, NEWS.md, docs/THUMTOO.md, docs/DEVELOP_VS_MASTER.md,
   docs/TILE_LOADING.md, flake.nix help text
 

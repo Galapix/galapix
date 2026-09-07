@@ -76,9 +76,7 @@ On Ubuntu 15.04 one can install all required libraries with this call:
       libboost-filesystem1.55-dev \
       libcurl4-gnutls-dev \
       libexif-dev \
-      libglademm-2.4-dev \
       libglew1.5-dev \
-      libgtkglextmm-x11-1.2-dev \
       libjpeg8-dev \
       libmagick++-dev \
       libpng12-dev \
@@ -117,10 +115,9 @@ To get a list of available options use:
 Running:
 --------
 
-The primary binary is the SDL viewer (`galapix-0.3.sdl` when built with the
-default project version). Pass image files or URLs directly:
+The product binary is the SDL viewer (`galapix`). Pass image files or URLs directly:
 
-    build/galapix-0.3.sdl [FILES]...
+    build/galapix [FILES]...
 
 There is no subcommand. A leading `view` is still accepted for compatibility
 with older scripts and documentation.
@@ -135,12 +132,12 @@ database file will be created; the database will reside in memory only.
 
 As a special gimmick you can run:
 
-    build/galapix-0.3.sdl buildin://mandelbrot
+    build/galapix buildin://mandelbrot
 
 To get a classic Mandelbrot set.
 
 
-Keyboard Commands for Galapix SDL
+Keyboard Commands
 ---------------------------------
 
 Key       | Function
