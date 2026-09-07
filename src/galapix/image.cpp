@@ -85,7 +85,9 @@ Image::clear_cache()
   {
     m_cache->clear();
   }
-  m_overview.clear();
+  if (m_overview) {
+    m_overview->clear();
+  }
 }
 
 void
@@ -107,7 +109,9 @@ Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
   }
   else
   {
-    m_overview.process();
+    if (m_overview) {
+      m_overview->process();
+    }
     m_cache->process_queue();
     m_renderer->draw(gc, cliprect, zoom);
   }
@@ -190,8 +194,8 @@ Image::on_leave_screen()
   WorkspaceItem::on_leave_screen();
   cache_cleanup();
   // Keep overview if already Ready; abort in-flight to save work off-screen.
-  if (m_overview.state() == ImageOverview::State::Loading) {
-    m_overview.clear();
+  if (m_overview && m_overview->state() == ImageOverview::State::Loading) {
+    m_overview->clear();
   }
 }
 
