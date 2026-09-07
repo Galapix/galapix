@@ -42,6 +42,14 @@ Galapix 0.3.0-dev (unreleased)
 * Key **`l`**: print view + tile backlog to stdout (pending requests/uploads)
 * **Dear ImGui** status overlay (F1) — pure OpenGL chrome placeholder
 
+### CLI
+
+* No subcommands: pass files/URLs directly (`galapix [OPTIONS]… [FILES]…`)
+* Removed `thumbgen`, `list`, `cleanup` (and vestigial `info` / `export`);
+  use **thumtoo** for offline tile work and DB-style maintenance
+* Leading `view` still accepted for compatibility with older scripts
+* `.desktop` file: richer image `MimeType=` list; Exec without subcommand
+
 ### Still in progress
 
 * In-memory libjpeg-scale **overview** under tiles (EXIF thumb / disk cache still open)

@@ -302,7 +302,7 @@ Until API changes land, Galapix may:
 
 | User intent | Tool |
 |-------------|------|
-| Browse / zoom now | `galapix view` + on-demand tiles (this strategy) |
+| Browse / zoom now | `galapix` + on-demand tiles (this strategy) |
 | Fill disk cache offline | `thumtoo-prepare` (batch pyramid OK) |
 | Legacy full Galapix prepare | Not ported; use thumtoo prepare |
 

@@ -1,10 +1,10 @@
 [Desktop Entry]
 Name=Galapix
-Comment=A Zoomable Image Viewer
+Comment=A zoomable image viewer for large collections and gigapixel images
 Icon=galapix
 Terminal=false
-Exec=galapix.sdl %f
+Exec=galapix-0.3.sdl %F
 Type=Application
-Categories=Graphics;Office;
+Categories=Graphics;Viewer;
 StartupNotify=false
-MimeType=application/x-galapix
+MimeType=image/jpeg;image/png;image/gif;image/bmp;image/tiff;image/webp;image/svg+xml;image/x-xcf;image/x-portable-anymap;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;application/x-galapix;

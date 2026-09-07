@@ -53,21 +53,25 @@ that develop no longer ships in-tree.
 
 ## CLI commands
 
+Galapix on **develop** is the viewer only. There is no subcommand: pass files
+or URLs directly (a leading `view` is still accepted for old scripts).
+
 | Command | master | develop | Notes |
 |---------|--------|---------|--------|
-| `view` | yes | yes | Main viewer path |
-| `thumbgen` | yes | yes | Small thumbs / limited generation |
-| `list` | yes | yes | List DB files |
-| `cleanup` | yes | yes | GC |
-| `export` | yes | yes | Export scaled images |
-| `info` | — | yes | develop-only |
+| *(default / files)* | via `view` | **yes** | Viewer; no subcommand required |
+| `view` | yes | compat only | Optional leading token; ignored |
+| `thumbgen` | yes | **removed** | Use **thumtoo** / `thumtoo-prepare` |
+| `list` | yes | **removed** | thumtoo / resource tooling |
+| `cleanup` | yes | **removed** | thumtoo |
+| `export` | yes | removed | Was mostly dead (`#if 0`) |
+| `info` | — | removed | Develop-only debug stub |
 | **`prepare`** | **yes** | **not ported** | Use **thumtoo-prepare**; improve thumtoo UX |
 | **`filegen`** | **yes** | **not ported** | Open/view + resource DB / thumtoo size probe |
 | **`check`** | **yes** | **not ported** | Optional later; not a merge blocker |
 | **`merge`** | **yes** | **not ported** | Optional later; not a merge blocker |
 
-Policy: do **not** reimplement these four on develop. Offline tile build is
-**thumtoo**’s job.
+Policy: do **not** reimplement master-only maintenance commands on develop.
+Offline tile build is **thumtoo**’s job.
 
 ## Features present on develop, absent on master
 

@@ -118,37 +118,25 @@ To get a list of available options use:
 Running:
 --------
 
-Galapix comes in two versions, one is `galapix.sdl`, a GUI-less SDL
-based version and `galapix.gtk` a GUI version. The Gtk version is at
-this point very incomplete and hasn't been tested much, but it might
-be easier to use then figuring out the keybinding used by the SDL
-version.
+The primary binary is the SDL viewer (`galapix-0.3.sdl` when built with the
+default project version). Pass image files or URLs directly:
 
-Galapix comes with a number of sub commands, allowing the user to either
-view images or pre-generate thumbnails. The most basic command is:
+    build/galapix-0.3.sdl [FILES]...
 
-    build/galapix.gtk view [FILES]...
+There is no subcommand. A leading `view` is still accepted for compatibility
+with older scripts and documentation.
 
-Which displays the given files. To pregenerate only the small
-thumbnails you use:
+Thumbnail generation and offline tile preparation belong to
+[thumtoo](https://github.com/Grumbel/thumtoo) (`thumtoo-prepare` and related
+tools). Galapix is the interactive viewer.
 
-    build/galapix.gtk thumbgen [FILES]...
-
-To generate not only the small thumbnails, but all tiles you use:
-
-    build/galapix.gtk prepare [FILES]...
-
-The other available commands are mostly for debugging and have little
-actualy use.
-
-Via the `-d` flag you can specifiy a database, so that you can have
-different databases for different files. If you give an empty string
-`-d ""`, no database file will be created, the database will resist in
-memory only.
+Via the `-d` flag you can specify a database, so that you can have different
+databases for different files. If you give an empty string `-d ""`, no
+database file will be created; the database will reside in memory only.
 
 As a special gimmick you can run:
 
-    build/galapix.gtk view buildin://mandelbrot
+    build/galapix-0.3.sdl buildin://mandelbrot
 
 To get a classic Mandelbrot set.
 

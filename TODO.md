@@ -742,7 +742,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-034.bundle`** (or later). Last doc policy: thumtoo via flake input; subtree if diverging.
+* Galapix develop tip: apply **`galapix-035.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
@@ -754,6 +754,8 @@ Random Notes
 * Console status key **`l`** (stdout); overview counts in `print_state`
 * **Dear ImGui** status overlay (**F1**); vendored `external/imgui` v1.91.6
 * F11 fullscreen toggle
+* **CLI trimming:** no subcommands; removed `thumbgen` / `list` / `cleanup` /
+  vestigial `info`/`export` and `ThumbnailGenerator`; desktop MimeTypes
 
 ### Depends on thumtoo upstream (already on thumtoo master in bundles)
 * `request_tile` single-scale only
@@ -767,10 +769,34 @@ Random Notes
 3. Expand ImGui chrome (tools/workspace) **without** burying logic in widgets
 4. Optional: EXIF thumb for overview; persistent overview disk cache
 5. Upstream still open: **single-cell** `request_tile` cut (not whole scale grid)
-6. Merge develop → master when UI smoke is acceptable
+6. Merge develop → master when UI smoke is acceptable (CLI now closer to a clean default)
 
 ### Do not
 * Reintroduce `pkgs.applyPatches` for thumtoo
 * Put business logic inside ImGui callbacks
 * Revive GTK as primary UI
+* Re-add Galapix thumbgen/list/cleanup CLI (belongs in thumtoo)
+
+## CLI trimming ([x] done, 2026-09-07)
+
+**Goal:** Drop subcommands that belong to thumtoo / are obsolete; make the
+viewer the default (no `view` prefix required).
+
+Removed:
+* `thumbgen` — thumbnail / limited tile gen → use **thumtoo** / `thumtoo-prepare`
+* `list` — list DB files → thumtoo / resource tooling
+* `cleanup` — DB GC → thumtoo
+* Vestigial `info` / `export` methods and `ThumbnailGenerator` sources
+
+Viewer is the only path: non-option arguments are files/URLs; empty argv
+launches an empty workspace when the frontend allows it. Leading `view` is
+still accepted for old scripts; other former commands error with a pointer
+to thumtoo.
+
+**Touched:**
+* `src/galapix/arg_parser.cpp`, `galapix.cpp`, `galapix.hpp`
+* Removed `thumbnail_generator.{hpp,cpp}`
+* `galapix.desktop` — Exec=`galapix-0.3.sdl %F`; image MimeTypes
+* AGENTS.md, README.md, NEWS.md, docs/THUMTOO.md, docs/DEVELOP_VS_MASTER.md,
+  docs/TILE_LOADING.md, flake.nix help text
 

@@ -305,7 +305,7 @@ echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-run-gtk [args]# build + run galapix-0.3.gtk"
               echo "  galapix-run-gdb [args]# build + gdb --args galapix-0.3.sdl"
               echo "  nix build             # packaged RelWithDebInfo-style derivation"
-              echo "  also: nix develop -c galapix-run view /tmp/*.jpg"
+              echo "  also: nix develop -c galapix-run /tmp/*.jpg"
             '';
           };
       }

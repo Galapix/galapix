@@ -44,12 +44,12 @@ rendering, layout tools, and (historically) its own SQLite tile tables.
 ## Architecture (viewer path)
 
 ```
-CLI (view / thumbgen / …)
+CLI (files / URLs; optional leading "view" for old scripts)
   → ViewerCommand
       → Database (resource SQLite; tile SQLite optional)
       → JobManager / DatabaseThread
       → Workspace + Image(TileProvider)
-  → System::launch_viewer (SDL or GTK)
+  → System::launch_viewer (SDL)
       → Viewer::draw / update
           → ImageTileCache → TileProvider::request_tile
 ```
@@ -68,9 +68,10 @@ full resolution**, tile size **256**.
 
 ## Session handoff (2026-09-07)
 
-Continue from **galapix-034** + **thumtoo-006** bundles (or newer). See TODO.md
+Continue from **galapix-035** + **thumtoo-006** bundles (or newer). See TODO.md
 “Session handoff”. Thumtoo is a **flake input** (`flake = false`); lock with
 `nix flake lock --update-input thumtoo`. ImGui overlay is F1; status also key `l`.
+CLI has no subcommands (viewer is default).
 
 ## thumtoo integration (status 2026-09-07)
 
@@ -151,8 +152,8 @@ nix build
 nix develop
 galapix-configure   # cmake -G Ninja -DWITH_THUMTOO=ON …
 galapix-build
-galapix-run view /tmp/*.jpg --verbose --debug
-# galapix-run-gtk …   # GTK frontend
+galapix-run /tmp/*.jpg --verbose --debug
+# galapix-run-gtk …   # GTK frontend (abandoned; BUILD_GALAPIX_GTK=OFF)
 # galapix-run-gdb …   # gdb --args galapix-0.3.sdl
 # Override: GALAPIX_BUILD_DIR=… THUMTOO_DIR=… CMAKE_BUILD_TYPE=…
 
@@ -164,9 +165,9 @@ cmake --build build
 Packaged run:
 
 ```bash
-result/bin/galapix-0.3.sdl view /path/to/images… --verbose --debug
+result/bin/galapix-0.3.sdl /path/to/images… --verbose --debug
 # or force SQLite tiles:
-result/bin/galapix-0.3.sdl view --no-thumtoo …
+result/bin/galapix-0.3.sdl --no-thumtoo …
 ```
 
 ## Coding conventions
