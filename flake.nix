@@ -104,7 +104,7 @@
 
             cmakeFlags = [
               "-DBUILD_GALAPIX_SDL=ON"
-              "-DBUILD_GALAPIX_GTK=ON"
+              "-DBUILD_GALAPIX_GTK=OFF"
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
@@ -218,7 +218,7 @@
                 cmake -S "$GALAPIX_SOURCE" -B "$GALAPIX_BUILD_DIR" -G Ninja \
                   -DCMAKE_BUILD_TYPE="''${CMAKE_BUILD_TYPE:-Debug}" \
                   -DBUILD_GALAPIX_SDL=ON \
-                  -DBUILD_GALAPIX_GTK=ON \
+                  -DBUILD_GALAPIX_GTK=OFF \
                   -DBUILD_BENCHMARKS=OFF \
                   -DWITH_THUMTOO=ON \
                   -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}" \
