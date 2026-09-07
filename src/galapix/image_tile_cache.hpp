@@ -130,6 +130,11 @@ public:
   /** The smallest scale that is stored permanently */
   int m_min_keep_scale;
 
+  /** Last cancel_jobs args — skip O(cache) walk when unchanged. */
+  bool m_have_last_cancel;
+  int m_last_cancel_scale;
+  Rect m_last_cancel_rect;
+
 private:
   /** Issue a provider request if this cell is not already in the cache.
       Does not recurse into stand-in requests (unlike request_tile). */

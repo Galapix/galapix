@@ -1,3 +1,20 @@
+## Frame-time: stop draw-path parent fan-out (2026-09-07) — tip **galapix-074**
+
+Measured serious GUI work while zooming (after thumtoo-035 moved I/O off GUI):
+
+1. **`find_smaller_tile`** enqueued **every** coarser scale for each missing
+   visible cell (`O(max_scale × visible_tiles)` provider jobs + map inserts
+   per frame). Now **lookup-only**; `request_tile` already queues parent +
+   overview.
+2. **`cancel_jobs`** walked the full REQUESTED map every draw even when the
+   visible rect/scale was unchanged. Skip when args match last call.
+3. Cap GL uploads at **2**/image/frame (was 4) to leave more headroom.
+
+Not touched (not the main frame-time spike once above is fixed): worker decode,
+receive_tile queue depth.
+
+---
+
 ## Frame drops on zoom — thumtoo request_tile (2026-09-07)
 
 Root cause was **thumtoo** `Client::request_tile` synchronous `get_tile` on the

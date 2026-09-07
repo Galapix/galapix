@@ -125,7 +125,10 @@ ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_tile_provider(tile_provider),
   m_max_scale(m_tile_provider->get_max_scale()),
   m_min_scale(m_tile_provider->get_min_scale()),
-  m_min_keep_scale(m_max_scale - 2)
+  m_min_keep_scale(m_max_scale - 2),
+  m_have_last_cancel(false),
+  m_last_cancel_scale(0),
+  m_last_cancel_rect()
 {
 }
 
@@ -240,6 +243,7 @@ ImageTileCache::clear()
     i->second.job_handle.set_aborted();
   }
   m_cache.clear();
+  m_have_last_cancel = false;
 }
 
 void
@@ -268,9 +272,13 @@ ImageTileCache::cleanup()
 wstdisplay::SurfacePtr
 ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
-  int  downscale_factor = 1;
+  // Lookup only — do not enqueue from the draw path. request_tile already
+  // queues the immediate parent and overview; walking every coarser scale
+  // here used to fire O(max_scale) provider jobs per missing cell per frame
+  // and dominated GUI time while zooming.
+  int downscale_factor = 1;
 
-  while(downscale_factor < m_max_scale)
+  while (downscale_factor <= m_max_scale - tiledb_scale && downscale_factor < 32)
   {
     downscale_out = Math::pow2(downscale_factor);
 
@@ -278,24 +286,13 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
     int const cy = y / downscale_out;
     int const cscale = tiledb_scale + downscale_factor;
 
-    TileCacheId cache_id(Vector2i(cx, cy), cscale);
-
-    Cache::iterator i = m_cache.find(cache_id);
+    Cache::iterator i = m_cache.find(TileCacheId(Vector2i(cx, cy), cscale));
     if (i != m_cache.end() && i->second.surface)
     {
       return i->second.surface;
     }
 
-    // Not in memory yet — make sure a request is in flight (idempotent).
-    queue_tile_request(cx, cy, cscale);
-
     downscale_factor += 1;
-  }
-
-  // Ensure overview is loading; do not draw it with parent-tile UV math
-  // (one full-image tile is not a grid parent of (x,y)).
-  if (m_max_scale > tiledb_scale) {
-    queue_tile_request(0, 0, m_max_scale);
   }
 
   return {};
@@ -306,7 +303,7 @@ ImageTileCache::process_queue()
 {
   // Cap GL uploads per frame so fast zoom never stalls the UI. Remaining
   // tiles stay queued; receive_tile / this function request another redraw.
-  constexpr int kMaxUploadsPerFrame = 4;
+  constexpr int kMaxUploadsPerFrame = 2;
 
   int uploaded = 0;
   Tile tile;
@@ -356,29 +353,42 @@ ImageTileCache::cancel_jobs(Rect const& rect, int scale)
   //  - same scale but outside the visible tile rect
   // Keep coarser REQUESTED jobs (scale > view scale): they are stand-ins /
   // overview while high-res tiles load and are cheap to finish.
-  if (!m_cache.empty())
+  //
+  // Skip full-map walk when the visible rect/scale did not change — zoom
+  // frames often re-draw the same tile set; O(cache) every frame was
+  // measurable with large REQUESTED sets.
+  if (m_have_last_cancel && m_last_cancel_scale == scale &&
+      m_last_cancel_rect == rect) {
+    return;
+  }
+  m_have_last_cancel = true;
+  m_last_cancel_scale = scale;
+  m_last_cancel_rect = rect;
+
+  if (m_cache.empty()) {
+    return;
+  }
+
+  for (Cache::iterator i = m_cache.begin(); i != m_cache.end();)
   {
-    for(Cache::iterator i = m_cache.begin(); i != m_cache.end();)
+    if (i->second.status != SurfaceStruct::SURFACE_REQUESTED) {
+      ++i;
+      continue;
+    }
+
+    int const job_scale = i->first.get_scale();
+    bool const finer_than_view = job_scale < scale;
+    bool const same_scale_outside =
+      job_scale == scale && !geom::contains(rect, i->first.get_pos());
+
+    if (finer_than_view || same_scale_outside)
     {
-      if (i->second.status != SurfaceStruct::SURFACE_REQUESTED) {
-        ++i;
-        continue;
-      }
-
-      int const job_scale = i->first.get_scale();
-      bool const finer_than_view = job_scale < scale;
-      bool const same_scale_outside =
-        job_scale == scale && !geom::contains(rect, i->first.get_pos());
-
-      if (finer_than_view || same_scale_outside)
-      {
-        i->second.job_handle.set_aborted();
-        m_cache.erase(i++);
-      }
-      else
-      {
-        ++i;
-      }
+      i->second.job_handle.set_aborted();
+      m_cache.erase(i++);
+    }
+    else
+    {
+      ++i;
     }
   }
 }
