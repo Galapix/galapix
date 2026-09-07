@@ -174,20 +174,12 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
 
     if (scaled_width  < 256.0f && scaled_height < 256.0f)
     {
-      // Whole image fits in one grid cell at the view scale (typical gallery
-      // / fit-all). Prefer soft overview — do not enqueue a thumtoo tile per
-      // image (1064 warm requests was ~3s). Same geometry as this branch
-      // always used; the previous screen_px LOD never matched.
-      auto const& ov = m_image.overview();
-      if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
-        return true;
-      }
-      if (ov.state() != ImageOverview::State::Failed) {
-        return true;
-      }
-      m_cache->cancel_jobs(Rect(0,0,1,1), tiledb_scale);
-      draw_tile(gc, 0, 0, tiledb_scale,
-                scale_factor * m_image.get_scale());
+      // Whole image fits in one grid cell (gallery / fit-all). Never enqueue
+      // grid tiles here: for archive/thumtoo URLs soft overview often Fails
+      // (TileGenerator cannot open rar members), and the Failed→draw_tile
+      // fallback was still 1064 warm get_tile jobs (~3s). Overview draws if
+      // Ready; otherwise empty until the user zooms in (scaled_* >= 256).
+      return true;
     }
     else
     {

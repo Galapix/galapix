@@ -1,3 +1,11 @@
+## Gallery one-tile branch: never request tiles (2026-09-07) — tip **galapix-087**
+
+Overview Failed for rar members → previous Failed→draw_tile fallback still
+issued 1064 thumtoo jobs. One-cell view scale now never calls draw_tile;
+tiles only when zoomed so scaled size ≥ 256.
+
+---
+
 ## Fix gallery LOD gate (2026-09-07) — tip **galapix-086**
 
 screen_long*zoom LOD never tripped; gallery already used the one-tile branch
