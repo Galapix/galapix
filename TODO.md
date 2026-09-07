@@ -47,6 +47,19 @@ Make **develop** the branch that becomes **master**. See
 * [x] Console tile load stats (`l` / `print_state`: pending requests, uploads, cache entries, thumtoo callback queue)
 * [ ] On-screen status overlay (needs text rendering; see [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md))
 
+### Next implementation targets (tile / archive)
+
+1. **Fast overview layer** separate from 256² tile identity (libjpeg scale / EXIF
+   thumbnail; never write overview bytes as “the” grid tile).
+2. **Upstream thumtoo**: single-cell `request_tile` cut + same-archive member
+   request coalesce (Galapix cannot fix libarchive seek pain alone).
+3. Optional: surface `thumtoo::Client` job backlog once Client exposes stats.
+4. Benchmark size-only vs size+overview on archive members before locking the
+   open pipeline.
+
+Console backlog (`l`) is in place; HUD waits on stb_truetype (or similar).
+
+
 Galapix ToDo
 ============
 
