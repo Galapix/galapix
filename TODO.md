@@ -56,15 +56,15 @@ Make **develop** the branch that becomes **master**. See
 
 ### Next implementation targets (tile / archive)
 
-1. **Fast overview layer** separate from 256² tile identity (libjpeg scale / EXIF
-   thumbnail; never write overview bytes as “the” grid tile).
+1. **EXIF embedded thumbnail** for overview (optional; libjpeg scale covers JPEG files).
 2. **Upstream thumtoo**: single-cell `request_tile` cut + same-archive member
    request coalesce (Galapix cannot fix libarchive seek pain alone).
 3. Optional: surface `thumtoo::Client` job backlog once Client exposes stats.
 4. Benchmark size-only vs size+overview on archive members before locking the
    open pipeline.
+5. On-screen HUD via stb_truetype (console status via key `l` is done).
 
-Console backlog (`l`) is in place; HUD waits on stb_truetype (or similar).
+In-memory overview (stdio) + max_scale grid stand-in are in place.
 
 
 Galapix ToDo

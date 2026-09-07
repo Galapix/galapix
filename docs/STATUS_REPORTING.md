@@ -23,6 +23,7 @@ that is only visible in the log.
 * aggregate **pending tile requests** (SURFACE_REQUESTED)
 * **pending GL uploads** (decoded tiles in `ImageTileCache::m_tile_queue`)
 * **cache entry** counts across all workspace images
+* **overview** counts (idle / loading / ready / failed) — stdio files only
 * **thumtoo callback queue** depth when `HAVE_THUMTOO` (usually 0 with the
   default inline executor)
 

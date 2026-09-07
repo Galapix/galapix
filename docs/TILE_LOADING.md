@@ -353,7 +353,8 @@ work on Client worker threads instead of serializing drain boundaries.
 | Missing tile → coarser tile | Present (`find_smaller_tile` draw path) |
 | Request coarser stand-in on miss | **Done** — queue max_scale overview + one parent cell before target; `cancel_jobs` keeps coarser REQUESTED jobs |
 | Fast overview ≠ tile store | **In-memory overview** via `ImageOverview` (libjpeg scale, not tile identity). EXIF thumb + disk cache still optional |
-| libjpeg / EXIF overview | **Not done** |
+| libjpeg overview (stdio) | **Done** — `ImageOverview` / `OverviewLoadJob` |
+| EXIF embedded thumb overview | **Not done** (optional) |
 | Archive same-member coalesce | **Not done** (thumtoo) |
 | Single **cell** only (not full scale grid) | **Not done** (thumtoo cut API) |
 | Drop Galapix SQLite tile DB | Pure thumtoo view already skips `cache4_tiles`; resource DB remains for patterns / metadata |
