@@ -1,3 +1,10 @@
+## Fix: -p batch size probe (2026-09-07)
+
+Large `-p` lists looked stuck near the end of progress: each size miss called
+`ThumtooTileProvider::create` → `request_size` + `drain` (sequential I/O).
+Now batch `request_size` once, then `create_from_size` only. Progress counts
+processed locators, not only successful adds.
+
 ## Implement `-p` / `--pattern` via thumtoo locator queries (2026-09-07)
 
 **Goal:** Replace the dead/stub resource-DB pattern path with thumtoo
@@ -54,13 +61,13 @@ Author: Ingo Ruhnke `<grumbel@gmail.com>` + `Co-authored-by: Grok <grok@x.ai>`.
 * [x] bundle galapix-059
 * [x] fix namespace for url_from_thumtoo_uri (060)
 
-## Session handoff (2026-09-07) — tip **galapix-060** / thumtoo **026+**
+## Session handoff (2026-09-07) — tip **galapix-061** / thumtoo **026+**
 
 ### Tip bundles (apply latest; stack cleanly)
 
 | Project | Tip bundle | Tip commit (subject) |
 |---------|------------|----------------------|
-| **galapix** | **`galapix-060.bundle`** | `-p` via thumtoo + namespace fix |
+| **galapix** | **`galapix-061.bundle`** | `-p` batch size probe (no per-hit drain) |
 | **thumtoo** | tip with **ca14b71+** (locator prefix/LIKE) | query APIs for Galapix `-p` |
 
 Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer  

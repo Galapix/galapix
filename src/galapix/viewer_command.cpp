@@ -264,27 +264,56 @@ ViewerCommand::run(std::vector<URL> const& urls)
         locs.insert(locs.end(), batch.begin(), batch.end());
       }
 
+      // Batch size probes once — per-URI create()+drain is O(n) sequential
+      // open/hash/decode and is what makes large -p lists look "stuck".
+      {
+        int pending = 0;
+        for (auto const& row : locs) {
+          if (row.uri.empty()) continue;
+          if (m_thumtoo->get_size(row.uri)) continue;
+          ++pending;
+          m_thumtoo->request_size(row.uri, [](std::string, std::optional<thumtoo::Size>) {});
+        }
+        if (pending > 0) {
+          std::cout << "Probing " << pending
+                    << " pattern match size(s) (thumtoo)..." << std::flush;
+          m_thumtoo->drain();
+          ThumtooCallbackQueue::instance().pump();
+          std::cout << " done\n";
+        }
+      }
+
       size_t added = 0;
       size_t skipped = 0;
-      for (auto const& row : locs) {
+      size_t const total = locs.size();
+      for (size_t i = 0; i < total; ++i) {
+        auto const& row = locs[i];
         auto url_opt = url_from_thumtoo_uri(row.uri);
         if (!url_opt) {
           ++skipped;
-          continue;
+        } else {
+          // Prefer create_from_size only (cache hit after batch probe).
+          // Do not call create() here — it would drain again per miss.
+          // row.uri is already the thumtoo Location URI.
+          TileProviderPtr provider;
+          if (auto sz = m_thumtoo->get_size(row.uri)) {
+            provider = ThumtooTileProvider::create_from_size(
+              m_thumtoo, row.uri, sz->width, sz->height);
+          }
+          if (!provider) {
+            ++skipped;
+          } else {
+            workspace.add_image(std::make_shared<Image>(
+              *url_opt, provider, &m_job_manager));
+            ++added;
+          }
         }
-        URL const& url = *url_opt;
-        auto provider = make_file_tile_provider(url, nullptr, nullptr);
-        if (!provider) {
-          ++skipped;
-          continue;
-        }
-        workspace.add_image(std::make_shared<Image>(url, provider, &m_job_manager));
-        ++added;
-        std::cout << "Pattern match: " << added << "/" << locs.size()
-                  << " - " << (locs.empty() ? 0 : 100 * added / locs.size()) << '%'
+        std::cout << "Pattern match: " << (i + 1) << "/" << total
+                  << " (" << added << " images)"
+                  << " - " << (total == 0 ? 0 : 100 * (i + 1) / total) << '%'
                   << '\r' << std::flush;
       }
-      if (!locs.empty()) {
+      if (total != 0) {
         std::cout << std::endl;
       }
       std::cout << "Pattern: " << added << " image(s) from thumtoo cache"
