@@ -163,7 +163,8 @@ archive paths, but new work should prefer extending thumtoo URIs.
 **thumtoo-017+:** `Client::resolve_content_id`, `list_uris_for_content_id`,
 `get_meta("sha256:…")` — content-id as URI (cache only). Network fetch and
 **thumtoo-018+:** `Client::read_source_bytes` for file/archive (and via content-id).
-PDF pages and http(s) fetch still future.
+PDF pages: **thumtoo-019** uses kPdfLayoutDpi (144) for size + on-demand
+tile rasterize (live-style). http(s) fetch still future.
 
 ## Live / procedural tiles (future — thumtoo)
 
