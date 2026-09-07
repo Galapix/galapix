@@ -52,7 +52,7 @@ Make **develop** the branch that becomes **master**. See
 * [ ] Benchmark: split vs merged size+overview for archive members
 * [ ] Optional: texture array / atlas batching for fewer draw calls
 * [x] Console tile load stats (`l` / `print_state`: pending requests, uploads, cache entries, thumtoo callback queue)
-* [ ] On-screen status overlay (needs text rendering; see [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md))
+* [x] On-screen status overlay (Dear ImGui, F1; see [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md))
 
 ### Next implementation targets (tile / archive)
 
@@ -62,7 +62,7 @@ Make **develop** the branch that becomes **master**. See
 3. Optional: surface `thumtoo::Client` job backlog once Client exposes stats.
 4. Benchmark size-only vs size+overview on archive members before locking the
    open pipeline.
-5. On-screen HUD via stb_truetype (console status via key `l` is done).
+5. Expand ImGui chrome (tools/workspace panels) without putting logic in widgets.
 
 In-memory overview (stdio) + max_scale grid stand-in are in place.
 

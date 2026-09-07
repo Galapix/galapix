@@ -40,6 +40,7 @@ Galapix 0.3.0-dev (unreleased)
 * **GTK frontend abandoned** — flake and default CMake build SDL only
 * F11 toggles fullscreen desktop ↔ window
 * Key **`l`**: print view + tile backlog to stdout (pending requests/uploads)
+* **Dear ImGui** status overlay (F1) — pure OpenGL chrome placeholder
 
 ### Still in progress
 
