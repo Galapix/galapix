@@ -57,6 +57,7 @@ private:
   Viewer& m_viewer;
 
   bool m_quit;
+  bool m_fullscreen;
   bool m_spnav_allow_rotate;
 
   std::vector<SDL_GameController*> m_gamecontrollers;

@@ -96,6 +96,7 @@ SDLViewer::SDLViewer(Size const& size, bool fullscreen, int  anti_aliasing,
     .anti_aliasing = anti_aliasing})),
   m_viewer(viewer),
   m_quit(false),
+  m_fullscreen(fullscreen),
   m_spnav_allow_rotate(false),
   m_gamecontrollers()
 {
@@ -434,7 +435,10 @@ SDLViewer::process_event(SDL_Event const& event)
           break;
 
         case SDLK_F11:
-          m_window->set_mode(wstdisplay::OpenGLWindow::Mode::FullscreenDesktop);
+          m_fullscreen = !m_fullscreen;
+          m_window->set_mode(m_fullscreen
+            ? wstdisplay::OpenGLWindow::Mode::FullscreenDesktop
+            : wstdisplay::OpenGLWindow::Mode::Window);
           break;
 
         case SDLK_F2:

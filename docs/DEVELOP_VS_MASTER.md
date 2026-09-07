@@ -148,7 +148,7 @@ SpaceNavigator when built). Tools under `src/tools/` match by name.
 
 | Area | master | develop | Risk |
 |------|--------|---------|------|
-| **F11 fullscreen** | `toggle_fullscreen()` | only `set_mode(FullscreenDesktop)` | **May not leave fullscreen** with F11 |
+| **F11 fullscreen** | `toggle_fullscreen()` | SDL toggles FullscreenDesktop ↔ Window | Fixed on develop SDL path |
 | **Initial layout** | `layout_tight()` + **`finish_layout()`** | ViewerCommand path; no `finish_layout` | Startup framing may differ |
 | Window / GL | in-tree `SDLWindow` | **wstdisplay::OpenGLWindow** | Resize, DPI, fullscreen |
 | Tile display | SQLite tiles | thumtoo and/or SQLite | Zoom scales, edge tiles |

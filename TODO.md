@@ -8,6 +8,11 @@ Make **develop** the branch that becomes **master**. See
 
 ### Policy
 
+* **GTK frontend is abandoned** — keep `BUILD_GALAPIX_GTK=OFF` (flake and
+  default CMake). Remove `src/gtk/` once the SDL viewer has any remaining
+  GUI features that still lived only on GTK. All new UI work is **SDL only**.
+
+
 * Master-only CLI (`prepare`, `filegen`, `check`, `merge`) → **not** ported;
   use **thumtoo-prepare** and improve thumtoo UX for the rest.
 * cache3 → cache4: **feature parity** first; optional **manual** conversion
@@ -17,7 +22,7 @@ Make **develop** the branch that becomes **master**. See
 ### Checklist
 
 * [ ] UI smoke: zoom scales, edge tiles, window resize
-* [ ] UI: F11 fullscreen **toggle** (develop currently only enters fullscreen)
+* [x] UI: F11 fullscreen **toggle** (SDL; leave with F11 again)
 * [ ] UI: tools, layouts 1–6, sort/shuffle, isolate, workspace F2/F3
 * [ ] NEWS: cache3/cache4 incompatibility (no auto migrator required)
 * [ ] NEWS: architecture (wstdisplay/surfcpp/thumtoo; no Boost/GLEW)
