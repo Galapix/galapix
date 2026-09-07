@@ -1,3 +1,13 @@
+Galapix 0.2.2
+=============
+
+* VERSION file (0.2.2); flake reads it for the package version
+* Nix flake builds SDL only (`galapix.sdl`); removed broken `galapix_gtk` app
+  (Gtk2 frontend needs libglademm/gtkglextmm, not available in modern nixpkgs)
+* CMake: BUILD_GALAPIX_GTK defaults to OFF
+* CMake build (SCons removed in 0.2.2 development history)
+
+
 Galapix 0.1.3 (??. Oct 2009)
 ============================
 

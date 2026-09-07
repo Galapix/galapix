@@ -129,6 +129,10 @@ this point very incomplete and hasn't been tested much, but it might
 be easier to use then figuring out the keybinding used by the SDL
 version.
 
+The Nix flake builds and installs only galapix.sdl (BUILD_GALAPIX_GTK=OFF).
+galapix.gtk still requires Gtk2 plus libglademm and gtkglextmm, which are
+not available in current nixpkgs.
+
 Galapix comes with a number of sub commands, allowing the user to either
 view images or pre-generate thumbnails. The most basic command is:
 

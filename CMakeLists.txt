@@ -29,7 +29,7 @@ endif()
 
 # --- Options ---
 option(BUILD_GALAPIX_SDL "Build galapix.sdl" ON)
-option(BUILD_GALAPIX_GTK "Build galapix.gtk" ON)
+option(BUILD_GALAPIX_GTK "Build galapix.gtk (needs gtkmm-2.4 + libglademm + gtkglextmm)" OFF)
 option(BUILD_EXTRA_APPS "Build extra apps" ON)
 
 # --- Dependencies ---
