@@ -216,50 +216,86 @@ ViewerCommand::run(std::vector<URL> const& urls)
   std::vector<URL> const& work_urls = urls;
 #endif
 
-  { // process all -p PATTERN options
-    std::vector<OldFileEntry> file_entries;
+  { // process all -p PATTERN options (thumtoo cache query when available)
+#ifdef HAVE_THUMTOO
+    if (m_thumtoo && !m_patterns.empty()) {
+      constexpr int kPatternLimit = 50'000;
 
-    for(std::vector<std::string>::const_iterator i = m_patterns.begin(); i != m_patterns.end(); ++i)
-    {
-      std::cout << "Processing pattern: '" << *i << "'" << std::endl;
+      auto glob_to_like = [](std::string const& glob) {
+        // Legacy GLOB * / ? → SQL LIKE % / _; pass through % _ unchanged.
+        std::string out;
+        out.reserve(glob.size());
+        for (char c : glob) {
+          if (c == '*') out.push_back('%');
+          else if (c == '?') out.push_back('_');
+          else out.push_back(c);
+        }
+        return out;
+      };
 
-      if (*i == "*")
-      {
-        // special case to display everything, might be faster then
-        // using the pattern
-        m_database.get_resources().get_old_file_entries(file_entries);
+      auto looks_like_path_prefix = [](std::string const& p) {
+        if (p.empty()) return false;
+        if (p.front() == '/') return true;
+        if (p.starts_with("file://")) return true;
+        return false;
+      };
+
+      std::vector<thumtoo::Database::LocatorRow> locs;
+      locs.reserve(256);
+
+      for (std::string const& pat : m_patterns) {
+        std::cout << "Processing pattern: '" << pat << "'" << std::endl;
+        std::vector<thumtoo::Database::LocatorRow> batch;
+        if (pat == "*") {
+          batch = m_thumtoo->list_locators(kPatternLimit);
+        } else if (looks_like_path_prefix(pat)) {
+          std::string prefix = pat;
+          if (prefix.starts_with("file://")) {
+            prefix = prefix.substr(7);
+          }
+          batch = m_thumtoo->list_locators_by_outer_path_prefix(prefix, kPatternLimit);
+        } else {
+          batch = m_thumtoo->list_locators_like(glob_to_like(pat), kPatternLimit);
+        }
+        if (static_cast<int>(batch.size()) >= kPatternLimit) {
+          std::cout << "  (limit " << kPatternLimit
+                    << " reached; results may be truncated)\n";
+        }
+        locs.insert(locs.end(), batch.begin(), batch.end());
       }
-      else
-      {
-        m_database.get_resources().get_old_file_entries(*i, file_entries);
-      }
-    }
 
-    for(std::vector<OldFileEntry>::const_iterator i = file_entries.begin(); i != file_entries.end(); ++i)
-    {
-      ImageEntry image_entry;
-      if (!m_database.get_resources().get_image_entry(*i, image_entry))
-      {
-        log_warn("no ImageEntry for {}", i->get_url());
-      }
-      else
-      {
-        workspace.add_image(std::make_shared<Image>(i->get_url(),
-                                          make_file_tile_provider(i->get_url(), &*i, &image_entry),
-                                          &m_job_manager));
-
-        // print progress
-        size_t n = static_cast<size_t>(i - file_entries.begin()) + 1;
-        size_t total = file_entries.size();
-        std::cout << "Getting tiles: " << n << "/" << total << " - "
-                  << (100 * n / total) << '%'
+      size_t added = 0;
+      size_t skipped = 0;
+      for (auto const& row : locs) {
+        auto url_opt = url_from_thumtoo_uri(row.uri);
+        if (!url_opt) {
+          ++skipped;
+          continue;
+        }
+        URL const& url = *url_opt;
+        auto provider = make_file_tile_provider(url, nullptr, nullptr);
+        if (!provider) {
+          ++skipped;
+          continue;
+        }
+        workspace.add_image(std::make_shared<Image>(url, provider, &m_job_manager));
+        ++added;
+        std::cout << "Pattern match: " << added << "/" << locs.size()
+                  << " - " << (locs.empty() ? 0 : 100 * added / locs.size()) << '%'
                   << '\r' << std::flush;
       }
-    }
-
-    if (!file_entries.empty())
-    {
-      std::cout << std::endl;
+      if (!locs.empty()) {
+        std::cout << std::endl;
+      }
+      std::cout << "Pattern: " << added << " image(s) from thumtoo cache"
+                << (skipped ? (", " + std::to_string(skipped) + " skipped") : "")
+                << std::endl;
+    } else
+#endif
+    if (!m_patterns.empty()) {
+      // Resource-DB path is stubbed (get_old_file_entries empty). Require thumtoo.
+      std::cerr << "Warning: -p/--pattern needs thumtoo (HAVE_THUMTOO and a "
+                   "populated cache). Resource DB pattern lookup was removed.\n";
     }
   }
 

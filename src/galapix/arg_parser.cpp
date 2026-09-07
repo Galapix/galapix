@@ -46,7 +46,7 @@ ArgParser::print_usage()
             << "  -f, --fullscreen       Start in fullscreen mode\n"
             << "  -t, --threads N        Number of worker threads (default: 2)\n"
             << "  -F, --files-from FILE  Get URLs from FILE\n"
-            << "  -p, --pattern GLOB     Select files from the resource DB (legacy; query → thumtoo later)\n"
+            << "  -p, --pattern PATTERN  Select images from the thumtoo cache (LIKE; */? or %/_; path prefix)\n"
             << "  -g, --geometry WxH     Start with window size WxH\n"
             << "  -a, --anti-aliasing N  Anti-aliasing factor 0,2,4 (default: 0)\n"
             << "  -h, --help             Show this help\n"
