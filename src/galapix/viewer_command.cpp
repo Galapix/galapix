@@ -16,7 +16,6 @@
 
 #include "galapix/viewer_command.hpp"
 
-#include <algorithm>
 #include <filesystem>
 #include <iostream>
 
@@ -35,11 +34,10 @@
 #  include "thumtoo/thumtoo_uri.hpp"
 #  include <thumtoo/archive.hpp>
 #  include <thumtoo/client.hpp>
-#  include <thumtoo/format.hpp>
 #  include <thumtoo/image.hpp>
 #  include <thumtoo/pdf.hpp>
-#  include <thumtoo/uri.hpp>
 #  include <cstdlib>
+#  include <algorithm>
 #endif
 
 namespace galapix {
@@ -61,56 +59,55 @@ std::filesystem::path default_thumtoo_cache()
 /** Expand a filesystem URL into Galapix URLs that map 1:1 to thumtoo media.
  *  Plain images → self. Archives → one URL per image member. PDFs → one URL
  *  per page (//page:N). Non-stdio / unknown → original URL only.
+ *
+ *  Uses is_likely_* helpers (available on older thumtoo); no format.hpp required.
  */
 std::vector<URL> expand_thumtoo_urls(URL const& url)
 {
   if (!url.has_stdio_name()) {
     return {url};
   }
-  std::filesystem::path const path = std::filesystem::absolute(url.get_stdio_name());
+  std::filesystem::path const path =
+    std::filesystem::absolute(url.get_stdio_name());
   if (!std::filesystem::is_regular_file(path)) {
     return {url};
   }
 
-  switch (thumtoo::classify_path(path)) {
-    case thumtoo::PathKind::Pdf: {
-      auto pages = thumtoo::pdf_page_count(path);
-      if (!pages || *pages < 1) {
-        return {url};
-      }
-      std::vector<URL> out;
-      out.reserve(static_cast<size_t>(*pages));
-      // Cap matches thumtoo-prepare (512).
-      int const n = std::min(*pages, 512);
-      for (int page = 1; page <= n; ++page) {
-        std::string s = "file://" + path.string() + "//page:" + std::to_string(page);
-        out.push_back(URL::from_string(s));
-      }
-      return out;
-    }
-    case thumtoo::PathKind::Archive: {
-      auto toc = thumtoo::read_archive_toc(path);
-      if (!toc) {
-        return {url};
-      }
-      std::vector<URL> out;
-      for (auto const& mem : *toc) {
-        if (!thumtoo::is_likely_image_member_path(mem.member_path)) {
-          continue;
-        }
-        // Prefer //archive: so thumtoo_uri_from_url maps via archive_uri.
-        std::string s = "file://" + path.string() + "//archive:" + mem.member_path;
-        out.push_back(URL::from_string(s));
-      }
-      return out.empty() ? std::vector<URL>{url} : out;
-    }
-    case thumtoo::PathKind::Image:
-    case thumtoo::PathKind::Unsupported:
-    default:
+  if (thumtoo::is_likely_pdf_path(path)) {
+    auto pages = thumtoo::pdf_page_count(path);
+    if (!pages || *pages < 1) {
       return {url};
+    }
+    std::vector<URL> out;
+    int const n = std::min(*pages, 512);
+    out.reserve(static_cast<size_t>(n));
+    for (int page = 1; page <= n; ++page) {
+      std::string s =
+        "file://" + path.string() + "//page:" + std::to_string(page);
+      out.push_back(URL::from_string(s));
+    }
+    return out;
   }
-}
 
+  if (thumtoo::is_likely_archive_path(path)) {
+    auto toc = thumtoo::read_archive_toc(path);
+    if (!toc) {
+      return {url};
+    }
+    std::vector<URL> out;
+    for (auto const& mem : *toc) {
+      if (!thumtoo::is_likely_image_member_path(mem.member_path)) {
+        continue;
+      }
+      std::string s =
+        "file://" + path.string() + "//archive:" + mem.member_path;
+      out.push_back(URL::from_string(s));
+    }
+    return out.empty() ? std::vector<URL>{url} : out;
+  }
+
+  return {url};
+}
 #endif
 
 } // namespace
@@ -217,9 +214,9 @@ ViewerCommand::run(std::vector<URL> const& urls)
       expanded_urls.insert(expanded_urls.end(), parts.begin(), parts.end());
     }
     if (expanded_urls.size() != urls.size()) {
-      std::cout << "Expanded " << urls.size() << " path(s) → "
-                << expanded_urls.size() << " media item(s) (archives/PDF)
-";
+      std::cout << "Expanded " << urls.size() << " path(s) -> "
+                << expanded_urls.size()
+                << " media item(s) (archives/PDF)\n";
     }
   }
   std::vector<URL> const& work_urls = m_thumtoo ? expanded_urls : urls;
