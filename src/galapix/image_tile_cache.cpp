@@ -177,15 +177,9 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
     return;
   }
 
-  // Cap in-flight provider jobs *per image*. thumtoo cannot cancel mid-raster;
-  // flooding while zooming wastes CPU. 24 was too low for a deep zoom on one
-  // large image (~full HD needs ~40 cells). Gallery fill is one request per
-  // image so a higher cap does not slow multi-file open.
-  // Always allow the single overview cell through.
-  constexpr int kMaxConcurrentRequests = 64;
-  if (scale != m_max_scale && pending_request_count() >= kMaxConcurrentRequests) {
-    return;
-  }
+  // No concurrent-request cap: zoom thrash is limited by stable_request_scale
+  // debounce. A per-image cap slowed deep zoom and felt like a global limit
+  // when many images each held REQUESTED entries.
 
   TileCacheId cache_id(Vector2i(x, y), scale);
   Cache::iterator i = m_cache.find(cache_id);

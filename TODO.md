@@ -1,3 +1,11 @@
+## Remove concurrent tile-request cap (2026-09-07) — tip **galapix-079**
+
+The REQUESTED-job cap (24 then 64) was meant to limit zoom thrash. It is
+redundant with `stable_request_scale` debounce and interfered with filling
+large collections. Removed.
+
+---
+
 ## Revert small-on-screen LOD early-out (2026-09-07) — tip **galapix-078**
 
 The `< 192px` overview-only path used `image_rect * zoom`, which does not
