@@ -1,3 +1,11 @@
+## Restore gallery tiles; overview cannot feed rar (2026-09-07) — tip **galapix-088**
+
+087 left fit-all blank: soft overview Fails for archive URLs and tiles were
+suppressed. Restored one-cell `draw_tile`. Follow-up: load overview from
+thumtoo max_scale/ladder so gallery can skip duplicate tile work later.
+
+---
+
 ## Gallery one-tile branch: never request tiles (2026-09-07) — tip **galapix-087**
 
 Overview Failed for rar members → previous Failed→draw_tile fallback still
