@@ -15,6 +15,7 @@
 #include <surf/software_surface.hpp>
 #include <wstdisplay/surface.hpp>
 
+#include "galapix/tile_provider.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue2.hpp"
 #include "math/rect.hpp"
@@ -44,9 +45,12 @@ public:
   State state() const { return m_state; }
   bool has_surface() const { return static_cast<bool>(m_surface); }
 
-  /** Start load once if Idle. No-op without JobManager or non-loadable URL. */
+  /** Start load once if Idle.
+   *  Prefer thumtoo max_scale tile when \a provider is ThumtooTileProvider
+   *  (archives / warm cache). Else JobManager + TileGenerator (local files). */
   void ensure_requested(JobManager* job_manager, URL const& url,
-                        int original_width, int original_height);
+                        int original_width, int original_height,
+                        TileProviderPtr provider = {});
 
   /** Main thread: promote decoded software surface to a GL texture. */
   void process();

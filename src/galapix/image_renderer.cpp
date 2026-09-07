@@ -150,7 +150,8 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
       m_image.job_manager(),
       m_image.get_url(),
       m_image.get_original_width(),
-      m_image.get_original_height());
+      m_image.get_original_height(),
+      m_image.get_tile_provider());
     m_image.overview().draw(gc, image_rect);
 
     // scale factor for requesting tiles: scale 0 = nominal size; negative =
@@ -174,10 +175,16 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
 
     if (scaled_width  < 256.0f && scaled_height < 256.0f)
     {
-      // One grid cell at this view scale (gallery / fit-all). Soft overview
-      // does not work for archive/thumtoo members (no stdio file), so we must
-      // request the coarsest tile or the view stays blank. Draw overview too
-      // when Ready (local JPEGs).
+      // One grid cell (gallery / fit-all). Prefer overview (now thumtoo-backed
+      // for archives). Avoid a second max_scale request via draw_tile while
+      // overview is Loading/Ready. Tile fallback only if overview Failed.
+      auto const& ov = m_image.overview();
+      if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
+        return true;
+      }
+      if (ov.state() != ImageOverview::State::Failed) {
+        return true;
+      }
       m_cache->cancel_jobs(Rect(0,0,1,1), tiledb_scale);
       draw_tile(gc, 0, 0, tiledb_scale,
                 scale_factor * m_image.get_scale());

@@ -1,3 +1,13 @@
+## Thumtoo-backed ImageOverview (2026-09-07) — tip **galapix-089**
+
+* Non-stdio URLs no longer mark overview Failed immediately
+* ThumtooTileProvider → request max_scale (0,0) tile as overview (JPEG decode
+  on worker), shares per-frame request budget
+* Gallery one-cell branch: overview Ready/Loading skips draw_tile; Failed falls
+  back to grid tile
+
+---
+
 ## Restore gallery tiles; overview cannot feed rar (2026-09-07) — tip **galapix-088**
 
 087 left fit-all blank: soft overview Fails for archive URLs and tiles were

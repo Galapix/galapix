@@ -77,6 +77,7 @@ public:
 
 private:
   void set_tile_provider(TileProviderPtr provider);
+  TileProviderPtr get_tile_provider() const { return m_provider; }
 
 private:
   URL       m_url;

@@ -21,6 +21,7 @@
 #include "job/job_manager.hpp"
 #include "jobs/overview_load_job.hpp"
 #include "math/math.hpp"
+#include "math/vector2i.hpp"
 #include "galapix/viewer.hpp"
 #include "util/weak_functor.hpp"
 
@@ -72,23 +73,12 @@ wstdisplay::SurfacePtr surface_from_software(surf::SoftwareSurface image)
 
 void
 ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
-                                int original_width, int original_height)
+                                int original_width, int original_height,
+                                TileProviderPtr provider)
 {
-  if (m_state != State::Idle || !job_manager) {
+  if (m_state != State::Idle) {
     return;
   }
-
-  // Cheap path only: local stdio files. Archive members need a coalesced
-  // size+overview pass in thumtoo (libarchive seek is expensive).
-  if (!url.has_stdio_name()) {
-    m_state = State::Failed;
-    return;
-  }
-
-  m_state = State::Loading;
-  m_job = JobHandle::create();
-
-  int const min_scale = min_scale_for_overview(original_width, original_height);
 
   std::weak_ptr<ImageOverview> weak_self;
   try {
@@ -97,6 +87,44 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     m_state = State::Failed;
     return;
   }
+
+#ifdef HAVE_THUMTOO
+  // Archive / thumtoo URIs: load coarsest pyramid cell (warm JPEG in cache).
+  // Share the per-frame request budget with grid tiles so first paint does
+  // not stampede SQLite with 1000+ parallel get_tile calls.
+  if (auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get())) {
+    if (!ImageTileCache::try_consume_request_budget()) {
+      return; // stay Idle — retry next frame
+    }
+    m_state = State::Loading;
+    int const scale = tp->get_max_scale();
+    m_job = tp->request_tile(
+      scale, Vector2i(0, 0),
+      [weak_self](Tile const& tile) {
+        auto self = weak_self.lock();
+        if (!self) {
+          return;
+        }
+        if (!tile || tile.get_surface().get_width() <= 0) {
+          self->receive_software(std::nullopt);
+          return;
+        }
+        self->receive_software(tile.get_surface());
+      });
+    return;
+  }
+#endif
+
+  // Local files via JobManager + libjpeg DCT scale.
+  if (!job_manager || !url.has_stdio_name()) {
+    m_state = State::Failed;
+    return;
+  }
+
+  m_state = State::Loading;
+  m_job = JobHandle::create();
+
+  int const min_scale = min_scale_for_overview(original_width, original_height);
 
   auto job = std::make_shared<OverviewLoadJob>(
     m_job, url, min_scale,
