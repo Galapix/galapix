@@ -13,7 +13,9 @@
 #include <algorithm>
 #include <optional>
 #include <logmich/log.hpp>
+#include <surf/color.hpp>
 #include <surf/convert.hpp>
+#include <surf/software_surface.hpp>
 #include <surf/pixel_format.hpp>
 #include <surf/plugins/jpeg.hpp>
 
@@ -30,7 +32,7 @@ namespace galapix {
 
 namespace {
 
-/** Decode JPEG tile bytes. Returns nullopt on empty payload or decode error.
+/** Decode tile bytes: rgb888 live cells or JPEG durable cache.
  *
  *  Converts to RGBA8 so row pitch is width*4 (multiple of 4). wstdisplay
  *  Texture upload uses GL_UNPACK_ALIGNMENT=4; tightly packed RGB8 rows with
@@ -42,6 +44,37 @@ std::optional<surf::SoftwareSurface> surface_from_tile_blob(thumtoo::TileBlob co
   if (tb.bytes.empty()) {
     return std::nullopt;
   }
+
+  // Live PDF path: raw RGB888 from thumtoo (no JPEG).
+  if (tb.codec == thumtoo::kTileCodecRgb888 || tb.codec == "rgb888") {
+    int const w = tb.width > 0 ? tb.width : 0;
+    int const h = tb.height > 0 ? tb.height : 0;
+    if (w <= 0 || h <= 0) {
+      return std::nullopt;
+    }
+    std::size_t const need =
+      static_cast<std::size_t>(w) * static_cast<std::size_t>(h) * 3u;
+    if (tb.bytes.size() < need) {
+      log_error("ThumtooTileProvider: rgb888 size mismatch {} < {}",
+                tb.bytes.size(), need);
+      return std::nullopt;
+    }
+    auto surface = surf::SoftwareSurface::create(
+      surf::PixelFormat::RGBA8, geom::isize(w, h));
+    auto& view = surface.as_pixelview<surf::RGBA8Pixel>();
+    for (int y = 0; y < h; ++y) {
+      std::uint8_t const* src =
+        tb.bytes.data() +
+        static_cast<std::size_t>(y) * static_cast<std::size_t>(w) * 3u;
+      surf::RGBA8Pixel* dst = view.get_row(y);
+      for (int x = 0; x < w; ++x) {
+        dst[x] = surf::RGBA8Pixel(src[x * 3 + 0], src[x * 3 + 1],
+                                  src[x * 3 + 2], 255);
+      }
+    }
+    return surface;
+  }
+
   try {
     auto surface = surf::jpeg::load_from_mem(
       std::span<uint8_t const>(tb.bytes.data(), tb.bytes.size()));
@@ -57,6 +90,7 @@ std::optional<surf::SoftwareSurface> surface_from_tile_blob(thumtoo::TileBlob co
     return std::nullopt;
   }
 }
+
 
 /** Max scale at which the image still fits in a single kTileSize (256) tile.
  *  Must match thumtoo::Client::get_tile_coverage theoretical range and
@@ -91,23 +125,14 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
 
   int max_scale = max_scale_for_size(width, height);
   if (auto cov = client->get_tile_coverage(uri)) {
-    // Stored coverage max; theoretical max from size still applies for raster.
-    max_scale = std::max(max_scale, cov->max_scale);
+    max_scale = cov->max_scale;
   }
 
-  // PDF pages (and similar) can region-render sharper than layout size.
-  // Soft floor only — each tile is still ≤256²; not a full-page RAM cap.
-  constexpr int kPdfMinTileScale = -4;  // 144*16 ≈ 2304 dpi
-  int min_scale = 0;
-  if (thumtoo::is_pdf_page_uri(uri)) {
-    min_scale = kPdfMinTileScale;
-  }
-
-  log_info("ThumtooTileProvider: {} {}x{} scale=[{},{}]",
-           uri, width, height, min_scale, max_scale);
+  log_info("ThumtooTileProvider: {} {}x{} max_scale={}",
+           uri, width, height, max_scale);
 
   return std::make_shared<ThumtooTileProvider>(
-    std::move(client), std::move(uri), Size(width, height), max_scale, min_scale);
+    std::move(client), std::move(uri), Size(width, height), max_scale);
 }
 
 TileProviderPtr
@@ -149,12 +174,11 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
 
 ThumtooTileProvider::ThumtooTileProvider(
   std::shared_ptr<thumtoo::Client> client, std::string uri, Size size,
-  int max_scale, int min_scale) :
+  int max_scale) :
   m_client(std::move(client)),
   m_uri(std::move(uri)),
   m_size(size),
-  m_max_scale(max_scale),
-  m_min_scale(min_scale)
+  m_max_scale(max_scale)
 {
 }
 
