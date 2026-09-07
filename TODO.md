@@ -1,3 +1,10 @@
+## Phase 1 done: HAVE_THUMTOO never uses cache4_tiles (2026-09-07)
+
+* `--no-thumtoo` rejected; always `sqlite_tiles=false` when HAVE_THUMTOO
+* Next Phase 2: delete SQLite tile sources from default build / tree (still
+  needed only for WITH_THUMTOO=OFF)
+* Query/library → thumtoo; dataverse UI much later
+
 ## Phase 1: deprecate Galapix SQLite tiles (2026-09-07)
 
 * `--no-thumtoo` → deprecation warning (HAVE_THUMTOO builds)
@@ -808,7 +815,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-039.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-042.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)

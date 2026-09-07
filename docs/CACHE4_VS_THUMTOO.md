@@ -115,11 +115,12 @@ smoke confidence is high.
 * Dropped unused package deps: **libmhash**, **jsoncpp**, **EnTT**, idle **Python** find.
 * Keep `MemoryTileDatabase` while anything still calls `get_tiles()` under pure thumtoo.
 
-### Phase 1 — default-only thumtoo (**in progress**)
+### Phase 1 — default-only thumtoo (**done** 2026-09-07)
 
-* `use_thumtoo` is the supported interactive tile backend when `HAVE_THUMTOO`.
-* `--no-thumtoo` prints a **deprecation** warning; startup notes legacy tile SQLite.
-* CI / daily use: build with thumtoo on; do not invest in cache4 tile features.
+* `HAVE_THUMTOO` builds **always** use thumtoo tiles; never open `cache4_tiles.sqlite3`.
+* `--no-thumtoo` rejected (error); `--thumtoo` kept as no-op for old scripts.
+* `DatabaseTileProvider` only compiled into the open path when **not** `HAVE_THUMTOO`.
+* Legacy SQLite tile sources remain in the tree for `WITH_THUMTOO=OFF` builds only.
 
 ### Phase 2 — remove Galapix tile SQLite
 

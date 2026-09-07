@@ -41,10 +41,8 @@ ArgParser::print_usage()
             << "\n"
             << "Options:\n"
             << "  -d, --database FILE    Resource DB prefix (default: ~/.galapix/cache4); tiles use thumtoo\n"
-            << "      --thumtoo          Use thumtoo tile cache for local files\n"
-            << "                         (default when built with HAVE_THUMTOO)\n"
-            << "      --no-thumtoo       Force Galapix SQLite tiles (deprecated)\n"
             << "      --thumtoo-cache DIR  thumtoo cache root (default: ~/.cache/thumtoo)\n"
+            << "                         (tiles always use thumtoo when built with HAVE_THUMTOO)\n"
             << "  -f, --fullscreen       Start in fullscreen mode\n"
             << "  -t, --threads N        Number of worker threads (default: 2)\n"
             << "  -F, --files-from FILE  Get URLs from FILE\n"
@@ -190,16 +188,24 @@ ArgParser::parse_args(int argc, char** argv, Options& opts)
       }
       else if (strcmp(argv[i], "--thumtoo") == 0)
       {
+        // Accepted for old scripts; thumtoo is always on when HAVE_THUMTOO.
+#ifdef HAVE_THUMTOO
         opts.use_thumtoo = true;
+#else
+        std::cerr << "Warning: --thumtoo ignored (binary built without HAVE_THUMTOO)\n";
+#endif
       }
       else if (strcmp(argv[i], "--no-thumtoo") == 0)
       {
-        opts.use_thumtoo = false;
 #ifdef HAVE_THUMTOO
         std::cerr
-          << "Warning: --no-thumtoo is deprecated; Galapix SQLite tiles "
-             "(cache4_tiles.sqlite3) will be removed. Prefer thumtoo "
-             "(default) or build without HAVE_THUMTOO for the legacy path.\n";
+          << "Error: --no-thumtoo is no longer supported. Galapix SQLite tiles "
+             "(cache4_tiles.sqlite3) are disabled in HAVE_THUMTOO builds. "
+             "Use a build without WITH_THUMTOO for the legacy path.\n";
+        // Keep thumtoo; do not honor the flag.
+        opts.use_thumtoo = true;
+#else
+        opts.use_thumtoo = false;
 #endif
       }
       else if (strcmp(argv[i], "--thumtoo-cache") == 0)

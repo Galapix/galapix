@@ -35,13 +35,14 @@ Database::create(std::string const& prefix, bool sqlite_tiles)
 
   if (sqlite_tiles)
   {
+    // Legacy Galapix tiles (builds without HAVE_THUMTOO / WITH_THUMTOO=OFF).
     tile_db = std::make_unique<SQLite::Database>(prefix + "/cache4_tiles.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
     tiles = std::make_unique<CachedTileDatabase>(
       std::make_unique<SQLiteTileDatabase>(*tile_db, *resources));
   }
   else
   {
-    // Pure thumtoo (or tests): no durable Galapix tile file; keep interface alive.
+    // HAVE_THUMTOO builds: no cache4_tiles.sqlite3; interface kept for DatabaseThread.
     tiles = std::make_unique<CachedTileDatabase>(
       std::make_unique<MemoryTileDatabase>());
   }

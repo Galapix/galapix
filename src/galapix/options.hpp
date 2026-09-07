@@ -55,8 +55,8 @@ public:
   int         threads;
   std::vector<std::string> rest;
 
-  /** When true and built with HAVE_THUMTOO, use ThumtooTileProvider for files.
-      false is deprecated (--no-thumtoo); legacy cache4_tiles path. */
+  /** When true, use ThumtooTileProvider for files (always true if HAVE_THUMTOO).
+      Without HAVE_THUMTOO, false selects legacy Galapix SQLite tiles. */
   bool use_thumtoo;
   /** thumtoo cache root; empty → $XDG_CACHE_HOME/thumtoo or ~/.cache/thumtoo */
   std::string thumtoo_cache;

@@ -115,12 +115,11 @@ std::vector<URL> expand_thumtoo_urls(URL const& url)
 ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
   m_opts(opts),
-  // Pure thumtoo view: keep resource DB for -p patterns, skip Galapix tile SQLite.
-  // Only when HAVE_THUMTOO and use_thumtoo; otherwise keep historical tile DB.
+  // Resource DB for -p patterns. Tile SQLite only when built without thumtoo.
   m_database(Database::create(
     opts.database,
 #ifdef HAVE_THUMTOO
-    /*sqlite_tiles=*/!opts.use_thumtoo
+    /*sqlite_tiles=*/false
 #else
     /*sqlite_tiles=*/true
 #endif
@@ -133,12 +132,9 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_database_thread.start_thread();
 
 #ifdef HAVE_THUMTOO
-  if (!m_opts.use_thumtoo) {
-    std::cerr << "Using legacy Galapix SQLite tiles (cache4_tiles.sqlite3); "
-                 "this path is deprecated.\n";
-  }
-  if (m_opts.use_thumtoo) {
-    thumtoo::image_library_init();
+  // HAVE_THUMTOO builds always use thumtoo for file tiles (no cache4_tiles).
+  thumtoo::image_library_init();
+  {
     std::filesystem::path cache = m_opts.thumtoo_cache.empty()
                                     ? default_thumtoo_cache()
                                     : std::filesystem::path(m_opts.thumtoo_cache);
@@ -180,9 +176,11 @@ ViewerCommand::make_file_tile_provider(URL const& url,
     return {};
   }
 #endif
+#ifndef HAVE_THUMTOO
   if (file_entry && image_entry) {
     return std::make_shared<DatabaseTileProvider>(*file_entry, *image_entry);
   }
+#endif
   return {};
 }
 
