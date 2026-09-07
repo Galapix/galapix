@@ -10,6 +10,7 @@
 
 #include "app/galapix_paths.hpp"
 
+#include <cctype>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -47,6 +48,7 @@ char const* icon_file(int index)
     "layout_spiral.png",
     "layout_vertical.png",
     "status.png",
+    "help.png",
   };
   return names[index];
 }
@@ -263,6 +265,40 @@ ImguiOverlay::begin_frame()
 }
 
 void
+ImguiOverlay::panel_toggle_btn(IconId id, char const* id_str, char const* tip_on,
+                               char const* tip_off, bool& visible_flag)
+{
+  Icon const& icon = m_icons[static_cast<size_t>(id)];
+  ImGui::PushID(id_str);
+  bool pressed = false;
+  ImVec2 const sz(32.0f, 32.0f);
+  if (icon.id) {
+    ImTextureID const tex_id =
+      static_cast<ImTextureID>(static_cast<std::uintptr_t>(icon.id));
+    if (visible_flag) {
+      ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.45f, 0.70f, 1.0f));
+    }
+    pressed = ImGui::ImageButton(id_str, tex_id, sz);
+    if (visible_flag) {
+      ImGui::PopStyleColor();
+    }
+  } else {
+    char label[2] = { id_str[0], '\0' };
+    if (visible_flag) {
+      label[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(label[0])));
+    }
+    pressed = ImGui::Button(label, sz);
+  }
+  if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
+    ImGui::SetTooltip("%s", visible_flag ? tip_on : tip_off);
+  }
+  if (pressed) {
+    visible_flag = !visible_flag;
+  }
+  ImGui::PopID();
+}
+
+void
 ImguiOverlay::draw_status(Viewer& viewer)
 {
   if (!m_initialized || !m_visible) {
@@ -333,45 +369,29 @@ ImguiOverlay::draw_status(Viewer& viewer)
     ImGui::Separator();
     ImGui::Spacing();
 
-    // Status panel toggle (hidden by default)
-    {
-      Icon const& icon = m_icons[static_cast<size_t>(IconId::Status)];
-      ImGui::PushID("status_toggle");
-      bool pressed = false;
-      ImVec2 const sz(32.0f, 32.0f);
-      if (icon.id) {
-        ImTextureID const tex_id =
-          static_cast<ImTextureID>(static_cast<std::uintptr_t>(icon.id));
-        if (m_status_visible) {
-          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.45f, 0.70f, 1.0f));
-        }
-        pressed = ImGui::ImageButton("Status", tex_id, sz);
-        if (m_status_visible) {
-          ImGui::PopStyleColor();
-        }
-      } else {
-        pressed = ImGui::Button(m_status_visible ? "S*" : "S", sz);
-      }
-      if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
-        ImGui::SetTooltip("%s", m_status_visible ? "Hide status / help" : "Show status / help");
-      }
-      if (pressed) {
-        m_status_visible = !m_status_visible;
-      }
-      ImGui::PopID();
-    }
+    panel_toggle_btn(IconId::Status, "status_toggle",
+                     "Hide status", "Show status", m_status_visible);
+    panel_toggle_btn(IconId::Help, "help_toggle",
+                     "Hide help", "Show help / shortcuts", m_help_visible);
   }
   ImGui::End();
   ImGui::PopStyleColor();
 
-  if (!m_status_visible) {
-    return;
+  if (m_status_visible) {
+    draw_status_panel(viewer);
   }
+  if (m_help_visible) {
+    draw_help_panel(viewer);
+  }
+}
 
-  // --- Status (offset past toolbar) ---
+void
+ImguiOverlay::draw_status_panel(Viewer& viewer)
+{
+  float const bar_w = 48.0f;
   ImGui::SetNextWindowPos(ImVec2(bar_w + 12.0f, 12.0f), ImGuiCond_FirstUseEver);
-  ImGui::SetNextWindowSize(ImVec2(420.0f, 520.0f), ImGuiCond_FirstUseEver);
-  if (!ImGui::Begin("Status / Help", &m_status_visible, ImGuiWindowFlags_NoCollapse)) {
+  ImGui::SetNextWindowSize(ImVec2(320.0f, 280.0f), ImGuiCond_FirstUseEver);
+  if (!ImGui::Begin("Status", &m_status_visible, ImGuiWindowFlags_NoCollapse)) {
     ImGui::End();
     return;
   }
@@ -397,9 +417,42 @@ ImguiOverlay::draw_status(Viewer& viewer)
                 ov_idle, ov_loading, ov_ready, ov_failed);
   }
 
-  ImGui::Separator();
-  if (ImGui::CollapsingHeader("Keyboard shortcuts", ImGuiTreeNodeFlags_DefaultOpen)) {
-    auto row = [](char const* key, char const* desc) {
+  ImGui::End();
+}
+
+void
+ImguiOverlay::draw_help_panel(Viewer& viewer)
+{
+  float const bar_w = 48.0f;
+  // Place help a bit lower / right of status so both can stay open.
+  ImGui::SetNextWindowPos(ImVec2(bar_w + 12.0f, 300.0f), ImGuiCond_FirstUseEver);
+  ImGui::SetNextWindowSize(ImVec2(420.0f, 480.0f), ImGuiCond_FirstUseEver);
+  if (!ImGui::Begin("Help / Shortcuts", &m_help_visible, ImGuiWindowFlags_NoCollapse)) {
+    ImGui::End();
+    return;
+  }
+
+  ImGui::TextWrapped(
+    "Click a key row to run the action (same as the keyboard shortcut). "
+    "Chrome-only and mouse bindings are listed but not clickable.");
+
+  if (ImGui::BeginTable("shortcuts", 2,
+                        ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg |
+                        ImGuiTableFlags_SizingStretchProp,
+                        ImVec2(-1.0f, 0.0f))) {
+    ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 110.0f);
+    ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthStretch);
+
+    auto section = [](char const* title) {
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("%s", title);
+      ImGui::TableSetColumnIndex(1);
+      ImGui::TextDisabled("");
+    };
+
+    // Non-actionable reference row (chrome / mouse / app-shell keys).
+    auto info_row = [](char const* key, char const* desc) {
       ImGui::TableNextRow();
       ImGui::TableSetColumnIndex(0);
       ImGui::TextUnformatted(key);
@@ -407,90 +460,92 @@ ImguiOverlay::draw_status(Viewer& viewer)
       ImGui::TextUnformatted(desc);
     };
 
-    if (ImGui::BeginTable("shortcuts", 2,
-                          ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg |
-                          ImGuiTableFlags_SizingStretchProp,
-                          ImVec2(-1.0f, 0.0f))) {
-      ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 110.0f);
-      ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthStretch);
-
+    // Clickable row: Selectable on the key triggers the Viewer action.
+    auto action_row = [](char const* key, char const* desc, auto&& action) {
       ImGui::TableNextRow();
       ImGui::TableSetColumnIndex(0);
-      ImGui::TextDisabled("Chrome");
-      row("Tab / F1", "Show/hide toolbar (and status)");
-      row("Status btn", "Show/hide this status panel");
+      ImGui::PushID(key);
+      bool const clicked = ImGui::Selectable(key, false);
+      if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
+        ImGui::SetTooltip("Click to run: %s", desc);
+      }
+      ImGui::TableSetColumnIndex(1);
+      ImGui::TextUnformatted(desc);
+      if (clicked) {
+        action();
+      }
+      ImGui::PopID();
+    };
 
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::TextDisabled("Tools");
-      row("p", "Pan tool");
-      row("z", "Zoom-rect tool");
-      row("y", "Grid tool");
-      row("m", "Move / resize tool");
-      row("r", "Move / rotate tool");
-      row("Home / End", "Keyboard zoom in / out");
-      row("Shift + mouse", "Rotate view while held");
-      row("Wheel", "Zoom toward cursor");
+    section("Chrome");
+    info_row("Tab / F1", "Show/hide toolbar (+ panels)");
+    info_row("Status btn", "Show/hide Status panel");
+    info_row("Help btn", "Show/hide this Help panel");
 
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::TextDisabled("View");
-      row("h", "Zoom home (fit)");
-      row("d", "Zoom to selection");
-      row("g", "Toggle grid");
-      row("f", "Toggle pinned grid");
-      row("b", "Cycle background color");
-      row("Shift+b", "Cycle background (reverse)");
-      row("Left / Right", "Rotate view ±90°");
-      row("Up / Down", "Reset view rotation");
-      row("Numpad 8/2/4/6", "Nudge view");
-      row("Numpad +/-", "Zoom in/out (center)");
-      row("F11", "Toggle fullscreen");
-      row("t", "Toggle trackball mode");
+    section("Tools");
+    action_row("p", "Pan tool", [&] { viewer.set_pan_tool(); });
+    action_row("z", "Zoom rect tool", [&] { viewer.set_zoom_tool(); });
+    action_row("y", "Grid tool", [&] { viewer.set_grid_tool(); });
+    action_row("m", "Move/resize tool", [&] { viewer.set_move_resize_tool(); });
+    info_row("LMB drag", "Use active tool");
+    info_row("MMB / Space+LMB", "Pan while held");
+    info_row("RMB + mouse", "Rotate view while held");
+    info_row("Wheel", "Zoom toward cursor");
 
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::TextDisabled("Layout");
-      row("1", "Regular layout");
-      row("2", "Tight layout");
-      row("3", "Random layout");
-      row("4", "Solve overlaps");
-      row("5", "Spiral layout");
-      row("6", "Vertical layout");
-      row("s", "Sort by name");
-      row("Shift+s", "Sort reverse");
-      row("n", "Shuffle");
+    section("View");
+    action_row("h", "Zoom home (fit)", [&] { viewer.zoom_home(); });
+    action_row("d", "Zoom to selection", [&] { viewer.zoom_to_selection(); });
+    action_row("g", "Toggle grid", [&] { viewer.toggle_grid(); });
+    action_row("f", "Toggle pinned grid", [&] { viewer.toggle_pinned_grid(); });
+    action_row("b", "Cycle background color", [&] { viewer.toggle_background_color(); });
+    action_row("Shift+b", "Cycle background (reverse)",
+               [&] { viewer.toggle_background_color(true); });
+    action_row("Left", "Rotate view −90°", [&] { viewer.rotate_view_270(); });
+    action_row("Right", "Rotate view +90°", [&] { viewer.rotate_view_90(); });
+    action_row("Up / Down", "Reset view rotation", [&] { viewer.reset_view_rotation(); });
+    info_row("Numpad 8/2/4/6", "Nudge view");
+    info_row("Numpad +/-", "Zoom in/out (center)");
+    info_row("F11", "Toggle fullscreen");
+    action_row("t", "Toggle trackball mode", [&] { viewer.toggle_trackball_mode(); });
 
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::TextDisabled("Selection");
-      row("i", "Isolate selection");
-      row("Delete", "Remove selection from workspace");
-      row("F5", "Refresh selection");
+    section("Layout");
+    action_row("1", "Regular layout", [&] { viewer.layout_auto(); });
+    action_row("2", "Tight layout", [&] { viewer.layout_tight(); });
+    action_row("3", "Random layout", [&] { viewer.layout_random(); });
+    action_row("4", "Solve overlaps", [&] { viewer.layout_solve_overlaps(); });
+    action_row("5", "Spiral layout", [&] { viewer.layout_spiral(); });
+    action_row("6", "Vertical layout", [&] { viewer.layout_vertical(); });
+    action_row("s", "Sort by name", [&] { viewer.sort_image_list(); });
+    action_row("Shift+s", "Sort reverse", [&] { viewer.sort_reverse_image_list(); });
+    action_row("n", "Shuffle", [&] { viewer.shuffle_image_list(); });
 
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::TextDisabled("Image / cache");
-      row("F2", "Load workspace");
-      row("F3", "Save workspace");
-      row("c", "Clear tile cache");
-      row("k", "Cleanup cache");
-      row("F6 / F7", "Brightness + / −");
-      row("F8 / F9", "Contrast + / −");
-      row("PgUp / PgDn", "Gamma + / −");
-      row("F10", "Reset gamma");
-      row("F12", "Screenshot → /tmp/");
+    section("Selection");
+    action_row("i", "Isolate selection", [&] { viewer.isolate_selection(); });
+    action_row("Delete", "Remove selection from workspace",
+               [&] { viewer.delete_selection(); });
+    action_row("F5", "Refresh selection", [&] { viewer.refresh_selection(); });
 
-      ImGui::TableNextRow();
-      ImGui::TableSetColumnIndex(0);
-      ImGui::TextDisabled("Debug");
-      row("Space", "Print visible images");
-      row("l", "Print viewer state");
-      row("0", "Print info");
-      row("Esc", "Quit");
+    section("Image / cache");
+    action_row("F2", "Load workspace", [&] { viewer.load(); });
+    action_row("F3", "Save workspace", [&] { viewer.save(); });
+    action_row("c", "Clear tile cache", [&] { viewer.clear_cache(); });
+    action_row("k", "Cleanup cache", [&] { viewer.cleanup_cache(); });
+    action_row("F6", "Brightness +", [&] { viewer.increase_brightness(); });
+    action_row("F7", "Brightness −", [&] { viewer.decrease_brightness(); });
+    action_row("F8", "Contrast +", [&] { viewer.increase_contrast(); });
+    action_row("F9", "Contrast −", [&] { viewer.decrease_contrast(); });
+    action_row("PgUp", "Gamma +", [&] { viewer.increase_gamma(); });
+    action_row("PgDn", "Gamma −", [&] { viewer.decrease_gamma(); });
+    action_row("F10", "Reset gamma", [&] { viewer.reset_gamma(); });
+    info_row("F12", "Screenshot → /tmp/");
 
-      ImGui::EndTable();
-    }
+    section("Debug");
+    action_row("Space", "Print visible images", [&] { viewer.print_images(); });
+    action_row("l", "Print viewer state", [&] { viewer.print_state(); });
+    action_row("0", "Print info", [&] { viewer.print_info(); });
+    info_row("Esc", "Quit");
+
+    ImGui::EndTable();
   }
 
   ImGui::End();

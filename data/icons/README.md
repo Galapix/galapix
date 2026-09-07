@@ -11,3 +11,4 @@
 | layout_regular, layout_tight, layout_random | Layouts 1–3 |
 | layout_solve, layout_spiral, layout_vertical | Layouts 4–6 |
 | status | Status panel toggle |
+| help | Help / shortcuts panel |

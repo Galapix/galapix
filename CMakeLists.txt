@@ -289,7 +289,7 @@ set(_galapix_icon_names
   grid grid_pin
   layout_regular layout_tight layout_random
   layout_solve layout_spiral layout_vertical
-  status)
+  status help)
 
 find_program(GALAPIX_RSVG_CONVERT NAMES rsvg-convert)
 find_program(GALAPIX_IM_CONVERT NAMES magick convert)

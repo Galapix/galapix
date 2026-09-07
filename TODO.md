@@ -1,3 +1,12 @@
+## Help panel + clickable shortcuts (2026-09-07)
+
+* Split former **Status / Help** into two panels:
+  - **Status** (toolbar icon): view scale, tile backlog, overview stats only
+  - **Help / Shortcuts** (new toolbar icon `help.svg`): categorized key list
+* Help rows that map to `Viewer` methods are **clickable** (run the action)
+* Non-clickable: Tab/F1 chrome, F11 fullscreen, F12 screenshot, Esc quit, mouse bindings
+* Docs: [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md)
+
 ## ImGui tools + hide chrome (2026-09-07)
 
 * SVG sources in `data/icons/svg/`; PNGs for ImGui textures
@@ -774,7 +783,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-035.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-036.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
