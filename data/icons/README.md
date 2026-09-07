@@ -2,16 +2,12 @@
 
 **Source of truth:** `svg/*.svg` (colored 24×24 glyphs).
 
-**PNG at build time:** CMake runs `rsvg-convert` (preferred) or ImageMagick
-`convert` and writes:
+**PNG at build time:** CMake `galapix_icons` → `${BUILD}/share/galapix/icons/...`
 
-```
-${CMAKE_BINARY_DIR}/share/galapix/icons/hicolor/24x24/actions/*.png
-```
-
-ImGui loads those PNGs via SDL_image (no SVG at runtime).
-
-`GALAPIX_DATADIR` overrides the data root; otherwise the build-tree path from
-`GALAPIX_DEFAULT_DATADIR` or `$prefix/share/galapix` is used.
-
-Do not commit generated PNGs.
+| SVG | Role |
+|-----|------|
+| pan_tool, zoom_rect_tool, grid_tool, move_tool | Tools |
+| grid, grid_pin | Grid toggles |
+| layout_regular, layout_tight, layout_random | Layouts 1–3 |
+| layout_solve, layout_spiral, layout_vertical | Layouts 4–6 |
+| status | Status panel toggle |

@@ -17,10 +17,10 @@ namespace galapix {
 
 class Viewer;
 
-/** Dear ImGui chrome (status + tool bar) on the SDL OpenGL viewer.
+/** Dear ImGui chrome (toolbar + optional status) on the SDL OpenGL viewer.
  *
- *  Toggle all chrome with Tab or F1. When visible, ImGui captures input
- *  over its windows; image tools keep working on the rest of the view.
+ *  Toggle all chrome with Tab or F1. Status panel is hidden by default and
+ *  toggled from a toolbar button.
  */
 class ImguiOverlay
 {
@@ -64,6 +64,10 @@ private:
     LayoutRegular,
     LayoutTight,
     LayoutRandom,
+    LayoutSolve,
+    LayoutSpiral,
+    LayoutVertical,
+    Status,
     Count
   };
 
@@ -74,6 +78,7 @@ private:
 
   bool m_initialized = false;
   bool m_visible = true;
+  bool m_status_visible = false; // Galapix status panel; toolbar toggles
   bool m_icons_loaded = false;
   std::array<Icon, static_cast<size_t>(IconId::Count)> m_icons{};
 };

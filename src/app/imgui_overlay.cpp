@@ -43,6 +43,10 @@ char const* icon_file(int index)
     "layout_regular.png",
     "layout_tight.png",
     "layout_random.png",
+    "layout_solve.png",
+    "layout_spiral.png",
+    "layout_vertical.png",
+    "status.png",
   };
   return names[index];
 }
@@ -321,14 +325,53 @@ ImguiOverlay::draw_status(Viewer& viewer)
     tool_btn(IconId::LayoutRegular, "Layout regular (1)", [&] { viewer.layout_auto(); });
     tool_btn(IconId::LayoutTight, "Layout tight (2)", [&] { viewer.layout_tight(); });
     tool_btn(IconId::LayoutRandom, "Layout random (3)", [&] { viewer.layout_random(); });
+    tool_btn(IconId::LayoutSolve, "Solve overlaps (4)", [&] { viewer.layout_solve_overlaps(); });
+    tool_btn(IconId::LayoutSpiral, "Layout spiral (5)", [&] { viewer.layout_spiral(); });
+    tool_btn(IconId::LayoutVertical, "Layout vertical (6)", [&] { viewer.layout_vertical(); });
+
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+
+    // Status panel toggle (hidden by default)
+    {
+      Icon const& icon = m_icons[static_cast<size_t>(IconId::Status)];
+      ImGui::PushID("status_toggle");
+      bool pressed = false;
+      ImVec2 const sz(32.0f, 32.0f);
+      if (icon.id) {
+        ImTextureID const tex_id =
+          static_cast<ImTextureID>(static_cast<std::uintptr_t>(icon.id));
+        if (m_status_visible) {
+          ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.45f, 0.70f, 1.0f));
+        }
+        pressed = ImGui::ImageButton("Status", tex_id, sz);
+        if (m_status_visible) {
+          ImGui::PopStyleColor();
+        }
+      } else {
+        pressed = ImGui::Button(m_status_visible ? "S*" : "S", sz);
+      }
+      if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
+        ImGui::SetTooltip("%s", m_status_visible ? "Hide status" : "Show status");
+      }
+      if (pressed) {
+        m_status_visible = !m_status_visible;
+      }
+      ImGui::PopID();
+    }
   }
   ImGui::End();
   ImGui::PopStyleColor();
 
+  if (!m_status_visible) {
+    return;
+  }
+
   // --- Status (offset past toolbar) ---
   ImGui::SetNextWindowPos(ImVec2(bar_w + 12.0f, 12.0f), ImGuiCond_FirstUseEver);
   ImGui::SetNextWindowSize(ImVec2(360.0f, 0.0f), ImGuiCond_FirstUseEver);
-  if (!ImGui::Begin("Galapix status", &m_visible, ImGuiWindowFlags_NoCollapse)) {
+  if (!ImGui::Begin("Galapix status", &m_status_visible, ImGuiWindowFlags_NoCollapse)) {
     ImGui::End();
     return;
   }
@@ -355,7 +398,7 @@ ImguiOverlay::draw_status(Viewer& viewer)
   }
 
   ImGui::Separator();
-  ImGui::TextDisabled("Tab / F1 hide chrome  |  H zoom home  |  l console dump");
+  ImGui::TextDisabled("Tab / F1 hide chrome  |  toolbar status button  |  H zoom home");
   ImGui::End();
 }
 
