@@ -46,7 +46,7 @@ std::optional<surf::SoftwareSurface> surface_from_tile_blob(thumtoo::TileBlob co
   }
 
   // Live PDF path: raw RGB888 from thumtoo (no JPEG).
-  if (tb.codec == thumtoo::kTileCodecRgb888 || tb.codec == "rgb888") {
+  if (tb.codec == "rgb888") {
     int const w = tb.width > 0 ? tb.width : 0;
     int const h = tb.height > 0 ? tb.height : 0;
     if (w <= 0 || h <= 0) {
