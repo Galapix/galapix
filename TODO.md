@@ -46,6 +46,7 @@ Make **develop** the branch that becomes **master**. See
 * [ ] Tile load policy ([docs/TILE_LOADING.md](docs/TILE_LOADING.md)): no interactive pyramid batch; overview ≠ tiles; archive coalesce
 * [x] thumtoo: single-scale on request_tile (in-tree patch; not full pyramid)
 * [ ] thumtoo: single-cell cut + same-archive request coalesce (upstream)
+* [x] Request coarser stand-in on tile miss (overview + parent; cancel keeps coarser)
 * [ ] Fast overview path (libjpeg/EXIF) with separate cache identity
 * [ ] Benchmark: split vs merged size+overview for archive members
 * [ ] Optional: texture array / atlas batching for fewer draw calls
