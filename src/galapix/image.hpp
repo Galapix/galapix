@@ -23,6 +23,7 @@
 
 #include "galapix/tile_provider.hpp"
 #include "galapix/tile.hpp"
+#include "galapix/image_overview.hpp"
 #include "job/job_handle.hpp"
 #include "job/thread_message_queue2.hpp"
 #include "math/rect.hpp"
@@ -35,13 +36,14 @@ namespace galapix {
 
 class ImageTileCache;
 class ImageRenderer;
+class JobManager;
 class TileEntry;
 class Image;
 
 class Image final : public WorkspaceItem
 {
 public:
-  Image(URL const& url, TileProviderPtr provider = {});
+  Image(URL const& url, TileProviderPtr provider = {}, JobManager* job_manager = nullptr);
   ~Image() override;
 
   void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) override;
@@ -66,15 +68,21 @@ public:
 
   void on_leave_screen() override;
 
+  ImageOverview& overview() { return *m_overview; }
+  ImageOverview const& overview() const { return *m_overview; }
+  JobManager* job_manager() const { return m_job_manager; }
+
 private:
   void set_tile_provider(TileProviderPtr provider);
 
 private:
   URL       m_url;
   TileProviderPtr m_provider;
+  JobManager* m_job_manager;
 
   std::shared_ptr<ImageTileCache> m_cache;
   std::unique_ptr<ImageRenderer>  m_renderer;
+  std::shared_ptr<ImageOverview> m_overview;
 };
 
 } // namespace galapix

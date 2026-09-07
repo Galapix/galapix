@@ -34,17 +34,22 @@ namespace galapix {
 
 using namespace surf;
 
-Image::Image(URL const& url, TileProviderPtr provider) :
+Image::Image(URL const& url, TileProviderPtr provider, JobManager* job_manager) :
   m_url(url),
   m_provider(std::move(provider)),
+  m_job_manager(job_manager),
   m_cache(),
-  m_renderer()
+  m_renderer(),
+  m_overview(std::make_shared<ImageOverview>())
 {
   set_tile_provider(m_provider);
 }
 
 Image::~Image()
 {
+  if (m_overview) {
+    m_overview->clear();
+  }
 }
 
 int
@@ -80,6 +85,7 @@ Image::clear_cache()
   {
     m_cache->clear();
   }
+  m_overview.clear();
 }
 
 void
@@ -101,6 +107,7 @@ Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
   }
   else
   {
+    m_overview.process();
     m_cache->process_queue();
     m_renderer->draw(gc, cliprect, zoom);
   }
@@ -182,6 +189,10 @@ Image::on_leave_screen()
 {
   WorkspaceItem::on_leave_screen();
   cache_cleanup();
+  // Keep overview if already Ready; abort in-flight to save work off-screen.
+  if (m_overview.state() == ImageOverview::State::Loading) {
+    m_overview.clear();
+  }
 }
 
 } // namespace galapix

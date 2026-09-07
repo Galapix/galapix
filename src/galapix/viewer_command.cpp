@@ -176,7 +176,8 @@ ViewerCommand::run(std::vector<URL> const& urls)
       else
       {
         workspace.add_image(std::make_shared<Image>(i->get_url(),
-                                          make_file_tile_provider(i->get_url(), &*i, &image_entry)));
+                                          make_file_tile_provider(i->get_url(), &*i, &image_entry),
+                                          &m_job_manager));
 
         // print progress
         size_t n = static_cast<size_t>(i - file_entries.begin()) + 1;
@@ -234,7 +235,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
     {
       if (i->get_payload() == "mandelbrot")
       {
-        workspace.add_image(std::make_shared<Image>(*i, std::make_shared<MandelbrotTileProvider>(m_job_manager)));
+        workspace.add_image(std::make_shared<Image>(*i, std::make_shared<MandelbrotTileProvider>(m_job_manager), &m_job_manager));
       }
       else
       {
@@ -243,7 +244,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
     }
     else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
     {
-      workspace.add_image(std::make_shared<Image>(*i, ZoomifyTileProvider::create(*i, m_job_manager)));
+      workspace.add_image(std::make_shared<Image>(*i, ZoomifyTileProvider::create(*i, m_job_manager), &m_job_manager));
     }
     else
     {
@@ -251,9 +252,9 @@ ViewerCommand::run(std::vector<URL> const& urls)
       if (!m_database.get_resources().get_old_file_entry(*i, file_entry))
       {
         if (auto provider = make_file_tile_provider(*i)) {
-          workspace.add_image(std::make_shared<Image>(*i, provider));
+          workspace.add_image(std::make_shared<Image>(*i, provider, &m_job_manager));
         } else {
-          workspace.add_image(std::make_shared<Image>(*i));
+          workspace.add_image(std::make_shared<Image>(*i, TileProviderPtr{}, &m_job_manager));
         }
       }
       else
@@ -267,7 +268,8 @@ ViewerCommand::run(std::vector<URL> const& urls)
         {
           workspace.add_image(std::make_shared<Image>(
             file_entry.get_url(),
-            make_file_tile_provider(file_entry.get_url(), &file_entry, &image_entry)));
+            make_file_tile_provider(file_entry.get_url(), &file_entry, &image_entry),
+            &m_job_manager));
         }
       }
     }

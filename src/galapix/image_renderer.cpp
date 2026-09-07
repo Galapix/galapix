@@ -141,6 +141,15 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
   }
   else
   {
+    // Soft whole-image preview (not a grid tile). Drawn under tiles so missing
+    // cells still show something while high-res loads.
+    m_image.overview().ensure_requested(
+      m_image.job_manager(),
+      m_image.get_url(),
+      m_image.get_original_width(),
+      m_image.get_original_height());
+    m_image.overview().draw(gc, image_rect);
+
     // scale factor for requesting the tile from the TileDatabase
     // FIXME: Can likely be done without float
     int tiledb_scale = std::clamp(static_cast<int>(logf(1.0f / (zoom * m_image.get_scale())) /
