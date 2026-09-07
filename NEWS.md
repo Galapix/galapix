@@ -43,7 +43,7 @@ Galapix 0.3.0-dev (unreleased)
 
 ### Still in progress
 
-* Separate libjpeg/EXIF **overview** store (quality ≠ grid tiles)
+* In-memory libjpeg-scale **overview** under tiles (EXIF thumb / disk cache still open)
 * thumtoo single-cell cut and same-archive request coalesce (upstream)
 * On-screen status HUD (needs text rendering)
 * Interactive UI parity testing before calling develop “master”

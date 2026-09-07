@@ -73,7 +73,7 @@ Do **not** push overview surfaces into `ImageTileCache` under a fake TileCacheId
 |------|--------|
 | Design (this doc) | **Done** |
 | max_scale grid stand-in | Done (tile cache) |
-| `ImageOverview` + worker load for local JPEG | Not done |
+| `ImageOverview` + worker load for local JPEG | **Done** (TileGenerator::load_surface / libjpeg scale) |
 | EXIF thumb path | Not done |
 | Disk cache for overview | Not done (optional) |
 | Archive coalesced size+overview | thumtoo / benchmark first |

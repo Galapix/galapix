@@ -47,7 +47,8 @@ Make **develop** the branch that becomes **master**. See
 * [x] thumtoo: single-scale on request_tile (in-tree patch; not full pyramid)
 * [ ] thumtoo: single-cell cut + same-archive request coalesce (upstream)
 * [x] Request coarser stand-in on tile miss (overview + parent; cancel keeps coarser)
-* [ ] Fast overview path (libjpeg/EXIF) with separate cache identity — design [docs/OVERVIEW.md](docs/OVERVIEW.md)
+* [x] Fast overview path (libjpeg scale) with separate in-memory layer — [docs/OVERVIEW.md](docs/OVERVIEW.md)
+* [ ] EXIF thumbnail path for overview (optional refinement)
 * [ ] Benchmark: split vs merged size+overview for archive members
 * [ ] Optional: texture array / atlas batching for fewer draw calls
 * [x] Console tile load stats (`l` / `print_state`: pending requests, uploads, cache entries, thumtoo callback queue)

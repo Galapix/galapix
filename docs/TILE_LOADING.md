@@ -352,7 +352,7 @@ work on Client worker threads instead of serializing drain boundaries.
 | `request_tile_pyramid` / prepare for batch | Unchanged (explicit batch OK) |
 | Missing tile → coarser tile | Present (`find_smaller_tile` draw path) |
 | Request coarser stand-in on miss | **Done** — queue max_scale overview + one parent cell before target; `cancel_jobs` keeps coarser REQUESTED jobs |
-| Fast overview ≠ tile store | **Partial** — max_scale grid tile used as stand-in (still a real tile identity). Separate libjpeg/EXIF overview store still **not done** |
+| Fast overview ≠ tile store | **In-memory overview** via `ImageOverview` (libjpeg scale, not tile identity). EXIF thumb + disk cache still optional |
 | libjpeg / EXIF overview | **Not done** |
 | Archive same-member coalesce | **Not done** (thumtoo) |
 | Single **cell** only (not full scale grid) | **Not done** (thumtoo cut API) |
