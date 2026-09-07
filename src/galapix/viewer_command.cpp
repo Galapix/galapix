@@ -16,6 +16,8 @@
 
 #include "galapix/viewer_command.hpp"
 
+#include <chrono>
+#include <cstdlib>
 #include <filesystem>
 #include <iostream>
 
@@ -39,6 +41,34 @@
 #endif
 
 namespace galapix {
+
+namespace {
+
+struct OpenTiming {
+  bool enabled = false;
+  std::chrono::steady_clock::time_point t0{};
+  std::chrono::steady_clock::time_point phase{};
+
+  explicit OpenTiming(char const* label) {
+    enabled = std::getenv("GALAPIX_OPEN_TIMING") != nullptr;
+    if (!enabled) return;
+    t0 = phase = std::chrono::steady_clock::now();
+    std::cout << "[open-timing] start " << label << "\n";
+  }
+
+  void mark(char const* name) {
+    if (!enabled) return;
+    auto now = std::chrono::steady_clock::now();
+    double dt = std::chrono::duration<double>(now - phase).count();
+    double tot = std::chrono::duration<double>(now - t0).count();
+    std::cout << "[open-timing] " << name << ": " << dt << " s (total "
+              << tot << " s)\n";
+    phase = now;
+  }
+};
+
+} // namespace
+
 
 namespace {
 
@@ -182,6 +212,7 @@ ViewerCommand::~ViewerCommand()
 void
 ViewerCommand::run(std::vector<URL> const& urls)
 {
+  OpenTiming timing("ViewerCommand::run");
   Workspace workspace;
 
 #ifdef HAVE_THUMTOO
@@ -201,8 +232,10 @@ ViewerCommand::run(std::vector<URL> const& urls)
     }
   }
   std::vector<URL> const& work_urls = m_thumtoo ? expanded_urls : urls;
+  timing.mark("expand");
 #else
   std::vector<URL> const& work_urls = urls;
+  timing.mark("expand");
 #endif
 
   { // process all -p PATTERN options (thumtoo cache query when available)
@@ -340,6 +373,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
     }
     std::cout << " " << work_urls.size() << " urls, " << pending << " probed\n";
   }
+  timing.mark("size_probe");
 #endif
 
   // process regular URLs
@@ -385,8 +419,10 @@ ViewerCommand::run(std::vector<URL> const& urls)
     std::cout << std::endl;
   }
 
+  timing.mark("add_images");
   log_info("launching viewer");
   m_system.launch_viewer(workspace, m_opts);
+  timing.mark("viewer_session");
   log_info("viewer done");
 }
 

@@ -1,3 +1,15 @@
+## Benchmark infrastructure for open path (2026-09-07) — tip **galapix-082**
+
+* `extra/open_phase_bench` — headless phase timings (expand / size / providers /
+  overview tiles), no SDL
+* `GALAPIX_OPEN_TIMING=1` — phase marks in real `ViewerCommand::run`
+* `BENCHMARKS.md` — how to use these vs `thumtoo-bench`
+
+Next: optional first-frame timing inside the viewer loop once we know which
+pre-viewer phase (if any) is still multi-second.
+
+---
+
 ## Faster initial gallery fill (2026-09-07) — tip **galapix-081**
 
 * GL uploads per image/frame: **2 → 16** (cache-hit overviews were stuck behind a tiny upload budget)
