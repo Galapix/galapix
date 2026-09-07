@@ -372,3 +372,11 @@ work on Client worker threads instead of serializing drain boundaries.
 | `prepare` CLI | `thumtoo-prepare` | Policy: use thumtoo |
 
 Galapix legacy **tile** tables can stay unused in pure thumtoo mode; do not invest in new SQLite tile features.
+
+## Session handoff (2026-09-07)
+
+Upstream thumtoo now: multi-worker queue, archive member cache, tile-job
+coalesce, prepare `--stats` (wall vs cpu-sum). Galapix interactive path still
+benefits most from single-scale `request_tile` + `ImageOverview` + stand-in
+parents. Remaining gap: **single-cell** cut (whole scale grid still possible
+inside one scale).

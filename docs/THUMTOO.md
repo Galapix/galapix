@@ -98,3 +98,17 @@ thumtoo only builds scales until the image fits in **one 256×256 tile**
 (`while (w > 256 || h > 256) shrink`). Galapix `ThumtooTileProvider::get_max_scale()`
 must use that same range. The historical ImageEntry formula (halve until edge ≤ 8)
 requests scales thumtoo will never produce (`min_scale > computed_max` → empty blob).
+
+## Session note (2026-09-07)
+
+Prefer **upstream thumtoo** at or after the multi-worker / extract-cache /
+stats commits (bundles `thumtoo-004`…`thumtoo-006`). After updating the
+input:
+
+```bash
+nix flake lock --update-input thumtoo
+```
+
+Prepare performance: `thumtoo-prepare --tiles --stats --jobs N` — see thumtoo
+`--help`. Interactive Galapix still uses `request_tile` (single scale) +
+in-viewer overview layer for stdio files.

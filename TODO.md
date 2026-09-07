@@ -46,9 +46,10 @@ Make **develop** the branch that becomes **master**. See
 * [x] Tile UV half-texel inset (LINEAR seam / black border)
 * [x] Offload tile JPEG decode off GUI; limit GL uploads per frame
 * [x] Batch thumtoo size probes at view open (Processing URLs)
-* [ ] Tile load policy ([docs/TILE_LOADING.md](docs/TILE_LOADING.md)): no interactive pyramid batch; overview ≠ tiles; archive coalesce
+* [x] Tile load policy (partial): no interactive full pyramid; overview ≠ tiles; stand-in + cancel policy
 * [x] thumtoo: single-scale on request_tile (upstream; not full pyramid)
-* [ ] thumtoo: single-cell cut + same-archive request coalesce (upstream)
+* [ ] thumtoo: single-cell cut (upstream still open)
+* [x] thumtoo: same-archive extract coalesce + member cache (upstream thumtoo-005+)
 * [x] Request coarser stand-in on tile miss (overview + parent; cancel keeps coarser)
 * [x] Fast overview path (libjpeg scale) with separate in-memory layer — [docs/OVERVIEW.md](docs/OVERVIEW.md)
 * [ ] EXIF thumbnail path for overview (optional refinement)
@@ -737,3 +738,39 @@ Random Notes
 1000 thumbnails -> 1MB
 10'000 thumbnails -> 10MB
 100'000 thumbnails -> 100MB (graphic card gets full) -> Solution: smaller thumbnails, also unload from GFX card, but keep software backstore
+
+## Session handoff (2026-09-07)
+
+### Bundles / tips
+* Galapix develop tip: apply **`galapix-034.bundle`** (or later). Last doc policy: thumtoo via flake input; subtree if diverging.
+* Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
+
+### Done this arc (Galapix)
+* Thumtoo flake input (`flake = false` source tree); **no** in-tree `patches/thumtoo-*.patch`
+* Policy: future thumtoo forks → **git subtree**, upstream in batches ([AGENTS.md](AGENTS.md))
+* SDL focus; GTK abandoned (`BUILD_GALAPIX_GTK=OFF`)
+* Tile miss: request overview + coarser parent; cancel keeps coarser jobs
+* `ImageOverview` (stdio files, libjpeg scale via `TileGenerator::load_surface`); archives skip overview
+* Console status key **`l`** (stdout); overview counts in `print_state`
+* **Dear ImGui** status overlay (**F1**); vendored `external/imgui` v1.91.6
+* F11 fullscreen toggle
+
+### Depends on thumtoo upstream (already on thumtoo master in bundles)
+* `request_tile` single-scale only
+* Multi-worker Client pool (`--jobs`)
+* Extract cache + archive coalesce for tiles/ladder
+* `thumtoo-prepare --tiles --stats` timings
+
+### Next session (Galapix) — priority order
+1. `nix flake lock --update-input thumtoo` after pulling latest thumtoo; rebuild SDL viewer
+2. UI smoke: zoom, edge tiles, resize, F1 overlay, `l` stats with thumtoo on
+3. Expand ImGui chrome (tools/workspace) **without** burying logic in widgets
+4. Optional: EXIF thumb for overview; persistent overview disk cache
+5. Upstream still open: **single-cell** `request_tile` cut (not whole scale grid)
+6. Merge develop → master when UI smoke is acceptable
+
+### Do not
+* Reintroduce `pkgs.applyPatches` for thumtoo
+* Put business logic inside ImGui callbacks
+* Revive GTK as primary UI
+

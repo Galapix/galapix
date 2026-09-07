@@ -66,7 +66,13 @@ CLI (view / thumbgen / …)
 Scale convention matches historical Galapix and thumtoo Phase 4: **scale 0 =
 full resolution**, tile size **256**.
 
-## thumtoo integration (status 2026-09-06)
+## Session handoff (2026-09-07)
+
+Continue from **galapix-034** + **thumtoo-006** bundles (or newer). See TODO.md
+“Session handoff”. Thumtoo is a **flake input** (`flake = false`); lock with
+`nix flake lock --update-input thumtoo`. ImGui overlay is F1; status also key `l`.
+
+## thumtoo integration (status 2026-09-07)
 
 Built with `-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…` (Nix flake enables this via
 flake input `thumtoo`). Defines `HAVE_THUMTOO=1`.
