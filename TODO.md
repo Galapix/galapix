@@ -1,3 +1,15 @@
+## Revert small-on-screen LOD early-out (2026-09-07) — tip **galapix-078**
+
+The `< 192px` overview-only path used `image_rect * zoom`, which does not
+match how on-screen size is computed in this renderer. Result: often skipped
+the tile grid while overview was empty → black / intermittent draws.
+
+Keep per-image request cap at 64. Any future LOD must use the same
+geometry as `tiledb_scale` / vertices and still request at least overview
+tiles when soft overview is missing.
+
+---
+
 ## Per-image request cap 64 + small-on-screen LOD (2026-09-07) — tip **galapix-077**
 
 * Concurrent REQUESTED cap is **per ImageTileCache**, not global. 300 pending
