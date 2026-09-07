@@ -47,20 +47,20 @@ Author: Ingo Ruhnke `<grumbel@gmail.com>` + `Co-authored-by: Grok <grok@x.ai>`.
 
 ### Status
 
-* [ ] flake / THUMTOO_DIR tip with query APIs
-* [ ] url_from_thumtoo_uri
-* [ ] ViewerCommand pattern path
-* [ ] help + docs
+* [ ] flake / THUMTOO_DIR tip with query APIs (agent env had no nix; use local THUMTOO_DIR or `nix flake lock --update-input thumtoo`)
+* [x] url_from_thumtoo_uri
+* [x] ViewerCommand pattern path
+* [x] help + docs
 * [ ] bundle galapix-059
 
-## Session handoff (2026-09-07) — tip **galapix-058** / thumtoo **026**
+## Session handoff (2026-09-07) — tip **galapix-059** / thumtoo **026+**
 
 ### Tip bundles (apply latest; stack cleanly)
 
 | Project | Tip bundle | Tip commit (subject) |
 |---------|------------|----------------------|
-| **galapix** | **`galapix-058.bundle`** | session handoff doc; stacks on 054 |
-| **thumtoo** | **`thumtoo-026.bundle`** | declare `fetch_http_cached`; HTTP stack 021–022 |
+| **galapix** | **`galapix-059.bundle`** | `-p` via thumtoo locator queries |
+| **thumtoo** | tip with **ca14b71+** (locator prefix/LIKE) | query APIs for Galapix `-p` |
 
 Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer  
 `Co-authored-by: Grok <grok@x.ai>`. Bundles use **HEAD** as ref, full history from first checkout, continuously numbered.
