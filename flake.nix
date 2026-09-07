@@ -73,19 +73,24 @@
           rev = "8fe7e9f63cd74ad58d9d2c28f312fc2ccceaef53";
           hash = "sha256-fE5S9OpkGSnohhlAQdejw9aAlfKU2t5VEMQaDO3P43o=";
         };
+        # Match biltoo: VERSION file + flake revCount/shortRev (not git-describe).
+        versionBase = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./VERSION);
+        gitRev = "${self.shortRev or self.dirtyShortRev or "dirty"}";
+        isDev = nixpkgs.lib.strings.hasInfix "-dev" versionBase;
+        version =
+          if isDev then
+            "${versionBase}.${toString (self.revCount or 0)}+g${gitRev}"
+          else
+            versionBase;
       in rec {
         packages = rec {
           default = galapix;
 
           galapix = pkgs.stdenv.mkDerivation {
             pname = "galapix";
-            version = tinycmmc.lib.versionFromFile self;
+            inherit version;
 
             src = nixpkgs.lib.cleanSource ./.;
-
-            postPatch = ''
-              echo "v${tinycmmc.lib.versionFromFile self}" > VERSION
-            '';
 
             enableParallelBuilding = true;
 
@@ -98,6 +103,7 @@
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
               "-DTHUMTOO_DIR=${thumtooSrc}"
+              "-DPROJECT_VERSION_FULL=${version}"
               # SQLiteCpp ships a deprecation note on SQLite::SQLite3 (upstream).
               "-Wno-dev"
             ];
@@ -288,6 +294,7 @@
               echo "  build dir: $GALAPIX_BUILD_DIR"
               echo "  THUMTOO_DIR=$THUMTOO_DIR"
               echo "  galapix-configure     # cmake -S . -B \$GALAPIX_BUILD_DIR -G Ninja (+ thumtoo)"
+echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-build         # incremental cmake --build"
               echo "  galapix-run [args]    # build + run galapix-0.3.sdl"
               echo "  galapix-run-gtk [args]# build + run galapix-0.3.gtk"

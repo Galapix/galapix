@@ -16,6 +16,8 @@
 
 #include "galapix/arg_parser.hpp"
 
+#include "galapix/version.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <string.h>
@@ -65,7 +67,7 @@ ArgParser::print_usage()
 void
 ArgParser::print_version()
 {
-  std::cout << PROJECT_NAME << " " << PROJECT_VERSION << std::endl;
+  std::cout << PROJECT_NAME << " " << GALAPIX_VERSION_STRING << std::endl;
 }
 
 void

@@ -103,6 +103,14 @@ size checks) after decode.
   worthwhile future optimization in wstdisplay + ImageRenderer; not required
   for correctness. Prefer fixing seams/filters first.
 
+## Version
+
+`VERSION` holds the base (e.g. `0.3.0-dev`). CMake and the flake append
+`.${revCount}+g${shortHash}` for `-dev` builds (same scheme as biltoo). The
+string is written to generated `galapix/version.hpp` (`GALAPIX_VERSION_STRING`)
+so only TUs that include it rebuild on version change. Nix packages pass
+`-DPROJECT_VERSION_FULL=…`.
+
 ## Build
 
 ```bash

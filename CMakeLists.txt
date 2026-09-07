@@ -15,9 +15,89 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 cmake_minimum_required(VERSION 3.16...3.31)
-project(galapix-0.3)
+
+# Version string (CLI --version / diagnostics):
+#   Packaging (nix build): -DPROJECT_VERSION_FULL=0.3.0-dev.N+gHASH from flake.nix
+#   Dev (nix develop / galapix-configure): VERSION + git, same scheme — NOT git-describe.
+#     flake: "${versionBase}.${revCount}+g${shortRev or dirtyShortRev or "dirty"}"
+#     cmake: "${VERSION}.${rev-list --count}+g$(rev-parse --short=7)"
+#
+# cmake --build re-runs configure when VERSION or .git/HEAD (or index) changes
+# via CMAKE_CONFIGURE_DEPENDS, so the baked version tracks commits without a
+# manual reconfigure.
+if(DEFINED PROJECT_VERSION_FULL AND NOT PROJECT_VERSION_FULL STREQUAL "")
+  string(STRIP "${PROJECT_VERSION_FULL}" PROJECT_VERSION_FULL)
+else()
+  file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION" PROJECT_VERSION_FULL LIMIT_COUNT 1)
+  string(STRIP "${PROJECT_VERSION_FULL}" PROJECT_VERSION_FULL)
+
+  if(PROJECT_VERSION_FULL MATCHES "-dev")
+    find_package(Git QUIET)
+    set(_galapix_git_dir "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+    if(Git_FOUND AND EXISTS "${_galapix_git_dir}")
+      # Worktree: .git is a file "gitdir: …"
+      if(NOT IS_DIRECTORY "${_galapix_git_dir}")
+        file(READ "${_galapix_git_dir}" _galapix_gitfile)
+        string(REGEX REPLACE "^gitdir:[ \t]*([^\r\n]+).*" "\\1" _galapix_git_dir
+               "${_galapix_gitfile}")
+        if(NOT IS_ABSOLUTE "${_galapix_git_dir}")
+          set(_galapix_git_dir "${CMAKE_CURRENT_SOURCE_DIR}/${_galapix_git_dir}")
+        endif()
+      endif()
+
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" -C "${CMAKE_CURRENT_SOURCE_DIR}" rev-list --count HEAD
+        OUTPUT_VARIABLE _galapix_git_count
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        RESULT_VARIABLE _galapix_git_count_rc
+      )
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" -C "${CMAKE_CURRENT_SOURCE_DIR}" rev-parse --short=7 HEAD
+        OUTPUT_VARIABLE _galapix_git_rev
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        RESULT_VARIABLE _galapix_git_rev_rc
+      )
+      if(_galapix_git_count_rc EQUAL 0 AND _galapix_git_rev_rc EQUAL 0
+         AND NOT _galapix_git_count STREQUAL "" AND NOT _galapix_git_rev STREQUAL "")
+        set(PROJECT_VERSION_FULL
+            "${PROJECT_VERSION_FULL}.${_galapix_git_count}+g${_galapix_git_rev}")
+        message(STATUS "Dev version from git: ${PROJECT_VERSION_FULL}")
+      endif()
+
+      set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/VERSION")
+      if(EXISTS "${_galapix_git_dir}/HEAD")
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+          "${_galapix_git_dir}/HEAD")
+      endif()
+      if(EXISTS "${_galapix_git_dir}/index")
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+          "${_galapix_git_dir}/index")
+      endif()
+    endif()
+  endif()
+endif()
+
+# project() needs a numeric version; strip -dev / +git / similar suffixes.
+string(REGEX MATCH "^[0-9]+(\\.[0-9]+)*" _project_version_cmake "${PROJECT_VERSION_FULL}")
+if(NOT _project_version_cmake)
+  set(_project_version_cmake "0.0.0")
+endif()
+
+# Keep historical PROJECT_NAME (binary OUTPUT_NAME galapix-0.3.sdl).
+project(galapix-0.3 VERSION ${_project_version_cmake} LANGUAGES CXX C)
 
 include(mk/cmake/TinyCMMC.cmake)
+
+# Version header: only TUs that include it recompile on version bump.
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/galapix/version.hpp.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/galapix/version.hpp"
+  @ONLY
+)
+message(STATUS "Galapix version: ${PROJECT_VERSION_FULL} (CMake PROJECT_VERSION=${PROJECT_VERSION})")
 
 include(CheckIncludeFile)
 
@@ -129,7 +209,6 @@ add_library(libgalapix SHARED ${LIBGALAPIX_SOURCES})
 set_target_properties(libgalapix PROPERTIES OUTPUT_NAME "${PROJECT_NAME}")
 target_compile_options(libgalapix PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 target_compile_definitions(libgalapix PUBLIC
-  -DPROJECT_VERSION="${PROJECT_VERSION}"
   -DPROJECT_NAME="${PROJECT_NAME}")
 target_include_directories(libgalapix PUBLIC
   src/
