@@ -153,6 +153,17 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
       m_image.get_original_height());
     m_image.overview().draw(gc, image_rect);
 
+    // Gallery / far zoom: image is only a few dozen pixels on screen. A full
+    // tile grid would be many draw calls and provider jobs per thumbnail.
+    // Overview alone is enough (already drawn above).
+    {
+      float const screen_w = image_rect.width() * zoom;
+      float const screen_h = image_rect.height() * zoom;
+      if (std::max(screen_w, screen_h) < 192.0f) {
+        return true;
+      }
+    }
+
     // scale factor for requesting tiles: scale 0 = nominal size; negative =
     // denser than layout (PDF). Raster providers report min_scale == 0.
     // floor so zooming in switches to sharper (more negative) scales promptly;

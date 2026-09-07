@@ -177,10 +177,12 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
     return;
   }
 
-  // Cap in-flight provider jobs. thumtoo cannot cancel mid-raster; flooding
-  // the queue while zooming wastes CPU on tiles that will be discarded.
+  // Cap in-flight provider jobs *per image*. thumtoo cannot cancel mid-raster;
+  // flooding while zooming wastes CPU. 24 was too low for a deep zoom on one
+  // large image (~full HD needs ~40 cells). Gallery fill is one request per
+  // image so a higher cap does not slow multi-file open.
   // Always allow the single overview cell through.
-  constexpr int kMaxConcurrentRequests = 24;
+  constexpr int kMaxConcurrentRequests = 64;
   if (scale != m_max_scale && pending_request_count() >= kMaxConcurrentRequests) {
     return;
   }

@@ -1,3 +1,19 @@
+## Per-image request cap 64 + small-on-screen LOD (2026-09-07) — tip **galapix-077**
+
+* Concurrent REQUESTED cap is **per ImageTileCache**, not global. 300 pending
+  across a gallery is many images each with a few jobs.
+* Cap raised **24 → 64** so one deep-zoomed image can fill a ~full-HD grid.
+* If an image is **&lt; 192px** on screen (long edge), skip the tile grid entirely
+  (overview only). Cuts draw calls and provider spam for hundreds of thumbnails.
+
+### Draw calls (note)
+N visible images ⇒ ≥N textured draws (overview). Plus one draw per visible
+tile cell when zoomed in. ~1000 thumbnails ≈ ~1000 draws — fine for modern GL
+if each is a single overview quad; the problem is N×(tile grid) when every
+thumbnail also requested a multi-tile pyramid. LOD above prevents that.
+
+---
+
 ## Zoom CPU spikes: debounce scale + cap in-flight jobs (2026-09-07) — tip **galapix-076**
 
 ### Cause
