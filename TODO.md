@@ -1,3 +1,12 @@
+
+## Gtk3 frontend restored (2026-09-07)
+
+* `Gtk::Application` (no `Gtk::Main`); Builder UI + CSS via `GALAPIX_DATADIR`
+* `Gtk::GLArea` only (dead gtkglext path removed)
+* CMake installs `data/gtk` + `data/icons` under `share/galapix`
+* Flake: `BUILD_GALAPIX_GTK=ON`; `nix run .#galapix_gtk`; wrap sets `GALAPIX_DATADIR`
+* Still incomplete vs SDL (no ImGui, limited keys); for inspection / optional use
+
 Galapix ToDo
 ============
 

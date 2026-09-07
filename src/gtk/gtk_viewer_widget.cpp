@@ -24,7 +24,6 @@
 #include "util/opengl.hpp"
 #include "galapix/viewer.hpp"
 #include "gtk/gtk_viewer_widget.hpp"
-#include "util/raise_exception.hpp"
 
 namespace galapix {
 
@@ -33,28 +32,9 @@ GtkViewerWidget::GtkViewerWidget(Viewer* viewer_)
     m_gc(),
     mouse_pos()
 {
-#ifdef DISABLED_FOR_GTK3
-  Glib::RefPtr<Gdk::GL::Config> glconfig;
-
-  glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB    |
-                                     Gdk::GL::MODE_DEPTH  |
-                                     Gdk::GL::MODE_DOUBLE);
-  if (!glconfig)
-  {
-    std::cerr << "*** Cannot find the double-buffered visual.\n"
-              << "*** Trying single-buffered visual.\n";
-
-    // Try single-buffered visual
-    glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB   |
-                                       Gdk::GL::MODE_DEPTH);
-    if (!glconfig)
-    {
-      raise_runtime_error("GtkViewerWidget(): *** Cannot find any OpenGL-capable visual.");
-    }
-  }
-
-  set_gl_capability(glconfig);
-#endif
+  // Gtk::GLArea provides the GL context (Gtk3); no gtkglextmm.
+  set_has_depth_buffer(true);
+  set_auto_render(true);
 
   add_events(Gdk::POINTER_MOTION_MASK | Gdk::BUTTON_PRESS_MASK | Gdk::BUTTON_RELEASE_MASK |
              Gdk::KEY_PRESS_MASK      | Gdk::KEY_RELEASE_MASK |

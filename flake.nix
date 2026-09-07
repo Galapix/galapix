@@ -101,9 +101,22 @@
 
             doCheck = false;
 
+            postInstall = ''
+              if [ ! -x "$out/bin/galapix-0.3.gtk" ]; then
+                echo "error: galapix-0.3.gtk missing (BUILD_GALAPIX_GTK?)" >&2
+                exit 1
+              fi
+              wrapProgram "$out/bin/galapix-0.3.gtk" \
+                --set GALAPIX_DATADIR "$out/share/galapix"
+              if [ -x "$out/bin/galapix-0.3.sdl" ]; then
+                wrapProgram "$out/bin/galapix-0.3.sdl" \
+                  --set GALAPIX_DATADIR "$out/share/galapix" || true
+              fi
+            '';
+
             cmakeFlags = [
               "-DBUILD_GALAPIX_SDL=ON"
-              "-DBUILD_GALAPIX_GTK=OFF"
+              "-DBUILD_GALAPIX_GTK=ON"
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
@@ -217,7 +230,7 @@
                 cmake -S "$GALAPIX_SOURCE" -B "$GALAPIX_BUILD_DIR" -G Ninja \
                   -DCMAKE_BUILD_TYPE="''${CMAKE_BUILD_TYPE:-Debug}" \
                   -DBUILD_GALAPIX_SDL=ON \
-                  -DBUILD_GALAPIX_GTK=OFF \
+                  -DBUILD_GALAPIX_GTK=ON \
                   -DBUILD_BENCHMARKS=OFF \
                   -DWITH_THUMTOO=ON \
                   -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}" \

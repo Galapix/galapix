@@ -424,4 +424,8 @@ install(FILES
   galapix.desktop
   DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
+# GTK UI (Builder XML, CSS, toolbar icons) — used when BUILD_GALAPIX_GTK=ON
+install(DIRECTORY data/gtk data/icons
+  DESTINATION ${CMAKE_INSTALL_DATADIR}/galapix)
+
 # EOF #
