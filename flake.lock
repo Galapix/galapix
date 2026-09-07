@@ -94,11 +94,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788723541,
-        "narHash": "sha256-HNtTZR6K5ioEfwJv62NMWV8+iHTGzcc6SjDbhJL5Fn0=",
+        "lastModified": 1788724557,
+        "narHash": "sha256-mAwGr2fklp8VTiXMfVHu0/Niov2ULc9wzFMfalaHTmU=",
         "owner": "grumbel",
         "repo": "arxpcpp",
-        "rev": "28baabb123c7e9827b3de85905bafc7502e2edcf",
+        "rev": "15d1ed5fb6c1137e44b026523d117c42cca815b9",
         "type": "github"
       },
       "original": {
@@ -468,6 +468,7 @@
         "sexpcpp": "sexpcpp",
         "strutcpp": "strutcpp",
         "surfcpp": "surfcpp",
+        "thumtoo": "thumtoo",
         "tinycmmc": "tinycmmc_2",
         "uitest": "uitest",
         "wstdisplay": "wstdisplay"
@@ -692,6 +693,22 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "thumtoo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1788769270,
+        "narHash": "sha256-x5AnvLdEQMYM5znYdgHKIRJEMyvlDTNjq2UCYlMsGu8=",
+        "owner": "Grumbel",
+        "repo": "thumtoo",
+        "rev": "865f5ef6fb829754f100c0b29e354c8d03c838fb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Grumbel",
+        "repo": "thumtoo",
         "type": "github"
       }
     },
