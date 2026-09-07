@@ -136,6 +136,7 @@ Image::set_tile_provider(TileProviderPtr provider)
   {
     m_provider = std::move(provider);
     m_cache    = std::make_shared<ImageTileCache>(m_provider);
+    m_cache->prefetch_overview();
     m_renderer = std::make_unique<ImageRenderer>(*this, m_cache);
   }
 

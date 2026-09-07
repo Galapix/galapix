@@ -74,6 +74,9 @@ private:
 public:
   ImageTileCache(TileProviderPtr const& tile_provider);
 
+  /** Call after make_shared — must not run in the constructor (shared_from_this). */
+  void prefetch_overview();
+
   SurfaceStruct request_tile(int x, int y, int scale);
   wstdisplay::SurfacePtr get_tile(int x, int y, int scale);
   wstdisplay::SurfacePtr find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);

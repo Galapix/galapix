@@ -125,8 +125,14 @@ ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_max_scale(m_tile_provider->get_max_scale()),
   m_min_keep_scale(m_max_scale - 2)
 {
+}
+
+void
+ImageTileCache::prefetch_overview()
+{
   // Prefetch full-image overview so find_smaller_tile has a stand-in before
   // the user zooms into fine scales (avoids purple "loading" cells).
+  // Requires a live shared_ptr (uses shared_from_this via queue_tile_request).
   if (m_max_scale >= 0) {
     queue_tile_request(0, 0, m_max_scale);
   }
