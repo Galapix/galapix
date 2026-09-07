@@ -33,7 +33,14 @@ std::filesystem::path absolute_path_from_payload(std::string const& path_str)
 std::string
 thumtoo_uri_from_url(URL const& url)
 {
-  if (url.get_protocol() != "file") {
+  std::string const protocol = url.get_protocol();
+
+  // Remote images: pass through for thumtoo (libcurl when THUMTOO_HAVE_CURL).
+  if (protocol == "http" || protocol == "https") {
+    return url.str();
+  }
+
+  if (protocol != "file") {
     return {};
   }
 

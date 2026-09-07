@@ -1,3 +1,7 @@
+## Galapix http(s) → thumtoo (2026-09-07)
+
+* `thumtoo_uri_from_url` passes http/https through for remote images
+
 ## thumtoo-021 HTTP(S) fetch (2026-09-07)
 
 * Optional libcurl; probe/tiles/pixels/read_source_bytes for http(s)
