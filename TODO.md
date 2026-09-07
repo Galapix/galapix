@@ -2,13 +2,13 @@
 
 * Cache-only list by uri/outer_path prefix — foundation for `-p` move
 
-## Session handoff (2026-09-07) — tip **galapix-055** / thumtoo **026**
+## Session handoff (2026-09-07) — tip **galapix-058** / thumtoo **026**
 
 ### Tip bundles (apply latest; stack cleanly)
 
 | Project | Tip bundle | Tip commit (subject) |
 |---------|------------|----------------------|
-| **galapix** | **`galapix-057.bundle`** | session handoff doc; stacks on 054 |
+| **galapix** | **`galapix-058.bundle`** | session handoff doc; stacks on 054 |
 | **thumtoo** | **`thumtoo-026.bundle`** | declare `fetch_http_cached`; HTTP stack 021–022 |
 
 Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer  
