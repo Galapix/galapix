@@ -25,6 +25,10 @@ rendering, layout tools, and (historically) its own SQLite tile tables.
 | [wstdisplay](https://github.com/WindstilleTeam/wstdisplay) | OpenGL window / GraphicsContext (SDL) |
 | [surfcpp](https://github.com/grumbel/surfcpp) | SoftwareSurface, JPEG/PNG load |
 
+## Handoff
+
+Latest session notes and tip bundles: top of [TODO.md](TODO.md).
+
 ## Documentation map
 
 | File | Purpose |
@@ -46,15 +50,16 @@ rendering, layout tools, and (historically) its own SQLite tile tables.
 ## Architecture (viewer path)
 
 ```
-CLI (files / URLs; optional leading "view" for old scripts)
+CLI (files / http(s) URLs; optional leading "view")
   → ViewerCommand
-      → Database (resource SQLite; tile SQLite optional)
-      → JobManager / DatabaseThread
+      → Database (resource cache4.sqlite3 only; no cache4_tiles)
+      → thumtoo::Client when HAVE_THUMTOO
       → Workspace + Image(TileProvider)
-  → System::launch_viewer (SDL)
-      → Viewer::draw / update
-          → ImageTileCache → TileProvider::request_tile
+  → System::launch_viewer (SDL) + ImGui Status/Help
+      → ImageTileCache → TileProvider::request_tile
 ```
+
+**Tip bundles:** galapix-055 + thumtoo-024 — see [TODO.md](TODO.md) session handoff.
 
 **TileProvider** implementations:
 

@@ -185,3 +185,8 @@ provider; production formats should plug into the same thumtoo tile contract.
 `thumtoo_uri_from_url` maps Galapix `http://` / `https://` URLs through to
 thumtoo unchanged. Requires thumtoo built with libcurl (`THUMTOO_HAVE_CURL`).
 Zoomify remains a separate provider.
+
+
+## Session handoff (2026-09-07)
+
+See repository [TODO.md](../TODO.md). Galapix tip **galapix-055**; pair with **thumtoo-024+**.

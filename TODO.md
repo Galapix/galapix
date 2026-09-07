@@ -1,3 +1,84 @@
+## Session handoff (2026-09-07) — tip **galapix-055** / thumtoo **024**
+
+### Tip bundles (apply latest; stack cleanly)
+
+| Project | Tip bundle | Tip commit (subject) |
+|---------|------------|----------------------|
+| **galapix** | **`galapix-055.bundle`** | session handoff doc; stacks on 054 |
+| **thumtoo** | **`thumtoo-024.bundle`** | declare `fetch_http_cached`; HTTP stack 021–022 |
+
+Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer  
+`Co-authored-by: Grok <grok@x.ai>`. Bundles use **HEAD** as ref, full history from first checkout, continuously numbered.
+
+### Galapix changes this session (high level)
+
+**UI (earlier tips ~036–041 era, still in history)**  
+* Split Status / Help; Help toolbar icon; clickable shortcut rows  
+* Keyboard: only block on `WantTextInput`; disable ImGui nav keyboard capture  
+
+**cache4 tile retirement**  
+* Phase 0–1: no `cache4_tiles` when `HAVE_THUMTOO`; dead deps/docs  
+* **Phase 2 (043+)**: removed `SQLiteTileDatabase`, tile statements/table,  
+  `DatabaseTileProvider`, `TileGenerationJob` / multi-tile jobs, DatabaseThread tile APIs  
+* `Database::create(prefix)` → resource `cache4.sqlite3` + in-memory tile stub only  
+* `TileGenerator` **kept** for overview JPEG scale path  
+* Build fixes: `RowId` include, `OldFileEntry` in DatabaseThread, drop dead includes in `image.cpp`  
+
+**Dead code**  
+* Removed `ResourceManager`, idle `DownloadManager` in `galapix.cpp`  
+* Still compile / unused on viewer path: `Generator`, `BlobManager`, much of `src/resource/*`  
+  (types still used by ResourceDatabase — trim carefully)  
+
+**thumtoo integration**  
+* `thumtoo_uri_from_url`: **http/https pass-through** (053) for remote images  
+* File / archive / PDF page mapping unchanged  
+* Docs: `docs/THUMTOO.md`, `docs/CACHE4_VS_THUMTOO.md` product direction  
+
+### Architecture (viewer path) — current
+
+```
+CLI (files / http(s) URLs)
+  → ViewerCommand
+      → Database (resource cache4.sqlite3 only; no cache4_tiles)
+      → thumtoo::Client when HAVE_THUMTOO
+      → Workspace + Image(TileProvider)
+          → ThumtooTileProvider | ZoomifyTileProvider | MandelbrotTileProvider
+  → Viewer (SDL) + ImGui overlay (Status / Help)
+```
+
+**Not** used for file tiles: SQLite tile DB, DatabaseTileProvider (deleted).
+
+### Thumtoo dependency (pair with galapix)
+
+Prefer **thumtoo-024+** (or git tip after HTTP + `fetch_http_cached` declaration).  
+Needs **libcurl** in the environment so nested thumtoo build gets `THUMTOO_HAVE_CURL`.  
+Galapix flake already lists `curl` in build inputs; update flake input when publishing.
+
+### Explicitly deferred
+
+* Galapix “dataverse” UI (much later); consume thumtoo, do not revive cache4 tiles  
+* Rich query / `-p` replacement → **thumtoo** library API  
+* Durable HTTP disk cache / TTL (session cache only in thumtoo-022)  
+* Pure no-store live PDF; per-tile PDF region render  
+
+### Next suggested work
+
+1. Smoke: local file, PDF page, archive member, `http(s)://` image with thumtoo-024  
+2. Point galapix `flake` `thumtoo` input at published tip with curl  
+3. Optional: delete/gate `Generator` / `BlobManager` if still unreferenced  
+4. thumtoo: durable download cache; query/list APIs  
+
+### Doc map
+
+| File | Role |
+|------|------|
+| [TODO.md](TODO.md) | This handoff + historical backlog |
+| [docs/THUMTOO.md](docs/THUMTOO.md) | Flags, URI/http/PDF notes |
+| [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md) | Phase 0–2 matrix; product horizons |
+| [AGENTS.md](AGENTS.md) | Agent rules + architecture |
+| thumtoo TODO | Retrieval API bundle table (016–023) |
+
+
 ## thumtoo-022 HTTP session body cache (2026-09-07)
 
 * In-process 512 MiB cache for successful GETs
