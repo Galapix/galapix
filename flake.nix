@@ -59,26 +59,23 @@
     wstdisplay.inputs.surfcpp.follows = "surfcpp";
     wstdisplay.inputs.logmich.follows = "logmich";
 
+    # Tile backend source tree (CMake add_subdirectory via THUMTOO_DIR).
+    # flake=false: input is the checkout path, not thumtoo's package outputs.
+    # Locked in flake.lock like any other input; single-scale request_tile is upstream.
+    thumtoo = {
+      url = "github:Grumbel/thumtoo";
+      flake = false;
+    };
+
   };
 
   outputs = { self, nixpkgs, flake-utils,
-              tinycmmc, exspcpp, arxpcpp, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay }:
+              tinycmmc, exspcpp, arxpcpp, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay, thumtoo }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        # thumtoo Phase 4 grid tiles (get_tile / request_tile).
-        thumtooUnpatched = pkgs.fetchFromGitHub {
-          owner = "Grumbel";
-          repo = "thumtoo";
-          rev = "8fe7e9f63cd74ad58d9d2c28f312fc2ccceaef53";
-          hash = "sha256-fE5S9OpkGSnohhlAQdejw9aAlfKU2t5VEMQaDO3P43o=";
-        };
-        # Interactive request_tile: only requested scale (not full pyramid).
-        thumtooSrc = pkgs.applyPatches {
-          name = "thumtoo-single-scale";
-          src = thumtooUnpatched;
-          patches = [ ./patches/thumtoo-request-tile-single-scale.patch ];
-        };
+        # thumtoo source tree for CMake add_subdirectory (THUMTOO_DIR).
+        thumtooSrc = thumtoo;
         # Match biltoo: VERSION file + flake revCount/shortRev (not git-describe).
         versionBase = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./VERSION);
         gitRev = "${self.shortRev or self.dirtyShortRev or "dirty"}";

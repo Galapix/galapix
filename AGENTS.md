@@ -69,7 +69,7 @@ full resolution**, tile size **256**.
 ## thumtoo integration (status 2026-09-06)
 
 Built with `-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…` (Nix flake enables this via
-`fetchFromGitHub` pin). Defines `HAVE_THUMTOO=1`.
+flake input `thumtoo`). Defines `HAVE_THUMTOO=1`.
 
 | Behaviour | Detail |
 |-----------|--------|
@@ -108,9 +108,7 @@ size checks) after decode.
 
 ## thumtoo patches
 
-`patches/thumtoo-request-tile-single-scale.patch` is applied in `flake.nix` via
-`applyPatches` so interactive `request_tile` builds only the requested scale
-(not a full pyramid). Prefer upstreaming to thumtoo when possible.
+Interactive `request_tile` only builds the requested scale (upstream thumtoo).
 
 ## Version
 

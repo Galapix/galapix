@@ -5,7 +5,7 @@ tile cache instead of (or alongside) its SQLite `tiles` table.
 
 ## Build
 
-Nix default package enables thumtoo (`fetchFromGitHub` pin +
+Nix default package enables thumtoo (flake input `thumtoo` +
 `-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…`).
 
 Manual CMake:
@@ -37,7 +37,8 @@ image.set_tile_provider(provider);
 
 - Tile size **256**, scale **0 = full resolution** (same as historical Galapix).
 - JPEG tiles from thumtoo are decoded with `surf::jpeg::load_from_mem`.
-- Misses call `thumtoo::Client::request_tile` (builds requested scale + coarser).
+- Misses call `thumtoo::Client::request_tile` (requested scale only; use
+  `request_tile_pyramid` / `thumtoo-prepare` for multi-scale batch).
 
 ## CLI prewarm
 

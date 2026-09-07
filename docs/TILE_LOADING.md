@@ -348,7 +348,7 @@ work on Client worker threads instead of serializing drain boundaries.
 
 | Item | Status |
 |------|--------|
-| No interactive full-pyramid on tile miss | **Patched** in-tree: `patches/thumtoo-request-tile-single-scale.patch` sets `tile_max_scale = scale` (still encodes all cells at that scale after shrink chain) |
+| No interactive full-pyramid on tile miss | **Upstream thumtoo** (`tile_max_scale = scale` on `request_tile`; still may encode all cells at that scale) |
 | `request_tile_pyramid` / prepare for batch | Unchanged (explicit batch OK) |
 | Missing tile → coarser tile | Present (`find_smaller_tile` draw path) |
 | Request coarser stand-in on miss | **Done** — queue max_scale overview + one parent cell before target; `cancel_jobs` keeps coarser REQUESTED jobs |
