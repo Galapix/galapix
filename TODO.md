@@ -1,3 +1,7 @@
+## thumtoo-022 HTTP session body cache (2026-09-07)
+
+* In-process 512 MiB cache for successful GETs
+
 ## Galapix http(s) → thumtoo (2026-09-07)
 
 * `thumtoo_uri_from_url` passes http/https through for remote images
@@ -860,7 +864,7 @@ Random Notes
 
 ### Bundles / tips
 * Galapix develop tip: apply **`galapix-048.bundle`** (or later). CLI trimmed; viewer default.
-* Thumtoo tip: apply **`thumtoo-021.bundle`** (Location URI API).
+* Thumtoo tip: apply **`thumtoo-022.bundle`** (Location URI API).
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
