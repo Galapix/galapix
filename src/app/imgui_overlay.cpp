@@ -456,7 +456,7 @@ ImguiOverlay::draw_help_panel(Viewer& viewer)
       ImGui::TableSetColumnIndex(0);
       ImGui::TextDisabled("%s", title);
       ImGui::TableSetColumnIndex(1);
-      ImGui::TextDisabled("");
+      ImGui::TextUnformatted("");
     };
 
     // Non-actionable reference row (chrome / mouse / app-shell keys).

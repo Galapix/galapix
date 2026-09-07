@@ -20,6 +20,7 @@
 #include <SQLiteCpp/Statement.h>
 #include "math/vector2i.hpp"
 
+#include "database/row_id.hpp"
 #include "database/tile_database_interface.hpp"
 #include "database/statements/tile_entry_delete.hpp"
 #include "database/statements/tile_entry_get_all_by_file_entry.hpp"
