@@ -6,12 +6,22 @@ Galapix ToDo
 Make **develop** the branch that becomes **master**. See
 [docs/DEVELOP_VS_MASTER.md](docs/DEVELOP_VS_MASTER.md).
 
-* [ ] Decide fate of master-only CLI: `prepare`, `filegen`, `check`, `merge`
-      (reimplement on develop, or document replacement via thumtoo / drop)
-* [ ] Document or implement cache3 → cache4 migration (DBs are incompatible)
-* [ ] Release checklist: SDL view smoke (zoom, edge tiles, resize), flake package
-* [ ] NEWS entry for architecture move (wstdisplay/surfcpp, thumtoo, no Boost/GLEW)
-* [ ] Merge develop into master (or retarget default branch after tag)
+### Policy
+
+* Master-only CLI (`prepare`, `filegen`, `check`, `merge`) → **not** ported;
+  use **thumtoo-prepare** and improve thumtoo UX for the rest.
+* cache3 → cache4: **feature parity** first; optional **manual** conversion
+  tool later (not a merge blocker).
+* Highest concern: **UI differences / regressions** (interactive testing).
+
+### Checklist
+
+* [ ] UI smoke: zoom scales, edge tiles, window resize
+* [ ] UI: F11 fullscreen **toggle** (develop currently only enters fullscreen)
+* [ ] UI: tools, layouts 1–6, sort/shuffle, isolate, workspace F2/F3
+* [ ] NEWS: cache3/cache4 incompatibility (no auto migrator required)
+* [ ] NEWS: architecture (wstdisplay/surfcpp/thumtoo; no Boost/GLEW)
+* [ ] Merge develop → master (or retarget default branch after tag)
 
 ## thumtoo integration
 

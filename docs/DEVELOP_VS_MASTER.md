@@ -61,15 +61,13 @@ that develop no longer ships in-tree.
 | `cleanup` | yes | yes | GC |
 | `export` | yes | yes | Export scaled images |
 | `info` | — | yes | develop-only |
-| **`prepare`** | **yes** | **missing** | Full tile pyramid generation on master |
-| **`filegen`** | **yes** | **missing** | File entries only |
-| **`check`** | **yes** | **missing** | DB consistency |
-| **`merge`** | **yes** | **missing** | Merge databases into `-d` DB |
+| **`prepare`** | **yes** | **not ported** | Use **thumtoo-prepare**; improve thumtoo UX |
+| **`filegen`** | **yes** | **not ported** | Open/view + resource DB / thumtoo size probe |
+| **`check`** | **yes** | **not ported** | Optional later; not a merge blocker |
+| **`merge`** | **yes** | **not ported** | Optional later; not a merge blocker |
 
-Usage text on develop also omits `prepare` / `filegen` / `check` / `merge`.
-For pure thumtoo view, offline “prepare” may mean **thumtoo prepare** instead of
-Galapix `prepare`; parity for **legacy SQLite tiles** still needs a develop
-equivalent or an explicit “use thumtoo CLI” policy.
+Policy: do **not** reimplement these four on develop. Offline tile build is
+**thumtoo**’s job.
 
 ## Features present on develop, absent on master
 
@@ -83,12 +81,9 @@ equivalent or an explicit “use thumtoo CLI” policy.
 
 ## Features on master that are missing, reduced, or moved on develop
 
-### Missing CLI (functional gap)
+### Master-only CLI (intentionally not on develop)
 
-- **`prepare`** — generate all tile scales for given files (master).
-- **`filegen`** — populate file entries without full tiles.
-- **`check`** — database consistency checks.
-- **`merge`** — merge multiple DB files into one.
+See table above. Prefer improving **thumtoo**’s CLI/UI over Galapix `prepare`.
 
 ### Moved out of tree (not necessarily broken)
 
@@ -117,8 +112,10 @@ Magick or dedicated loaders in surfcpp).
 | Tile DB path | `~/.galapix/cache3_tiles.sqlite3` | `cache4_tiles.sqlite3` or thumtoo cache |
 | Schema | older FileEntry-centric | redesigned resource/blob/image tables |
 
-**No automatic migration.** Users switching branch must use a new cache dir or
-write a migrator. Document this in release notes when merging to master.
+**No automatic migration required for merge.** Focus on **feature parity** on
+develop. Optional later: a **manual** cache3→cache4 conversion tool if users
+need old caches. Until then, use a fresh `cache4` / thumtoo directory. Mention
+incompatibility in NEWS.
 
 ### Possible regressions / soft spots on develop (not “missing on purpose”)
 
@@ -140,20 +137,45 @@ These are areas that needed recent fixes on develop or remain sensitive:
 | Guix | historically present on master | not primary on develop |
 | Tests | `test/` | `test/` + `uitest/` + optional benchmarks |
 
+
+## Interactive UI (SDL viewer)
+
+Keyboard/tool surface is largely the **same** on both branches (pan/zoom/move,
+layouts 1–6, grid, isolate, delete, sort/shuffle, gamma/brightness, trackball,
+SpaceNavigator when built). Tools under `src/tools/` match by name.
+
+### Known develop differences / things to test
+
+| Area | master | develop | Risk |
+|------|--------|---------|------|
+| **F11 fullscreen** | `toggle_fullscreen()` | only `set_mode(FullscreenDesktop)` | **May not leave fullscreen** with F11 |
+| **Initial layout** | `layout_tight()` + **`finish_layout()`** | ViewerCommand path; no `finish_layout` | Startup framing may differ |
+| Window / GL | in-tree `SDLWindow` | **wstdisplay::OpenGLWindow** | Resize, DPI, fullscreen |
+| Tile display | SQLite tiles | thumtoo and/or SQLite | Zoom scales, edge tiles |
+| GTK | CMake default ON | CMake default OFF | Secondary frontend |
+| Workspace F2/F3 | yes | yes (priocpp) | Format compatibility untested |
+
+### Suggested manual UI test list
+
+1. Several local JPEGs with thumtoo; zoom all scales (no missing tiles).
+2. Right/bottom image edge: no black rows or shear.
+3. Window **resize** (viewport + ortho).
+4. **F11** fullscreen and back to windowed (fix/fix).
+5. Tools: pan (P), zoom (Z), move/resize (M), rotate (R), grid (Y).
+6. Layouts 1–6; sort (S), shuffle (N); isolate (I); Delete.
+7. F2/F3 workspace load/save if used.
+8. Optional: `builtin://mandelbrot`, archives, GTK build.
+
 ## Merge strategy (develop → master)
 
-1. **Treat develop as the source of truth** for architecture (external libs,
-   glad, thumtoo).
-2. **Do not** try to reintroduce Boost/GLEW/in-tree display on develop.
+1. **Treat develop as the source of truth** (external libs, glad, thumtoo).
+2. **Do not** reintroduce Boost/GLEW/in-tree display, or Galapix `prepare` /
+   `filegen` / `check` / `merge` (thumtoo CLI / UX instead).
 3. Before merge:
-   - Restore or deliberately obsolete **`prepare` / `filegen` / `check` /
-     `merge`** (map `prepare` → thumtoo + optional SQLite tile gen).
-   - Document **cache3 → cache4** incompatibility (or provide migration).
-   - Decide GTK default for the release package.
-   - Run SDL view smoke tests (local JPEG, zoom levels, edge tiles, resize).
-   - Align flake package name/binaries (`galapix-0.3.sdl` vs master paths).
-4. Merge develop into master (or replace master tip with develop after tag),
-   with a clear NEWS entry.
+   - **UI testing** (table above); fix F11 toggle and layout/startup gaps.
+   - NEWS: cache3/cache4 incompatible; optional manual converter later.
+   - Decide GTK default; align flake binaries.
+4. Merge develop → master (or retarget default branch after tag).
 
 ## Related docs
 
