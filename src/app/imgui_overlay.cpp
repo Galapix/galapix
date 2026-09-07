@@ -353,7 +353,7 @@ ImguiOverlay::draw_status(Viewer& viewer)
         pressed = ImGui::Button(m_status_visible ? "S*" : "S", sz);
       }
       if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
-        ImGui::SetTooltip("%s", m_status_visible ? "Hide status" : "Show status");
+        ImGui::SetTooltip("%s", m_status_visible ? "Hide status / help" : "Show status / help");
       }
       if (pressed) {
         m_status_visible = !m_status_visible;
@@ -370,8 +370,8 @@ ImguiOverlay::draw_status(Viewer& viewer)
 
   // --- Status (offset past toolbar) ---
   ImGui::SetNextWindowPos(ImVec2(bar_w + 12.0f, 12.0f), ImGuiCond_FirstUseEver);
-  ImGui::SetNextWindowSize(ImVec2(360.0f, 0.0f), ImGuiCond_FirstUseEver);
-  if (!ImGui::Begin("Galapix status", &m_status_visible, ImGuiWindowFlags_NoCollapse)) {
+  ImGui::SetNextWindowSize(ImVec2(420.0f, 520.0f), ImGuiCond_FirstUseEver);
+  if (!ImGui::Begin("Status / Help", &m_status_visible, ImGuiWindowFlags_NoCollapse)) {
     ImGui::End();
     return;
   }
@@ -398,7 +398,101 @@ ImguiOverlay::draw_status(Viewer& viewer)
   }
 
   ImGui::Separator();
-  ImGui::TextDisabled("Tab / F1 hide chrome  |  toolbar status button  |  H zoom home");
+  if (ImGui::CollapsingHeader("Keyboard shortcuts", ImGuiTreeNodeFlags_DefaultOpen)) {
+    auto row = [](char const* key, char const* desc) {
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextUnformatted(key);
+      ImGui::TableSetColumnIndex(1);
+      ImGui::TextUnformatted(desc);
+    };
+
+    if (ImGui::BeginTable("shortcuts", 2,
+                          ImGuiTableFlags_BordersInnerV | ImGuiTableFlags_RowBg |
+                          ImGuiTableFlags_SizingStretchProp,
+                          ImVec2(-1.0f, 0.0f))) {
+      ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 110.0f);
+      ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthStretch);
+
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("Chrome");
+      row("Tab / F1", "Show/hide toolbar (and status)");
+      row("Status btn", "Show/hide this status panel");
+
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("Tools");
+      row("p", "Pan tool");
+      row("z", "Zoom-rect tool");
+      row("y", "Grid tool");
+      row("m", "Move / resize tool");
+      row("r", "Move / rotate tool");
+      row("Home / End", "Keyboard zoom in / out");
+      row("Shift + mouse", "Rotate view while held");
+      row("Wheel", "Zoom toward cursor");
+
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("View");
+      row("h", "Zoom home (fit)");
+      row("d", "Zoom to selection");
+      row("g", "Toggle grid");
+      row("f", "Toggle pinned grid");
+      row("b", "Cycle background color");
+      row("Shift+b", "Cycle background (reverse)");
+      row("Left / Right", "Rotate view ±90°");
+      row("Up / Down", "Reset view rotation");
+      row("Numpad 8/2/4/6", "Nudge view");
+      row("Numpad +/-", "Zoom in/out (center)");
+      row("F11", "Toggle fullscreen");
+      row("t", "Toggle trackball mode");
+
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("Layout");
+      row("1", "Regular layout");
+      row("2", "Tight layout");
+      row("3", "Random layout");
+      row("4", "Solve overlaps");
+      row("5", "Spiral layout");
+      row("6", "Vertical layout");
+      row("s", "Sort by name");
+      row("Shift+s", "Sort reverse");
+      row("n", "Shuffle");
+
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("Selection");
+      row("i", "Isolate selection");
+      row("Delete", "Remove selection from workspace");
+      row("F5", "Refresh selection");
+
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("Image / cache");
+      row("F2", "Load workspace");
+      row("F3", "Save workspace");
+      row("c", "Clear tile cache");
+      row("k", "Cleanup cache");
+      row("F6 / F7", "Brightness + / −");
+      row("F8 / F9", "Contrast + / −");
+      row("PgUp / PgDn", "Gamma + / −");
+      row("F10", "Reset gamma");
+      row("F12", "Screenshot → /tmp/");
+
+      ImGui::TableNextRow();
+      ImGui::TableSetColumnIndex(0);
+      ImGui::TextDisabled("Debug");
+      row("Space", "Print visible images");
+      row("l", "Print viewer state");
+      row("0", "Print info");
+      row("Esc", "Quit");
+
+      ImGui::EndTable();
+    }
+  }
+
   ImGui::End();
 }
 
