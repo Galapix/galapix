@@ -1,3 +1,11 @@
+## flake: keep sqlite for thumtoo (2026-09-07) — tip **galapix-069**
+
+Removing Galapix SQLiteCpp dropped `sqlite` from flake `buildInputs`, but
+thumtoo’s CMake still does `pkg_check_modules(... sqlite3)` (line 16). Restore
+`sqlite` under the thumtoo dependency block. Galapix sources do not use it.
+
+---
+
 ## Remove ResourceDatabase / cache4 resource index (2026-09-07) — tip **galapix-068**
 
 ### Removed from Galapix

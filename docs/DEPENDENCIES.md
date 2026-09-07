@@ -22,9 +22,11 @@ Primary packaging is `flake.nix` + `CMakeLists.txt`.
 | HTTP(S) / Zoomify download | Still **libcurl** |
 | Broad format decode (XCF, …) | Still **ImageMagick** via surfcpp plugin |
 
-thumtoo brings its own stack when `WITH_THUMTOO=ON`: **vips**, **libjxl**,
+thumtoo brings its own stack when `WITH_THUMTOO=ON`: **sqlite3**, **vips**, **libjxl**,
 **libarchive**, **poppler** (PDF pages), and its own SQLite under
-`$XDG_CACHE_HOME/thumtoo` (not Galapix’s tile DB).
+`$XDG_CACHE_HOME/thumtoo` (not Galapix’s removed cache4). Flake must still
+provide **sqlite** for thumtoo’s `pkg_check_modules(sqlite3)` even though
+Galapix no longer links SQLiteCpp.
 
 ## Candidates to drop (low risk)
 

@@ -142,7 +142,8 @@
               # libexif: no direct Galapix refs; drop unless surfcpp needs it at link time
               libspnav
 
-              # thumtoo (via add_subdirectory): vips ladder + JPEG tiles + archives
+              # thumtoo (via add_subdirectory): its own SQLite cache + ladder
+              sqlite   # required by thumtoo CMake (not Galapix cache4)
               vips
               libjxl
               libarchive
