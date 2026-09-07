@@ -14,10 +14,10 @@ stack once thumtoo covers the view path. Related: [THUMTOO.md](THUMTOO.md),
 | Horizon | Owner | Role |
 |---------|-------|------|
 | **Now** | Galapix | Zoomable **viewer** + workspace layout; tiles from **thumtoo** |
-| **Near** | thumtoo | Durable pixels **and** richer **query / library** APIs (patterns, collections, metadata) — do not grow Galapix resource SQL for this |
-| **Later** | Galapix (+ thumtoo) | Browsable self-contained **dataverse** (explore a corpus as a place, not only open a file list). Spec deliberately deferred; avoid premature architecture in Galapix |
+| **Near** | thumtoo | Durable pixels, **query/library**, and (growing) **data retrieval**: flexible nested URIs, network + archive + PDF + content-id blob access — not more Galapix resource SQL |
+| **Later** | Galapix (+ thumtoo) | Browsable self-contained **dataverse** UI on top of thumtoo. Spec deferred; avoid premature architecture in Galapix |
 
-`-p` / resource-DB listing is **transitional**. New query features belong in **thumtoo** so multiple tools (Galapix, biltoo, dirtoo) share one index.
+`-p` / resource-DB listing is **transitional**. New query **and** fetch/URI features belong in **thumtoo** so Galapix, biltoo, and dirtoo share one backend. See [THUMTOO.md](THUMTOO.md) (data retrieval / live PDF tiles).
 
 
 ## What “cache4” is
@@ -29,15 +29,10 @@ Galapix opens two SQLite files under the database prefix (`Options::database`):
 | **`cache4.sqlite3`** | **Resource** index: files, URLs, blobs, images, archives, video stubs; pattern search (`-p`); mtime/size | **Still opened** (patterns / optional metadata) |
 | **`cache4_tiles.sqlite3`** | **Tile** store: 256² JPEG cells keyed by image row + scale + (x,y) | **Not created**; `MemoryTileDatabase` stub only |
 
-`Database::create(prefix, sqlite_tiles)` wires:
-
-* `sqlite_tiles=true` → `CachedTileDatabase(SQLiteTileDatabase)` → durable tiles
-* `sqlite_tiles=false` → `CachedTileDatabase(MemoryTileDatabase)` → no tile file
-
-View path then chooses a `TileProvider`:
-
-* **thumtoo on** → `ThumtooTileProvider` only (no SQLite tile fallback)
-* **thumtoo off / no HAVE_THUMTOO** → `DatabaseTileProvider` → `DatabaseThread::request_tile` → tile gen jobs + tile tables
+`Database::create(prefix)` opens **resource** `cache4.sqlite3` only, plus an
+in-memory tile stub. Durable tiles are thumtoo’s. View path for files uses
+`ThumtooTileProvider` when `HAVE_THUMTOO`; Zoomify/Mandelbrot stay separate
+providers. Galapix SQLite tile generation was removed (Phase 2).
 
 ## Feature matrix
 
@@ -53,8 +48,10 @@ View path then chooses a `TileProvider`:
 | Image size without opening file | `ImageEntry` in resource DB | `get_size` / `request_size` | thumtoo sufficient on pure view |
 | Archive member images | arxp + resource + tiles | libarchive + URI `…//archive:…` | Prefer thumtoo; **arxp** still in tree for `ArchiveThread` |
 | PDF pages | Weak / external tools historically | poppler via thumtoo | Prefer thumtoo |
-| HTTP(S) / Zoomify | libcurl + `ZoomifyTileProvider` | Not thumtoo | **Keep** separate providers |
-| Mandelbrot / builtin | `MandelbrotTileProvider` | N/A | **Keep** |
+| HTTP(S) / Zoomify | libcurl + `ZoomifyTileProvider` | Not yet | Future: thumtoo network URIs; Zoomify may stay special |
+| Nested archive / PDF / content-id URIs | Partial (arxp, PDF expand) | Partial (`//archive:`, `//page:`) | **thumtoo** general retrieval — see THUMTOO.md |
+| Live PDF tiles (no pre-raster pyramid) | — | — | **thumtoo** future (mandelbrot-style on-demand) |
+| Mandelbrot / builtin | `MandelbrotTileProvider` | N/A | **Keep** as Galapix demo provider |
 | Tile cleanup / delete by file id | `SQLiteTileDatabase::delete_tiles` | thumtoo cache tools | Operational difference only |
 | File-on-disk tile layout | **`FileTileDatabase`** | — | **Dead code** (never constructed) |
 

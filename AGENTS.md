@@ -36,6 +36,7 @@ rendering, layout tools, and (historically) its own SQLite tile tables.
 | [docs/DEVELOP_VS_MASTER.md](docs/DEVELOP_VS_MASTER.md) | develop vs master feature gap / merge |
 | [docs/TILE_LOADING.md](docs/TILE_LOADING.md) | Viewport-first tile load strategy |
 | [docs/CACHE4_VS_THUMTOO.md](docs/CACHE4_VS_THUMTOO.md) | cache4 tiles/resource vs thumtoo; removal phases |
+| [docs/THUMTOO.md](docs/THUMTOO.md) | thumtoo flags; **future** URI/blob retrieval + live PDF tiles |
 | [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md) | Console + ImGui status overlay (F1) |
 | [docs/OVERVIEW.md](docs/OVERVIEW.md) | Fast overview layer (≠ grid tiles) |
 | [NEWS.md](NEWS.md) | Release notes |

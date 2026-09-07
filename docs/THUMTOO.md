@@ -70,7 +70,7 @@ galapix --no-thumtoo [files…]
 When thumtoo is enabled (`HAVE_THUMTOO` and not `--no-thumtoo`),
 `ViewerCommand` opens a shared `thumtoo::Client` and uses `ThumtooTileProvider`
 for local files and archive members (Galapix `//rar:` / `//zip:` → thumtoo
-`//archive:`). Falls back to `DatabaseTileProvider` if size probe fails.
+`//archive:`). No Galapix SQLite tile fallback (removed Phase 2).
 
 With `--no-thumtoo` (or a build without `HAVE_THUMTOO`), behaviour is the
 historical SQLite tile path.
@@ -135,4 +135,38 @@ Galapix `-p` / `cache4.sqlite3` resource patterns are transitional. Richer
 listing, filtering, and collection queries should land in **thumtoo** so
 Galapix, biltoo, and dirtoo share one backend. Galapix’s long-term “dataverse”
 UI is separate and much later; it should consume thumtoo, not revive cache4.
+
+## Data retrieval / flexible URIs (future — thumtoo)
+
+Galapix still has pieces of a **resource / blob / network** path (libcurl,
+arxp, `Blob*` helpers, content hashing). The long-term home for that is
+**thumtoo as a general data-retrieval layer**, not only a thumbnail cache.
+
+Target capability (design notes, not a Galapix roadmap item):
+
+* **Composable location URIs** that can point at, and nest:
+  * local files and directories
+  * HTTP(S) (and similar) network resources
+  * members inside archives (zip, rar, tar, …)
+  * **networked archives** (HTTP → archive → member)
+  * pages inside PDFs (including PDF-in-archive, archive-in-archive, …)
+  * content-addressed blobs (`sha1:` / `sha256:` once bytes are known)
+* **Blob access API**: resolve URI → bytes (or stream), with caching keyed by
+  content id where possible; tools share one store.
+* Galapix (and biltoo/dirtoo) become **consumers** of that URI/blob API for
+  open/list/fetch; do not grow a parallel Galapix-only resource stack.
+
+Until thumtoo owns this, Galapix may keep libcurl/arxp for Zoomify and legacy
+archive paths, but new work should prefer extending thumtoo URIs.
+
+## Live / procedural tiles (future — thumtoo)
+
+Today PDF pages are **rasterized once** (e.g. media-box at fixed dpi) then cut
+into durable 256² JPEG cells. A later option is **real-time rendering** into
+tiles at the requested scale (same idea as Galapix `builtin://mandelbrot`:
+no pre-baked pyramid, high resolution on demand).
+
+That belongs in **thumtoo** (provider that fills a tile from a live rasterizer),
+not a separate Galapix-only PDF path. Mandelbrot can stay a Galapix demo
+provider; production formats should plug into the same thumtoo tile contract.
 

@@ -1,3 +1,11 @@
+## thumtoo direction: retrieval URIs + live PDF (2026-09-07)
+
+* **Not Galapix work now** — document only; implement in thumtoo when ready
+* Flexible nested URIs: network, archives, nested archives, PDF pages, sha1/sha256 blobs
+* Blob/network access currently split across Galapix (curl/arxp) — long-term **thumtoo**
+* Live PDF → tiles at requested scale (mandelbrot-style), not only fixed-dpi cache
+* See [docs/THUMTOO.md](docs/THUMTOO.md)
+
 ## Phase 2 done: Galapix SQLite tile stack removed (2026-09-07)
 
 * Deleted `cache4_tiles` path, `SQLiteTileDatabase`, tile SQL statements/table,
@@ -822,7 +830,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-043.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-046.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
