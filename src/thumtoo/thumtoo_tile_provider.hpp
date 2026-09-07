@@ -32,9 +32,15 @@ namespace galapix {
 class ThumtooTileProvider : public TileProvider
 {
 public:
-  /** Probe size if needed, then construct. Returns empty shared_ptr on failure. */
+  /** Probe size if needed, then construct. Returns empty shared_ptr on failure.
+   *  Avoid calling in a tight loop — each miss does request_size + drain(). */
   static TileProviderPtr create(std::shared_ptr<thumtoo::Client> client,
                                 std::string uri);
+
+  /** Construct when size is already known (after a batched size probe). */
+  static TileProviderPtr create_from_size(std::shared_ptr<thumtoo::Client> client,
+                                          std::string uri,
+                                          int width, int height);
 
   ThumtooTileProvider(std::shared_ptr<thumtoo::Client> client, std::string uri,
                       Size size, int max_scale);

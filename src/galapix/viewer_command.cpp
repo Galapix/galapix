@@ -105,10 +105,16 @@ ViewerCommand::make_file_tile_provider(URL const& url,
     std::string const uri = thumtoo_uri_from_url(url);
     if (uri.empty()) {
       log_warn("thumtoo: cannot map URL to URI: {}", url);
+    } else if (auto sz = m_thumtoo->get_size(uri)) {
+      if (auto p = ThumtooTileProvider::create_from_size(
+            m_thumtoo, uri, sz->width, sz->height)) {
+        return p;
+      }
+      log_warn("thumtoo provider failed for {}; no SQLite tile fallback", uri);
     } else if (auto p = ThumtooTileProvider::create(m_thumtoo, uri)) {
+      // Missed batch probe (or single-file path).
       return p;
     } else {
-      // Pure thumtoo: do not fall back to Galapix SQLite tiles.
       log_warn("thumtoo provider failed for {}; no SQLite tile fallback", uri);
     }
     return {};
@@ -186,6 +192,31 @@ ViewerCommand::run(std::vector<URL> const& urls)
       std::cout << std::endl;
     }
   }
+
+#ifdef HAVE_THUMTOO
+  // Batch thumtoo size probes: one drain for the whole list. Per-file
+  // create()+drain was O(n) sequential open/hash/decode and dominated
+  // "Processing URLs" for large folders (not Galapix SHA1).
+  if (m_thumtoo) {
+    std::cout << "Probing image sizes (thumtoo)..." << std::flush;
+    int pending = 0;
+    for (URL const& u : urls) {
+      if (u.get_protocol() == "builtin") continue;
+      if (Filesystem::has_extension(u.str(), "ImageProperties.xml")) continue;
+      if (u.has_stdio_name() && Filesystem::has_extension(u.get_stdio_name(), ".galapix")) continue;
+      std::string const uri = thumtoo_uri_from_url(u);
+      if (uri.empty()) continue;
+      if (m_thumtoo->get_size(uri)) continue;
+      ++pending;
+      m_thumtoo->request_size(uri, [](std::string, std::optional<thumtoo::Size>) {});
+    }
+    if (pending > 0) {
+      m_thumtoo->drain();
+      ThumtooCallbackQueue::instance().pump();
+    }
+    std::cout << " " << urls.size() << " urls, " << pending << " probed\n";
+  }
+#endif
 
   // process regular URLs
   for(std::vector<URL>::const_iterator i = urls.begin(); i != urls.end(); ++i)

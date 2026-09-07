@@ -37,6 +37,7 @@ Make **develop** the branch that becomes **master**. See
 * [x] GUI-thread Executor (ThumtooCallbackQueue pumped from Viewer::draw)
 * [x] Tile UV half-texel inset (LINEAR seam / black border)
 * [x] Offload tile JPEG decode off GUI; limit GL uploads per frame
+* [x] Batch thumtoo size probes at view open (Processing URLs)
 * [ ] Tile loading strategy ([docs/TILE_LOADING.md](docs/TILE_LOADING.md)): single-tile thumtoo path, JPEG scale/overview, priority queue
 * [ ] Optional: texture array / atlas batching for fewer draw calls
 

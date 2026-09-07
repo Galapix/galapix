@@ -79,6 +79,28 @@ int max_scale_for_size(int width, int height)
 
 } // namespace
 
+/** Build provider when dimensions are already known (or in thumtoo cache). */
+TileProviderPtr
+ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
+                                      std::string uri,
+                                      int width, int height)
+{
+  if (!client || uri.empty() || width <= 0 || height <= 0) {
+    return {};
+  }
+
+  int max_scale = max_scale_for_size(width, height);
+  if (auto cov = client->get_tile_coverage(uri)) {
+    max_scale = cov->max_scale;
+  }
+
+  log_info("ThumtooTileProvider: {} {}x{} max_scale={}",
+           uri, width, height, max_scale);
+
+  return std::make_shared<ThumtooTileProvider>(
+    std::move(client), std::move(uri), Size(width, height), max_scale);
+}
+
 TileProviderPtr
 ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
                             std::string uri)
@@ -87,21 +109,23 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
     return {};
   }
 
-  // Ensure size is known (synchronous probe via request + drain).
-  // Default Executor runs callbacks inline from the worker; drain() waits until
-  // the queue and in-flight jobs are idle.
-  if (!client->get_size(uri)) {
-    bool done = false;
-    client->request_size(uri, [&](std::string, std::optional<thumtoo::Size>) {
-      done = true;
-    });
-    client->drain();
-    // Executor posts to the main-thread queue; run it before we continue.
-    ThumtooCallbackQueue::instance().pump();
-    if (!done) {
-      log_error("ThumtooTileProvider: size probe did not complete for " + uri);
-      return {};
-    }
+  // Prefer cached size — no I/O.
+  if (auto sz = client->get_size(uri)) {
+    return create_from_size(std::move(client), std::move(uri),
+                            sz->width, sz->height);
+  }
+
+  // Single-URI path: one request_size + drain (slow if called in a loop).
+  // Bulk open should batch request_size then drain once (ViewerCommand).
+  bool done = false;
+  client->request_size(uri, [&](std::string, std::optional<thumtoo::Size>) {
+    done = true;
+  });
+  client->drain();
+  ThumtooCallbackQueue::instance().pump();
+  if (!done) {
+    log_error("ThumtooTileProvider: size probe did not complete for " + uri);
+    return {};
   }
 
   auto sz = client->get_size(uri);
@@ -110,18 +134,8 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
     return {};
   }
 
-  // Prefer theoretical/stored coverage from thumtoo; fall back to local formula.
-  int max_scale = max_scale_for_size(sz->width, sz->height);
-  if (auto cov = client->get_tile_coverage(uri)) {
-    max_scale = cov->max_scale;
-  }
-
-  log_info("ThumtooTileProvider: {} {}x{} max_scale={}",
-           uri, sz->width, sz->height, max_scale);
-
-  return std::make_shared<ThumtooTileProvider>(
-    std::move(client), std::move(uri),
-    Size(sz->width, sz->height), max_scale);
+  return create_from_size(std::move(client), std::move(uri),
+                          sz->width, sz->height);
 }
 
 ThumtooTileProvider::ThumtooTileProvider(

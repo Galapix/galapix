@@ -229,3 +229,32 @@ Until API changes land, Galapix may:
 - [THUMTOO.md](THUMTOO.md) — flags, pure mode, scale range
 - [DEVELOP_VS_MASTER.md](DEVELOP_VS_MASTER.md) — branch gap / UI focus
 - [DEPENDENCIES.md](DEPENDENCIES.md) — what thumtoo replaces
+
+
+## Startup: "Processing URLs" slowness
+
+The progress line during `view` is **not** primarily Galapix SHA1 checksums on
+the open path. With thumtoo it was dominated by **per-file size probes**:
+
+```text
+for each URL:
+  ThumtooTileProvider::create
+    → request_size + Client::drain()   // open file, optional content id / decode
+```
+
+That is **O(n) sequential** heavy work before the viewer window appears.
+
+### Fix (develop)
+
+1. **Batch** `request_size` for all URLs missing size, then **one** `drain()`.
+2. Build providers with `create_from_size` from the cache (no second probe).
+3. Single-file / miss still uses `create()` (one probe) as fallback.
+
+thumtoo may still hash or decode inside each size job; batching overlaps that
+work on Client worker threads instead of serializing drain boundaries.
+
+### Future
+
+- Defer size until first layout / first visible image (open viewer immediately).
+- Header-only JPEG size (SOF) without full content-id hash when acceptable.
+- Do not SHA1 whole files on Galapix open path for pure thumtoo view.
