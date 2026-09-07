@@ -1,3 +1,17 @@
+## Main loop: vsync instead of SDL_Delay(10) (2026-09-07) — tip **galapix-075**
+
+### Why 60fps was impossible
+`AppViewer::run` ended every frame with **`SDL_Delay(10)`**. At 60Hz the
+frame budget is ~16.7ms; sleeping 10ms left ~6ms for tiles/GL/ImGui. Any
+upload work pushed the total over a frame → visible jank, never a steady 60.
+
+### Fix
+* `SDL_GL_SetSwapInterval(1)` after window create (pace on display refresh)
+* Remove the fixed 10ms delay
+* `trigger_redraw`: single `SDL_PushEvent` (no busy-wait if queue full)
+
+---
+
 ## Frame-time: stop draw-path parent fan-out (2026-09-07) — tip **galapix-074**
 
 Measured serious GUI work while zooming (after thumtoo-035 moved I/O off GUI):

@@ -107,6 +107,13 @@ AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
   });
   m_viewer.reshape(m_window->get_size());
 
+  // Pace the loop with display refresh. A fixed SDL_Delay(10) previously
+  // left only ~6ms of budget for draw+upload at 60Hz and guaranteed jank.
+  if (SDL_GL_SetSwapInterval(1) != 0) {
+    log_warn("SDL_GL_SetSwapInterval(1) failed: {}; frames will not be vsynced",
+             SDL_GetError());
+  }
+
   SDL_Window* sdl_window = SDL_GetWindowFromID(m_window->get_id());
   SDL_GLContext glctx = SDL_GL_GetCurrentContext();
   if (!m_imgui.init(sdl_window, glctx)) {
@@ -710,13 +717,8 @@ AppViewer::run()
     }
 
     m_window->swap_buffers();
-
-    // std::cout << "." << std::flush;
-
-    // FIXME: Higher values mean less CPU use for drawing and more
-    // for loading, which is nice for low-end CPUs, but not so nice
-    // for high-end CPUs, maybe make this configurable
-    SDL_Delay(10);
+    // No fixed sleep: vsync (SetSwapInterval) paces the loop. A hard
+    // SDL_Delay(10) capped throughput well below 60fps once draw work grew.
   }
 
 #ifdef HAVE_SPACE_NAVIGATOR

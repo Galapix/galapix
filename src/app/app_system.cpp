@@ -68,7 +68,8 @@ AppSystem::trigger_redraw()
   event.user.data1 = nullptr;
   event.user.data2 = nullptr;
 
-  while (SDL_PushEvent(&event) != 1) {}
+  // Do not spin if the queue is full — Viewer::redraw already coalesces.
+  SDL_PushEvent(&event);
 }
 
 void
