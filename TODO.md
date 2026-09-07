@@ -38,9 +38,10 @@ Make **develop** the branch that becomes **master**. See
 * [x] Tile UV half-texel inset (LINEAR seam / black border)
 * [x] Offload tile JPEG decode off GUI; limit GL uploads per frame
 * [x] Batch thumtoo size probes at view open (Processing URLs)
-* [ ] Tile pipeline Pass 1–3 ([docs/TILE_LOADING.md](docs/TILE_LOADING.md)): size → fast JPEG overview → on-demand tiles; lower-res fallback
-* [ ] thumtoo: single-tile/single-scale generation (not full pyramid on miss)
-* [ ] Pass 2: libjpeg scale / EXIF overview for local JPEG
+* [ ] Tile load policy ([docs/TILE_LOADING.md](docs/TILE_LOADING.md)): no interactive pyramid batch; overview ≠ tiles; archive coalesce
+* [ ] thumtoo: single-tile generation; optional same-archive request coalesce
+* [ ] Fast overview path (libjpeg/EXIF) with separate cache identity
+* [ ] Benchmark: split vs merged size+overview for archive members
 * [ ] Optional: texture array / atlas batching for fewer draw calls
 
 Galapix ToDo

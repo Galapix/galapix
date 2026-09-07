@@ -28,56 +28,88 @@ full archive extract or a complete multi-scale cut is not.
 ---
 
 
-## Canonical pipeline (target)
+## Pipeline (working model — not settled)
 
-Three kinds of work, in order. Later steps must not block earlier paint.
+Open questions: whether **size/orientation** should be a separate pass from
+**fast overview**, and how to live with **libarchive’s weak random access**.
+Benchmark before locking the design.
 
-### Pass 1 — Size / orientation (cheap)
+### Requirements that are settled
 
-- Header-only or thumtoo `request_size` (batched, one drain).
-- Enough to place images on the workspace and pick `tilescale`.
-- **No** full decode, **no** full-file hash on the critical path if avoidable
-  (provisional content id until hash is needed).
+1. **Interactive path must not full-pyramid-batch** on a single tile miss.
+2. **Missing tile → next coarser tile** (then placeholder), never a blank wait
+   for the whole image.
+3. **Fast overview ≠ grid tiles.** Low-quality JPEG/EXIF previews must **not**
+   overwrite or share identity with high-quality 256² tiles (separate store /
+   key / quality flag). Upgrade is replace-on-arrival, not mutate-in-place of
+   the same blob as “the” tile.
+4. **GUI never blocks** on decode/hash/archive extract.
 
-### Pass 2 — Fast overview (optional but important for JPEG)
+### Size / orientation vs fast overview
 
-- Prefer **libjpeg scaled decode** (1/2/4/8) and/or embedded EXIF thumbnail.
-- Produce **one coarse stand-in** (often a single tile at high scale, or a
-  soft full-image texture) so the user sees something immediately.
-- Still off the GUI thread; upload with the per-frame budget.
+| Approach | Pros | Cons |
+|----------|------|------|
+| **Split** | Smallest work for layout-only; can show empty frames early | Extra open/seek for archives (painful with libarchive) |
+| **Merged** | One archive member read → size + soft preview | Heavier minimum work; still need quality separation from real tiles |
 
-### Pass 3 — Grid tiles (authoritative)
+For **plain files**, split is often fine (header-only size is cheap).  
+For **archive members**, seeking is expensive — **merging size + overview into
+one sequential read** of the member may win. **Measure** (time to first size,
+time to first pixels, seeks per member, cold vs warm).
 
-Two modes, both valid:
+### Fast overview quality isolation
 
-| Mode | When | Behaviour |
-|------|------|-----------|
-| **On demand** | Interactive `view` | Generate only **visible** `(scale,x,y)` (or that scale); return ASAP |
-| **Batch** | Idle / `thumtoo-prepare` | Full pyramid or archive set in the background |
+- libjpeg scale / EXIF thumb: **low quality**, good for “something on screen”.
+- Pyramid tiles: **high quality** (e.g. JPEG q≈80 grid cells).
+- Store overview under a distinct key (e.g. `overview` / `preview` max-edge,
+  or a non-tile layer), **not** as `tiles(scale,x,y)` at the same coordinates
+  as real cells. Otherwise a soft preview can be mistaken for a finished tile
+  and never upgraded, or pollute the durable tile cache.
 
-Never make interactive view wait for a full-pyramid batch.
+Viewer: draw overview only as stand-in; when a real tile arrives, drop the
+overview for that region.
+
+### Grid tiles: on demand (default)
+
+- One miss → generate **that cell** (or at most that scale’s visible set).
+- **No** automatic `min_scale…computed_max` pyramid on interactive request.
+- Explicit batch remains **`thumtoo-prepare`** / idle background only.
+
+### Archives and libarchive seeking
+
+Random access inside many archive formats is **slow** (solid compression,
+weak seek, re-decompress from earlier points). Implications:
+
+- Prefer **one sequential pass per member** when touching an archive entry
+  (size + overview, or a small set of tiles), over many tiny seeks.
+- **Auto-batch on the thumtoo side** when several tile requests share the same
+  archive member (or same content id) within a short window: open once, satisfy
+  many cells, close. That is **request coalescing**, not “build the whole
+  pyramid before returning anything”.
+- Coalesce carefully: still return the **first needed** tile as soon as it
+  exists; do not hold the UI until the whole batch finishes.
+- Benchmark candidates: zip store vs deflate, 7z solid vs non-solid, tar.gz,
+  rar; cold page cache vs warm.
 
 ### Fallback when a tile is missing
 
 ```text
-requested tile (scale, x, y)
-    → if present: draw it
-    → else: find_smaller_tile / parent scales (stretch)
-    → else: placeholder (e.g. solid colour)
+requested high-quality tile (scale, x, y)
+    → real tile if present
+    → else coarser real tile (find_smaller_tile)
+    → else overview / fast-jpeg stand-in (if any)
+    → else placeholder colour
 ```
-
-`ImageRenderer` / `ImageTileCache::find_smaller_tile` already implement the
-“next lower res” idea on develop; keep that path strong while Pass 3 fills in.
 
 ### Mapping to current code
 
-| Step | Today | Gap |
-|------|--------|-----|
-| Pass 1 | Batched thumtoo size probe at open | Defer until after window open; header-only JPEG |
-| Pass 2 | Missing for pure thumtoo (vips path only) | libjpeg scale / EXIF overview into cache |
-| Pass 3 on demand | thumtoo `request_tile` often builds whole pyramid | Single-tile / single-scale generation |
-| Pass 3 batch | `thumtoo-prepare` | OK as offline tool |
-| Lower-res fallback | `find_smaller_tile` | Keep; ensure coarse tiles exist early (Pass 2) |
+| Concern | Today | Direction |
+|---------|--------|-----------|
+| Size at open | Batched thumtoo probe | Keep; consider merge with overview for archives |
+| Fast overview | Not on pure thumtoo path | Add; **separate** from tile table |
+| Pyramid on miss | `request_tile` often full range | **Remove** for interactive path |
+| Archive multi-tile | Likely repeated open/seek | thumtoo **coalesce** same-member requests |
+| Lower-res fallback | `find_smaller_tile` | Keep; overview as extra tier |
 
 ## What master did well
 
