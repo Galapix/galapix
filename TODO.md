@@ -1,3 +1,18 @@
+## Zoom CPU spikes: debounce scale + cap in-flight jobs (2026-09-07) — tip **galapix-076**
+
+### Cause
+Fast zoom steps `tiledb_scale` every frame. Each step:
+* enqueues a full visible grid of `request_tile` (PDF raster / JPEG on workers)
+* `cancel_jobs` marks handles aborted, but **thumtoo cannot stop mid-job**
+* workers finish discarded work → CPU spikes and uneven frame times
+
+### Fix
+* **`stable_request_scale`**: hold the previous request scale until the desired
+  scale is unchanged for **80ms** (continuous zoom never commits intermediates)
+* **Cap concurrent REQUESTED** at 24 (overview always allowed)
+
+---
+
 ## Main loop: vsync instead of SDL_Delay(10) (2026-09-07) — tip **galapix-075**
 
 ### Why 60fps was impossible

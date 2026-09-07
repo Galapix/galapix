@@ -128,7 +128,11 @@ ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_min_keep_scale(m_max_scale - 2),
   m_have_last_cancel(false),
   m_last_cancel_scale(0),
-  m_last_cancel_rect()
+  m_last_cancel_rect(),
+  m_have_stable_scale(false),
+  m_stable_scale(0),
+  m_pending_scale(0),
+  m_pending_since()
 {
 }
 
@@ -170,6 +174,14 @@ void
 ImageTileCache::queue_tile_request(int x, int y, int scale)
 {
   if (x < 0 || y < 0 || scale < m_min_scale || scale > m_max_scale) {
+    return;
+  }
+
+  // Cap in-flight provider jobs. thumtoo cannot cancel mid-raster; flooding
+  // the queue while zooming wastes CPU on tiles that will be discarded.
+  // Always allow the single overview cell through.
+  constexpr int kMaxConcurrentRequests = 24;
+  if (scale != m_max_scale && pending_request_count() >= kMaxConcurrentRequests) {
     return;
   }
 
@@ -244,6 +256,7 @@ ImageTileCache::clear()
   }
   m_cache.clear();
   m_have_last_cancel = false;
+  m_have_stable_scale = false;
 }
 
 void
@@ -296,6 +309,40 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
   }
 
   return {};
+}
+
+
+int
+ImageTileCache::stable_request_scale(int desired_scale)
+{
+  using clock = std::chrono::steady_clock;
+  constexpr auto kHold = std::chrono::milliseconds(80);
+
+  if (!m_have_stable_scale) {
+    m_have_stable_scale = true;
+    m_stable_scale = desired_scale;
+    m_pending_scale = desired_scale;
+    m_pending_since = clock::now();
+    return m_stable_scale;
+  }
+
+  if (desired_scale == m_stable_scale) {
+    m_pending_scale = desired_scale;
+    return m_stable_scale;
+  }
+
+  // Desired moved: restart hold timer on each change so continuous zoom
+  // never commits intermediate scales.
+  if (desired_scale != m_pending_scale) {
+    m_pending_scale = desired_scale;
+    m_pending_since = clock::now();
+    return m_stable_scale;
+  }
+
+  if (clock::now() - m_pending_since >= kHold) {
+    m_stable_scale = desired_scale;
+  }
+  return m_stable_scale;
 }
 
 void

@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_IMAGE_TILE_CACHE_HPP
 #define HEADER_GALAPIX_GALAPIX_IMAGE_TILE_CACHE_HPP
 
+#include <chrono>
 #include <map>
 #include <memory>
 #include <vector>
@@ -102,6 +103,11 @@ public:
   int get_max_scale() const { return m_max_scale; }
   int get_min_scale() const { return m_min_scale; }
 
+  /** Debounced scale for provider requests. Fast zoom holds the previous
+      scale briefly so we do not enqueue a full grid at every intermediate
+      log2 step (workers cannot cancel in-flight PDF/JPEG work). */
+  int stable_request_scale(int desired_scale);
+
   static void set_tile_debug(bool on) { s_tile_debug = on; }
   static bool tile_debug() { return s_tile_debug; }
 
@@ -134,6 +140,12 @@ public:
   bool m_have_last_cancel;
   int m_last_cancel_scale;
   Rect m_last_cancel_rect;
+
+  /** Debounced request scale (see stable_request_scale). */
+  bool m_have_stable_scale = false;
+  int m_stable_scale = 0;
+  int m_pending_scale = 0;
+  std::chrono::steady_clock::time_point m_pending_since{};
 
 private:
   /** Issue a provider request if this cell is not already in the cache.
