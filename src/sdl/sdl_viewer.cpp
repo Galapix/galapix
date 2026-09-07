@@ -127,10 +127,14 @@ SDLViewer::~SDLViewer()
 void
 SDLViewer::process_event(SDL_Event const& event)
 {
-  // F1 always toggles chrome, even when ImGui wants keyboard focus.
-  if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F1) {
-    m_imgui.toggle();
-    return;
+  // Tab / F1 always toggle chrome, even when ImGui wants keyboard focus.
+  // (H remains zoom-home; do not steal it for UI hide.)
+  if (event.type == SDL_KEYDOWN) {
+    SDL_Keycode const sym = event.key.keysym.sym;
+    if (sym == SDLK_F1 || sym == SDLK_TAB) {
+      m_imgui.toggle();
+      return;
+    }
   }
 
   // Feed ImGui; skip viewer handling when it wants capture.

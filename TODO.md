@@ -1,3 +1,9 @@
+## ImGui tools + hide chrome (2026-09-07)
+
+* SVG sources in `data/icons/svg/`; PNGs for ImGui textures
+* Tools window: pan/zoom/grid/move, grid toggles, layouts
+* **Tab** or **F1** toggles all ImGui chrome (H stays zoom-home)
+
 
 ## GTK removed (2026-09-07) — SDL only
 

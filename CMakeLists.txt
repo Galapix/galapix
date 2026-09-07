@@ -281,6 +281,7 @@ endif()
 
 if(BUILD_GALAPIX_SDL)
   pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
+  pkg_search_module(SDL2_IMAGE REQUIRED SDL2_image IMPORTED_TARGET)
 
   file(GLOB LIBGALAPIX_SDL_SOURCES src/sdl/*.cpp)
   list(APPEND LIBGALAPIX_SDL_SOURCES ${GALAPIX_SPNAV_SOURCES})
@@ -302,7 +303,8 @@ if(BUILD_GALAPIX_SDL)
     ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends)
   target_link_libraries(libgalapix_sdl PUBLIC
     libgalapix
-    PkgConfig::SDL2)
+    PkgConfig::SDL2
+    PkgConfig::SDL2_IMAGE)
   target_compile_definitions(libgalapix_sdl PRIVATE -DGALAPIX_SDL)
 
   add_executable(galapix.sdl src/main/sdl_main.cpp)

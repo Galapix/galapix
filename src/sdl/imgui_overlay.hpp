@@ -10,17 +10,17 @@
 #define HEADER_GALAPIX_SDL_IMGUI_OVERLAY_HPP
 
 #include <SDL.h>
+#include <array>
+#include <string>
 
 namespace galapix {
 
 class Viewer;
 
-/** Dear ImGui chrome overlay (placeholder UI on pure OpenGL).
+/** Dear ImGui chrome (status + tool bar) on the SDL OpenGL viewer.
  *
- *  Toggle with F1. When visible, ImGui captures mouse/keyboard over its
- *  windows so the image tools keep working on the rest of the view.
- *  Application state stays in Viewer/Workspace; ImGui only displays and
- *  sends simple commands.
+ *  Toggle all chrome with Tab or F1. When visible, ImGui captures input
+ *  over its windows; image tools keep working on the rest of the view.
  */
 class ImguiOverlay
 {
@@ -46,8 +46,36 @@ public:
   bool want_capture_keyboard() const;
 
 private:
+  struct Icon
+  {
+    unsigned id = 0; // GLuint
+    int w = 0;
+    int h = 0;
+  };
+
+  enum class IconId
+  {
+    Pan = 0,
+    ZoomRect,
+    GridTool,
+    Move,
+    Grid,
+    GridPin,
+    LayoutRegular,
+    LayoutTight,
+    LayoutRandom,
+    Count
+  };
+
+  bool load_icons();
+  void destroy_icons();
+  static std::string data_root();
+  bool load_icon_png(IconId id, std::string const& filename);
+
   bool m_initialized = false;
   bool m_visible = true;
+  bool m_icons_loaded = false;
+  std::array<Icon, static_cast<size_t>(IconId::Count)> m_icons{};
 };
 
 } // namespace galapix
