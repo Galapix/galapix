@@ -19,6 +19,7 @@ namespace galapix {
  *
  *  - Plain file → file:///abs/path
  *  - Archive member (…//rar:m, …//zip:m, …) → file:///abs/archive//archive:m
+ *  - PDF page (…//page:N, 1-based) → file:///abs.pdf//page:N
  *  - Non-file protocols → empty string
  */
 std::string thumtoo_uri_from_url(URL const& url);

@@ -112,3 +112,17 @@ nix flake lock --update-input thumtoo
 Prepare performance: `thumtoo-prepare --tiles --stats --jobs N` — see thumtoo
 `--help`. Interactive Galapix still uses `request_tile` (single scale) +
 in-viewer overview layer for stdio files.
+
+
+## PDF and archives
+
+With thumtoo enabled, opening a **PDF** expands to one image per page
+(`file:///doc.pdf//page:N`, 1-based, capped at 512 pages). **Archives**
+expand to one image per image member (`//archive:member`).
+
+Size probes use thumtoo; **PDF page tiles** still need thumtoo raster→tile
+support (preview ladder may work; full zoom tiles may be incomplete until
+thumtoo grows PDF tiling).
+
+MIME types in `galapix.desktop` align with `thumtoo::media_mime_types()` plus
+Galapix-only types (SVG, XCF, workspace).

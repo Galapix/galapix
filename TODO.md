@@ -41,6 +41,7 @@ Make **develop** the branch that becomes **master**. See
 * [x] Prefetch overview + request coarser stand-ins in find_smaller_tile
       (reduce purple loading tiles on fast zoom)
 * [x] Fix bad_weak_ptr: prefetch_overview after make_shared (not in ctor)
+* [x] Expand PDF pages + archive members on open; sync desktop MIME with thumtoo
 * [x] Flake: enable WITH_THUMTOO against thumtoo (tile API commit)
 * [x] Align size probe with Client::drain / get_size after request_size
 * [x] Default-on when HAVE_THUMTOO; `--no-thumtoo` forces SQLite tiles
