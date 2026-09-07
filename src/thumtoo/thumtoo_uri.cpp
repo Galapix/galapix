@@ -93,8 +93,6 @@ thumtoo_uri_from_url(URL const& url)
   return thumtoo::archive_uri(apath, member);
 }
 
-} // namespace galapix
-
 std::optional<URL>
 url_from_thumtoo_uri(std::string_view uri)
 {
