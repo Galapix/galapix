@@ -805,3 +805,55 @@ to thumtoo.
 * AGENTS.md, README.md, NEWS.md, docs/THUMTOO.md, docs/DEVELOP_VS_MASTER.md,
   docs/TILE_LOADING.md, flake.nix help text
 
+
+## PDF page tiles show as purple (2026-09-07)
+
+### Symptom
+Opening a PDF expands pages (`file:///doc.pdf//page:N`) correctly. Each page
+appears in the workspace as a purple “no image” / loading tile. Tiles never
+arrive; overview may also stay empty for PDF pages.
+
+### Root cause (thumtoo, not Galapix UI)
+In `thumtoo` `Client` tile path (`src/client.cpp`):
+
+- Interactive `request_tile`: when URI is a PDF page, code does
+  `reply_one(std::nullopt); return;`
+- Pyramid path: `reply_pyramid_done(false); return;`
+
+Size probe and ladder/pixels paths **do** handle PDF (72 dpi media-box size +
+`pdf_rasterize_page` → `build_ladder_rgb`). Grid tiles were left as a stub
+(“Video/PDF page tiles” still listed as future work in thumtoo TODO).
+
+Galapix `ThumtooTileProvider` correctly requests tiles; it receives empty
+blobs → purple stand-ins.
+
+### Fix plan (belongs in thumtoo)
+1. Add `build_tile_cell_rgb` / optional pyramid-from-RGB in `image.hpp`/`image.cpp`
+   (mirror `build_tile_cell_buffer` using `vips_image_new_from_memory` for RGB888).
+2. In `Client` EnsureTiles / interactive tile job:
+   - Parse PDF URI
+   - Rasterize page at long-edge matching the stored size (72 dpi) or higher if
+     we later raise reported size
+   - `build_tile_cell_rgb` (or buffer path) for the requested (scale,x,y)
+   - Store tile + reply
+3. Same for pyramid prewarm.
+4. Optional follow-up: report higher native size (e.g. 150–300 dpi) so scale-0
+   tiles are useful for reading; keep content_id stable (`sha256:…:page:N`).
+
+### Galapix side after thumtoo fix
+- `nix flake lock --update-input thumtoo` (or temporary path/subtree if needed)
+- Rebuild SDL viewer; smoke open multi-page PDF, zoom, `l` / F1 stats
+- No Galapix logic change expected if URI + provider already correct
+
+### Status
+- [x] Implement PDF tile encode in thumtoo (local: `build_tile_cell_rgb` +
+      client EnsureTiles path; commit message “Implement PDF page grid tiles”)
+- [ ] Land that commit on thumtoo master, then `nix flake lock --update-input thumtoo`
+- [ ] UI smoke PDF pages (zoom, multi-page, F1 / `l`)
+
+Until thumtoo master includes the fix, override for local builds:
+
+```bash
+nix build .#galapix --override-input thumtoo path:/path/to/thumtoo-with-pdf-tiles
+```
+

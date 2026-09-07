@@ -120,9 +120,11 @@ With thumtoo enabled, opening a **PDF** expands to one image per page
 (`file:///doc.pdf//page:N`, 1-based, capped at 512 pages). **Archives**
 expand to one image per image member (`//archive:member`).
 
-Size probes use thumtoo; **PDF page tiles** still need thumtoo raster→tile
-support (preview ladder may work; full zoom tiles may be incomplete until
-thumtoo grows PDF tiling).
+Size probes, ladder previews, and **grid tiles** for PDF pages are handled by
+thumtoo (rasterize at reported 72 dpi media-box size, then cut 256² JPEG
+cells). Requires a thumtoo build that includes PDF tile encode (no longer
+stubs `request_tile` for `//page:N`). Until that lands on thumtoo master,
+override the flake input to a checkout that has the fix.
 
 MIME types in `galapix.desktop` align with `thumtoo::media_mime_types()` plus
 Galapix-only types (SVG, XCF, workspace).
