@@ -58,7 +58,7 @@ private:
   std::shared_ptr<thumtoo::Client> m_thumtoo;
 #endif
 
-  /** Prefer thumtoo provider when enabled; otherwise DatabaseTileProvider. */
+  /** Thumtoo TileProvider when HAVE_THUMTOO; else empty for plain files. */
   TileProviderPtr make_file_tile_provider(URL const& url,
                                           OldFileEntry const* file_entry = nullptr,
                                           ImageEntry const* image_entry = nullptr);

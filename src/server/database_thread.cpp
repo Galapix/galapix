@@ -25,8 +25,6 @@
 #include "database/database.hpp"
 #include "job/job_manager.hpp"
 #include "jobs/file_entry_generation_job.hpp"
-#include "jobs/multiple_tile_generation_job.hpp"
-#include "jobs/tile_generation_job.hpp"
 #include "resource/file_info.hpp"
 #include "resource/resource_locator.hpp"
 #include "resource/url_info.hpp"
@@ -42,8 +40,7 @@ DatabaseThread::DatabaseThread(Database& database,
   m_quit(false),
   m_abort(false),
   m_request_queue(),
-  m_receive_queue(256), // FIXME: Make this configurable
-  m_tile_generation_jobs()
+  m_receive_queue(256) // FIXME: Make this configurable
 {
   assert(current_ == nullptr);
   current_ = this;
@@ -168,80 +165,14 @@ DatabaseThread::store_url_info(URLInfo const& url_info,
 }
 
 
-JobHandle
-DatabaseThread::request_tile(OldFileEntry const& file_entry, int tilescale, Vector2i const& pos,
-                             const std::function<void (Tile)>& callback)
-{
-  log_info("{} {} {}", file_entry, tilescale, pos);
 
-  JobHandle job_handle_ = JobHandle::create();
-
-  m_request_queue.wait_and_push
-    ([this, job_handle_, file_entry, tilescale, pos, callback]()
-     {
-       JobHandle job_handle = job_handle_;
-       if (!job_handle.is_aborted())
-       {
-         TileEntry tile;
-         if (m_database.get_tiles().get_tile(file_entry.get_id(), tilescale, pos, tile))
-         {
-           // Tile has been found, so return it and finish up
-           if (callback)
-           {
-             callback(tile);
-           }
-           job_handle.set_finished();
-         }
-         else
-         {
-           // Tile hasn't been found, so we need to generate it
-           if ((false))
-           {
-             std::cout << "Error: Couldn't get tile: "
-                       << file_entry.get_id() << " "
-                       << pos.x() << " "
-                       << pos.y() << " "
-                       << tilescale
-                       << std::endl;
-           }
-
-           {
-             DatabaseThread::current()->generate_tile(job_handle, file_entry, tilescale, pos, callback);
-           }
-         }
-       }
-     });
-
-  return job_handle_;
-}
-
-JobHandle
-DatabaseThread::request_tiles(OldFileEntry const& file_entry, int min_scale, int max_scale,
-                              const std::function<void (Tile)>& callback)
-{
-  JobHandle job_handle = JobHandle::create();
-
-  m_request_queue.wait_and_push
-    ([this, job_handle, file_entry, min_scale, max_scale, callback]
-     {
-       if (!job_handle.is_aborted())
-       {
-         generate_tiles(job_handle,
-                        file_entry,
-                        min_scale, max_scale,
-                        callback);
-       }
-     });
-
-  return job_handle;
-}
 
 void
 DatabaseThread::request_job_removal(std::shared_ptr<Job> const& job, bool unused)
 {
-  m_request_queue.wait_and_push([this, job](){
-      remove_job(job);
-    });
+  (void)job;
+  (void)unused;
+  // TileGenerationJob queue removed; file-entry jobs are fire-and-forget.
 }
 
 JobHandle
@@ -304,25 +235,6 @@ DatabaseThread::request_files_by_pattern(const std::function<void (OldFileEntry)
       });
 }
 
-void
-DatabaseThread::receive_tile(RowId const& fileid, Tile const& tile)
-{
-  log_info("{} Tile({}, {})", fileid, tile.get_scale(), tile.get_pos());
-
-  m_receive_queue.wait_and_push([this, fileid, tile](){
-      // FIXME: Make some better error checking in case of loading failure
-      if (tile)
-      {
-        // FIXME: Test the performance of this
-        //if (!m_database.get_tiles().has_tile(tile.fileid, tile.pos, tile.scale))
-        m_database.get_tiles().store_tile(fileid, tile);
-      }
-      else
-      {
-
-      }
-    });
-}
 
 void
 DatabaseThread::delete_file_entry(RowId const& fileid)
@@ -367,103 +279,8 @@ DatabaseThread::process_queue(ThreadMessageQueue2<std::function<void()>>& queue)
   }
 }
 
-void
-DatabaseThread::remove_job(std::shared_ptr<Job> const& job)
-{
-  for(std::list<std::shared_ptr<TileGenerationJob> >::iterator i = m_tile_generation_jobs.begin();
-      i != m_tile_generation_jobs.end(); ++i)
-  {
-    if (*i == job)
-    {
-      m_tile_generation_jobs.erase(i);
-      break;
-    }
-  }
-}
 
-void
-DatabaseThread::generate_tiles(JobHandle const& job_handle, OldFileEntry const& file_entry,
-                               int min_scale, int max_scale,
-                               const std::function<void (Tile)>& callback)
-{
-  // FIXME: We are ignoring the callback, but shouldn't so assert in
-  // case somebody tries to use one
-  assert(!callback);
 
-  int min_scale_in_db = -1;
-  int max_scale_in_db = -1;
-
-  m_database.get_tiles().get_min_max_scale(file_entry.get_id(), min_scale_in_db, max_scale_in_db);
-
-  std::shared_ptr<MultipleTileGenerationJob>
-    job_ptr(new MultipleTileGenerationJob(job_handle,
-                                          file_entry.get_url(),
-                                          min_scale_in_db, max_scale_in_db,
-                                          min_scale, max_scale,
-                                          [this, file_entry](Tile const& tile){
-                                            receive_tile(file_entry.get_id(), tile);
-                                          }));
-
-  // Not removing the job from the queue
-  m_tile_job_manager.request(job_ptr);
-}
-
-void
-DatabaseThread::generate_tile(JobHandle const& job_handle,
-                              OldFileEntry const& file_entry, int tilescale, Vector2i const& pos,
-                              const std::function<void (Tile)>& callback)
-{
-
-  std::list<std::shared_ptr<TileGenerationJob> >::iterator it =
-    std::find_if(m_tile_generation_jobs.begin(), m_tile_generation_jobs.end(),
-                 [&file_entry](std::shared_ptr<TileGenerationJob> const& job){
-                   return job->get_url() == file_entry.get_url();
-                 });
-
-  if (it != m_tile_generation_jobs.end() &&
-      (*it)->request_tile(job_handle, tilescale, pos, callback))
-  {
-    // all ok
-  }
-  else
-  {
-    // job not there or already running, so create a new one
-    int min_scale_in_db = -1;
-    int max_scale_in_db = -1;
-
-    if (m_database.get_tiles().get_min_max_scale(file_entry.get_id(), min_scale_in_db, max_scale_in_db))
-    {
-      if (tilescale >= min_scale_in_db &&
-          tilescale <= max_scale_in_db)
-      {
-        // This means we have got a request for tile generation for a
-        // tile that should be already in the database, this can
-        // happen when the database is incomplete (say after a "kill
-        // -9")
-        std::cout << "DatabaseThread::generate_tile: Warning request for Tile which should already be in the database:\n"
-                  << "  file: " << file_entry << '\n'
-                  << "  pos: " << pos << '\n'
-                  << "  tilescale: " << tilescale << '\n'
-                  << "  min: " << min_scale_in_db  << '\n'
-                  << "  max: " << max_scale_in_db << std::endl;
-
-        // We lie and say that no Tile is in the database, so all get
-        // regenerated
-        min_scale_in_db = -1;
-        max_scale_in_db = -1;
-      }
-    }
-
-    auto job_ptr = std::make_shared<TileGenerationJob>(file_entry, min_scale_in_db, max_scale_in_db);
-    job_ptr->sig_tile_callback().connect(std::bind(&DatabaseThread::receive_tile, this, std::placeholders::_1, std::placeholders::_2));
-
-    job_ptr->request_tile(job_handle, tilescale, pos, callback);
-
-    m_tile_job_manager.request(job_ptr, std::bind(&DatabaseThread::request_job_removal, this, std::placeholders::_1, std::placeholders::_2));
-
-    m_tile_generation_jobs.push_front(job_ptr);
-  }
-}
 
 void
 DatabaseThread::generate_file_entry(JobHandle const& job_handle, URL const& url,
@@ -481,8 +298,6 @@ DatabaseThread::generate_file_entry(JobHandle const& job_handle, URL const& url,
     });
 
   m_tile_job_manager.request(job_ptr);
-  //m_tile_job_manager.request(job_ptr, std::bind(&DatabaseThread::request_job_removal, this, _1, _2));
-  //m_tile_generation_jobs.push_front(job_ptr);
 }
 
 void

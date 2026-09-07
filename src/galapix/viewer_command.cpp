@@ -19,7 +19,6 @@
 #include <filesystem>
 #include <iostream>
 
-#include "galapix/database_tile_provider.hpp"
 #include "database/entries/old_file_entry.hpp"
 #include "database/entries/image_entry.hpp"
 #include "galapix/mandelbrot_tile_provider.hpp"
@@ -115,15 +114,8 @@ std::vector<URL> expand_thumtoo_urls(URL const& url)
 ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
   m_opts(opts),
-  // Resource DB for -p patterns. Tile SQLite only when built without thumtoo.
-  m_database(Database::create(
-    opts.database,
-#ifdef HAVE_THUMTOO
-    /*sqlite_tiles=*/false
-#else
-    /*sqlite_tiles=*/true
-#endif
-  )),
+  // Resource DB for -p patterns. Durable tiles: thumtoo (HAVE_THUMTOO).
+  m_database(Database::create(opts.database)),
   m_job_manager(opts.threads),
   m_database_thread(m_database, m_job_manager),
   m_patterns(opts.patterns)
@@ -144,9 +136,10 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
               << " (Galapix SQLite tiles disabled)" << std::endl;
   }
 #else
+  std::cerr << "Warning: galapix was built without HAVE_THUMTOO; local file "
+               "tiles need thumtoo. Zoomify/Mandelbrot still work.\n";
   if (m_opts.use_thumtoo) {
-    std::cerr << "Warning: --thumtoo requested but galapix was built without "
-                 "HAVE_THUMTOO; using SQLite tiles.\n";
+    std::cerr << "Warning: --thumtoo requested but this binary has no thumtoo.\n";
   }
 #endif
 }
@@ -176,11 +169,8 @@ ViewerCommand::make_file_tile_provider(URL const& url,
     return {};
   }
 #endif
-#ifndef HAVE_THUMTOO
-  if (file_entry && image_entry) {
-    return std::make_shared<DatabaseTileProvider>(*file_entry, *image_entry);
-  }
-#endif
+  (void)file_entry;
+  (void)image_entry;
   return {};
 }
 

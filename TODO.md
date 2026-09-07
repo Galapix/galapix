@@ -1,3 +1,10 @@
+## Phase 2 done: Galapix SQLite tile stack removed (2026-09-07)
+
+* Deleted `cache4_tiles` path, `SQLiteTileDatabase`, tile SQL statements/table,
+  `DatabaseTileProvider`, tile generation jobs, DatabaseThread tile APIs
+* Resource `cache4.sqlite3` remains for `-p` until thumtoo query exists
+* `TileGenerator` kept for overview JPEG scale path
+
 ## Phase 1 done: HAVE_THUMTOO never uses cache4_tiles (2026-09-07)
 
 * `--no-thumtoo` rejected; always `sqlite_tiles=false` when HAVE_THUMTOO
@@ -815,7 +822,7 @@ Random Notes
 ## Session handoff (2026-09-07)
 
 ### Bundles / tips
-* Galapix develop tip: apply **`galapix-042.bundle`** (or later). CLI trimmed; viewer default.
+* Galapix develop tip: apply **`galapix-043.bundle`** (or later). CLI trimmed; viewer default.
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)

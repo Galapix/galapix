@@ -17,12 +17,9 @@
 #ifndef HEADER_GALAPIX_SERVER_DATABASE_THREAD_HPP
 #define HEADER_GALAPIX_SERVER_DATABASE_THREAD_HPP
 
-#include <list>
 #include <optional>
 
-#include "database/entries/tile_entry.hpp"
 #include "database/entries/resource_entry.hpp"
-#include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
 #include "job/job_manager.hpp"
 #include "job/thread.hpp"
@@ -39,8 +36,6 @@ class ImageInfo;
 class OldFileEntry;
 class ResourceInfo;
 class ResourceLocator;
-class TileDatabaseMessage;
-class TileGenerationJob;
 class URL;
 class URLInfo;
 
@@ -79,16 +74,6 @@ public:
                       const std::function<void (Failable<URLInfo> const&)>& callback);
 
   /* @{ */ // syncronized functions to be used by other threads
-  /**
-   *  Request the tile from the database, if not in the database the
-   *  tile will be generated from the source image
-   */
-  JobHandle request_tile(OldFileEntry const& file_entry, int tilescale, Vector2i const& pos,
-                         const std::function<void (Tile)>& callback);
-
-  JobHandle request_tiles(OldFileEntry const& file_entry, int min_scale, int max_scale,
-                          const std::function<void (Tile)>& callback);
-
   void request_job_removal(std::shared_ptr<Job> const& job, bool unused);
 
   /** Request the OldFileEntry for \a filename */
@@ -105,7 +90,7 @@ public:
                         URL const& url, int size, int mtime, OldFileEntry::Handler handler,
                         const std::function<void (OldFileEntry)>& callback);
 
-  /** Delete the given OldFileEntry along with all TileEntry refering to it */
+  /** Delete the given OldFileEntry (and any in-memory tile stubs) */
   void      delete_file_entry(RowId const& fileid);
   /* @} */
 
@@ -113,25 +98,10 @@ public:
                               const std::function<void (std::optional<ResourceEntry> const&)>& callback);
 
 private:
-  void remove_job(std::shared_ptr<Job> const& job);
-
-  /** Generates the requested tile from its original image */
-  void generate_tiles(JobHandle const& job_handle, OldFileEntry const& file_entry,
-                      int min_scale, int max_scale,
-                      const std::function<void (Tile)>& callback);
-
-  /** Generates the requested tile from its original image */
-  void generate_tile(JobHandle const& job_handle,
-                     OldFileEntry const& file_entry, int tilescale, Vector2i const& pos,
-                     const std::function<void (Tile)>& callback);
-
   void generate_file_entry(JobHandle const& job_handle, URL const& url,
                            const std::function<void (OldFileEntry)>& file_callback);
 
-  /** Place tile into the database */
-  void receive_tile(RowId const& fileid, Tile const& tile);
   void receive_file(OldFileEntry const& file_entry);
-  void receive_tiles(std::vector<TileEntry> const& tiles);
 
   void process_queue(ThreadMessageQueue2<std::function<void()>>& queue) const;
 
@@ -148,8 +118,6 @@ private:
 
   ThreadMessageQueue2<std::function<void()>> m_request_queue;
   ThreadMessageQueue2<std::function<void()>> m_receive_queue;
-  std::list<std::shared_ptr<TileGenerationJob> > m_tile_generation_jobs;
-
 private:
   DatabaseThread (DatabaseThread const&);
   DatabaseThread& operator= (DatabaseThread const&);

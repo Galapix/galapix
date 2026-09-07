@@ -16,47 +16,33 @@
 
 #include "database/database.hpp"
 
-#include "database/sqlite_tile_database.hpp"
+#include <iostream>
+
 #include "database/cached_tile_database.hpp"
+#include "database/memory_tile_database.hpp"
 #include "util/filesystem.hpp"
 
 namespace galapix {
 
 Database
-Database::create(std::string const& prefix, bool sqlite_tiles)
+Database::create(std::string const& prefix)
 {
   Filesystem::mkdir(prefix);
 
   auto db = std::make_unique<SQLite::Database>(prefix + "/cache4.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
   auto resources = std::make_unique<ResourceDatabase>(*db);
 
-  std::unique_ptr<SQLite::Database> tile_db;
-  std::unique_ptr<TileDatabaseInterface> tiles;
+  // No cache4_tiles.sqlite3 — durable tiles are thumtoo's job.
+  auto tiles = std::make_unique<CachedTileDatabase>(
+    std::make_unique<MemoryTileDatabase>());
 
-  if (sqlite_tiles)
-  {
-    // Legacy Galapix tiles (builds without HAVE_THUMTOO / WITH_THUMTOO=OFF).
-    tile_db = std::make_unique<SQLite::Database>(prefix + "/cache4_tiles.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
-    tiles = std::make_unique<CachedTileDatabase>(
-      std::make_unique<SQLiteTileDatabase>(*tile_db, *resources));
-  }
-  else
-  {
-    // HAVE_THUMTOO builds: no cache4_tiles.sqlite3; interface kept for DatabaseThread.
-    tiles = std::make_unique<CachedTileDatabase>(
-      std::make_unique<MemoryTileDatabase>());
-  }
-
-  return Database(std::move(db), std::move(tile_db), std::move(resources), std::move(tiles));
+  return Database(std::move(db), std::move(resources), std::move(tiles));
 }
 
 Database::Database(std::unique_ptr<SQLite::Database> db,
-                   std::unique_ptr<SQLite::Database> tile_db,
                    std::unique_ptr<ResourceDatabase> resources,
                    std::unique_ptr<TileDatabaseInterface> tiles) :
-  m_db2(),
   m_db(std::move(db)),
-  m_tile_db(std::move(tile_db)),
   m_resources(std::move(resources)),
   m_tiles(std::move(tiles))
 {

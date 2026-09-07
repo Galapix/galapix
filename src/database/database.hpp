@@ -30,13 +30,12 @@ namespace galapix {
 class Database
 {
 public:
-  /** Open resource DB under prefix. When sqlite_tiles is false, tile storage is
-   *  in-memory only (no cache4_tiles.sqlite3) — used for pure thumtoo view. */
-  static Database create(std::string const& prefix, bool sqlite_tiles = true);
+  /** Open resource DB under prefix. Tile storage is in-memory only; durable
+   *  tiles live in thumtoo (HAVE_THUMTOO). cache4_tiles.sqlite3 is gone. */
+  static Database create(std::string const& prefix);
 
 public:
   Database(std::unique_ptr<SQLite::Database> db,
-           std::unique_ptr<SQLite::Database> tile_db,
            std::unique_ptr<ResourceDatabase> resources,
            std::unique_ptr<TileDatabaseInterface> tiles);
   Database(Database&&) = default;
@@ -50,9 +49,7 @@ public:
   void cleanup();
 
 private:
-  std::unique_ptr<SQLite::Database> m_db2;
   std::unique_ptr<SQLite::Database> m_db;
-  std::unique_ptr<SQLite::Database> m_tile_db;
   std::unique_ptr<ResourceDatabase> m_resources;
   std::unique_ptr<TileDatabaseInterface> m_tiles;
 

@@ -122,13 +122,17 @@ smoke confidence is high.
 * `DatabaseTileProvider` only compiled into the open path when **not** `HAVE_THUMTOO`.
 * Legacy SQLite tile sources remain in the tree for `WITH_THUMTOO=OFF` builds only.
 
-### Phase 2 — remove Galapix tile SQLite
+### Phase 2 — remove Galapix tile SQLite (**done** 2026-09-07)
 
-* Stop creating `cache4_tiles.sqlite3`.
-* Remove `SQLiteTileDatabase`, tile tables/statements, `DatabaseTileProvider`,
-  tile-only `DatabaseThread` APIs, `TileGenerationJob` / multi-tile jobs.
-* **Split** `TileGenerator`: keep overview helpers; drop full pyramid write-to-DB path.
-* Simplify `Database::create` to resource DB (+ optional null tile interface).
+* No `cache4_tiles.sqlite3`; `Database::create(prefix)` only opens resource DB +
+  in-memory tile stub (`CachedTileDatabase`/`MemoryTileDatabase`).
+* Removed: `SQLiteTileDatabase`, `tile_table`, tile statements,
+  `DatabaseTileProvider`, `TileGenerationJob`, `MultipleTileGenerationJob`,
+  `DatabaseThread` tile request/generate/receive paths.
+* **Kept:** `TileGenerator` (overview / surface helpers), `Tile`/`TileEntry`,
+  Zoomify/Mandelbrot providers, thumtoo provider.
+* Builds without `HAVE_THUMTOO` can still open Zoomify/Mandelbrot; plain files
+  need thumtoo.
 
 ### Phase 3 — resource DB slim / replace (thumtoo query)
 
