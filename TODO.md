@@ -1,3 +1,7 @@
+## thumtoo-021 HTTP(S) fetch (2026-09-07)
+
+* Optional libcurl; probe/tiles/pixels/read_source_bytes for http(s)
+
 ## thumtoo-019 PDF live tiles @ 144 dpi (2026-09-07)
 
 * Page size and request_tile rasterize at kPdfLayoutDpi
@@ -852,7 +856,7 @@ Random Notes
 
 ### Bundles / tips
 * Galapix develop tip: apply **`galapix-048.bundle`** (or later). CLI trimmed; viewer default.
-* Thumtoo tip: apply **`thumtoo-019.bundle`** (Location URI API).
+* Thumtoo tip: apply **`thumtoo-021.bundle`** (Location URI API).
 * Thumtoo tip: apply **`thumtoo-006.bundle`** (or later). Parallel workers, extract cache, wall vs cpu stats.
 
 ### Done this arc (Galapix)
