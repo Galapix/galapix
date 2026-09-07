@@ -153,8 +153,12 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
 
     // scale factor for requesting tiles: scale 0 = nominal size; negative =
     // denser than layout (PDF). Raster providers report min_scale == 0.
+    // floor so zooming in switches to sharper (more negative) scales promptly;
+    // truncating toward zero stayed on coarse tiles too long and looked like
+    // JPEG upscaling of the previous level.
     int tiledb_scale = std::clamp(
-      static_cast<int>(logf(1.0f / (zoom * m_image.get_scale())) / logf(2.0f)),
+      static_cast<int>(std::floor(
+        std::log(1.0f / (zoom * m_image.get_scale())) / std::log(2.0f) + 1e-5f)),
       m_cache->get_min_scale(), m_cache->get_max_scale());
     // 2^scale as float so scale < 0 works (Math::pow2 is int shift only).
     float const scale_factor = std::ldexp(1.0f, tiledb_scale);
