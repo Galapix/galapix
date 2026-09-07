@@ -164,11 +164,8 @@ ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
     job_handle.set_finished();
   };
 
-  if (auto hit = m_client->get_tile(m_uri, tilescale, x, y)) {
-    deliver(std::move(hit));
-    return job_handle;
-  }
-
+  // Always go through request_tile so load + JPEG decode run on a Client
+  // worker (inline executor). Never decode on the GUI thread during draw.
   m_client->request_tile(
     m_uri, tilescale, x, y,
     [deliver = std::move(deliver)](std::string, int, int, int,

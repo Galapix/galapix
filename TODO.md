@@ -36,6 +36,7 @@ Make **develop** the branch that becomes **master**. See
 * [x] Pure thumtoo view: no cache4_tiles.sqlite3, no DatabaseTileProvider fallback
 * [x] GUI-thread Executor (ThumtooCallbackQueue pumped from Viewer::draw)
 * [x] Tile UV half-texel inset (LINEAR seam / black border)
+* [x] Offload tile JPEG decode off GUI; limit GL uploads per frame
 * [ ] Optional: texture array / atlas batching for fewer draw calls
 
 Galapix ToDo

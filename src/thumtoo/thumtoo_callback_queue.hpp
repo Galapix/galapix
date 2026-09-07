@@ -16,11 +16,12 @@
 
 namespace galapix {
 
-/** Marshals thumtoo Client completion callbacks onto the viewer/main thread.
+/** Optional queue for GUI-marshaled thumtoo callbacks.
  *
- *  Worker threads must not touch OpenGL or Viewer state directly; they post
- *  here and Viewer::draw pumps the queue. Synchronous probes (create + drain)
- *  must call pump() after drain() so callbacks run before the viewer starts.
+ *  Default make_executor() is thumtoo::Executor{} (inline on the Client worker).
+ *  Tile JPEG decode and receive_tile queue push run off the GUI thread. OpenGL
+ *  texture upload stays in ImageTileCache::process_queue on the main thread.
+ *  pump() is a no-op with the default executor.
  */
 class ThumtooCallbackQueue
 {

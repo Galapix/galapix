@@ -249,9 +249,13 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
 void
 ImageTileCache::process_queue()
 {
-  // Check the queue for newly arrived tiles
+  // Cap GL uploads per frame so fast zoom never stalls the UI. Remaining
+  // tiles stay queued; receive_tile / this function request another redraw.
+  constexpr int kMaxUploadsPerFrame = 4;
+
+  int uploaded = 0;
   Tile tile;
-  while (m_tile_queue.try_pop(tile))
+  while (uploaded < kMaxUploadsPerFrame && m_tile_queue.try_pop(tile))
   {
     TileCacheId tile_id(tile.get_pos(), tile.get_scale());
 
@@ -259,7 +263,6 @@ ImageTileCache::process_queue()
 
     if (i == m_cache.end())
     {
-      // std::cout << "ImageTileCache::process_queue(): received unrequested tile" << std::endl;
       m_cache[tile_id] = SurfaceStruct(JobHandle::create(),
                                        SurfaceStruct::SURFACE_SUCCEEDED,
                                        surface_from_software(tile.get_surface()));
@@ -268,6 +271,15 @@ ImageTileCache::process_queue()
     {
       i->second.surface = surface_from_software(tile.get_surface());
       i->second.status = SurfaceStruct::SURFACE_SUCCEEDED;
+    }
+    ++uploaded;
+  }
+
+  if (uploaded > 0 && !m_tile_queue.empty())
+  {
+    // More decoded tiles waiting — keep animating without blocking this frame.
+    if (Viewer* v = Viewer::current()) {
+      v->redraw();
     }
   }
 }
@@ -304,9 +316,13 @@ ImageTileCache::cancel_jobs(Rect const& rect, int scale)
 void
 ImageTileCache::receive_tile(Tile const& tile)
 {
+  // May run on a Client worker thread: queue is thread-safe; only schedule
+  // a redraw (SDL_PushEvent). OpenGL upload happens in process_queue on main.
   m_tile_queue.wait_and_push(tile);
 
-  Viewer::current()->redraw();
+  if (Viewer* v = Viewer::current()) {
+    v->redraw();
+  }
 }
 
 } // namespace galapix

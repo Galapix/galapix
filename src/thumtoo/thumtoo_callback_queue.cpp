@@ -22,17 +22,21 @@ ThumtooCallbackQueue::instance()
 thumtoo::Executor
 ThumtooCallbackQueue::make_executor()
 {
-  return thumtoo::Executor([this](thumtoo::Executor::Fn fn) {
-    m_queue.wait_and_push(std::move(fn));
-    if (Viewer* v = Viewer::current()) {
-      v->redraw();
-    }
-  });
+  // Default / inline Executor: Client worker threads run tile callbacks on the
+  // worker itself. JPEG decode + ImageTileCache::receive_tile (queue push) stay
+  // off the GUI thread. receive_tile only pushes a thread-safe queue and may
+  // SDL_PushEvent for redraw — it must not touch OpenGL.
+  //
+  // Size probes during create() complete inside Client::drain() without a
+  // main-thread pump.
+  return thumtoo::Executor{};
 }
 
 void
 ThumtooCallbackQueue::pump()
 {
+  // Reserved for hosts that install a GUI-marshaling executor. With the default
+  // inline executor this is a no-op.
   std::function<void()> fn;
   while (m_queue.try_pop(fn)) {
     fn();
