@@ -177,11 +177,16 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
   constexpr int kMaxTileAttempts = 3;
   int next_attempts = 1;
   if (i != m_cache.end()) {
-    // Retry failed cells a few times (PDF region render can flake), then stop.
-    if (i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
-        i->second.job_handle.is_failed() &&
-        !i->second.surface &&
-        i->second.attempts < kMaxTileAttempts) {
+    // Retry failed / aborted cells a few times (live PDF region render is
+    // slow and often aborted by cancel_jobs while the user pans/zooms).
+    // Without treating is_aborted() like a failure, the entry stays
+    // SURFACE_REQUESTED with no surface and is never re-queued → permanent
+    // purple cells for live-only / negative-scale PDF tiles.
+    bool const dead =
+      i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+      !i->second.surface &&
+      (i->second.job_handle.is_failed() || i->second.job_handle.is_aborted());
+    if (dead && i->second.attempts < kMaxTileAttempts) {
       next_attempts = i->second.attempts + 1;
       m_cache.erase(i);
     } else {

@@ -1,10 +1,63 @@
+## Live PDF tiles investigation (2026-09-07) — tip **galapix-063**
+
+### Symptom
+Cached PDF tiles (JPEG from thumtoo durable store) render. Live /
+interactive cells — especially **negative scale** and first-miss path that
+returns **`codec=rgb888`** — stay purple or never refine.
+
+### Already correct at tip `c7f4975` (+ thumtoo `32bb12a`)
+
+| Piece | Status |
+|-------|--------|
+| `surface_from_tile_blob` | Branches on `codec == "rgb888"` → RGBA8; else JPEG |
+| `get_min_scale()` | PDF `//page:` → **−4** (2304 dpi); raster stays 0 |
+| ImageRenderer scale | `floor(log2(1/(zoom·s)))` + `ldexp` for scale_factor &lt; 1 |
+| Tile grid math | `itilesize = 256 · 2^{scale}` matches thumtoo region geometry |
+| flake.lock thumtoo | Pins tip with live rgb888 + durable floor −2 |
+
+thumtoo side (verified separately): interactive PDF **always** replies
+`rgb888`; durable JPEG only for `scale ≥ −2`; geometry tests pass.
+
+### Root cause found (Galapix cache)
+
+`ImageTileCache::queue_tile_request` only re-queued cells whose handle was
+**`is_failed()`**. Live PDF region renders are slow; `cancel_jobs` often
+**`set_aborted()`** when the user pans/zooms before the worker finishes.
+
+Race:
+
+1. Request scale −1 cell → entry `SURFACE_REQUESTED`
+2. Worker still in Poppler region render
+3. View moves → `cancel_jobs` may **abort without erase** in some paths, or
+   the worker completes after an abort flag is set while the entry remains
+4. `deliver` sees `is_aborted()` and returns **without** `set_failed()`
+5. Entry stays `REQUESTED`, no surface, **not** `is_failed()` → never retried
+6. Permanent purple for live-only / negative-scale cells
+
+Cached JPEG hits complete quickly on the first try → rarely hit the race.
+
+### Fix (this tip)
+
+* Treat **`is_aborted()` like `is_failed()`** for retry (up to 3 attempts).
+* Richer decode-failure log (codec, byte size, meta WxH).
+
+### Still watch
+
+* After 3 dead attempts the cell stays dead until image reload — consider
+  periodic retry or clear-on-zoom-in later.
+* Overview still skips non-stdio URLs (`//page:` has plugin) — intentional;
+  grid tiles are the only PDF preview.
+* TODO text previously said min_scale −8; code uses −4 (enough for 2304 dpi).
+
+---
+
 ## get_min_scale for PDF negative tiles (2026-09-07)
 
 Not a boolean flag: **`TileProvider::get_min_scale()`** (default 0) is the
-range bound the cache/renderer need. PDF via thumtoo: min_scale = −8.
+range bound the cache/renderer need. PDF via thumtoo: min_scale = **−4**.
 ImageRenderer uses float `ldexp` for scale_factor so scale < 0 works.
 
-Pairs with thumtoo-030 region PDF tiles.
+Pairs with thumtoo-030 region PDF tiles + live rgb888.
 
 ## Fix: -p batch size probe (2026-09-07)
 

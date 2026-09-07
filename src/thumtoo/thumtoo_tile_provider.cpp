@@ -203,6 +203,8 @@ ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
 
   auto deliver = [job_handle, callback, tilescale, pos, uri = m_uri](
                    std::optional<thumtoo::TileBlob> tb) mutable {
+    // cancel_jobs may have erased the cache entry already; still mark the
+    // handle so any stale entry is treated as dead and re-queued.
     if (job_handle.is_aborted()) {
       return;
     }
@@ -215,11 +217,18 @@ ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
     }
     auto surface = surface_from_tile_blob(*tb);
     if (!surface) {
-      log_error("ThumtooTileProvider: decode failed {} scale={} pos=({},{})",
-                uri, tilescale, pos.x(), pos.y());
+      log_error(
+        "ThumtooTileProvider: decode failed {} scale={} pos=({},{}) "
+        "codec={} bytes={} meta={}x{}",
+        uri, tilescale, pos.x(), pos.y(), tb->codec, tb->bytes.size(),
+        tb->width, tb->height);
       job_handle.set_failed();
       return;
     }
+    log_debug("ThumtooTileProvider: delivered {} scale={} pos=({},{}) "
+              "codec={} {}x{}",
+              uri, tilescale, pos.x(), pos.y(), tb->codec, tb->width,
+              tb->height);
     callback(Tile(tilescale, pos, *surface));
     job_handle.set_finished();
   };
