@@ -19,6 +19,7 @@
 
 #include <optional>
 
+#include "database/entries/old_file_entry.hpp"
 #include "database/entries/resource_entry.hpp"
 #include "job/job_handle.hpp"
 #include "job/job_manager.hpp"
@@ -33,7 +34,6 @@ class Database;
 class DatabaseMessage;
 class FileInfo;
 class ImageInfo;
-class OldFileEntry;
 class ResourceInfo;
 class ResourceLocator;
 class URL;
