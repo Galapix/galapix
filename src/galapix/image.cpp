@@ -184,6 +184,12 @@ Image::tile_cache_entries() const
   return m_cache ? m_cache->cache_entry_count() : 0;
 }
 
+int
+Image::ready_tile_surfaces() const
+{
+  return m_cache ? m_cache->ready_surface_count() : 0;
+}
+
 URL
 Image::get_url() const
 {

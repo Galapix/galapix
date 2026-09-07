@@ -90,7 +90,8 @@ public:
   void print_images(Rectf const& rect) const;
 
   /** Aggregate tile job / upload backlog across all images (for status). */
-  void tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_entries) const;
+  void tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_entries,
+                      int* out_ready_surfaces = nullptr) const;
 
   /** Count images by overview state (Idle / Loading / Ready / Failed). */
   void overview_stats(int& out_idle, int& out_loading, int& out_ready, int& out_failed) const;

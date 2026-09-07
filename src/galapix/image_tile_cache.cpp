@@ -37,6 +37,27 @@ namespace galapix {
 bool ImageTileCache::s_tile_debug = false;
 
 namespace {
+int s_request_budget = 0;
+} // namespace
+
+void
+ImageTileCache::begin_frame_request_budget(int max_new_requests)
+{
+  s_request_budget = max_new_requests;
+}
+
+bool
+ImageTileCache::try_consume_request_budget()
+{
+  if (s_request_budget <= 0) {
+    return false;
+  }
+  --s_request_budget;
+  return true;
+}
+
+
+namespace {
 
 /** Pad a partial edge tile to tile_size² by repeating the last row/column
  *  (edge-clamp). LINEAR filtering near UV boundaries then samples content
@@ -180,9 +201,11 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
     return;
   }
 
-  // No concurrent-request cap: zoom thrash is limited by stable_request_scale
-  // debounce. A per-image cap slowed deep zoom and felt like a global limit
-  // when many images each held REQUESTED entries.
+  // Global per-frame start budget (begin_frame_request_budget). Issuing
+  // ~1000 provider jobs on first paint stampeded thumtoo; fill took ~3s.
+  if (!try_consume_request_budget()) {
+    return;
+  }
 
   TileCacheId cache_id(Vector2i(x, y), scale);
   Cache::iterator i = m_cache.find(cache_id);
@@ -467,6 +490,19 @@ ImageTileCache::pending_request_count() const
   int n = 0;
   for (auto const& entry : m_cache) {
     if (entry.second.status == SurfaceStruct::SURFACE_REQUESTED) {
+      ++n;
+    }
+  }
+  return n;
+}
+
+int
+ImageTileCache::ready_surface_count() const
+{
+  int n = 0;
+  for (auto const& entry : m_cache) {
+    if (entry.second.status == SurfaceStruct::SURFACE_SUCCEEDED &&
+        entry.second.surface) {
       ++n;
     }
   }

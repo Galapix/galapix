@@ -120,6 +120,16 @@ public:
   /** Entries currently held in the surface cache (any status). */
   int cache_entry_count() const { return static_cast<int>(m_cache.size()); }
 
+  /** SUCCEEDED entries that have a GL surface ready to draw. */
+  int ready_surface_count() const;
+
+  /** Call once per Viewer::draw before images request tiles. Limits how many
+      new provider jobs start this frame (global), to avoid stampeding thumtoo
+      SQLite with 1000+ parallel get_tile calls on first paint. */
+  static void begin_frame_request_budget(int max_new_requests);
+
+  static bool try_consume_request_budget();
+
 public:
   Cache m_cache;
 

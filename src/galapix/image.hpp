@@ -64,6 +64,7 @@ public:
   /** Decoded tiles waiting for GL upload. */
   int pending_tile_uploads() const;
   int tile_cache_entries() const;
+  int ready_tile_surfaces() const;
 
   void on_leave_screen() override;
 

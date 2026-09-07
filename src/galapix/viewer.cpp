@@ -34,6 +34,7 @@
 #ifdef HAVE_THUMTOO
 #  include "thumtoo/thumtoo_callback_queue.hpp"
 #endif
+#include "galapix/image_tile_cache.hpp"
 #include "galapix/workspace.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
@@ -150,6 +151,9 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
 #endif
   m_mark_for_redraw = false;
 
+  // Stagger new provider jobs across frames (see ImageTileCache budget).
+  ImageTileCache::begin_frame_request_budget(48);
+
   bool clip_debug = false;
 
   glm::mat4 modelview = glm::mat4(1);
@@ -230,7 +234,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
     static int frame = 0;
     static bool inited = false;
     static bool saw_requests = false;
-    static bool logged_first_entry = false;
+    static bool logged_first_ready = false;
     static bool logged_idle = false;
 
     if (!inited) {
@@ -240,8 +244,8 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
     }
     ++frame;
 
-    int requests = 0, uploads = 0, entries = 0;
-    m_workspace->tile_load_stats(requests, uploads, entries);
+    int requests = 0, uploads = 0, entries = 0, ready = 0;
+    m_workspace->tile_load_stats(requests, uploads, entries, &ready);
     double sec = std::chrono::duration<double>(clock::now() - t0).count();
 
     if (frame <= 10 || (frame <= 120 && frame % 15 == 0) || frame % 60 == 0) {
@@ -249,12 +253,13 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
                 << " t=" << sec << "s"
                 << " req=" << requests
                 << " upload_q=" << uploads
+                << " ready=" << ready
                 << " cache=" << entries << "\n";
     }
-    if (!logged_first_entry && entries > 0) {
-      logged_first_entry = true;
-      std::cout << "[open-timing] first_cache_entry t=" << sec << "s"
-                << " cache=" << entries << "\n";
+    if (!logged_first_ready && ready > 0) {
+      logged_first_ready = true;
+      std::cout << "[open-timing] first_ready_surface t=" << sec << "s"
+                << " ready=" << ready << "\n";
     }
     if (requests > 0) {
       saw_requests = true;
@@ -262,6 +267,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
     if (saw_requests && !logged_idle && requests == 0 && uploads == 0) {
       logged_idle = true;
       std::cout << "[open-timing] pending_idle t=" << sec << "s"
+                << " ready=" << ready
                 << " cache=" << entries
                 << " (no outstanding tile requests/uploads)\n";
     }

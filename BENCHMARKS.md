@@ -76,3 +76,9 @@ Pre-viewer work here is **~0.15 s**. The multi-second “initial load” is
 * `frame N t=… req=… upload_q=… cache=…` (early frames)
 * `first_cache_entry` — first successful tile surface in any cache
 * `pending_idle` — request+upload queues empty after having been busy
+
+## 1064-image warm rar result (2026-09-07)
+
+Pre-viewer ~0.15s. Frame 1 issued ~1032 tile requests; ~3s to pending_idle
+with upload_q usually 0 → worker/SQLite path. galapix-084 limits new jobs to
+48/frame to reduce stampede.

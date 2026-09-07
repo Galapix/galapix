@@ -1,3 +1,15 @@
+## First-paint: 1k jobs stampeded workers (2026-09-07) — tip **galapix-084**
+
+Measured (1064 warm-cache rar members):
+* Pre-viewer ~0.15s
+* Frame 1: req≈1032, upload_q≈0; pending_idle ~2.95s
+* Bottleneck: provider job drain, not GL (upload_q stayed empty)
+
+Fix: global **48 new request_tile jobs per frame**. Metrics: `ready=` =
+SUCCEEDED with surface; `first_ready_surface` replaces misleading cache count.
+
+---
+
 ## Viewer first-paint timing (2026-09-07) — tip **galapix-083**
 
 Measured: pre-viewer open for 1064 rar members is ~0.15s (warm cache).
