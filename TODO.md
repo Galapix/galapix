@@ -1,3 +1,14 @@
+## Gallery LOD: overview-only under 256px on screen (2026-09-07) — tip **galapix-085**
+
+When long edge on screen &lt; 256px:
+* soft overview Ready → no tile requests
+* Idle/Loading → wait (no tile stampede)
+* Failed → single max_scale tile fallback
+
+Avoids ~1064 warm `request_tile` jobs (~3s) for fit-all galleries.
+
+---
+
 ## First-paint: 1k jobs stampeded workers (2026-09-07) — tip **galapix-084**
 
 Measured (1064 warm-cache rar members):
