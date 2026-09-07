@@ -41,6 +41,9 @@ public:
                                  const std::function<void (Tile)>& callback) =0;
 
   virtual int get_max_scale() const =0;
+  /** Finest scale the provider can produce. Raster images: 0. PDF/live:
+      may be negative (sharper than nominal get_size() layout). */
+  virtual int get_min_scale() const { return 0; }
   virtual int get_tilesize() const =0;
   virtual Size get_size() const =0;
 

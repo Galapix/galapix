@@ -91,14 +91,23 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
 
   int max_scale = max_scale_for_size(width, height);
   if (auto cov = client->get_tile_coverage(uri)) {
-    max_scale = cov->max_scale;
+    // Stored coverage max; theoretical max from size still applies for raster.
+    max_scale = std::max(max_scale, cov->max_scale);
   }
 
-  log_info("ThumtooTileProvider: {} {}x{} max_scale={}",
-           uri, width, height, max_scale);
+  // PDF pages (and similar) can region-render sharper than layout size.
+  // Soft floor only — each tile is still ≤256²; not a full-page RAM cap.
+  constexpr int kPdfMinTileScale = -8;
+  int min_scale = 0;
+  if (thumtoo::is_pdf_page_uri(uri)) {
+    min_scale = kPdfMinTileScale;
+  }
+
+  log_info("ThumtooTileProvider: {} {}x{} scale=[{},{}]",
+           uri, width, height, min_scale, max_scale);
 
   return std::make_shared<ThumtooTileProvider>(
-    std::move(client), std::move(uri), Size(width, height), max_scale);
+    std::move(client), std::move(uri), Size(width, height), max_scale, min_scale);
 }
 
 TileProviderPtr
@@ -140,11 +149,12 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
 
 ThumtooTileProvider::ThumtooTileProvider(
   std::shared_ptr<thumtoo::Client> client, std::string uri, Size size,
-  int max_scale) :
+  int max_scale, int min_scale) :
   m_client(std::move(client)),
   m_uri(std::move(uri)),
   m_size(size),
-  m_max_scale(max_scale)
+  m_max_scale(max_scale),
+  m_min_scale(min_scale)
 {
 }
 

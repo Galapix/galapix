@@ -123,6 +123,7 @@ ImageTileCache::ImageTileCache(TileProviderPtr const& tile_provider) :
   m_tile_queue(),
   m_tile_provider(tile_provider),
   m_max_scale(m_tile_provider->get_max_scale()),
+  m_min_scale(m_tile_provider->get_min_scale()),
   m_min_keep_scale(m_max_scale - 2)
 {
 }
@@ -141,7 +142,7 @@ ImageTileCache::prefetch_overview()
 wstdisplay::SurfacePtr
 ImageTileCache::get_tile(int x, int y, int scale)
 {
-  if (x < 0 || y < 0 || scale < 0)
+  if (x < 0 || y < 0 || scale < m_min_scale)
   {
     return {};
   }
@@ -164,7 +165,7 @@ ImageTileCache::get_tile(int x, int y, int scale)
 void
 ImageTileCache::queue_tile_request(int x, int y, int scale)
 {
-  if (x < 0 || y < 0 || scale < 0 || scale > m_max_scale) {
+  if (x < 0 || y < 0 || scale < m_min_scale || scale > m_max_scale) {
     return;
   }
 

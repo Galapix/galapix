@@ -1,3 +1,11 @@
+## get_min_scale for PDF negative tiles (2026-09-07)
+
+Not a boolean flag: **`TileProvider::get_min_scale()`** (default 0) is the
+range bound the cache/renderer need. PDF via thumtoo: min_scale = −8.
+ImageRenderer uses float `ldexp` for scale_factor so scale < 0 works.
+
+Pairs with thumtoo-030 region PDF tiles.
+
 ## Fix: -p batch size probe (2026-09-07)
 
 Large `-p` lists looked stuck near the end of progress: each size miss called
@@ -61,13 +69,13 @@ Author: Ingo Ruhnke `<grumbel@gmail.com>` + `Co-authored-by: Grok <grok@x.ai>`.
 * [x] bundle galapix-059
 * [x] fix namespace for url_from_thumtoo_uri (060)
 
-## Session handoff (2026-09-07) — tip **galapix-061** / thumtoo **026+**
+## Session handoff (2026-09-07) — tip **galapix-062** / thumtoo **026+**
 
 ### Tip bundles (apply latest; stack cleanly)
 
 | Project | Tip bundle | Tip commit (subject) |
 |---------|------------|----------------------|
-| **galapix** | **`galapix-061.bundle`** | `-p` batch size probe (no per-hit drain) |
+| **galapix** | **`galapix-062.bundle`** | `get_min_scale` + PDF negative tile zoom |
 | **thumtoo** | tip with **ca14b71+** (locator prefix/LIKE) | query APIs for Galapix `-p` |
 
 Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer  

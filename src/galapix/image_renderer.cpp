@@ -16,6 +16,7 @@
 
 #include "galapix/image_renderer.hpp"
 
+#include <cmath>
 #include <surf/color.hpp>
 #include <wstdisplay/graphics_context.hpp>
 
@@ -150,21 +151,22 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
       m_image.get_original_height());
     m_image.overview().draw(gc, image_rect);
 
-    // scale factor for requesting the tile from the TileDatabase
-    // FIXME: Can likely be done without float
-    int tiledb_scale = std::clamp(static_cast<int>(logf(1.0f / (zoom * m_image.get_scale())) /
-                                                   logf(2.0f)),
-                                  0, m_cache->get_max_scale());
-    int scale_factor = Math::pow2(tiledb_scale);
+    // scale factor for requesting tiles: scale 0 = nominal size; negative =
+    // denser than layout (PDF). Raster providers report min_scale == 0.
+    int tiledb_scale = std::clamp(
+      static_cast<int>(logf(1.0f / (zoom * m_image.get_scale())) / logf(2.0f)),
+      m_cache->get_min_scale(), m_cache->get_max_scale());
+    // 2^scale as float so scale < 0 works (Math::pow2 is int shift only).
+    float const scale_factor = std::ldexp(1.0f, tiledb_scale);
 
-    int scaled_width  = m_image.get_original_width()  / scale_factor;
-    int scaled_height = m_image.get_original_height() / scale_factor;
+    float const scaled_width  = static_cast<float>(m_image.get_original_width())  / scale_factor;
+    float const scaled_height = static_cast<float>(m_image.get_original_height()) / scale_factor;
 
-    if (scaled_width  < 256 && scaled_height < 256)
+    if (scaled_width  < 256.0f && scaled_height < 256.0f)
     { // So small that only one tile is to be drawn
       m_cache->cancel_jobs(Rect(0,0,1,1), tiledb_scale);
       draw_tile(gc, 0, 0, tiledb_scale,
-                static_cast<float>(scale_factor) * m_image.get_scale());
+                scale_factor * m_image.get_scale());
     }
     else
     {
@@ -175,19 +177,19 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
                            (image_region.right()  - image_rect.left()) / m_image.get_scale(),
                            (image_region.bottom() - image_rect.top())  / m_image.get_scale());
 
-      int   itilesize = 256 * scale_factor;
+      float const itilesize = 256.0f * scale_factor;
 
-      int start_x = static_cast<int>(image_region.left() / static_cast<float>(itilesize));
-      int end_x   = Math::ceil_div(static_cast<int>(image_region.right()), itilesize);
+      int start_x = static_cast<int>(std::floor(image_region.left() / itilesize));
+      int end_x   = static_cast<int>(std::ceil(image_region.right() / itilesize));
 
-      int start_y = static_cast<int>(image_region.top() / static_cast<float>(itilesize));
-      int end_y   = Math::ceil_div(static_cast<int>(image_region.bottom()), itilesize);
+      int start_y = static_cast<int>(std::floor(image_region.top() / itilesize));
+      int end_y   = static_cast<int>(std::ceil(image_region.bottom() / itilesize));
 
       Rect rect(start_x, start_y, end_x, end_y);
       m_cache->cancel_jobs(rect, tiledb_scale);
       draw_tiles(gc,
                  rect, tiledb_scale,
-                 static_cast<float>(scale_factor) * m_image.get_scale());
+                 scale_factor * m_image.get_scale());
     }
 
     return true;

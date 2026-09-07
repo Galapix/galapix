@@ -96,6 +96,7 @@ public:
   void receive_tile(Tile const& tile);
 
   int get_max_scale() const { return m_max_scale; }
+  int get_min_scale() const { return m_min_scale; }
 
   /** Tiles with an outstanding provider job (SURFACE_REQUESTED). */
   int pending_request_count() const;
@@ -113,8 +114,11 @@ public:
 
   TileProviderPtr m_tile_provider;
 
-  /** The maximum scale for which tiles exist */
+  /** Coarsest scale (overview). */
   int m_max_scale;
+
+  /** Finest scale the provider allows (0 for raster; may be negative for PDF). */
+  int m_min_scale;
 
   /** The smallest scale that is stored permanently */
   int m_min_keep_scale;

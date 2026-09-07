@@ -43,12 +43,13 @@ public:
                                           int width, int height);
 
   ThumtooTileProvider(std::shared_ptr<thumtoo::Client> client, std::string uri,
-                      Size size, int max_scale);
+                      Size size, int max_scale, int min_scale);
 
   JobHandle request_tile(int tilescale, Vector2i const& pos,
                          const std::function<void(Tile)>& callback) override;
 
   int get_max_scale() const override { return m_max_scale; }
+  int get_min_scale() const override { return m_min_scale; }
   int get_tilesize() const override { return 256; }
   Size get_size() const override { return m_size; }
 
@@ -57,6 +58,7 @@ private:
   std::string m_uri;
   Size m_size;
   int m_max_scale;
+  int m_min_scale;
 
 private:
   ThumtooTileProvider(ThumtooTileProvider const&) = delete;
