@@ -83,20 +83,24 @@ ImguiOverlay::data_root()
     }
   }
 #endif
+  auto has_action_icons = [](std::filesystem::path const& root) {
+    return std::filesystem::is_directory(
+      root / "icons" / "hicolor" / "24x24" / "actions");
+  };
   if (char const* src = std::getenv("GALAPIX_SOURCE"); src && *src) {
     std::filesystem::path p = std::filesystem::path(src) / "data";
-    if (std::filesystem::is_directory(p / "icons")) {
+    if (has_action_icons(p)) {
       return p.string();
     }
   }
-  if (std::filesystem::is_directory("data/icons")) {
+  if (has_action_icons("data")) {
     return "data";
   }
   // Installed package: $prefix/bin/galapix → $prefix/share/galapix
   std::filesystem::path const exe = executable_dir();
   if (!exe.empty()) {
     std::filesystem::path const share = exe.parent_path() / "share" / "galapix";
-    if (std::filesystem::is_directory(share / "icons")) {
+    if (std::filesystem::is_directory(share / "icons" / "hicolor" / "24x24" / "actions")) {
       return share.string();
     }
   }

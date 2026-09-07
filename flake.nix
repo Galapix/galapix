@@ -240,6 +240,11 @@
                   echo "galapix-run: $bin missing after build" >&2
                   exit 1
                 fi
+                export GALAPIX_DATADIR="''${GALAPIX_DATADIR:-$GALAPIX_BUILD_DIR/share/galapix}"
+                if [ ! -d "$GALAPIX_DATADIR/icons/hicolor/24x24/actions" ]; then
+                  echo "galapix-run: icons missing under $GALAPIX_DATADIR (galapix_icons target?)" >&2
+                  exit 1
+                fi
                 # No exec: return to interactive shell when typed by hand.
                 "$bin" "$@"
               ''
@@ -257,6 +262,7 @@
                   echo "galapix-run-gdb: gdb not found (should be in the nix develop shell)" >&2
                   exit 1
                 fi
+                export GALAPIX_DATADIR="''${GALAPIX_DATADIR:-$GALAPIX_BUILD_DIR/share/galapix}"
                 gdb --args "$bin" "$@"
               ''
             );
@@ -278,11 +284,13 @@
             CMAKE_BUILD_TYPE = "Debug";
             shellHook = ''
               export GALAPIX_SOURCE="$PWD"
-              export GALAPIX_DATADIR="''${GALAPIX_DATADIR:-$PWD/data}"
               export GALAPIX_BUILD_DIR="''${GALAPIX_BUILD_DIR:-/tmp/galapix-build}"
+              # PNGs are generated into the build tree (not source data/).
+              export GALAPIX_DATADIR="''${GALAPIX_DATADIR:-$GALAPIX_BUILD_DIR/share/galapix}"
               export THUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}"
               echo "galapix dev shell (CMAKE_BUILD_TYPE=''${CMAKE_BUILD_TYPE:-Debug})"
               echo "  build dir: $GALAPIX_BUILD_DIR"
+              echo "  GALAPIX_DATADIR=$GALAPIX_DATADIR"
               echo "  THUMTOO_DIR=$THUMTOO_DIR"
               echo "  galapix-configure     # cmake -S . -B \$GALAPIX_BUILD_DIR -G Ninja (+ thumtoo)"
 echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
