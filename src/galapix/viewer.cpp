@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <chrono>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <logmich/log.hpp>
@@ -217,6 +219,51 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
     else
     {
       gc.draw_grid(m_grid_offset, m_grid_size, m_grid_color);
+    }
+  }
+
+  // First-paint / fill progress when GALAPIX_OPEN_TIMING is set. Pre-viewer
+  // open is already timed in ViewerCommand; multi-second delays are here.
+  if (std::getenv("GALAPIX_OPEN_TIMING") != nullptr && m_workspace) {
+    using clock = std::chrono::steady_clock;
+    static clock::time_point t0{};
+    static int frame = 0;
+    static bool inited = false;
+    static bool saw_requests = false;
+    static bool logged_first_entry = false;
+    static bool logged_idle = false;
+
+    if (!inited) {
+      t0 = clock::now();
+      inited = true;
+      std::cout << "[open-timing] viewer first draw\n";
+    }
+    ++frame;
+
+    int requests = 0, uploads = 0, entries = 0;
+    m_workspace->tile_load_stats(requests, uploads, entries);
+    double sec = std::chrono::duration<double>(clock::now() - t0).count();
+
+    if (frame <= 10 || (frame <= 120 && frame % 15 == 0) || frame % 60 == 0) {
+      std::cout << "[open-timing] frame " << frame
+                << " t=" << sec << "s"
+                << " req=" << requests
+                << " upload_q=" << uploads
+                << " cache=" << entries << "\n";
+    }
+    if (!logged_first_entry && entries > 0) {
+      logged_first_entry = true;
+      std::cout << "[open-timing] first_cache_entry t=" << sec << "s"
+                << " cache=" << entries << "\n";
+    }
+    if (requests > 0) {
+      saw_requests = true;
+    }
+    if (saw_requests && !logged_idle && requests == 0 && uploads == 0) {
+      logged_idle = true;
+      std::cout << "[open-timing] pending_idle t=" << sec << "s"
+                << " cache=" << entries
+                << " (no outstanding tile requests/uploads)\n";
     }
   }
 }

@@ -59,3 +59,20 @@ See `thumtoo` tool help for pyramid / job counts.
    frames, GL upload, overview jobs), not open pipeline.
 3. If `overview_tiles` is multi-second on warm cache → thumtoo/worker path.
 4. If `expand` is multi-second → archive TOC I/O.
+
+## Interpreting a real run (example)
+
+```
+expand:      0.0002 s
+size_probe:  0.018 s   (1064 urls, 0 probed → warm cache)
+add_images:  0.13 s
+viewer_session_until_quit: 6.6 s   ← entire session, NOT first paint
+```
+
+Pre-viewer work here is **~0.15 s**. The multi-second “initial load” is
+**inside the viewer**. With `GALAPIX_OPEN_TIMING=1` the viewer also logs:
+
+* `viewer first draw`
+* `frame N t=… req=… upload_q=… cache=…` (early frames)
+* `first_cache_entry` — first successful tile surface in any cache
+* `pending_idle` — request+upload queues empty after having been busy

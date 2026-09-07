@@ -1,3 +1,11 @@
+## Viewer first-paint timing (2026-09-07) — tip **galapix-083**
+
+Measured: pre-viewer open for 1064 rar members is ~0.15s (warm cache).
+`viewer_session` was the whole quit latency. Now frame logs under
+`GALAPIX_OPEN_TIMING` report time to first cache entry and pending_idle.
+
+---
+
 ## Benchmark infrastructure for open path (2026-09-07) — tip **galapix-082**
 
 * `extra/open_phase_bench` — headless phase timings (expand / size / providers /

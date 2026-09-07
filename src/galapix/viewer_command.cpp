@@ -422,7 +422,8 @@ ViewerCommand::run(std::vector<URL> const& urls)
   timing.mark("add_images");
   log_info("launching viewer");
   m_system.launch_viewer(workspace, m_opts);
-  timing.mark("viewer_session");
+  // Whole interactive session until quit — not first-paint. See frame logs.
+  timing.mark("viewer_session_until_quit");
   log_info("viewer done");
 }
 
