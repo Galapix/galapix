@@ -9,7 +9,9 @@
 #ifndef HEADER_GALAPIX_THUMTOO_THUMTOO_URI_HPP
 #define HEADER_GALAPIX_THUMTOO_THUMTOO_URI_HPP
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "util/url.hpp"
 
@@ -24,6 +26,15 @@ namespace galapix {
  *  - Other non-file protocols → empty string
  */
 std::string thumtoo_uri_from_url(URL const& url);
+
+/** Convert a thumtoo Location URI (or http(s) URL) back to a Galapix URL.
+ *
+ *  Accepts the same forms produced by thumtoo_uri_from_url and by thumtoo
+ *  Client::list_locators_* (file://…, file://…//archive:…, file://…//page:N,
+ *  http(s)://…). Content-id URIs (sha256:…) return nullopt — resolve to a
+ *  locator first. Empty / unparseable input → nullopt.
+ */
+std::optional<URL> url_from_thumtoo_uri(std::string_view uri);
 
 } // namespace galapix
 

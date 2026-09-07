@@ -95,4 +95,31 @@ thumtoo_uri_from_url(URL const& url)
 
 } // namespace galapix
 
+std::optional<URL>
+url_from_thumtoo_uri(std::string_view uri)
+{
+  if (uri.empty()) {
+    return std::nullopt;
+  }
+
+  // Content-addressed ids are not openable as images without a locator.
+  if (thumtoo::is_content_id_uri(uri)) {
+    return std::nullopt;
+  }
+
+  // http(s) and file Location URIs share Galapix URL grammar
+  // (protocol://payload[//plugin:payload]).
+  if (thumtoo::is_http_uri(uri) || uri.starts_with("file://")) {
+    // Validate with thumtoo parser so we reject garbage early.
+    if (thumtoo::parse_location(uri)) {
+      return URL::from_string(std::string(uri));
+    }
+    return std::nullopt;
+  }
+
+  return std::nullopt;
+}
+
+} // namespace galapix
+
 /* EOF */
