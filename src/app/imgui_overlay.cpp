@@ -8,6 +8,7 @@
 
 #include "app/imgui_overlay.hpp"
 
+#include <cstdint>
 #include <cstdlib>
 #include <filesystem>
 #include <string>
@@ -221,9 +222,12 @@ ImguiOverlay::draw_status(Viewer& viewer)
       ImGui::PushID(static_cast<int>(id));
       bool pressed = false;
       if (icon.id) {
+        // ImTextureID is ImU64 here; open GLuint via uintptr_t (not intptr_t).
+        ImTextureID const tex_id =
+          static_cast<ImTextureID>(static_cast<std::uintptr_t>(icon.id));
         pressed = ImGui::ImageButton(
           tip,
-          reinterpret_cast<ImTextureID>(static_cast<intptr_t>(icon.id)),
+          tex_id,
           ImVec2(static_cast<float>(icon.w), static_cast<float>(icon.h)));
       } else {
         pressed = ImGui::Button(tip, ImVec2(28.0f, 28.0f));
