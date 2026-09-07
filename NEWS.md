@@ -1,3 +1,54 @@
+<!--
+SPDX-FileCopyrightText: 2008-2026 Ingo Ruhnke <grumbel@gmail.com>
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
+Galapix 0.3.0-dev (unreleased)
+==============================
+
+### Architecture
+
+* Modern C++ stack: **no Boost**, **no GLEW** (glad via wstdisplay)
+* Display: **wstdisplay** (SDL OpenGL window / GraphicsContext)
+* Image codecs: **surfcpp** (+ optional ImageMagick)
+* Archives: **arxpcpp** / libarchive (thumtoo for tile members)
+* Build: CMake + **flake.nix** (`nix develop` helpers)
+
+### Database / caches (incompatible with 0.1.x)
+
+* Resource DB: `~/.galapix/cache4.sqlite3` (redesigned schema)
+* Legacy tile DB: `cache4_tiles.sqlite3` when not using thumtoo
+* **No automatic migration** from cache3 / old tile tables — use a fresh
+  cache directory. Optional manual conversion may come later; not required
+  for the develop → master merge
+
+### thumtoo tile backend
+
+* Default when built with `HAVE_THUMTOO` (`--no-thumtoo` forces SQLite tiles)
+* Pure thumtoo view skips Galapix `cache4_tiles.sqlite3`
+* Content-addressed tiles (sha256) under `$XDG_CACHE_HOME/thumtoo`
+* Interactive `request_tile` limited to the requested scale (in-tree patch;
+  full pyramids via `thumtoo-prepare` / `request_tile_pyramid`)
+* Batch size probes at view open; tile JPEG decode off the GUI thread;
+  budgeted GL uploads per frame
+* On tile miss: request max_scale overview + parent cell before the target;
+  coarser in-flight jobs are not cancelled as the view scale changes
+* Offline prepare: use **thumtoo-prepare** (Galapix `prepare` CLI not ported)
+
+### UI (SDL)
+
+* **GTK frontend abandoned** — flake and default CMake build SDL only
+* F11 toggles fullscreen desktop ↔ window
+* Key **`l`**: print view + tile backlog to stdout (pending requests/uploads)
+
+### Still in progress
+
+* Separate libjpeg/EXIF **overview** store (quality ≠ grid tiles)
+* thumtoo single-cell cut and same-archive request coalesce (upstream)
+* On-screen status HUD (needs text rendering)
+* Interactive UI parity testing before calling develop “master”
+
+
 Galapix 0.1.3 (??. Oct 2009)
 ============================
 
@@ -64,4 +115,3 @@ Galapix 0.0.2 (4. Sep 2008)
 ===========================
 
 * initial release
-
