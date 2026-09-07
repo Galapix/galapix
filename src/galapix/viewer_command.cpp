@@ -112,14 +112,12 @@ std::vector<URL> expand_thumtoo_urls(URL const& url)
 ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_system(system),
   m_opts(opts),
-  // Resource DB for -p patterns. Durable tiles: thumtoo (HAVE_THUMTOO).
+  // Resource DB still opened (schema / optional tools). View tiles: thumtoo.
   m_database(Database::create(opts.database)),
   m_job_manager(opts.threads),
-  m_database_thread(m_database, m_job_manager),
   m_patterns(opts.patterns)
 {
   m_job_manager.start_thread();
-  m_database_thread.start_thread();
 
 #ifdef HAVE_THUMTOO
   // HAVE_THUMTOO builds always use thumtoo for file tiles (no cache4_tiles).
@@ -174,10 +172,7 @@ ViewerCommand::~ViewerCommand()
   try
   {
     m_job_manager.abort_thread();
-    m_database_thread.abort_thread();
-
     m_job_manager.join_thread();
-    m_database_thread.join_thread();
   }
   catch(std::exception const& err)
   {

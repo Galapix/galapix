@@ -21,28 +21,24 @@
 
 #include <SQLiteCpp/Database.h>
 
-#include "database/memory_tile_database.hpp"
 #include "database/resource_database.hpp"
-#include "database/tile_database_interface.hpp"
 
 namespace galapix {
 
+/** Opens resource DB under prefix (`cache4.sqlite3`). Durable tiles live in
+ *  thumtoo; Galapix no longer keeps an in-memory tile stub. */
 class Database
 {
 public:
-  /** Open resource DB under prefix. Tile storage is in-memory only; durable
-   *  tiles live in thumtoo (HAVE_THUMTOO). cache4_tiles.sqlite3 is gone. */
   static Database create(std::string const& prefix);
 
 public:
   Database(std::unique_ptr<SQLite::Database> db,
-           std::unique_ptr<ResourceDatabase> resources,
-           std::unique_ptr<TileDatabaseInterface> tiles);
+           std::unique_ptr<ResourceDatabase> resources);
   Database(Database&&) = default;
   ~Database();
 
   ResourceDatabase& get_resources() { return *m_resources; }
-  TileDatabaseInterface& get_tiles() { return *m_tiles; }
 
   void delete_file_entry(RowId const& fileid);
 
@@ -51,7 +47,6 @@ public:
 private:
   std::unique_ptr<SQLite::Database> m_db;
   std::unique_ptr<ResourceDatabase> m_resources;
-  std::unique_ptr<TileDatabaseInterface> m_tiles;
 
 private:
   Database(Database const&) = delete;

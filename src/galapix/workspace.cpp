@@ -28,7 +28,6 @@
 #include "galapix/layouter/regular_layouter.hpp"
 #include "galapix/layouter/spiral_layouter.hpp"
 #include "galapix/layouter/tight_layouter.hpp"
-#include "server/database_thread.hpp"
 #include "util/reader.hpp"
 
 namespace galapix {

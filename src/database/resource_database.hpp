@@ -54,7 +54,6 @@ class OldFileEntry;
 class ResourceHandler;
 class ResourceInfo;
 class ResourceLocator;
-class TileEntry;
 class URL;
 class URLInfo;
 class URLInfoGet;

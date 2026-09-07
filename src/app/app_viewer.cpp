@@ -35,7 +35,6 @@
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
-#include "server/database_thread.hpp"
 #include "spnav/space_navigator.hpp"
 #include "util/filesystem.hpp"
 

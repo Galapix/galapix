@@ -18,7 +18,6 @@
 #define HEADER_GALAPIX_GALAPIX_VIEWER_COMMAND_HPP
 
 #include "database/database.hpp"
-#include "server/database_thread.hpp"
 #include "job/job_manager.hpp"
 
 #include "galapix/options.hpp"
@@ -51,8 +50,6 @@ private:
       the view path no longer reads ResourceDatabase rows. */
   Database   m_database;
   JobManager m_job_manager;
-  /** Idle under the thumtoo view path (no request_* callers). */
-  DatabaseThread m_database_thread;
   std::vector<std::string> m_patterns;
 
 #ifdef HAVE_THUMTOO

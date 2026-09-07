@@ -16,10 +16,6 @@
 
 #include "database/database.hpp"
 
-#include <iostream>
-
-#include "database/cached_tile_database.hpp"
-#include "database/memory_tile_database.hpp"
 #include "util/filesystem.hpp"
 
 namespace galapix {
@@ -29,22 +25,17 @@ Database::create(std::string const& prefix)
 {
   Filesystem::mkdir(prefix);
 
-  auto db = std::make_unique<SQLite::Database>(prefix + "/cache4.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
+  auto db = std::make_unique<SQLite::Database>(
+    prefix + "/cache4.sqlite3", SQLite::OPEN_READWRITE | SQLite::OPEN_CREATE);
   auto resources = std::make_unique<ResourceDatabase>(*db);
 
-  // No cache4_tiles.sqlite3 — durable tiles are thumtoo's job.
-  auto tiles = std::make_unique<CachedTileDatabase>(
-    std::make_unique<MemoryTileDatabase>());
-
-  return Database(std::move(db), std::move(resources), std::move(tiles));
+  return Database(std::move(db), std::move(resources));
 }
 
 Database::Database(std::unique_ptr<SQLite::Database> db,
-                   std::unique_ptr<ResourceDatabase> resources,
-                   std::unique_ptr<TileDatabaseInterface> tiles) :
+                   std::unique_ptr<ResourceDatabase> resources) :
   m_db(std::move(db)),
-  m_resources(std::move(resources)),
-  m_tiles(std::move(tiles))
+  m_resources(std::move(resources))
 {
 }
 
@@ -55,12 +46,9 @@ Database::~Database()
 void
 Database::delete_file_entry(RowId const& fileid)
 {
-  std::cout << "Begin Delete" << std::endl;
   m_db->exec("BEGIN;");
-  m_tiles->delete_tiles(fileid);
   m_resources->delete_old_file_entry(fileid);
   m_db->exec("END;");
-  std::cout << "End Delete" << std::endl;
 }
 
 void

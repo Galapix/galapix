@@ -161,12 +161,10 @@ smoke confidence is high.
 unique-ish fields (archive password, video aspect) are not read by the
 current viewer.
 
-* **Idle stack (safe next deletes once smoke-tested):**
-  - `DatabaseThread` — started/joined, **zero** external `request_*` callers
-  - `FileEntryGenerationJob` — legacy tile cut into resource DB
-  - `CachedTileDatabase` / `MemoryTileDatabase` / `TileDatabaseInterface` —
-    only `Database::delete_file_entry` → `delete_tiles` (itself unused from UI)
-  - `src/generator/` + much of `src/resource/` — not on the view path
+* **Removed (galapix-067):** `DatabaseThread`, `FileEntryGenerationJob`,
+  `CachedTileDatabase` / `MemoryTileDatabase` / `TileDatabaseInterface`.
+* **Still idle / optional:** `src/generator/` + much of `src/resource/`;
+  `Database`/`ResourceDatabase` still constructed but not read for view.
 * Archive: prefer thumtoo URIs on open; `Filesystem` still uses **arxpcpp** when
   scanning directories. `ArchiveThread` has no remaining callers outside itself.
 * **Dataverse** (browsable self-contained corpus UI) is a **much later** Galapix

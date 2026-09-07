@@ -23,7 +23,6 @@ TEST_F(DatabaseTest, check_cleanup)
 TEST_F(DatabaseTest, check_get)
 {
   m_db.get_resources();
-  m_db.get_tiles();
 
   m_db.cleanup();
 }

@@ -1,3 +1,16 @@
+## Remove idle DatabaseThread + tile stubs (2026-09-07) — tip **galapix-067**
+
+* Dropped `DatabaseThread` from `ViewerCommand` (was start/join only).
+* Deleted `database_thread.*`, `file_entry_generation_job.*`,
+  `cached_tile_database.*`, `memory_tile_database.*`, `tile_database_interface.hpp`.
+* `Database` is resource-only (still opens `cache4.sqlite3`; view path does not read it).
+* `TileEntry` kept for `Tile` ctor compatibility; not a storage path.
+
+Next: consider not constructing `Database` at all under HAVE_THUMTOO, then
+SQLiteCpp / ResourceDatabase deletion.
+
+---
+
 ## View path ignores ResourceDatabase (2026-09-07) — tip **galapix-066**
 
 ### Concern

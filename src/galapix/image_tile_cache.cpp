@@ -30,7 +30,6 @@
 
 #include "galapix/viewer.hpp"
 #include "math/math.hpp"
-#include "server/database_thread.hpp"
 #include "util/weak_functor.hpp"
 
 namespace galapix {

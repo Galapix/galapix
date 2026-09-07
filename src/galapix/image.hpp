@@ -37,7 +37,6 @@ namespace galapix {
 class ImageTileCache;
 class ImageRenderer;
 class JobManager;
-class TileEntry;
 class Image;
 
 class Image final : public WorkspaceItem
