@@ -1,6 +1,57 @@
-## thumtoo-026 locator prefix/LIKE query (2026-09-07)
+## Implement `-p` / `--pattern` via thumtoo locator queries (2026-09-07)
 
-* Cache-only list by uri/outer_path prefix — foundation for `-p` move
+**Goal:** Replace the dead/stub resource-DB pattern path with thumtoo
+`list_locators_by_uri_prefix` / `list_locators_by_outer_path_prefix` /
+`list_locators_like` (thumtoo-026 / commit ca14b71+).
+
+### Plan (galapix-059)
+
+1. **Bump thumtoo flake input** to a tip that includes locator query APIs
+   (ca14b71 or later; currently locked at 29d1b4f). Without nix in the
+   agent environment, edit `flake.lock` manually or document
+   `nix flake lock --update-input thumtoo` for the packager. Local builds
+   can use `-DTHUMTOO_DIR=/path/to/thumtoo` at tip.
+
+2. **`url_from_thumtoo_uri`** in `src/thumtoo/thumtoo_uri.{hpp,cpp}`:
+   reverse of `thumtoo_uri_from_url` using `thumtoo::parse_location`.
+   Map `file://` + optional `//archive:` / `//page:` pipes to Galapix URL
+   form; pass through `http(s)`.
+
+3. **`ViewerCommand` pattern block** (`viewer_command.cpp`):
+   - When `HAVE_THUMTOO` and `m_thumtoo`:
+     - `*` → `list_locators` (high limit, e.g. 50_000)
+     - absolute path / `file://` prefix → `list_locators_by_outer_path_prefix`
+     - otherwise → convert legacy GLOB `*`/`?` to SQL LIKE `%`/`_` and call
+       `list_locators_like` (also accept raw `%`/`_`)
+   - For each `LocatorRow`, `url_from_thumtoo_uri` → `make_file_tile_provider`
+     → `workspace.add_image`
+   - Keep resource-DB stubs as no-op fallback when no thumtoo (already empty)
+
+4. **CLI help** (`arg_parser.cpp`): update `-p` text from “legacy; query →
+   thumtoo later” to describe cache-only thumtoo match (LIKE / path prefix).
+
+5. **Docs:** `docs/THUMTOO.md`, `docs/CACHE4_VS_THUMTOO.md` — mark `-p` as
+   thumtoo-backed; resource DB no longer required for pattern open.
+
+6. **Limits:** start with limit 50_000; log if truncated. No new CLI flag
+   unless needed later.
+
+7. **Commits (small, focused):**
+   - docs: plan for thumtoo-backed `-p`
+   - thumtoo_uri: reverse mapping
+   - viewer: implement pattern via Client list APIs
+   - help + docs update
+   - handoff tip galapix-059
+
+Author: Ingo Ruhnke `<grumbel@gmail.com>` + `Co-authored-by: Grok <grok@x.ai>`.
+
+### Status
+
+* [ ] flake / THUMTOO_DIR tip with query APIs
+* [ ] url_from_thumtoo_uri
+* [ ] ViewerCommand pattern path
+* [ ] help + docs
+* [ ] bundle galapix-059
 
 ## Session handoff (2026-09-07) — tip **galapix-058** / thumtoo **026**
 
@@ -37,6 +88,7 @@ Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer
 * `thumtoo_uri_from_url`: **http/https pass-through** (053) for remote images  
 * File / archive / PDF page mapping unchanged  
 * Docs: `docs/THUMTOO.md`, `docs/CACHE4_VS_THUMTOO.md` product direction  
+* **Next:** `-p` via thumtoo locator list APIs (see plan above)
 
 ### Architecture (viewer path) — current
 
@@ -54,24 +106,23 @@ CLI (files / http(s) URLs)
 
 ### Thumtoo dependency (pair with galapix)
 
-Prefer **thumtoo-024+** (or git tip after HTTP + `fetch_http_cached` declaration).  
+Prefer **thumtoo tip with locator query** (ca14b71+ / outer_path index).  
 Needs **libcurl** in the environment so nested thumtoo build gets `THUMTOO_HAVE_CURL`.  
-Galapix flake already lists `curl` in build inputs; update flake input when publishing.
+Galapix flake already lists `curl` in build inputs; **update flake input** to
+include query APIs when publishing.
 
 ### Explicitly deferred
 
 * Galapix “dataverse” UI (much later); consume thumtoo, do not revive cache4 tiles  
-* Rich query / `-p` replacement → **thumtoo** library API  
-* Durable HTTP disk cache / TTL (session cache only in thumtoo-022)  
+* Tags / collections query (thumtoo still open)  
 * Pure no-store live PDF; per-tile PDF region render  
 
 ### Next suggested work
 
-0. thumtoo-025 durable HTTP body cache (pair tip)
-1. Smoke: local file, PDF page, archive member, `http(s)://` image with thumtoo-024  
-2. Point galapix `flake` `thumtoo` input at published tip with curl  
+0. **Implement `-p` via thumtoo list APIs** (this tip / galapix-059)
+1. Smoke: local file, PDF page, archive member, `http(s)://` image  
+2. Point galapix `flake` `thumtoo` input at published tip with query + curl  
 3. Optional: delete/gate `Generator` / `BlobManager` if still unreferenced  
-4. thumtoo: durable download cache; query/list APIs  
 
 ### Doc map
 
