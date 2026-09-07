@@ -51,15 +51,16 @@ Author: Ingo Ruhnke `<grumbel@gmail.com>` + `Co-authored-by: Grok <grok@x.ai>`.
 * [x] url_from_thumtoo_uri
 * [x] ViewerCommand pattern path
 * [x] help + docs
-* [ ] bundle galapix-059
+* [x] bundle galapix-059
+* [x] fix namespace for url_from_thumtoo_uri (060)
 
-## Session handoff (2026-09-07) — tip **galapix-059** / thumtoo **026+**
+## Session handoff (2026-09-07) — tip **galapix-060** / thumtoo **026+**
 
 ### Tip bundles (apply latest; stack cleanly)
 
 | Project | Tip bundle | Tip commit (subject) |
 |---------|------------|----------------------|
-| **galapix** | **`galapix-059.bundle`** | `-p` via thumtoo locator queries |
+| **galapix** | **`galapix-060.bundle`** | `-p` via thumtoo + namespace fix |
 | **thumtoo** | tip with **ca14b71+** (locator prefix/LIKE) | query APIs for Galapix `-p` |
 
 Author for commits: Ingo Ruhnke `<grumbel@gmail.com>` with trailer  
