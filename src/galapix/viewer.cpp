@@ -15,6 +15,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
+#include <iostream>
 #include <logmich/log.hpp>
 
 #include <glm/gtx/io.hpp>
@@ -693,19 +694,28 @@ Viewer::print_info()
 void
 Viewer::print_state()
 {
-  log_info("view offset={} scale={}", m_state.get_offset(), m_state.get_scale());
+  // User-facing status (key "l"): use stdout like print_images/print_info.
+  // log_info is silent unless --verbose / --debug.
+  std::cout << "-- Viewer state -----------------------------------------" << std::endl;
+  std::cout << "  offset: (" << m_state.get_offset().x() << ", "
+            << m_state.get_offset().y() << ")  scale: "
+            << m_state.get_scale() << std::endl;
   if (m_workspace) {
     int requests = 0;
     int uploads = 0;
     int cache_entries = 0;
     m_workspace->tile_load_stats(requests, uploads, cache_entries);
-    log_info("tiles: pending_requests={} pending_uploads={} cache_entries={}",
-             requests, uploads, cache_entries);
+    std::cout << "  tiles: pending_requests=" << requests
+              << "  pending_uploads=" << uploads
+              << "  cache_entries=" << cache_entries << std::endl;
+  } else {
+    std::cout << "  workspace: (none)" << std::endl;
   }
 #if defined(HAVE_THUMTOO)
-  log_info("thumtoo callback queue size={}",
-           ThumtooCallbackQueue::instance().size());
+  std::cout << "  thumtoo callback queue: "
+            << ThumtooCallbackQueue::instance().size() << std::endl;
 #endif
+  std::cout << "--------------------------------------------------------" << std::endl;
 }
 
 void
