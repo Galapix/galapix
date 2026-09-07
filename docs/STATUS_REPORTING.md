@@ -14,7 +14,7 @@ that is only visible in the log.
 | Action | Key | Output |
 |--------|-----|--------|
 | Print visible image URLs | `Space` | stdout |
-| Print tile / view load stats | `l` | log (`print_state`) |
+| Print tile / view load stats | `l` | stdout (`print_state`) |
 | Print per-image info | `0` | stdout |
 
 `Viewer::print_state` (key **`l`**) writes to **stdout** (not `log_info` — that is silent without `--verbose`) and reports:

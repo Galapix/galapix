@@ -24,8 +24,8 @@ Make **develop** the branch that becomes **master**. See
 * [ ] UI smoke: zoom scales, edge tiles, window resize
 * [x] UI: F11 fullscreen **toggle** (SDL; leave with F11 again)
 * [ ] UI: tools, layouts 1–6, sort/shuffle, isolate, workspace F2/F3
-* [ ] NEWS: cache3/cache4 incompatibility (no auto migrator required)
-* [ ] NEWS: architecture (wstdisplay/surfcpp/thumtoo; no Boost/GLEW)
+* [x] NEWS: cache3/cache4 incompatibility (no auto migrator required)
+* [x] NEWS: architecture (wstdisplay/surfcpp/thumtoo; no Boost/GLEW)
 * [ ] Merge develop → master (or retarget default branch after tag)
 
 ## thumtoo integration
@@ -47,7 +47,7 @@ Make **develop** the branch that becomes **master**. See
 * [x] thumtoo: single-scale on request_tile (in-tree patch; not full pyramid)
 * [ ] thumtoo: single-cell cut + same-archive request coalesce (upstream)
 * [x] Request coarser stand-in on tile miss (overview + parent; cancel keeps coarser)
-* [ ] Fast overview path (libjpeg/EXIF) with separate cache identity
+* [ ] Fast overview path (libjpeg/EXIF) with separate cache identity — design [docs/OVERVIEW.md](docs/OVERVIEW.md)
 * [ ] Benchmark: split vs merged size+overview for archive members
 * [ ] Optional: texture array / atlas batching for fewer draw calls
 * [x] Console tile load stats (`l` / `print_state`: pending requests, uploads, cache entries, thumtoo callback queue)
