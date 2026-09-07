@@ -125,6 +125,14 @@ size checks) after decode.
 `THUMTOO_DIR` / `add_subdirectory`. Prefer upstream thumtoo master; do not
 carry long-lived `patches/*.patch` + `pkgs.applyPatches` for thumtoo.
 
+**Local thumtoo while developing both:** `galapix-run` / `galapix-configure`
+resolve `THUMTOO_DIR` as (1) env `THUMTOO_DIR`, (2) sibling
+`$GALAPIX_SOURCE/../thumtoo`, (3) flake-locked input. If the CMake cache still
+points at another tree, `galapix-build` reconfigures automatically. Printout:
+`galapix-run: THUMTOO_DIR=…` on stderr. Update the lock with
+`nix flake lock --update-input thumtoo` when you want CI/nix build to track
+upstream again.
+
 **If Galapix needs thumtoo changes again** (before they can land upstream):
 
 1. **Vendor with `git subtree`** under e.g. `third_party/thumtoo` (or

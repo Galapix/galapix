@@ -208,6 +208,20 @@
                 exit 1
               fi
               GALAPIX_BUILD_DIR="''${GALAPIX_BUILD_DIR:-/tmp/galapix-build}"
+              # Resolve thumtoo source for -DTHUMTOO_DIR:
+              # 1) explicit THUMTOO_DIR
+              # 2) sibling checkout ../thumtoo (common when developing both)
+              # 3) flake input (locked in flake.lock)
+              if [ -z "''${THUMTOO_DIR:-}" ]; then
+                if [ -f "$GALAPIX_SOURCE/../thumtoo/CMakeLists.txt" ]; then
+                  THUMTOO_DIR="$(cd "$GALAPIX_SOURCE/../thumtoo" && pwd)"
+                elif [ -f "$GALAPIX_SOURCE/third_party/thumtoo/CMakeLists.txt" ]; then
+                  THUMTOO_DIR="$(cd "$GALAPIX_SOURCE/third_party/thumtoo" && pwd)"
+                else
+                  THUMTOO_DIR="${thumtooSrc}"
+                fi
+              fi
+              export THUMTOO_DIR
             '';
             galapixConfigure = pkgs.writeShellScriptBin "galapix-configure" (
               galapixDevPreamble
@@ -223,7 +237,21 @@
             galapixBuild = pkgs.writeShellScriptBin "galapix-build" (
               galapixDevPreamble
               + ''
+                need_configure=0
                 if [ ! -f "$GALAPIX_BUILD_DIR/build.ninja" ] && [ ! -f "$GALAPIX_BUILD_DIR/Makefile" ]; then
+                  need_configure=1
+                else
+                  # Pick up a different/local thumtoo tree without a manual reconfigure.
+                  cached=""
+                  if [ -f "$GALAPIX_BUILD_DIR/CMakeCache.txt" ]; then
+                    cached="$(sed -n 's/^THUMTOO_DIR:PATH=//p' "$GALAPIX_BUILD_DIR/CMakeCache.txt" | head -1)"
+                  fi
+                  if [ "$cached" != "$THUMTOO_DIR" ]; then
+                    echo "galapix-build: THUMTOO_DIR changed ($cached -> $THUMTOO_DIR); reconfiguring" >&2
+                    need_configure=1
+                  fi
+                fi
+                if [ "$need_configure" -eq 1 ]; then
                   galapix-configure || exit 1
                 fi
                 cmake --build "$GALAPIX_BUILD_DIR" "$@"
@@ -239,6 +267,7 @@
                   echo "galapix-run: $bin missing after build" >&2
                   exit 1
                 fi
+                echo "galapix-run: THUMTOO_DIR=$THUMTOO_DIR" >&2
                 export GALAPIX_DATADIR="''${GALAPIX_DATADIR:-$GALAPIX_BUILD_DIR/share/galapix}"
                 if [ ! -d "$GALAPIX_DATADIR/icons/hicolor/24x24/actions" ]; then
                   echo "galapix-run: icons missing under $GALAPIX_DATADIR (galapix_icons target?)" >&2
@@ -295,6 +324,7 @@
 echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-build         # incremental cmake --build"
               echo "  galapix-run [args]    # build + run galapix"
+              echo "  THUMTOO_DIR           # override thumtoo source (default: ../thumtoo or flake lock)"
               echo "  galapix-run-gdb [args]# build + gdb --args galapix"
               echo "  nix build             # packaged RelWithDebInfo-style derivation"
               echo "  also: nix develop -c galapix-run /tmp/*.jpg"
