@@ -107,7 +107,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     // the first ensure_requested often races ahead of get_lqip().
     if (!m_lqip_only && !m_surface) {
       if (auto hash = tp->client()->ensure_lqip(tp->uri())) {
-        if (auto img = thumtoo::thumbhash_decode_rgba(
+        if (auto img = thumtoo::lqip_decode_rgba(
                 std::span<std::uint8_t const>(hash->data(), hash->size()))) {
           try {
             auto surface = surf::SoftwareSurface::create(

@@ -1,3 +1,19 @@
+## Handsum LQIP (c3q4) for sharper placeholders (2026-09-08) — tip **galapix-111**
+
+Prefer Handsum (147 B fixed) over ThumbHash for content.lqip. Decode via
+`lqip_decode_rgba` (magic-detect). ensure_lqip upgrades old ThumbHash rows.
+
+Requires thumtoo with handsum.cpp (local path / next thumtoo bundle).
+
+Clear or open images so ensure_lqip rewrites LQIP blobs.
+
+### Status
+- [x] thumtoo encode/decode + kind
+- [x] Galapix decode path
+- [ ] Bundles galapix-026 / thumtoo-0xx
+
+---
+
 ## Grid tiles starved by levels budget (2026-09-08) — tip **galapix-110** / bundle **galapix-025**
 
 ### Symptom
