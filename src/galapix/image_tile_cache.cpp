@@ -374,13 +374,11 @@ ImageTileCache::issue_requests()
                                 wstdisplay::SurfacePtr(),
                                 next_attempts);
 
-    TileProvider::TileRequest req;
-    req.scale = scale;
-    req.pos = Vector2i(x, y);
-    req.job_handle = job_handle;
-    req.callback = weak(std::mem_fn(&ImageTileCache::receive_tile),
-                        shared_from_this());
-    batch.push_back(std::move(req));
+    batch.emplace_back(
+      scale,
+      Vector2i(x, y),
+      job_handle,
+      weak(std::mem_fn(&ImageTileCache::receive_tile), shared_from_this()));
   }
 
   m_needed.clear();

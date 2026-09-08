@@ -46,10 +46,18 @@ public:
   /** Optional multi-cell request. Default calls request_tile per entry.
       Providers may coalesce into one backend job (shared decode). */
   struct TileRequest {
-    int scale = 0;
+    int scale;
     Vector2i pos;
-    JobHandle job_handle = JobHandle::create();
+    JobHandle job_handle;
     std::function<void (Tile)> callback;
+
+    TileRequest(int scale_, Vector2i pos_, JobHandle handle_,
+                std::function<void (Tile)> callback_)
+      : scale(scale_),
+        pos(pos_),
+        job_handle(std::move(handle_)),
+        callback(std::move(callback_))
+    {}
   };
   virtual void request_tiles(std::vector<TileRequest> requests);
 
