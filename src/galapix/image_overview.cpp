@@ -125,13 +125,23 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
                                           src[x * 4 + 2], src[x * 4 + 3]);
               }
             }
+            log_debug("ImageOverview: LQIP decode {}x{} for {}",
+                      img->width, img->height, tp->uri());
             m_state = State::Loading;
             receive_software(std::move(surface), /*from_lqip=*/true);
+          } catch (std::exception const& err) {
+            log_debug("ImageOverview: LQIP surface create failed for {}: {}",
+                      tp->uri(), err.what());
           } catch (...) {
-            // fall through to levels
+            log_debug("ImageOverview: LQIP surface create failed for {}",
+                      tp->uri());
           }
+        } else {
+          log_debug("ImageOverview: ThumbHash decode failed for {} ({} bytes)",
+                    tp->uri(), hash->size());
         }
       }
+      // Misses are common before size probe finishes; do not log every frame.
     }
 
     // Postage-stamp gallery: LQIP alone is enough.
@@ -268,8 +278,13 @@ ImageOverview::process()
   }
 
   try {
+    int const sw = surface->get_width();
+    int const sh = surface->get_height();
     m_surface = surface_from_software(std::move(*surface));
     m_state = State::Ready;
+    if (m_lqip_only) {
+      log_debug("ImageOverview: LQIP GL upload ready {}x{}", sw, sh);
+    }
   } catch (std::exception const& err) {
     log_debug("ImageOverview: GL upload failed: {}", err.what());
     m_state = State::Failed;

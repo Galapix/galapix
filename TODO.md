@@ -1,3 +1,21 @@
+## LQIP path debug logging (2026-09-08) — tip **galapix-107** / bundle **galapix-022**
+
+Add log_debug when ThumbHash LQIP decodes, when decode/surface create fails,
+and when LQIP GL upload succeeds. Misses before size probe are intentionally
+not logged every frame (would flood gallery).
+
+Run with `--debug` (or log level debug) to confirm:
+- "LQIP decode WxH for …" then "LQIP GL upload ready WxH" → path works
+- only decode/surface failures → encode/hash problem
+- neither line → ensure_lqip empty (no content_id / VIPS miss) or not Thumtoo provider
+
+### Status
+- [x] Debug logs
+- [ ] Bundle galapix-022
+- [ ] User runtime confirmation
+
+---
+
 ## Thread-safety atomics + remove dead m_lqip_tried (2026-09-08) — tip **galapix-106** / bundle **galapix-021**
 
 From source audit (AUDIT.md):
