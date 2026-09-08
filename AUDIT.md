@@ -75,7 +75,7 @@ vs levels failure restore). Prefer explicit phases if touched again:
 `Idle → LqipReady → LevelsLoading → LevelsReady | Failed`.
 
 ## Open
-- [ ] Optional: serialize db_/blobs_ with an explicit mutex (or one connection per worker)
+- [x] Serialize Database/BlobStore with recursive_mutex (thumtoo-051)
 - [ ] Optional: prepared statement cache in BlobStore
 - [ ] Optional: Overview state machine cleanup
 - [ ] PDF LQIP

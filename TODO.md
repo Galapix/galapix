@@ -1,3 +1,9 @@
+## SQLite connection mutex (2026-09-08) — **thumtoo-051**
+
+- [x] Database + BlobStore recursive_mutex on public methods
+
+---
+
 ## Audit continuation (2026-09-08) — tip **galapix-113**
 
 ### Checked
