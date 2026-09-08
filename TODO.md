@@ -11,7 +11,7 @@ entry and immediately re-queued the same cell next frame (infinite fail loop).
 - Raise adjacent scale hold 50ms → 150ms to reduce intermediate grid re-issue
 
 - [x] Code
-- [ ] Bundle galapix-055
+- [x] Bundle galapix-055
 
 ---
 
