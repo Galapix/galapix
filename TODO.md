@@ -1,3 +1,14 @@
+## Default window size 1024x768 (2026-09-08) — tip **galapix-141** / bundle **galapix-059**
+
+- Pulled `origin/master` (includes flake.lock update and reclaim removal)
+- Default `Options::geometry` 800x600 → **1024x768** (`-g` / `--geometry` still overrides)
+- Removed older handoff bundles 051–058 from artifacts (keep tip 059)
+
+- [x] Code
+- [x] Bundle galapix-059
+
+---
+
 ## Remove timed tile REQUESTED reclaim (2026-09-08) — tip **galapix-140** / bundle **galapix-058**
 
 The 4s `reclaim_stuck_requests` path was a workaround for lost callbacks; it
