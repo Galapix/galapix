@@ -1,3 +1,14 @@
+## LQIP one-shot miss log (2026-09-08) — tip **galapix-108** / bundle **galapix-023**
+
+When `ensure_lqip` returns empty, log once per overview instance (not every
+frame). Helps distinguish "never had content_id/VIPS" from decode failures.
+
+### Status
+- [x] m_lqip_miss_logged + log_debug
+- [ ] Bundle galapix-023
+
+---
+
 ## LQIP path debug logging (2026-09-08) — tip **galapix-107** / bundle **galapix-022**
 
 Add log_debug when ThumbHash LQIP decodes, when decode/surface create fails,

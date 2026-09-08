@@ -141,7 +141,13 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
                     tp->uri(), hash->size());
         }
       }
-      // Misses are common before size probe finishes; do not log every frame.
+      else if (!m_lqip_miss_logged) {
+        // One-shot: common before size probe; if it never appears, content_id
+        // is missing or VIPS ThumbHash encode failed.
+        m_lqip_miss_logged = true;
+        log_debug("ImageOverview: ensure_lqip empty for {} (will retry silently)",
+                  tp->uri());
+      }
     }
 
     // Postage-stamp gallery: LQIP alone is enough.
@@ -308,6 +314,7 @@ ImageOverview::clear()
   m_surface.reset();
   m_lqip_only = false;
   m_levels_requested = false;
+  m_lqip_miss_logged = false;
   std::optional<surf::SoftwareSurface> discard;
   while (m_queue.try_pop(discard)) {
   }

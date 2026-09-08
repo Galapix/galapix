@@ -74,7 +74,10 @@ private:
   wstdisplay::SurfacePtr m_surface;
   bool m_lqip_only = false;
   bool m_levels_requested = false;
+  /** One-shot debug: avoid per-frame spam when ensure_lqip is empty. */
+  bool m_lqip_miss_logged = false;
 };
+
 
 } // namespace galapix
 
