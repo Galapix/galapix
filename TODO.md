@@ -9,7 +9,7 @@ thumtoo-064 adds DjVu page tiles. Galapix only needs:
 Requires thumtoo with `THUMTOO_HAVE_DJVU` (DjVuLibre).
 
 - [x] Code
-- [ ] Bundle galapix-072
+- [x] Bundle galapix-072
 
 ---
 
