@@ -184,12 +184,16 @@ ImageRenderer::prepare(Rectf const& cliprect, float zoom)
   }
 
   // Soft overview / levels first (may consume request budget on thumtoo path).
+  // Request overview sized to on-screen long edge (not a fixed 512).
+  int const disp_long = static_cast<int>(std::ceil(
+    std::max(m_image.get_scaled_width(), m_image.get_scaled_height())));
   m_image.overview().ensure_requested(
     m_image.job_manager(),
     m_image.get_url(),
     m_image.get_original_width(),
     m_image.get_original_height(),
-    m_image.get_tile_provider());
+    m_image.get_tile_provider(),
+    disp_long);
 
   if (plan.skip_grid) {
     return;

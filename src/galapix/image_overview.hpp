@@ -46,11 +46,14 @@ public:
   bool has_surface() const { return static_cast<bool>(m_surface); }
 
   /** Start load once if Idle.
-   *  Prefer thumtoo max_scale tile when \a provider is ThumtooTileProvider
-   *  (archives / warm cache). Else JobManager + TileGenerator (local files). */
+   *  @param target_long_edge Desired on-screen long edge in pixels (clamped
+   *         to 128..512). Pass display size at gallery zoom — not a fixed 512.
+   *  Thumtoo: request_pixels levels ladder. Else OverviewLoadJob / libjpeg.
+   */
   void ensure_requested(JobManager* job_manager, URL const& url,
                         int original_width, int original_height,
-                        TileProviderPtr provider = {});
+                        TileProviderPtr provider = {},
+                        int target_long_edge = 256);
 
   /** Main thread: promote decoded software surface to a GL texture. */
   void process();

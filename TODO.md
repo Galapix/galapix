@@ -1,3 +1,17 @@
+## Overview max_edge matches display size (2026-09-08) — tip **galapix-102** / bundle **galapix-015**
+
+Gallery of ~1000 images requested a **512** long-edge level for every thumbnail
+while on-screen size was often ~50–100px → encode/decode/upload cost dominated
+fill time (~3s).
+
+`ensure_requested` now takes `target_long_edge` from displayed size, clamped to
+**128..512**. Thumtoo `request_pixels` and libjpeg overview path both use it.
+
+### Status
+- [x] Bundle galapix-015
+
+---
+
 ## Levels-first overview + purple while loading (2026-09-08) — tip **galapix-101** / bundle **galapix-012**
 
 ### Issues

@@ -83,7 +83,8 @@ wstdisplay::SurfacePtr surface_from_software(surf::SoftwareSurface image)
 void
 ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
                                 int original_width, int original_height,
-                                TileProviderPtr provider)
+                                TileProviderPtr provider,
+                                int target_long_edge)
 {
   if (m_state != State::Idle) {
     return;
@@ -110,11 +111,14 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     }
     m_state = State::Loading;
     m_job = JobHandle::create();
-    constexpr int kOverviewMaxEdge = 512;
+    // Match displayed size; thumtoo ladder steps are 128/256/512/…
+    // 512 for every gallery thumbnail was far larger than on-screen size.
+    int edge = target_long_edge > 0 ? target_long_edge : 256;
+    edge = std::clamp(edge, 128, 512);
     auto client = tp->client();
     std::string uri = tp->uri();
     client->request_pixels(
-      std::move(uri), kOverviewMaxEdge,
+      std::move(uri), edge,
       [weak_self, job = m_job](std::string, int, std::optional<thumtoo::PixelLevel> px) mutable {
         auto self = weak_self.lock();
         if (!self) {
@@ -159,7 +163,8 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
   m_state = State::Loading;
   m_job = JobHandle::create();
 
-  int const min_scale = min_scale_for_overview(original_width, original_height);
+  int const edge = std::clamp(target_long_edge > 0 ? target_long_edge : 256, 128, 512);
+  int const min_scale = min_scale_for_overview(original_width, original_height, edge);
 
   auto job = std::make_shared<OverviewLoadJob>(
     m_job, url, min_scale,
