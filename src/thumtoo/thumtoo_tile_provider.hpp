@@ -48,6 +48,8 @@ public:
   JobHandle request_tile(int tilescale, Vector2i const& pos,
                          const std::function<void(Tile)>& callback) override;
 
+  void request_tiles(std::vector<TileRequest> requests) override;
+
   int get_max_scale() const override { return m_max_scale; }
   int get_min_scale() const override { return m_min_scale; }
   int get_tilesize() const override { return 256; }
