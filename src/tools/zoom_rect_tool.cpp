@@ -48,7 +48,7 @@ ZoomRectTool::up  (Vector2i const& pos)
   {
     drag_active = false;
     Rectf rect(click_pos,
-               viewer->get_state().screen2world(mouse_pos));
+               viewer->get_state().screen2world_f(mouse_pos));
     rect = geom::normalize(rect);
 
     viewer->get_state().zoom_to(viewer->get_size(), rect);
@@ -59,7 +59,7 @@ ZoomRectTool::up  (Vector2i const& pos)
 void
 ZoomRectTool::down(Vector2i const& pos)
 {
-  click_pos = viewer->get_state().screen2world(pos);
+  click_pos = viewer->get_state().screen2world_f(pos);
   drag_active = true;
 }
 
@@ -69,7 +69,7 @@ ZoomRectTool::draw(wstdisplay::GraphicsContext& gc)
   if (drag_active)
   {
     Rectf rect(click_pos,
-               viewer->get_state().screen2world(mouse_pos));
+               viewer->get_state().screen2world_f(mouse_pos));
     rect = geom::normalize(rect);
     gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }

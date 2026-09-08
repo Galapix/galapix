@@ -18,6 +18,7 @@
 
 #include "math/math.hpp"
 
+#include <cmath>
 #include <iostream>
 
 #include <surf/color.hpp>
@@ -41,8 +42,14 @@ MandelbrotTileJob::run()
 {
   SoftwareSurface surface = SoftwareSurface::create(surf::PixelFormat::RGB8, Size(256, 256));
 
-  Size imagesize(m_size.width()  / Math::pow2(m_scale),
-                 m_size.height() / Math::pow2(m_scale));
+  // Virtual image size at this scale level, in double (int Size overflows near 2^30).
+  double const level_w =
+    static_cast<double>(m_size.width()) / static_cast<double>(Math::pow2(m_scale));
+  double const level_h =
+    static_cast<double>(m_size.height()) / static_cast<double>(Math::pow2(m_scale));
+
+  // Deeper tiles (smaller scale) need more iterations before the set "falls apart".
+  int const max_iteration = std::min(2000, 80 + 40 * std::max(0, 20 - m_scale));
 
   for(int py = 0; py < surface.get_height(); ++py)
   {
@@ -52,30 +59,27 @@ MandelbrotTileJob::run()
 
     for(int px = 0; px < surface.get_width(); ++px)
     {
-      double x0 = static_cast<double>(256 * m_pos.x() + px) / static_cast<double>(imagesize.width())  * 4.0 - 2.5;
-      double y0 = static_cast<double>(256 * m_pos.y() + py) / static_cast<double>(imagesize.height()) * 3.0 - 1.5;
+      double const ix = static_cast<double>(256 * m_pos.x() + px);
+      double const iy = static_cast<double>(256 * m_pos.y() + py);
+      double const x0 = ix / level_w * 4.0 - 2.5;
+      double const y0 = iy / level_h * 3.0 - 1.5;
 
-      double x = 0;
-      double y = 0;
+      double x = 0.0;
+      double y = 0.0;
 
       int iteration = 0;
-      const int max_iteration = 160;
 
-      while(x*x + y*y <= (2*2) &&
-            iteration < max_iteration)
+      while(x*x + y*y <= 4.0 && iteration < max_iteration)
       {
-        double xtemp = x * x - y * y + x0;
-        y = 2 * x * y + y0;
-
+        double const xtemp = x * x - y * y + x0;
+        y = 2.0 * x * y + y0;
         x = xtemp;
-
         ++iteration;
       }
 
-      surface.put_pixel({px, py},
-                        Color::from_rgb888(static_cast<uint8_t>(255 * iteration / max_iteration),
-                                           static_cast<uint8_t>(255 * iteration / max_iteration),
-                                           static_cast<uint8_t>(255 * iteration / max_iteration)));
+      double const t = static_cast<double>(iteration) / static_cast<double>(max_iteration);
+      auto const v = static_cast<uint8_t>(255.0 * t);
+      surface.put_pixel({px, py}, Color::from_rgb888(v, v, v));
     }
   }
 

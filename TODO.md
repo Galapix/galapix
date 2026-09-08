@@ -1,3 +1,19 @@
+## ViewerState double precision (2026-09-08) — tip **galapix-149** / bundle **galapix-067**
+
+View pan/zoom used float; deep `builtin://mandelbrot` zoom falls apart.
+
+### Change
+- `ViewerState` offset/scale/angle are **double** (`Vector2d`, `Rectd`)
+- OpenGL still gets float at the matrix boundary (`get_*_f` / casts)
+- Tools use `screen2world_f` for selection geometry
+- Mandelbrot tile coords in double; more iterations at fine scales
+- Workspace item layout remains float (not full-world double yet)
+
+- [x] Code
+- [x] Bundle galapix-067
+
+---
+
 ## Revert LIFO-starve timeout; rely on thumtoo FIFO (2026-09-08) — tip **galapix-148** / bundle **galapix-066**
 
 Drop age-based REQUESTED retry. Completion is deterministic via thumtoo-062

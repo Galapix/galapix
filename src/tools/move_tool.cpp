@@ -47,7 +47,7 @@ MoveTool::move(Vector2i const& pos, Vector2i const& rel)
   if (move_active)
   {
     // FIXME: Why does (Vector2i * float) work instead of giving an error?
-    viewer->get_workspace()->move_selection(Vector2f(rel).as_vec() * (1.0f/viewer->get_state().get_scale()));
+    viewer->get_workspace()->move_selection(Vector2f(rel).as_vec() * (1.0f/viewer->get_state().get_scale_f()));
   }
 }
 
@@ -58,7 +58,7 @@ MoveTool::up(Vector2i const& /*pos*/)
   {
     drag_active = false;
     Rectf rect(click_pos,
-               viewer->get_state().screen2world(mouse_pos));
+               viewer->get_state().screen2world_f(mouse_pos));
     rect = geom::normalize(rect);
     viewer->get_workspace()->select_images(viewer->get_workspace()->get_images(rect));
   }
@@ -71,7 +71,7 @@ MoveTool::up(Vector2i const& /*pos*/)
 void
 MoveTool::down(Vector2i const& pos)
 {
-  click_pos = viewer->get_state().screen2world(pos);
+  click_pos = viewer->get_state().screen2world_f(pos);
 
   WorkspaceItemPtr image = viewer->get_workspace()->get_image(click_pos);
 
@@ -101,7 +101,7 @@ MoveTool::draw(wstdisplay::GraphicsContext& gc)
   if (drag_active)
   {
     Rectf rect(click_pos,
-               viewer->get_state().screen2world(mouse_pos));
+               viewer->get_state().screen2world_f(mouse_pos));
     rect = geom::normalize(rect);
     gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }

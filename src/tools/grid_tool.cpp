@@ -48,8 +48,8 @@ GridTool::up  (Vector2i const& pos)
     //Rect rect(click_pos, mouse_pos);
     //rect.normalize();
 
-    Rectf rect(viewer->get_state().screen2world(click_pos),
-               viewer->get_state().screen2world(mouse_pos));
+    Rectf rect(viewer->get_state().screen2world_f(click_pos),
+               viewer->get_state().screen2world_f(mouse_pos));
     rect = geom::normalize(rect);
 
     viewer->set_grid(Vector2f(rect.left(), rect.top()),
@@ -71,8 +71,8 @@ GridTool::draw(wstdisplay::GraphicsContext& gc)
   {
     if ((true))
     {
-      Rectf rect(viewer->get_state().screen2world(click_pos),
-                 viewer->get_state().screen2world(mouse_pos));
+      Rectf rect(viewer->get_state().screen2world_f(click_pos),
+                 viewer->get_state().screen2world_f(mouse_pos));
       rect = geom::normalize(rect);
       gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
     }
@@ -80,8 +80,8 @@ GridTool::draw(wstdisplay::GraphicsContext& gc)
     {
       // Draw a preview of the grid
       // FIXME: Doesn't work, wrong space
-      Rectf rect(viewer->get_state().screen2world(click_pos),
-                 viewer->get_state().screen2world(mouse_pos));
+      Rectf rect(viewer->get_state().screen2world_f(click_pos),
+                 viewer->get_state().screen2world_f(mouse_pos));
       rect = geom::normalize(rect);
 
       gc.draw_grid(Vector2f(rect.left(), rect.top()), rect.size(), surf::Color::from_rgba8888(255, 255, 0, 255));
