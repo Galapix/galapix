@@ -1,3 +1,13 @@
+## Fix TileRequest / JobHandle default-ctor (2026-09-08) — tip **galapix-122** / bundle **galapix-039**
+
+`JobHandle()` is private; `TileRequest req;` failed to compile. Explicit
+constructor + `emplace_back` in `issue_requests`.
+
+- [x] Code
+- [x] Bundle galapix-039
+
+---
+
 ## Build fix for tile batch API (2026-09-08) — tip **galapix-121** / bundle **galapix-038**
 
 - JobHandle default member on TileRequest → `JobHandle::create()`
