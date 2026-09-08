@@ -20,7 +20,7 @@ arxpcpp and transitive exspcpp from Galapix.
 
 ### Status
 - [x] Code
-- [ ] Bundle galapix-032
+- [x] Bundle galapix-032
 
 ---
 
