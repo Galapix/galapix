@@ -214,7 +214,13 @@ is thumtoo.
 
 ## Target strategy
 
-### Priority order (highest first)
+### LQIP tier (ThumbHash)
+
+Before levels/tiles, thumtoo may have a **ThumbHash** on the content row
+(`Client::get_lqip`). Galapix `ImageOverview` paints it first; at on-screen
+long edge ≤64 it skips `request_pixels`. See GLOSSARY.md.
+
+## Priority order (highest first)
 
 | Priority | What | Why |
 |----------|------|-----|
