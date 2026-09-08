@@ -11,7 +11,7 @@ Remaining failures after 051/052 under WARNINGS=ON WERROR=ON:
 - `ImGui::Text` float→double (-Wdouble-promotion)
 
 - [x] Code
-- [ ] Bundle galapix-053
+- [x] Bundle galapix-053
 
 ---
 
