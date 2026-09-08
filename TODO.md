@@ -1,3 +1,13 @@
+## Build fix for tile batch API (2026-09-08) — tip **galapix-121** / bundle **galapix-038**
+
+- JobHandle default member on TileRequest → `JobHandle::create()`
+- Declare `ThumtooTileProvider::request_tiles`
+
+- [x] Code
+- [x] Bundle galapix-038
+
+---
+
 ## Batch visible tiles in one thumtoo job (2026-09-08) — tip **galapix-120** / bundle **galapix-037**
 
 ### Problem
