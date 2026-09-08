@@ -7,7 +7,7 @@ also kills legitimate in-flight work when many images/archives are loading.
 - Keep dump_stuck for GALAPIX_OPEN_TIMING diagnostics only
 
 - [x] Code
-- [ ] Bundle galapix-058
+- [x] Bundle galapix-058
 
 ---
 
