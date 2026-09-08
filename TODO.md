@@ -1,3 +1,14 @@
+## Retry LIFO-starved tile REQUESTED (2026-09-08) — tip **galapix-147** / bundle **galapix-065**
+
+Archive/grid cells could sit REQUESTED 20s+ forever: thumtoo interactive
+queue is LIFO, so continuous new work starves older jobs. Treat live
+REQUESTED older than 20s as failed and re-issue (up to 3 attempts).
+
+- [x] Code
+- [x] Bundle galapix-065
+
+---
+
 ## SizeProbeSession access + Workspace init (2026-09-08) — tip **galapix-146** / bundle **galapix-064**
 
 - Make `Image::set_tile_provider` public for async size probe attach
