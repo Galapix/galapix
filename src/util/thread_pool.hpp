@@ -18,6 +18,7 @@
 #define HEADER_GALAPIX_UTIL_THREAD_POOL_HPP
 
 #include <functional>
+#include <atomic>
 #include <thread>
 #include <vector>
 
@@ -42,16 +43,16 @@ public:
   void schedule(Task const& task);
   void abort();
 
-  bool is_shutting_down() const { return m_shutdown; }
-  bool is_aborted() const { return m_forced_shutdown; }
+  bool is_shutting_down() const { return m_shutdown.load(std::memory_order_acquire); }
+  bool is_aborted() const { return m_forced_shutdown.load(std::memory_order_acquire); }
 
 private:
   void run();
 
 private:
   ShutdownPolicy m_shutdown_policy;
-  bool m_shutdown;
-  bool m_forced_shutdown;
+  std::atomic<bool> m_shutdown;
+  std::atomic<bool> m_forced_shutdown;
   std::vector<std::thread> m_threads;
 
   ThreadMessageQueue2<Task> m_queue;

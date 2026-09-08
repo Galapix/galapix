@@ -18,6 +18,8 @@
 #define HEADER_GALAPIX_UTIL_ASYNC_MESSENGER_HPP
 
 #include "job/thread.hpp"
+
+#include <atomic>
 #include "job/thread_message_queue2.hpp"
 
 namespace galapix {
@@ -35,7 +37,7 @@ protected:
   void queue(const std::function<void ()>& message);
 
 private:
-  bool m_quit;
+  std::atomic<bool> m_quit;
   ThreadMessageQueue2<std::function<void ()> > m_queue;
 
 private:

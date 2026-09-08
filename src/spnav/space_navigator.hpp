@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_SPNAV_SPACE_NAVIGATOR_HPP
 #define HEADER_GALAPIX_SPNAV_SPACE_NAVIGATOR_HPP
 
+#include <atomic>
 #include <thread>
 
 namespace galapix {
@@ -36,7 +37,7 @@ private:
   void run();
 
 private:
-  bool m_quit;
+  std::atomic<bool> m_quit;
   std::thread m_thread;
   int m_pipefd[2];
 

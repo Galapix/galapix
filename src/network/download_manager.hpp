@@ -70,8 +70,8 @@ private:
   std::thread m_thread;
   int m_pipefd[2];
 
-  bool m_abort;
-  bool m_stop;
+  std::atomic<bool> m_abort;
+  std::atomic<bool> m_stop;
   ThreadMessageQueue2<std::function<void ()> > m_queue;
 
   std::vector<std::unique_ptr<DownloadTransfer> > m_transfers;
