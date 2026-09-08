@@ -64,3 +64,33 @@ next to the tile counters above. Archive coalesce and single-cell cut remain
 * [THUMTOO.md](THUMTOO.md) — backend flags and threading
 * TODO.md — checklist items for overlay / queue visibility
 * `external/imgui/README.galapix.md` — vendor note
+
+## Frame timing (debug)
+
+| Env | Purpose |
+|-----|---------|
+| `GALAPIX_OPEN_TIMING=1` | First-paint fill progress (`req` / `upload_q` / `ready`) |
+| `GALAPIX_FRAME_TIMING=1` | Per-frame phase breakdown for zoom/pan jank |
+
+`GALAPIX_FRAME_TIMING` logs every slow frame (`total > 16ms`), the first few
+frames, and every 60th frame:
+
+```
+[frame-timing] f=… total=…ms pump=…ms prepare=…ms draw=…ms scale=…
+  upl=… new_req=… budget_left=… req=… upload_q=… ready=… cache=… cb_q=… [SLOW]
+```
+
+| Field | Meaning |
+|-------|---------|
+| `pump` | `ThumtooCallbackQueue::pump` (main-thread callbacks) |
+| `prepare` | `Workspace::prepare_tiles` (mark + **GL upload** + issue + levels) |
+| `draw` | `Workspace::draw` (textured quads) |
+| `upl` | Software→GL tile uploads this frame (cap 64) |
+| `new_req` | New provider jobs started this frame (budget 128) |
+| `budget_left` | Remaining request budget after issue |
+| `req` / `upload_q` | Outstanding REQUESTED jobs / decoded queue depth |
+| `cb_q` | Thumtoo callbacks waiting for pump |
+
+When zooming out, expect `prepare` and `upl` to dominate if many overview
+tiles hit the upload path; `draw` grows with visible image count.
+

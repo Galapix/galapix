@@ -1,3 +1,13 @@
+## Frame timing diagnostics (2026-09-08) — tip **galapix-136** / bundle **galapix-054**
+
+`GALAPIX_FRAME_TIMING=1` per-frame phase breakdown (pump / prepare / draw ms)
+plus upload and request counters. Helps diagnose zoom-out frame drops.
+
+- [x] Code + STATUS_REPORTING.md
+- [ ] Bundle galapix-054
+
+---
+
 ## Fix WERROR: third-party SYSTEM + remaining app warnings (2026-09-08) — tip **galapix-135** / bundle **galapix-053**
 
 Remaining failures after 051/052 under WARNINGS=ON WERROR=ON:

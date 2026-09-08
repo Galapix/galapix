@@ -169,9 +169,24 @@ Viewer::redraw()
 void
 Viewer::draw(wstdisplay::GraphicsContext& gc)
 {
+  using clock = std::chrono::steady_clock;
+  static bool const frame_timing =
+    std::getenv("GALAPIX_FRAME_TIMING") != nullptr;
+  clock::time_point const t_frame0 =
+    frame_timing ? clock::now() : clock::time_point{};
+  double ms_pump = 0.0;
+  double ms_prepare = 0.0;
+  double ms_draw = 0.0;
+
+  {
+    auto const t0 = frame_timing ? clock::now() : clock::time_point{};
 #ifdef HAVE_THUMTOO
-  ThumtooCallbackQueue::instance().pump();
+    ThumtooCallbackQueue::instance().pump();
 #endif
+    if (frame_timing) {
+      ms_pump = std::chrono::duration<double, std::milli>(clock::now() - t0).count();
+    }
+  }
   m_mark_for_redraw.store(false);
 
   // Stagger new provider jobs across frames (see ImageTileCache budget).
@@ -227,8 +242,20 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
     gc.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
   }
 
-  m_workspace->prepare_tiles(cliprect, m_state.get_scale());
-  m_workspace->draw(gc, cliprect, m_state.get_scale());
+  {
+    auto const t0 = frame_timing ? clock::now() : clock::time_point{};
+    m_workspace->prepare_tiles(cliprect, m_state.get_scale());
+    if (frame_timing) {
+      ms_prepare = std::chrono::duration<double, std::milli>(clock::now() - t0).count();
+    }
+  }
+  {
+    auto const t0 = frame_timing ? clock::now() : clock::time_point{};
+    m_workspace->draw(gc, cliprect, m_state.get_scale());
+    if (frame_timing) {
+      ms_draw = std::chrono::duration<double, std::milli>(clock::now() - t0).count();
+    }
+  }
 
   left_tool->draw(gc);
   middle_tool->draw(gc);
@@ -252,7 +279,6 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
   // First-paint / fill progress when GALAPIX_OPEN_TIMING is set. Pre-viewer
   // open is already timed in ViewerCommand; multi-second delays are here.
   if (std::getenv("GALAPIX_OPEN_TIMING") != nullptr && m_workspace) {
-    using clock = std::chrono::steady_clock;
     static clock::time_point t0{};
     static int frame = 0;
     static bool inited = false;
@@ -278,8 +304,10 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
                 << " upload_q=" << uploads
                 << " ready=" << ready
                 << " cache=" << entries << "\n";
+      // Only dump cells that look stuck (age past reclaim threshold), not
+      // every in-flight REQUESTED handle.
       if (requests > 0) {
-        std::cout << "[open-timing] stuck REQUESTED dump:\n";
+        std::cout << "[open-timing] live REQUESTED sample (any age):\n";
         m_workspace->dump_stuck_tile_requests(8);
       }
     }
@@ -297,6 +325,51 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
                 << " ready=" << ready
                 << " cache=" << entries
                 << " (no outstanding tile requests/uploads)\n";
+    }
+  }
+
+  // Per-frame phase breakdown for zoom/pan jank (GALAPIX_FRAME_TIMING=1).
+  // Logs slow frames always (>16ms) and a periodic summary every 60 frames.
+  if (frame_timing && m_workspace) {
+    static int ft_frame = 0;
+    static bool ft_inited = false;
+    ++ft_frame;
+    if (!ft_inited) {
+      ft_inited = true;
+      std::cout << "[frame-timing] enabled: logs frames >16ms and every 60th "
+                   "frame (pump/prepare/draw ms, uploads, new reqs, queue)\n";
+    }
+    double const ms_total =
+      std::chrono::duration<double, std::milli>(clock::now() - t_frame0).count();
+    int requests = 0, upload_q = 0, entries = 0, ready = 0;
+    m_workspace->tile_load_stats(requests, upload_q, entries, &ready);
+    int const uploads = ImageTileCache::frame_uploads();
+    int const new_reqs = ImageTileCache::frame_requests_started();
+    int const budget_left = ImageTileCache::request_budget_remaining();
+#ifdef HAVE_THUMTOO
+    int const cb_q = ThumtooCallbackQueue::instance().size();
+#else
+    int const cb_q = 0;
+#endif
+    bool const slow = ms_total > 16.0;
+    bool const periodic = (ft_frame % 60 == 0);
+    if (slow || periodic || ft_frame <= 5) {
+      std::cout << "[frame-timing] f=" << ft_frame
+                << " total=" << ms_total << "ms"
+                << " pump=" << ms_pump << "ms"
+                << " prepare=" << ms_prepare << "ms"
+                << " draw=" << ms_draw << "ms"
+                << " scale=" << m_state.get_scale()
+                << " upl=" << uploads
+                << " new_req=" << new_reqs
+                << " budget_left=" << budget_left
+                << " req=" << requests
+                << " upload_q=" << upload_q
+                << " ready=" << ready
+                << " cache=" << entries
+                << " cb_q=" << cb_q
+                << (slow ? " SLOW" : "")
+                << "\n";
     }
   }
 }

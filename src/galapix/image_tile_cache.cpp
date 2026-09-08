@@ -44,12 +44,16 @@ bool ImageTileCache::s_tile_requests_enabled = true;
 
 namespace {
 int s_request_budget = 0;
+int s_frame_uploads = 0;
+int s_frame_requests_started = 0;
 } // namespace
 
 void
 ImageTileCache::begin_frame_request_budget(int max_new_requests)
 {
   s_request_budget = max_new_requests;
+  s_frame_uploads = 0;
+  s_frame_requests_started = 0;
 }
 
 bool
@@ -59,7 +63,26 @@ ImageTileCache::try_consume_request_budget()
     return false;
   }
   --s_request_budget;
+  ++s_frame_requests_started;
   return true;
+}
+
+int
+ImageTileCache::frame_uploads()
+{
+  return s_frame_uploads;
+}
+
+int
+ImageTileCache::frame_requests_started()
+{
+  return s_frame_requests_started;
+}
+
+int
+ImageTileCache::request_budget_remaining()
+{
+  return s_request_budget;
 }
 
 
@@ -584,6 +607,7 @@ ImageTileCache::process_queue()
     }
     ++uploaded;
   }
+  s_frame_uploads += uploaded;
 
   // Keep the main loop running while decoded tiles await upload; otherwise
   // pending_upload_count can sit non-zero after workers go idle and no

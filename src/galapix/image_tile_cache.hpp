@@ -169,6 +169,11 @@ public:
 
   static bool try_consume_request_budget();
 
+  /** Reset each begin_frame_request_budget; for GALAPIX_FRAME_TIMING. */
+  static int frame_uploads();
+  static int frame_requests_started();
+  static int request_budget_remaining();
+
 public:
   Cache m_cache;
 
