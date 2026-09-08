@@ -10,7 +10,7 @@ LQIP purple symptom: audit found no proven race; still needs runtime ensure_lqip
 
 ### Status
 - [x] Atomics + dead code cleanup
-- [ ] Bundle galapix-021
+- [x] Bundle galapix-021
 - [ ] LQIP runtime confirmation (separate)
 
 ---
