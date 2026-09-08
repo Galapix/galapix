@@ -9,7 +9,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 ### Phase 0–5 — Done
 - [x] Docs, thumtoo integration, tile path, viewer/workspace, job system
-- [x] util (weak_functor, thread_pool, async_messenger), math, CMake HAVE_THUMTOO
+- [x] util (weak_functor, thread_pool, async_messenger atomics), math, CMake HAVE_THUMTOO
 
 ### Phase 6 — thumtoo
 - [x] ensure_lqip / get_lqip / store_lqip / executor / uri / db lqip
@@ -31,7 +31,16 @@ SPDX-License-Identifier: GPL-3.0-or-later
 4. Remove m_lqip_tried
 5. LQIP path log_debug (decode / fail / upload / one-shot miss)
 
+## Findings applied (continued)
+6. Archive batch extract-always → warm get_tile first (thumtoo-049)
+7. EnsurePixels / ProbeSize warm skip extract (thumtoo-050)
+8. ThreadPool / AsyncMessenger / DownloadManager / SpaceNavigator atomics (galapix-027)
+9. Handsum LQIP + C decode TU in external/ (thumtoo-046…048)
+10. Levels after grid budget (galapix-025); LQIP-only skip_grid fix (galapix-024)
+
 ## Open
-- LQIP purple: runtime confirm with --debug (see TODO tip galapix-107/108)
-- Optional: blob_store, ThreadPool shutdown atomics, Executor GUI marshal
+- [ ] blob_store deep dive (optional)
+- [ ] full pdf.cpp / archive.cpp (optional)
+- [ ] Overview state machine rewrite (optional)
+- [ ] PDF LQIP
 

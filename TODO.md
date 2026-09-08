@@ -1,3 +1,18 @@
+## Archive warm-path + thread atomics (2026-09-08) — tip **galapix-112**
+
+### Done
+- [x] thumtoo-049: EnsureTiles batch skip extract on get_tile hit
+- [x] thumtoo-050: EnsurePixels + ProbeSize warm batch skip extract
+- [x] galapix-027: atomic shutdown flags (ThreadPool, AsyncMessenger,
+      DownloadManager, SpaceNavigator)
+
+### Next (optional)
+- [ ] Overview state machine cleanup (Idle/Lqip/Levels/Failed)
+- [ ] blob_store deep dive
+- [ ] PDF LQIP
+
+---
+
 ## Handsum LQIP (c3q4) for sharper placeholders (2026-09-08) — tip **galapix-111**
 
 Prefer Handsum (147 B fixed) over ThumbHash for content.lqip. Decode via
@@ -10,7 +25,7 @@ Clear or open images so ensure_lqip rewrites LQIP blobs.
 ### Status
 - [x] thumtoo encode/decode + kind
 - [x] Galapix decode path
-- [ ] Bundles galapix-026 / thumtoo-0xx
+- [x] Bundles galapix-026+ / thumtoo-046…050
 
 ---
 
