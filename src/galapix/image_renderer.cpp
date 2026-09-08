@@ -148,9 +148,11 @@ ImageRenderer::plan_view(Rectf const& cliprect, float zoom)
   if (scaled_width < 256.0f && scaled_height < 256.0f) {
     plan.one_cell = true;
     auto const& ov = m_image.overview();
-    // Gallery / fit-all: use overview only when it is actually Ready.
-    // While Loading/Idle, keep the one-cell grid so purple placeholders show.
-    if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
+    // Gallery / fit-all: skip the one-cell grid only when a *sharp* soft
+    // underlay is Ready (levels). LQIP-only must not skip_grid — otherwise
+    // grid tiles never load and the blurry ThumbHash stays forever.
+    if (ov.state() == ImageOverview::State::Ready && ov.has_surface() &&
+        !ov.is_lqip_only()) {
       plan.skip_grid = true;
     } else {
       plan.tile_rect = Rect(0, 0, 1, 1);
@@ -199,12 +201,15 @@ ImageRenderer::prepare(Rectf const& cliprect, float zoom)
     return;
   }
 
-  // Do not stampede grid tiles while the first soft layer is still loading.
-  // Overview Idle/Loading → wait; Ready or Failed → mark grid (or purple).
+  // Wait for the *first* soft pixels before stampeding the grid. Once any
+  // underlay exists (LQIP or levels), keep marking tiles even while a levels
+  // upgrade is Loading — otherwise grid tiles never start and LQIP sticks.
   {
-    auto const st = m_image.overview().state();
-    if (st == ImageOverview::State::Idle ||
-        st == ImageOverview::State::Loading) {
+    auto const& ov = m_image.overview();
+    auto const st = ov.state();
+    if (!ov.has_surface() &&
+        (st == ImageOverview::State::Idle ||
+         st == ImageOverview::State::Loading)) {
       return;
     }
   }

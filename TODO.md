@@ -1,3 +1,27 @@
+## Grid tiles blocked after LQIP (2026-09-08) — tip **galapix-109** / bundle **galapix-024**
+
+### Symptom
+LQIP underlays appear, but never upgrade to real image tiles.
+
+### Causes
+1. `prepare` refused to mark grid tiles while overview was `Loading` — levels
+   upgrade after LQIP set Loading and blocked the grid forever if levels failed
+   or stalled.
+2. Levels failure with LQIP kept `Loading` (did not restore `Ready`).
+3. Gallery `skip_grid` treated any Ready underlay (including LQIP-only) as
+   sufficient, so the one-cell grid never ran.
+
+### Fix
+- Mark grid when any underlay surface exists (even if levels Loading).
+- On levels failure with LQIP: restore Ready, clear m_levels_requested.
+- skip_grid only for Ready non-LQIP (levels) underlay.
+
+### Status
+- [x] Code fix
+- [ ] Bundle galapix-024
+
+---
+
 ## LQIP one-shot miss log (2026-09-08) — tip **galapix-108** / bundle **galapix-023**
 
 When `ensure_lqip` returns empty, log once per overview instance (not every
