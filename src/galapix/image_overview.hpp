@@ -49,7 +49,15 @@ public:
     Levels   ///< ladder / full overview — gallery may skip_grid
   };
 
-  ImageOverview() = default;
+  ImageOverview() :
+    m_state(State::Idle),
+    m_job(JobHandle::create()),
+    m_queue(),
+    m_surface(),
+    m_underlay(Underlay::None),
+    m_levels_requested(false),
+    m_lqip_miss_logged(false)
+  {}
 
   State state() const { return m_state; }
   Underlay underlay() const { return m_underlay; }

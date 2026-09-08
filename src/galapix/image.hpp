@@ -50,7 +50,7 @@ public:
   /** Start provider jobs for tiles marked in prepare_tiles (budgeted). */
   void issue_tile_requests() override;
   /** Levels soft-underlay upgrade after grid jobs have taken budget. */
-  void request_overview_levels(Rectf const& cliprect, float zoom);
+  void request_overview_levels(Rectf const& cliprect, float zoom) override;
   void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) override;
   void draw_mark(wstdisplay::GraphicsContext& gc) override;
 
@@ -95,6 +95,10 @@ private:
   std::shared_ptr<ImageTileCache> m_cache;
   std::unique_ptr<ImageRenderer>  m_renderer;
   std::shared_ptr<ImageOverview> m_overview;
+
+private:
+  Image(Image const&) = delete;
+  Image& operator=(Image const&) = delete;
 };
 
 } // namespace galapix

@@ -1,3 +1,17 @@
+## Fix WERROR build: Image override + effc++ (2026-09-08) — tip **galapix-133** / bundle **galapix-051**
+
+With WARNINGS=ON WERROR=ON, Image and ImageOverview failed:
+
+- `Image::request_overview_levels` missing `override`
+- `Image` has raw pointer `m_job_manager` → need deleted copy/assign (-Weffc++)
+- `ImageOverview` default ctor left `m_queue` / `m_surface` uninitialized in
+  member-init list (-Weffc++)
+
+- [x] Code
+- [ ] Bundle galapix-051
+
+---
+
 ## galapix-configure: WARNINGS=ON WERROR=ON (2026-09-08) — tip **galapix-132** / bundle **galapix-050**
 
 Dev `galapix-configure` passes `-DWARNINGS=ON -DWERROR=ON` so warnings fail the build.
