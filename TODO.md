@@ -12,7 +12,7 @@ spec via [xdgcpp](https://github.com/Grumbel/xdgcpp):
   environment — no nix binary)
 
 - [x] Code
-- [ ] Bundle galapix-070
+- [x] Bundle galapix-070
 
 ---
 
