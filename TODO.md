@@ -1,3 +1,12 @@
+## galapix-configure: WARNINGS=ON WERROR=ON (2026-09-08) — tip **galapix-132** / bundle **galapix-050**
+
+Dev `galapix-configure` passes `-DWARNINGS=ON -DWERROR=ON` so warnings fail the build.
+
+- [x] flake.nix
+- [x] Bundle galapix-050
+
+---
+
 ## Fix pending_tile_requests on WorkspaceItem (2026-09-08) — tip **galapix-131** / bundle **galapix-048**
 
 Compile error: `WorkspaceItem` had no `pending_tile_requests`. Add virtual

@@ -213,7 +213,9 @@
               + ''
                 cmake -S "$GALAPIX_SOURCE" -B "$GALAPIX_BUILD_DIR" -G Ninja \
                   -DCMAKE_BUILD_TYPE="''${CMAKE_BUILD_TYPE:-Debug}" \
-                                    -DBUILD_BENCHMARKS=OFF \
+                  -DWARNINGS=ON \
+                  -DWERROR=ON \
+                  -DBUILD_BENCHMARKS=OFF \
                   -DWITH_THUMTOO=ON \
                   -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}" \
                   -Wno-dev
@@ -305,7 +307,7 @@
               echo "  build dir: $GALAPIX_BUILD_DIR"
               echo "  GALAPIX_DATADIR=$GALAPIX_DATADIR"
               echo "  THUMTOO_DIR=$THUMTOO_DIR"
-              echo "  galapix-configure     # cmake -S . -B \$GALAPIX_BUILD_DIR -G Ninja (+ thumtoo)"
+              echo "  galapix-configure     # cmake -S . -B \$GALAPIX_BUILD_DIR -G Ninja (+ thumtoo, WARNINGS=ON WERROR=ON)"
 echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-build         # incremental cmake --build"
               echo "  galapix-run [args]    # build + run galapix"
