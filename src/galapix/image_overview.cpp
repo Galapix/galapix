@@ -102,11 +102,11 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
 
 #ifdef HAVE_THUMTOO
   if (auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get())) {
-    // 1) Inline ThumbHash from content row — no blob I/O, allowed in cache-only.
-    // Retry every frame until present: size probe writes LQIP asynchronously, so
-    // the first ensure_requested often races ahead of get_lqip().
+    // 1) LQIP from content row only (get_lqip). Never ensure_lqip on the GUI
+    // thread — that rasterizes PDF/DjVu pages and pegs the CPU with no tiles.
+    // Workers fill LQIP on EnsurePixels; we retry get_lqip each frame until then.
     if (m_underlay != Underlay::Lqip && !m_surface) {
-      if (auto hash = tp->client()->ensure_lqip(tp->uri())) {
+      if (auto hash = tp->client()->get_lqip(tp->uri())) {
         if (auto img = thumtoo::lqip_decode_rgba(
                 std::span<std::uint8_t const>(hash->data(), hash->size()))) {
           try {
@@ -145,7 +145,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
         // One-shot: common before size probe; if it never appears, content_id
         // is missing or VIPS ThumbHash encode failed.
         m_lqip_miss_logged = true;
-        log_debug("ImageOverview: ensure_lqip empty for {} (will retry silently)",
+        log_debug("ImageOverview: get_lqip empty for {} (will retry silently)",
                   tp->uri());
       }
     }

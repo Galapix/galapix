@@ -1,3 +1,13 @@
+## GUI: get_lqip only in ImageOverview (2026-09-08) — **galapix-082**
+
+After skipping LQIP in size probe, ensure_lqip on every prepare/draw frame
+rasterized every visible DjVu page on the UI thread (100% CPU, no updates).
+
+- [x] get_lqip only in ImageOverview
+- [ ] Bundle galapix-082
+
+---
+
 ## Accept DjVu in directory/file scan (2026-09-08) — tip **galapix-157** / bundle **galapix-075**
 
 `Filesystem::generate_image_file_list` only allowed PDF + archives past the
