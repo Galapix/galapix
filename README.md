@@ -166,7 +166,7 @@ Useful options:
 Special URL:
 
 ```bash
-galapix buildin://mandelbrot
+galapix builtin://mandelbrot
 ```
 
 

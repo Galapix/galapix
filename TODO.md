@@ -1,3 +1,12 @@
+## README spelling: builtin:// (2026-09-08) — tip **galapix-144** / bundle **galapix-062**
+
+- Fix `buildin://mandelbrot` → `builtin://mandelbrot`
+
+- [x] Code
+- [x] Bundle galapix-062
+
+---
+
 ## Async thumtoo size probe + UI status (2026-09-08) — tip **galapix-143** / bundle **galapix-061**
 
 Blocking `Probing image sizes (thumtoo)...` + `drain()` before launch made large
