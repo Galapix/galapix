@@ -4,7 +4,7 @@
 - `ViewerCommand`: init `m_thumtoo` in member-init list under HAVE_THUMTOO (-Weffc++)
 
 - [x] Code
-- [ ] Bundle galapix-052
+- [x] Bundle galapix-052
 
 ---
 
