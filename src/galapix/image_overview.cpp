@@ -203,11 +203,13 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
     return;
   }
 
-  // Postage-stamp gallery: LQIP alone is enough.
-  if (m_underlay == Underlay::Lqip && m_state == State::Ready && target_long_edge <= 64) {
+  // Postage-stamp gallery: LQIP alone is enough (avoid levels thrash).
+  if (m_underlay == Underlay::Lqip && m_state == State::Ready && target_long_edge <= 128) {
     return;
   }
-  if (m_levels_requested && m_state == State::Loading) {
+  // One shot: in flight, succeeded (Levels), or failed after LQIP. Do not
+  // re-spend the global request budget every frame when levels is empty.
+  if (m_levels_requested) {
     return;
   }
   if (m_state == State::Ready && m_underlay == Underlay::Levels) {
@@ -242,8 +244,8 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
       }
       if (!px || px->bytes.empty() || px->width <= 0 || px->height <= 0) {
         if (self->m_underlay == Underlay::Lqip) {
+          // Keep m_levels_requested so ensure_levels does not retry every frame.
           self->m_state = State::Ready;
-          self->m_levels_requested = false;
           job.set_failed();
         } else {
           self->receive_software(std::nullopt, false);
@@ -258,8 +260,8 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
           "thumtoo-level");
         if (surface.get_width() <= 0) {
           if (self->m_underlay == Underlay::Lqip) {
+            // Keep m_levels_requested so ensure_levels does not retry every frame.
             self->m_state = State::Ready;
-            self->m_levels_requested = false;
             job.set_failed();
           } else {
             self->receive_software(std::nullopt, false);
@@ -271,8 +273,8 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
         job.set_finished();
       } catch (...) {
         if (self->m_underlay == Underlay::Lqip) {
+          // Keep m_levels_requested so ensure_levels does not retry every frame.
           self->m_state = State::Ready;
-          self->m_levels_requested = false;
           job.set_failed();
         } else {
           self->receive_software(std::nullopt, false);

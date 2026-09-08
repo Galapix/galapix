@@ -1,3 +1,18 @@
+## Stop overview levels budget thrash (2026-09-08) — tip **galapix-138** / bundle **galapix-056**
+
+Stable gallery zoom still showed `new_req=128 req=0` after the tile retry
+fix. Root cause: `ImageOverview::ensure_levels` on LQIP failure set
+`m_levels_requested = false`, so every visible image re-spent 1 unit of the
+global request budget each frame (not counted in `req`).
+
+- Keep `m_levels_requested` after failure; skip if already requested
+- Raise LQIP-only postage threshold 64 → 128 px
+
+- [x] Code
+- [ ] Bundle galapix-056
+
+---
+
 ## Stop failed-tile request thrash (2026-09-08) — tip **galapix-137** / bundle **galapix-055**
 
 Frame timing at gallery zoom-out showed `new_req=128 budget_left=0` with

@@ -76,7 +76,8 @@ public:
   /** Levels ladder upgrade (thumtoo request_pixels). Call *after* grid
    *  issue_requests so tile jobs get the per-frame budget first.
    *  @param target_long_edge On-screen long edge (clamped 128..512).
-   *         At tiny sizes (≤64), LQIP alone is enough — no-op.
+   *         At tiny sizes (≤128), LQIP alone is enough — no-op.
+   *  One attempt per image until clear(); failures do not re-spend budget.
    */
   void ensure_levels(TileProviderPtr provider, int target_long_edge = 256);
 
