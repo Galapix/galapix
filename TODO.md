@@ -17,7 +17,7 @@ case. Provider work was already off-GUI; order/budget were wrong.
 
 ### Status
 - [x] Code
-- [ ] Bundle galapix-036
+- [x] Bundle galapix-036
 
 ---
 
