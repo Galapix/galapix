@@ -21,7 +21,7 @@
 #include <iostream>
 #include <uitest/uitest.hpp>
 
-#include <arxp/util.hpp>
+#include <fstream>
 
 #include "network/curl.hpp"
 
@@ -44,7 +44,8 @@ UITEST(CURL, test, "URL...",
       std::cout << "Trying to get: " << arg << std::endl;
       std::string mime_type;
       auto data = CURLHandler::get_data(arg, &mime_type);
-      arxp::write_file("/tmp/out", data);
+      std::ofstream out("/tmp/out", std::ios::binary);
+      out.write(reinterpret_cast<const char*>(data.data()), static_cast<std::streamsize>(data.size()));
       std::cout << "Got: " << arg << " -> '" << mime_type << "'" << std::endl;
     }
 

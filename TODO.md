@@ -1,3 +1,20 @@
+## Verify arxpcpp removal + dead uitest cleanup (2026-09-08) — tip **galapix-116** / bundle **galapix-033**
+
+Follow-up to galapix-115:
+
+- Confirmed no `arxp` in src/CMake/flake.nix
+- Deleted uitests for removed resource/ArchiveThread stack (already unbuildable)
+- `curl_test` writes via ofstream instead of `arxp::write_file`
+- CACHE4_VS_THUMTOO notes updated
+
+Remaining historical mentions in older TODO sections / NEWS are archival only.
+
+### Status
+- [x] Verification + uitest cleanup
+- [ ] Bundle galapix-033
+
+---
+
 ## Remove arxpcpp / exspcpp — archives via thumtoo (2026-09-08) — tip **galapix-115** / bundle **galapix-032**
 
 ### Goal

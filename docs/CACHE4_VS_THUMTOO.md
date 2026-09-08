@@ -51,10 +51,10 @@ providers. Galapix SQLite tile generation was removed (Phase 2).
 | Full-pyramid batch generate | `request_tiles` / multi-scale jobs | `request_tile_pyramid` / `thumtoo-prepare` | Prefer thumtoo CLI |
 | Pattern list (`-p`) / known files | **Resource** DB (legacy, stubs) | `list_locators_*` | **Done:** `-p` uses thumtoo cache |
 | Image size without opening file | `ImageEntry` in resource DB | `get_size` / `request_size` | thumtoo sufficient on pure view |
-| Archive member images | arxp + resource + tiles | libarchive + URI `…//archive:…` | Prefer thumtoo; **arxp** still in tree for `ArchiveThread` |
+| Archive member images | removed | libarchive + URI `…//archive:…` | **thumtoo only** (galapix-115) |
 | PDF pages | Weak / external tools historically | poppler via thumtoo | Prefer thumtoo |
 | HTTP(S) / Zoomify | libcurl + `ZoomifyTileProvider` | Not yet | Future: thumtoo network URIs; Zoomify may stay special |
-| Nested archive / PDF / content-id URIs | Partial (arxp, PDF expand) | Partial (`//archive:`, `//page:`) | **thumtoo** general retrieval — see THUMTOO.md |
+| Nested archive / PDF / content-id URIs | removed | Partial (`//archive:`, `//page:`) | **thumtoo** general retrieval — see THUMTOO.md |
 | Live PDF tiles (no pre-raster pyramid) | — | — | **thumtoo** future (mandelbrot-style on-demand) |
 | Mandelbrot / builtin | `MandelbrotTileProvider` | N/A | **Keep** as Galapix demo provider |
 | Tile cleanup / delete by file id | `SQLiteTileDatabase::delete_tiles` | thumtoo cache tools | Operational difference only |
@@ -94,7 +94,7 @@ Rough ownership of the **legacy tile** path (safe to gate or delete once
 | **OpenSSL** | SHA in tile/resource | Yes | `src/util/sha1.cpp` |
 | **libjpeg** / **libpng** | Encode/decode tiles | surfcpp / overview | Stay |
 | **ImageMagick** | Broad decode for tile gen | surfcpp formats | Stay until format policy changes |
-| **arxpcpp** | Archive extract for old path | `ArchiveThread`, `App` | Separate from tile SQLite; thumtoo has libarchive |
+| ~~**arxpcpp**~~ | Removed galapix-115 | — | Archives via thumtoo |
 | **libcurl** | Downloads / Zoomify | Network | Stay |
 | **libmhash** | — | — | **Unused** (OpenSSL EVP) |
 | **jsoncpp** | — | — | **Unused** |
@@ -171,8 +171,8 @@ current viewer.
 * **Removed (galapix-068):** entire ResourceDatabase / cache4 resource index,
   `src/resource/`, `src/generator/`, SHA1 helper, SQLiteCpp dependency.
 * Gaps (archive passwords, video aspect, HTTP validators) → **thumtoo TODO**.
-* Archive: prefer thumtoo URIs on open; `Filesystem` still uses **arxpcpp** when
-  scanning directories. `ArchiveThread` has no remaining callers outside itself.
+* Archive: thumtoo URIs on open; directory scan lists containers for
+  ViewerCommand expansion (`read_archive_toc`). arxpcpp removed (galapix-115).
 * **Dataverse** (browsable self-contained corpus UI) is a **much later** Galapix
   product layer on top of thumtoo data — not a reason to keep cache4 SQL.
 
@@ -180,7 +180,7 @@ current viewer.
 
 * Flake: dropped residual **entt** / **python3** / **libexif** (galapix-065).
 * No immediate Magick/curl removal from tile retirement alone.
-* arxp only if archive UI is thumtoo-only and `Filesystem` archive scan is gone.
+* ~~arxp~~ removed galapix-115.
 * SQLiteCpp only after resource DB + idle tile stub are deleted.
 
 ## Recommendation
