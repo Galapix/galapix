@@ -5,7 +5,7 @@ surface_factory filter. Opening a `.djvu` (or a dir of them) yielded
 "0 files found" / "No URLs given" before ViewerCommand expansion.
 
 - [x] Code: `is_likely_djvu_path` in scan filter
-- [ ] Bundle galapix-075
+- [x] Bundle galapix-075
 
 ---
 
