@@ -1,3 +1,19 @@
+## Rewrite overlap solver (2026-09-08) — tip **galapix-139** / bundle **galapix-057**
+
+Old `Workspace::solve_overlaps` was O(n²) full pairwise + unbounded loop with
+`NumOverlappings` spam; unusable on large collections.
+
+New `solve_image_overlaps` (layouter/overlap_solver):
+- Spatial hash neighbor queries
+- Iterative minimum-translation axis separation (max 64 passes)
+- 16px gap; writes positions back once per run
+- No per-iteration stdout
+
+- [x] Code
+- [ ] Bundle galapix-057
+
+---
+
 ## Stop overview levels budget thrash (2026-09-08) — tip **galapix-138** / bundle **galapix-056**
 
 Stable gallery zoom still showed `new_req=128 req=0` after the tile retry

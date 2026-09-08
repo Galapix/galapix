@@ -23,6 +23,7 @@
 #include <logmich/log.hpp>
 #include <strut/numeric_less.hpp>
 
+#include "galapix/layouter/overlap_solver.hpp"
 #include "galapix/layouter/random_layouter.hpp"
 #include "galapix/layouter/regular_layouter.hpp"
 #include "galapix/layouter/spiral_layouter.hpp"
@@ -396,43 +397,7 @@ Workspace::delete_selection()
 void
 Workspace::solve_overlaps()
 {
-  // FIXME: This function is extremely slow and doesn't work
-  // dynamically (no animation on position setting)
-  int num_overlappings = 1;
-
-  while(num_overlappings)
-  {
-    num_overlappings = 0;
-    // Use QuadTree to make this fast
-    for(auto i = m_images.begin(); i != m_images.end(); ++i)
-    {
-      for(auto j = i+1; j != m_images.end(); ++j)
-      {
-        Rectf irect = (*i)->get_image_rect();
-        Rectf jrect = (*j)->get_image_rect();
-
-        if (geom::intersects(irect, jrect))
-        {
-          num_overlappings += 1;
-
-          Rectf clip = geom::intersection(irect, jrect);
-
-          // FIXME: This only works if one rect isn't completly within the other
-          if (clip.width() > clip.height())
-          {
-            (*i)->set_pos((*i)->get_pos().as_vec() - Vector2f(0.0f, clip.height()/2 + 16.0f).as_vec());
-            (*j)->set_pos((*j)->get_pos().as_vec() + Vector2f(0.0f, clip.height()/2 + 16.0f).as_vec());
-          }
-          else
-          {
-            (*i)->set_pos((*i)->get_pos().as_vec() - Vector2f(clip.width()/2 + 16.0f, 0.0f).as_vec());
-            (*j)->set_pos((*j)->get_pos().as_vec() + Vector2f(clip.width()/2 + 16.0f, 0.0f).as_vec());
-          }
-        }
-      }
-    }
-    std::cout << "NumOverlappings: " << num_overlappings << std::endl;
-  }
+  solve_image_overlaps(m_images, /*gap=*/16.0f);
 }
 
 void
