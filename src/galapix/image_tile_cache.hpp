@@ -19,6 +19,7 @@
 
 #include <chrono>
 #include <map>
+#include <set>
 #include <memory>
 #include <vector>
 #include <wstdisplay/surface.hpp>
@@ -82,7 +83,25 @@ public:
   /** Call after make_shared — must not run in the constructor (shared_from_this). */
   void prefetch_overview();
 
+  /** Pure lookup: cache entry or REQUESTED placeholder (no enqueue). */
+  SurfaceStruct lookup_tile(int x, int y, int scale);
+
+  /** Record that this cell is visible this frame. Also marks stand-ins
+      (parent cell + max_scale overview). No provider jobs. */
+  void mark_tile_needed(int x, int y, int scale);
+
+  /** Start provider jobs for cells marked since the last issue, under the
+      global per-frame budget. Coarser scales first so stand-ins tend to
+      finish before fine tiles. Clears the needed set. */
+  void issue_requests();
+
+  void clear_needed();
+
+  /** Legacy: mark + issue stand-ins/target immediately + lookup.
+      Prefer mark_tile_needed / issue_requests / lookup_tile from the
+      prepare/draw split. */
   SurfaceStruct request_tile(int x, int y, int scale);
+
   wstdisplay::SurfacePtr get_tile(int x, int y, int scale);
   wstdisplay::SurfacePtr find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
 
@@ -137,6 +156,9 @@ public:
 
 public:
   Cache m_cache;
+
+  /** Cells marked visible this frame (plus stand-ins). Consumed by issue_requests. */
+  std::set<TileCacheId> m_needed;
 
   ThreadMessageQueue2<Tile> m_tile_queue;
 

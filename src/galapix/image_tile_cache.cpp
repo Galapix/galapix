@@ -17,6 +17,7 @@
 #include "galapix/image_tile_cache.hpp"
 
 #include <algorithm>
+#include <vector>
 
 #include <assert.h>
 #include <cstring>
@@ -246,38 +247,77 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
                                     next_attempts);
 }
 
+void
+ImageTileCache::clear_needed()
+{
+  m_needed.clear();
+}
+
+void
+ImageTileCache::mark_tile_needed(int x, int y, int scale)
+{
+  if (x < 0 || y < 0 || scale < m_min_scale || scale > m_max_scale) {
+    return;
+  }
+
+  // Stand-ins first in the set ordering sense: we still sort on issue.
+  // Coarser overview + parent so find_smaller_tile has something to show.
+  if (scale < m_max_scale) {
+    m_needed.insert(TileCacheId(Vector2i(0, 0), m_max_scale));
+    m_needed.insert(TileCacheId(Vector2i(x / 2, y / 2), scale + 1));
+  }
+  m_needed.insert(TileCacheId(Vector2i(x, y), scale));
+}
+
+void
+ImageTileCache::issue_requests()
+{
+  if (m_needed.empty()) {
+    return;
+  }
+
+  // Coarser scales first (higher scale number = coarser). TileCacheId sorts
+  // by scale ascending, so reverse-iterate for stand-ins before fine tiles.
+  std::vector<TileCacheId> ordered(m_needed.begin(), m_needed.end());
+  std::sort(ordered.begin(), ordered.end(),
+            [](TileCacheId const& a, TileCacheId const& b) {
+              if (a.get_scale() != b.get_scale()) {
+                return a.get_scale() > b.get_scale(); // coarser first
+              }
+              if (a.get_pos().x() != b.get_pos().x()) {
+                return a.get_pos().x() < b.get_pos().x();
+              }
+              return a.get_pos().y() < b.get_pos().y();
+            });
+
+  for (TileCacheId const& id : ordered) {
+    queue_tile_request(id.get_pos().x(), id.get_pos().y(), id.get_scale());
+  }
+  m_needed.clear();
+}
+
 ImageTileCache::SurfaceStruct
-ImageTileCache::request_tile(int x, int y, int scale)
+ImageTileCache::lookup_tile(int x, int y, int scale)
 {
   TileCacheId cache_id(Vector2i(x, y), scale);
-
   Cache::iterator i = m_cache.find(cache_id);
-
   if (i != m_cache.end()) {
     return i->second;
   }
-
-  // First paint: queue coarser stand-ins before the target so FIFO workers
-  // tend to produce a full-image overview (max_scale) and one parent cell
-  // before the high-res tile. find_smaller_tile can then draw something
-  // while the target is still loading. cancel_jobs keeps coarser requests.
-  if (scale < m_max_scale) {
-    queue_tile_request(0, 0, m_max_scale);
-    queue_tile_request(x / 2, y / 2, scale + 1);
-  }
-
-  queue_tile_request(x, y, scale);
-
-  i = m_cache.find(cache_id);
-  if (i != m_cache.end()) {
-    return i->second;
-  }
-  // Budget exhausted or requests disabled: no cache entry was created.
-  // Still report REQUESTED so the draw path paints the purple loading
-  // placeholder instead of treating the cell as a successful empty surface.
+  // Not in cache (budget, disabled, or not yet issued): treat as loading so
+  // the draw path can show the purple placeholder instead of a blank cell.
   SurfaceStruct missing;
   missing.status = SurfaceStruct::SURFACE_REQUESTED;
   return missing;
+}
+
+ImageTileCache::SurfaceStruct
+ImageTileCache::request_tile(int x, int y, int scale)
+{
+  // Legacy one-shot path: mark stand-ins + target, issue immediately, lookup.
+  mark_tile_needed(x, y, scale);
+  issue_requests();
+  return lookup_tile(x, y, scale);
 }
 
 void

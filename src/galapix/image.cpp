@@ -97,6 +97,20 @@ Image::cache_cleanup()
 }
 
 void
+Image::prepare_tiles(Rectf const& cliprect, float zoom)
+{
+  if (!m_provider || !m_cache || !m_renderer) {
+    return;
+  }
+  if (m_overview) {
+    m_overview->process();
+  }
+  m_cache->process_queue();
+  m_renderer->prepare(cliprect, zoom);
+  m_cache->issue_requests();
+}
+
+void
 Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
   if (!m_provider)
@@ -106,10 +120,7 @@ Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
   }
   else
   {
-    if (m_overview) {
-      m_overview->process();
-    }
-    m_cache->process_queue();
+    // Uploads and requests were handled in prepare_tiles; draw is pure.
     m_renderer->draw(gc, cliprect, zoom);
   }
 }

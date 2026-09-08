@@ -41,10 +41,12 @@ class Image;
 
 class Image final : public WorkspaceItem
 {
+  friend class ImageRenderer;
 public:
   Image(URL const& url, TileProviderPtr provider = {}, JobManager* job_manager = nullptr);
   ~Image() override;
 
+  void prepare_tiles(Rectf const& cliprect, float zoom) override;
   void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) override;
   void draw_mark(wstdisplay::GraphicsContext& gc) override;
 

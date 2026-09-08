@@ -29,7 +29,7 @@ namespace galapix {
 
 using namespace surf;
 
-ImageRenderer::ImageRenderer(Image& image, ImageTileCachePtr const& cache) :
+ImageRenderer::ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> const& cache) :
   m_image(image),
   m_cache(cache)
 {
@@ -47,10 +47,99 @@ ImageRenderer::get_vertex(int x, int y, float zoom) const
                          m_image.get_scaled_height()));
 }
 
+ImageRenderer::ViewPlan
+ImageRenderer::plan_view(Rectf const& cliprect, float zoom)
+{
+  ViewPlan plan;
+  Rectf image_rect = m_image.get_image_rect();
+
+  if (!geom::intersects(cliprect, image_rect)) {
+    return plan; // visible = false
+  }
+  plan.visible = true;
+
+  int const desired_scale = std::clamp(
+    static_cast<int>(std::floor(
+      std::log(1.0f / (zoom * m_image.get_scale())) / std::log(2.0f) + 1e-5f)),
+    m_cache->get_min_scale(), m_cache->get_max_scale());
+  plan.tiledb_scale = m_cache->stable_request_scale(desired_scale);
+  plan.scale_factor = std::ldexp(1.0f, plan.tiledb_scale);
+  plan.tile_zoom = plan.scale_factor * m_image.get_scale();
+
+  float const scaled_width  = static_cast<float>(m_image.get_original_width())  / plan.scale_factor;
+  float const scaled_height = static_cast<float>(m_image.get_original_height()) / plan.scale_factor;
+
+  if (scaled_width < 256.0f && scaled_height < 256.0f) {
+    plan.one_cell = true;
+    auto const& ov = m_image.overview();
+    // Gallery / fit-all: prefer overview; only fall back to a grid tile when
+    // overview Failed (same policy as pre-split draw path).
+    if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
+      plan.skip_grid = true;
+    } else if (ov.state() != ImageOverview::State::Failed) {
+      plan.skip_grid = true;
+    } else {
+      plan.tile_rect = Rect(0, 0, 1, 1);
+    }
+  } else {
+    Rectf image_region = geom::intersection(image_rect, cliprect);
+    image_region = Rectf((image_region.left()   - image_rect.left()) / m_image.get_scale(),
+                         (image_region.top()    - image_rect.top())  / m_image.get_scale(),
+                         (image_region.right()  - image_rect.left()) / m_image.get_scale(),
+                         (image_region.bottom() - image_rect.top())  / m_image.get_scale());
+
+    float const itilesize = 256.0f * plan.scale_factor;
+    int start_x = static_cast<int>(std::floor(image_region.left() / itilesize));
+    int end_x   = static_cast<int>(std::ceil(image_region.right() / itilesize));
+    int start_y = static_cast<int>(std::floor(image_region.top() / itilesize));
+    int end_y   = static_cast<int>(std::ceil(image_region.bottom() / itilesize));
+    plan.tile_rect = Rect(start_x, start_y, end_x, end_y);
+  }
+
+  return plan;
+}
+
+void
+ImageRenderer::prepare(Rectf const& cliprect, float zoom)
+{
+  ViewPlan const plan = plan_view(cliprect, zoom);
+
+  if (!plan.visible) {
+    m_cache->cleanup();
+    return;
+  }
+
+  // Soft overview load (may consume request budget for thumtoo path).
+  m_image.overview().ensure_requested(
+    m_image.job_manager(),
+    m_image.get_url(),
+    m_image.get_original_width(),
+    m_image.get_original_height(),
+    m_image.get_tile_provider());
+
+  if (plan.skip_grid) {
+    return;
+  }
+
+  if (plan.one_cell) {
+    m_cache->cancel_jobs(Rect(0, 0, 1, 1), plan.tiledb_scale);
+    m_cache->mark_tile_needed(0, 0, plan.tiledb_scale);
+    return;
+  }
+
+  m_cache->cancel_jobs(plan.tile_rect, plan.tiledb_scale);
+  for (int y = plan.tile_rect.top(); y < plan.tile_rect.bottom(); ++y) {
+    for (int x = plan.tile_rect.left(); x < plan.tile_rect.right(); ++x) {
+      m_cache->mark_tile_needed(x, y, plan.tiledb_scale);
+    }
+  }
+}
+
 void
 ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scale, float zoom)
 {
-  ImageTileCache::SurfaceStruct sstruct = m_cache->request_tile(x, y, scale);
+  // Pure lookup — requests were issued in prepare / issue_requests.
+  ImageTileCache::SurfaceStruct sstruct = m_cache->lookup_tile(x, y, scale);
   Rectf const tile_rect(get_vertex(x,   y,   zoom),
                         get_vertex(x+1, y+1, zoom));
   if (sstruct.surface)
@@ -135,86 +224,27 @@ ImageRenderer::draw_tiles(wstdisplay::GraphicsContext& gc, Rect const& rect, int
 bool
 ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
-  Rectf image_rect = m_image.get_image_rect();
+  ViewPlan const plan = plan_view(cliprect, zoom);
 
-  if (!geom::intersects(cliprect, image_rect))
-  {
-    m_cache->cleanup();
+  if (!plan.visible) {
     return false;
   }
-  else
-  {
-    // Soft whole-image preview (not a grid tile). Drawn under tiles so missing
-    // cells still show something while high-res loads.
-    m_image.overview().ensure_requested(
-      m_image.job_manager(),
-      m_image.get_url(),
-      m_image.get_original_width(),
-      m_image.get_original_height(),
-      m_image.get_tile_provider());
-    m_image.overview().draw(gc, image_rect);
 
-    // scale factor for requesting tiles: scale 0 = nominal size; negative =
-    // denser than layout (PDF). Raster providers report min_scale == 0.
-    // floor so zooming in switches to sharper (more negative) scales promptly;
-    // truncating toward zero stayed on coarse tiles too long and looked like
-    // JPEG upscaling of the previous level.
-    int const desired_scale = std::clamp(
-      static_cast<int>(std::floor(
-        std::log(1.0f / (zoom * m_image.get_scale())) / std::log(2.0f) + 1e-5f)),
-      m_cache->get_min_scale(), m_cache->get_max_scale());
-    // Hold provider requests on the previous scale while zoom is still
-    // moving (see ImageTileCache::stable_request_scale). Viewport scale
-    // still tracks the mouse; tiles stay at the last settled level.
-    int const tiledb_scale = m_cache->stable_request_scale(desired_scale);
-    // 2^scale as float so scale < 0 works (Math::pow2 is int shift only).
-    float const scale_factor = std::ldexp(1.0f, tiledb_scale);
+  Rectf image_rect = m_image.get_image_rect();
+  // Soft whole-image preview under tiles (load was requested in prepare).
+  m_image.overview().draw(gc, image_rect);
 
-    float const scaled_width  = static_cast<float>(m_image.get_original_width())  / scale_factor;
-    float const scaled_height = static_cast<float>(m_image.get_original_height()) / scale_factor;
-
-    if (scaled_width  < 256.0f && scaled_height < 256.0f)
-    {
-      // One grid cell (gallery / fit-all). Prefer overview (now thumtoo-backed
-      // for archives). Avoid a second max_scale request via draw_tile while
-      // overview is Loading/Ready. Tile fallback only if overview Failed.
-      auto const& ov = m_image.overview();
-      if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
-        return true;
-      }
-      if (ov.state() != ImageOverview::State::Failed) {
-        return true;
-      }
-      m_cache->cancel_jobs(Rect(0,0,1,1), tiledb_scale);
-      draw_tile(gc, 0, 0, tiledb_scale,
-                scale_factor * m_image.get_scale());
-    }
-    else
-    {
-      Rectf image_region = geom::intersection(image_rect, cliprect); // visible part of the image
-
-      image_region = Rectf((image_region.left()   - image_rect.left()) / m_image.get_scale(),
-                           (image_region.top()    - image_rect.top())  / m_image.get_scale(),
-                           (image_region.right()  - image_rect.left()) / m_image.get_scale(),
-                           (image_region.bottom() - image_rect.top())  / m_image.get_scale());
-
-      float const itilesize = 256.0f * scale_factor;
-
-      int start_x = static_cast<int>(std::floor(image_region.left() / itilesize));
-      int end_x   = static_cast<int>(std::ceil(image_region.right() / itilesize));
-
-      int start_y = static_cast<int>(std::floor(image_region.top() / itilesize));
-      int end_y   = static_cast<int>(std::ceil(image_region.bottom() / itilesize));
-
-      Rect rect(start_x, start_y, end_x, end_y);
-      m_cache->cancel_jobs(rect, tiledb_scale);
-      draw_tiles(gc,
-                 rect, tiledb_scale,
-                 scale_factor * m_image.get_scale());
-    }
-
+  if (plan.skip_grid) {
     return true;
   }
+
+  if (plan.one_cell) {
+    draw_tile(gc, 0, 0, plan.tiledb_scale, plan.tile_zoom);
+  } else {
+    draw_tiles(gc, plan.tile_rect, plan.tiledb_scale, plan.tile_zoom);
+  }
+
+  return true;
 }
 
 } // namespace galapix

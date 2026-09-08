@@ -116,9 +116,9 @@ Workspace::layout_random()
 }
 
 void
-Workspace::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
+Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
 {
-  for(auto& i: m_images)
+  for (auto& i : m_images)
   {
     if (geom::intersects(i->get_image_rect(), cliprect))
     {
@@ -126,8 +126,7 @@ Workspace::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zo
       {
         i->on_enter_screen();
       }
-
-      i->draw(gc, cliprect, zoom);
+      i->prepare_tiles(cliprect, zoom);
     }
     else
     {
@@ -135,6 +134,19 @@ Workspace::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zo
       {
         i->on_leave_screen();
       }
+    }
+  }
+}
+
+void
+Workspace::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
+{
+  for(auto& i: m_images)
+  {
+    if (geom::intersects(i->get_image_rect(), cliprect))
+    {
+      // enter/leave handled in prepare_tiles (same visibility test)
+      i->draw(gc, cliprect, zoom);
     }
   }
 

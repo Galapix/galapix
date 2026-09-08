@@ -34,14 +34,32 @@ class ImageRenderer
 public:
   ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> const& cache);
 
-  /** Return true if something was drawn to the screen, false when
-      image was outside the cliprect */
+  /** Visibility, cancel obsolete jobs, mark needed tiles, request overview.
+      No GL draws. Call once per frame before issue_requests / draw. */
+  void prepare(Rectf const& cliprect, float zoom);
+
+  /** Pure draw: overview + tile surfaces / stand-ins / placeholders.
+      Must not enqueue provider work. */
   bool draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom);
 
 private:
   Vector2f get_vertex(int x, int y, float zoom) const;
   void draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int tiledb_scale, float zoom);
   void draw_tiles(wstdisplay::GraphicsContext& gc, Rect const& rect, int tiledb_scale, float zoom);
+
+  /** Shared visibility / LOD decision for prepare and draw. */
+  struct ViewPlan
+  {
+    bool visible = false;
+    bool one_cell = false;
+    bool skip_grid = false; // gallery: overview covers us
+    int tiledb_scale = 0;
+    float scale_factor = 1.0f;
+    float tile_zoom = 1.0f;
+    Rect tile_rect{0, 0, 0, 0}; // grid cells when !one_cell
+  };
+
+  ViewPlan plan_view(Rectf const& cliprect, float zoom);
 
 private:
   Image& m_image;

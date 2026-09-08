@@ -1,3 +1,47 @@
+## Tile request phase split (2026-09-08) — tip **galapix-091** / bundle **galapix-002**
+
+Follow-up to galapix-090: implement the documented draw/update split.
+
+### Frame structure (target)
+```
+Viewer::draw:
+  begin_frame_request_budget(N)
+  workspace.prepare_tiles(clip, zoom)  // mark + issue + uploads + overview
+  workspace.draw(...)                  // pure lookup + GL
+```
+
+### API
+**ImageTileCache**
+- `mark_tile_needed(x,y,scale)` — records cell + stand-ins (parent, max_scale); no jobs
+- `issue_requests()` — issue marked cells under budget, coarser first
+- `lookup_tile(x,y,scale)` — pure map lookup; REQUESTED placeholder if absent
+- `request_tile` kept as thin wrapper (mark + issue one-shot + lookup) for any residual callers
+- Per-frame `m_needed` cleared at start of `issue_requests` / explicit `clear_needed`
+
+**ImageRenderer**
+- `prepare(clip, zoom)` — visibility, cancel_jobs, mark_tile_needed, overview ensure
+- `draw(...)` — overview blit + lookup_tile only (no enqueue)
+
+**Image / WorkspaceItem / Workspace**
+- `prepare_tiles(clip, zoom)` virtual (default no-op on WorkspaceItem)
+- Image: process overview + tile upload queue, then renderer.prepare, then issue_requests
+- Workspace two-phase: prepare_tiles then draw
+
+### Status
+- [x] ImageTileCache mark / issue / lookup
+- [x] ImageRenderer prepare vs draw
+- [x] WorkspaceItem / Workspace / Viewer wiring
+- [ ] Bundle galapix-002
+
+### Behaviour notes
+- Draw path uses `lookup_tile` only (no enqueue).
+- `issue_requests` sorts coarser scales first so stand-ins win the budget race.
+- Per-image `prepare_tiles`: overview process + tile uploads + mark + issue.
+- Key `R` still disables `queue_tile_request` (cache-only).
+- Legacy `request_tile` remains as mark+issue+lookup for any residual callers.
+
+---
+
 ## Tile request / placeholder redesign (2026-09-08) — tip **galapix-090** / bundle **galapix-001**
 
 ### Symptom

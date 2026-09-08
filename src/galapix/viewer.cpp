@@ -204,8 +204,8 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
     gc.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
   }
 
-  m_workspace->draw(gc, cliprect,
-                    m_state.get_scale());
+  m_workspace->prepare_tiles(cliprect, m_state.get_scale());
+  m_workspace->draw(gc, cliprect, m_state.get_scale());
 
   left_tool->draw(gc);
   middle_tool->draw(gc);
