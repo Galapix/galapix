@@ -503,8 +503,9 @@ AppViewer::process_event(SDL_Event const& event)
           }
           break;
 
-        case SDLK_r:
+        case SDLK_u:
           {
+            // SDLK_r is already move/rotate tool; use u = "use cache only".
             bool on = !galapix::ImageTileCache::tile_requests_enabled();
             galapix::ImageTileCache::set_tile_requests_enabled(on);
             std::cout << "Tile requests: " << (on ? "ENABLED" : "DISABLED (cache-only)")

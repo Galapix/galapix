@@ -1,3 +1,13 @@
+## Fix duplicate SDLK_r (2026-09-08) — tip **galapix-094** / bundle **galapix-005**
+
+`R` was already bound to move/rotate tool. Tile cache-only toggle moved to **`U`**.
+
+### Status
+- [x] Use SDLK_u for tile_requests_enabled toggle
+- [x] Bundle galapix-005
+
+---
+
 ## Global mark-then-issue pass (2026-09-08) — tip **galapix-093** / bundle **galapix-004**
 
 After the prepare/draw split, each `Image::prepare_tiles` still called
@@ -73,7 +83,7 @@ Viewer::draw:
 - Draw path uses `lookup_tile` only (no enqueue).
 - `issue_requests` sorts coarser scales first so stand-ins win the budget race.
 - Per-image `prepare_tiles`: overview process + tile uploads + mark + issue.
-- Key `R` still disables `queue_tile_request` (cache-only).
+- Key `U` still disables `queue_tile_request` (cache-only).
 - Legacy `request_tile` remains as mark+issue+lookup for any residual callers.
 
 ---
@@ -133,7 +143,7 @@ both **looks up** and **enqueues** (side effects on the draw path).
    to queue stand-ins (max_scale / parent) preferentially — already ordered
    first; keep that order and rely on (1) for visuals.
 3. Static `s_tile_requests_enabled` (default true). `queue_tile_request` and
-   overview thumtoo path respect it. Key **`R`** toggles; log the state.
+   overview thumtoo path respect it. Key **`U`** toggles; log the state.
 4. Fix stale tile-debug help text (code paints purple for loading, not
    yellow/red).
 
@@ -165,7 +175,7 @@ budget, and never lie about status on the return value (this tip).
 ### Status
 - [x] Analysis documented (this section)
 - [x] Fix empty-return status → purple restored
-- [x] Cache-only toggle (`R`)
+- [x] Cache-only toggle (`U`)
 - [x] Tile-debug message corrected
 - [x] Bundle galapix-001-tile-placeholder-and-cache-only.bundle (tip galapix-090)
 

@@ -131,7 +131,7 @@ public:
   static bool tile_debug() { return s_tile_debug; }
 
   /** When false, queue_tile_request is a no-op (in-memory cache only).
-      In-flight jobs still finish and upload. Toggle with key 'R'. */
+      In-flight jobs still finish and upload. Toggle with key 'U'. */
   static void set_tile_requests_enabled(bool on) { s_tile_requests_enabled = on; }
   static bool tile_requests_enabled() { return s_tile_requests_enabled; }
 
