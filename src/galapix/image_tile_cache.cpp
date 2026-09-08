@@ -16,6 +16,10 @@
 
 #include "galapix/image_tile_cache.hpp"
 
+#ifdef HAVE_THUMTOO
+#  include "thumtoo/thumtoo_tile_provider.hpp"
+#endif
+
 #include <algorithm>
 #include <vector>
 
@@ -328,10 +332,80 @@ ImageTileCache::issue_requests()
               return a.get_pos().y() < b.get_pos().y();
             });
 
+  // Build a batch of new provider jobs. ThumtooTileProvider coalesces these
+  // into one Client job so one decode/ladder serves the whole visible set.
+  std::vector<TileProvider::TileRequest> batch;
+  batch.reserve(ordered.size());
+  constexpr int kMaxTileAttempts = 3;
+
   for (TileCacheId const& id : ordered) {
-    queue_tile_request(id.get_pos().x(), id.get_pos().y(), id.get_scale());
+    int const x = id.get_pos().x();
+    int const y = id.get_pos().y();
+    int const scale = id.get_scale();
+    if (x < 0 || y < 0 || scale < m_min_scale || scale > m_max_scale) {
+      continue;
+    }
+    if (!s_tile_requests_enabled) {
+      break;
+    }
+
+    Cache::iterator i = m_cache.find(id);
+    int next_attempts = 1;
+    if (i != m_cache.end()) {
+      bool const dead =
+        i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+        !i->second.surface &&
+        (i->second.job_handle.is_failed() || i->second.job_handle.is_aborted());
+      if (dead && i->second.attempts < kMaxTileAttempts) {
+        next_attempts = i->second.attempts + 1;
+        m_cache.erase(i);
+      } else {
+        continue; // hit or in-flight
+      }
+    }
+
+    if (!try_consume_request_budget()) {
+      break;
+    }
+
+    JobHandle job_handle = JobHandle::create();
+    m_cache[id] = SurfaceStruct(job_handle,
+                                SurfaceStruct::SURFACE_REQUESTED,
+                                wstdisplay::SurfacePtr(),
+                                next_attempts);
+
+    TileProvider::TileRequest req;
+    req.scale = scale;
+    req.pos = Vector2i(x, y);
+    req.job_handle = job_handle;
+    req.callback = weak(std::mem_fn(&ImageTileCache::receive_tile),
+                        shared_from_this());
+    batch.push_back(std::move(req));
   }
+
   m_needed.clear();
+
+  if (batch.empty()) {
+    return;
+  }
+
+#ifdef HAVE_THUMTOO
+  // Thumtoo: one backend job for the whole set (shared decode ladder).
+  if (std::dynamic_pointer_cast<ThumtooTileProvider>(m_tile_provider)) {
+    m_tile_provider->request_tiles(std::move(batch));
+    return;
+  }
+#endif
+
+  // Other providers: one request_tile each (their JobHandle replaces ours).
+  for (auto& req : batch) {
+    TileCacheId id(req.pos, req.scale);
+    JobHandle h = m_tile_provider->request_tile(req.scale, req.pos, req.callback);
+    Cache::iterator it = m_cache.find(id);
+    if (it != m_cache.end()) {
+      it->second.job_handle = h;
+    }
+  }
 }
 
 ImageTileCache::SurfaceStruct

@@ -19,6 +19,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include "galapix/tile.hpp"
 #include "job/job_handle.hpp"
@@ -41,6 +42,16 @@ public:
 
   virtual JobHandle request_tile(int tilescale, Vector2i const& pos,
                                  const std::function<void (Tile)>& callback) =0;
+
+  /** Optional multi-cell request. Default calls request_tile per entry.
+      Providers may coalesce into one backend job (shared decode). */
+  struct TileRequest {
+    int scale = 0;
+    Vector2i pos;
+    JobHandle job_handle;
+    std::function<void (Tile)> callback;
+  };
+  virtual void request_tiles(std::vector<TileRequest> requests);
 
   virtual int get_max_scale() const =0;
   /** Finest scale the provider can produce. Raster images: 0. PDF/live:

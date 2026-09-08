@@ -1,3 +1,23 @@
+## Batch visible tiles in one thumtoo job (2026-09-08) — tip **galapix-120** / bundle **galapix-037**
+
+### Problem
+Even after finer-first issue order, a deep-zoomed image still took ~1s for
+all cells to appear. Each cell was a separate Client job; workers contended
+on the per-image shrink ladder and paid queue overhead N times.
+
+### Fix
+- thumtoo-057: `Client::request_tiles` — one job, many cells
+- `TileProvider::request_tiles` + `ThumtooTileProvider` override
+- `ImageTileCache::issue_requests` builds a batch and sends it in one call
+
+Requires thumtoo-057.
+
+### Status
+- [x] Code
+- [ ] Bundle galapix-037
+
+---
+
 ## Finer-first tile issue + higher start budget (2026-09-08) — tip **galapix-119** / bundle **galapix-036**
 
 ### Problem
