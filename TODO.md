@@ -15,7 +15,7 @@ Grid jobs saw budget 0 every frame until zoom re-ordered work.
 
 ### Status
 - [x] Code
-- [ ] Bundle galapix-025
+- [x] Bundle galapix-025
 
 ---
 
