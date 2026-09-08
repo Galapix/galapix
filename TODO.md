@@ -31,7 +31,7 @@ Viewer::draw:
 - [x] ImageTileCache mark / issue / lookup
 - [x] ImageRenderer prepare vs draw
 - [x] WorkspaceItem / Workspace / Viewer wiring
-- [ ] Bundle galapix-002
+- [x] Bundle galapix-002-tile-prepare-draw-split.bundle
 
 ### Behaviour notes
 - Draw path uses `lookup_tile` only (no enqueue).
