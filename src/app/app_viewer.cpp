@@ -104,9 +104,9 @@ AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
   m_gamecontrollers()
 {
   // OpenGLWindow::handle_event updates glViewport; keep ortho + Viewer in sync.
-  m_window->sig_resized.connect([this](geom::isize const& size) {
-    m_window->get_gc().set_ortho(size);
-    m_viewer.reshape(size);
+  m_window->sig_resized.connect([this](geom::isize const& new_size) {
+    m_window->get_gc().set_ortho(new_size);
+    m_viewer.reshape(new_size);
   });
   m_viewer.reshape(m_window->get_size());
 

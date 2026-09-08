@@ -73,7 +73,15 @@ executable_dir()
 
 } // namespace
 
-ImguiOverlay::ImguiOverlay() = default;
+ImguiOverlay::ImguiOverlay() :
+  m_initialized(false),
+  m_visible(true),
+  m_status_visible(false),
+  m_help_visible(false),
+  m_icons_loaded(false),
+  m_icons{},
+  m_toasts()
+{}
 
 ImguiOverlay::~ImguiOverlay()
 {
@@ -503,8 +511,10 @@ ImguiOverlay::draw_status_panel(Viewer& viewer)
   }
 
   ViewerState const& st = viewer.get_state();
-  ImGui::Text("view scale: %.4f", st.get_scale());
-  ImGui::Text("offset: (%.1f, %.1f)", st.get_offset().x(), st.get_offset().y());
+  ImGui::Text("view scale: %.4f", static_cast<double>(st.get_scale()));
+  ImGui::Text("offset: (%.1f, %.1f)",
+              static_cast<double>(st.get_offset().x()),
+              static_cast<double>(st.get_offset().y()));
 
   if (Workspace* ws = viewer.get_workspace()) {
     int requests = 0, uploads = 0, cache_entries = 0;

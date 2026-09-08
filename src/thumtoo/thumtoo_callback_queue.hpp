@@ -37,7 +37,7 @@ public:
   int size() const;
 
 private:
-  ThumtooCallbackQueue() = default;
+  ThumtooCallbackQueue() : m_queue() {}
 
   ThreadMessageQueue2<std::function<void()>> m_queue;
 

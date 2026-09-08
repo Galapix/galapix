@@ -249,6 +249,17 @@ if(WITH_THUMTOO)
     src/thumtoo/thumtoo_uri.cpp)
   target_compile_definitions(libgalapix PUBLIC HAVE_THUMTOO=1)
   target_link_libraries(libgalapix PUBLIC ${THUMTOO_TARGET})
+  # Treat thumtoo headers as system so -Weffc++ / WERROR do not diagnose them.
+  # Mark the linked target's interface includes as system (covers add_subdirectory
+  # and IMPORTED layouts) and add an explicit path as a fallback.
+  set_property(TARGET ${THUMTOO_TARGET} APPEND PROPERTY
+    INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+    "$<TARGET_PROPERTY:${THUMTOO_TARGET},INTERFACE_INCLUDE_DIRECTORIES>")
+  if(EXISTS "${THUMTOO_DIR}/include")
+    target_include_directories(libgalapix SYSTEM PUBLIC "${THUMTOO_DIR}/include")
+  elseif(THUMTOO_INCLUDE_DIR)
+    target_include_directories(libgalapix SYSTEM PUBLIC "${THUMTOO_INCLUDE_DIR}")
+  endif()
   message(STATUS "thumtoo tile backend enabled (${THUMTOO_DIR})")
 endif()
 
@@ -329,9 +340,11 @@ add_library(libgalapix_app STATIC ${LIBGALAPIX_APP_SOURCES})
 target_compile_options(libgalapix_app PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 # ImGui is third-party; do not apply project warning flags to it.
 set_source_files_properties(${IMGUI_SOURCES} PROPERTIES COMPILE_FLAGS "-w")
-target_include_directories(libgalapix_app PUBLIC
+# SYSTEM so including imgui.h from our sources does not fail under WERROR.
+target_include_directories(libgalapix_app SYSTEM PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui
-  ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends
+  ${CMAKE_CURRENT_SOURCE_DIR}/external/imgui/backends)
+target_include_directories(libgalapix_app PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}/src)
 target_link_libraries(libgalapix_app PUBLIC
   libgalapix

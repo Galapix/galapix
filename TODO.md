@@ -1,3 +1,20 @@
+## Fix WERROR: third-party SYSTEM + remaining app warnings (2026-09-08) — tip **galapix-135** / bundle **galapix-053**
+
+Remaining failures after 051/052 under WARNINGS=ON WERROR=ON:
+
+- ImGui headers diagnosed when included from `imgui_overlay.cpp` → mark
+  imgui include dirs **SYSTEM**; keep `-w` on imgui .cpp sources
+- thumtoo `Executor` default ctor (-Weffc++) via non-system include → mark
+  thumtoo interface includes **SYSTEM**
+- `ThumtooCallbackQueue` / `ImguiOverlay` member-init list (-Weffc++)
+- `AppViewer` lambda param shadows ctor param (-Wshadow)
+- `ImGui::Text` float→double (-Wdouble-promotion)
+
+- [x] Code
+- [ ] Bundle galapix-053
+
+---
+
 ## Fix WERROR: ThreadMessageQueue2 size + ViewerCommand init (2026-09-08) — tip **galapix-134** / bundle **galapix-052**
 
 - `ThreadMessageQueue2::size()`: cast `queue::size_type` → `int` (-Wconversion)
