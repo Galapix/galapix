@@ -38,6 +38,7 @@
 #  include <thumtoo/client.hpp>
 #  include <thumtoo/image.hpp>
 #  include <thumtoo/pdf.hpp>
+#  include <thumtoo/djvu.hpp>
 #  include <cstdlib>
 #  include <algorithm>
 #endif

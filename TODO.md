@@ -1,3 +1,13 @@
+## Include thumtoo/djvu.hpp for page expand (2026-09-08) — tip **galapix-155** / bundle **galapix-073**
+
+viewer_command / viewer called `thumtoo::is_likely_djvu_path` without including
+`<thumtoo/djvu.hpp>` (only pdf.hpp was pulled in).
+
+- [x] Code
+- [ ] Bundle galapix-073
+
+---
+
 ## DjVu open path (2026-09-08) — tip **galapix-154** / bundle **galapix-072**
 
 thumtoo-064 adds DjVu page tiles. Galapix only needs:
