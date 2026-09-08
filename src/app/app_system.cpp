@@ -56,7 +56,8 @@ AppSystem::launch_viewer(Workspace& workspace, Options& opts)
 bool
 AppSystem::requires_command_line_args()
 {
-  return true;
+  // Empty argv opens an empty workspace; do not print --help.
+  return false;
 }
 
 void

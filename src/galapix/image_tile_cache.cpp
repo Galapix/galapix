@@ -683,10 +683,13 @@ ImageTileCache::pending_request_count() const
     if (entry.second.status != SurfaceStruct::SURFACE_REQUESTED) {
       continue;
     }
-    // Failed/aborted are not in-flight work; counting them made "pending"
-    // stick at ~100 after partial batch failures.
+    // Failed/aborted are not in-flight. Finished means the worker already
+    // delivered into m_tile_queue (awaiting GL upload) — that is
+    // pending_uploads, not pending_requests. Fresh generate could leave
+    // dozens of finished+REQUESTED cells and look "stuck" at ~100.
     if (entry.second.job_handle.is_failed() ||
-        entry.second.job_handle.is_aborted()) {
+        entry.second.job_handle.is_aborted() ||
+        entry.second.job_handle.is_finished()) {
       continue;
     }
     ++n;

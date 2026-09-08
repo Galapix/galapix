@@ -1,3 +1,16 @@
+## No-args start + pending_requests excludes finished (2026-09-08) — tip **galapix-124** / bundle **galapix-041**
+
+- `requires_command_line_args()` → false: `galapix` with no args opens the viewer
+- `pending_request_count` ignores finished handles (decoded, waiting GL upload)
+
+Fresh tile generate left many REQUESTED+finished cells counted as pending until
+upload drained; cache hits uploaded so fast it was barely visible.
+
+- [x] Code
+- [x] Bundle galapix-041
+
+---
+
 ## Pending-request accounting + dead cell cleanup (2026-09-08) — tip **galapix-123** / bundle **galapix-040**
 
 - `pending_request_count` ignores failed/aborted handles (was stuck ~100)
