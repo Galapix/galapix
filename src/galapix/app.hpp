@@ -19,7 +19,6 @@
 #ifndef HEADER_GALAPIX_GALAPIX_APP_HPP
 #define HEADER_GALAPIX_GALAPIX_APP_HPP
 
-#include <arxp/fwd.hpp>
 #include <surf/fwd.hpp>
 
 namespace galapix {
@@ -31,11 +30,9 @@ public:
   App();
 
   surf::SoftwareSurfaceFactory& surface_factory();
-  arxp::ArchiveManager& archive();
 
 private:
   surf::SoftwareSurfaceFactory* m_surface_factory;
-  arxp::ArchiveManager* m_archive_manager;
 
 private:
   App(App const&) = delete;

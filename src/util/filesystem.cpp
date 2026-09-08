@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <fstream>
-#include <future>
 #include <string.h>
 #include <dirent.h>
 #include <errno.h>
@@ -30,12 +29,6 @@
 #include <sstream>
 #include <algorithm>
 
-#include <arxp/archive_loader.hpp>
-#include <arxp/archive_manager.hpp>
-#include <arxp/rar.hpp>
-#include <arxp/seven_zip.hpp>
-#include <arxp/tar.hpp>
-#include <arxp/zip.hpp>
 #include <logmich/log.hpp>
 #include <surf/software_surface.hpp>
 
@@ -339,35 +332,15 @@ Filesystem::generate_image_file_list(std::string const& pathname, std::vector<UR
       lst.push_back(pathname);
     }
 
-    // check the file list for valid entries, if entries are archives,
-    // get a file list from them
-    std::vector<std::future<std::vector<URL>>> archive_tasks;
+    // Collect supported files. Archives and PDFs are listed as containers;
+    // ViewerCommand expands them via thumtoo (TOC / page count).
     for(std::vector<std::string>::iterator i = lst.begin(); i != lst.end(); ++i)
     {
       URL url = URL::from_filename(*i);
 
       try
       {
-        if (g_app.archive().is_archive(*i))
-        {
-          archive_tasks.push_back(std::async([i, url]() -> std::vector<URL> {
-                std::vector<URL> sub_file_list;
-
-                arxp::ArchiveLoader const* loader;
-                auto const& files = g_app.archive().get_filenames(*i, &loader);
-                for(auto const& file: files)
-                {
-                  URL archive_url = URL::from_string(url.str() + "//" + loader->str() + ":" + file);
-                  if (g_app.surface_factory().has_supported_extension(archive_url.str()))
-                  {
-                    sub_file_list.push_back(archive_url);
-                  }
-                }
-
-                return sub_file_list;
-              }));
-        }
-        else if (has_extension(*i, ".galapix"))
+        if (has_extension(*i, ".galapix"))
         {
           file_list.push_back(url);
         }
@@ -403,18 +376,6 @@ Filesystem::generate_image_file_list(std::string const& pathname, std::vector<UR
       }
     }
 
-    for(auto& task: archive_tasks)
-    {
-      try
-      {
-        auto const& sub_lst = task.get();
-        file_list.insert(file_list.end(), sub_lst.begin(), sub_lst.end());
-      }
-      catch(std::exception const& err)
-      {
-        log_warn("Warning: {}", err.what());
-      }
-    }
   }
 }
 

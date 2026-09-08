@@ -17,7 +17,7 @@ Primary packaging is `flake.nix` + `CMakeLists.txt`.
 |------|------------------------|
 | Multi-scale **tiles** (view path) | **thumtoo only** when `HAVE_THUMTOO` (`--no-thumtoo` rejected) |
 | Resource / file index | **Removed** (galapix-068); thumtoo locators/content |
-| Archive listing when scanning dirs | Still **arxpcpp** (`Filesystem` / `App::archive`) |
+| Archive listing when scanning dirs | **thumtoo** (`is_likely_archive_path` + `read_archive_toc` in ViewerCommand) |
 | PDF / archive **open** | thumtoo expands `//page:` / `//archive:` |
 | HTTP(S) / Zoomify download | Still **libcurl** |
 | Broad format decode (XCF, …) | Still **ImageMagick** via surfcpp plugin |
@@ -53,8 +53,8 @@ phases (SQLiteCpp stays until resource DB goes).
 | Dependency | Tied to | To remove it |
 |------------|---------|----------------|
 | ~~**SQLiteCpp**~~ | Removed galapix-068 | — |
-| **arxpcpp** | `Filesystem` archive scan, `App::archive`, `ArchiveThread` (mostly idle) | Prefer thumtoo archive expand on open; then delete arxp wiring. |
-| **exspcpp** | Transitive of arxpcpp only | Goes away with arxpcpp. |
+| ~~**arxpcpp**~~ | Removed galapix-115 | Archives via thumtoo libarchive |
+| ~~**exspcpp**~~ | Removed with arxpcpp | — |
 | **ImageMagick** / GraphicsMagick | surfcpp `imagemagick` plugin; `Magick::InitializeMagick` | Keep JPEG/PNG via surfcpp; lose Magick-backed formats unless another loader is wired. |
 | **libcurl** | `DownloadManager`, remote URLs, Zoomify | Local-file / thumtoo-only builds can drop network. |
 | ~~**OpenSSL**~~ | Removed with SHA1 helper (galapix-068) | — |

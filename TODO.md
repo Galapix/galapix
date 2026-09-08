@@ -1,3 +1,29 @@
+## Remove arxpcpp / exspcpp — archives via thumtoo (2026-09-08) — tip **galapix-115** / bundle **galapix-032**
+
+### Goal
+All archive TOC / member access goes through thumtoo (libarchive). Drop
+arxpcpp and transitive exspcpp from Galapix.
+
+### Galapix changes
+- [x] `Filesystem::generate_image_file_list`: drop arxp expand; archives already
+      added via `is_likely_archive_path` and expanded in `ViewerCommand`
+- [x] `URL::get_data`: plain file via `Blob::from_file`; archive plugins via
+      `thumtoo::extract_archive_member` (HAVE_THUMTOO)
+- [x] Remove `App::archive` / `ArchiveManager` wiring
+- [x] Delete idle `ArchiveThread`
+- [x] CMake + flake: drop arxp / exspcpp
+- [x] Update DEPENDENCIES.md
+
+### Preserve later in thumtoo (not Galapix)
+- unrar for RAR subformats libarchive cannot open
+- optional external unrar/unzip for single-member extract (avoids full TOC walk)
+
+### Status
+- [x] Code
+- [ ] Bundle galapix-032
+
+---
+
 ## Overview underlay kind (2026-09-08) — tip **galapix-114** / **galapix-031**
 
 Replace `m_lqip_only` bool with `Underlay { None, Lqip, Levels }` so load

@@ -25,8 +25,7 @@ namespace galapix {
 App g_app;
 
 App::App() :
-  m_surface_factory(nullptr),
-  m_archive_manager(nullptr)
+  m_surface_factory(nullptr)
 {
 }
 
@@ -35,13 +34,6 @@ App::surface_factory()
 {
   assert(m_surface_factory != nullptr);
   return *m_surface_factory;
-}
-
-arxp::ArchiveManager&
-App::archive()
-{
-  assert(m_archive_manager != nullptr);
-  return *m_archive_manager;
 }
 
 } // namespace galapix

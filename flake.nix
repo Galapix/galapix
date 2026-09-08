@@ -12,17 +12,7 @@
     geomcpp.url = "github:grumbel/geomcpp";
     geomcpp.inputs.nixpkgs.follows = "nixpkgs";
 
-    exspcpp.url = "github:grumbel/exspcpp";
-    exspcpp.inputs.nixpkgs.follows = "nixpkgs";
-    exspcpp.inputs.flake-utils.follows = "flake-utils";
 
-    arxpcpp.url = "github:grumbel/arxpcpp";
-    arxpcpp.inputs.nixpkgs.follows = "nixpkgs";
-    arxpcpp.inputs.flake-utils.follows = "flake-utils";
-    arxpcpp.inputs.tinycmmc.follows = "tinycmmc";
-    arxpcpp.inputs.logmich.follows = "logmich";
-    arxpcpp.inputs.exspcpp.follows = "exspcpp";
-    arxpcpp.inputs.uitest.follows = "uitest";
 
     logmich.url = "github:logmich/logmich";
     logmich.inputs.nixpkgs.follows = "nixpkgs";
@@ -72,7 +62,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils,
-              tinycmmc, exspcpp, arxpcpp, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay, thumtoo }:
+              tinycmmc, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay, thumtoo }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -171,7 +161,6 @@
             ] ++ [
               tinycmmc.packages.${system}.default
               logmich.packages.${system}.default
-              arxpcpp.packages.${system}.default
               geomcpp.packages.${system}.default
               priocpp.packages.${system}.default
               surfcpp.packages.${system}.default

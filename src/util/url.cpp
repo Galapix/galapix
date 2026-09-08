@@ -20,13 +20,12 @@
 #include <stdexcept>
 #include <ostream>
 
-#include <arxp/rar.hpp>
-#include <arxp/seven_zip.hpp>
-#include <arxp/tar.hpp>
-#include <arxp/util.hpp>
-#include <arxp/zip.hpp>
+#ifdef HAVE_THUMTOO
+#  include <thumtoo/archive.hpp>
+#endif
 
 #include "network/curl.hpp"
+#include "util/blob.hpp"
 #include "util/filesystem.hpp"
 #include "util/raise_exception.hpp"
 
@@ -131,23 +130,24 @@ URL::get_data(std::string* mime_type) const
   {
     if (m_plugin.empty())
     {
-      return arxp::read_file(m_payload);
+      Blob blob = Blob::from_file(m_payload);
+      return std::vector<uint8_t>(blob.begin(), blob.end());
     }
-    else if (m_plugin == "rar")
+    // Archive member: file:///path.zip//zip:inner.jpg (or rar/7zip/tar/archive)
+    else if (m_plugin == "rar" || m_plugin == "zip" || m_plugin == "7zip" ||
+             m_plugin == "7z" || m_plugin == "tar" || m_plugin == "archive")
     {
-      return arxp::Rar::get_file(m_payload, m_plugin_payload);
-    }
-    else if (m_plugin == "zip")
-    {
-      return arxp::Zip::get_file(m_payload, m_plugin_payload);
-    }
-    else if (m_plugin == "7zip")
-    {
-      return arxp::SevenZip::get_file(m_payload, m_plugin_payload);
-    }
-    else if (m_plugin == "tar")
-    {
-      return arxp::Tar::get_file(m_payload, m_plugin_payload);
+#ifdef HAVE_THUMTOO
+      auto data = thumtoo::extract_archive_member(m_payload, m_plugin_payload);
+      if (!data) {
+        raise_runtime_error("URL::get_data(): archive extract failed: " + str());
+      }
+      return std::move(*data);
+#else
+      raise_runtime_error(
+        "URL::get_data(): archive members require thumtoo (HAVE_THUMTOO): " +
+        str());
+#endif
     }
     else
     {

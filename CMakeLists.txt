@@ -164,7 +164,6 @@ function(build_dependencies)
   tinycmmc_find_dependency(sexp)
   tinycmmc_find_dependency(strut)
   tinycmmc_find_dependency(surf)
-  tinycmmc_find_dependency(arxp)
   tinycmmc_find_dependency(prio)
   tinycmmc_find_dependency(wstdisplay)
 endfunction()
@@ -193,7 +192,6 @@ target_include_directories(libgalapix PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}/src/)
 target_link_libraries(libgalapix PUBLIC
   prio::prio
-  arxp::arxp
   surf::surf
   strut::strut
   logmich::logmich

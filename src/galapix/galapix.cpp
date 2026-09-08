@@ -23,7 +23,6 @@
 
 #include <Magick++.h>
 
-#include <arxp/archive_manager.hpp>
 #include <strut/numeric_less.hpp>
 #include <surf/software_surface_factory.hpp>
 
@@ -83,10 +82,8 @@ Galapix::main(int argc, char** argv)
 
     Magick::InitializeMagick(*argv);
 
-    arxp::ArchiveManager archive_manager;
     SoftwareSurfaceFactory software_surface_factory;
 
-    g_app.m_archive_manager = &archive_manager;
     g_app.m_surface_factory = &software_surface_factory;
 
     run(opts);
