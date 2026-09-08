@@ -5,7 +5,7 @@ frame). Helps distinguish "never had content_id/VIPS" from decode failures.
 
 ### Status
 - [x] m_lqip_miss_logged + log_debug
-- [ ] Bundle galapix-023
+- [x] Bundle galapix-023
 
 ---
 
