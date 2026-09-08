@@ -8,7 +8,7 @@ With WARNINGS=ON WERROR=ON, Image and ImageOverview failed:
   member-init list (-Weffc++)
 
 - [x] Code
-- [ ] Bundle galapix-051
+- [x] Bundle galapix-051
 
 ---
 
