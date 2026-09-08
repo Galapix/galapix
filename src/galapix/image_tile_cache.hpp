@@ -91,8 +91,9 @@ public:
   void mark_tile_needed(int x, int y, int scale);
 
   /** Start provider jobs for cells marked since the last issue, under the
-      global per-frame budget. Coarser scales first; within a scale, nearer
-      the visible-rect centre first. Clears the needed set. */
+      global per-frame budget. Finer (exact) scales first so deep zoom is not
+      starved behind parent/overview generation; within a scale, nearer the
+      visible-rect centre. Clears the needed set. */
   void issue_requests();
 
   void clear_needed();

@@ -264,13 +264,22 @@ ImageTileCache::mark_tile_needed(int x, int y, int scale)
     return;
   }
 
-  // Mark the full ancestor chain (target → parents → max_scale overview cell).
-  // issue_requests sorts coarser-first so stand-ins tend to finish before the
-  // fine tile; find_smaller_tile can then upscale whatever is already Ready.
+  // Mark the requested cell, then missing ancestors only (for stand-ins).
+  // Already-SUCCEEDED coarser cells are skipped so they do not compete for the
+  // per-frame start budget. issue_requests prioritises *finer* scales first so
+  // a deep zoom is not starved behind overview/parent generation.
   int cx = x;
   int cy = y;
   for (int s = scale; s <= m_max_scale; ++s) {
-    m_needed.insert(TileCacheId(Vector2i(cx, cy), s));
+    TileCacheId const id(Vector2i(cx, cy), s);
+    if (s == scale) {
+      m_needed.insert(id);
+    } else {
+      Cache::iterator it = m_cache.find(id);
+      if (it == m_cache.end() || !it->second.surface) {
+        m_needed.insert(id);
+      }
+    }
     cx /= 2;
     cy /= 2;
   }
@@ -290,15 +299,15 @@ ImageTileCache::issue_requests()
     return;
   }
 
-  // Coarser scales first; within a scale, nearer the viewport centre first so
-  // the per-frame budget prefers what the user is looking at.
+  // Finer scales first (exact view cells before parents/overview). Within a
+  // scale, nearer the viewport centre first.
   float const fx = m_focus_tx;
   float const fy = m_focus_ty;
   std::vector<TileCacheId> ordered(m_needed.begin(), m_needed.end());
   std::sort(ordered.begin(), ordered.end(),
             [fx, fy](TileCacheId const& a, TileCacheId const& b) {
               if (a.get_scale() != b.get_scale()) {
-                return a.get_scale() > b.get_scale(); // coarser first
+                return a.get_scale() < b.get_scale(); // finer first
               }
               float const da =
                 (static_cast<float>(a.get_pos().x()) + 0.5f - fx) *

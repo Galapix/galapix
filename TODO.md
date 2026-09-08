@@ -1,3 +1,26 @@
+## Finer-first tile issue + higher start budget (2026-09-08) — tip **galapix-119** / bundle **galapix-036**
+
+### Problem
+Zoomed into one image, the first tile appears reasonably quickly but the rest
+trickle in over seconds. Coarser-first `issue_requests` + marking full ancestor
+chains spent the per-frame start budget on overview/parent jobs; exact cells
+started late. Budget 48/frame made a large visible grid take several frames to
+even *enqueue*.
+
+Throttling was aimed at gallery stampede; it hurts the single-image deep-zoom
+case. Provider work was already off-GUI; order/budget were wrong.
+
+### Fix
+- Issue **finer scales first** (exact view before parents)
+- Mark ancestors only when not already SUCCEEDED (no budget fight with hits)
+- Raise per-frame start budget **48 → 128**
+
+### Status
+- [x] Code
+- [ ] Bundle galapix-036
+
+---
+
 ## Tile request LIFO catch-up + zoom hold (2026-09-08) — tip **galapix-118** / bundle **galapix-035**
 
 ### Problem

@@ -156,7 +156,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
   m_mark_for_redraw.store(false);
 
   // Stagger new provider jobs across frames (see ImageTileCache budget).
-  ImageTileCache::begin_frame_request_budget(48);
+  ImageTileCache::begin_frame_request_budget(128);
 
   bool clip_debug = false;
 
