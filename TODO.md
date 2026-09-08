@@ -1,3 +1,15 @@
+## Galapix paints ThumbHash LQIP under overview (2026-09-08) — tip **galapix-103** / bundle **galapix-016**
+
+ImageOverview tries `Client::get_lqip` first (inline ThumbHash, no blob I/O).
+At on-screen long edge ≤64, LQIP alone is enough (no levels stampede). Larger
+views still `request_pixels` and replace the underlay when levels arrive.
+
+### Status
+- [x] Bundle galapix-016
+- Requires thumtoo-040 (schema v2 + get_lqip)
+
+---
+
 ## Overview max_edge matches display size (2026-09-08) — tip **galapix-102** / bundle **galapix-015**
 
 Gallery of ~1000 images requested a **512** long-edge level for every thumbnail

@@ -16,6 +16,7 @@
 #include <surf/convert.hpp>
 #include <surf/software_surface_factory.hpp>
 #include <surf/pixel_format.hpp>
+#include <surf/pixel_data.hpp>
 #include <wstdisplay/graphics_context.hpp>
 #include <wstdisplay/texture.hpp>
 
@@ -31,6 +32,7 @@
 #ifdef HAVE_THUMTOO
 #  include "thumtoo/thumtoo_tile_provider.hpp"
 #  include <thumtoo/client.hpp>
+#  include <thumtoo/lqip.hpp>
 #  include <thumtoo/types.hpp>
 #endif
 
@@ -86,7 +88,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
                                 TileProviderPtr provider,
                                 int target_long_edge)
 {
-  if (m_state != State::Idle) {
+  if (m_state == State::Failed) {
     return;
   }
 
@@ -99,27 +101,68 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
   }
 
 #ifdef HAVE_THUMTOO
-  // Thumtoo: first soft layer is the **levels** ladder (JXL preview via
-  // request_pixels), not a grid tile. Grid tiles are a later refinement.
-  // Share the per-frame budget so first paint does not stampede the client.
   if (auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get())) {
     if (!ImageTileCache::tile_requests_enabled()) {
-      return; // cache-only mode — stay Idle
+      return;
     }
+
+    // 1) Inline ThumbHash from content row — no blob I/O.
+    if (!m_lqip_tried) {
+      m_lqip_tried = true;
+      if (auto hash = tp->client()->get_lqip(tp->uri())) {
+        if (auto img = thumtoo::thumbhash_decode_rgba(
+                std::span<std::uint8_t const>(hash->data(), hash->size()))) {
+          try {
+            auto surface = surf::SoftwareSurface::create(
+              surf::PixelFormat::RGBA8,
+              geom::isize(img->width, img->height));
+            auto& view = surface.as_pixelview<surf::RGBA8Pixel>();
+            for (int y = 0; y < img->height; ++y) {
+              std::uint8_t const* src =
+                img->rgba.data() +
+                static_cast<std::size_t>(y) *
+                  static_cast<std::size_t>(img->width) * 4u;
+              surf::RGBA8Pixel* dst = view.get_row(y);
+              for (int x = 0; x < img->width; ++x) {
+                dst[x] = surf::RGBA8Pixel(src[x * 4 + 0], src[x * 4 + 1],
+                                          src[x * 4 + 2], src[x * 4 + 3]);
+              }
+            }
+            m_state = State::Loading;
+            receive_software(std::move(surface), /*from_lqip=*/true);
+          } catch (...) {
+            // fall through to levels
+          }
+        }
+      }
+    }
+
+    // Postage-stamp gallery: LQIP alone is enough.
+    if (m_lqip_only && m_state == State::Ready && target_long_edge <= 64) {
+      return;
+    }
+    if (m_levels_requested && m_state == State::Loading) {
+      return;
+    }
+    if (m_state == State::Ready && !m_lqip_only) {
+      return; // full overview already
+    }
+
+    // 2) Levels ladder (blob) for sharper soft underlay.
     if (!ImageTileCache::try_consume_request_budget()) {
-      return; // stay Idle — retry next frame
+      return;
     }
     m_state = State::Loading;
+    m_levels_requested = true;
     m_job = JobHandle::create();
-    // Match displayed size; thumtoo ladder steps are 128/256/512/…
-    // 512 for every gallery thumbnail was far larger than on-screen size.
     int edge = target_long_edge > 0 ? target_long_edge : 256;
     edge = std::clamp(edge, 128, 512);
     auto client = tp->client();
     std::string uri = tp->uri();
     client->request_pixels(
       std::move(uri), edge,
-      [weak_self, job = m_job](std::string, int, std::optional<thumtoo::PixelLevel> px) mutable {
+      [weak_self, job = m_job](std::string, int,
+                               std::optional<thumtoo::PixelLevel> px) mutable {
         auto self = weak_self.lock();
         if (!self) {
           return;
@@ -128,31 +171,41 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
           return;
         }
         if (!px || px->bytes.empty() || px->width <= 0 || px->height <= 0) {
-          self->receive_software(std::nullopt);
-          job.set_failed();
+          // Keep LQIP if we already have it.
+          if (!self->m_lqip_only) {
+            self->receive_software(std::nullopt, false);
+            job.set_failed();
+          }
           return;
         }
         try {
-          // JXL (or whatever codec thumtoo stored) via surface factory.
           auto surface = g_app.surface_factory().from_mem(
             std::span<uint8_t const>(px->bytes.data(), px->bytes.size()),
             px->codec == "jxl" ? "image/jxl" : px->codec,
             "thumtoo-level");
           if (surface.get_width() <= 0) {
-            self->receive_software(std::nullopt);
-            job.set_failed();
+            if (!self->m_lqip_only) {
+              self->receive_software(std::nullopt, false);
+              job.set_failed();
+            }
             return;
           }
-          self->receive_software(std::move(surface));
+          self->receive_software(std::move(surface), /*from_lqip=*/false);
           job.set_finished();
         } catch (...) {
-          self->receive_software(std::nullopt);
-          job.set_failed();
+          if (!self->m_lqip_only) {
+            self->receive_software(std::nullopt, false);
+            job.set_failed();
+          }
         }
       });
     return;
   }
 #endif
+
+  if (m_state != State::Idle) {
+    return;
+  }
 
   // Local files via JobManager + libjpeg DCT scale.
   if (!job_manager || !url.has_stdio_name()) {
@@ -170,7 +223,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     m_job, url, min_scale,
     [weak_self](std::optional<surf::SoftwareSurface> surface) {
       if (auto self = weak_self.lock()) {
-        self->receive_software(std::move(surface));
+        self->receive_software(std::move(surface), false);
       }
     });
 
@@ -178,9 +231,15 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
 }
 
 void
-ImageOverview::receive_software(std::optional<surf::SoftwareSurface> surface)
+ImageOverview::receive_software(std::optional<surf::SoftwareSurface> surface,
+                                bool from_lqip)
 {
-  // Worker thread: only enqueue for main-thread GL upload.
+  // May run on worker or main: queue is thread-safe; GL upload in process().
+  if (from_lqip) {
+    m_lqip_only = true;
+  } else if (surface.has_value()) {
+    m_lqip_only = false;
+  }
   m_queue.wait_and_push(std::move(surface));
   if (Viewer* v = Viewer::current()) {
     v->redraw();
@@ -196,8 +255,13 @@ ImageOverview::process()
   }
 
   if (!surface.has_value() || surface->get_width() <= 0 || surface->get_height() <= 0) {
-    m_state = State::Failed;
-    m_surface.reset();
+    // Keep an existing LQIP surface if a levels upgrade failed.
+    if (m_surface) {
+      m_state = State::Ready;
+    } else {
+      m_state = State::Failed;
+      m_surface.reset();
+    }
     return;
   }
 
@@ -225,6 +289,9 @@ ImageOverview::clear()
   m_job.set_aborted();
   m_state = State::Idle;
   m_surface.reset();
+  m_lqip_tried = false;
+  m_lqip_only = false;
+  m_levels_requested = false;
   std::optional<surf::SoftwareSurface> discard;
   while (m_queue.try_pop(discard)) {
   }

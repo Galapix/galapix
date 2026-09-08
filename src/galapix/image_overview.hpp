@@ -25,9 +25,9 @@ namespace galapix {
 
 class JobManager;
 
-/** In-memory soft whole-image preview (not a grid tile).
+/** Soft whole-image underlay: LQIP (ThumbHash) then levels / libjpeg overview.
  *
- *  See docs/OVERVIEW.md. Loaded via OverviewLoadJob / libjpeg scale.
+ *  See GLOSSARY.md (overview / levels / LQIP).
  */
 class ImageOverview : public std::enable_shared_from_this<ImageOverview>
 {
@@ -44,11 +44,12 @@ public:
 
   State state() const { return m_state; }
   bool has_surface() const { return static_cast<bool>(m_surface); }
+  /** True when the current surface is only the inline ThumbHash (no levels yet). */
+  bool is_lqip_only() const { return m_lqip_only; }
 
-  /** Start load once if Idle.
-   *  @param target_long_edge Desired on-screen long edge in pixels (clamped
-   *         to 128..512). Pass display size at gallery zoom — not a fixed 512.
-   *  Thumtoo: request_pixels levels ladder. Else OverviewLoadJob / libjpeg.
+  /** Start or upgrade soft underlay.
+   *  @param target_long_edge On-screen long edge (clamped 128..512 for levels).
+   *         At tiny sizes (≤64), a cached ThumbHash LQIP alone is enough.
    */
   void ensure_requested(JobManager* job_manager, URL const& url,
                         int original_width, int original_height,
@@ -64,12 +65,16 @@ public:
   void clear();
 
 private:
-  void receive_software(std::optional<surf::SoftwareSurface> surface);
+  void receive_software(std::optional<surf::SoftwareSurface> surface,
+                        bool from_lqip = false);
 
   State m_state = State::Idle;
   JobHandle m_job = JobHandle::create();
   ThreadMessageQueue2<std::optional<surf::SoftwareSurface>> m_queue;
   wstdisplay::SurfacePtr m_surface;
+  bool m_lqip_tried = false;
+  bool m_lqip_only = false;
+  bool m_levels_requested = false;
 };
 
 } // namespace galapix
