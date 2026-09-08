@@ -49,11 +49,12 @@ public:
       Must not enqueue provider work. */
   bool draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom);
 
-private:
-  Vector2f get_vertex(int x, int y, float zoom) const;
   /** World → draw space (subtract render origin, then float). */
   static Vector2f to_draw(Vector2f const& world);
   static Rectf to_draw(Rectf const& world);
+
+private:
+  Vector2f get_vertex(int x, int y, float zoom) const;
   void draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int tiledb_scale, float zoom);
   void draw_tiles(wstdisplay::GraphicsContext& gc, Rect const& rect, int tiledb_scale, float zoom);
 
