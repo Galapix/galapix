@@ -1,3 +1,17 @@
+## Toast notifications for toggle feedback (2026-09-08) — tip **galapix-096** / bundle **galapix-007**
+
+On-screen ImGui toasts for short user-facing stdout messages (tile debug `V`,
+tile requests `U`). Appear bottom-center for ~3s, fade out; shown even when
+Tab/F1 chrome is hidden. Still printed to stdout.
+
+### Status
+- [x] ImguiOverlay::notify + draw_toasts
+- [x] Wire V / U keys
+- [x] Help lists `u`
+- [x] Bundle galapix-007
+
+---
+
 ## Stand-in tiles on zoom-in (2026-09-08) — tip **galapix-095** / bundle **galapix-006**
 
 ### Symptom

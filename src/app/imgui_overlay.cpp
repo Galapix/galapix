@@ -10,7 +10,10 @@
 
 #include "app/galapix_paths.hpp"
 
+#include <algorithm>
 #include <cctype>
+#include <cstdio>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -30,6 +33,9 @@
 #include "galapix/workspace.hpp"
 
 namespace galapix {
+
+ImguiOverlay* ImguiOverlay::s_instance = nullptr;
+
 namespace {
 
 char const* icon_file(int index)
@@ -221,6 +227,7 @@ ImguiOverlay::init(SDL_Window* window, SDL_GLContext gl_context)
   // GL context is current; upload icon textures now.
   load_icons();
   m_initialized = true;
+  s_instance = this;
   return true;
 }
 
@@ -230,6 +237,10 @@ ImguiOverlay::shutdown()
   if (!m_initialized) {
     return;
   }
+  if (s_instance == this) {
+    s_instance = nullptr;
+  }
+  m_toasts.clear();
   destroy_icons();
   ImGui_ImplOpenGL3_Shutdown();
   ImGui_ImplSDL2_Shutdown();
@@ -307,9 +318,96 @@ ImguiOverlay::panel_toggle_btn(IconId id, char const* id_str, char const* tip_on
 }
 
 void
+ImguiOverlay::notify(std::string message, float duration_seconds)
+{
+  if (!s_instance || message.empty()) {
+    return;
+  }
+  auto const now = std::chrono::steady_clock::now();
+  auto const dur = std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+    std::chrono::duration<float>(duration_seconds));
+  s_instance->m_toasts.push_back(Toast{std::move(message), now + dur});
+  while (s_instance->m_toasts.size() > kMaxToasts) {
+    s_instance->m_toasts.pop_front();
+  }
+  // Keep the frame loop alive so the toast can fade out without user input.
+  if (Viewer* v = Viewer::current()) {
+    v->redraw();
+  }
+}
+
+void
+ImguiOverlay::draw_toasts()
+{
+  if (!m_initialized) {
+    return;
+  }
+
+  auto const now = std::chrono::steady_clock::now();
+  while (!m_toasts.empty() && m_toasts.front().expires <= now) {
+    m_toasts.pop_front();
+  }
+  if (m_toasts.empty()) {
+    return;
+  }
+
+  ImGuiIO const& io = ImGui::GetIO();
+  float const pad = 12.0f;
+  float y = io.DisplaySize.y - pad;
+
+  // Still animating — request another frame for fade/expiry.
+  if (Viewer* v = Viewer::current()) {
+    v->redraw();
+  }
+
+  int idx = 0;
+  for (auto it = m_toasts.rbegin(); it != m_toasts.rend(); ++it, ++idx) {
+    float const remaining = std::chrono::duration<float>(it->expires - now).count();
+    float alpha = 1.0f;
+    if (remaining < 0.5f) {
+      alpha = std::max(0.0f, remaining / 0.5f);
+    }
+
+    ImVec2 const text_size = ImGui::CalcTextSize(it->text.c_str());
+    float const win_w = text_size.x + 24.0f;
+    float const win_h = text_size.y + 16.0f;
+    y -= win_h + 6.0f;
+    float const x = (io.DisplaySize.x - win_w) * 0.5f;
+
+    ImGui::SetNextWindowPos(ImVec2(x, y), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(win_w, win_h), ImGuiCond_Always);
+    ImGui::SetNextWindowBgAlpha(0.82f * alpha);
+    ImGuiWindowFlags const flags =
+      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
+      ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoScrollbar |
+      ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing |
+      ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoInputs;
+
+    char id[32];
+    std::snprintf(id, sizeof(id), "##toast%d", idx);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 6.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 8.0f));
+    if (ImGui::Begin(id, nullptr, flags)) {
+      ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1, 1, 1, alpha));
+      ImGui::TextUnformatted(it->text.c_str());
+      ImGui::PopStyleColor();
+    }
+    ImGui::End();
+    ImGui::PopStyleVar(2);
+  }
+}
+
+void
 ImguiOverlay::draw_status(Viewer& viewer)
 {
-  if (!m_initialized || !m_visible) {
+  if (!m_initialized) {
+    return;
+  }
+
+  // Toasts stay visible even when Tab/F1 chrome is hidden.
+  draw_toasts();
+
+  if (!m_visible) {
     return;
   }
 
@@ -513,7 +611,8 @@ ImguiOverlay::draw_help_panel(Viewer& viewer)
     action_row("Up / Down", "Reset view rotation", [&] { viewer.reset_view_rotation(); });
     info_row("Numpad 8/2/4/6", "Nudge view");
     info_row("Numpad +/-", "Zoom in/out (center)");
-    info_row("v", "Tile debug overlay (green/cyan/yellow/red)");
+    info_row("v", "Tile debug overlay (green/cyan/purple)");
+    info_row("u", "Toggle tile requests (cache-only mode)");
     info_row("F11", "Toggle fullscreen");
     action_row("t", "Toggle trackball mode", [&] { viewer.toggle_trackball_mode(); });
 

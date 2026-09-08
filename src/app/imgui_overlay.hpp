@@ -11,6 +11,8 @@
 
 #include <SDL.h>
 #include <array>
+#include <chrono>
+#include <deque>
 #include <string>
 
 namespace galapix {
@@ -44,6 +46,10 @@ public:
 
   bool want_capture_mouse() const;
   bool want_capture_keyboard() const;
+
+  /** Queue a short-lived on-screen toast (also still printed to stdout by callers).
+      Safe from the main/GUI thread only. Visible even when Tab/F1 chrome is hidden. */
+  static void notify(std::string message, float duration_seconds = 3.0f);
 
 private:
   struct Icon
@@ -83,6 +89,13 @@ private:
 
   void draw_status_panel(Viewer& viewer);
   void draw_help_panel(Viewer& viewer);
+  void draw_toasts();
+
+  struct Toast
+  {
+    std::string text;
+    std::chrono::steady_clock::time_point expires;
+  };
 
   bool m_initialized = false;
   bool m_visible = true;
@@ -90,6 +103,10 @@ private:
   bool m_help_visible = false;   // keyboard shortcuts; toolbar toggle
   bool m_icons_loaded = false;
   std::array<Icon, static_cast<size_t>(IconId::Count)> m_icons{};
+  std::deque<Toast> m_toasts;
+
+  static ImguiOverlay* s_instance;
+  static constexpr size_t kMaxToasts = 8;
 };
 
 } // namespace galapix

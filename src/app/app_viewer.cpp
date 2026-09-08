@@ -15,6 +15,9 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "app/app_viewer.hpp"
+#include "app/imgui_overlay.hpp"
+
+#include <string>
 
 #include <format>
 #include <iostream>
@@ -497,9 +500,10 @@ AppViewer::process_event(SDL_Event const& event)
           {
             bool on = !galapix::ImageTileCache::tile_debug();
             galapix::ImageTileCache::set_tile_debug(on);
-            std::cout << "Tile debug: " << (on ? "ON" : "OFF")
-                      << " (green=at requested scale, cyan=upscaled stand-in, "
-                      << "purple fill=loading / no surface yet)\n";
+            std::string msg = std::string("Tile debug: ") + (on ? "ON" : "OFF")
+              + " (green=exact scale, cyan=upscaled stand-in, purple=loading)";
+            std::cout << msg << "\n";
+            ImguiOverlay::notify(std::move(msg));
           }
           break;
 
@@ -508,9 +512,11 @@ AppViewer::process_event(SDL_Event const& event)
             // SDLK_r is already move/rotate tool; use u = "use cache only".
             bool on = !galapix::ImageTileCache::tile_requests_enabled();
             galapix::ImageTileCache::set_tile_requests_enabled(on);
-            std::cout << "Tile requests: " << (on ? "ENABLED" : "DISABLED (cache-only)")
-                      << " — new provider jobs " << (on ? "allowed" : "suppressed")
-                      << "; in-flight still complete\n";
+            std::string msg = std::string("Tile requests: ")
+              + (on ? "ENABLED" : "DISABLED (cache-only)")
+              + (on ? " — new provider jobs allowed" : " — new provider jobs suppressed");
+            std::cout << msg << "\n";
+            ImguiOverlay::notify(std::move(msg));
           }
           break;
 
