@@ -580,8 +580,6 @@ ImageTileCache::request_scale_holding() const
 void
 ImageTileCache::process_queue()
 {
-  reclaim_stuck_requests();
-
   // Cap GL uploads per image per frame. Was 2 and starved gallery fill when
   // many overview tiles were already decoded. Higher budget drains the
   // receive queue faster when thumbnails are cache hits.
@@ -730,55 +728,11 @@ ImageTileCache::pending_upload_count() const
 }
 
 
-void
-ImageTileCache::reclaim_stuck_requests()
-{
-  using clock = std::chrono::steady_clock;
-  // Fresh generate of a large grid should complete well under this; anything
-  // still REQUESTED with no finished/failed/aborted is a lost callback.
-  constexpr auto kTimeout = std::chrono::seconds(4);
-
-  auto const now = clock::now();
-  int reclaimed = 0;
-  for (Cache::iterator i = m_cache.begin(); i != m_cache.end();)
-  {
-    if (i->second.status != SurfaceStruct::SURFACE_REQUESTED ||
-        i->second.surface)
-    {
-      ++i;
-      continue;
-    }
-    auto const& h = i->second.job_handle;
-    if (h.is_finished() || h.is_failed() || h.is_aborted())
-    {
-      ++i;
-      continue;
-    }
-    auto const age = now - i->second.issued_at;
-    if (age < kTimeout)
-    {
-      ++i;
-      continue;
-    }
-    int const scale = i->first.get_scale();
-    int const x = i->first.get_pos().x();
-    int const y = i->first.get_pos().y();
-    log_warn("ImageTileCache: reclaim stuck REQUESTED scale={} pos=({},{}) "
-             "age={:.1f}s attempts={}",
-             scale, x, y,
-             std::chrono::duration<double>(age).count(),
-             i->second.attempts);
-    i->second.job_handle.set_failed();
-    m_cache.erase(i++);
-    ++reclaimed;
-  }
-  if (reclaimed > 0)
-  {
-    log_warn("ImageTileCache: reclaimed {} stuck tile request(s)", reclaimed);
-    // Allow cancel_jobs to run again next frame.
-    m_have_last_cancel = false;
-  }
-}
+// Timed "reclaim stuck REQUESTED" was removed: a fixed wall-clock timeout
+// is not a substitute for reliable JobHandle completion. Under load (many
+// images, archive generate) a job can legitimately stay REQUESTED for well
+// over a few seconds. cancel_jobs still aborts obsolete work; providers must
+// always finish/fail/abort every issued handle.
 
 void
 ImageTileCache::dump_stuck_requests(int limit) const

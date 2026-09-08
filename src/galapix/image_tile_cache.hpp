@@ -148,7 +148,6 @@ public:
   int pending_request_count() const;
 
   /** Fail/erase REQUESTED entries with no completion for too long; log them. */
-  void reclaim_stuck_requests();
 
   /** Log up to \a limit stuck REQUESTED cells (scale, pos, handle flags, age). */
   void dump_stuck_requests(int limit = 32) const;

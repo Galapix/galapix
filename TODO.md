@@ -1,3 +1,16 @@
+## Remove timed tile REQUESTED reclaim (2026-09-08) — tip **galapix-140** / bundle **galapix-058**
+
+The 4s `reclaim_stuck_requests` path was a workaround for lost callbacks; it
+also kills legitimate in-flight work when many images/archives are loading.
+
+- Remove timed reclaim; rely on cancel_jobs + provider always completing handles
+- Keep dump_stuck for GALAPIX_OPEN_TIMING diagnostics only
+
+- [x] Code
+- [ ] Bundle galapix-058
+
+---
+
 ## Rewrite overlap solver (2026-09-08) — tip **galapix-139** / bundle **galapix-057**
 
 Old `Workspace::solve_overlaps` was O(n²) full pairwise + unbounded loop with
