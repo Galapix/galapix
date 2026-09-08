@@ -1,3 +1,16 @@
+## Fix Viewer JobManager shutdown assert (2026-09-08) — tip **galapix-128** / bundle **galapix-045**
+
+`Thread::~Thread` asserts `m_state == kJoined`. Viewer only called
+`stop_thread()` (sets quit, no join), so exit aborted after adding a
+JobManager to Viewer for drag-and-drop.
+
+Match ViewerCommand: `abort_thread()` + `join_thread()`.
+
+- [x] Code
+- [x] Bundle galapix-045
+
+---
+
 ## Verify + fix Viewer JobManager threads (2026-09-08) — tip **galapix-127** / bundle **galapix-044**
 
 Verification of galapix-043 / thumtoo-060:

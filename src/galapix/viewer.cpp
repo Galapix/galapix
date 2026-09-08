@@ -143,7 +143,13 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
 
 Viewer::~Viewer()
 {
-  m_job_manager.stop_thread();
+  // Same sequence as ViewerCommand: signal quit, then join. Thread::~Thread
+  // asserts m_state == kJoined — stop_thread alone left workers running.
+  try {
+    m_job_manager.abort_thread();
+    m_job_manager.join_thread();
+  } catch (...) {
+  }
   if (current_ == this) {
     current_ = nullptr;
   }
