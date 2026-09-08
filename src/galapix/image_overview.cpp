@@ -106,7 +106,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     // Retry every frame until present: size probe writes LQIP asynchronously, so
     // the first ensure_requested often races ahead of get_lqip().
     if (!m_lqip_only && !m_surface) {
-      if (auto hash = tp->client()->get_lqip(tp->uri())) {
+      if (auto hash = tp->client()->ensure_lqip(tp->uri())) {
         if (auto img = thumtoo::thumbhash_decode_rgba(
                 std::span<std::uint8_t const>(hash->data(), hash->size()))) {
           try {

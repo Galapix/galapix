@@ -1,3 +1,15 @@
+## Use ensure_lqip + same-frame overview process (2026-09-08) — tip **galapix-105** / bundle **galapix-020**
+
+Warm caches had size but no ThumbHash; `get_lqip` stayed empty. Call
+`Client::ensure_lqip` (thumtoo-045) to backfill. Run overview `process()` after
+`prepare` so LQIP uploads the same frame it is decoded.
+
+### Status
+- [x] Bundle galapix-020
+- Requires thumtoo-045
+
+---
+
 ## LQIP retry + less opaque purple (2026-09-08) — tip **galapix-104** / bundle **galapix-019**
 
 ### Bugs

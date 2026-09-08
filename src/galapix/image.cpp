@@ -102,13 +102,12 @@ Image::prepare_tiles(Rectf const& cliprect, float zoom)
   if (!m_provider || !m_cache || !m_renderer) {
     return;
   }
+  // Mark/ensure first so LQIP can be queued, then process() uploads same frame.
+  m_renderer->prepare(cliprect, zoom);
   if (m_overview) {
     m_overview->process();
   }
   m_cache->process_queue();
-  // Mark only — Workspace issues after every image has marked so the
-  // global request budget is not monopolized by early items in m_images.
-  m_renderer->prepare(cliprect, zoom);
 }
 
 void
