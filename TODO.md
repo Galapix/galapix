@@ -14,7 +14,7 @@ Build failures after galapix-070:
 - App code may still call `ImguiOverlay::notify` directly
 
 - [x] Code
-- [ ] Bundle galapix-071
+- [x] Bundle galapix-071
 
 ---
 
