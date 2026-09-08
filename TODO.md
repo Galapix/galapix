@@ -1,3 +1,18 @@
+## Audit continuation (2026-09-08) — tip **galapix-113**
+
+### Checked
+- [x] blob_store.cpp (WAL, schema, multi-worker single-connection model)
+- [x] archive.cpp / pdf.cpp structure
+- [x] Document findings in AUDIT.md
+
+### Still open
+- [ ] Explicit db mutex or per-worker SQLite connections (if TSan noise / contention)
+- [ ] Overview state machine cleanup
+- [ ] PDF LQIP
+- [ ] Blob eviction policy
+
+---
+
 ## Archive warm-path + thread atomics (2026-09-08) — tip **galapix-112**
 
 ### Done
