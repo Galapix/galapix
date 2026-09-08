@@ -7,4 +7,4 @@ Exec=galapix %F
 Type=Application
 Categories=Graphics;Viewer;
 StartupNotify=false
-MimeType=image/jpeg;image/png;image/gif;image/bmp;image/webp;image/jxl;image/tiff;image/heic;image/heif;image/avif;image/svg+xml;image/x-xcf;image/x-portable-anymap;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;application/pdf;application/zip;application/vnd.rar;application/x-7z-compressed;application/x-tar;application/gzip;application/x-galapix;
+MimeType=image/jpeg;image/png;image/gif;image/bmp;image/webp;image/jxl;image/tiff;image/heic;image/heif;image/avif;image/svg+xml;image/x-xcf;image/x-portable-anymap;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;application/pdf;image/vnd.djvu;image/vnd.djvu+multipage;application/zip;application/vnd.rar;application/x-7z-compressed;application/x-tar;application/gzip;application/x-galapix;

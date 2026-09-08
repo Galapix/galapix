@@ -87,8 +87,8 @@ std::filesystem::path default_thumtoo_cache()
 }
 
 /** Expand a filesystem URL into Galapix URLs that map 1:1 to thumtoo media.
- *  Plain images → self. Archives → one URL per image member. PDFs → one URL
- *  per page (//page:N). Non-stdio / unknown → original URL only.
+ *  Plain images → self. Archives → one URL per image member. PDFs/DjVu → one
+ *  URL per page (//page:N). Non-stdio / unknown → original URL only.
  *
  *  Uses is_likely_* helpers (available on older thumtoo); no format.hpp required.
  */
@@ -105,6 +105,22 @@ std::vector<URL> expand_thumtoo_urls(URL const& url)
 
   if (thumtoo::is_likely_pdf_path(path)) {
     auto pages = thumtoo::pdf_page_count(path);
+    if (!pages || *pages < 1) {
+      return {url};
+    }
+    std::vector<URL> out;
+    int const n = std::min(*pages, 512);
+    out.reserve(static_cast<size_t>(n));
+    for (int page = 1; page <= n; ++page) {
+      std::string s =
+        "file://" + path.string() + "//page:" + std::to_string(page);
+      out.push_back(URL::from_string(s));
+    }
+    return out;
+  }
+
+  if (thumtoo::is_likely_djvu_path(path)) {
+    auto pages = thumtoo::djvu_page_count(path);
     if (!pages || *pages < 1) {
       return {url};
     }
@@ -239,7 +255,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
     if (expanded_urls.size() != urls.size()) {
       std::cout << "Expanded " << urls.size() << " path(s) -> "
                 << expanded_urls.size()
-                << " media item(s) (archives/PDF)\n";
+                << " media item(s) (archives/PDF/DjVu)\n";
     }
   }
   std::vector<URL> const& work_urls = m_thumtoo ? expanded_urls : urls;

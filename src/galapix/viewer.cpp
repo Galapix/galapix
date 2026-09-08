@@ -966,6 +966,17 @@ Viewer::open_paths(std::vector<std::string> const& paths)
         continue;
       }
     }
+    if (thumtoo::is_likely_djvu_path(abspath)) {
+      auto pages = thumtoo::djvu_page_count(abspath);
+      if (pages && *pages > 0) {
+        int const n = std::min(*pages, 512);
+        for (int page = 1; page <= n; ++page) {
+          expanded.push_back(URL::from_string(
+            "file://" + abspath.string() + "//page:" + std::to_string(page)));
+        }
+        continue;
+      }
+    }
     if (thumtoo::is_likely_archive_path(abspath)) {
       auto toc = thumtoo::read_archive_toc(abspath);
       if (toc) {

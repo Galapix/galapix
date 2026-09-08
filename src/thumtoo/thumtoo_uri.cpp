@@ -10,6 +10,7 @@
 
 #include <thumtoo/archive.hpp>
 #include <thumtoo/pdf.hpp>
+#include <thumtoo/djvu.hpp>
 #include <thumtoo/uri.hpp>
 
 #include <cctype>
@@ -71,7 +72,7 @@ thumtoo_uri_from_url(URL const& url)
 
   std::filesystem::path apath = absolute_path_from_payload(archive_path);
 
-  // PDF page: file:///doc.pdf//page:3  (1-based, thumtoo Location form)
+  // PDF / DjVu page: file:///doc.pdf//page:3  (1-based, thumtoo Location form)
   if (plugin == "page") {
     int page = 0;
     for (char c : member) {
@@ -85,6 +86,9 @@ thumtoo_uri_from_url(URL const& url)
     }
     if (page < 1) {
       return {};
+    }
+    if (thumtoo::is_likely_djvu_path(apath)) {
+      return thumtoo::djvu_page_uri(apath, page);
     }
     return thumtoo::pdf_page_uri(apath, page);
   }

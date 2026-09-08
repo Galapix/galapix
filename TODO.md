@@ -1,3 +1,18 @@
+## DjVu open path (2026-09-08) — tip **galapix-154** / bundle **galapix-072**
+
+thumtoo-064 adds DjVu page tiles. Galapix only needs:
+
+- Expand `.djvu`/`.djv` to `file://…//page:N` (viewer + ViewerCommand)
+- Desktop MIME: `image/vnd.djvu`, `image/vnd.djvu+multipage`
+- URI bridge uses `djvu_page_uri` when path is DjVu
+
+Requires thumtoo with `THUMTOO_HAVE_DJVU` (DjVuLibre).
+
+- [x] Code
+- [ ] Bundle galapix-072
+
+---
+
 ## Fix xdgcpp link + decouple SizeProbe from ImGui (2026-09-08) — tip **galapix-153** / bundle **galapix-071**
 
 Build failures after galapix-070:
