@@ -254,10 +254,8 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
       next_attempts = i->second.attempts + 1;
       m_cache.erase(i);
     } else {
-      // Already SUCCEEDED or in-flight — do NOT consume the per-frame budget.
-      // mark_tile_needed records full ancestor chains every frame; charging
-      // budget for cache hits starved fine-scale requests so mixed-scale
-      // stand-ins never upgraded.
+      // Already SUCCEEDED, in-flight, or retries exhausted — do NOT consume
+      // the per-frame budget. Exhausted dead cells stay until cancel_jobs.
       return;
     }
   }
@@ -371,8 +369,10 @@ ImageTileCache::issue_requests()
         next_attempts = i->second.attempts + 1;
         m_cache.erase(i);
       } else if (dead) {
-        // Exhausted retries — drop so a later view can try again.
-        m_cache.erase(i);
+        // Exhausted retries: keep the dead entry so we do not re-issue every
+        // frame (was burning the global request budget with req=0). cancel_jobs
+        // drops it when the view scale/rect changes so a later view can retry.
+        continue;
       } else {
         continue; // hit or in-flight
       }
@@ -531,8 +531,9 @@ ImageTileCache::stable_request_scale(int desired_scale)
   using clock = std::chrono::steady_clock;
   // Only damp *adjacent* scale steps (continuous wheel). Large jumps
   // (layout, zoom-to-fit, multi-notch wheel) commit immediately so initial
-  // gallery fill is not delayed 80ms per level.
-  constexpr auto kHold = std::chrono::milliseconds(50);
+  // gallery fill is not delayed per level. Hold is long enough that a steady
+  // zoom does not re-issue a full intermediate grid every ~3 frames.
+  constexpr auto kHold = std::chrono::milliseconds(150);
 
   if (!m_have_stable_scale) {
     m_have_stable_scale = true;

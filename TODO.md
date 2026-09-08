@@ -1,3 +1,20 @@
+## Stop failed-tile request thrash (2026-09-08) — tip **galapix-137** / bundle **galapix-055**
+
+Frame timing at gallery zoom-out showed `new_req=128 budget_left=0` with
+`req=0 upl=0` every frame — budget burned with no live work.
+
+Cause: after `kMaxTileAttempts` failures, `issue_requests` erased the dead
+entry and immediately re-queued the same cell next frame (infinite fail loop).
+
+- Keep exhausted dead entries until `cancel_jobs` (scale/rect change)
+- Same for `queue_tile_request`
+- Raise adjacent scale hold 50ms → 150ms to reduce intermediate grid re-issue
+
+- [x] Code
+- [ ] Bundle galapix-055
+
+---
+
 ## Frame timing diagnostics (2026-09-08) — tip **galapix-136** / bundle **galapix-054**
 
 `GALAPIX_FRAME_TIMING=1` per-frame phase breakdown (pump / prepare / draw ms)
