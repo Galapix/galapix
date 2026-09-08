@@ -1,4 +1,4 @@
-## Tile request / placeholder redesign (2026-09-08) — tip **galapix-090** (in progress)
+## Tile request / placeholder redesign (2026-09-08) — tip **galapix-090** / bundle **galapix-001**
 
 ### Symptom
 - Purple loading placeholders (`155,0,155`) stopped appearing when **no** tile
@@ -87,7 +87,7 @@ budget, and never lie about status on the return value (this tip).
 - [x] Fix empty-return status → purple restored
 - [x] Cache-only toggle (`R`)
 - [x] Tile-debug message corrected
-- [ ] Bundle galapix-090
+- [x] Bundle galapix-001-tile-placeholder-and-cache-only.bundle (tip galapix-090)
 
 ---
 
