@@ -25,14 +25,13 @@
 
 namespace galapix {
 
-/** Single-precision world/layout point (workspace item positions, etc.). */
 using Vector2f = geom::fpoint;
 
-/** Double-precision view/camera point (pan offset, screen↔world). */
-using Vector2d = geom::tpoint<double>;
+//std::ostream& operator<<(std::ostream& s, const Vector2f& v);
 
 } // namespace galapix
 
 #endif
 
 /* EOF */
+

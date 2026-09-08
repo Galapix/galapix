@@ -34,13 +34,6 @@ class ImageRenderer
 public:
   ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> const& cache);
 
-  /** Camera-relative draw origin (world space, double). Geometry is emitted as
-      float(local = world - origin) so the float modelview stays well-conditioned.
-      OpenGL matrices remain float32 (wstdisplay / GPU); this is the stable path. */
-  static void set_render_origin(Vector2d const& origin);
-  static void clear_render_origin();
-  static Vector2d render_origin() { return s_render_origin; }
-
   /** Visibility, cancel obsolete jobs, mark needed tiles, request overview.
       No GL draws. Call once per frame before issue_requests / draw. */
   void prepare(Rectf const& cliprect, float zoom);
@@ -48,10 +41,6 @@ public:
   /** Pure draw: overview + tile surfaces / stand-ins / placeholders.
       Must not enqueue provider work. */
   bool draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom);
-
-  /** World → draw space (subtract render origin, then float). */
-  static Vector2f to_draw(Vector2f const& world);
-  static Rectf to_draw(Rectf const& world);
 
 private:
   Vector2f get_vertex(int x, int y, float zoom) const;
@@ -75,7 +64,6 @@ private:
 private:
   Image& m_image;
   std::shared_ptr<ImageTileCache> m_cache;
-  static Vector2d s_render_origin;
 
 private:
   ImageRenderer(ImageRenderer const&);

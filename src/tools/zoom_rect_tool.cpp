@@ -22,7 +22,6 @@
 #include <wstdisplay/graphics_context.hpp>
 
 #include "galapix/viewer.hpp"
-#include "galapix/image_renderer.hpp"
 
 namespace galapix {
 
@@ -49,7 +48,7 @@ ZoomRectTool::up  (Vector2i const& pos)
   {
     drag_active = false;
     Rectf rect(click_pos,
-               viewer->get_state().screen2world_f(mouse_pos));
+               viewer->get_state().screen2world(mouse_pos));
     rect = geom::normalize(rect);
 
     viewer->get_state().zoom_to(viewer->get_size(), rect);
@@ -60,7 +59,7 @@ ZoomRectTool::up  (Vector2i const& pos)
 void
 ZoomRectTool::down(Vector2i const& pos)
 {
-  click_pos = viewer->get_state().screen2world_f(pos);
+  click_pos = viewer->get_state().screen2world(pos);
   drag_active = true;
 }
 
@@ -70,9 +69,9 @@ ZoomRectTool::draw(wstdisplay::GraphicsContext& gc)
   if (drag_active)
   {
     Rectf rect(click_pos,
-               viewer->get_state().screen2world_f(mouse_pos));
+               viewer->get_state().screen2world(mouse_pos));
     rect = geom::normalize(rect);
-    gc.draw_rect(ImageRenderer::to_draw(rect), surf::Color::from_rgb888(255, 255, 255));
+    gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }
 }
 

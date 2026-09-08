@@ -35,7 +35,7 @@ ResizeTool::move(Vector2i const& pos, Vector2i const& /*rel*/)
 {
   if (resize_active)
   {
-    Vector2f p = viewer->get_state().screen2world_f(pos);
+    Vector2f p = viewer->get_state().screen2world(pos);
 
     float a = geom::distance(selection_center, p);
     float b = geom::distance(selection_center, resize_center);
@@ -60,7 +60,7 @@ void
 ResizeTool::down(Vector2i const& pos)
 {
   resize_active    = true;
-  resize_center    = viewer->get_state().screen2world_f(pos);
+  resize_center    = viewer->get_state().screen2world(pos);
   selection_center = viewer->get_workspace()->get_selection()->get_center();
 }
 

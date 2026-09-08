@@ -41,7 +41,6 @@
 namespace galapix {
 
 using Sizef = geom::fsize;
-using Sized = geom::tsize<double>;
 using Size = geom::isize;
 
 } // namespace galapix

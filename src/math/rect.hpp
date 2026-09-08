@@ -41,7 +41,6 @@
 namespace galapix {
 
 using Rectf = geom::frect;
-using Rectd = geom::trect<double>;
 using Rect = geom::irect;
 
 } // namespace galapix

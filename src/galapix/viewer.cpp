@@ -31,7 +31,6 @@
 
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
-#include "galapix/image_renderer.hpp"
 
 #ifdef HAVE_THUMTOO
 #  include "thumtoo/thumtoo_callback_queue.hpp"
@@ -208,18 +207,14 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
                                           0.0f));
   }
 
-  Rectd cliprect_d = m_state.screen2world(Rect(0, 0, m_size.width(), m_size.height()));
-  Rectf cliprect(static_cast<float>(cliprect_d.left()),
-                 static_cast<float>(cliprect_d.top()),
-                 static_cast<float>(cliprect_d.right()),
-                 static_cast<float>(cliprect_d.bottom()));
+  Rectf cliprect = m_state.screen2world(Rect(0, 0, m_size.width(), m_size.height()));
 
-  if (m_state.get_angle() != 0.0)
+  if (m_state.get_angle() != 0.0f)
   {
     modelview *= glm::translate(glm::vec3(static_cast<float>(m_size.width())/2.0f,
                                           static_cast<float>(m_size.height())/2.0f,
                                           0.0f));
-    modelview *= glm::rotate(glm::radians(m_state.get_angle_f()), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotates around 0.0
+    modelview *= glm::rotate(glm::radians(m_state.get_angle()), glm::vec3(0.0f, 0.0f, 1.0f)); // Rotates around 0.0
     modelview *= glm::translate(glm::vec3(-static_cast<float>(m_size.width())/2.0f,
                                           -static_cast<float>(m_size.height())/2.0f,
                                           0.0f));
@@ -236,41 +231,27 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
                      center.y() + diagonal);
   }
 
-  // Camera-relative modelview: screen = offset + scale * world
-  //          = (offset + scale * origin) + scale * (world - origin)
-  // Compute the translation in double, emit float matrices near O(1) for the
-  // visible region. wstdisplay/OpenGL stay float32 — dmat4 would still quantize
-  // at the GPU uniform upload.
-  Vector2d const view_origin(
-    (cliprect_d.left() + cliprect_d.right()) * 0.5,
-    (cliprect_d.top() + cliprect_d.bottom()) * 0.5);
-  double const s = m_state.get_scale();
-  Vector2d const off = m_state.get_offset();
-  float const tx = static_cast<float>(off.x() + s * view_origin.x());
-  float const ty = static_cast<float>(off.y() + s * view_origin.y());
-  float const sf = static_cast<float>(s);
-  modelview *= glm::translate(glm::vec3(tx, ty, 0.0f));
-  modelview *= glm::scale(glm::vec3(sf, sf, 1.0f));
-  ImageRenderer::set_render_origin(view_origin);
+  modelview *= glm::translate(glm::vec3(m_state.get_offset().x(), m_state.get_offset().y(), 0.0f));
+  modelview *= glm::scale(glm::vec3(m_state.get_scale(), m_state.get_scale(), 1.0f));
 
   gc.set_modelview(modelview);
   gc.clear(m_background_colors[static_cast<size_t>(m_background_color)]);
 
   if (clip_debug)
   {
-    gc.draw_rect(ImageRenderer::to_draw(cliprect), surf::Color::from_rgb888(255, 0, 255));
+    gc.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
   }
 
   {
     auto const t0 = frame_timing ? clock::now() : clock::time_point{};
-    m_workspace->prepare_tiles(cliprect, m_state.get_scale_f());
+    m_workspace->prepare_tiles(cliprect, m_state.get_scale());
     if (frame_timing) {
       ms_prepare = std::chrono::duration<double, std::milli>(clock::now() - t0).count();
     }
   }
   {
     auto const t0 = frame_timing ? clock::now() : clock::time_point{};
-    m_workspace->draw(gc, cliprect, m_state.get_scale_f());
+    m_workspace->draw(gc, cliprect, m_state.get_scale());
     if (frame_timing) {
       ms_draw = std::chrono::duration<double, std::milli>(clock::now() - t0).count();
     }
@@ -280,14 +261,13 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
   middle_tool->draw(gc);
   right_tool->draw(gc);
 
-  ImageRenderer::clear_render_origin();
   gc.set_modelview(glm::mat4(1));
   if (m_draw_grid)
   {
     if (m_pin_grid)
     {
-      gc.draw_grid(m_grid_offset.as_vec() * m_state.get_scale_f() + m_state.get_offset_f().as_vec(),
-                             m_grid_size * m_state.get_scale_f(),
+      gc.draw_grid(m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec(),
+                             m_grid_size * m_state.get_scale(),
                              m_grid_color);
     }
     else
@@ -525,8 +505,8 @@ Viewer::set_grid(Vector2f const& offset, Sizef const& size)
   }
   else
   {
-    m_grid_offset = offset.as_vec() * m_state.get_scale_f() + m_state.get_offset_f().as_vec();
-    m_grid_size   = size * m_state.get_scale_f() ;
+    m_grid_offset = offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec();
+    m_grid_size   = size * m_state.get_scale() ;
   }
 }
 
@@ -686,13 +666,13 @@ Viewer::toggle_pinned_grid()
   log_info("Pin Grid: {}", m_pin_grid);
   if (!m_pin_grid)
   {
-    m_grid_offset = m_grid_offset.as_vec() * m_state.get_scale_f() + m_state.get_offset_f().as_vec();
-    m_grid_size   = m_grid_size * m_state.get_scale_f();
+    m_grid_offset = m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec();
+    m_grid_size   = m_grid_size * m_state.get_scale();
   }
   else
   {
-    m_grid_offset = (m_grid_offset.as_vec() - m_state.get_offset_f().as_vec()) / m_state.get_scale_f();
-    m_grid_size   = m_grid_size / m_state.get_scale_f();
+    m_grid_offset = (m_grid_offset.as_vec() - m_state.get_offset().as_vec()) / m_state.get_scale();
+    m_grid_size   = m_grid_size / m_state.get_scale();
   }
 }
 
@@ -854,22 +834,14 @@ Viewer::isolate_selection()
 void
 Viewer::print_images()
 {
-  Rectd cliprect_d = m_state.screen2world(Rect(m_size));
-  Rectf cliprect(static_cast<float>(cliprect_d.left()),
-                 static_cast<float>(cliprect_d.top()),
-                 static_cast<float>(cliprect_d.right()),
-                 static_cast<float>(cliprect_d.bottom()));
+  Rectf cliprect = m_state.screen2world(Rect(m_size));
   m_workspace->print_images(cliprect);
 }
 
 void
 Viewer::print_info()
 {
-  Rectd cliprect_d = m_state.screen2world(Rect(m_size));
-  Rectf cliprect(static_cast<float>(cliprect_d.left()),
-                 static_cast<float>(cliprect_d.top()),
-                 static_cast<float>(cliprect_d.right()),
-                 static_cast<float>(cliprect_d.bottom()));
+  Rectf cliprect = m_state.screen2world(Rect(m_size));
   m_workspace->print_info(cliprect);
 }
 

@@ -1,3 +1,21 @@
+## Revert ViewerState double + camera-relative (2026-09-08) — tip **galapix-151** / bundle **galapix-069**
+
+Get rid of the two recent commits that switched pan/zoom to double and added
+camera-relative world→draw transforms. Back to plain float `ViewerState`.
+
+Higher precision (if needed later) will be done differently, e.g. making
+wstdisplay path double — not by splitting float/double at the matrix boundary
+or subtracting a render origin.
+
+- Restored pre-37a34d1 sources for ViewerState, ImageRenderer, tools, mandelbrot, etc.
+- Kept current flake.lock
+- Removed Vector2d/Rectd aliases and to_draw / set_render_origin helpers
+
+- [x] Code
+- [x] Bundle galapix-069
+
+---
+
 ## Camera-relative float matrices (2026-09-08) — tip **galapix-150** / bundle **galapix-068**
 
 Synced to upstream `f6f531b2`. Float modelview still breaks deep zoom if world

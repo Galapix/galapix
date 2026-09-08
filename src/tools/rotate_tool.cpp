@@ -40,7 +40,7 @@ RotateTool::move(Vector2i const& pos, Vector2i const& /*rel*/)
 {
   if (rotate_active)
   {
-    Vector2f mouse_pos = viewer->get_state().screen2world_f(pos);
+    Vector2f mouse_pos = viewer->get_state().screen2world(pos);
     float angle = atan2f(selection_center.y() - mouse_pos.y(),
                          selection_center.x() - mouse_pos.x());
 
@@ -63,7 +63,7 @@ RotateTool::up  (Vector2i const& /*pos*/)
 void
 RotateTool::down(Vector2i const& pos)
 {
-  Vector2f mouse_pos = viewer->get_state().screen2world_f(pos);
+  Vector2f mouse_pos = viewer->get_state().screen2world(pos);
 
   rotate_active    = true;
   selection_center = viewer->get_workspace()->get_selection()->get_center();

@@ -346,19 +346,19 @@ AppViewer::process_event(SDL_Event const& event)
           break;
 
         case SDLK_KP_8:
-          { auto o = m_viewer.get_state().get_offset(); m_viewer.get_state().set_offset(Vector2d(o.x(), o.y() + 128.0)); }
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(0.0f, +128.0f).as_vec());
           break;
 
         case SDLK_KP_2:
-          { auto o = m_viewer.get_state().get_offset(); m_viewer.get_state().set_offset(Vector2d(o.x(), o.y() - 128.0)); }
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(0.0f, -128.0f).as_vec());
           break;
 
         case SDLK_KP_4:
-          { auto o = m_viewer.get_state().get_offset(); m_viewer.get_state().set_offset(Vector2d(o.x() + 128.0, o.y())); }
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(+128.0f, 0.0f).as_vec());
           break;
 
         case SDLK_KP_6:
-          { auto o = m_viewer.get_state().get_offset(); m_viewer.get_state().set_offset(Vector2d(o.x() - 128.0, o.y())); }
+          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(-128.0f, 0.0f).as_vec());
           break;
 
         case SDLK_p:

@@ -16,7 +16,6 @@
 
 #include "galapix/viewer_state.hpp"
 
-#include <cmath>
 #include <glm/ext.hpp>
 
 #include "galapix/viewer.hpp"
@@ -25,21 +24,21 @@ namespace galapix {
 
 ViewerState::ViewerState(Viewer& viewer) :
   m_viewer(viewer),
-  scale{1.0},
-  angle{0.0},
-  offset{0.0, 0.0}
+  scale{1.0f},
+  angle{0.0f},
+  offset{0.0f, 0.0f}
 {
 }
 
 void
-ViewerState::zoom(double factor, Vector2i const& pos)
+ViewerState::zoom(float factor, Vector2i const& pos)
 {
   scale *= factor;
 
-  Vector2d center(static_cast<double>(m_viewer.get_width())  / 2.0,
-                  static_cast<double>(m_viewer.get_height()) / 2.0);
+  Vector2f center(static_cast<float>(m_viewer.get_width())  / 2.0f,
+                  static_cast<float>(m_viewer.get_height()) / 2.0f);
 
-  Vector2d rotated_pos(static_cast<double>(pos.x()), static_cast<double>(pos.y()));
+  Vector2f rotated_pos(pos);
   rotated_pos = rotated_pos.as_vec() - center.as_vec();
   rotated_pos = glm::rotate(rotated_pos.as_vec(), glm::radians(-angle));
   rotated_pos = rotated_pos.as_vec() + center.as_vec();
@@ -48,118 +47,78 @@ ViewerState::zoom(double factor, Vector2i const& pos)
 }
 
 void
-ViewerState::zoom(double factor)
+ViewerState::zoom(float factor)
 {
-  zoom(factor, Vector2i(m_viewer.get_width()/2,
+  zoom(factor, Vector2i(m_viewer.get_width()/2, // FIXME: Little ugly, isn't it?
                         m_viewer.get_height()/2));
 }
 
 void
-ViewerState::rotate(double r)
+ViewerState::rotate(float r)
 {
   angle += r;
 }
 
 void
-ViewerState::set_angle(double r)
+ViewerState::set_angle(float r)
 {
   angle = r;
 }
 
 void
-ViewerState::set_offset(Vector2d const& o)
+ViewerState::set_offset(Vector2f const& o)
 {
   offset = o;
 }
 
 void
-ViewerState::set_offset(Vector2f const& o)
-{
-  offset = Vector2d(static_cast<double>(o.x()), static_cast<double>(o.y()));
-}
-
-void
-ViewerState::set_scale(double s)
+ViewerState::set_scale(float s)
 {
   scale = s;
 }
 
 void
-ViewerState::move(Vector2d const& pos)
-{
-  double const rad = angle / 180.0 * glm::pi<double>();
-  double const c = std::cos(rad);
-  double const s = std::sin(rad);
-  offset = Vector2d(offset.x() + (pos.x() * c + pos.y() * s),
-                    offset.y() - (pos.x() * s - pos.y() * c));
-}
-
-void
 ViewerState::move(Vector2f const& pos)
 {
-  move(Vector2d(static_cast<double>(pos.x()), static_cast<double>(pos.y())));
-}
-
-Vector2d
-ViewerState::screen2world(Vector2i const& pos) const
-{
-  return (Vector2d(static_cast<double>(pos.x()), static_cast<double>(pos.y())).as_vec()
-          - offset.as_vec()) / scale;
-}
-
-Rectd
-ViewerState::screen2world(Rect const& rect) const
-{
-  return Rectd((static_cast<double>(rect.left())   - offset.x()) / scale,
-               (static_cast<double>(rect.top())    - offset.y()) / scale,
-               (static_cast<double>(rect.right())  - offset.x()) / scale,
-               (static_cast<double>(rect.bottom()) - offset.y()) / scale);
+  // FIXME: Implement a proper 2D Matrix instead of this hackery
+  offset = Vector2f(offset.x() + (pos.x() * cosf(angle/180.0f*glm::pi<float>()) + pos.y() * sinf(angle/180.0f*glm::pi<float>())),
+                    offset.y() - (pos.x() * sinf(angle/180.0f*glm::pi<float>()) - pos.y() * cosf(angle/180.0f*glm::pi<float>())));
 }
 
 Vector2f
-ViewerState::screen2world_f(Vector2i const& pos) const
+ViewerState::screen2world(Vector2i const& pos) const
 {
-  Vector2d const p = screen2world(pos);
-  return Vector2f(static_cast<float>(p.x()), static_cast<float>(p.y()));
+  return (Vector2f(pos).as_vec() - offset.as_vec()) / scale;
 }
 
 Rectf
-ViewerState::screen2world_f(Rect const& rect) const
+ViewerState::screen2world(Rect const& rect) const
 {
-  Rectd const r = screen2world(rect);
-  return Rectf(static_cast<float>(r.left()), static_cast<float>(r.top()),
-               static_cast<float>(r.right()), static_cast<float>(r.bottom()));
+  return Rectf((static_cast<float>(rect.left())   - offset.x()) / scale,
+               (static_cast<float>(rect.top())    - offset.y()) / scale,
+               (static_cast<float>(rect.right())  - offset.x()) / scale,
+               (static_cast<float>(rect.bottom()) - offset.y()) / scale);
 }
 
 void
 ViewerState::zoom_to(Size const& display_, Rectf const& rect)
 {
-  zoom_to(display_, Rectd(static_cast<double>(rect.left()),
-                          static_cast<double>(rect.top()),
-                          static_cast<double>(rect.right()),
-                          static_cast<double>(rect.bottom())));
-}
-
-void
-ViewerState::zoom_to(Size const& display_, Rectd const& rect)
-{
   assert(rect);
 
-  Sized display(static_cast<double>(display_.width()),
-                static_cast<double>(display_.height()));
+  Sizef display = Sizef(display_);
 
   if ((display.height() / display.width()) > (rect.height() / rect.width()))
-  {
+  { // match width
     scale = display.width() / rect.width();
 
-    offset = Vector2d(-rect.left() * scale,
-                      -(rect.top() - ((display.height() / scale) - rect.height()) / 2.0) * scale);
+    offset = Vector2f(-rect.left() * scale,
+                      -(rect.top() - ((display.height() / scale) - rect.height()) / 2.0f) * scale);
   }
   else
-  {
+  { // match height
     scale = display.height() / rect.height();
 
-    offset = Vector2d(-(rect.left() - ((display.width() / scale) - rect.width()) / 2.0) * scale,
+    offset = Vector2f(-(rect.left() - ((display.width() / scale) - rect.width()) / 2.0f) * scale,
                       -rect.top()  * scale);
   }
 }
