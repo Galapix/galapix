@@ -1,3 +1,20 @@
+## Purple loading placeholders always visible (2026-09-08) — tip **galapix-100** / bundle **galapix-011**
+
+### Bug
+After overview-aware purple policy, loading cells with no stand-in drew
+**nothing** when overview was Ready (only soft overview under the grid).
+Purple placeholders appeared to be "broken" again.
+
+### Fix
+Always draw purple when exact tile is missing and `find_smaller_tile` has no
+stand-in: opaque if no overview surface, semi-transparent fill + outline when
+overview is Ready (overview still readable, cell still marked loading).
+
+### Status
+- [x] Bundle galapix-011
+
+---
+
 ## Pending uploads drain + note on JPEG round-trip (2026-09-08) — tip **galapix-099** / bundle **galapix-010**
 
 ### Pending uploads stuck at 10–20

@@ -257,17 +257,17 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
   }
   else if (sstruct.status == ImageTileCache::SurfaceStruct::SURFACE_REQUESTED)
   {
-    // Opaque purple only when nothing else can fill the cell. Overview is
-    // already drawn under the grid; covering it with purple caused "flashes"
-    // on zoom-in when the soft overview was the only stand-in (gallery LOD
-    // never put grid tiles in the cache).
+    // No exact tile and no coarser stand-in: always show a purple loading
+    // placeholder. When a soft overview is already under the grid, use a
+    // semi-transparent fill so the overview still reads through; otherwise
+    // opaque purple (classic "nothing ready yet" look). Never skip the fill
+    // entirely — that made loading cells invisible once overview was Ready.
     auto const& ov = m_image.overview();
-    if (!(ov.state() == ImageOverview::State::Ready && ov.has_surface())) {
-      gc.fill_rect(tile_rect, Color::from_rgb888(155, 0, 155));
-    } else if (ImageTileCache::tile_debug()) {
-      // Overview showing through — purple-ish tint marks "loading / overview only".
-      gc.fill_rect(tile_rect, Color::from_rgba8888(155, 0, 155, 70));
+    if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
+      gc.fill_rect(tile_rect, Color::from_rgba8888(155, 0, 155, 140));
       gc.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
+    } else {
+      gc.fill_rect(tile_rect, Color::from_rgb888(155, 0, 155));
     }
   }
 
