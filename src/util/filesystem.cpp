@@ -34,6 +34,7 @@
 
 #ifdef HAVE_THUMTOO
 #  include <thumtoo/archive.hpp>
+#  include <thumtoo/djvu.hpp>
 #  include <thumtoo/pdf.hpp>
 #endif
 
@@ -357,9 +358,11 @@ Filesystem::generate_image_file_list(std::string const& pathname, std::vector<UR
           file_list.push_back(url);
         }
 #ifdef HAVE_THUMTOO
-        // PDF pages / archive members are expanded later in ViewerCommand when
-        // thumtoo is enabled. surface_factory only knows raster formats.
+        // PDF / DjVu pages and archive members are expanded later in
+        // ViewerCommand when thumtoo is enabled. surface_factory only knows
+        // raster formats.
         else if (thumtoo::is_likely_pdf_path(*i) ||
+                 thumtoo::is_likely_djvu_path(*i) ||
                  thumtoo::is_likely_archive_path(*i))
         {
           file_list.push_back(url);

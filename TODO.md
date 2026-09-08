@@ -1,3 +1,14 @@
+## Accept DjVu in directory/file scan (2026-09-08) — tip **galapix-157** / bundle **galapix-075**
+
+`Filesystem::generate_image_file_list` only allowed PDF + archives past the
+surface_factory filter. Opening a `.djvu` (or a dir of them) yielded
+"0 files found" / "No URLs given" before ViewerCommand expansion.
+
+- [x] Code: `is_likely_djvu_path` in scan filter
+- [ ] Bundle galapix-075
+
+---
+
 ## Include thumtoo/djvu.hpp for page expand (2026-09-08) — tip **galapix-155** / bundle **galapix-073**
 
 viewer_command / viewer called `thumtoo::is_likely_djvu_path` without including
