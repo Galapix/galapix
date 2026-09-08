@@ -67,6 +67,7 @@ public:
   int pending_tile_requests() const;
   /** Decoded tiles waiting for GL upload. */
   int pending_tile_uploads() const;
+  int pending_upload_count() const override { return pending_tile_uploads(); }
   int tile_cache_entries() const;
   int ready_tile_surfaces() const;
 

@@ -119,6 +119,9 @@ void
 Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
 {
   // Pass 1: visibility + mark needed tiles (no provider jobs yet).
+  // Also process_queue for off-screen images that still have decoded tiles
+  // waiting for GL upload — otherwise pending_uploads can stick until the
+  // image scrolls back into view (or forever if it never does).
   for (auto& i : m_images)
   {
     if (geom::intersects(i->get_image_rect(), cliprect))
@@ -131,6 +134,9 @@ Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
     }
     else
     {
+      if (i->pending_upload_count() > 0) {
+        i->prepare_tiles(cliprect, zoom);  // process_queue only useful part
+      }
       if (i->is_visible())
       {
         i->on_leave_screen();

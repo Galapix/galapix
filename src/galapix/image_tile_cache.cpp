@@ -459,7 +459,7 @@ ImageTileCache::process_queue()
   // Cap GL uploads per image per frame. Was 2 and starved gallery fill when
   // many overview tiles were already decoded. Higher budget drains the
   // receive queue faster when thumbnails are cache hits.
-  constexpr int kMaxUploadsPerFrame = 32;
+  constexpr int kMaxUploadsPerFrame = 64;
 
   int uploaded = 0;
   Tile tile;

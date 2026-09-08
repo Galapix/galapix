@@ -1,3 +1,22 @@
+## Pending uploads drain + note on JPEG round-trip (2026-09-08) — tip **galapix-099** / bundle **galapix-010**
+
+### Pending uploads stuck at 10–20
+`process_queue` only ran for on-screen images. Decoded tiles for briefly
+visible / scrolled-off images stayed in `m_tile_queue`. Now off-screen images
+with `pending_upload_count() > 0` still get `prepare_tiles` (queue drain).
+Upload cap 32→64.
+
+### Encode/decode (thumtoo-037)
+Interactive path was JPEG encode (thumtoo) → store → get_tile → JPEG decode
+(Galapix). thumtoo-037 delivers rgb888 in-memory and stores JPEG off the
+reply path.
+
+### Status
+- [x] Off-screen upload drain
+- [x] Bundle galapix-010
+
+---
+
 ## Fix: request budget wasted on cache hits (2026-09-08) — tip **galapix-098** / bundle **galapix-009**
 
 ### Symptom
