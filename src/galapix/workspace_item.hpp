@@ -72,6 +72,7 @@ public:
   /** Mark visible tiles / process uploads. Default: no-op. Called before issue. */
   virtual void prepare_tiles(Rectf const& cliprect, float zoom) {}
   virtual int pending_upload_count() const { return 0; }
+  virtual int pending_tile_requests() const { return 0; }
 
   /** Start provider jobs for tiles marked in prepare_tiles. Default: no-op. */
   virtual void issue_tile_requests() {}

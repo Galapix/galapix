@@ -66,7 +66,7 @@ public:
   void print_info() const override;
 
   /** Outstanding tile jobs for this image (0 if no cache yet). */
-  int pending_tile_requests() const;
+  int pending_tile_requests() const override;
   void dump_stuck_tile_requests(int limit = 16) const;
   /** Decoded tiles waiting for GL upload. */
   int pending_tile_uploads() const;

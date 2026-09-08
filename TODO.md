@@ -1,3 +1,13 @@
+## Fix pending_tile_requests on WorkspaceItem (2026-09-08) — tip **galapix-131** / bundle **galapix-048**
+
+Compile error: `WorkspaceItem` had no `pending_tile_requests`. Add virtual
+default 0; `Image` overrides.
+
+- [x] Code
+- [x] Bundle galapix-048
+
+---
+
 ## Reclaim + dump stuck REQUESTED tiles (2026-09-08) — tip **galapix-130** / bundle **galapix-047**
 
 Open-timing showed `req=15` for 40s with `upload_q=0` — live REQUESTED
