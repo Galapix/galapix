@@ -11,7 +11,7 @@ Run with `--debug` (or log level debug) to confirm:
 
 ### Status
 - [x] Debug logs
-- [ ] Bundle galapix-022
+- [x] Bundle galapix-022
 - [ ] User runtime confirmation
 
 ---
