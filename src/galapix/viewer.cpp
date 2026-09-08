@@ -31,6 +31,7 @@
 
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
+#include "galapix/image_renderer.hpp"
 
 #ifdef HAVE_THUMTOO
 #  include "thumtoo/thumtoo_callback_queue.hpp"
@@ -235,16 +236,29 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
                      center.y() + diagonal);
   }
 
-  modelview *= glm::translate(glm::vec3(static_cast<float>(m_state.get_offset().x()),
-                                        static_cast<float>(m_state.get_offset().y()), 0.0f));
-  modelview *= glm::scale(glm::vec3(m_state.get_scale_f(), m_state.get_scale_f(), 1.0f));
+  // Camera-relative modelview: screen = offset + scale * world
+  //          = (offset + scale * origin) + scale * (world - origin)
+  // Compute the translation in double, emit float matrices near O(1) for the
+  // visible region. wstdisplay/OpenGL stay float32 — dmat4 would still quantize
+  // at the GPU uniform upload.
+  Vector2d const view_origin(
+    (cliprect_d.left() + cliprect_d.right()) * 0.5,
+    (cliprect_d.top() + cliprect_d.bottom()) * 0.5);
+  double const s = m_state.get_scale();
+  Vector2d const off = m_state.get_offset();
+  float const tx = static_cast<float>(off.x() + s * view_origin.x());
+  float const ty = static_cast<float>(off.y() + s * view_origin.y());
+  float const sf = static_cast<float>(s);
+  modelview *= glm::translate(glm::vec3(tx, ty, 0.0f));
+  modelview *= glm::scale(glm::vec3(sf, sf, 1.0f));
+  ImageRenderer::set_render_origin(view_origin);
 
   gc.set_modelview(modelview);
   gc.clear(m_background_colors[static_cast<size_t>(m_background_color)]);
 
   if (clip_debug)
   {
-    gc.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
+    gc.draw_rect(ImageRenderer::to_draw(cliprect), surf::Color::from_rgb888(255, 0, 255));
   }
 
   {
@@ -266,6 +280,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
   middle_tool->draw(gc);
   right_tool->draw(gc);
 
+  ImageRenderer::clear_render_origin();
   gc.set_modelview(glm::mat4(1));
   if (m_draw_grid)
   {

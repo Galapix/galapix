@@ -136,8 +136,8 @@ Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
   if (!m_provider)
   {
-    gc.fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
-                 surf::Color::from_rgb888(255,255,0));
+    Rectf const r(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height()));
+    gc.fill_rect(ImageRenderer::to_draw(r), surf::Color::from_rgb888(255,255,0));
   }
   else
   {

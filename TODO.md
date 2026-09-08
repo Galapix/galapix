@@ -1,3 +1,20 @@
+## Camera-relative float matrices (2026-09-08) — tip **galapix-150** / bundle **galapix-068**
+
+Synced to upstream `f6f531b2`. Float modelview still breaks deep zoom if world
+positions are large — GPU uniforms are float32; wstdisplay `glm::mat4` stays.
+
+### Approach
+- Keep `ViewerState` in **double**
+- Modelview translation = `offset + scale * view_origin` (double → float)
+- Draw geometry as `float(world - view_origin)` via `ImageRenderer::set_render_origin`
+
+Not a full double path through OpenGL (would still quantize at the GPU).
+
+- [x] Code
+- [x] Bundle galapix-068
+
+---
+
 ## ViewerState double precision (2026-09-08) — tip **galapix-149** / bundle **galapix-067**
 
 View pan/zoom used float; deep `builtin://mandelbrot` zoom falls apart.

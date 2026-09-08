@@ -28,6 +28,35 @@
 
 namespace galapix {
 
+Vector2d ImageRenderer::s_render_origin{0.0, 0.0};
+
+void
+ImageRenderer::set_render_origin(Vector2d const& origin)
+{
+  s_render_origin = origin;
+}
+
+void
+ImageRenderer::clear_render_origin()
+{
+  s_render_origin = Vector2d(0.0, 0.0);
+}
+
+Vector2f
+ImageRenderer::to_draw(Vector2f const& world)
+{
+  return Vector2f(static_cast<float>(static_cast<double>(world.x()) - s_render_origin.x()),
+                  static_cast<float>(static_cast<double>(world.y()) - s_render_origin.y()));
+}
+
+Rectf
+ImageRenderer::to_draw(Rectf const& world)
+{
+  return Rectf(to_draw(Vector2f(world.left(), world.top())),
+               to_draw(Vector2f(world.right(), world.bottom())));
+}
+
+
 using namespace surf;
 
 namespace {
@@ -116,11 +145,13 @@ ImageRenderer::get_vertex(int x, int y, float zoom) const
 {
   float tilesize = 256.0f * zoom;
 
-  return m_image.get_top_left_pos() +
+  Vector2f const world =
+    m_image.get_top_left_pos() +
     geom::fsize(std::min(static_cast<float>(x) * tilesize,
                          m_image.get_scaled_width()),
                 std::min(static_cast<float>(y) * tilesize,
                          m_image.get_scaled_height()));
+  return to_draw(world);
 }
 
 ImageRenderer::ViewPlan
@@ -336,14 +367,15 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
   }
 
   Rectf image_rect = m_image.get_image_rect();
+  Rectf image_draw = to_draw(image_rect);
   // Soft whole-image preview under tiles (load was requested in prepare).
-  m_image.overview().draw(gc, image_rect);
+  m_image.overview().draw(gc, image_draw);
 
   // Purple only when Idle with nothing queued — Loading often means LQIP is
   // already in the upload queue (process next frame) or levels are in flight.
   if (!m_image.overview().has_surface() &&
       m_image.overview().state() == ImageOverview::State::Idle) {
-    gc.fill_rect(image_rect, surf::Color::from_rgb888(155, 0, 155));
+    gc.fill_rect(image_draw, surf::Color::from_rgb888(155, 0, 155));
   }
 
   if (plan.skip_grid) {

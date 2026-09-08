@@ -21,6 +21,7 @@
 
 #include "galapix/workspace.hpp"
 #include "galapix/viewer.hpp"
+#include "galapix/image_renderer.hpp"
 
 namespace galapix {
 
@@ -103,7 +104,7 @@ MoveTool::draw(wstdisplay::GraphicsContext& gc)
     Rectf rect(click_pos,
                viewer->get_state().screen2world_f(mouse_pos));
     rect = geom::normalize(rect);
-    gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
+    gc.draw_rect(ImageRenderer::to_draw(rect), surf::Color::from_rgb888(255, 255, 255));
   }
 }
 
