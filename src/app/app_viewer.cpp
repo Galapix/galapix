@@ -499,7 +499,17 @@ AppViewer::process_event(SDL_Event const& event)
             galapix::ImageTileCache::set_tile_debug(on);
             std::cout << "Tile debug: " << (on ? "ON" : "OFF")
                       << " (green=at requested scale, cyan=upscaled stand-in, "
-                      << "yellow=loading, red=failed)\n";
+                      << "purple fill=loading / no surface yet)\n";
+          }
+          break;
+
+        case SDLK_r:
+          {
+            bool on = !galapix::ImageTileCache::tile_requests_enabled();
+            galapix::ImageTileCache::set_tile_requests_enabled(on);
+            std::cout << "Tile requests: " << (on ? "ENABLED" : "DISABLED (cache-only)")
+                      << " — new provider jobs " << (on ? "allowed" : "suppressed")
+                      << "; in-flight still complete\n";
           }
           break;
 

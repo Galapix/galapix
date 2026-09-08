@@ -1,3 +1,96 @@
+## Tile request / placeholder redesign (2026-09-08) — tip **galapix-090** (in progress)
+
+### Symptom
+- Purple loading placeholders (`155,0,155`) stopped appearing when **no** tile
+  data was ready (blank cells instead).
+- Frequent **purple flashes** on tile pop-in instead of stable lower-resolution
+  stand-ins (upscaled coarser cells / overview).
+
+### Root cause analysis
+
+`ImageRenderer::draw_tile` always calls `ImageTileCache::request_tile`, which
+both **looks up** and **enqueues** (side effects on the draw path).
+
+1. **Budget + empty return (purple gone)**  
+   `queue_tile_request` returns early when the global per-frame budget
+   (`begin_frame_request_budget(48)`) is exhausted and **does not insert** a
+   cache entry. `request_tile` then falls through to `return SurfaceStruct()`  
+   whose default `status` is `SURFACE_SUCCEEDED` (enum 0) with a null surface.  
+   The draw switch only paints purple for `SURFACE_REQUESTED`. Result: no
+   placeholder when the cell was never entered in the cache this frame.
+
+2. **Flashes**  
+   Under budget pressure the coarser stand-in (`max_scale` / parent) may not be
+   queued in the same `request_tile` call as the target. Until something lands
+   in the cache, `find_smaller_tile` (lookup-only) returns empty → purple for
+   one or more frames, then the exact tile or a stand-in appears. Overview is
+   drawn under the grid, but per-cell purple still flashes on top.
+
+3. **Structural smell**  
+   - Draw mutates request state and consumes a global static budget in
+     traversal order (image / tile order dependent).  
+   - `cancel_jobs` also runs from the draw path.  
+   - Stand-in policy is ad-hoc inside `request_tile` (two opportunistic queues
+     before the target).  
+   - No way to freeze requesting and inspect pure in-memory cache behaviour
+     (debug).  
+   - Upload (`process_queue`) is correctly on the main thread; provider work is
+     off-thread — good. The remaining coupling is **request issuance ↔ draw**.
+
+### Goals for this tip
+- Restore correct loading placeholders (purple) when nothing is ready.
+- Prefer stand-ins over purple whenever any coarser surface exists.
+- Add a keyboard toggle that **disables all new tile requests** (cache-only /
+  debug mode); existing in-flight jobs still complete and upload.
+- Document a cleaner long-term split (draw = pure lookup; update = batched
+  issue) without a big-bang rewrite this tip.
+
+### Short-term code changes
+1. `request_tile`: if the cell is still absent after `queue_tile_request`,
+   return an explicit `SurfaceStruct` with `status = SURFACE_REQUESTED` and
+   null surface (do **not** leave a permanent cache entry without a job).
+2. Optional small priority tweak: when budget is nearly exhausted, still try
+   to queue stand-ins (max_scale / parent) preferentially — already ordered
+   first; keep that order and rely on (1) for visuals.
+3. Static `s_tile_requests_enabled` (default true). `queue_tile_request` and
+   overview thumtoo path respect it. Key **`R`** toggles; log the state.
+4. Fix stale tile-debug help text (code paints purple for loading, not
+   yellow/red).
+
+### Longer-term redesign (not all in this tip)
+Desired frame structure:
+
+```
+Viewer::draw:
+  begin_frame_request_budget(N)
+  for each image: image.mark_visible(clip, scale)   // pure bookkeeping
+  for each image: image.issue_requests()            // or one global batch
+  for each image: image.process_uploads()
+  for each image: image.draw()                      // pure lookup + GL
+```
+
+- `mark_visible` / desired-set: record which (scale,x,y) cells the current view
+  wants; no provider calls.
+- `issue_requests`: walk desired set (priority: current scale visible → parent
+  → max_scale overview), start jobs up to budget; batch-friendly.
+- Draw path never calls `request_tile`; only `lookup` / `find_smaller_tile` /
+  placeholder by status.
+- Enables true batching, stable priorities independent of draw order, and
+  trivial cache-only mode.
+
+Incremental path: keep `request_tile` as “ensure + lookup” for call-site
+compatibility, but move the “ensure” part behind the enable flag and the
+budget, and never lie about status on the return value (this tip).
+
+### Status
+- [x] Analysis documented (this section)
+- [x] Fix empty-return status → purple restored
+- [x] Cache-only toggle (`R`)
+- [x] Tile-debug message corrected
+- [ ] Bundle galapix-090
+
+---
+
 ## Thumtoo-backed ImageOverview (2026-09-07) — tip **galapix-089**
 
 * Non-stdio URLs no longer mark overview Failed immediately

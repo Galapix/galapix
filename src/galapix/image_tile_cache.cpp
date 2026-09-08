@@ -35,6 +35,7 @@
 namespace galapix {
 
 bool ImageTileCache::s_tile_debug = false;
+bool ImageTileCache::s_tile_requests_enabled = true;
 
 namespace {
 int s_request_budget = 0;
@@ -201,6 +202,11 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
     return;
   }
 
+  // Cache-only / debug mode: do not start new provider work.
+  if (!s_tile_requests_enabled) {
+    return;
+  }
+
   // Global per-frame start budget (begin_frame_request_budget). Issuing
   // ~1000 provider jobs on first paint stampeded thumtoo; fill took ~3s.
   if (!try_consume_request_budget()) {
@@ -266,7 +272,12 @@ ImageTileCache::request_tile(int x, int y, int scale)
   if (i != m_cache.end()) {
     return i->second;
   }
-  return SurfaceStruct();
+  // Budget exhausted or requests disabled: no cache entry was created.
+  // Still report REQUESTED so the draw path paints the purple loading
+  // placeholder instead of treating the cell as a successful empty surface.
+  SurfaceStruct missing;
+  missing.status = SurfaceStruct::SURFACE_REQUESTED;
+  return missing;
 }
 
 void

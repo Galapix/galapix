@@ -111,6 +111,11 @@ public:
   static void set_tile_debug(bool on) { s_tile_debug = on; }
   static bool tile_debug() { return s_tile_debug; }
 
+  /** When false, queue_tile_request is a no-op (in-memory cache only).
+      In-flight jobs still finish and upload. Toggle with key 'R'. */
+  static void set_tile_requests_enabled(bool on) { s_tile_requests_enabled = on; }
+  static bool tile_requests_enabled() { return s_tile_requests_enabled; }
+
   /** Tiles with an outstanding provider job (SURFACE_REQUESTED). */
   int pending_request_count() const;
 
@@ -166,6 +171,7 @@ private:
   ImageTileCache& operator=(ImageTileCache const&);
 
   static bool s_tile_debug;
+  static bool s_tile_requests_enabled;
 };
 
 } // namespace galapix

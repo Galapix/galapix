@@ -93,6 +93,9 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
   // Share the per-frame request budget with grid tiles so first paint does
   // not stampede SQLite with 1000+ parallel get_tile calls.
   if (auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get())) {
+    if (!ImageTileCache::tile_requests_enabled()) {
+      return; // cache-only mode — stay Idle
+    }
     if (!ImageTileCache::try_consume_request_budget()) {
       return; // stay Idle — retry next frame
     }
