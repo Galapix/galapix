@@ -135,7 +135,7 @@ Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
     }
     else
     {
-      // process_queue + reclaim stuck REQUESTED even when off-screen
+      // process_queue even when off-screen so decoded tiles still upload
       if (i->pending_upload_count() > 0 || i->pending_tile_requests() > 0) {
         i->prepare_tiles(cliprect, zoom);
       }
