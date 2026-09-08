@@ -16,6 +16,8 @@
 
 #include "galapix/viewer_command.hpp"
 
+#include "galapix/size_probe_session.hpp"
+
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
@@ -219,6 +221,12 @@ ViewerCommand::run(std::vector<URL> const& urls)
   Workspace workspace;
 
 #ifdef HAVE_THUMTOO
+  // Single session for pattern + file URL size probes (async; UI opens first).
+  auto size_probe = std::make_shared<SizeProbeSession>();
+  workspace.set_size_probe(size_probe);
+#endif
+
+#ifdef HAVE_THUMTOO
   // Expand PDF pages and archive image members into per-item URLs so the rest
   // of the pipeline stays "one Image ↔ one thumtoo URI".
   std::vector<URL> expanded_urls;
@@ -289,48 +297,29 @@ ViewerCommand::run(std::vector<URL> const& urls)
         locs.insert(locs.end(), batch.begin(), batch.end());
       }
 
-      // Batch size probes once — per-URI create()+drain is O(n) sequential
-      // open/hash/decode and is what makes large -p lists look "stuck".
-      {
-        int pending = 0;
-        for (auto const& row : locs) {
-          if (row.uri.empty()) continue;
-          if (m_thumtoo->get_size(row.uri)) continue;
-          ++pending;
-          m_thumtoo->request_size(row.uri, [](std::string, std::optional<thumtoo::Size>) {});
-        }
-        if (pending > 0) {
-          std::cout << "Probing " << pending
-                    << " pattern match size(s) (thumtoo)..." << std::flush;
-          m_thumtoo->drain();
-          ThumtooCallbackQueue::instance().pump();
-          std::cout << " done\n";
-        }
-      }
-
+      // Queue size probes without blocking; attach providers as sizes arrive
+      // (SizeProbeSession + viewer tick). Opens the UI immediately.
       size_t added = 0;
       size_t skipped = 0;
       size_t const total = locs.size();
       for (size_t i = 0; i < total; ++i) {
         auto const& row = locs[i];
         auto url_opt = url_from_thumtoo_uri(row.uri);
-        if (!url_opt) {
+        if (!url_opt || row.uri.empty()) {
           ++skipped;
         } else {
-          // Prefer create_from_size only (cache hit after batch probe).
-          // Do not call create() here — it would drain again per miss.
-          // row.uri is already the thumtoo Location URI.
           TileProviderPtr provider;
           if (auto sz = m_thumtoo->get_size(row.uri)) {
             provider = ThumtooTileProvider::create_from_size(
               m_thumtoo, row.uri, sz->width, sz->height);
           }
+          auto image = std::make_shared<Image>(
+            *url_opt, provider, &m_job_manager);
+          workspace.add_image(image);
+          ++added;
           if (!provider) {
-            ++skipped;
-          } else {
-            workspace.add_image(std::make_shared<Image>(
-              *url_opt, provider, &m_job_manager));
-            ++added;
+            m_thumtoo->request_size(row.uri, [](std::string, std::optional<thumtoo::Size>) {});
+            size_probe->add_pending(image, row.uri);
           }
         }
         std::cout << "Pattern match: " << (i + 1) << "/" << total
@@ -338,6 +327,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
                   << " - " << (total == 0 ? 0 : 100 * (i + 1) / total) << '%'
                   << '\r' << std::flush;
       }
+
       if (total != 0) {
         std::cout << std::endl;
       }
@@ -354,29 +344,10 @@ ViewerCommand::run(std::vector<URL> const& urls)
   }
 
 #ifdef HAVE_THUMTOO
-  // Batch thumtoo size probes: one drain for the whole list. Per-file
-  // create()+drain was O(n) sequential open/hash/decode and dominated
-  // "Processing URLs" for large folders (not Galapix SHA1).
-  if (m_thumtoo) {
-    std::cout << "Probing image sizes (thumtoo)..." << std::flush;
-    int pending = 0;
-    for (URL const& u : work_urls) {
-      if (u.get_protocol() == "builtin") continue;
-      if (Filesystem::has_extension(u.str(), "ImageProperties.xml")) continue;
-      if (u.has_stdio_name() && Filesystem::has_extension(u.get_stdio_name(), ".galapix")) continue;
-      std::string const uri = thumtoo_uri_from_url(u);
-      if (uri.empty()) continue;
-      if (m_thumtoo->get_size(uri)) continue;
-      ++pending;
-      m_thumtoo->request_size(uri, [](std::string, std::optional<thumtoo::Size>) {});
-    }
-    if (pending > 0) {
-      m_thumtoo->drain();
-      ThumtooCallbackQueue::instance().pump();
-    }
-    std::cout << " " << work_urls.size() << " urls, " << pending << " probed\n";
-  }
-  timing.mark("size_probe");
+  // Queue size probes without blocking the viewer launch. Known sizes get a
+  // provider immediately; the rest attach on the main thread as get_size()
+  // fills in (SizeProbeSession + Viewer::update tick).
+  timing.mark("size_probe_queued");
 #endif
 
   // process regular URLs
@@ -408,14 +379,40 @@ ViewerCommand::run(std::vector<URL> const& urls)
     }
     else
     {
-      // Sizes and tiles from thumtoo (or empty provider).
-      if (auto provider = make_file_tile_provider(*i)) {
-        workspace.add_image(std::make_shared<Image>(*i, provider, &m_job_manager));
-      } else {
+#ifdef HAVE_THUMTOO
+      if (m_thumtoo) {
+        std::string const uri = thumtoo_uri_from_url(*i);
+        TileProviderPtr provider;
+        if (!uri.empty()) {
+          if (auto sz = m_thumtoo->get_size(uri)) {
+            provider = ThumtooTileProvider::create_from_size(
+              m_thumtoo, uri, sz->width, sz->height);
+          }
+        }
+        auto image = std::make_shared<Image>(*i, provider, &m_job_manager);
+        workspace.add_image(image);
+        if (!provider && !uri.empty()) {
+          m_thumtoo->request_size(uri, [](std::string, std::optional<thumtoo::Size>) {});
+          size_probe->add_pending(image, uri);
+        }
+      } else
+#endif
+      {
         workspace.add_image(std::make_shared<Image>(*i, TileProviderPtr{}, &m_job_manager));
       }
     }
   }
+
+#ifdef HAVE_THUMTOO
+  if (m_thumtoo && size_probe->total() > 0) {
+    size_probe->start_drain(m_thumtoo, size_probe);
+  } else if (m_thumtoo) {
+    // No outstanding probes; drop empty session.
+    workspace.set_size_probe({});
+  }
+  timing.mark("size_probe");
+#endif
+
 
   if (!urls.empty())
   {

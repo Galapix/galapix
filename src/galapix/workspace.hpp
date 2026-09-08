@@ -23,6 +23,7 @@
 #include "galapix/image_collection.hpp"
 #include "galapix/layouter/layouter.hpp"
 #include "galapix/layouter/spiral_layouter.hpp"
+#include "galapix/size_probe_session.hpp"
 #include "galapix/selection.hpp"
 #include "galapix/workspace_item.hpp"
 #include "math/quad_tree.hpp"
@@ -51,6 +52,11 @@ public:
   void layout_vertical();
   void layout_random();
   void solve_overlaps();
+
+  /** Optional background thumtoo size probe (viewer may open before sizes are known). */
+  void set_size_probe(std::shared_ptr<SizeProbeSession> probe);
+  std::shared_ptr<SizeProbeSession> size_probe() const { return m_size_probe; }
+  void tick_size_probe();
 
   // ---------------------------------------------
 
@@ -115,6 +121,7 @@ private:
   ImageCollection m_images;
   SelectionPtr m_selection;
   LayouterPtr m_layouter;
+  std::shared_ptr<SizeProbeSession> m_size_probe;
 
 private:
   Workspace (Workspace const&) = delete;

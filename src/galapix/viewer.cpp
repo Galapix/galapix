@@ -377,6 +377,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
 void
 Viewer::update(float delta)
 {
+  m_workspace->tick_size_probe();
   m_workspace->update(delta);
 
   zoom_in_tool ->update(m_mouse_pos, delta);

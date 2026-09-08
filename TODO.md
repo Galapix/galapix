@@ -1,3 +1,18 @@
+## Async thumtoo size probe + UI status (2026-09-08) — tip **galapix-143** / bundle **galapix-061**
+
+Blocking `Probing image sizes (thumtoo)...` + `drain()` before launch made large
+opens feel hung.
+
+- Queue `request_size`, open viewer immediately with placeholder Images
+- Background thread runs `Client::drain()`
+- Main-thread `SizeProbeSession::tick` attaches providers as `get_size` fills in
+- Console progress + ImGui toasts; relayout when complete
+
+- [x] Code
+- [x] Bundle galapix-061
+
+---
+
 ## Update README (2026-09-08) — tip **galapix-142** / bundle **galapix-060**
 
 - Remove Travis/Coverity badges and leftover "zoomview" title fragment

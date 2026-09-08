@@ -24,6 +24,7 @@
 #include <strut/numeric_less.hpp>
 
 #include "galapix/layouter/overlap_solver.hpp"
+#include "galapix/size_probe_session.hpp"
 #include "galapix/layouter/random_layouter.hpp"
 #include "galapix/layouter/regular_layouter.hpp"
 #include "galapix/layouter/spiral_layouter.hpp"
@@ -398,6 +399,20 @@ void
 Workspace::solve_overlaps()
 {
   solve_image_overlaps(m_images, /*gap=*/16.0f);
+}
+
+void
+Workspace::set_size_probe(std::shared_ptr<SizeProbeSession> probe)
+{
+  m_size_probe = std::move(probe);
+}
+
+void
+Workspace::tick_size_probe()
+{
+  if (m_size_probe) {
+    m_size_probe->tick();
+  }
 }
 
 void
