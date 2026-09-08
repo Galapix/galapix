@@ -136,6 +136,18 @@ Domain terms used in Galapix, its tile pipeline, and the optional
 
 ---
 
+
+## Inline LQIP (tiny gallery stamps)
+
+| Term | Meaning |
+|------|---------|
+| **LQIP** | Low-Quality Image Placeholder: a few dozen bytes that approximate the image for instant gallery cells. |
+| **ThumbHash** | DCT-based LQIP (~25–37 bytes). Stored on the thumtoo **content** row (`content.lqip`), not in blob storage. |
+| **lqip_kind** | Discriminator for the blob format (`1` = ThumbHash). |
+| **Handsum** | Alternate fixed-size LQIP (48–147 B); not wired yet — candidate if we need sharper fixed columns. |
+
+**Stack:** ThumbHash (row) → levels (blob) → grid tiles.
+
 ## See also
 
 - [docs/TILE_LOADING.md](docs/TILE_LOADING.md) — priority order and backend behaviour  
