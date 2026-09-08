@@ -22,8 +22,13 @@
 #include "jobs/overview_load_job.hpp"
 #include "math/math.hpp"
 #include "math/vector2i.hpp"
+#include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer.hpp"
 #include "util/weak_functor.hpp"
+
+#ifdef HAVE_THUMTOO
+#  include "thumtoo/thumtoo_tile_provider.hpp"
+#endif
 
 namespace galapix {
 

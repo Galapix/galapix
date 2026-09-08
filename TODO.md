@@ -1,3 +1,19 @@
+## Build fix: image_overview includes (2026-09-08) — tip **galapix-092** / bundle **galapix-003**
+
+`ImageOverview::ensure_requested` (HAVE_THUMTOO path) uses `ThumtooTileProvider`
+and `ImageTileCache` without including their headers. Add:
+
+* `galapix/image_tile_cache.hpp` (budget + requests-enabled)
+* `thumtoo/thumtoo_tile_provider.hpp` (under `HAVE_THUMTOO`)
+
+Latent from the thumtoo-backed overview path; surfaced when building 002.
+
+### Status
+- [x] Includes fixed
+- [x] Bundle galapix-003
+
+---
+
 ## Tile request phase split (2026-09-08) — tip **galapix-091** / bundle **galapix-002**
 
 Follow-up to galapix-090: implement the documented draw/update split.
