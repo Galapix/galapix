@@ -4,7 +4,7 @@
 plus upload and request counters. Helps diagnose zoom-out frame drops.
 
 - [x] Code + STATUS_REPORTING.md
-- [ ] Bundle galapix-054
+- [x] Bundle galapix-054
 
 ---
 
