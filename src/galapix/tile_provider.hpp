@@ -48,7 +48,7 @@ public:
   struct TileRequest {
     int scale = 0;
     Vector2i pos;
-    JobHandle job_handle;
+    JobHandle job_handle = JobHandle::create();
     std::function<void (Tile)> callback;
   };
   virtual void request_tiles(std::vector<TileRequest> requests);
