@@ -153,6 +153,16 @@ Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
       i->issue_tile_requests();
     }
   }
+  // Pass 3: levels soft-underlay with *remaining* budget only. Doing this in
+  // prepare stole the whole frame budget so grid tiles never started until
+  // the user zoomed (re-mark / new scales).
+  for (auto& i : m_images)
+  {
+    if (geom::intersects(i->get_image_rect(), cliprect))
+    {
+      i->request_overview_levels(cliprect, zoom);
+    }
+  }
 }
 
 void

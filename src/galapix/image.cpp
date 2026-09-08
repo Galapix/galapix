@@ -119,6 +119,17 @@ Image::issue_tile_requests()
 }
 
 void
+Image::request_overview_levels(Rectf const& /*cliprect*/, float /*zoom*/)
+{
+  if (!m_overview || !m_provider) {
+    return;
+  }
+  int const disp_long = static_cast<int>(std::ceil(
+    std::max(get_scaled_width(), get_scaled_height())));
+  m_overview->ensure_levels(m_provider, disp_long);
+}
+
+void
 Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
 {
   if (!m_provider)

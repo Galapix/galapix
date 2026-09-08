@@ -75,6 +75,8 @@ public:
 
   /** Start provider jobs for tiles marked in prepare_tiles. Default: no-op. */
   virtual void issue_tile_requests() {}
+  /** Soft levels after grid issue; default no-op. */
+  virtual void request_overview_levels(Rectf const&, float) {}
 
   virtual void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) = 0;
   virtual void draw_mark(wstdisplay::GraphicsContext& gc) = 0;

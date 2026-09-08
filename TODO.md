@@ -1,3 +1,24 @@
+## Grid tiles starved by levels budget (2026-09-08) — tip **galapix-110** / bundle **galapix-025**
+
+### Symptom
+LQIP appears; real tiles only after zoom in/out. Otherwise LQIP sticks.
+
+### Cause
+`ensure_requested` spent the global per-frame request budget on
+`request_pixels` (levels) during prepare, before `issue_tile_requests`.
+Grid jobs saw budget 0 every frame until zoom re-ordered work.
+
+### Fix
+- `ensure_requested`: LQIP (+ non-thumtoo overview) only — no tile budget
+- New `ensure_levels` / `Image::request_overview_levels`
+- Workspace pass 3: levels **after** grid `issue_tile_requests` (remaining budget)
+
+### Status
+- [x] Code
+- [ ] Bundle galapix-025
+
+---
+
 ## Grid tiles blocked after LQIP (2026-09-08) — tip **galapix-109** / bundle **galapix-024**
 
 ### Symptom

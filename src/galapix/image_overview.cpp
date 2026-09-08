@@ -150,86 +150,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
       }
     }
 
-    // Postage-stamp gallery: LQIP alone is enough.
-    if (m_lqip_only && m_state == State::Ready && target_long_edge <= 64) {
-      return;
-    }
-    if (m_levels_requested && m_state == State::Loading) {
-      return;
-    }
-    if (m_state == State::Ready && !m_lqip_only) {
-      return; // full overview already
-    }
-
-    // No new provider work in cache-only mode (LQIP above is cache-only).
-    if (!ImageTileCache::tile_requests_enabled()) {
-      return;
-    }
-
-    // 2) Levels ladder (blob) for sharper soft underlay.
-    if (!ImageTileCache::try_consume_request_budget()) {
-      return;
-    }
-    m_state = State::Loading;
-    m_levels_requested = true;
-    m_job = JobHandle::create();
-    int edge = target_long_edge > 0 ? target_long_edge : 256;
-    edge = std::clamp(edge, 128, 512);
-    auto client = tp->client();
-    std::string uri = tp->uri();
-    client->request_pixels(
-      std::move(uri), edge,
-      [weak_self, job = m_job](std::string, int,
-                               std::optional<thumtoo::PixelLevel> px) mutable {
-        auto self = weak_self.lock();
-        if (!self) {
-          return;
-        }
-        if (job.is_aborted()) {
-          return;
-        }
-        if (!px || px->bytes.empty() || px->width <= 0 || px->height <= 0) {
-          // Keep LQIP if we already have it; restore Ready so grid tiles are
-          // not blocked forever by a stuck Loading state.
-          if (self->m_lqip_only) {
-            self->m_state = State::Ready;
-            self->m_levels_requested = false;
-            job.set_failed();
-          } else {
-            self->receive_software(std::nullopt, false);
-            job.set_failed();
-          }
-          return;
-        }
-        try {
-          auto surface = g_app.surface_factory().from_mem(
-            std::span<uint8_t const>(px->bytes.data(), px->bytes.size()),
-            px->codec == "jxl" ? "image/jxl" : px->codec,
-            "thumtoo-level");
-          if (surface.get_width() <= 0) {
-            if (self->m_lqip_only) {
-              self->m_state = State::Ready;
-              self->m_levels_requested = false;
-              job.set_failed();
-            } else {
-              self->receive_software(std::nullopt, false);
-              job.set_failed();
-            }
-            return;
-          }
-          self->receive_software(std::move(surface), /*from_lqip=*/false);
-          job.set_finished();
-        } catch (...) {
-          if (self->m_lqip_only) {
-            self->m_state = State::Ready;
-            self->m_levels_requested = false;
-            job.set_failed();
-          } else {
-            self->receive_software(std::nullopt, false);
-            job.set_failed();
-          }
-        }
-      });
+    // Levels upgrade is ensure_levels() — after grid issue_requests (budget).
     return;
   }
 #endif
@@ -259,6 +180,110 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     });
 
   job_manager->request(job);
+}
+
+
+void
+ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
+{
+#ifdef HAVE_THUMTOO
+  if (m_state == State::Failed) {
+    return;
+  }
+
+  auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get());
+  if (!tp) {
+    return;
+  }
+
+  std::weak_ptr<ImageOverview> weak_self;
+  try {
+    weak_self = shared_from_this();
+  } catch (std::bad_weak_ptr const&) {
+    return;
+  }
+
+  // Postage-stamp gallery: LQIP alone is enough.
+  if (m_lqip_only && m_state == State::Ready && target_long_edge <= 64) {
+    return;
+  }
+  if (m_levels_requested && m_state == State::Loading) {
+    return;
+  }
+  if (m_state == State::Ready && !m_lqip_only) {
+    return; // full overview already
+  }
+
+  if (!ImageTileCache::tile_requests_enabled()) {
+    return;
+  }
+
+  // Spend remaining per-frame budget after grid issue_requests.
+  if (!ImageTileCache::try_consume_request_budget()) {
+    return;
+  }
+  m_state = State::Loading;
+  m_levels_requested = true;
+  m_job = JobHandle::create();
+  int edge = target_long_edge > 0 ? target_long_edge : 256;
+  edge = std::clamp(edge, 128, 512);
+  auto client = tp->client();
+  std::string uri = tp->uri();
+  client->request_pixels(
+    std::move(uri), edge,
+    [weak_self, job = m_job](std::string, int,
+                             std::optional<thumtoo::PixelLevel> px) mutable {
+      auto self = weak_self.lock();
+      if (!self) {
+        return;
+      }
+      if (job.is_aborted()) {
+        return;
+      }
+      if (!px || px->bytes.empty() || px->width <= 0 || px->height <= 0) {
+        if (self->m_lqip_only) {
+          self->m_state = State::Ready;
+          self->m_levels_requested = false;
+          job.set_failed();
+        } else {
+          self->receive_software(std::nullopt, false);
+          job.set_failed();
+        }
+        return;
+      }
+      try {
+        auto surface = g_app.surface_factory().from_mem(
+          std::span<uint8_t const>(px->bytes.data(), px->bytes.size()),
+          px->codec == "jxl" ? "image/jxl" : px->codec,
+          "thumtoo-level");
+        if (surface.get_width() <= 0) {
+          if (self->m_lqip_only) {
+            self->m_state = State::Ready;
+            self->m_levels_requested = false;
+            job.set_failed();
+          } else {
+            self->receive_software(std::nullopt, false);
+            job.set_failed();
+          }
+          return;
+        }
+        self->receive_software(std::move(surface), /*from_lqip=*/false);
+        job.set_finished();
+      } catch (...) {
+        if (self->m_lqip_only) {
+          self->m_state = State::Ready;
+          self->m_levels_requested = false;
+          job.set_failed();
+        } else {
+          self->receive_software(std::nullopt, false);
+          job.set_failed();
+        }
+      }
+    });
+#else
+  (void)provider;
+  (void)target_long_edge;
+#endif
 }
 
 void
