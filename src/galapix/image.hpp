@@ -83,7 +83,7 @@ public:
   }
   JobManager* job_manager() const { return m_job_manager; }
 
-private:
+  /** Attach or replace the tile provider (e.g. after async size probe). */
   void set_tile_provider(TileProviderPtr provider);
   TileProviderPtr get_tile_provider() const { return m_provider; }
 

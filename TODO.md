@@ -1,3 +1,13 @@
+## SizeProbeSession access + Workspace init (2026-09-08) — tip **galapix-146** / bundle **galapix-064**
+
+- Make `Image::set_tile_provider` public for async size probe attach
+- Initialize `Workspace::m_size_probe` in the ctor for `-Weffc++`
+
+- [x] Code
+- [x] Bundle galapix-064
+
+---
+
 ## Fix SizeProbeSession compile (2026-09-08) — tip **galapix-145** / bundle **galapix-063**
 
 - Match `start_drain(client, self)` / `tick()` to the header

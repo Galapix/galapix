@@ -36,7 +36,8 @@ namespace galapix {
 Workspace::Workspace() :
   m_images(),
   m_selection(Selection::create()),
-  m_layouter()
+  m_layouter(),
+  m_size_probe()
 {
 }
 
