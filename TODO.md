@@ -1,3 +1,23 @@
+## Global mark-then-issue pass (2026-09-08) — tip **galapix-093** / bundle **galapix-004**
+
+After the prepare/draw split, each `Image::prepare_tiles` still called
+`issue_requests()` immediately, so early `m_images` entries consumed the
+whole per-frame budget before later visible images could mark.
+
+### Change
+- `Image::prepare_tiles` — uploads + mark only
+- `Image::issue_tile_requests` — `cache->issue_requests()`
+- `Workspace::prepare_tiles` — pass 1 mark all visible, pass 2 issue all visible
+- Overview `ensure_requested` still runs in prepare (may use budget for
+  thumtoo overview); grid cells only after every image has marked
+
+### Status
+- [x] Split mark / issue on Image + WorkspaceItem
+- [x] Workspace two-pass prepare
+- [x] Bundle galapix-004
+
+---
+
 ## Build fix: image_overview includes (2026-09-08) — tip **galapix-092** / bundle **galapix-003**
 
 `ImageOverview::ensure_requested` (HAVE_THUMTOO path) uses `ThumtooTileProvider`

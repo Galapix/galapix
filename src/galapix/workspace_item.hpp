@@ -69,8 +69,11 @@ public:
 
   virtual Rectf get_image_rect() const;
 
-  /** Mark visible tiles / start loads. Default: no-op. Called before draw. */
+  /** Mark visible tiles / process uploads. Default: no-op. Called before issue. */
   virtual void prepare_tiles(Rectf const& cliprect, float zoom) {}
+
+  /** Start provider jobs for tiles marked in prepare_tiles. Default: no-op. */
+  virtual void issue_tile_requests() {}
 
   virtual void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) = 0;
   virtual void draw_mark(wstdisplay::GraphicsContext& gc) = 0;

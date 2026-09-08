@@ -118,6 +118,7 @@ Workspace::layout_random()
 void
 Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
 {
+  // Pass 1: visibility + mark needed tiles (no provider jobs yet).
   for (auto& i : m_images)
   {
     if (geom::intersects(i->get_image_rect(), cliprect))
@@ -134,6 +135,16 @@ Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
       {
         i->on_leave_screen();
       }
+    }
+  }
+  // Pass 2: issue under the global budget. Still per-image FIFO within the
+  // mark order, but every visible image has its stand-ins/targets recorded
+  // before any queue_tile_request runs — fairer than interleaving issue.
+  for (auto& i : m_images)
+  {
+    if (geom::intersects(i->get_image_rect(), cliprect))
+    {
+      i->issue_tile_requests();
     }
   }
 }

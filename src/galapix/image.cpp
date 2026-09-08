@@ -106,8 +106,17 @@ Image::prepare_tiles(Rectf const& cliprect, float zoom)
     m_overview->process();
   }
   m_cache->process_queue();
+  // Mark only — Workspace issues after every image has marked so the
+  // global request budget is not monopolized by early items in m_images.
   m_renderer->prepare(cliprect, zoom);
-  m_cache->issue_requests();
+}
+
+void
+Image::issue_tile_requests()
+{
+  if (m_cache) {
+    m_cache->issue_requests();
+  }
 }
 
 void

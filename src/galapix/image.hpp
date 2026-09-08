@@ -47,6 +47,8 @@ public:
   ~Image() override;
 
   void prepare_tiles(Rectf const& cliprect, float zoom) override;
+  /** Start provider jobs for tiles marked in prepare_tiles (budgeted). */
+  void issue_tile_requests() override;
   void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) override;
   void draw_mark(wstdisplay::GraphicsContext& gc) override;
 
