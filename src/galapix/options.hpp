@@ -29,7 +29,7 @@ class Options
 public:
   Options() :
     fullscreen(false),
-    geometry(800, 600),
+    geometry(1024, 768),
     anti_aliasing(0),
 
     database(),
