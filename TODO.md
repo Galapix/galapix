@@ -18,7 +18,7 @@ LQIP underlays appear, but never upgrade to real image tiles.
 
 ### Status
 - [x] Code fix
-- [ ] Bundle galapix-024
+- [x] Bundle galapix-024
 
 ---
 
