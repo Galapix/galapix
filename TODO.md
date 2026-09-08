@@ -1,3 +1,29 @@
+## Fix: request budget wasted on cache hits (2026-09-08) — tip **galapix-098** / bundle **galapix-009**
+
+### Symptom
+Tile debug showed mixed scale tints that never resolved to the requested
+scale. Status "pending uploads" stuck around 5–20.
+
+### Cause
+`queue_tile_request` called `try_consume_request_budget()` **before** checking
+whether the cell was already SUCCEEDED / in-flight. After mark_tile_needed
+started recording full ancestor chains, each frame re-issued hundreds of
+already-cached coarser cells first (coarser-first sort), burned the entire
+global budget of 48 on no-ops, and never started jobs for missing fine tiles.
+
+### Fix
+- Check cache (and dead-job retry) first; only consume budget when starting a
+  new provider job
+- process_queue: 16→32 uploads/image/frame; redraw while queue non-empty even
+  after a partial drain so pending uploads cannot stall when workers are idle
+
+### Status
+- [x] Budget order fix
+- [x] Upload drain redraw
+- [x] Bundle galapix-009
+
+---
+
 ## Tile debug: scale-coded translucent fills (2026-09-08) — tip **galapix-097** / bundle **galapix-008**
 
 Tile debug (`V`) draws a **semi-transparent fill + outline** whose colour

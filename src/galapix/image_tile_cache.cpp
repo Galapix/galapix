@@ -208,12 +208,6 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
     return;
   }
 
-  // Global per-frame start budget (begin_frame_request_budget). Issuing
-  // ~1000 provider jobs on first paint stampeded thumtoo; fill took ~3s.
-  if (!try_consume_request_budget()) {
-    return;
-  }
-
   TileCacheId cache_id(Vector2i(x, y), scale);
   Cache::iterator i = m_cache.find(cache_id);
 
@@ -233,8 +227,18 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
       next_attempts = i->second.attempts + 1;
       m_cache.erase(i);
     } else {
+      // Already SUCCEEDED or in-flight — do NOT consume the per-frame budget.
+      // mark_tile_needed records full ancestor chains every frame; charging
+      // budget for cache hits starved fine-scale requests so mixed-scale
+      // stand-ins never upgraded.
       return;
     }
+  }
+
+  // Global per-frame start budget (begin_frame_request_budget). Only charge
+  // when we are about to start a real provider job.
+  if (!try_consume_request_budget()) {
+    return;
   }
 
   JobHandle job_handle = m_tile_provider->request_tile(
@@ -455,7 +459,7 @@ ImageTileCache::process_queue()
   // Cap GL uploads per image per frame. Was 2 and starved gallery fill when
   // many overview tiles were already decoded. Higher budget drains the
   // receive queue faster when thumbnails are cache hits.
-  constexpr int kMaxUploadsPerFrame = 16;
+  constexpr int kMaxUploadsPerFrame = 32;
 
   int uploaded = 0;
   Tile tile;
@@ -479,9 +483,11 @@ ImageTileCache::process_queue()
     ++uploaded;
   }
 
-  if (uploaded > 0 && !m_tile_queue.empty())
+  // Keep the main loop running while decoded tiles await upload; otherwise
+  // pending_upload_count can sit non-zero after workers go idle and no
+  // further receive_tile redraws arrive.
+  if (uploaded > 0 || !m_tile_queue.empty())
   {
-    // More decoded tiles waiting — keep animating without blocking this frame.
     if (Viewer* v = Viewer::current()) {
       v->redraw();
     }
