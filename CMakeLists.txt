@@ -351,7 +351,7 @@ target_include_directories(libgalapix_app PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}/src)
 target_link_libraries(libgalapix_app PUBLIC
   libgalapix
-  xdgcpp
+  xdgcpp::xdgcpp
   PkgConfig::SDL2
   PkgConfig::SDL2_IMAGE)
 

@@ -14,7 +14,7 @@
 #include <logmich/log.hpp>
 #include <thumtoo/client.hpp>
 
-#include "app/imgui_overlay.hpp"
+#include "util/status_notify.hpp"
 #include "galapix/viewer.hpp"
 #include "thumtoo/thumtoo_tile_provider.hpp"
 
@@ -92,7 +92,7 @@ SizeProbeSession::tick()
       std::cout << "Probing image sizes (thumtoo): done "
                 << m_completed << "/" << m_total << "\n"
                 << std::flush;
-      ImguiOverlay::notify(
+      status_notify(
         "Size probe complete (" + std::to_string(m_completed) + "/" +
           std::to_string(m_total) + ")",
         4.0f);
@@ -143,7 +143,7 @@ SizeProbeSession::tick()
     m_last_logged = done;
     std::cout << "Probing image sizes (thumtoo): " << done << "/" << tot
               << "\r" << std::flush;
-    ImguiOverlay::notify(
+    status_notify(
       "Probing image sizes: " + std::to_string(done) + "/" + std::to_string(tot),
       2.5f);
     if (Viewer* v = Viewer::current()) {
@@ -156,7 +156,7 @@ SizeProbeSession::tick()
     std::cout << "\nProbing image sizes (thumtoo): done " << m_completed
               << "/" << m_total << "\n"
               << std::flush;
-    ImguiOverlay::notify(
+    status_notify(
       "Size probe complete (" + std::to_string(m_completed) + "/" +
         std::to_string(m_total) + ")",
       4.0f);

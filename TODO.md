@@ -1,3 +1,23 @@
+## Fix xdgcpp link + decouple SizeProbe from ImGui (2026-09-08) — tip **galapix-153** / bundle **galapix-071**
+
+Build failures after galapix-070:
+
+1. `xdg.h: No such file or directory` — CMake linked bare `xdgcpp`; the
+   exported target is `xdgcpp::xdgcpp` (INTERFACE include dirs only on that).
+2. `undefined reference to ImguiOverlay::notify` when linking benchmarks —
+   `SizeProbeSession` (libgalapix) pulled in the app-layer ImGui overlay.
+
+### Fix
+- Link `xdgcpp::xdgcpp`
+- Add `util/status_notify` hook in libgalapix; SizeProbe calls `status_notify()`
+- `ImguiOverlay::init` registers the handler; shutdown clears it
+- App code may still call `ImguiOverlay::notify` directly
+
+- [x] Code
+- [ ] Bundle galapix-071
+
+---
+
 ## ImGui.ini under XDG config (2026-09-08) — tip **galapix-152** / bundle **galapix-070**
 
 Stop dumping `imgui.ini` into the process cwd. Use the XDG Base Directory

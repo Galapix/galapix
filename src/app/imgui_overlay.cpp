@@ -30,6 +30,7 @@
 #include <xdg.h>
 
 #include "galapix/viewer.hpp"
+#include "util/status_notify.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
 
@@ -253,6 +254,10 @@ ImguiOverlay::init(SDL_Window* window, SDL_GLContext gl_context)
   load_icons();
   m_initialized = true;
   s_instance = this;
+  // Core (libgalapix) toasts go through status_notify → here.
+  set_status_notify_handler([](std::string msg, float secs) {
+    ImguiOverlay::notify(std::move(msg), secs);
+  });
   return true;
 }
 
@@ -265,6 +270,7 @@ ImguiOverlay::shutdown()
   if (s_instance == this) {
     s_instance = nullptr;
   }
+  set_status_notify_handler({});
   m_toasts.clear();
   destroy_icons();
   ImGui_ImplOpenGL3_Shutdown();
