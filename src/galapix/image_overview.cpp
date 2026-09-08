@@ -14,6 +14,7 @@
 
 #include <logmich/log.hpp>
 #include <surf/convert.hpp>
+#include <surf/software_surface_factory.hpp>
 #include <surf/pixel_format.hpp>
 #include <wstdisplay/graphics_context.hpp>
 #include <wstdisplay/texture.hpp>
@@ -114,7 +115,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     std::string uri = tp->uri();
     client->request_pixels(
       std::move(uri), kOverviewMaxEdge,
-      [weak_self, job = m_job](std::string, int, std::optional<thumtoo::PixelLevel> px) {
+      [weak_self, job = m_job](std::string, int, std::optional<thumtoo::PixelLevel> px) mutable {
         auto self = weak_self.lock();
         if (!self) {
           return;
