@@ -142,6 +142,7 @@
               libjxl
               libarchive
               poppler
+              djvulibre
 
               # Silence pkg-config warnings
               libsysprof-capture
