@@ -1,3 +1,21 @@
+## Only request view-scale tiles; cancel other REQUESTED (2026-09-08) — tip **galapix-129** / bundle **galapix-046**
+
+### Problem
+`mark_tile_needed` queued the whole ancestor chain. `cancel_jobs` kept
+coarser REQUESTED jobs as "stand-ins". Result: pending_requests stuck high,
+tile-debug mixed resolutions that never settled to the view scale.
+
+### Fix
+- Mark **only** the exact view-scale cell
+- Cancel **all** REQUESTED jobs at other scales (or outside the visible rect)
+- Stand-ins still come from already-SUCCEEDED coarser tiles via
+  `find_smaller_tile` — no extra requests
+
+- [x] Code
+- [x] Bundle galapix-046
+
+---
+
 ## Fix Viewer JobManager shutdown assert (2026-09-08) — tip **galapix-128** / bundle **galapix-045**
 
 `Thread::~Thread` asserts `m_state == kJoined`. Viewer only called

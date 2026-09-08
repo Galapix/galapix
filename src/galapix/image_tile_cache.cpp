@@ -268,25 +268,13 @@ ImageTileCache::mark_tile_needed(int x, int y, int scale)
     return;
   }
 
-  // Mark the requested cell, then missing ancestors only (for stand-ins).
-  // Already-SUCCEEDED coarser cells are skipped so they do not compete for the
-  // per-frame start budget. issue_requests prioritises *finer* scales first so
-  // a deep zoom is not starved behind overview/parent generation.
-  int cx = x;
-  int cy = y;
-  for (int s = scale; s <= m_max_scale; ++s) {
-    TileCacheId const id(Vector2i(cx, cy), s);
-    if (s == scale) {
-      m_needed.insert(id);
-    } else {
-      Cache::iterator it = m_cache.find(id);
-      if (it == m_cache.end() || !it->second.surface) {
-        m_needed.insert(id);
-      }
-    }
-    cx /= 2;
-    cy /= 2;
-  }
+  // Only the exact view-scale cell. Coarser ancestors used to be marked for
+  // "stand-in" generation; that left dozens of REQUESTED parent jobs that
+  // cancel_jobs deliberately kept (scale > view), so pending_requests never
+  // drained and tile-debug showed mixed resolutions forever.
+  // Display still uses find_smaller_tile() on *already SUCCEEDED* coarser
+  // surfaces — no need to request them again.
+  m_needed.insert(TileCacheId(Vector2i(x, y), scale));
 }
 
 void
@@ -618,15 +606,13 @@ void
 ImageTileCache::cancel_jobs(Rect const& rect, int scale)
 {
   // scale 0 = full resolution, higher = coarser.
-  // Drop obsolete work when the view moves:
-  //  - finer than the current view scale (user zoomed out)
+  // Drop obsolete REQUESTED work when the view moves:
+  //  - any scale other than the current view scale (including coarser
+  //    "stand-in" requests that used to be kept and left pending stuck)
   //  - same scale but outside the visible tile rect
-  // Keep coarser REQUESTED jobs (scale > view scale): they are stand-ins /
-  // overview while high-res tiles load and are cheap to finish.
+  // SUCCEEDED surfaces at other scales stay for find_smaller_tile().
   //
-  // Skip full-map walk when the visible rect/scale did not change — zoom
-  // frames often re-draw the same tile set; O(cache) every frame was
-  // measurable with large REQUESTED sets.
+  // Skip full-map walk when the visible rect/scale did not change.
   if (m_have_last_cancel && m_last_cancel_scale == scale &&
       m_last_cancel_rect == rect) {
     return;
@@ -647,11 +633,11 @@ ImageTileCache::cancel_jobs(Rect const& rect, int scale)
     }
 
     int const job_scale = i->first.get_scale();
-    bool const finer_than_view = job_scale < scale;
+    bool const wrong_scale = job_scale != scale;
     bool const same_scale_outside =
       job_scale == scale && !geom::contains(rect, i->first.get_pos());
 
-    if (finer_than_view || same_scale_outside)
+    if (wrong_scale || same_scale_outside)
     {
       i->second.job_handle.set_aborted();
       m_cache.erase(i++);
