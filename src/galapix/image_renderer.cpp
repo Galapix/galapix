@@ -216,11 +216,23 @@ ImageRenderer::prepare(Rectf const& cliprect, float zoom)
 
   if (plan.one_cell) {
     m_cache->cancel_jobs(Rect(0, 0, 1, 1), plan.tiledb_scale);
-    m_cache->mark_tile_needed(0, 0, plan.tiledb_scale);
+    // While scale is still debouncing, cancel only — do not enqueue intermediate grids.
+    if (!m_cache->request_scale_holding()) {
+      m_cache->set_request_focus(0.5f, 0.5f);
+      m_cache->mark_tile_needed(0, 0, plan.tiledb_scale);
+    }
     return;
   }
 
   m_cache->cancel_jobs(plan.tile_rect, plan.tiledb_scale);
+  if (m_cache->request_scale_holding()) {
+    // Scale not settled: keep stand-ins; skip mark/issue of this intermediate grid.
+    return;
+  }
+
+  float const cx = 0.5f * static_cast<float>(plan.tile_rect.left() + plan.tile_rect.right());
+  float const cy = 0.5f * static_cast<float>(plan.tile_rect.top() + plan.tile_rect.bottom());
+  m_cache->set_request_focus(cx, cy);
   for (int y = plan.tile_rect.top(); y < plan.tile_rect.bottom(); ++y) {
     for (int x = plan.tile_rect.left(); x < plan.tile_rect.right(); ++x) {
       m_cache->mark_tile_needed(x, y, plan.tiledb_scale);

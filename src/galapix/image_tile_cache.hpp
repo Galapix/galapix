@@ -91,8 +91,8 @@ public:
   void mark_tile_needed(int x, int y, int scale);
 
   /** Start provider jobs for cells marked since the last issue, under the
-      global per-frame budget. Coarser scales first so stand-ins tend to
-      finish before fine tiles. Clears the needed set. */
+      global per-frame budget. Coarser scales first; within a scale, nearer
+      the visible-rect centre first. Clears the needed set. */
   void issue_requests();
 
   void clear_needed();
@@ -126,6 +126,12 @@ public:
       scale briefly so we do not enqueue a full grid at every intermediate
       log2 step (workers cannot cancel in-flight PDF/JPEG work). */
   int stable_request_scale(int desired_scale);
+
+  /** True while desired scale differs from the committed stable scale. */
+  bool request_scale_holding() const;
+
+  /** Focus in tile coords for issue_requests priority (viewport centre). */
+  void set_request_focus(float tile_x, float tile_y);
 
   static void set_tile_debug(bool on) { s_tile_debug = on; }
   static bool tile_debug() { return s_tile_debug; }
@@ -183,6 +189,9 @@ public:
   int m_stable_scale = 0;
   int m_pending_scale = 0;
   std::chrono::steady_clock::time_point m_pending_since{};
+
+  float m_focus_tx = 0.0f;
+  float m_focus_ty = 0.0f;
 
 private:
   /** Issue a provider request if this cell is not already in the cache.

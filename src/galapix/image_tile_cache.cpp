@@ -277,19 +277,41 @@ ImageTileCache::mark_tile_needed(int x, int y, int scale)
 }
 
 void
+ImageTileCache::set_request_focus(float tile_x, float tile_y)
+{
+  m_focus_tx = tile_x;
+  m_focus_ty = tile_y;
+}
+
+void
 ImageTileCache::issue_requests()
 {
   if (m_needed.empty()) {
     return;
   }
 
-  // Coarser scales first (higher scale number = coarser). TileCacheId sorts
-  // by scale ascending, so reverse-iterate for stand-ins before fine tiles.
+  // Coarser scales first; within a scale, nearer the viewport centre first so
+  // the per-frame budget prefers what the user is looking at.
+  float const fx = m_focus_tx;
+  float const fy = m_focus_ty;
   std::vector<TileCacheId> ordered(m_needed.begin(), m_needed.end());
   std::sort(ordered.begin(), ordered.end(),
-            [](TileCacheId const& a, TileCacheId const& b) {
+            [fx, fy](TileCacheId const& a, TileCacheId const& b) {
               if (a.get_scale() != b.get_scale()) {
                 return a.get_scale() > b.get_scale(); // coarser first
+              }
+              float const da =
+                (static_cast<float>(a.get_pos().x()) + 0.5f - fx) *
+                  (static_cast<float>(a.get_pos().x()) + 0.5f - fx) +
+                (static_cast<float>(a.get_pos().y()) + 0.5f - fy) *
+                  (static_cast<float>(a.get_pos().y()) + 0.5f - fy);
+              float const db =
+                (static_cast<float>(b.get_pos().x()) + 0.5f - fx) *
+                  (static_cast<float>(b.get_pos().x()) + 0.5f - fx) +
+                (static_cast<float>(b.get_pos().y()) + 0.5f - fy) *
+                  (static_cast<float>(b.get_pos().y()) + 0.5f - fy);
+              if (da != db) {
+                return da < db;
               }
               if (a.get_pos().x() != b.get_pos().x()) {
                 return a.get_pos().x() < b.get_pos().x();
@@ -451,6 +473,12 @@ ImageTileCache::stable_request_scale(int desired_scale)
     m_stable_scale = desired_scale;
   }
   return m_stable_scale;
+}
+
+bool
+ImageTileCache::request_scale_holding() const
+{
+  return m_have_stable_scale && m_pending_scale != m_stable_scale;
 }
 
 void

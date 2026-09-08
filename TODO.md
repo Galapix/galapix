@@ -1,3 +1,27 @@
+## Tile request LIFO catch-up + zoom hold (2026-09-08) — tip **galapix-118** / bundle **galapix-035**
+
+### Problem
+With tile requests on (not `U`), pan/zoom drops frames; after stopping, the
+view takes long to fill because thumtoo's job queue was **FIFO** — intermediate
+cells from the gesture ran before the final view. `cancel_jobs` only marks
+Galapix handles aborted; work already queued in thumtoo still runs to completion.
+
+Provider I/O/decode was already off the GUI thread; the pain is backlog order
+and enqueueing intermediate zoom grids.
+
+### Fix
+- **thumtoo-056**: interactive `request_tile` enqueues **LIFO** (`push_front`);
+  supersede pending same-cell jobs; bulk pyramid stays FIFO
+- **Galapix**: while `stable_request_scale` is holding, cancel only (no mark/issue)
+- **Galapix**: `issue_requests` prefers cells nearer the viewport centre
+
+### Status
+- [x] Code
+- [ ] Bundle galapix-035
+- Requires thumtoo-056
+
+---
+
 ## Prune arxpcpp/exspcpp from flake.lock (2026-09-08) — tip **galapix-117** / bundle **galapix-034**
 
 flake.nix no longer inputs arxpcpp/exspcpp, but flake.lock still locked those
