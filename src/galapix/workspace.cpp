@@ -134,8 +134,9 @@ Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
     }
     else
     {
-      if (i->pending_upload_count() > 0) {
-        i->prepare_tiles(cliprect, zoom);  // process_queue only useful part
+      // process_queue + reclaim stuck REQUESTED even when off-screen
+      if (i->pending_upload_count() > 0 || i->pending_tile_requests() > 0) {
+        i->prepare_tiles(cliprect, zoom);
       }
       if (i->is_visible())
       {
@@ -266,6 +267,21 @@ Workspace::print_images(Rectf const& rect) const
               << std::endl;
   }
   std::cout << "--------------------------------------------------------" << std::endl;
+}
+
+void
+Workspace::dump_stuck_tile_requests(int limit_per_image) const
+{
+  for (auto const& item : m_images) {
+    auto image = std::dynamic_pointer_cast<Image>(item);
+    if (!image) {
+      continue;
+    }
+    if (image->pending_tile_requests() <= 0) {
+      continue;
+    }
+    image->dump_stuck_tile_requests(limit_per_image);
+  }
 }
 
 void

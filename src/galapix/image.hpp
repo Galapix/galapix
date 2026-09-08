@@ -67,6 +67,7 @@ public:
 
   /** Outstanding tile jobs for this image (0 if no cache yet). */
   int pending_tile_requests() const;
+  void dump_stuck_tile_requests(int limit = 16) const;
   /** Decoded tiles waiting for GL upload. */
   int pending_tile_uploads() const;
   int pending_upload_count() const override { return pending_tile_uploads(); }

@@ -68,10 +68,12 @@ public:
       job_handle(job_handle_),
       status(status_),
       surface(std::move(surface_)),
-      attempts(attempts_)
+      attempts(attempts_),
+      issued_at(std::chrono::steady_clock::now())
     {}
 
     int attempts = 0;
+    std::chrono::steady_clock::time_point issued_at{};
   };
 
 private:
@@ -144,6 +146,12 @@ public:
 
   /** Tiles with an outstanding provider job (SURFACE_REQUESTED). */
   int pending_request_count() const;
+
+  /** Fail/erase REQUESTED entries with no completion for too long; log them. */
+  void reclaim_stuck_requests();
+
+  /** Log up to \a limit stuck REQUESTED cells (scale, pos, handle flags, age). */
+  void dump_stuck_requests(int limit = 32) const;
 
   /** Decoded tiles waiting for OpenGL upload (m_tile_queue). */
   int pending_upload_count() const;

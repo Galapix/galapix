@@ -204,6 +204,16 @@ Image::pending_tile_requests() const
   return m_cache ? m_cache->pending_request_count() : 0;
 }
 
+void
+Image::dump_stuck_tile_requests(int limit) const
+{
+  if (m_cache) {
+    std::cout << "  image " << m_url << ":
+";
+    m_cache->dump_stuck_requests(limit);
+  }
+}
+
 int
 Image::pending_tile_uploads() const
 {

@@ -96,6 +96,9 @@ public:
   void tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_entries,
                       int* out_ready_surfaces = nullptr) const;
 
+  /** Print stuck REQUESTED tile jobs (for GALAPIX_OPEN_TIMING / debugging). */
+  void dump_stuck_tile_requests(int limit_per_image = 8) const;
+
   /** Count images by overview state (Idle / Loading / Ready / Failed). */
   void overview_stats(int& out_idle, int& out_loading, int& out_ready, int& out_failed) const;
 

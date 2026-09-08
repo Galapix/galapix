@@ -1,3 +1,22 @@
+## Reclaim + dump stuck REQUESTED tiles (2026-09-08) — tip **galapix-130** / bundle **galapix-047**
+
+Open-timing showed `req=15` for 40s with `upload_q=0` — live REQUESTED
+handles that never finished/failed (lost backend callback).
+
+### Changes
+- `issued_at` on each REQUESTED entry
+- `reclaim_stuck_requests()` after 4s: set_failed + erase + log
+- `dump_stuck_requests()` printed under GALAPIX_OPEN_TIMING when req>0
+- Off-screen images with pending requests still run process_queue/reclaim
+
+Not a full data-driven rewrite; isolates lost jobs so they stop blocking
+the counter and can be re-issued on the next mark.
+
+- [x] Code
+- [x] Bundle galapix-047
+
+---
+
 ## Only request view-scale tiles; cancel other REQUESTED (2026-09-08) — tip **galapix-129** / bundle **galapix-046**
 
 ### Problem

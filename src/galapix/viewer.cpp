@@ -278,6 +278,10 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
                 << " upload_q=" << uploads
                 << " ready=" << ready
                 << " cache=" << entries << "\n";
+      if (requests > 0) {
+        std::cout << "[open-timing] stuck REQUESTED dump:\n";
+        m_workspace->dump_stuck_tile_requests(8);
+      }
     }
     if (!logged_first_ready && ready > 0) {
       logged_first_ready = true;
