@@ -17,7 +17,7 @@ and enqueueing intermediate zoom grids.
 
 ### Status
 - [x] Code
-- [ ] Bundle galapix-035
+- [x] Bundle galapix-035
 - Requires thumtoo-056
 
 ---
