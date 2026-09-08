@@ -4,7 +4,7 @@ viewer_command / viewer called `thumtoo::is_likely_djvu_path` without including
 `<thumtoo/djvu.hpp>` (only pdf.hpp was pulled in).
 
 - [x] Code
-- [ ] Bundle galapix-073
+- [x] Bundle galapix-073
 
 ---
 
