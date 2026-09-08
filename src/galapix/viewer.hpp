@@ -19,15 +19,18 @@
 
 #include <atomic>
 #include <memory>
-#include <memory>
+#include <string>
 #include <vector>
 
 #include <surf/color.hpp>
 #include <wstdisplay/fwd.hpp>
 
 #include "galapix/viewer_state.hpp"
+#include "job/job_manager.hpp"
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"
+
+namespace thumtoo { class Client; }
 
 namespace galapix {
 
@@ -130,6 +133,10 @@ public:
   void load();
   void save();
 
+  /** Open files/dirs from the desktop (drag-and-drop or similar).
+      Expands archives and PDFs the same way as the command line. */
+  void open_paths(std::vector<std::string> const& paths);
+
   void refresh_selection();
 
   void clear_cache();
@@ -154,6 +161,10 @@ public:
 private:
   System& m_system;
   Workspace* m_workspace;
+  JobManager m_job_manager;
+#ifdef HAVE_THUMTOO
+  std::shared_ptr<thumtoo::Client> m_thumtoo;
+#endif
   std::atomic<bool> m_mark_for_redraw;
   bool  m_draw_grid;
   bool  m_pin_grid;

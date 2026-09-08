@@ -1,3 +1,13 @@
+## Drag-and-drop open images and archives (2026-09-08) — tip **galapix-125** / bundle **galapix-042**
+
+SDL_DROPFILE → `Viewer::open_paths`: files, directories, archives (image members),
+PDFs (pages). Same expansion as CLI. Enables `SDL_EventState(SDL_DROPFILE)`.
+
+- [x] Code
+- [x] Bundle galapix-042
+
+---
+
 ## No-args start + pending_requests excludes finished (2026-09-08) — tip **galapix-124** / bundle **galapix-041**
 
 - `requires_command_line_args()` → false: `galapix` with no args opens the viewer

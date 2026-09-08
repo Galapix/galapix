@@ -256,7 +256,19 @@ AppViewer::process_event(SDL_Event const& event)
       printf("SDL_CONTROLLERDEVICEREMAPPED which:%d\n", event.cdevice.which);
       break;
 
+    case SDL_DROPFILE:
+      {
+        char* dropped = event.drop.file;
+        if (dropped) {
+          std::vector<std::string> paths{std::string(dropped)};
+          SDL_free(dropped);
+          m_viewer.open_paths(paths);
+        }
+      }
+      break;
+
     case SDL_QUIT:
+
       std::cout << "Viewer: SDL_QUIT received" << std::endl;
       m_quit = true;
       break;
@@ -692,6 +704,8 @@ AppViewer::run()
   SpaceNavigator space_navigator;
   space_navigator.start_thread();
 #endif
+
+  SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
 
   while(!m_quit)
   {
