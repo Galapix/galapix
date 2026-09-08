@@ -9,7 +9,7 @@ global request budget each frame (not counted in `req`).
 - Raise LQIP-only postage threshold 64 → 128 px
 
 - [x] Code
-- [ ] Bundle galapix-056
+- [x] Bundle galapix-056
 
 ---
 
