@@ -4,7 +4,7 @@ After skipping LQIP in size probe, ensure_lqip on every prepare/draw frame
 rasterized every visible DjVu page on the UI thread (100% CPU, no updates).
 
 - [x] get_lqip only in ImageOverview
-- [ ] Bundle galapix-082
+- [x] Bundle galapix-082
 
 ---
 
