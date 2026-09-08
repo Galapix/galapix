@@ -1,3 +1,13 @@
+## Fix SizeProbeSession compile (2026-09-08) — tip **galapix-145** / bundle **galapix-063**
+
+- Match `start_drain(client, self)` / `tick()` to the header
+- Explicit member init list for `-Weffc++`
+
+- [x] Code
+- [x] Bundle galapix-063
+
+---
+
 ## README spelling: builtin:// (2026-09-08) — tip **galapix-144** / bundle **galapix-062**
 
 - Fix `buildin://mandelbrot` → `builtin://mandelbrot`
