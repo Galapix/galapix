@@ -1,3 +1,14 @@
+## Update README (2026-09-08) — tip **galapix-142** / bundle **galapix-060**
+
+- Remove Travis/Coverity badges and leftover "zoomview" title fragment
+- Document Nix flake + CMake (no waf), thumtoo, current deps and CLI
+- Default geometry note 1024x768
+
+- [x] Code
+- [x] Bundle galapix-060
+
+---
+
 ## Default window size 1024x768 (2026-09-08) — tip **galapix-141** / bundle **galapix-059**
 
 - Pulled `origin/master` (includes flake.lock update and reclaim removal)
