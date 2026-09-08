@@ -1,3 +1,13 @@
+## Index-based batch tile delivery (2026-09-08) — tip **galapix-126** / bundle **galapix-043**
+
+Requires thumtoo-060. ThumtooTileProvider::request_tiles delivers by index
+so every JobHandle is finished/failed; tiles can reach the upload queue.
+
+- [x] Code
+- [x] Bundle galapix-043
+
+---
+
 ## Drag-and-drop open images and archives (2026-09-08) — tip **galapix-125** / bundle **galapix-042**
 
 SDL_DROPFILE → `Viewer::open_paths`: files, directories, archives (image members),

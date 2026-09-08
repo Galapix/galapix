@@ -259,47 +259,42 @@ ThumtooTileProvider::request_tiles(std::vector<TileRequest> requests)
     return;
   }
 
-  auto deliver_one = [](TileRequest& r, std::optional<thumtoo::TileBlob> tb) {
-    if (r.job_handle.is_aborted()) {
-      return;
-    }
-    if (!tb || tb->bytes.empty()) {
-      r.job_handle.set_failed();
-      return;
-    }
-    auto surface = surface_from_tile_blob(*tb);
-    if (!surface) {
-      r.job_handle.set_failed();
-      return;
-    }
-    if (r.callback) {
-      r.callback(Tile(r.scale, r.pos, *surface));
-    }
-    r.job_handle.set_finished();
-  };
-
   auto cbs = std::make_shared<std::vector<TileRequest>>(std::move(requests));
   std::vector<thumtoo::Client::TileCoord> coords;
   coords.reserve(cbs->size());
   for (auto const& r : *cbs) {
-    coords.push_back(thumtoo::Client::TileCoord{r.scale, r.pos.x(), r.pos.y()});
+    coords.push_back(
+      thumtoo::Client::TileCoord{r.scale, r.pos.x(), r.pos.y()});
   }
 
-  // One Client job for the whole visible set (shared probe / shrink ladder).
+  // Index-based completion: never re-match scale/x/y (missed matches left
+  // JobHandles REQUESTED forever and tiles never appeared).
   m_client->request_tiles(
     m_uri, std::move(coords),
-    [cbs, deliver_one](std::string, int scale, int x, int y,
-                       std::optional<thumtoo::TileBlob> tb) {
-      for (auto& r : *cbs) {
-        if (r.scale == scale && r.pos.x() == x && r.pos.y() == y) {
-          // Only deliver once per request slot.
-          if (r.job_handle.is_finished() || r.job_handle.is_failed() ||
-              r.job_handle.is_aborted()) {
-            return;
-          }
-          deliver_one(r, std::move(tb));
-          return;
+    [cbs](std::size_t index, std::optional<thumtoo::TileBlob> tb) {
+      if (index >= cbs->size()) {
+        return;
+      }
+      TileRequest& r = (*cbs)[index];
+      if (r.job_handle.is_aborted()) {
+        return;
+      }
+      if (!tb || tb->bytes.empty()) {
+        r.job_handle.set_failed();
+        return;
+      }
+      auto surface = surface_from_tile_blob(*tb);
+      if (!surface) {
+        r.job_handle.set_failed();
+        return;
+      }
+      try {
+        if (r.callback) {
+          r.callback(Tile(r.scale, r.pos, *surface));
         }
+        r.job_handle.set_finished();
+      } catch (...) {
+        r.job_handle.set_failed();
       }
     });
 }
