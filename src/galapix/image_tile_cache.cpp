@@ -38,45 +38,6 @@
 #include "util/weak_functor.hpp"
 
 namespace galapix {
-namespace {
-
-/** In-flight REQUESTED that never got finished/failed/aborted.
- *
- *  Thumtoo enqueues interactive tiles LIFO. Continuous pan/zoom + many archive
- *  images can leave older cells queued forever while newer work always jumps
- *  the front. Treat long-lived handles as failed so issue_requests can re-queue
- *  them (new jobs go to the front again). This is not a generic "timeout for
- *  slow generate" — 20s is past normal archive decode for one cell under a
- *  healthy queue.
- */
-bool is_starved_request(ImageTileCache::SurfaceStruct const& s)
-{
-  if (s.status != ImageTileCache::SurfaceStruct::SURFACE_REQUESTED || s.surface) {
-    return false;
-  }
-  auto const& h = s.job_handle;
-  if (h.is_finished() || h.is_failed() || h.is_aborted()) {
-    return false;
-  }
-  using clock = std::chrono::steady_clock;
-  constexpr double kStarveSeconds = 20.0;
-  double const age = std::chrono::duration<double>(clock::now() - s.issued_at).count();
-  return age >= kStarveSeconds;
-}
-
-bool is_retryable_dead(ImageTileCache::SurfaceStruct const& s)
-{
-  if (s.status != ImageTileCache::SurfaceStruct::SURFACE_REQUESTED || s.surface) {
-    return false;
-  }
-  auto const& h = s.job_handle;
-  if (h.is_failed() || h.is_aborted()) {
-    return true;
-  }
-  return is_starved_request(s);
-}
-
-} // namespace
 
 
 bool ImageTileCache::s_tile_debug = false;
@@ -281,12 +242,16 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
   constexpr int kMaxTileAttempts = 3;
   int next_attempts = 1;
   if (i != m_cache.end()) {
-    // Retry failed / aborted / LIFO-starved cells a few times (PDF abort on
-    // pan/zoom; archive cells can sit REQUESTED forever behind a LIFO queue).
-    if (is_retryable_dead(i->second) && i->second.attempts < kMaxTileAttempts) {
-      if (is_starved_request(i->second) && !i->second.job_handle.is_failed()) {
-        i->second.job_handle.set_failed();
-      }
+    // Retry failed / aborted cells a few times (live PDF region render is
+    // slow and often aborted by cancel_jobs while the user pans/zooms).
+    // Without treating is_aborted() like a failure, the entry stays
+    // SURFACE_REQUESTED with no surface and is never re-queued → permanent
+    // purple cells for live-only / negative-scale PDF tiles.
+    bool const dead =
+      i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+      !i->second.surface &&
+      (i->second.job_handle.is_failed() || i->second.job_handle.is_aborted());
+    if (dead && i->second.attempts < kMaxTileAttempts) {
       next_attempts = i->second.attempts + 1;
       m_cache.erase(i);
     } else {
@@ -397,13 +362,14 @@ ImageTileCache::issue_requests()
     Cache::iterator i = m_cache.find(id);
     int next_attempts = 1;
     if (i != m_cache.end()) {
-      if (is_retryable_dead(i->second) && i->second.attempts < kMaxTileAttempts) {
-        if (is_starved_request(i->second) && !i->second.job_handle.is_failed()) {
-          i->second.job_handle.set_failed();
-        }
+      bool const dead =
+        i->second.status == SurfaceStruct::SURFACE_REQUESTED &&
+        !i->second.surface &&
+        (i->second.job_handle.is_failed() || i->second.job_handle.is_aborted());
+      if (dead && i->second.attempts < kMaxTileAttempts) {
         next_attempts = i->second.attempts + 1;
         m_cache.erase(i);
-      } else if (is_retryable_dead(i->second)) {
+      } else if (dead) {
         // Exhausted retries: keep the dead entry so we do not re-issue every
         // frame (was burning the global request budget with req=0). cancel_jobs
         // drops it when the view scale/rect changes so a later view can retry.
@@ -763,10 +729,9 @@ ImageTileCache::pending_upload_count() const
 }
 
 
-// Providers must finish/fail/abort every JobHandle. In addition, REQUESTED
-// cells older than ~20s without a terminal state are treated as LIFO-starved
-// and re-queued (see is_starved_request). That is separate from the old
-// timed "reclaim" that aborted still-running work at 4s.
+// Timed reclaim of live REQUESTED was removed. Providers must always
+// finish/fail/abort every issued JobHandle. Interactive tile scheduling is
+// FIFO in thumtoo so older cells are not starved behind continuous new work.
 
 void
 ImageTileCache::dump_stuck_requests(int limit) const

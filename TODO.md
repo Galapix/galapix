@@ -1,3 +1,13 @@
+## Revert LIFO-starve timeout; rely on thumtoo FIFO (2026-09-08) — tip **galapix-148** / bundle **galapix-066**
+
+Drop age-based REQUESTED retry. Completion is deterministic via thumtoo-062
+FIFO interactive tile queue + same-cell coalesce.
+
+- [x] Code
+- [x] Bundle galapix-066
+
+---
+
 ## Retry LIFO-starved tile REQUESTED (2026-09-08) — tip **galapix-147** / bundle **galapix-065**
 
 Archive/grid cells could sit REQUESTED 20s+ forever: thumtoo interactive
