@@ -1,3 +1,26 @@
+## Thread-safety atomics + remove dead m_lqip_tried (2026-09-08) — tip **galapix-106** / bundle **galapix-021**
+
+From source audit (AUDIT.md):
+- JobHandle flags → `std::atomic<bool>` (safe cross-thread is_*)
+- JobWorkerThread m_quit/m_abort → atomic
+- Viewer::redraw coalesce → atomic CAS; ~Viewer clears current_
+- Remove unused ImageOverview::m_lqip_tried
+
+LQIP purple symptom: audit found no proven race; still needs runtime ensure_lqip hit/miss if it persists.
+
+### Status
+- [x] Atomics + dead code cleanup
+- [ ] Bundle galapix-021
+- [ ] LQIP runtime confirmation (separate)
+
+---
+
+## Investigate LQIP not showing / only purple placeholders (2026-09-08)
+
+Primary audit complete — see AUDIT.md. Thread-safety fixes applied above.
+
+---
+
 ## Use ensure_lqip + same-frame overview process (2026-09-08) — tip **galapix-105** / bundle **galapix-020**
 
 Warm caches had size but no ThumbHash; `get_lqip` stayed empty. Call

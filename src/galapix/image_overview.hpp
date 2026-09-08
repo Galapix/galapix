@@ -72,7 +72,6 @@ private:
   JobHandle m_job = JobHandle::create();
   ThreadMessageQueue2<std::optional<surf::SoftwareSurface>> m_queue;
   wstdisplay::SurfacePtr m_surface;
-  bool m_lqip_tried = false;
   bool m_lqip_only = false;
   bool m_levels_requested = false;
 };

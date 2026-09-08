@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <ostream>
@@ -34,9 +35,10 @@ public:
   {}
 
 public:
-  bool aborted;
-  bool finished;
-  bool failed;
+  // Atomically readable from any thread; writers still notify under mutex.
+  std::atomic<bool> aborted;
+  std::atomic<bool> finished;
+  std::atomic<bool> failed;
 
   std::mutex     mutex;
   std::condition_variable cond;
@@ -60,54 +62,56 @@ JobHandle::~JobHandle()
 void
 JobHandle::set_aborted()
 {
+  impl->aborted.store(true, std::memory_order_release);
   std::lock_guard<std::mutex> lock(impl->mutex);
-  impl->aborted = true;
   impl->cond.notify_all();
 }
 
 bool
 JobHandle::is_aborted() const
 {
-  return impl->aborted;
+  return impl->aborted.load(std::memory_order_acquire);
 }
 
 void
 JobHandle::set_finished()
 {
+  impl->finished.store(true, std::memory_order_release);
   std::lock_guard<std::mutex> lock(impl->mutex);
-  impl->finished = true;
   impl->cond.notify_all();
 }
 
 bool
 JobHandle::is_finished() const
 {
-  return impl->finished || impl->aborted;
+  return impl->finished.load(std::memory_order_acquire) ||
+         impl->aborted.load(std::memory_order_acquire);
 }
 
 void
 JobHandle::set_failed()
 {
+  impl->finished.store(true, std::memory_order_release);
+  impl->failed.store(true, std::memory_order_release);
   std::lock_guard<std::mutex> lock(impl->mutex);
-  impl->finished = true;
-  impl->failed   = true;
   impl->cond.notify_all();
 }
 
 bool
 JobHandle::is_failed() const
 {
-  return impl->failed;
+  return impl->failed.load(std::memory_order_acquire);
 }
 
 void
 JobHandle::wait()
 {
   std::unique_lock<std::mutex> lock(impl->mutex);
-  if (!impl->finished && !impl->aborted && !impl->failed)
-  {
-    impl->cond.wait(lock, [this]{ return is_finished(); });
-  }
+  impl->cond.wait(lock, [this] {
+    return impl->finished.load(std::memory_order_acquire) ||
+           impl->aborted.load(std::memory_order_acquire) ||
+           impl->failed.load(std::memory_order_acquire);
+  });
 }
 
 std::ostream& operator<<(std::ostream& os, JobHandle const& job_handle)

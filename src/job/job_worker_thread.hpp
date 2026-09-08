@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_JOB_JOB_WORKER_THREAD_HPP
 #define HEADER_GALAPIX_JOB_JOB_WORKER_THREAD_HPP
 
+#include <atomic>
 #include <functional>
 #include <memory>
 
@@ -57,8 +58,8 @@ public:
 
 private:
   ThreadMessageQueue2<Task> m_queue;
-  bool m_quit;
-  bool m_abort;
+  std::atomic<bool> m_quit;
+  std::atomic<bool> m_abort;
 
 private:
   JobWorkerThread (JobWorkerThread const&);

@@ -291,7 +291,6 @@ ImageOverview::clear()
   m_job.set_aborted();
   m_state = State::Idle;
   m_surface.reset();
-  m_lqip_tried = false;
   m_lqip_only = false;
   m_levels_requested = false;
   std::optional<surf::SoftwareSurface> discard;

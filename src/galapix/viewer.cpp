@@ -131,14 +131,18 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
 
 Viewer::~Viewer()
 {
+  if (current_ == this) {
+    current_ = nullptr;
+  }
 }
 
 void
 Viewer::redraw()
 {
-  if (!m_mark_for_redraw)
+  // Workers may call redraw(); coalesce with atomic CAS.
+  bool expected = false;
+  if (m_mark_for_redraw.compare_exchange_strong(expected, true))
   {
-    m_mark_for_redraw = true;
     m_system.trigger_redraw();
   }
 }
@@ -149,7 +153,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
 #ifdef HAVE_THUMTOO
   ThumtooCallbackQueue::instance().pump();
 #endif
-  m_mark_for_redraw = false;
+  m_mark_for_redraw.store(false);
 
   // Stagger new provider jobs across frames (see ImageTileCache budget).
   ImageTileCache::begin_frame_request_budget(48);

@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 #define HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 
+#include <atomic>
 #include <memory>
 #include <memory>
 #include <vector>
@@ -153,7 +154,7 @@ public:
 private:
   System& m_system;
   Workspace* m_workspace;
-  bool  m_mark_for_redraw;
+  std::atomic<bool> m_mark_for_redraw;
   bool  m_draw_grid;
   bool  m_pin_grid;
   float m_gamma;
