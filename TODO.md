@@ -6,7 +6,7 @@ rewired tinycmmc to root `nixpkgs` / `flake-utils`.
 
 ### Status
 - [x] flake.lock prune
-- [ ] Bundle galapix-034
+- [x] Bundle galapix-034
 
 ---
 
