@@ -105,7 +105,7 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     // 1) Inline ThumbHash from content row — no blob I/O, allowed in cache-only.
     // Retry every frame until present: size probe writes LQIP asynchronously, so
     // the first ensure_requested often races ahead of get_lqip().
-    if (!m_lqip_only && !m_surface) {
+    if (m_underlay != Underlay::Lqip && !m_surface) {
       if (auto hash = tp->client()->ensure_lqip(tp->uri())) {
         if (auto img = thumtoo::lqip_decode_rgba(
                 std::span<std::uint8_t const>(hash->data(), hash->size()))) {
@@ -204,13 +204,13 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
   }
 
   // Postage-stamp gallery: LQIP alone is enough.
-  if (m_lqip_only && m_state == State::Ready && target_long_edge <= 64) {
+  if (m_underlay == Underlay::Lqip && m_state == State::Ready && target_long_edge <= 64) {
     return;
   }
   if (m_levels_requested && m_state == State::Loading) {
     return;
   }
-  if (m_state == State::Ready && !m_lqip_only) {
+  if (m_state == State::Ready && m_underlay == Underlay::Levels) {
     return; // full overview already
   }
 
@@ -241,7 +241,7 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
         return;
       }
       if (!px || px->bytes.empty() || px->width <= 0 || px->height <= 0) {
-        if (self->m_lqip_only) {
+        if (self->m_underlay == Underlay::Lqip) {
           self->m_state = State::Ready;
           self->m_levels_requested = false;
           job.set_failed();
@@ -257,7 +257,7 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
           px->codec == "jxl" ? "image/jxl" : px->codec,
           "thumtoo-level");
         if (surface.get_width() <= 0) {
-          if (self->m_lqip_only) {
+          if (self->m_underlay == Underlay::Lqip) {
             self->m_state = State::Ready;
             self->m_levels_requested = false;
             job.set_failed();
@@ -270,7 +270,7 @@ ImageOverview::ensure_levels(TileProviderPtr provider, int target_long_edge)
         self->receive_software(std::move(surface), /*from_lqip=*/false);
         job.set_finished();
       } catch (...) {
-        if (self->m_lqip_only) {
+        if (self->m_underlay == Underlay::Lqip) {
           self->m_state = State::Ready;
           self->m_levels_requested = false;
           job.set_failed();
@@ -292,9 +292,9 @@ ImageOverview::receive_software(std::optional<surf::SoftwareSurface> surface,
 {
   // May run on worker or main: queue is thread-safe; GL upload in process().
   if (from_lqip) {
-    m_lqip_only = true;
+    m_underlay = Underlay::Lqip;
   } else if (surface.has_value()) {
-    m_lqip_only = false;
+    m_underlay = Underlay::Levels;
   }
   m_queue.wait_and_push(std::move(surface));
   if (Viewer* v = Viewer::current()) {
@@ -311,11 +311,13 @@ ImageOverview::process()
   }
 
   if (!surface.has_value() || surface->get_width() <= 0 || surface->get_height() <= 0) {
-    // Keep an existing LQIP surface if a levels upgrade failed.
+    // Keep an existing underlay if a levels upgrade failed.
     if (m_surface) {
       m_state = State::Ready;
+      // m_underlay unchanged (typically still Lqip)
     } else {
       m_state = State::Failed;
+      m_underlay = Underlay::None;
       m_surface.reset();
     }
     return;
@@ -326,7 +328,7 @@ ImageOverview::process()
     int const sh = surface->get_height();
     m_surface = surface_from_software(std::move(*surface));
     m_state = State::Ready;
-    if (m_lqip_only) {
+    if (m_underlay == Underlay::Lqip) {
       log_debug("ImageOverview: LQIP GL upload ready {}x{}", sw, sh);
     }
   } catch (std::exception const& err) {
@@ -350,7 +352,7 @@ ImageOverview::clear()
   m_job.set_aborted();
   m_state = State::Idle;
   m_surface.reset();
-  m_lqip_only = false;
+  m_underlay = Underlay::None;
   m_levels_requested = false;
   m_lqip_miss_logged = false;
   std::optional<surf::SoftwareSurface> discard;

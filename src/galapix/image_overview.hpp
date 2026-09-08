@@ -32,20 +32,30 @@ class JobManager;
 class ImageOverview : public std::enable_shared_from_this<ImageOverview>
 {
 public:
+  /** Load lifecycle (orthogonal to what is drawn). */
   enum class State
   {
     Idle,
-    Loading,
-    Ready,
+    Loading,  ///< job in flight (LQIP, levels, or libjpeg overview)
+    Ready,    ///< GL surface available (see underlay())
     Failed
+  };
+
+  /** What the current GL surface represents. */
+  enum class Underlay
+  {
+    None,
+    Lqip,    ///< soft placeholder only — grid tiles still required
+    Levels   ///< ladder / full overview — gallery may skip_grid
   };
 
   ImageOverview() = default;
 
   State state() const { return m_state; }
+  Underlay underlay() const { return m_underlay; }
   bool has_surface() const { return static_cast<bool>(m_surface); }
-  /** True when the current surface is only the inline ThumbHash (no levels yet). */
-  bool is_lqip_only() const { return m_lqip_only; }
+  /** True when the drawn surface is LQIP only (not levels). */
+  bool is_lqip_only() const { return m_underlay == Underlay::Lqip; }
 
   /** LQIP (and non-thumtoo libjpeg overview). Does not spend tile budget.
    *  @param target_long_edge On-screen long edge (for non-thumtoo DCT scale).
@@ -78,7 +88,7 @@ private:
   JobHandle m_job = JobHandle::create();
   ThreadMessageQueue2<std::optional<surf::SoftwareSurface>> m_queue;
   wstdisplay::SurfacePtr m_surface;
-  bool m_lqip_only = false;
+  Underlay m_underlay = Underlay::None;
   bool m_levels_requested = false;
   /** One-shot debug: avoid per-frame spam when ensure_lqip is empty. */
   bool m_lqip_miss_logged = false;

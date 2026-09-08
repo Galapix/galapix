@@ -77,7 +77,7 @@ vs levels failure restore). Prefer explicit phases if touched again:
 ## Open
 - [x] Serialize Database/BlobStore with recursive_mutex (thumtoo-051)
 - [ ] Optional: prepared statement cache in BlobStore
-- [ ] Optional: Overview state machine cleanup
+- [x] Overview: Underlay enum orthogonal to State (galapix-031)
 - [ ] PDF LQIP
 - [ ] Blob cache eviction / size budget
 

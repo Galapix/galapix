@@ -1,3 +1,14 @@
+## Overview underlay kind (2026-09-08) — tip **galapix-114** / **galapix-031**
+
+Replace `m_lqip_only` bool with `Underlay { None, Lqip, Levels }` so load
+`State` (Idle/Loading/Ready/Failed) is orthogonal to what is drawn.
+`is_lqip_only()` → `m_underlay == Lqip` (skip_grid still correct).
+
+- [x] Code
+- [x] Bundle galapix-031
+
+---
+
 ## SQLite connection mutex (2026-09-08) — **thumtoo-051**
 
 - [x] Database + BlobStore recursive_mutex on public methods
