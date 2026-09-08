@@ -145,6 +145,9 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
   m_opts(opts),
   m_job_manager(opts.threads),
   m_patterns(opts.patterns)
+#ifdef HAVE_THUMTOO
+  , m_thumtoo()
+#endif
 {
   m_job_manager.start_thread();
 

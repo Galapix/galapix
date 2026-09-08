@@ -1,3 +1,13 @@
+## Fix WERROR: ThreadMessageQueue2 size + ViewerCommand init (2026-09-08) — tip **galapix-134** / bundle **galapix-052**
+
+- `ThreadMessageQueue2::size()`: cast `queue::size_type` → `int` (-Wconversion)
+- `ViewerCommand`: init `m_thumtoo` in member-init list under HAVE_THUMTOO (-Weffc++)
+
+- [x] Code
+- [ ] Bundle galapix-052
+
+---
+
 ## Fix WERROR build: Image override + effc++ (2026-09-08) — tip **galapix-133** / bundle **galapix-051**
 
 With WARNINGS=ON WERROR=ON, Image and ImageOverview failed:
