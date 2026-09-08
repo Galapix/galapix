@@ -67,7 +67,7 @@ Viewer* Viewer::current_ = nullptr;
 Viewer::Viewer(System& system, Workspace* workspace_) :
   m_system(system),
   m_workspace(workspace_),
-  m_job_manager(/*threads=*/0),
+  m_job_manager(/*threads=*/2),
   m_mark_for_redraw(false),
   m_draw_grid(false),
   m_pin_grid(false),

@@ -1,3 +1,22 @@
+## Verify + fix Viewer JobManager threads (2026-09-08) — tip **galapix-127** / bundle **galapix-044**
+
+Verification of galapix-043 / thumtoo-060:
+
+- Index-based batch delivery: OK
+- Reply-before-durable + deferred store: OK
+- Probe once / skip_probe: OK
+- pending excludes finished/failed: OK
+- Drag-drop open_paths + SDL_DROPFILE: OK
+- No-args start: OK
+
+**Bug found:** `Viewer` constructed `JobManager(0)` which `assert(num_threads > 0)`.
+Drop-opened images would crash or have no overview workers. Fixed to 2 threads.
+
+- [x] JobManager threads fix
+- [x] Bundle galapix-044
+
+---
+
 ## Index-based batch tile delivery (2026-09-08) — tip **galapix-126** / bundle **galapix-043**
 
 Requires thumtoo-060. ThumtooTileProvider::request_tiles delivers by index
