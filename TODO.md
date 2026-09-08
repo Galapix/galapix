@@ -1,3 +1,15 @@
+## Prune arxpcpp/exspcpp from flake.lock (2026-09-08) — tip **galapix-117** / bundle **galapix-034**
+
+flake.nix no longer inputs arxpcpp/exspcpp, but flake.lock still locked those
+nodes and routed tinycmmc follows through `exspcpp`. Removed the nodes and
+rewired tinycmmc to root `nixpkgs` / `flake-utils`.
+
+### Status
+- [x] flake.lock prune
+- [ ] Bundle galapix-034
+
+---
+
 ## Verify arxpcpp removal + dead uitest cleanup (2026-09-08) — tip **galapix-116** / bundle **galapix-033**
 
 Follow-up to galapix-115:

@@ -72,41 +72,6 @@
         "url": "https://libsdl.org/release/SDL2-devel-2.32.8-mingw.tar.gz"
       }
     },
-    "arxpcpp": {
-      "inputs": {
-        "exspcpp": [
-          "exspcpp"
-        ],
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "logmich": [
-          "logmich"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "tinycmmc": [
-          "tinycmmc"
-        ],
-        "uitest": [
-          "uitest"
-        ]
-      },
-      "locked": {
-        "lastModified": 1788724557,
-        "narHash": "sha256-mAwGr2fklp8VTiXMfVHu0/Niov2ULc9wzFMfalaHTmU=",
-        "owner": "grumbel",
-        "repo": "arxpcpp",
-        "rev": "15d1ed5fb6c1137e44b026523d117c42cca815b9",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "repo": "arxpcpp",
-        "type": "github"
-      }
-    },
     "babyxml": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -125,30 +90,6 @@
       "original": {
         "owner": "grumbel",
         "repo": "babyxml",
-        "type": "github"
-      }
-    },
-    "exspcpp": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "tinycmmc": "tinycmmc"
-      },
-      "locked": {
-        "lastModified": 1788723408,
-        "narHash": "sha256-szf5FzlPUYj21Fm5yhHUV87D0jsQXeAlIqIM4gjZp80=",
-        "owner": "grumbel",
-        "repo": "exspcpp",
-        "rev": "a133e27b6fa0331b91b77ba14c02961ba28fb95b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "grumbel",
-        "repo": "exspcpp",
         "type": "github"
       }
     },
@@ -457,9 +398,7 @@
     },
     "root": {
       "inputs": {
-        "arxpcpp": "arxpcpp",
         "babyxml": "babyxml",
-        "exspcpp": "exspcpp",
         "flake-utils": "flake-utils_2",
         "geomcpp": "geomcpp",
         "logmich": "logmich",
@@ -715,11 +654,9 @@
     "tinycmmc": {
       "inputs": {
         "flake-utils": [
-          "exspcpp",
           "flake-utils"
         ],
         "nixpkgs": [
-          "exspcpp",
           "nixpkgs"
         ]
       },
