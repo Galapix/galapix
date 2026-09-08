@@ -208,8 +208,7 @@ void
 Image::dump_stuck_tile_requests(int limit) const
 {
   if (m_cache) {
-    std::cout << "  image " << m_url << ":
-";
+    std::cout << "  image " << m_url << ":\n";
     m_cache->dump_stuck_requests(limit);
   }
 }
