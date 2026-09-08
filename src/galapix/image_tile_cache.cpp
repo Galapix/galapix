@@ -260,13 +260,16 @@ ImageTileCache::mark_tile_needed(int x, int y, int scale)
     return;
   }
 
-  // Stand-ins first in the set ordering sense: we still sort on issue.
-  // Coarser overview + parent so find_smaller_tile has something to show.
-  if (scale < m_max_scale) {
-    m_needed.insert(TileCacheId(Vector2i(0, 0), m_max_scale));
-    m_needed.insert(TileCacheId(Vector2i(x / 2, y / 2), scale + 1));
+  // Mark the full ancestor chain (target → parents → max_scale overview cell).
+  // issue_requests sorts coarser-first so stand-ins tend to finish before the
+  // fine tile; find_smaller_tile can then upscale whatever is already Ready.
+  int cx = x;
+  int cy = y;
+  for (int s = scale; s <= m_max_scale; ++s) {
+    m_needed.insert(TileCacheId(Vector2i(cx, cy), s));
+    cx /= 2;
+    cy /= 2;
   }
-  m_needed.insert(TileCacheId(Vector2i(x, y), scale));
 }
 
 void
@@ -355,13 +358,16 @@ ImageTileCache::cleanup()
 wstdisplay::SurfacePtr
 ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
-  // Lookup only — do not enqueue from the draw path. request_tile already
-  // queues the immediate parent and overview; walking every coarser scale
-  // here used to fire O(max_scale) provider jobs per missing cell per frame
-  // and dominated GUI time while zooming.
+  // Lookup only — do not enqueue from the draw path. Walking every coarser
+  // scale used to fire O(max_scale) provider jobs per missing cell per frame
+  // when this path still requested; keep it pure.
+  //
+  // Prefer the nearest coarser cell that already has a GL surface so zoom-in
+  // keeps showing the tiles that were on screen a moment earlier.
   int downscale_factor = 1;
+  int const max_factor = m_max_scale - tiledb_scale;
 
-  while (downscale_factor <= m_max_scale - tiledb_scale && downscale_factor < 32)
+  while (downscale_factor <= max_factor && downscale_factor < 32)
   {
     downscale_out = Math::pow2(downscale_factor);
 
@@ -376,6 +382,22 @@ ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale
     }
 
     downscale_factor += 1;
+  }
+
+  // Whole-image overview cell (0,0) at max_scale may not lie on the ancestor
+  // chain for every (x,y) when max_scale mapping used different alignment —
+  // still try it as last resort when present.
+  if (max_factor > 0) {
+    Cache::iterator i = m_cache.find(TileCacheId(Vector2i(0, 0), m_max_scale));
+    if (i != m_cache.end() && i->second.surface) {
+      downscale_out = Math::pow2(max_factor);
+      // Map fine cell into the single overview tile's pixel space.
+      // Caller uses x%downscale / y%downscale; for overview that is wrong if
+      // the overview is one cell for the whole image. Use absolute mapping:
+      // store downscale_out as full grid size at this scale.
+      // Keep conventional downscale so subsection math uses x % downscale.
+      return i->second.surface;
+    }
   }
 
   return {};

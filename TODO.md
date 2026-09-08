@@ -1,3 +1,31 @@
+## Stand-in tiles on zoom-in (2026-09-08) — tip **galapix-095** / bundle **galapix-006**
+
+### Symptom
+Zooming in showed opaque purple cells even when a lower-resolution image was
+on screen a moment earlier (overview or coarser grid tiles).
+
+### Causes
+1. **Opaque purple over overview** — soft `ImageOverview` is drawn under the
+   grid but missing cells filled solid purple, hiding the only available
+   stand-in (common after gallery one-cell LOD which never put grid tiles in
+   the tile cache).
+2. **Weak mark chain** — only immediate parent + max_scale were marked; full
+   ancestor chain is now marked so coarser-first issue fills stand-ins.
+3. **draw_tile order** — coarser stand-in is always sought when the exact tile
+   is missing (not only when all four finer children are absent).
+
+### Fix
+- `mark_tile_needed`: mark target and every coarser ancestor up to max_scale
+- `draw_tile`: find_smaller first; purple only if no stand-in **and** overview
+  is not Ready
+- find_smaller: keep pure lookup; nearest coarser surface wins
+
+### Status
+- [x] mark chain + draw stand-in path
+- [x] Bundle galapix-006
+
+---
+
 ## Fix duplicate SDLK_r (2026-09-08) — tip **galapix-094** / bundle **galapix-005**
 
 `R` was already bound to move/rotate tool. Tile cache-only toggle moved to **`U`**.

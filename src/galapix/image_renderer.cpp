@@ -151,64 +151,57 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
       // Green: pixel data at the requested scale is on screen.
       gc.draw_rect(tile_rect, surf::Color::from_rgb888(0, 220, 0));
     }
+    return;
   }
-  else // tile not found, so find a replacement
+
+  // Exact tile missing: paint coarser stand-in first (tiles that were on
+  // screen before zoom-in), then any finer children that already arrived.
+  int downscale = 1;
+  wstdisplay::SurfacePtr stand_in = m_cache->find_smaller_tile(x, y, scale, downscale);
+
+  if (stand_in)
   {
-    // higher resolution tiles (FIXME: we are only using one level, should check everything recursivly)
-   wstdisplay::SurfacePtr nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
-    wstdisplay::SurfacePtr ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
-    wstdisplay::SurfacePtr sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
-    wstdisplay::SurfacePtr se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
+    // Subsection of the coarser tile that covers this fine cell.
+    // downscale == 2^k; pixel size of this cell inside the coarser 256² tile.
+    int const sub = std::max(1, 256 / downscale);
+    float const sx = static_cast<float>((x % downscale) * sub);
+    float const sy = static_cast<float>((y % downscale) * sub);
+    Rectf subsection(Vector2f(sx, sy), Sizef(Size(sub, sub)));
 
-    if (!nw || !ne || !sw || !se)
-    {
-      // draw lower resolution tiles
-      int downscale;
-      wstdisplay::SurfacePtr surface = m_cache->find_smaller_tile(x, y, scale, downscale);
+    subsection = geom::frect(subsection.topleft(),
+                             geom::fpoint(std::min(subsection.right(),  stand_in->get_width()),
+                                          std::min(subsection.bottom(), stand_in->get_height())));
 
-      if (surface)
-      {
-        Rectf subsection(Vector2f(static_cast<float>(x % downscale * 256 / downscale), // NOLINT
-                                  static_cast<float>(y % downscale * 256 / downscale)), // NOLINT
-                         Sizef(Size(256 / downscale, 256 / downscale)));
-
-        subsection = geom::frect(subsection.topleft(),
-                                 geom::fpoint(std::min(subsection.right(),  surface->get_width()),
-                                              std::min(subsection.bottom(), surface->get_height())));
-
-        surface->draw(gc, subsection, tile_rect);
-        if (ImageTileCache::tile_debug()) {
-          // Cyan: showing coarser stand-in (not the requested scale) — upscaled.
-          gc.draw_rect(tile_rect, surf::Color::from_rgb888(0, 200, 255));
-        }
-      }
-      else // draw replacement rect when no tile could be loaded
-      {
-        switch (sstruct.status)
-        {
-          case ImageTileCache::SurfaceStruct::SURFACE_SUCCEEDED:
-            //assert(false && "should never happen");
-            break;
-
-          case ImageTileCache::SurfaceStruct::SURFACE_REQUESTED:
-            gc.fill_rect(Rectf(get_vertex(x,   y,   zoom),
-                                         get_vertex(x+1, y+1, zoom)),
-                                   surf::Color::from_rgb888(155, 0, 155));
-            break;
-
-          default:
-            assert(false && "should never happen either");
-            break;
-        }
-      }
+    stand_in->draw(gc, subsection, tile_rect);
+    if (ImageTileCache::tile_debug()) {
+      // Cyan: showing coarser stand-in (not the requested scale) — upscaled.
+      gc.draw_rect(tile_rect, surf::Color::from_rgb888(0, 200, 255));
     }
-
-    // draw higher resolution tiles
-    if (nw) { nw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f))); }
-    if (ne) { ne->draw(gc, Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f))); }
-    if (sw) { sw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f))); }
-    if (se) { se->draw(gc, Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f))); }
   }
+  else if (sstruct.status == ImageTileCache::SurfaceStruct::SURFACE_REQUESTED)
+  {
+    // Opaque purple only when nothing else can fill the cell. Overview is
+    // already drawn under the grid; covering it with purple caused "flashes"
+    // on zoom-in when the soft overview was the only stand-in (gallery LOD
+    // never put grid tiles in the cache).
+    auto const& ov = m_image.overview();
+    if (!(ov.state() == ImageOverview::State::Ready && ov.has_surface())) {
+      gc.fill_rect(tile_rect, surf::Color::from_rgb888(155, 0, 155));
+    } else if (ImageTileCache::tile_debug()) {
+      // Overview showing through — outline only in debug.
+      gc.draw_rect(tile_rect, surf::Color::from_rgb888(155, 0, 155));
+    }
+  }
+
+  // Progressive refine: draw any finer children that are already loaded.
+  wstdisplay::SurfacePtr nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
+  wstdisplay::SurfacePtr ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
+  wstdisplay::SurfacePtr sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
+  wstdisplay::SurfacePtr se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
+  if (nw) { nw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f))); }
+  if (ne) { ne->draw(gc, Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f))); }
+  if (sw) { sw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f))); }
+  if (se) { se->draw(gc, Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f))); }
 }
 
 void
