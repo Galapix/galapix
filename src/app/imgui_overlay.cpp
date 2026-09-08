@@ -27,6 +27,7 @@
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
 #include <logmich/log.hpp>
+#include <xdg.h>
 
 #include "galapix/viewer.hpp"
 #include "galapix/viewer_state.hpp"
@@ -209,6 +210,22 @@ ImguiOverlay::init(SDL_Window* window, SDL_GLContext gl_context)
   IMGUI_CHECKVERSION();
   ImGui::CreateContext();
   ImGuiIO& io = ImGui::GetIO();
+
+  // Persist layout under XDG config (not cwd). Keep the string alive for
+  // the whole ImGui context lifetime.
+  {
+    namespace fs = std::filesystem;
+    fs::path cfg_dir = xdg::config().home() / "galapix";
+    std::error_code ec;
+    fs::create_directories(cfg_dir, ec);
+    if (ec) {
+      log_warn("Could not create ImGui config dir {}: {}", cfg_dir.string(), ec.message());
+    }
+    static std::string ini_path = (cfg_dir / "imgui.ini").string();
+    io.IniFilename = ini_path.c_str();
+    log_info("ImGui settings: {}", ini_path);
+  }
+
   // Do not enable keyboard nav: it sets WantCaptureKeyboard whenever an
   // ImGui window is focused (e.g. after a toolbar/help click) and would
   // swallow Viewer shortcuts until the user clicks the canvas again.

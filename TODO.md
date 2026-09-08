@@ -1,3 +1,21 @@
+## ImGui.ini under XDG config (2026-09-08) — tip **galapix-152** / bundle **galapix-070**
+
+Stop dumping `imgui.ini` into the process cwd. Use the XDG Base Directory
+spec via [xdgcpp](https://github.com/Grumbel/xdgcpp):
+
+  `$XDG_CONFIG_HOME/galapix/imgui.ini`  (fallback `~/.config/galapix/imgui.ini`)
+
+- Add flake input `xdgcpp` and link it into `libgalapix_app`
+- Set `ImGuiIO::IniFilename` in `ImguiOverlay::init`; create the config dir
+- Do **not** touch legacy `~/.galapix` (galapix-0.2.x leftover; no migration)
+- After pull: `nix flake lock --update-input xdgcpp` (lock not refreshed in this
+  environment — no nix binary)
+
+- [x] Code
+- [ ] Bundle galapix-070
+
+---
+
 ## Revert ViewerState double + camera-relative (2026-09-08) — tip **galapix-151** / bundle **galapix-069**
 
 Get rid of the two recent commits that switched pan/zoom to double and added

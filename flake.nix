@@ -30,6 +30,10 @@
     strutcpp.url = "github:grumbel/strutcpp";
     strutcpp.inputs.nixpkgs.follows = "nixpkgs";
 
+    xdgcpp.url = "github:Grumbel/xdgcpp";
+    xdgcpp.inputs.nixpkgs.follows = "nixpkgs";
+    xdgcpp.inputs.flake-utils.follows = "flake-utils";
+
     surfcpp.url = "github:grumbel/surfcpp";
     surfcpp.inputs.nixpkgs.follows = "nixpkgs";
     surfcpp.inputs.geomcpp.follows = "geomcpp";
@@ -62,7 +66,7 @@
   };
 
   outputs = { self, nixpkgs, flake-utils,
-              tinycmmc, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay, thumtoo }:
+              tinycmmc, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay, xdgcpp, thumtoo }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -169,6 +173,7 @@
               wstdisplay.packages.${system}.default
               uitest.packages.${system}.default
               strutcpp.packages.${system}.default
+              xdgcpp.packages.${system}.default
             ];
           };
         };

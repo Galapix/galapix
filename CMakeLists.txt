@@ -169,6 +169,9 @@ function(build_dependencies)
 endfunction()
 build_dependencies()
 
+# XDG Base Directory helpers (ImGui.ini path, future config).
+find_package(xdgcpp REQUIRED)
+
 # compile libgalapix
 file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
   src/galapix/*.cpp
@@ -348,6 +351,7 @@ target_include_directories(libgalapix_app PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}/src)
 target_link_libraries(libgalapix_app PUBLIC
   libgalapix
+  xdgcpp
   PkgConfig::SDL2
   PkgConfig::SDL2_IMAGE)
 
