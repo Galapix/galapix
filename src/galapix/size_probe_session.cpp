@@ -20,7 +20,17 @@
 
 namespace galapix {
 
-SizeProbeSession::SizeProbeSession() = default;
+SizeProbeSession::SizeProbeSession() :
+  m_pending(),
+  m_total(0),
+  m_completed(0),
+  m_last_logged(-1),
+  m_drain_started(false),
+  m_completion_notified(false),
+  m_drain_done(false),
+  m_client()
+{
+}
 
 void
 SizeProbeSession::add_pending(std::shared_ptr<Image> image, std::string uri)
@@ -33,12 +43,14 @@ SizeProbeSession::add_pending(std::shared_ptr<Image> image, std::string uri)
 }
 
 void
-SizeProbeSession::start_drain(std::shared_ptr<thumtoo::Client> client)
+SizeProbeSession::start_drain(std::shared_ptr<thumtoo::Client> client,
+                              std::shared_ptr<SizeProbeSession> self)
 {
   if (m_drain_started || !client) {
     return;
   }
   m_drain_started = true;
+  m_client = client;
   if (m_total == 0) {
     m_drain_done.store(true);
     return;
@@ -53,7 +65,7 @@ SizeProbeSession::start_drain(std::shared_ptr<thumtoo::Client> client)
 
   // drain() blocks until queued request_size work finishes. Run it off the
   // GUI thread so the window can open and stay interactive.
-  std::thread([client, this]() {
+  std::thread([client = std::move(client), self = std::move(self)]() {
     try {
       client->drain();
     } catch (std::exception const& err) {
@@ -61,7 +73,9 @@ SizeProbeSession::start_drain(std::shared_ptr<thumtoo::Client> client)
     } catch (...) {
       log_error("size probe drain: unknown error");
     }
-    m_drain_done.store(true);
+    if (self) {
+      self->m_drain_done.store(true);
+    }
     if (Viewer* v = Viewer::current()) {
       v->redraw();
     }
@@ -69,8 +83,9 @@ SizeProbeSession::start_drain(std::shared_ptr<thumtoo::Client> client)
 }
 
 void
-SizeProbeSession::tick(std::shared_ptr<thumtoo::Client> const& client)
+SizeProbeSession::tick()
 {
+  auto client = m_client;
   if (!client || m_pending.empty()) {
     if (m_drain_done.load() && !m_completion_notified && m_total > 0) {
       m_completion_notified = true;
