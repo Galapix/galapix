@@ -11,7 +11,7 @@ Remaining historical mentions in older TODO sections / NEWS are archival only.
 
 ### Status
 - [x] Verification + uitest cleanup
-- [ ] Bundle galapix-033
+- [x] Bundle galapix-033
 
 ---
 
