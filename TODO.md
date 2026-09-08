@@ -10,7 +10,7 @@ New `solve_image_overlaps` (layouter/overlap_solver):
 - No per-iteration stdout
 
 - [x] Code
-- [ ] Bundle galapix-057
+- [x] Bundle galapix-057
 
 ---
 
