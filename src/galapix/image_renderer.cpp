@@ -269,15 +269,20 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
   }
   else if (sstruct.status == ImageTileCache::SurfaceStruct::SURFACE_REQUESTED)
   {
-    // No exact tile and no coarser stand-in: always show a purple loading
-    // placeholder. When a soft overview is already under the grid, use a
-    // semi-transparent fill so the overview still reads through; otherwise
-    // opaque purple (classic "nothing ready yet" look). Never skip the fill
-    // entirely — that made loading cells invisible once overview was Ready.
+    // Prefer soft underlay (LQIP / levels). Opaque purple only when there is
+    // truly nothing under the cell yet (overview Idle/Failed, no surface).
     auto const& ov = m_image.overview();
-    if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
-      gc.fill_rect(tile_rect, Color::from_rgba8888(155, 0, 155, 140));
-      gc.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
+    if (ov.has_surface()) {
+      // Soft underlay already drawn — light tint only in tile-debug? skip fill.
+      if (ImageTileCache::tile_debug()) {
+        gc.fill_rect(tile_rect, Color::from_rgba8888(155, 0, 155, 70));
+        gc.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
+      }
+    } else if (ov.state() == ImageOverview::State::Loading) {
+      // LQIP/levels in flight — do not cover with opaque purple.
+      if (ImageTileCache::tile_debug()) {
+        gc.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
+      }
     } else {
       gc.fill_rect(tile_rect, Color::from_rgb888(155, 0, 155));
     }
@@ -317,10 +322,10 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
   // Soft whole-image preview under tiles (load was requested in prepare).
   m_image.overview().draw(gc, image_rect);
 
-  // While levels/overview are still loading, paint purple so the cell is not blank.
+  // Purple only when Idle with nothing queued — Loading often means LQIP is
+  // already in the upload queue (process next frame) or levels are in flight.
   if (!m_image.overview().has_surface() &&
-      (m_image.overview().state() == ImageOverview::State::Loading ||
-       m_image.overview().state() == ImageOverview::State::Idle)) {
+      m_image.overview().state() == ImageOverview::State::Idle) {
     gc.fill_rect(image_rect, surf::Color::from_rgb888(155, 0, 155));
   }
 

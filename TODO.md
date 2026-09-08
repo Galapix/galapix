@@ -1,3 +1,22 @@
+## LQIP retry + less opaque purple (2026-09-08) — tip **galapix-104** / bundle **galapix-019**
+
+### Bugs
+1. `m_lqip_tried` made `get_lqip` one-shot; size probe often finishes *after*
+   the first `ensure_requested` → permanent miss → purple forever.
+2. Cache-only mode returned before LQIP (which is cache-only).
+3. Opaque purple painted while overview Loading (LQIP queued / levels in flight).
+
+### Fix
+- Retry `get_lqip` every frame until a surface exists
+- Try LQIP even when tile requests disabled
+- Opaque purple only when overview Idle/Failed with no surface; Loading leaves
+  underlay visible; Ready underlay skips tile purple (debug tint only)
+
+### Status
+- [x] Bundle galapix-019
+
+---
+
 ## Galapix paints ThumbHash LQIP under overview (2026-09-08) — tip **galapix-103** / bundle **galapix-016**
 
 ImageOverview tries `Client::get_lqip` first (inline ThumbHash, no blob I/O).

@@ -102,13 +102,10 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
 
 #ifdef HAVE_THUMTOO
   if (auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get())) {
-    if (!ImageTileCache::tile_requests_enabled()) {
-      return;
-    }
-
-    // 1) Inline ThumbHash from content row — no blob I/O.
-    if (!m_lqip_tried) {
-      m_lqip_tried = true;
+    // 1) Inline ThumbHash from content row — no blob I/O, allowed in cache-only.
+    // Retry every frame until present: size probe writes LQIP asynchronously, so
+    // the first ensure_requested often races ahead of get_lqip().
+    if (!m_lqip_only && !m_surface) {
       if (auto hash = tp->client()->get_lqip(tp->uri())) {
         if (auto img = thumtoo::thumbhash_decode_rgba(
                 std::span<std::uint8_t const>(hash->data(), hash->size()))) {
@@ -146,6 +143,11 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     }
     if (m_state == State::Ready && !m_lqip_only) {
       return; // full overview already
+    }
+
+    // No new provider work in cache-only mode (LQIP above is cache-only).
+    if (!ImageTileCache::tile_requests_enabled()) {
+      return;
     }
 
     // 2) Levels ladder (blob) for sharper soft underlay.
