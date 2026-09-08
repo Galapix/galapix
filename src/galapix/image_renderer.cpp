@@ -16,6 +16,7 @@
 
 #include "galapix/image_renderer.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <surf/color.hpp>
 #include <wstdisplay/graphics_context.hpp>
@@ -28,6 +29,81 @@
 namespace galapix {
 
 using namespace surf;
+
+namespace {
+
+/** Semi-transparent fill colour encoding the pyramid scale of the pixels
+ *  actually drawn (not merely "exact vs stand-in").
+ *  Finer scales (lower / more negative) skew cool; coarser skew warm.
+ *  Exact match for the requested scale gets a stronger green bias. */
+Color
+debug_fill_for_scale(int tile_scale, int requested_scale)
+{
+  // Stable distinct hues for successive scale indices (wrap).
+  // RGB primaries chosen for contrast on both light and dark tiles.
+  static constexpr uint8_t kPalette[][3] = {
+    {  40, 200,  80 }, // 0 green
+    {  60, 180, 220 }, // 1 cyan
+    {  80, 120, 255 }, // 2 blue
+    { 160, 100, 255 }, // 3 violet
+    { 220,  80, 200 }, // 4 magenta
+    { 240,  90,  90 }, // 5 red
+    { 240, 150,  50 }, // 6 orange
+    { 230, 210,  40 }, // 7 yellow
+    { 160, 220,  50 }, // 8 lime
+    {  50, 210, 160 }, // 9 teal
+    { 100, 160, 240 }, // 10 light blue
+    { 200, 120, 160 }, // 11 rose
+  };
+  constexpr int n = static_cast<int>(sizeof(kPalette) / sizeof(kPalette[0]));
+  // Bias so typical raster max_scale (~positive) and scale 0 land on different slots.
+  int idx = tile_scale % n;
+  if (idx < 0) {
+    idx += n;
+  }
+
+  uint8_t r = kPalette[idx][0];
+  uint8_t g = kPalette[idx][1];
+  uint8_t b = kPalette[idx][2];
+
+  // Exact requested scale: pull toward saturated green so "good" cells pop.
+  if (tile_scale == requested_scale) {
+    r = static_cast<uint8_t>((static_cast<int>(r) + 0) / 2);
+    g = static_cast<uint8_t>(std::min(255, static_cast<int>(g) + 40));
+    b = static_cast<uint8_t>((static_cast<int>(b) + 0) / 2);
+  }
+
+  // ~35% opacity — readable tint without hiding tile content.
+  return Color::from_rgba8888(r, g, b, 90);
+}
+
+Color
+debug_outline_for_scale(int tile_scale, int requested_scale)
+{
+  Color c = debug_fill_for_scale(tile_scale, requested_scale);
+  // Solid outline in the same hue.
+  return Color::from_rgba8888(c.r8(), c.g8(), c.b8(), 255);
+}
+
+int
+downscale_to_steps(int downscale)
+{
+  int k = 0;
+  for (int d = downscale; d > 1; d >>= 1) {
+    ++k;
+  }
+  return k;
+}
+
+void
+draw_tile_debug_overlay(wstdisplay::GraphicsContext& gc, Rectf const& tile_rect,
+                        int displayed_scale, int requested_scale)
+{
+  gc.fill_rect(tile_rect, debug_fill_for_scale(displayed_scale, requested_scale));
+  gc.draw_rect(tile_rect, debug_outline_for_scale(displayed_scale, requested_scale));
+}
+
+} // namespace
 
 ImageRenderer::ImageRenderer(Image& image, std::shared_ptr<ImageTileCache> const& cache) :
   m_image(image),
@@ -148,8 +224,8 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
 
     if (ImageTileCache::tile_debug())
     {
-      // Green: pixel data at the requested scale is on screen.
-      gc.draw_rect(tile_rect, surf::Color::from_rgb888(0, 220, 0));
+      // Semi-transparent scale tint + outline (exact requested scale).
+      draw_tile_debug_overlay(gc, tile_rect, scale, scale);
     }
     return;
   }
@@ -174,8 +250,9 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
 
     stand_in->draw(gc, subsection, tile_rect);
     if (ImageTileCache::tile_debug()) {
-      // Cyan: showing coarser stand-in (not the requested scale) — upscaled.
-      gc.draw_rect(tile_rect, surf::Color::from_rgb888(0, 200, 255));
+      // Upscaled coarser pyramid level — tint encodes that level's scale.
+      int const displayed_scale = scale + downscale_to_steps(downscale);
+      draw_tile_debug_overlay(gc, tile_rect, displayed_scale, scale);
     }
   }
   else if (sstruct.status == ImageTileCache::SurfaceStruct::SURFACE_REQUESTED)
@@ -186,10 +263,11 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
     // never put grid tiles in the cache).
     auto const& ov = m_image.overview();
     if (!(ov.state() == ImageOverview::State::Ready && ov.has_surface())) {
-      gc.fill_rect(tile_rect, surf::Color::from_rgb888(155, 0, 155));
+      gc.fill_rect(tile_rect, Color::from_rgb888(155, 0, 155));
     } else if (ImageTileCache::tile_debug()) {
-      // Overview showing through — outline only in debug.
-      gc.draw_rect(tile_rect, surf::Color::from_rgb888(155, 0, 155));
+      // Overview showing through — purple-ish tint marks "loading / overview only".
+      gc.fill_rect(tile_rect, Color::from_rgba8888(155, 0, 155, 70));
+      gc.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
     }
   }
 

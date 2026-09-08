@@ -1,3 +1,16 @@
+## Tile debug: scale-coded translucent fills (2026-09-08) — tip **galapix-097** / bundle **galapix-008**
+
+Tile debug (`V`) draws a **semi-transparent fill + outline** whose colour
+encodes the pyramid **scale of the pixels shown** (exact or upscaled stand-in).
+Exact match for the requested scale gets a green bias; purple remains loading /
+overview-only.
+
+### Status
+- [x] Scale palette + fill_rect overlay
+- [x] Bundle galapix-008
+
+---
+
 ## Toast notifications for toggle feedback (2026-09-08) — tip **galapix-096** / bundle **galapix-007**
 
 On-screen ImGui toasts for short user-facing stdout messages (tile debug `V`,

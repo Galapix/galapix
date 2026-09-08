@@ -501,7 +501,7 @@ AppViewer::process_event(SDL_Event const& event)
             bool on = !galapix::ImageTileCache::tile_debug();
             galapix::ImageTileCache::set_tile_debug(on);
             std::string msg = std::string("Tile debug: ") + (on ? "ON" : "OFF")
-              + " (green=exact scale, cyan=upscaled stand-in, purple=loading)";
+              + " (tint=pyramid scale, green bias=exact, purple=loading)";
             std::cout << msg << "\n";
             ImguiOverlay::notify(std::move(msg));
           }
