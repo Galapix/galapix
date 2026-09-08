@@ -1,3 +1,23 @@
+## Levels-first overview + purple while loading (2026-09-08) — tip **galapix-101** / bundle **galapix-012**
+
+### Issues
+1. Purple placeholders still missing in gallery: `skip_grid` was true for
+   overview Loading/Idle, so `draw_tile` never ran.
+2. Thumtoo overview used **coarsest grid tile** (`request_tile(max_scale)`), not
+   the **levels** ladder (`request_pixels`). Levels never appeared.
+3. Grid tiles were marked every frame while overview still loading → too early.
+
+### Fix
+* Gallery: `skip_grid` only when overview **Ready** with a surface
+* Image-level purple fill while overview Idle/Loading and no surface
+* Thumtoo overview: `Client::request_pixels(..., 512)` (JXL level)
+* `prepare`: do not mark grid tiles until overview is Ready or Failed
+
+### Status
+- [x] Bundle galapix-012
+
+---
+
 ## Purple loading placeholders always visible (2026-09-08) — tip **galapix-100** / bundle **galapix-011**
 
 ### Bug

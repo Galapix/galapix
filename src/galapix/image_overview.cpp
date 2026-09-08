@@ -22,12 +22,15 @@
 #include "jobs/overview_load_job.hpp"
 #include "math/math.hpp"
 #include "math/vector2i.hpp"
+#include "galapix/app.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/viewer.hpp"
 #include "util/weak_functor.hpp"
 
 #ifdef HAVE_THUMTOO
 #  include "thumtoo/thumtoo_tile_provider.hpp"
+#  include <thumtoo/client.hpp>
+#  include <thumtoo/types.hpp>
 #endif
 
 namespace galapix {
@@ -94,9 +97,9 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
   }
 
 #ifdef HAVE_THUMTOO
-  // Archive / thumtoo URIs: load coarsest pyramid cell (warm JPEG in cache).
-  // Share the per-frame request budget with grid tiles so first paint does
-  // not stampede SQLite with 1000+ parallel get_tile calls.
+  // Thumtoo: first soft layer is the **levels** ladder (JXL preview via
+  // request_pixels), not a grid tile. Grid tiles are a later refinement.
+  // Share the per-frame budget so first paint does not stampede the client.
   if (auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get())) {
     if (!ImageTileCache::tile_requests_enabled()) {
       return; // cache-only mode — stay Idle
@@ -105,19 +108,42 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
       return; // stay Idle — retry next frame
     }
     m_state = State::Loading;
-    int const scale = tp->get_max_scale();
-    m_job = tp->request_tile(
-      scale, Vector2i(0, 0),
-      [weak_self](Tile const& tile) {
+    m_job = JobHandle::create();
+    constexpr int kOverviewMaxEdge = 512;
+    auto client = tp->client();
+    std::string uri = tp->uri();
+    client->request_pixels(
+      std::move(uri), kOverviewMaxEdge,
+      [weak_self, job = m_job](std::string, int, std::optional<thumtoo::PixelLevel> px) {
         auto self = weak_self.lock();
         if (!self) {
           return;
         }
-        if (!tile || tile.get_surface().get_width() <= 0) {
-          self->receive_software(std::nullopt);
+        if (job.is_aborted()) {
           return;
         }
-        self->receive_software(tile.get_surface());
+        if (!px || px->bytes.empty() || px->width <= 0 || px->height <= 0) {
+          self->receive_software(std::nullopt);
+          job.set_failed();
+          return;
+        }
+        try {
+          // JXL (or whatever codec thumtoo stored) via surface factory.
+          auto surface = g_app.surface_factory().from_mem(
+            std::span<uint8_t const>(px->bytes.data(), px->bytes.size()),
+            px->codec == "jxl" ? "image/jxl" : px->codec,
+            "thumtoo-level");
+          if (surface.get_width() <= 0) {
+            self->receive_software(std::nullopt);
+            job.set_failed();
+            return;
+          }
+          self->receive_software(std::move(surface));
+          job.set_finished();
+        } catch (...) {
+          self->receive_software(std::nullopt);
+          job.set_failed();
+        }
       });
     return;
   }

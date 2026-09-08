@@ -53,6 +53,9 @@ public:
   int get_tilesize() const override { return 256; }
   Size get_size() const override { return m_size; }
 
+  std::shared_ptr<thumtoo::Client> client() const { return m_client; }
+  std::string const& uri() const { return m_uri; }
+
 private:
   std::shared_ptr<thumtoo::Client> m_client;
   std::string m_uri;

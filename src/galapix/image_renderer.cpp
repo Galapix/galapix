@@ -148,11 +148,9 @@ ImageRenderer::plan_view(Rectf const& cliprect, float zoom)
   if (scaled_width < 256.0f && scaled_height < 256.0f) {
     plan.one_cell = true;
     auto const& ov = m_image.overview();
-    // Gallery / fit-all: prefer overview; only fall back to a grid tile when
-    // overview Failed (same policy as pre-split draw path).
+    // Gallery / fit-all: use overview only when it is actually Ready.
+    // While Loading/Idle, keep the one-cell grid so purple placeholders show.
     if (ov.state() == ImageOverview::State::Ready && ov.has_surface()) {
-      plan.skip_grid = true;
-    } else if (ov.state() != ImageOverview::State::Failed) {
       plan.skip_grid = true;
     } else {
       plan.tile_rect = Rect(0, 0, 1, 1);
@@ -185,7 +183,7 @@ ImageRenderer::prepare(Rectf const& cliprect, float zoom)
     return;
   }
 
-  // Soft overview load (may consume request budget for thumtoo path).
+  // Soft overview / levels first (may consume request budget on thumtoo path).
   m_image.overview().ensure_requested(
     m_image.job_manager(),
     m_image.get_url(),
@@ -195,6 +193,16 @@ ImageRenderer::prepare(Rectf const& cliprect, float zoom)
 
   if (plan.skip_grid) {
     return;
+  }
+
+  // Do not stampede grid tiles while the first soft layer is still loading.
+  // Overview Idle/Loading → wait; Ready or Failed → mark grid (or purple).
+  {
+    auto const st = m_image.overview().state();
+    if (st == ImageOverview::State::Idle ||
+        st == ImageOverview::State::Loading) {
+      return;
+    }
   }
 
   if (plan.one_cell) {
@@ -304,6 +312,13 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
   Rectf image_rect = m_image.get_image_rect();
   // Soft whole-image preview under tiles (load was requested in prepare).
   m_image.overview().draw(gc, image_rect);
+
+  // While levels/overview are still loading, paint purple so the cell is not blank.
+  if (!m_image.overview().has_surface() &&
+      (m_image.overview().state() == ImageOverview::State::Loading ||
+       m_image.overview().state() == ImageOverview::State::Idle)) {
+    gc.fill_rect(image_rect, surf::Color::from_rgb888(155, 0, 155));
+  }
 
   if (plan.skip_grid) {
     return true;
