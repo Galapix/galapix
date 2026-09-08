@@ -410,7 +410,8 @@
         "thumtoo": "thumtoo",
         "tinycmmc": "tinycmmc",
         "uitest": "uitest",
-        "wstdisplay": "wstdisplay"
+        "wstdisplay": "wstdisplay",
+        "xdgcpp": "xdgcpp"
       }
     },
     "sexpcpp": {
@@ -752,6 +753,29 @@
       "original": {
         "owner": "WindstilleTeam",
         "repo": "wstdisplay",
+        "type": "github"
+      }
+    },
+    "xdgcpp": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1788897224,
+        "narHash": "sha256-qTeg25NOdnJTOB3OnVtDfodrdi5GjFH6D033YBdZ8Bo=",
+        "owner": "Grumbel",
+        "repo": "xdgcpp",
+        "rev": "d8a183d82b539969204cffd02b819a1ff87a8099",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Grumbel",
+        "repo": "xdgcpp",
         "type": "github"
       }
     }
