@@ -1,3 +1,14 @@
+## Pending-request accounting + dead cell cleanup (2026-09-08) — tip **galapix-123** / bundle **galapix-040**
+
+- `pending_request_count` ignores failed/aborted handles (was stuck ~100)
+- Exhausted retry cells are erased so they can be re-issued
+- Pair with thumtoo-059 batch probe/exception fixes
+
+- [x] Code
+- [x] Bundle galapix-040
+
+---
+
 ## Fix TileRequest / JobHandle default-ctor (2026-09-08) — tip **galapix-122** / bundle **galapix-039**
 
 `JobHandle()` is private; `TileRequest req;` failed to compile. Explicit

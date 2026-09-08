@@ -359,6 +359,9 @@ ImageTileCache::issue_requests()
       if (dead && i->second.attempts < kMaxTileAttempts) {
         next_attempts = i->second.attempts + 1;
         m_cache.erase(i);
+      } else if (dead) {
+        // Exhausted retries — drop so a later view can try again.
+        m_cache.erase(i);
       } else {
         continue; // hit or in-flight
       }
@@ -677,9 +680,16 @@ ImageTileCache::pending_request_count() const
 {
   int n = 0;
   for (auto const& entry : m_cache) {
-    if (entry.second.status == SurfaceStruct::SURFACE_REQUESTED) {
-      ++n;
+    if (entry.second.status != SurfaceStruct::SURFACE_REQUESTED) {
+      continue;
     }
+    // Failed/aborted are not in-flight work; counting them made "pending"
+    // stick at ~100 after partial batch failures.
+    if (entry.second.job_handle.is_failed() ||
+        entry.second.job_handle.is_aborted()) {
+      continue;
+    }
+    ++n;
   }
   return n;
 }

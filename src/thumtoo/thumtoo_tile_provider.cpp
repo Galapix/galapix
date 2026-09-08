@@ -292,6 +292,11 @@ ThumtooTileProvider::request_tiles(std::vector<TileRequest> requests)
                        std::optional<thumtoo::TileBlob> tb) {
       for (auto& r : *cbs) {
         if (r.scale == scale && r.pos.x() == x && r.pos.y() == y) {
+          // Only deliver once per request slot.
+          if (r.job_handle.is_finished() || r.job_handle.is_failed() ||
+              r.job_handle.is_aborted()) {
+            return;
+          }
           deliver_one(r, std::move(tb));
           return;
         }
