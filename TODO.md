@@ -1,3 +1,10 @@
+## PDF image-heavy min_scale — **galapix-164**
+
+- [x] `create_from_size`: image-heavy PDF pages use min_scale=0 (no live deep tiles)
+- [x] Bundle galapix-164
+
+---
+
 ## Tile request queue dump — **galapix-163**
 
 - [x] `ImageTileCache::dump_request_queue` — in-flight cells by age/scale
