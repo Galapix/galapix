@@ -81,3 +81,10 @@ vs levels failure restore). Prefer explicit phases if touched again:
 - [ ] PDF LQIP
 - [ ] Blob cache eviction / size budget
 
+### Non-thumtoo overview (TileGenerator)
+
+`OverviewLoadJob` → `TileGenerator::load_surface` uses **libjpeg DCT scale**
+`jpeg_scale = min(pow2(min_scale), 8)` for JPEG files. Thumtoo interactive
+tiles do not currently match this (full decode + RAM ladder); see thumtoo
+`docs/THUMBNAIL_AUDIT.md` §6d and §8.1.
+
