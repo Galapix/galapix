@@ -103,3 +103,10 @@ not touch source paths (or even assume SQLite on a slow disk is free).
 Never put `$XDG_CACHE_HOME/thumtoo` on the same USB as the photo library if
 that volume spins down.
 
+### LQIP display policy (galapix-161)
+
+- **Cold open** (no LQIP in cache at first `ensure_requested`): never show LQIP
+  this session — real tiles/thumbnails are better and arrive on the same path.
+- **Warm / successive open** (LQIP already stored): show soft underlay immediately.
+- Generation stays on workers after the first durable tile/level (for next open).
+

@@ -1,3 +1,12 @@
+## LQIP warm-only display (2026-09-09) — **galapix-161** / **thumtoo-086**
+
+- [x] Galapix: show LQIP only if present at session start (successive opens)
+- [x] thumtoo: no LQIP on size probe (incl. archive members)
+- [x] thumtoo: generate LQIP after first durable interactive tile (next open)
+- [x] Bundles galapix-161, thumtoo-086
+
+---
+
 ## GUI: no source I/O on main thread (2026-09-09) — **galapix-160**
 
 Sleeping USB can take ~30s to spin up. open_paths expansion and

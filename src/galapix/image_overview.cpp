@@ -103,12 +103,25 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
 
 #ifdef HAVE_THUMTOO
   if (auto* tp = dynamic_cast<ThumtooTileProvider*>(provider.get())) {
-    // 1) LQIP from content row only (get_lqip). Never ensure_lqip on the GUI
-    // thread — that rasterizes PDF/DjVu pages and pegs the CPU with no tiles.
-    // Workers fill LQIP on EnsurePixels; we retry get_lqip each frame until then.
+    // 1) LQIP only on successive (warm) opens: if the blob was already cached
+    // when this Image first looked, show it. On a cold first open the real
+    // thumbnail/tiles are higher quality — never show LQIP that appears
+    // mid-session. Never ensure_lqip on the GUI thread.
     if (m_underlay != Underlay::Lqip && !m_surface) {
-      // get_lqip is SQLite-only but still disk I/O — never hammer it every
-      // frame (sleeping USB / busy cache can stall the GUI for seconds).
+      if (!m_lqip_policy_decided) {
+        m_lqip_policy_decided = true;
+        if (auto hash = tp->client()->get_lqip(tp->uri())) {
+          m_lqip_warm_ok = true;
+          (void)hash;
+        } else {
+          m_lqip_warm_ok = false;
+          log_debug("ImageOverview: no warm LQIP for {} (cold — tiles only)",
+                    tp->uri());
+        }
+      }
+      if (!m_lqip_warm_ok) {
+        return;  // cold open: grid tiles fill underlay
+      }
       auto const now = std::chrono::steady_clock::now();
       if (m_next_lqip_try.time_since_epoch().count() != 0 && now < m_next_lqip_try) {
         return;

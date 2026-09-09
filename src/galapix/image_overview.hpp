@@ -58,7 +58,9 @@ public:
     m_underlay(Underlay::None),
     m_levels_requested(false),
     m_lqip_miss_logged(false),
-    m_next_lqip_try{}
+    m_next_lqip_try{},
+    m_lqip_policy_decided(false),
+    m_lqip_warm_ok(false)
   {}
 
   State state() const { return m_state; }
@@ -105,6 +107,11 @@ private:
   bool m_lqip_miss_logged = false;
   /** Do not poll SQLite every frame on miss (USB/slow cache spin-up). */
   std::chrono::steady_clock::time_point m_next_lqip_try{};
+  /** Once true, m_lqip_warm_ok is fixed for this Image session. */
+  bool m_lqip_policy_decided = false;
+  /** LQIP was already in the cache when first checked — show it (successive
+      opens). If false, never show LQIP this session; wait for real tiles. */
+  bool m_lqip_warm_ok = false;
 };
 
 
