@@ -142,9 +142,28 @@
               libjxl
               libarchive
               poppler
+              mupdf
               djvulibre
 
               # Silence pkg-config warnings
+              cgif
+              libexif
+              libultrahdr
+              libwebp
+              pango
+              fribidi
+              libtiff
+              librsvg
+              dav1d
+              matio
+              hdf5
+              lcms2
+              openexr
+              libraw
+              openjpeg
+              libhwy
+              libimagequant
+              libxml2
               libsysprof-capture
               pcre2
               cfitsio
