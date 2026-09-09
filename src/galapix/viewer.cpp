@@ -43,6 +43,7 @@
 #  include <thumtoo/image.hpp>
 #  include <thumtoo/pdf.hpp>
 #  include <thumtoo/djvu.hpp>
+#  include <thumtoo/expand.hpp>
 #  include <filesystem>
 #endif
 #include "galapix/image.hpp"
@@ -973,43 +974,14 @@ Viewer::open_paths(std::vector<std::string> const& paths)
           out_uris.push_back(u.str());
           continue;
         }
-        if (thumtoo::is_likely_pdf_path(abspath)) {
-          auto pages = thumtoo::pdf_page_count(abspath);
-          if (pages && *pages > 0) {
-            int const n = std::min(*pages, 512);
-            for (int page = 1; page <= n; ++page) {
-              out_uris.push_back(
-                "file://" + abspath.string() + "//page:" + std::to_string(page));
+        // PDF / DjVu / EPUB / archive — single expansion path (includes //epub:).
+        {
+          auto expanded = thumtoo::expand_media_uris(abspath, 512);
+          if (!expanded.empty()) {
+            for (auto& uri : expanded) {
+              out_uris.push_back(std::move(uri));
             }
             continue;
-          }
-        }
-        if (thumtoo::is_likely_djvu_path(abspath)) {
-          auto pages = thumtoo::djvu_page_count(abspath);
-          if (pages && *pages > 0) {
-            int const n = std::min(*pages, 512);
-            for (int page = 1; page <= n; ++page) {
-              out_uris.push_back(
-                "file://" + abspath.string() + "//page:" + std::to_string(page));
-            }
-            continue;
-          }
-        }
-        if (thumtoo::is_likely_archive_path(abspath)) {
-          auto toc = thumtoo::read_archive_toc(abspath);
-          if (toc) {
-            bool any = false;
-            for (auto const& mem : *toc) {
-              if (!thumtoo::is_likely_image_member_path(mem.member_path)) {
-                continue;
-              }
-              out_uris.push_back(
-                "file://" + abspath.string() + "//archive:" + mem.member_path);
-              any = true;
-            }
-            if (any) {
-              continue;
-            }
           }
         }
         out_uris.push_back(u.str());

@@ -1,3 +1,12 @@
+## EPUB open via expand_media_uris — **galapix-168**
+
+- [x] open_paths / viewer_command use `thumtoo::expand_media_uris`
+- [x] Include `thumtoo/expand.hpp`
+- [x] Tile provider EPUB min_scale; directory scan `.epub`
+- [x] Bundle galapix-168
+
+---
+
 ## Fix dump_tile_request_queue link — **galapix-166**
 
 - [x] Implement `Image::dump_tile_request_queue` (declared in galapix-163)

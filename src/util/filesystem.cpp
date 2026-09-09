@@ -35,6 +35,7 @@
 #ifdef HAVE_THUMTOO
 #  include <thumtoo/archive.hpp>
 #  include <thumtoo/djvu.hpp>
+#  include <thumtoo/epub.hpp>
 #  include <thumtoo/pdf.hpp>
 #endif
 
@@ -363,6 +364,7 @@ Filesystem::generate_image_file_list(std::string const& pathname, std::vector<UR
         // raster formats.
         else if (thumtoo::is_likely_pdf_path(*i) ||
                  thumtoo::is_likely_djvu_path(*i) ||
+                 thumtoo::is_likely_epub_path(*i) ||
                  thumtoo::is_likely_archive_path(*i))
         {
           file_list.push_back(url);

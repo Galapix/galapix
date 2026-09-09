@@ -39,6 +39,7 @@
 #  include <thumtoo/image.hpp>
 #  include <thumtoo/pdf.hpp>
 #  include <thumtoo/djvu.hpp>
+#  include <thumtoo/expand.hpp>
 #  include <cstdlib>
 #  include <algorithm>
 #endif
@@ -104,53 +105,16 @@ std::vector<URL> expand_thumtoo_urls(URL const& url)
     return {url};
   }
 
-  if (thumtoo::is_likely_pdf_path(path)) {
-    auto pages = thumtoo::pdf_page_count(path);
-    if (!pages || *pages < 1) {
-      return {url};
-    }
-    std::vector<URL> out;
-    int const n = std::min(*pages, 512);
-    out.reserve(static_cast<size_t>(n));
-    for (int page = 1; page <= n; ++page) {
-      std::string s =
-        "file://" + path.string() + "//page:" + std::to_string(page);
-      out.push_back(URL::from_string(s));
-    }
-    return out;
-  }
-
-  if (thumtoo::is_likely_djvu_path(path)) {
-    auto pages = thumtoo::djvu_page_count(path);
-    if (!pages || *pages < 1) {
-      return {url};
-    }
-    std::vector<URL> out;
-    int const n = std::min(*pages, 512);
-    out.reserve(static_cast<size_t>(n));
-    for (int page = 1; page <= n; ++page) {
-      std::string s =
-        "file://" + path.string() + "//page:" + std::to_string(page);
-      out.push_back(URL::from_string(s));
-    }
-    return out;
-  }
-
-  if (thumtoo::is_likely_archive_path(path)) {
-    auto toc = thumtoo::read_archive_toc(path);
-    if (!toc) {
-      return {url};
-    }
-    std::vector<URL> out;
-    for (auto const& mem : *toc) {
-      if (!thumtoo::is_likely_image_member_path(mem.member_path)) {
-        continue;
+  {
+    auto expanded = thumtoo::expand_media_uris(path, 512);
+    if (!expanded.empty()) {
+      std::vector<URL> out;
+      out.reserve(expanded.size());
+      for (auto const& s : expanded) {
+        out.push_back(URL::from_string(s));
       }
-      std::string s =
-        "file://" + path.string() + "//archive:" + mem.member_path;
-      out.push_back(URL::from_string(s));
+      return out;
     }
-    return out.empty() ? std::vector<URL>{url} : out;
   }
 
   return {url};

@@ -26,6 +26,7 @@
 
 #include <thumtoo/client.hpp>
 #include <thumtoo/pdf.hpp>
+#include <thumtoo/epub.hpp>
 #include <thumtoo/constants.hpp>
 #include <thumtoo/uri.hpp>
 
@@ -153,6 +154,9 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
         log_debug("ThumtooTileProvider: PDF backend={} min_scale={}",
                   thumtoo::pdf_backend_name(parsed->backend), min_scale);
       }
+    } else if (thumtoo::parse_epub_uri(uri)) {
+      // Reflowed EPUB pages are vector-like; allow deep live region tiles.
+      log_debug("ThumtooTileProvider: EPUB min_scale={}", min_scale);
     }
   }
 
