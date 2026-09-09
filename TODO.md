@@ -1,3 +1,11 @@
+## Fix dump_tile_request_queue link — **galapix-166**
+
+- [x] Implement `Image::dump_tile_request_queue` (declared in galapix-163)
+- [x] `Workspace::dump_tile_request_queues` dynamic_cast to `Image`
+- [x] Bundle galapix-166
+
+---
+
 ## PDF backend-aware min_scale — **galapix-165**
 
 - [x] `pdf_page_allows_live_tiles(..., parsed->backend)`

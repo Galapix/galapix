@@ -276,10 +276,12 @@ void
 Workspace::dump_tile_request_queues(int limit_per_image) const
 {
   std::cout << "=== tile request queues ===\n";
-  for (auto const& image : m_images) {
-    if (image) {
-      image->dump_tile_request_queue(limit_per_image);
+  for (auto const& item : m_images) {
+    auto image = std::dynamic_pointer_cast<Image>(item);
+    if (!image) {
+      continue;
     }
+    image->dump_tile_request_queue(limit_per_image);
   }
 }
 
