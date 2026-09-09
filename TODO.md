@@ -1,3 +1,12 @@
+## Tile request queue dump — **galapix-163**
+
+- [x] `ImageTileCache::dump_request_queue` — in-flight cells by age/scale
+- [x] Wired through Image / Workspace; `print_state` (`l`) and frame-timing stuck dump
+- [x] Status panel points at stdout dump
+- [x] Bundle galapix-163
+
+---
+
 ## LQIP timing (not display hacks) — **galapix-162**
 
 - [x] Revert warm/cold LQIP display special-case

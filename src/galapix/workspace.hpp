@@ -104,6 +104,7 @@ public:
 
   /** Print stuck REQUESTED tile jobs (for GALAPIX_OPEN_TIMING / debugging). */
   void dump_stuck_tile_requests(int limit_per_image = 8) const;
+  void dump_tile_request_queues(int limit_per_image = 24) const;
 
   /** Count images by overview state (Idle / Loading / Ready / Failed). */
   void overview_stats(int& out_idle, int& out_loading, int& out_ready, int& out_failed) const;

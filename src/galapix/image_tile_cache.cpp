@@ -21,6 +21,8 @@
 #endif
 
 #include <algorithm>
+#include <map>
+#include <iomanip>
 #include <vector>
 
 #include <assert.h>
@@ -771,6 +773,97 @@ ImageTileCache::dump_stuck_requests(int limit) const
   if (n == 0)
   {
     std::cout << "  (no live REQUESTED handles)\n";
+  }
+}
+
+void
+ImageTileCache::dump_request_queue(int limit) const
+{
+  using clock = std::chrono::steady_clock;
+  auto const now = clock::now();
+
+  struct Row {
+    int scale = 0;
+    int x = 0;
+    int y = 0;
+    int attempts = 0;
+    double age_s = 0;
+    bool finished = false;
+    bool failed = false;
+    bool aborted = false;
+    bool has_surface = false;
+  };
+  std::vector<Row> rows;
+  rows.reserve(m_cache.size());
+  std::map<int, int> by_scale_req;
+  int ready = 0;
+  int requested = 0;
+  for (auto const& entry : m_cache) {
+    if (entry.second.status == SurfaceStruct::SURFACE_SUCCEEDED &&
+        entry.second.surface) {
+      ++ready;
+      continue;
+    }
+    if (entry.second.status != SurfaceStruct::SURFACE_REQUESTED) {
+      continue;
+    }
+    ++requested;
+    int const sc = entry.first.get_scale();
+    ++by_scale_req[sc];
+    Row r;
+    r.scale = sc;
+    r.x = entry.first.get_pos().x();
+    r.y = entry.first.get_pos().y();
+    r.attempts = entry.second.attempts;
+    r.age_s = std::chrono::duration<double>(now - entry.second.issued_at).count();
+    auto const& h = entry.second.job_handle;
+    r.finished = h.is_finished();
+    r.failed = h.is_failed();
+    r.aborted = h.is_aborted();
+    r.has_surface = static_cast<bool>(entry.second.surface);
+    rows.push_back(r);
+  }
+  std::sort(rows.begin(), rows.end(), [](Row const& a, Row const& b) {
+    if (a.age_s != b.age_s) return a.age_s > b.age_s;
+    if (a.scale != b.scale) return a.scale > b.scale;
+    if (a.y != b.y) return a.y < b.y;
+    return a.x < b.x;
+  });
+
+  std::cout << "  tile queue: requested=" << requested
+            << " ready_surfaces=" << ready
+            << " upload_q=" << m_tile_queue.size()
+            << " cache_entries=" << m_cache.size()
+            << "\n";
+  std::cout << "  requested by scale:";
+  if (by_scale_req.empty()) {
+    std::cout << " (none)";
+  } else {
+    for (auto it = by_scale_req.rbegin(); it != by_scale_req.rend(); ++it) {
+      std::cout << " s" << it->first << "=" << it->second;
+    }
+  }
+  std::cout << "\n";
+
+  int n = 0;
+  for (auto const& r : rows) {
+    if (n >= limit) {
+      std::cout << "  ... " << (static_cast<int>(rows.size()) - n)
+                << " more REQUESTED omitted\n";
+      break;
+    }
+    std::cout << "  req scale=" << r.scale
+              << " pos=(" << r.x << "," << r.y << ")"
+              << " age=" << std::fixed << std::setprecision(2) << r.age_s << "s"
+              << " attempts=" << r.attempts
+              << " fin=" << r.finished
+              << " fail=" << r.failed
+              << " abort=" << r.aborted
+              << "\n";
+    ++n;
+  }
+  if (rows.empty()) {
+    std::cout << "  (request queue empty)\n";
   }
 }
 

@@ -273,6 +273,17 @@ Workspace::print_images(Rectf const& rect) const
 }
 
 void
+Workspace::dump_tile_request_queues(int limit_per_image) const
+{
+  std::cout << "=== tile request queues ===\n";
+  for (auto const& image : m_images) {
+    if (image) {
+      image->dump_tile_request_queue(limit_per_image);
+    }
+  }
+}
+
+void
 Workspace::dump_stuck_tile_requests(int limit_per_image) const
 {
   for (auto const& item : m_images) {

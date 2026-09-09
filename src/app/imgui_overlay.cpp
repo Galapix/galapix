@@ -30,6 +30,7 @@
 #include <xdg.h>
 
 #include "galapix/viewer.hpp"
+#include "galapix/image_tile_cache.hpp"
 #include "util/status_notify.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
@@ -547,6 +548,11 @@ ImguiOverlay::draw_status_panel(Viewer& viewer)
     ImGui::Text("  pending requests: %d", requests);
     ImGui::Text("  pending uploads:  %d", uploads);
     ImGui::Text("  cache entries:    %d", cache_entries);
+    ImGui::Text("  tile_debug: %s  (key toggles overlay colours)",
+                galapix::ImageTileCache::tile_debug() ? "ON" : "off");
+    ImGui::TextWrapped(
+      "Press 'l' (print_state) for full in-flight request list on stdout: "
+      "scale, pos, age, attempts, fin/fail/abort per cell.");
 
     int ov_idle = 0, ov_loading = 0, ov_ready = 0, ov_failed = 0;
     ws->overview_stats(ov_idle, ov_loading, ov_ready, ov_failed);

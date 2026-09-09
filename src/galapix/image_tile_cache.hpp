@@ -152,6 +152,9 @@ public:
   /** Log up to \a limit stuck REQUESTED cells (scale, pos, handle flags, age). */
   void dump_stuck_requests(int limit = 32) const;
 
+  /** Log in-flight REQUESTED cells and upload-queue depth (tile debug). */
+  void dump_request_queue(int limit = 64) const;
+
   /** Decoded tiles waiting for OpenGL upload (m_tile_queue). */
   int pending_upload_count() const;
 

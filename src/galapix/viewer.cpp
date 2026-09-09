@@ -317,6 +317,7 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
       // every in-flight REQUESTED handle.
       if (requests > 0) {
         std::cout << "[open-timing] live REQUESTED sample (any age):\n";
+        m_workspace->dump_tile_request_queues(24);
         m_workspace->dump_stuck_tile_requests(8);
       }
     }
@@ -859,6 +860,8 @@ Viewer::print_info()
 void
 Viewer::print_state()
 {
+  m_workspace->dump_tile_request_queues(16);
+
   // User-facing status (key "l"): use stdout like print_images/print_info.
   // log_info is silent unless --verbose / --debug.
   std::cout << "-- Viewer state -----------------------------------------" << std::endl;
