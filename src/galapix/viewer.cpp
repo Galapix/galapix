@@ -19,6 +19,8 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <thread>
+#include <mutex>
 #include <logmich/log.hpp>
 
 #include <glm/gtx/io.hpp>
@@ -44,6 +46,7 @@
 #  include <filesystem>
 #endif
 #include "galapix/image.hpp"
+#include "galapix/size_probe_session.hpp"
 #include "util/url.hpp"
 #include "galapix/image_tile_cache.hpp"
 #include "galapix/workspace.hpp"
@@ -69,6 +72,11 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
   m_system(system),
   m_workspace(workspace_),
   m_job_manager(/*threads=*/2),
+#ifdef HAVE_THUMTOO
+  m_thumtoo(),
+#endif
+  m_pending_open_mu(),
+  m_pending_open_batches(),
   m_mark_for_redraw(false),
   m_draw_grid(false),
   m_pin_grid(false),
@@ -378,6 +386,8 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
 void
 Viewer::update(float delta)
 {
+  process_pending_opens();
+
   m_workspace->tick_size_probe();
   m_workspace->update(delta);
 
@@ -894,41 +904,10 @@ Viewer::open_paths(std::vector<std::string> const& paths)
     return;
   }
 
-  std::vector<URL> urls;
-  for (std::string const& raw : paths) {
-    if (raw.empty()) {
-      continue;
-    }
-    std::string path = raw;
-    // SDL may give file:// URIs on some platforms.
-    if (path.rfind("file://", 0) == 0) {
-      path = path.substr(7);
-      // file:///path → /path
-      if (path.size() >= 2 && path[0] == '/' && path[1] == '/') {
-        path = path.substr(1);
-      }
-    }
-    try {
-      if (std::filesystem::is_directory(path)) {
-        Filesystem::generate_image_file_list(path, urls);
-      } else if (std::filesystem::is_regular_file(path) || URL::is_url(raw)) {
-        if (URL::is_url(raw) && raw.rfind("file://", 0) != 0) {
-          urls.push_back(URL::from_string(raw));
-        } else {
-          urls.push_back(URL::from_filename(path));
-        }
-      } else {
-        log_info("open_paths: skip missing path {}", path);
-      }
-    } catch (std::exception const& err) {
-      log_info("open_paths: {}: {}", path, err.what());
-    }
-  }
-
-  if (urls.empty()) {
-    return;
-  }
-
+  // Source volumes (USB) may take 10–30s to spin up. Never stat, open, or
+  // expand archives/PDFs on the GUI thread — do that on a worker and only
+  // attach Images on the main thread via process_pending_opens().
+  std::vector<std::string> paths_copy = paths;
 #ifdef HAVE_THUMTOO
   if (!m_thumtoo) {
     thumtoo::image_library_init();
@@ -940,86 +919,179 @@ Viewer::open_paths(std::vector<std::string> const& paths)
     } else {
       cache = std::filesystem::path(".cache") / "thumtoo";
     }
+    // Client::open hits local XDG cache only (not the source volume).
     m_thumtoo = thumtoo::Client::open(
       cache, ThumtooCallbackQueue::instance().make_executor());
   }
+#endif
 
-  std::vector<URL> expanded;
-  for (URL const& u : urls) {
-    if (!u.has_stdio_name()) {
-      expanded.push_back(u);
-      continue;
-    }
-    std::filesystem::path const abspath =
-      std::filesystem::absolute(u.get_stdio_name());
-    if (!std::filesystem::is_regular_file(abspath)) {
-      expanded.push_back(u);
-      continue;
-    }
-    if (thumtoo::is_likely_pdf_path(abspath)) {
-      auto pages = thumtoo::pdf_page_count(abspath);
-      if (pages && *pages > 0) {
-        int const n = std::min(*pages, 512);
-        for (int page = 1; page <= n; ++page) {
-          expanded.push_back(URL::from_string(
-            "file://" + abspath.string() + "//page:" + std::to_string(page)));
-        }
-        continue;
-      }
-    }
-    if (thumtoo::is_likely_djvu_path(abspath)) {
-      auto pages = thumtoo::djvu_page_count(abspath);
-      if (pages && *pages > 0) {
-        int const n = std::min(*pages, 512);
-        for (int page = 1; page <= n; ++page) {
-          expanded.push_back(URL::from_string(
-            "file://" + abspath.string() + "//page:" + std::to_string(page)));
-        }
-        continue;
-      }
-    }
-    if (thumtoo::is_likely_archive_path(abspath)) {
-      auto toc = thumtoo::read_archive_toc(abspath);
-      if (toc) {
-        bool any = false;
-        for (auto const& mem : *toc) {
-          if (!thumtoo::is_likely_image_member_path(mem.member_path)) {
-            continue;
-          }
-          expanded.push_back(URL::from_string(
-            "file://" + abspath.string() + "//archive:" + mem.member_path));
-          any = true;
-        }
-        if (any) {
+  std::thread([this, paths_copy = std::move(paths_copy)]() {
+    std::vector<std::string> out_uris;
+    try {
+      std::vector<URL> urls;
+      for (std::string const& raw : paths_copy) {
+        if (raw.empty()) {
           continue;
         }
-      }
-    }
-    expanded.push_back(u);
-  }
-  urls = std::move(expanded);
-#endif
-
-  int added = 0;
-  for (URL const& u : urls) {
-    TileProviderPtr provider;
-#ifdef HAVE_THUMTOO
-    if (m_thumtoo) {
-      std::string const uri = thumtoo_uri_from_url(u);
-      if (!uri.empty()) {
-        if (auto sz = m_thumtoo->get_size(uri)) {
-          provider = ThumtooTileProvider::create_from_size(
-            m_thumtoo, uri, sz->width, sz->height);
-        } else {
-          provider = ThumtooTileProvider::create(m_thumtoo, uri);
+        std::string path = raw;
+        if (path.rfind("file://", 0) == 0) {
+          path = path.substr(7);
+          if (path.size() >= 2 && path[0] == '/' && path[1] == '/') {
+            path = path.substr(1);
+          }
+        }
+        try {
+          if (std::filesystem::is_directory(path)) {
+            Filesystem::generate_image_file_list(path, urls);
+          } else if (std::filesystem::is_regular_file(path) || URL::is_url(raw)) {
+            if (URL::is_url(raw) && raw.rfind("file://", 0) != 0) {
+              urls.push_back(URL::from_string(raw));
+            } else {
+              urls.push_back(URL::from_filename(path));
+            }
+          } else {
+            log_info("open_paths: skip missing path {}", path);
+          }
+        } catch (std::exception const& err) {
+          log_info("open_paths: {}: {}", path, err.what());
         }
       }
-    }
+
+#ifdef HAVE_THUMTOO
+      for (URL const& u : urls) {
+        if (!u.has_stdio_name()) {
+          out_uris.push_back(u.str());
+          continue;
+        }
+        std::filesystem::path const abspath =
+          std::filesystem::absolute(u.get_stdio_name());
+        // Extension heuristics only when file missing still allow URL pass-through
+        if (!std::filesystem::is_regular_file(abspath)) {
+          out_uris.push_back(u.str());
+          continue;
+        }
+        if (thumtoo::is_likely_pdf_path(abspath)) {
+          auto pages = thumtoo::pdf_page_count(abspath);
+          if (pages && *pages > 0) {
+            int const n = std::min(*pages, 512);
+            for (int page = 1; page <= n; ++page) {
+              out_uris.push_back(
+                "file://" + abspath.string() + "//page:" + std::to_string(page));
+            }
+            continue;
+          }
+        }
+        if (thumtoo::is_likely_djvu_path(abspath)) {
+          auto pages = thumtoo::djvu_page_count(abspath);
+          if (pages && *pages > 0) {
+            int const n = std::min(*pages, 512);
+            for (int page = 1; page <= n; ++page) {
+              out_uris.push_back(
+                "file://" + abspath.string() + "//page:" + std::to_string(page));
+            }
+            continue;
+          }
+        }
+        if (thumtoo::is_likely_archive_path(abspath)) {
+          auto toc = thumtoo::read_archive_toc(abspath);
+          if (toc) {
+            bool any = false;
+            for (auto const& mem : *toc) {
+              if (!thumtoo::is_likely_image_member_path(mem.member_path)) {
+                continue;
+              }
+              out_uris.push_back(
+                "file://" + abspath.string() + "//archive:" + mem.member_path);
+              any = true;
+            }
+            if (any) {
+              continue;
+            }
+          }
+        }
+        out_uris.push_back(u.str());
+      }
+#else
+      for (URL const& u : urls) {
+        out_uris.push_back(u.str());
+      }
 #endif
-    m_workspace->add_image(
-      std::make_shared<Image>(u, provider, &m_job_manager));
-    ++added;
+    } catch (std::exception const& err) {
+      log_error("open_paths worker: {}", err.what());
+    } catch (...) {
+      log_error("open_paths worker: unknown error");
+    }
+
+    if (out_uris.empty()) {
+      return;
+    }
+    {
+      std::lock_guard<std::mutex> lock(m_pending_open_mu);
+      m_pending_open_batches.push_back(std::move(out_uris));
+    }
+    redraw();
+  }).detach();
+}
+
+void
+Viewer::process_pending_opens()
+{
+  std::vector<std::vector<std::string> > batches;
+  {
+    std::lock_guard<std::mutex> lock(m_pending_open_mu);
+    if (m_pending_open_batches.empty()) {
+      return;
+    }
+    batches.swap(m_pending_open_batches);
   }
+
+  int added = 0;
+#ifdef HAVE_THUMTOO
+  std::shared_ptr<SizeProbeSession> probe;
+  if (m_thumtoo) {
+    probe = m_workspace->size_probe();
+    if (!probe) {
+      probe = std::make_shared<SizeProbeSession>();
+      m_workspace->set_size_probe(probe);
+    }
+  }
+#endif
+  for (auto& batch : batches) {
+    for (std::string const& uri_str : batch) {
+      URL u = URL::is_url(uri_str) ? URL::from_string(uri_str)
+                                   : URL::from_filename(uri_str);
+      TileProviderPtr provider;
+#ifdef HAVE_THUMTOO
+      std::string th_uri;
+      if (m_thumtoo) {
+        th_uri = thumtoo_uri_from_url(u);
+        if (!th_uri.empty()) {
+          // Cache-only SQLite read — never request_size+drain on GUI.
+          if (auto sz = m_thumtoo->get_size(th_uri)) {
+            provider = ThumtooTileProvider::create_from_size(
+              m_thumtoo, th_uri, sz->width, sz->height);
+          } else {
+            m_thumtoo->request_size(
+              th_uri, [](std::string, std::optional<thumtoo::Size>) {});
+          }
+        }
+      }
+#endif
+      auto image = std::make_shared<Image>(u, provider, &m_job_manager);
+#ifdef HAVE_THUMTOO
+      if (m_thumtoo && probe && !th_uri.empty() && !provider) {
+        probe->add_pending(image, th_uri);
+      }
+#endif
+      m_workspace->add_image(image);
+      ++added;
+    }
+  }
+#ifdef HAVE_THUMTOO
+  if (m_thumtoo && probe && added > 0) {
+    probe->start_drain(m_thumtoo, probe);
+  }
+#endif
 
   if (added > 0) {
     log_info("open_paths: added {} item(s)", added);
@@ -1028,6 +1100,7 @@ Viewer::open_paths(std::vector<std::string> const& paths)
     redraw();
   }
 }
+
 
 } // namespace galapix
 

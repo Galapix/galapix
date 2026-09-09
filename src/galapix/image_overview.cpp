@@ -12,6 +12,7 @@
 
 #include <glad/gl.h>
 
+#include <chrono>
 #include <logmich/log.hpp>
 #include <surf/convert.hpp>
 #include <surf/software_surface_factory.hpp>
@@ -106,6 +107,12 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
     // thread — that rasterizes PDF/DjVu pages and pegs the CPU with no tiles.
     // Workers fill LQIP on EnsurePixels; we retry get_lqip each frame until then.
     if (m_underlay != Underlay::Lqip && !m_surface) {
+      // get_lqip is SQLite-only but still disk I/O — never hammer it every
+      // frame (sleeping USB / busy cache can stall the GUI for seconds).
+      auto const now = std::chrono::steady_clock::now();
+      if (m_next_lqip_try.time_since_epoch().count() != 0 && now < m_next_lqip_try) {
+        return;
+      }
       if (auto hash = tp->client()->get_lqip(tp->uri())) {
         if (auto img = thumtoo::lqip_decode_rgba(
                 std::span<std::uint8_t const>(hash->data(), hash->size()))) {
@@ -141,12 +148,14 @@ ImageOverview::ensure_requested(JobManager* job_manager, URL const& url,
                     tp->uri(), hash->size());
         }
       }
-      else if (!m_lqip_miss_logged) {
-        // One-shot: common before size probe; if it never appears, content_id
-        // is missing or VIPS ThumbHash encode failed.
-        m_lqip_miss_logged = true;
-        log_debug("ImageOverview: get_lqip empty for {} (will retry silently)",
-                  tp->uri());
+      else {
+        // Retry with backoff — not every frame.
+        m_next_lqip_try = now + std::chrono::milliseconds(250);
+        if (!m_lqip_miss_logged) {
+          m_lqip_miss_logged = true;
+          log_debug("ImageOverview: get_lqip empty for {} (will retry ~250ms)",
+                    tp->uri());
+        }
       }
     }
 

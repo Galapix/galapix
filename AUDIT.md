@@ -88,3 +88,18 @@ vs levels failure restore). Prefer explicit phases if touched again:
 tiles do not currently match this (full decode + RAM ladder); see thumtoo
 `docs/THUMBNAIL_AUDIT.md` §6d and §8.1.
 
+## GUI thread I/O (sleeping USB / spin-up)
+
+Source volumes may take **10–30s** to respond after idle. The GUI thread must
+not touch source paths (or even assume SQLite on a slow disk is free).
+
+| Call | Thread | Notes |
+|------|--------|-------|
+| `Viewer::open_paths` expand (stat, PDF/DjVu count, archive TOC) | **worker** | Results applied in `process_pending_opens` |
+| `ThumtooTileProvider::create` (`request_size`+`drain`) | **forbidden on GUI** | open_paths uses cache `get_size` only + SizeProbe |
+| `ImageOverview` `get_lqip` | GUI, **≥250ms backoff** on miss | SQLite is still I/O |
+| `get_size` / `get_tile` cache hits | prefer worker; GUI OK for local XDG cache | Keep thumtoo cache on fast disk |
+
+Never put `$XDG_CACHE_HOME/thumtoo` on the same USB as the photo library if
+that volume spins down.
+

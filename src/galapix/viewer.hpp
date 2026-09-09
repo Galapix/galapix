@@ -18,8 +18,10 @@
 #define HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 
 #include <atomic>
+#include <mutex>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include <surf/color.hpp>
@@ -137,6 +139,9 @@ public:
       Expands archives and PDFs the same way as the command line. */
   void open_paths(std::vector<std::string> const& paths);
 
+  /** Apply batches produced by open_paths worker (GUI thread only). */
+  void process_pending_opens();
+
   void refresh_selection();
 
   void clear_cache();
@@ -165,6 +170,9 @@ private:
 #ifdef HAVE_THUMTOO
   std::shared_ptr<thumtoo::Client> m_thumtoo;
 #endif
+  /** Expanded URLs from open_paths background thread (no FS on GUI). */
+  std::mutex m_pending_open_mu;
+  std::vector<std::vector<std::string> > m_pending_open_batches;
   std::atomic<bool> m_mark_for_redraw;
   bool  m_draw_grid;
   bool  m_pin_grid;

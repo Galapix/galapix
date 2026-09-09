@@ -1,3 +1,16 @@
+## GUI: no source I/O on main thread (2026-09-09) — **galapix-160**
+
+Sleeping USB can take ~30s to spin up. open_paths expansion and
+pdf_page_count/archive TOC must not run on the GUI thread.
+
+- [x] `open_paths` expands on a detached worker; `process_pending_opens` on GUI
+- [x] No `ThumtooTileProvider::create`+drain from open_paths
+- [x] ImageOverview `get_lqip` miss backoff 250ms
+- [x] SizeProbe attach for pending opens without size
+- [x] Bundle galapix-160
+
+---
+
 ## GUI: get_lqip only in ImageOverview (2026-09-08) — **galapix-082**
 
 After skipping LQIP in size probe, ensure_lqip on every prepare/draw frame

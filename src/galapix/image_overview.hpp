@@ -9,6 +9,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_IMAGE_OVERVIEW_HPP
 #define HEADER_GALAPIX_GALAPIX_IMAGE_OVERVIEW_HPP
 
+#include <chrono>
 #include <memory>
 #include <optional>
 
@@ -56,7 +57,8 @@ public:
     m_surface(),
     m_underlay(Underlay::None),
     m_levels_requested(false),
-    m_lqip_miss_logged(false)
+    m_lqip_miss_logged(false),
+    m_next_lqip_try{}
   {}
 
   State state() const { return m_state; }
@@ -101,6 +103,8 @@ private:
   bool m_levels_requested = false;
   /** One-shot debug: avoid per-frame spam when ensure_lqip is empty. */
   bool m_lqip_miss_logged = false;
+  /** Do not poll SQLite every frame on miss (USB/slow cache spin-up). */
+  std::chrono::steady_clock::time_point m_next_lqip_try{};
 };
 
 
