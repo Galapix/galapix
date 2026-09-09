@@ -144,10 +144,14 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
   if (thumtoo::is_pdf_page_uri(uri)) {
     min_scale = kPdfMinLiveTileScaleVector;
     if (auto parsed = thumtoo::parse_pdf_uri(uri)) {
-      if (!thumtoo::pdf_page_allows_live_tiles(parsed->pdf_path, parsed->page)) {
+      if (!thumtoo::pdf_page_allows_live_tiles(parsed->pdf_path, parsed->page,
+                                               parsed->backend)) {
         min_scale = 0;
-        log_info("ThumtooTileProvider: image-heavy PDF page, min_scale=0 {}",
-                 uri);
+        log_info("ThumtooTileProvider: image-heavy PDF ({}) min_scale=0 {}",
+                 thumtoo::pdf_backend_name(parsed->backend), uri);
+      } else {
+        log_debug("ThumtooTileProvider: PDF backend={} min_scale={}",
+                  thumtoo::pdf_backend_name(parsed->backend), min_scale);
       }
     }
   }

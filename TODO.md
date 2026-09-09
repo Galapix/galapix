@@ -1,3 +1,11 @@
+## PDF backend-aware min_scale — **galapix-165**
+
+- [x] `pdf_page_allows_live_tiles(..., parsed->backend)`
+- [x] Log backend name when gating image-heavy pages
+- [x] Bundle galapix-165
+
+---
+
 ## PDF image-heavy min_scale — **galapix-164**
 
 - [x] `create_from_size`: image-heavy PDF pages use min_scale=0 (no live deep tiles)
