@@ -1,9 +1,8 @@
-## LQIP warm-only display (2026-09-09) — **galapix-161** / **thumtoo-086**
+## LQIP timing (not display hacks) — **galapix-162**
 
-- [x] Galapix: show LQIP only if present at session start (successive opens)
-- [x] thumtoo: no LQIP on size probe (incl. archive members)
-- [x] thumtoo: generate LQIP after first durable interactive tile (next open)
-- [x] Bundles galapix-161, thumtoo-086
+- [x] Revert warm/cold LQIP display special-case
+- [x] Document: generation after first durable tile is the whole mechanism
+- [x] Bundle galapix-162
 
 ---
 
