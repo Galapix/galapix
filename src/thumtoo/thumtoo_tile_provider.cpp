@@ -185,7 +185,7 @@ ThumtooTileProvider::create(std::shared_ptr<thumtoo::Client> client,
   // Single-URI path: one request_size + drain (slow if called in a loop).
   // Bulk open should batch request_size then drain once (ViewerCommand).
   bool done = false;
-  client->request_size(uri, [&](std::string, std::optional<thumtoo::Size>) {
+  client->request_size(uri, [&](std::string, thumtoo::SizeReply) {
     done = true;
   });
   client->drain();

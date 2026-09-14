@@ -1,3 +1,21 @@
+## thumtoo SizeReply callback — **galapix-169**
+
+thumtoo-200 broke `request_size` ABI: `SizeCallback` is now
+`(std::string, thumtoo::SizeReply)` instead of
+`(std::string, std::optional<thumtoo::Size>)`.
+
+- [x] viewer_command.cpp (2 sites)
+- [x] viewer.cpp
+- [x] thumtoo_tile_provider.cpp
+- [x] extra/open_phase_bench.cpp
+- [x] Bundle galapix-169
+
+```bash
+git pull /path/to/galapix-169-thumtoo-size-reply.bundle HEAD
+```
+
+---
+
 ## EPUB open via expand_media_uris — **galapix-168**
 
 - [x] open_paths / viewer_command use `thumtoo::expand_media_uris`

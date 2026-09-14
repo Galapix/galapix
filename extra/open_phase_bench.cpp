@@ -173,7 +173,7 @@ int main(int argc, char** argv)
         continue;
       }
       ++pending;
-      client->request_size(uri, [](std::string, std::optional<thumtoo::Size>) {});
+      client->request_size(uri, [](std::string, thumtoo::SizeReply) {});
     }
     if (pending > 0) {
       client->drain();

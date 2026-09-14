@@ -299,7 +299,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
           workspace.add_image(image);
           ++added;
           if (!provider) {
-            m_thumtoo->request_size(row.uri, [](std::string, std::optional<thumtoo::Size>) {});
+            m_thumtoo->request_size(row.uri, [](std::string, thumtoo::SizeReply) {});
             size_probe->add_pending(image, row.uri);
           }
         }
@@ -373,7 +373,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
         auto image = std::make_shared<Image>(*i, provider, &m_job_manager);
         workspace.add_image(image);
         if (!provider && !uri.empty()) {
-          m_thumtoo->request_size(uri, [](std::string, std::optional<thumtoo::Size>) {});
+          m_thumtoo->request_size(uri, [](std::string, thumtoo::SizeReply) {});
           size_probe->add_pending(image, uri);
         }
       } else

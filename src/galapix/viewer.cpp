@@ -1047,7 +1047,7 @@ Viewer::process_pending_opens()
               m_thumtoo, th_uri, sz->width, sz->height);
           } else {
             m_thumtoo->request_size(
-              th_uri, [](std::string, std::optional<thumtoo::Size>) {});
+              th_uri, [](std::string, thumtoo::SizeReply) {});
           }
         }
       }
