@@ -254,12 +254,12 @@ ViewerCommand::run(std::vector<URL> const& urls)
         return false;
       };
 
-      std::vector<thumtoo::Database::LocatorRow> locs;
+      std::vector<thumtoo::Client::LocatorRow> locs;
       locs.reserve(256);
 
       for (std::string const& pat : m_patterns) {
         std::cout << "Processing pattern: '" << pat << "'" << std::endl;
-        std::vector<thumtoo::Database::LocatorRow> batch;
+        std::vector<thumtoo::Client::LocatorRow> batch;
         if (pat == "*") {
           batch = m_thumtoo->list_locators(kPatternLimit);
         } else if (looks_like_path_prefix(pat)) {

@@ -1,3 +1,19 @@
+## Client::LocatorRow (Store-only thumtoo) — **galapix-170**
+
+thumtoo deleted `Database` / `BlobStore`. Pattern open used
+`thumtoo::Database::LocatorRow`; use `thumtoo::Client::LocatorRow` instead.
+
+Requires **thumtoo ≥ 269** (Client owns LocatorRow POD; ≥284 preferred).
+
+- [x] viewer_command.cpp pattern list
+- [x] Bundle galapix-170
+
+```bash
+git pull /path/to/galapix-170-client-locator-row.bundle HEAD
+```
+
+---
+
 ## thumtoo SizeReply callback — **galapix-169**
 
 thumtoo-200 broke `request_size` ABI: `SizeCallback` is now
