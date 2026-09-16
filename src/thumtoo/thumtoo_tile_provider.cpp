@@ -104,10 +104,12 @@ int max_scale_for_size(int width, int height)
   int w = width;
   int h = height;
   int max_scale = 0;
-  // Same loop as thumtoo (TILES.md / get_tile_coverage).
+  // Same as thumtoo dim_at_tile_scale / vips_shrink floor-half (not ceil).
   while (w > 256 || h > 256) {
-    w = (w + 1) / 2;
-    h = (h + 1) / 2;
+    w = w / 2;
+    h = h / 2;
+    if (w < 1) w = 1;
+    if (h < 1) h = 1;
     ++max_scale;
   }
   return max_scale;

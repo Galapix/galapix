@@ -1,3 +1,23 @@
+# TODO / agent handoff
+
+## Status (2026-09-16)
+
+**Tip: galapix-171-tile-max-scale-floor.** max_scale_for_size matches thumtoo floor-half.
+Prior: **170**. Requires **thumtoo ≥ 293** (interactive tiles not starved by ProbeSize).
+
+### Change
+- `max_scale_for_size` uses successive floor half (not ceil) like thumtoo pyramid
+
+### Apply
+```bash
+git pull /path/to/galapix-171-tile-max-scale-floor.bundle HEAD
+```
+
+### Done criteria
+- [x] Bundle **171**
+
+---
+
 ## Client::LocatorRow (Store-only thumtoo) — **galapix-170**
 
 thumtoo deleted `Database` / `BlobStore`. Pattern open used
