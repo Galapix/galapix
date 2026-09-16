@@ -100,6 +100,7 @@ configure_file(
 message(STATUS "Galapix version: ${PROJECT_VERSION_FULL} (CMake PROJECT_VERSION=${PROJECT_VERSION})")
 
 include(CheckIncludeFile)
+include(GNUInstallDirs)
 
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
@@ -364,6 +365,9 @@ target_link_libraries(galapix PRIVATE libgalapix_app)
 install(TARGETS galapix
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+install(FILES man/galapix.1
+  DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 
 
 # compile extra

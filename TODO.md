@@ -2,19 +2,21 @@
 
 ## Status (2026-09-16)
 
-**Tip: galapix-171-tile-max-scale-floor.** max_scale_for_size matches thumtoo floor-half.
-Prior: **170**. Requires **thumtoo ≥ 293** (interactive tiles not starved by ProbeSize).
+**Tip: galapix-172-man-page.** Install `man galapix`.
+Prior: **171** (on origin). Requires **thumtoo ≥ 293** preferred.
 
 ### Change
-- `max_scale_for_size` uses successive floor half (not ceil) like thumtoo pyramid
+- `man/galapix.1` — synopsis, options, thumtoo cache, see also thumtoo tools
+- CMake installs to `${CMAKE_INSTALL_MANDIR}/man1`
 
 ### Apply
 ```bash
-git pull /path/to/galapix-171-tile-max-scale-floor.bundle HEAD
+git pull /path/to/galapix-172-man-page.bundle HEAD
 ```
+(Applies cleanly on current origin/master, which already includes **171**.)
 
 ### Done criteria
-- [x] Bundle **171**
+- [x] Bundle **172**
 
 ---
 

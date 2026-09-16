@@ -1,0 +1,106 @@
+.\" SPDX-FileCopyrightText: 2008-2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH GALAPIX 1 "2026-09-16" "galapix" "User Commands"
+.SH NAME
+galapix \- zoomable image collection viewer
+.SH SYNOPSIS
+.B galapix
+[\fIOPTION\fR]...
+[\fIFILE\fR|\fIURL\fR]...
+.SH DESCRIPTION
+.B galapix
+displays large image collections and high-resolution images in an
+interactive zoomable OpenGL workspace. Non-option arguments are image
+files, directories (scanned for images), or URLs.
+.PP
+With no files and no
+.BR \-p
+patterns, the frontend may open an empty workspace.
+.PP
+Thumbnail generation and durable multi-resolution tiles belong to
+.BR thumtoo (1)
+(e.g.
+.BR thumtoo-prepare ).
+When built with
+.BR HAVE_THUMTOO ,
+local files and archive members use the thumtoo tile backend (256\(mu256
+JPEG pyramid). Pre-warm tiles with:
+.PP
+.nf
+thumtoo-prepare --tiles \fIpaths\fR...
+.fi
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show help and exit.
+.TP
+.BR \-V ", " \-\-version
+Show version and exit.
+.TP
+.BR \-f ", " \-\-fullscreen
+Start in fullscreen mode.
+.TP
+.BI \-g ", " \-\-geometry " WxH"
+Initial window size (default: 1024x768).
+.TP
+.BI \-a ", " \-\-anti\-aliasing " N"
+Anti-aliasing factor 0, 2, or 4 (default: 0).
+.TP
+.BI \-t ", " \-\-threads " N"
+Worker threads (default: 2).
+.TP
+.BI \-F ", " \-\-files\-from " FILE"
+Read additional paths/URLs from
+.IR FILE
+(one per line).
+.TP
+.BI \-p ", " \-\-pattern " PATTERN"
+Select images already registered in the thumtoo cache (SQL LIKE;
+.B *
+/
+.B ?
+or
+.B %
+/
+.BR _ ;
+path prefix forms supported).
+.TP
+.BI \-\-thumtoo\-cache " DIR"
+thumtoo cache root (default:
+.I $XDG_CACHE_HOME/thumtoo
+or
+.IR ~/.cache/thumtoo ).
+.TP
+.B \-\-thumtoo
+Accepted for compatibility; thumtoo tiles are used whenever the binary was
+built with
+.BR HAVE_THUMTOO .
+.TP
+.B \-\-no\-thumtoo
+Not supported in
+.B HAVE_THUMTOO
+builds (legacy Galapix SQLite tiles removed). Use a build without
+.B WITH_THUMTOO
+for the historical path.
+.TP
+.BI \-d ", " \-\-database " FILE"
+Deprecated no-op (resource DB removed; thumtoo owns the durable cache).
+.SH CONTROLS
+Interactive tools and key bindings are shown in the in-app help overlay
+(when enabled).
+.B F11
+toggles fullscreen.
+.SH FILES
+.TP
+.I $XDG_CACHE_HOME/thumtoo
+Default thumtoo Store cache (tiles, locators, LQIP).
+.SH SEE ALSO
+.BR thumtoo-prepare (1),
+.BR thumtoo-status (1),
+.BR thumtoo-tile (1)
+.PP
+Project documentation:
+.IR docs/THUMTOO.md
+in the source tree.
+.SH AUTHOR
+Ingo Ruhnke and contributors.
