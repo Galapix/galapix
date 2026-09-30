@@ -53,14 +53,13 @@
     wstdisplay.inputs.surfcpp.follows = "surfcpp";
     wstdisplay.inputs.logmich.follows = "logmich";
 
-    # Tile backend source tree (CMake add_subdirectory via THUMTOO_DIR).
-    # flake=false: input is the checkout path, not thumtoo's package outputs.
-    # Locked in flake.lock like any other input.
+    # Tile backend: full flake (lib.mkBuildInputs / pinMupdf), same as biltoo.
+    # Source tree for CMake add_subdirectory is the flake outPath.
     # If Galapix must diverge from upstream again, vendor via git subtree
     # (see AGENTS.md); do not reintroduce pkgs.applyPatches + patches/*.patch.
     thumtoo = {
       url = "github:Grumbel/thumtoo";
-      flake = false;
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
   };
@@ -70,8 +69,17 @@
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
-        # thumtoo source tree for CMake add_subdirectory (THUMTOO_DIR).
+        # MuPDF ≥ 1.28 — same pin as biltoo / thumtoo.lib.pinMupdf.
+        pinMupdf =
+          if thumtoo.lib ? pinMupdf then
+            thumtoo.lib.pinMupdf
+          else
+            (p: p.mupdf);
+        pkgsForThumtoo = pkgs // { mupdf = pinMupdf pkgs; };
+        # Source tree for CMake add_subdirectory (flake outPath).
         thumtooSrc = thumtoo;
+        # Same pkg-config deps as standalone thumtoo (libunarr, mupdf, …).
+        thumtooBuildInputs = thumtoo.lib.mkBuildInputs pkgsForThumtoo;
         # Match biltoo: VERSION file + flake revCount/shortRev (not git-describe).
         versionBase = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./VERSION);
         gitRev = "${self.shortRev or self.dirtyShortRev or "dirty"}";
@@ -136,54 +144,13 @@
               # libexif: no direct Galapix refs; drop unless surfcpp needs it at link time
               libspnav
 
-              # thumtoo (via add_subdirectory): its own SQLite cache + ladder
-              sqlite   # required by thumtoo CMake (not Galapix cache4)
-              vips
-              libjxl
-              libarchive
-              poppler
-              mupdf
-              djvulibre
-
-              # Silence pkg-config warnings
+              # Silence pkg-config noise from nested probes (biltoo does the same).
               systemd
-              cgif
-              libexif
-              libultrahdr
-              libwebp
-              pango
-              fribidi
-              libtiff
-              librsvg
-              dav1d
-              matio
-              hdf5
-              lcms2
-              openexr
-              libraw
-              openjpeg
-              libhwy
-              libimagequant
-              libxml2
-              libsysprof-capture
-              pcre2
-              cfitsio
-              util-linux
-              libselinux
-              libsepol
-              libunwind
-              elfutils
-              zstd
-              orc
-              libthai
-              libdatrie
-              libxkbcommon
-              libxdmcp
-              libepoxy
-              dbus-glib
-              at-spi2-core
-              libxtst
-            ] ++ [
+            ]
+            # thumtoo (via add_subdirectory): same deps as standalone thumtoo
+            # (sqlite, vips, jxl, archive, poppler, pinned mupdf, djvu, …).
+            ++ thumtooBuildInputs
+            ++ [
               tinycmmc.packages.${system}.default
               logmich.packages.${system}.default
               geomcpp.packages.${system}.default

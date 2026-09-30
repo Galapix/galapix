@@ -637,13 +637,17 @@
       }
     },
     "thumtoo": {
-      "flake": false,
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
       "locked": {
-        "lastModified": 1790787700,
-        "narHash": "sha256-zL2k3ptJGq6yg8FbWs0j58ZlW4HbY+QZcLJQJqWas1Q=",
+        "lastModified": 1790793421,
+        "narHash": "sha256-NEsA5kctP2kCjaZQy7nBhroXouvxpcHHmm1syYXhDWE=",
         "owner": "Grumbel",
         "repo": "thumtoo",
-        "rev": "88b16c8a4314690281d1c7a4a89d54fe80abd336",
+        "rev": "743dbf44517c3d53f9d8ea67b13c13fd795fedcc",
         "type": "github"
       },
       "original": {

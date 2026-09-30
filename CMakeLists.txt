@@ -224,7 +224,13 @@ if(WITH_THUMTOO)
     set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
     set(THUMTOO_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(THUMTOO_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+    # Nested thumtoo must not inherit Galapix PROJECT_VERSION_FULL (biltoo does
+    # the same). Restore after add_subdirectory for our version.hpp.
+    set(_galapix_saved_project_version_full "${PROJECT_VERSION_FULL}")
+    unset(PROJECT_VERSION_FULL)
     add_subdirectory("${THUMTOO_DIR}" "${CMAKE_BINARY_DIR}/thumtoo" EXCLUDE_FROM_ALL)
+    set(PROJECT_VERSION_FULL "${_galapix_saved_project_version_full}")
+    unset(_galapix_saved_project_version_full)
     if(TARGET thumtoo)
       set(THUMTOO_TARGET thumtoo)
     elseif(TARGET thumtoo::thumtoo)

@@ -1,5 +1,26 @@
 # TODO / agent handoff
 
+## Status (2026-09-30)
+
+**Tip:** galapix thumtoo flake wiring (biltoo-style).
+
+### This change
+- `thumtoo` flake input is a **full flake** (not `flake = false`): exposes
+  `thumtoo.lib.mkBuildInputs` and `thumtoo.lib.pinMupdf` like biltoo.
+- Package `buildInputs` uses `thumtooBuildInputs` instead of a hand-rolled
+  vips/mupdf/sqlite/… list.
+- CMake: unset `PROJECT_VERSION_FULL` around nested `add_subdirectory(thumtoo)`
+  (same as biltoo).
+
+### After pull
+```bash
+nix flake lock --update-input thumtoo   # regenerate lock (was flake=false)
+nix develop   # or nix build
+git pull /path/to/galapix-thumtoo-flake-biltoo-style.bundle HEAD
+```
+
+---
+
 ## Status (2026-09-16)
 
 **Tip: galapix-172-man-page.** Install `man galapix`.
