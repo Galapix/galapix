@@ -124,7 +124,7 @@
               gtest
               libjpeg
               libpng
-              libsigcxx
+              libsigcxx_3_0
               mesa
 
               SDL2
@@ -146,6 +146,7 @@
               djvulibre
 
               # Silence pkg-config warnings
+              systemd
               cgif
               libexif
               libultrahdr

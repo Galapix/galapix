@@ -130,7 +130,7 @@ endif()
 # find_package(ImageMagick COMPONENTS Magick++ REQUIRED)
 pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
 
-pkg_search_module(SIGCXX REQUIRED sigc++-2.0 IMPORTED_TARGET)
+pkg_search_module(SIGCXX REQUIRED sigc++-3.0 IMPORTED_TARGET)
 
 check_include_file(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
 if(USE_OPENGLES2 OR HAVE_BCMHOST)
