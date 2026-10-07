@@ -21,6 +21,7 @@
 #include <memory>
 
 #include "app/imgui_overlay.hpp"
+#include "app/key_bindings.hpp"
 
 #include <wstdisplay/canvas.hpp>
 #include <wstdisplay/opengl_window.hpp>
@@ -47,6 +48,13 @@ public:
 private:
   void process_event(SDL_Event const& event);
   void draw_frame();
+
+  /** The keyboard shortcuts, also listed in the Help panel */
+  KeyBindings make_key_bindings();
+  void save_screenshot();
+  void toggle_fullscreen();
+  void toggle_tile_debug();
+  void toggle_tile_requests();
   void update_gamecontrollers(float delta);
 
   void add_gamecontroller(int joy_id);
@@ -65,6 +73,7 @@ private:
   bool m_spnav_allow_rotate;
 
   ImguiOverlay m_imgui;
+  KeyBindings m_key_bindings;
 
   std::vector<SDL_GameController*> m_gamecontrollers;
 

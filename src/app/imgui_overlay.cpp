@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <string>
+#include <string_view>
 #include <unistd.h>
 #include <vector>
 
@@ -627,70 +628,29 @@ ImguiOverlay::draw_help_panel(Viewer& viewer)
     info_row("Status btn", "Show/hide Status panel");
     info_row("Help btn", "Show/hide this Help panel");
 
-    section("Tools");
-    action_row("p", "Pan tool", [&] { viewer.set_pan_tool(); });
-    action_row("z", "Zoom rect tool", [&] { viewer.set_zoom_tool(); });
-    action_row("y", "Grid tool", [&] { viewer.set_grid_tool(); });
-    action_row("m", "Move/resize tool", [&] { viewer.set_move_resize_tool(); });
-    info_row("LMB drag", "Use active tool");
-    info_row("MMB / Space+LMB", "Pan while held");
-    info_row("RMB + mouse", "Rotate view while held");
+    section("Mouse");
+    info_row("LMB / MMB / RMB", "Tools of the current tool set (see Tools)");
     info_row("Wheel", "Zoom toward cursor");
+    info_row("Home / End held", "Zoom in / out");
+    info_row("Shift held", "Rotate view with the mouse");
 
-    section("View");
-    action_row("h", "Zoom home (fit)", [&] { viewer.zoom_home(); });
-    action_row("d", "Zoom to selection", [&] { viewer.zoom_to_selection(); });
-    action_row("g", "Toggle grid", [&] { viewer.toggle_grid(); });
-    action_row("f", "Toggle pinned grid", [&] { viewer.toggle_pinned_grid(); });
-    action_row("b", "Cycle background color", [&] { viewer.toggle_background_color(); });
-    action_row("Shift+b", "Cycle background (reverse)",
-               [&] { viewer.toggle_background_color(true); });
-    action_row("Left", "Rotate view −90°", [&] { viewer.rotate_view_270(); });
-    action_row("Right", "Rotate view +90°", [&] { viewer.rotate_view_90(); });
-    action_row("Up / Down", "Reset view rotation", [&] { viewer.reset_view_rotation(); });
-    info_row("Numpad 8/2/4/6", "Nudge view");
-    info_row("Numpad +/-", "Zoom in/out (center)");
-    info_row("v", "Tile debug: scale tint overlay (fill + outline)");
-    info_row("u", "Toggle tile requests (cache-only mode)");
-    info_row("F11", "Toggle fullscreen");
-    action_row("t", "Toggle trackball mode", [&] { viewer.toggle_trackball_mode(); });
-
-    section("Layout");
-    action_row("1", "Regular layout", [&] { viewer.layout_auto(); });
-    action_row("2", "Tight layout", [&] { viewer.layout_tight(); });
-    action_row("3", "Random layout", [&] { viewer.layout_random(); });
-    action_row("4", "Solve overlaps", [&] { viewer.layout_solve_overlaps(); });
-    action_row("5", "Spiral layout", [&] { viewer.layout_spiral(); });
-    action_row("6", "Vertical layout", [&] { viewer.layout_vertical(); });
-    action_row("s", "Sort by name", [&] { viewer.sort_image_list(); });
-    action_row("Shift+s", "Sort reverse", [&] { viewer.sort_reverse_image_list(); });
-    action_row("n", "Shuffle", [&] { viewer.shuffle_image_list(); });
-
-    section("Selection");
-    action_row("i", "Isolate selection", [&] { viewer.isolate_selection(); });
-    action_row("Delete", "Remove selection from workspace",
-               [&] { viewer.delete_selection(); });
-    action_row("F5", "Refresh selection", [&] { viewer.refresh_selection(); });
-
-    section("Image / cache");
-    action_row("F2", "Load workspace", [&] { viewer.load(); });
-    action_row("F3", "Save workspace", [&] { viewer.save(); });
-    action_row("c", "Clear tile cache", [&] { viewer.clear_cache(); });
-    action_row("k", "Cleanup cache", [&] { viewer.cleanup_cache(); });
-    action_row("F6", "Brightness +", [&] { viewer.increase_brightness(); });
-    action_row("F7", "Brightness −", [&] { viewer.decrease_brightness(); });
-    action_row("F8", "Contrast +", [&] { viewer.increase_contrast(); });
-    action_row("F9", "Contrast −", [&] { viewer.decrease_contrast(); });
-    action_row("PgUp", "Gamma +", [&] { viewer.increase_gamma(); });
-    action_row("PgDn", "Gamma −", [&] { viewer.decrease_gamma(); });
-    action_row("F10", "Reset gamma", [&] { viewer.reset_gamma(); });
-    info_row("F12", "Screenshot → /tmp/");
-
-    section("Debug");
-    action_row("Space", "Print visible images", [&] { viewer.print_images(); });
-    action_row("l", "Print viewer state", [&] { viewer.print_state(); });
-    action_row("0", "Print info", [&] { viewer.print_info(); });
-    info_row("Esc", "Quit");
+    // Keyboard: the table AppViewer handles keys with, grouped
+    if (m_key_bindings) {
+      std::vector<std::string_view> groups;
+      for (KeyBinding const& binding : *m_key_bindings) {
+        if (std::find(groups.begin(), groups.end(), binding.group) == groups.end()) {
+          groups.push_back(binding.group);
+        }
+      }
+      for (std::string_view const group : groups) {
+        section(std::string(group).c_str());
+        for (KeyBinding const& binding : *m_key_bindings) {
+          if (binding.group == group) {
+            action_row(binding.label, binding.description, binding.action);
+          }
+        }
+      }
+    }
 
     ImGui::EndTable();
   }

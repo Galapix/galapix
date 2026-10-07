@@ -45,8 +45,9 @@ public:
   void start_drain(std::shared_ptr<thumtoo::Client> client,
                    std::shared_ptr<SizeProbeSession> self);
 
-  /** Main-thread: attach providers for sizes that are ready; update UI. */
-  void tick(Workspace& workspace);
+  /** Main-thread: attach providers for sizes that are ready. Returns true
+      once, when the last size arrived (time to lay the images out). */
+  bool tick(Workspace& workspace);
 
 private:
   struct Item

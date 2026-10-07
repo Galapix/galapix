@@ -17,6 +17,7 @@
 #ifndef HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 #define HEADER_GALAPIX_GALAPIX_VIEWER_HPP
 
+#include <array>
 #include <atomic>
 #include <mutex>
 #include <memory>
@@ -31,22 +32,14 @@
 #include "job/job_manager.hpp"
 #include "math/vector2f.hpp"
 #include "math/vector2i.hpp"
+#include "tools/tools.hpp"
 
 namespace thumtoo { class Client; }
 
 namespace galapix {
 
-class GridTool;
-class MoveTool;
-class PanTool;
-class ResizeTool;
-class RotateTool;
 class System;
-class Tool;
-class ViewRotateTool;
 class Workspace;
-class ZoomRectTool;
-class ZoomTool;
 
 enum class MouseButton
 {
@@ -92,11 +85,12 @@ public:
   void set_grid(Vector2f const& offset, Sizef const& size);
 
   // Tool Controls
-  void set_pan_tool();
-  void set_zoom_tool();
-  void set_grid_tool();
-  void set_move_resize_tool();
-  void set_move_rotate_tool();
+  void set_tools(ToolSet const& tools);
+  void set_pan_tool() { set_tools(kPanTools); }
+  void set_zoom_tool() { set_tools(kZoomRectTools); }
+  void set_grid_tool() { set_tools(kGridTools); }
+  void set_move_resize_tool() { set_tools(kMoveResizeTools); }
+  void set_move_rotate_tool() { set_tools(kMoveRotateTools); }
 
   // Gamma Controls
   void increase_contrast();
@@ -185,22 +179,13 @@ private:
   ViewerState m_state;
   geom::isize m_size;
 
-  std::unique_ptr<ZoomTool>   keyboard_zoom_in_tool;
-  std::unique_ptr<ZoomTool>   keyboard_zoom_out_tool;
-  std::unique_ptr<ViewRotateTool> keyboard_view_rotate_tool;
-
-  std::unique_ptr<PanTool>      pan_tool;
-  std::unique_ptr<MoveTool>     move_tool;
-  std::unique_ptr<ZoomRectTool> zoom_rect_tool;
-  std::unique_ptr<ZoomTool>     zoom_in_tool;
-  std::unique_ptr<ZoomTool>     zoom_out_tool;
-  std::unique_ptr<ResizeTool>   resize_tool;
-  std::unique_ptr<RotateTool>   rotate_tool;
-  std::unique_ptr<GridTool>     grid_tool;
-
-  Tool* left_tool;
-  Tool* middle_tool;
-  Tool* right_tool;
+  /** Tool state per mouse button (MouseButton - 1) */
+  std::array<ToolDrag, 3> m_buttons;
+  /** Tools held with keys (Home/End zoom, Shift rotates the view) */
+  ToolDrag m_key_zoom_in;
+  ToolDrag m_key_zoom_out;
+  ToolDrag m_key_view_rotate;
+  bool m_trackball_mode;
 
   Vector2i m_mouse_pos;
 

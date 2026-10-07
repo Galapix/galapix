@@ -16,6 +16,7 @@
 
 #include "app/app_viewer.hpp"
 #include "app/imgui_overlay.hpp"
+#include "app/key_bindings.hpp"
 
 #include <string>
 
@@ -106,8 +107,12 @@ AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
   m_fullscreen(fullscreen),
   m_spnav_allow_rotate(false),
   m_imgui(),
+  m_key_bindings(),
   m_gamecontrollers()
 {
+  m_key_bindings = make_key_bindings();
+  m_imgui.set_key_bindings(&m_key_bindings);
+
   // The Renderer takes the frame size in begin_frame(), only the Viewer
   // needs to know about window resizes.
   m_window->sig_resized.connect([this](geom::isize const& new_size) {
@@ -329,258 +334,14 @@ AppViewer::process_event(SDL_Event const& event)
       break;
 
     case SDL_KEYDOWN:
-      switch(event.key.keysym.sym)
       {
-        case SDLK_ESCAPE:
-          m_quit = true;
-          break;
-
-        case SDLK_d:
-          m_viewer.zoom_to_selection();
-          break;
-
-        case SDLK_KP_PLUS:
-          m_viewer.get_state().zoom(1.25f);
-          break;
-
-        case SDLK_KP_MINUS:
-          m_viewer.get_state().zoom(1.0f/1.25f);
-          break;
-
-        case SDLK_KP_8:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(0.0f, +128.0f).as_vec());
-          break;
-
-        case SDLK_KP_2:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(0.0f, -128.0f).as_vec());
-          break;
-
-        case SDLK_KP_4:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(+128.0f, 0.0f).as_vec());
-          break;
-
-        case SDLK_KP_6:
-          m_viewer.get_state().set_offset(m_viewer.get_state().get_offset().as_vec() + Vector2f(-128.0f, 0.0f).as_vec());
-          break;
-
-        case SDLK_p:
-          m_viewer.set_pan_tool();
-          break;
-
-        case SDLK_r:
-          m_viewer.set_move_rotate_tool();
-          break;
-
-        case SDLK_k:
-          m_viewer.cleanup_cache();
-          break;
-
-        case SDLK_z:
-          m_viewer.set_zoom_tool();
-          break;
-
-        case SDLK_m:
-          m_viewer.set_move_resize_tool();
-          break;
-
-        case SDLK_h:
-          m_viewer.zoom_home();
-          break;
-
-        case SDLK_s:
-          if (keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT])
-          {
-            m_viewer.sort_reverse_image_list();
-          }
-          else
-          {
-            m_viewer.sort_image_list();
-          }
-          break;
-
-        case SDLK_n:
-          m_viewer.shuffle_image_list();
-          break;
-
-        case SDLK_F12:
-          {
-            SoftwareSurface surface = m_window->screenshot();
-            // FIXME: Could do this in a worker thread to avoid pause on screenshotting
-            for(int i = 0; ; ++i)
-            {
-              std::string outfile = std::format("/tmp/galapix-screenshot-{:04d}.png", i);
-              if (!Filesystem::exist(outfile))
-              {
-                png::save(surface, outfile);
-                std::cout << "Screenshot written to " << outfile << std::endl;
-                break;
-              }
-            }
-          }
-          break;
-
-        case SDLK_i:
-          m_viewer.isolate_selection();
-          break;
-
-        case SDLK_DELETE:
-          m_viewer.delete_selection();
-          break;
-
-        case SDLK_y:
-          m_viewer.set_grid_tool();
-          break;
-
-        case SDLK_F6:
-          m_viewer.increase_brightness();
-          break;
-
-        case SDLK_F7:
-          m_viewer.decrease_brightness();
-          break;
-
-        case SDLK_F8:
-          m_viewer.increase_contrast();
-          break;
-
-        case SDLK_F9:
-          m_viewer.decrease_contrast();
-          break;
-
-        case SDLK_F10:
-          m_viewer.reset_gamma();
-          break;
-
-        case SDLK_PAGEUP:
-          m_viewer.increase_gamma();
-          break;
-
-        case SDLK_PAGEDOWN:
-          m_viewer.decrease_gamma();
-          break;
-
-        case SDLK_1:
-          m_viewer.layout_auto();
-          break;
-
-        case SDLK_2:
-          m_viewer.layout_tight();
-          break;
-
-        case SDLK_3:
-          m_viewer.layout_random();
-          break;
-
-        case SDLK_4:
-          m_viewer.layout_solve_overlaps();
-          break;
-
-        case SDLK_5:
-          m_viewer.layout_spiral();
-          break;
-
-        case SDLK_6:
-          m_viewer.layout_vertical();
-          break;
-
-        case SDLK_g:
-          m_viewer.toggle_grid();
-          break;
-
-        case SDLK_f:
-          m_viewer.toggle_pinned_grid();
-          break;
-
-        case SDLK_F11:
-          m_fullscreen = !m_fullscreen;
-          m_window->set_mode(m_fullscreen
-            ? wstdisplay::OpenGLWindow::Mode::FullscreenDesktop
-            : wstdisplay::OpenGLWindow::Mode::Window);
-          break;
-
-        case SDLK_F2:
-          m_viewer.load();
-          break;
-
-        case SDLK_F3:
-          m_viewer.save();
-          break;
-
-        case SDLK_c:
-          m_viewer.clear_cache();
-          break;
-
-        case SDLK_v:
-          {
-            bool on = !galapix::ImageTiles::tile_debug();
-            galapix::ImageTiles::set_tile_debug(on);
-            std::string msg = std::string("Tile debug: ") + (on ? "ON" : "OFF")
-              + " (tint=pyramid scale, green bias=exact, purple=no tile)";
-            std::cout << msg << "\n";
-            ImguiOverlay::notify(std::move(msg));
-          }
-          break;
-
-        case SDLK_u:
-          {
-            // SDLK_r is already move/rotate tool; use u = "use cache only".
-            bool on = !galapix::ImageTiles::requests_enabled();
-            galapix::ImageTiles::set_requests_enabled(on);
-            std::string msg = std::string("Tile requests: ")
-              + (on ? "ENABLED" : "DISABLED (cache-only)")
-              + (on ? " — new provider jobs allowed" : " — new provider jobs suppressed");
-            std::cout << msg << "\n";
-            ImguiOverlay::notify(std::move(msg));
-          }
-          break;
-
-        case SDLK_F5:
-          m_viewer.refresh_selection();
-          break;
-
-        case SDLK_t:
-          m_viewer.toggle_trackball_mode();
-          break;
-
-        case SDLK_UP:
-        case SDLK_DOWN:
-          m_viewer.reset_view_rotation();
-          break;
-
-        case SDLK_LEFT:
-          m_viewer.rotate_view_270();
-          break;
-
-        case SDLK_RIGHT:
-          m_viewer.rotate_view_90();
-          break;
-
-        case SDLK_b:
-          if (keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT])
-          {
-            m_viewer.toggle_background_color(true);
-          }
-          else
-          {
-            m_viewer.toggle_background_color();
-          }
-          break;
-
-        case SDLK_SPACE:
-          m_viewer.print_images();
-          break;
-
-        case SDLK_l:
-          m_viewer.print_state();
-          break;
-
-        case SDLK_0:
-          m_viewer.print_info();
-          break;
-
-        default:
+        bool const shift = keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT];
+        if (KeyBinding const* binding = find_key_binding(m_key_bindings, event.key.keysym.sym, shift)) {
+          binding->action();
+        } else {
+          // held keys: Home/End zoom, Shift rotates the view
           m_viewer.on_key_down(sdlkey2viewer(event.key.keysym.sym));
-          break;
+        }
       }
       break;
 
@@ -605,6 +366,128 @@ AppViewer::draw_frame()
   m_imgui.begin_frame();
   m_imgui.draw_status(m_viewer);
   m_imgui.end_frame();
+}
+
+KeyBindings
+AppViewer::make_key_bindings()
+{
+  Viewer& v = m_viewer;
+  auto nudge = [&v](float x, float y) {
+    v.get_state().set_offset(v.get_state().get_offset().as_vec() + Vector2f(x, y).as_vec());
+  };
+
+  return {
+    {SDLK_p, false, "p", "Tools", "Pan & zoom: LMB zoom in, MMB pan, RMB zoom out", [&v] { v.set_pan_tool(); }},
+    {SDLK_z, false, "z", "Tools", "Zoom rectangle on LMB", [&v] { v.set_zoom_tool(); }},
+    {SDLK_y, false, "y", "Tools", "Grid rectangle on LMB", [&v] { v.set_grid_tool(); }},
+    {SDLK_m, false, "m", "Tools", "Move/select on LMB, resize selection on RMB", [&v] { v.set_move_resize_tool(); }},
+    {SDLK_r, false, "r", "Tools", "Move/select on LMB, rotate selection on RMB", [&v] { v.set_move_rotate_tool(); }},
+    {SDLK_t, false, "t", "Tools", "Toggle trackball mode", [&v] { v.toggle_trackball_mode(); }},
+
+    {SDLK_h, false, "h", "View", "Zoom home", [&v] { v.zoom_home(); }},
+    {SDLK_d, false, "d", "View", "Zoom to selection (or everything)", [&v] { v.zoom_to_selection(); }},
+    {SDLK_KP_PLUS, false, "Numpad +", "View", "Zoom in", [&v] { v.get_state().zoom(1.25f); }},
+    {SDLK_KP_MINUS, false, "Numpad -", "View", "Zoom out", [&v] { v.get_state().zoom(1.0f / 1.25f); }},
+    {SDLK_KP_8, false, "Numpad 8", "View", "Nudge view up", [nudge] { nudge(0.0f, +128.0f); }},
+    {SDLK_KP_2, false, "Numpad 2", "View", "Nudge view down", [nudge] { nudge(0.0f, -128.0f); }},
+    {SDLK_KP_4, false, "Numpad 4", "View", "Nudge view left", [nudge] { nudge(+128.0f, 0.0f); }},
+    {SDLK_KP_6, false, "Numpad 6", "View", "Nudge view right", [nudge] { nudge(-128.0f, 0.0f); }},
+    {SDLK_LEFT, false, "Left", "View", "Rotate view -90°", [&v] { v.rotate_view_270(); }},
+    {SDLK_RIGHT, false, "Right", "View", "Rotate view +90°", [&v] { v.rotate_view_90(); }},
+    {SDLK_UP, false, "Up", "View", "Reset view rotation", [&v] { v.reset_view_rotation(); }},
+    {SDLK_DOWN, false, "Down", "View", "Reset view rotation", [&v] { v.reset_view_rotation(); }},
+    {SDLK_g, false, "g", "View", "Toggle grid", [&v] { v.toggle_grid(); }},
+    {SDLK_f, false, "f", "View", "Toggle pinned grid", [&v] { v.toggle_pinned_grid(); }},
+    {SDLK_b, false, "b", "View", "Cycle background color", [&v] { v.toggle_background_color(); }},
+    {SDLK_b, true, "Shift+b", "View", "Cycle background color backwards", [&v] { v.toggle_background_color(true); }},
+    {SDLK_F11, false, "F11", "View", "Toggle fullscreen", [this] { toggle_fullscreen(); }},
+
+    {SDLK_1, false, "1", "Layout", "Regular layout", [&v] { v.layout_auto(); }},
+    {SDLK_2, false, "2", "Layout", "Tight layout", [&v] { v.layout_tight(); }},
+    {SDLK_3, false, "3", "Layout", "Random layout", [&v] { v.layout_random(); }},
+    {SDLK_4, false, "4", "Layout", "Solve overlaps", [&v] { v.layout_solve_overlaps(); }},
+    {SDLK_5, false, "5", "Layout", "Spiral layout", [&v] { v.layout_spiral(); }},
+    {SDLK_6, false, "6", "Layout", "Vertical layout", [&v] { v.layout_vertical(); }},
+    {SDLK_s, false, "s", "Layout", "Sort by name", [&v] { v.sort_image_list(); }},
+    {SDLK_s, true, "Shift+s", "Layout", "Sort by name, reverse", [&v] { v.sort_reverse_image_list(); }},
+    {SDLK_n, false, "n", "Layout", "Shuffle", [&v] { v.shuffle_image_list(); }},
+
+    {SDLK_i, false, "i", "Selection", "Isolate selection", [&v] { v.isolate_selection(); }},
+    {SDLK_DELETE, false, "Delete", "Selection", "Remove selection from workspace", [&v] { v.delete_selection(); }},
+    {SDLK_F5, false, "F5", "Selection", "Refresh selection (not implemented)", [&v] { v.refresh_selection(); }},
+
+    {SDLK_F2, false, "F2", "Workspace", "Load /tmp/workspace-dump.galapix", [&v] { v.load(); }},
+    {SDLK_F3, false, "F3", "Workspace", "Save /tmp/workspace-dump.galapix", [&v] { v.save(); }},
+    {SDLK_F12, false, "F12", "Workspace", "Screenshot to /tmp/", [this] { save_screenshot(); }},
+
+    {SDLK_F6, false, "F6", "Display", "Brightness +", [&v] { v.increase_brightness(); }},
+    {SDLK_F7, false, "F7", "Display", "Brightness -", [&v] { v.decrease_brightness(); }},
+    {SDLK_F8, false, "F8", "Display", "Contrast +", [&v] { v.increase_contrast(); }},
+    {SDLK_F9, false, "F9", "Display", "Contrast -", [&v] { v.decrease_contrast(); }},
+    {SDLK_PAGEUP, false, "PgUp", "Display", "Gamma +", [&v] { v.increase_gamma(); }},
+    {SDLK_PAGEDOWN, false, "PgDn", "Display", "Gamma -", [&v] { v.decrease_gamma(); }},
+    {SDLK_F10, false, "F10", "Display", "Reset gamma", [&v] { v.reset_gamma(); }},
+
+    {SDLK_c, false, "c", "Tiles", "Clear tile cache", [&v] { v.clear_cache(); }},
+    {SDLK_k, false, "k", "Tiles", "Free textures of off-screen images", [&v] { v.cleanup_cache(); }},
+    {SDLK_v, false, "v", "Tiles", "Tile debug overlay (tint = pyramid scale)", [this] { toggle_tile_debug(); }},
+    {SDLK_u, false, "u", "Tiles", "Toggle tile requests (cache-only mode)", [this] { toggle_tile_requests(); }},
+
+    {SDLK_SPACE, false, "Space", "Debug", "Print visible images", [&v] { v.print_images(); }},
+    {SDLK_l, false, "l", "Debug", "Print viewer and tile state", [&v] { v.print_state(); }},
+    {SDLK_0, false, "0", "Debug", "Print image info", [&v] { v.print_info(); }},
+
+    {SDLK_ESCAPE, false, "Esc", "App", "Quit", [this] { m_quit = true; }},
+  };
+}
+
+void
+AppViewer::save_screenshot()
+{
+  SoftwareSurface surface = m_window->screenshot();
+  // FIXME: Could do this in a worker thread to avoid pause on screenshotting
+  for(int i = 0; ; ++i)
+  {
+    std::string outfile = std::format("/tmp/galapix-screenshot-{:04d}.png", i);
+    if (!Filesystem::exist(outfile))
+    {
+      png::save(surface, outfile);
+      std::cout << "Screenshot written to " << outfile << std::endl;
+      break;
+    }
+  }
+}
+
+void
+AppViewer::toggle_fullscreen()
+{
+  m_fullscreen = !m_fullscreen;
+  m_window->set_mode(m_fullscreen
+                     ? wstdisplay::OpenGLWindow::Mode::FullscreenDesktop
+                     : wstdisplay::OpenGLWindow::Mode::Window);
+}
+
+void
+AppViewer::toggle_tile_debug()
+{
+  bool const on = !ImageTiles::tile_debug();
+  ImageTiles::set_tile_debug(on);
+  std::string msg = std::string("Tile debug: ") + (on ? "ON" : "OFF")
+    + " (tint=pyramid scale, green bias=exact, purple=no tile)";
+  std::cout << msg << "\n";
+  ImguiOverlay::notify(std::move(msg));
+}
+
+void
+AppViewer::toggle_tile_requests()
+{
+  bool const on = !ImageTiles::requests_enabled();
+  ImageTiles::set_requests_enabled(on);
+  std::string msg = std::string("Tile requests: ")
+    + (on ? "ENABLED" : "DISABLED (cache-only)")
+    + (on ? " — new provider jobs allowed" : " — new provider jobs suppressed");
+  std::cout << msg << "\n";
+  ImguiOverlay::notify(std::move(msg));
 }
 
 float

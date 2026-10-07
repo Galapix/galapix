@@ -83,7 +83,7 @@ SizeProbeSession::start_drain(std::shared_ptr<thumtoo::Client> client,
   }).detach();
 }
 
-void
+bool
 SizeProbeSession::tick(Workspace& workspace)
 {
   auto client = m_client;
@@ -97,13 +97,9 @@ SizeProbeSession::tick(Workspace& workspace)
         "Size probe complete (" + std::to_string(m_completed) + "/" +
           std::to_string(m_total) + ")",
         4.0f);
-      if (Viewer* v = Viewer::current()) {
-        v->layout_tight();
-        v->zoom_to_selection();
-        v->redraw();
-      }
+      return true;
     }
-    return;
+    return false;
   }
 
   std::vector<Item> still;
@@ -160,12 +156,9 @@ SizeProbeSession::tick(Workspace& workspace)
       "Size probe complete (" + std::to_string(m_completed) + "/" +
         std::to_string(m_total) + ")",
       4.0f);
-    if (Viewer* v = Viewer::current()) {
-      v->layout_tight();
-      v->zoom_to_selection();
-      v->redraw();
-    }
+    return true;
   }
+  return false;
 }
 
 } // namespace galapix

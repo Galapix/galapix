@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <algorithm>
 #include <chrono>
 #include <cstdlib>
 #include <filesystem>
@@ -55,14 +56,7 @@
 #include "galapix/workspace.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
-#include "tools/grid_tool.hpp"
-#include "tools/move_tool.hpp"
-#include "tools/pan_tool.hpp"
-#include "tools/resize_tool.hpp"
-#include "tools/rotate_tool.hpp"
-#include "tools/view_rotate_tool.hpp"
-#include "tools/zoom_rect_tool.hpp"
-#include "tools/zoom_tool.hpp"
+#include "tools/tools.hpp"
 #include "util/canvas_grid.hpp"
 #include "util/filesystem.hpp"
 
@@ -89,20 +83,11 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
   m_contrast(1.0f),
   m_state(*this),
   m_size(),
-  keyboard_zoom_in_tool(),
-  keyboard_zoom_out_tool(),
-  keyboard_view_rotate_tool(),
-  pan_tool(),
-  move_tool(),
-  zoom_rect_tool(),
-  zoom_in_tool(),
-  zoom_out_tool(),
-  resize_tool(),
-  rotate_tool(),
-  grid_tool(),
-  left_tool(),
-  middle_tool(),
-  right_tool(),
+  m_buttons(),
+  m_key_zoom_in{ToolKind::ZoomIn},
+  m_key_zoom_out{ToolKind::ZoomOut},
+  m_key_view_rotate{ToolKind::ViewRotate},
+  m_trackball_mode(false),
   m_mouse_pos(),
   m_background_color(),
   m_background_colors(),
@@ -113,24 +98,7 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
   m_job_manager.start_thread();
   current_ = this;
 
-  pan_tool       = std::make_unique<PanTool>(this);
-  move_tool      = std::make_unique<MoveTool>(this);
-  zoom_rect_tool = std::make_unique<ZoomRectTool>(this);
-  resize_tool    = std::make_unique<ResizeTool>(this);
-  rotate_tool    = std::make_unique<RotateTool>(this);
-  grid_tool      = std::make_unique<GridTool>(this);
-
-  zoom_in_tool  = std::make_unique<ZoomTool>(this, -4.0f);
-  zoom_out_tool = std::make_unique<ZoomTool>(this,  4.0f);
-
-  keyboard_zoom_in_tool  = std::make_unique<ZoomTool>(this, -4.0f);
-  keyboard_zoom_out_tool = std::make_unique<ZoomTool>(this,  4.0f);
-
-  keyboard_view_rotate_tool = std::make_unique<ViewRotateTool>(this);
-
-  left_tool   = zoom_in_tool.get();
-  middle_tool = pan_tool.get();
-  right_tool  = zoom_out_tool.get();
+  set_tools(kPanTools);
 
   m_background_color = 0;
   // Black to White
@@ -271,9 +239,9 @@ Viewer::draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas)
     }
   }
 
-  left_tool->draw(canvas);
-  middle_tool->draw(canvas);
-  right_tool->draw(canvas);
+  for (ToolDrag const& drag : m_buttons) {
+    tool_draw(*this, drag, canvas);
+  }
 
   // The grid is drawn in window coordinates, unaffected by the view
   canvas.set_space(wstdisplay::Space::Screen);
@@ -412,14 +380,19 @@ Viewer::update(float delta)
 {
   process_pending_opens();
 
-  m_workspace->tick_size_probe();
+  if (m_workspace->tick_size_probe()) {
+    // all sizes known: lay out with the real aspect ratios
+    layout_tight();
+    zoom_to_selection();
+  }
   m_workspace->update(delta);
 
-  zoom_in_tool ->update(m_mouse_pos, delta);
-  zoom_out_tool->update(m_mouse_pos, delta);
+  for (ToolDrag& drag : m_buttons) {
+    tool_update(*this, drag, m_mouse_pos, delta);
+  }
 
-  keyboard_zoom_in_tool ->update(m_mouse_pos, delta);
-  keyboard_zoom_out_tool->update(m_mouse_pos, delta);
+  tool_update(*this, m_key_zoom_in, m_mouse_pos, delta);
+  tool_update(*this, m_key_zoom_out, m_mouse_pos, delta);
 }
 
 void
@@ -427,11 +400,11 @@ Viewer::on_mouse_motion(Vector2i const& pos, Vector2i const& rel)
 {
   m_mouse_pos = pos;
 
-  left_tool  ->move(m_mouse_pos, rel);
-  middle_tool->move(m_mouse_pos, rel);
-  right_tool ->move(m_mouse_pos, rel);
+  for (ToolDrag& drag : m_buttons) {
+    tool_move(*this, drag, m_mouse_pos, rel);
+  }
 
-  keyboard_view_rotate_tool->move(m_mouse_pos, rel);
+  tool_move(*this, m_key_view_rotate, m_mouse_pos, rel);
 }
 
 void
@@ -439,19 +412,9 @@ Viewer::on_mouse_button_down(Vector2i const& pos, MouseButton btn)
 {
   m_mouse_pos = pos;
 
-  switch(btn)
-  {
-    case MouseButton::LEFT:
-      left_tool->down(pos);
-      break;
-
-    case MouseButton::RIGHT:
-      right_tool->down(pos);
-      break;
-
-    case MouseButton::MIDDLE:
-      middle_tool->down(pos);
-      break;
+  auto const index = static_cast<size_t>(btn) - 1;
+  if (index < m_buttons.size()) {
+    tool_down(*this, m_buttons[index], pos);
   }
 }
 
@@ -460,19 +423,9 @@ Viewer::on_mouse_button_up(Vector2i const& pos, MouseButton btn)
 {
   m_mouse_pos = pos;
 
-  switch(btn)
-  {
-    case MouseButton::LEFT:
-      left_tool->up(pos);
-      break;
-
-    case MouseButton::RIGHT:
-      right_tool->up(pos);
-      break;
-
-    case MouseButton::MIDDLE:
-      middle_tool->up(pos);
-      break;
+  auto const index = static_cast<size_t>(btn) - 1;
+  if (index < m_buttons.size()) {
+    tool_up(*this, m_buttons[index], pos);
   }
 }
 
@@ -482,15 +435,15 @@ Viewer::on_key_up(Key key)
   switch(key)
   {
     case Key::ZOOM_OUT:
-      keyboard_zoom_out_tool->up(m_mouse_pos);
+      tool_up(*this, m_key_zoom_out, m_mouse_pos);
       break;
 
     case Key::ZOOM_IN:
-      keyboard_zoom_in_tool->up(m_mouse_pos);
+      tool_up(*this, m_key_zoom_in, m_mouse_pos);
       break;
 
     case Key::ROTATE:
-      keyboard_view_rotate_tool->up(m_mouse_pos);
+      tool_up(*this, m_key_view_rotate, m_mouse_pos);
       break;
 
     default:
@@ -504,15 +457,15 @@ Viewer::on_key_down(Key key)
   switch(key)
   {
     case Key::ZOOM_OUT:
-      keyboard_zoom_out_tool->down(m_mouse_pos);
+      tool_down(*this, m_key_zoom_out, m_mouse_pos);
       break;
 
     case Key::ZOOM_IN:
-      keyboard_zoom_in_tool->down(m_mouse_pos);
+      tool_down(*this, m_key_zoom_in, m_mouse_pos);
       break;
 
     case Key::ROTATE:
-      keyboard_view_rotate_tool->down(m_mouse_pos);
+      tool_down(*this, m_key_view_rotate, m_mouse_pos);
       break;
 
     default:
@@ -524,10 +477,9 @@ bool
 Viewer::is_active() const
 {
   return
-    zoom_in_tool ->is_active() ||
-    zoom_out_tool->is_active() ||
-    keyboard_zoom_in_tool ->is_active() ||
-    keyboard_zoom_out_tool->is_active();
+    std::any_of(m_buttons.begin(), m_buttons.end(), tool_animating) ||
+    tool_animating(m_key_zoom_in) ||
+    tool_animating(m_key_zoom_out);
 }
 
 void
@@ -546,48 +498,11 @@ Viewer::set_grid(Vector2f const& offset, Sizef const& size)
 }
 
 void
-Viewer::set_pan_tool()
+Viewer::set_tools(ToolSet const& tools)
 {
-  log_info("Pan&Zoom Tools selected");
-  left_tool   = zoom_in_tool.get();
-  right_tool  = zoom_out_tool.get();
-  middle_tool = pan_tool.get();
-}
-
-void
-Viewer::set_zoom_tool()
-{
-  log_info("Zoom&Pan Tools selected");
-  left_tool   = zoom_rect_tool.get();
-  right_tool  = zoom_out_tool.get();
-  middle_tool = pan_tool.get();
-}
-
-void
-Viewer::set_grid_tool()
-{
-  log_info("Grid Tool selected");
-  left_tool   = grid_tool.get();
-  right_tool  = zoom_out_tool.get();
-  middle_tool = pan_tool.get();
-}
-
-void
-Viewer::set_move_resize_tool()
-{
-  log_info("Move&Resize Tools selected");
-  left_tool   = move_tool.get();
-  right_tool  = resize_tool.get();
-  middle_tool = pan_tool.get();
-}
-
-void
-Viewer::set_move_rotate_tool()
-{
-  log_info("Move&Rotate Tools selected");
-  left_tool   = move_tool.get();
-  right_tool  = rotate_tool.get();
-  middle_tool = pan_tool.get();
+  log_info("{} tools selected", tools.name);
+  // A drag in progress ends with the tool change
+  m_buttons = {ToolDrag{tools.left}, ToolDrag{tools.middle}, ToolDrag{tools.right}};
 }
 
 void
@@ -778,9 +693,9 @@ Viewer::reset_view_rotation()
 void
 Viewer::toggle_trackball_mode()
 {
-  pan_tool->set_trackball_mode(!pan_tool->get_trackball_mode());
+  m_trackball_mode = !m_trackball_mode;
 
-  if (pan_tool->get_trackball_mode())
+  if (m_trackball_mode)
   {
     log_info("Trackball mode active, press 't' to leave");
     m_system.set_trackball_mode(true);
@@ -795,7 +710,7 @@ Viewer::toggle_trackball_mode()
 bool
 Viewer::get_trackball_mode() const
 {
-  return pan_tool->get_trackball_mode();
+  return m_trackball_mode;
 }
 
 void

@@ -15,6 +15,8 @@
 #include <deque>
 #include <string>
 
+#include "app/key_bindings.hpp"
+
 namespace galapix {
 
 class Viewer;
@@ -42,6 +44,9 @@ public:
 
   void begin_frame();
   void draw_status(Viewer& viewer);
+
+  /** Shortcuts listed (and clickable) in the Help panel */
+  void set_key_bindings(KeyBindings const* bindings) { m_key_bindings = bindings; }
   void end_frame();
 
   bool want_capture_mouse() const;
@@ -104,9 +109,14 @@ private:
   bool m_icons_loaded = false;
   std::array<Icon, static_cast<size_t>(IconId::Count)> m_icons{};
   std::deque<Toast> m_toasts;
+  KeyBindings const* m_key_bindings = nullptr;
 
   static ImguiOverlay* s_instance;
   static constexpr size_t kMaxToasts = 8;
+
+public:
+  ImguiOverlay(ImguiOverlay const&) = delete;
+  ImguiOverlay& operator=(ImguiOverlay const&) = delete;
 };
 
 } // namespace galapix

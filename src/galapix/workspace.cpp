@@ -477,12 +477,10 @@ Workspace::set_size_probe(std::shared_ptr<SizeProbeSession> probe)
   m_size_probe = std::move(probe);
 }
 
-void
+bool
 Workspace::tick_size_probe()
 {
-  if (m_size_probe) {
-    m_size_probe->tick(*this);
-  }
+  return m_size_probe && m_size_probe->tick(*this);
 }
 
 // ---------------------------------------------------------------------------

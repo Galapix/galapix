@@ -136,7 +136,8 @@ public:
   /** Optional background thumtoo size probe (viewer may open before sizes are known). */
   void set_size_probe(std::shared_ptr<SizeProbeSession> probe);
   std::shared_ptr<SizeProbeSession> size_probe() const { return m_size_probe; }
-  void tick_size_probe();
+  /** True once when the size probe finished */
+  bool tick_size_probe();
 
   // ---------------------------------------------
   // Debug and status
