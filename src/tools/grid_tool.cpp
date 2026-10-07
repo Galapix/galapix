@@ -75,7 +75,8 @@ GridTool::draw(wstdisplay::Canvas& canvas)
       Rectf rect(viewer->get_state().screen2world(click_pos),
                  viewer->get_state().screen2world(mouse_pos));
       rect = geom::normalize(rect);
-      canvas.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
+      canvas.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255),
+                       1.0f / viewer->get_state().get_scale());
     }
     else
     {

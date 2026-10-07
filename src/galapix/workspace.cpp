@@ -152,7 +152,7 @@ Workspace::draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom)
 
   for(auto& i: *m_selection)
   {
-    i->draw_mark(canvas);
+    i->draw_mark(canvas, zoom);
   }
 }
 

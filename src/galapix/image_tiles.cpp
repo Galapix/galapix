@@ -115,7 +115,7 @@ debug_fill_for_scale(int tile_scale, int target_scale)
 
 void
 draw_debug_overlay(wstdisplay::Canvas& canvas, Rectf const& rect, lod::DrawCommand const& cmd,
-                   int target_scale)
+                   int target_scale, float line_width)
 {
   switch (cmd.kind)
   {
@@ -124,14 +124,14 @@ draw_debug_overlay(wstdisplay::Canvas& canvas, Rectf const& rect, lod::DrawComma
       {
         surf::Color const fill = debug_fill_for_scale(cmd.src_key.scale, target_scale);
         canvas.fill_rect(rect, fill);
-        canvas.draw_rect(rect, surf::Color::from_rgba8888(fill.r8(), fill.g8(), fill.b8(), 255));
+        canvas.draw_rect(rect, surf::Color::from_rgba8888(fill.r8(), fill.g8(), fill.b8(), 255), line_width);
       }
       break;
 
     case lod::DrawKind::Underlay:
     case lod::DrawKind::Empty:
       canvas.fill_rect(rect, surf::Color::from_rgba8888(155, 0, 155, 70));
-      canvas.draw_rect(rect, kPlaceholderColor);
+      canvas.draw_rect(rect, kPlaceholderColor, line_width);
       break;
   }
 }
@@ -287,7 +287,8 @@ ImageTiles::texture_for(lod::TileKey const& key) const
 }
 
 void
-ImageTiles::draw(wstdisplay::Canvas& canvas, Rectf const& image_rect, float image_scale) const
+ImageTiles::draw(wstdisplay::Canvas& canvas, Rectf const& image_rect, float image_scale,
+                 float zoom) const
 {
   int const content_w = m_session->content_w();
   int const content_h = m_session->content_h();
@@ -338,7 +339,7 @@ ImageTiles::draw(wstdisplay::Canvas& canvas, Rectf const& image_rect, float imag
     }
 
     if (s_tile_debug) {
-      draw_debug_overlay(canvas, dst, cmd, m_plan.target_scale);
+      draw_debug_overlay(canvas, dst, cmd, m_plan.target_scale, 1.0f / zoom);
     }
   }
 }

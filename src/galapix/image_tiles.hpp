@@ -45,7 +45,9 @@ public:
   /** Not visible anymore: withdraw the demand (queued cells get cancelled). */
   void hide();
 
-  void draw(wstdisplay::Canvas& canvas, Rectf const& image_rect, float image_scale) const;
+  /** \a zoom is the view scale, for 1px debug outlines. */
+  void draw(wstdisplay::Canvas& canvas, Rectf const& image_rect, float image_scale,
+            float zoom) const;
 
   /** Drop every cell and texture, cancel outstanding requests. */
   void clear();

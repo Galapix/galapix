@@ -97,7 +97,7 @@ Image::draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom)
   }
   else
   {
-    m_tiles->draw(canvas, get_image_rect(), get_scale());
+    m_tiles->draw(canvas, get_image_rect(), get_scale(), zoom);
   }
 }
 
@@ -147,9 +147,9 @@ Image::get_url() const
 }
 
 void
-Image::draw_mark(wstdisplay::Canvas& canvas)
+Image::draw_mark(wstdisplay::Canvas& canvas, float zoom)
 {
-  canvas.draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255));
+  canvas.draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255), 1.0f / zoom);
 }
 
 void

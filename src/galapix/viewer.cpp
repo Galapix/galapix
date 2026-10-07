@@ -253,7 +253,7 @@ Viewer::draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas)
 
   if (clip_debug)
   {
-    canvas.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
+    canvas.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255), 1.0f / m_state.get_scale());
   }
 
   {

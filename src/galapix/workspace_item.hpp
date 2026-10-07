@@ -73,7 +73,8 @@ public:
   virtual void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom) {}
 
   virtual void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom) = 0;
-  virtual void draw_mark(wstdisplay::Canvas& canvas) = 0;
+  /** Selection outline, \a zoom is the view scale (outline stays 1px). */
+  virtual void draw_mark(wstdisplay::Canvas& canvas, float zoom) = 0;
 
   virtual URL get_url() const = 0;
 

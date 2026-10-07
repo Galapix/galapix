@@ -39,7 +39,7 @@ public:
   void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom) override;
 
   void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom) override;
-  void draw_mark(wstdisplay::Canvas& canvas) override;
+  void draw_mark(wstdisplay::Canvas& canvas, float zoom) override;
 
   URL get_url() const override;
 
