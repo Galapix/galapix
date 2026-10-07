@@ -3,8 +3,9 @@
 
 /// DjVu tile cells, page profiles and decode accounting on
 /// tests/fixtures/pages.djvu (make_djvu_fixtures.sh):
-///   1 bitonal 2550x3300 @300, 2 photo 1275x1650 @150, 3 compound 2550x3300
-///   (300 dpi JB2 mask + 850x1100 IW44 background).
+///   1 bitonal 2550x3300 @300 + hidden text, 2 photo 1275x1650 @150,
+///   3 compound 2550x3300 (300 dpi JB2 mask + 850x1100 IW44 background),
+///   4 empty (INFO only).
 ///
 /// * Profiles report the layers with their dpi; finest useful scale is 0.
 /// * Every cell of a page renders from one page decode (also threaded, and
@@ -20,9 +21,12 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <cmath>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -72,7 +76,7 @@ int render_all(const fs::path& f, int page, int scale) {
 
 int main() {
   const fs::path f = fs::path(THUMTOO_FIXTURES_DIR) / "pages.djvu";
-  expect(thumtoo::djvu_page_count(f).value_or(0) == 3, "page count");
+  expect(thumtoo::djvu_page_count(f).value_or(0) == 4, "page count");
 
   // 1. Profiles.
   {
@@ -114,11 +118,13 @@ int main() {
   }
 
   // 3. Threads and two documents: still one decode per (document, page).
-  const fs::path dir = fs::temp_directory_path() /
-                       ("thumtoo-djvu-" + std::to_string(std::rand()));
+  const fs::path dir =
+      fs::temp_directory_path() /
+      ("thumtoo-djvu-" +
+       std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
   fs::create_directories(dir);
   const fs::path g = dir / "copy.djvu";
-  fs::copy_file(f, g);
+  fs::copy_file(f, g, fs::copy_options::overwrite_existing);
   thumtoo::djvu_release_document_cache();
   thumtoo::djvu_reset_render_stats();
   {
@@ -211,6 +217,70 @@ int main() {
            "page out of range: " + past.error);
     auto outside = thumtoo::djvu_render_tile_cell(f, 1, 0, 99, 0);
     expect(outside.status == TileStatus::Unavailable, "cell outside page: " + outside.error);
+  }
+
+  // 7. Hidden text layer and empty pages.
+  {
+    std::string error;
+    auto p1 = thumtoo::djvu_page_profile(f, 1, &error);
+    expect(p1 && p1->invisible_glyphs > 40, "hidden text counted: " +
+                                                std::to_string(p1 ? p1->invisible_glyphs : -1));
+    expect(p1 && p1->summary.find("hidden text") != std::string::npos,
+           "summary mentions the text layer");
+    auto layer = thumtoo::djvu_page_text_layer(f, 1);
+    std::size_t words = 0;
+    if (layer) {
+      for (const auto& r : layer->regions) words += r.role == thumtoo::TextRegionRole::Text;
+    }
+    expect(words == 9, "nine words in the text layer, got " + std::to_string(words));
+
+    auto empty = thumtoo::djvu_page_profile(f, 4, &error);
+    expect(empty && empty->kind == thumtoo::PageContentKind::Empty && empty->images.empty(),
+           "INFO-only page is Empty: " + (empty ? empty->summary : error));
+    auto cell = thumtoo::djvu_render_tile_cell(f, 4, 0, 1, 1);
+    bool white = cell.raster.has_value();
+    if (cell.raster) {
+      for (auto b : cell.raster->rgb) white = white && b == 255;
+    }
+    expect(cell.status == TileStatus::Ok && white, "empty page renders white: " + cell.error);
+  }
+
+  // 8. Broken files fail with a reason (not white tiles).
+  {
+    const fs::path truncated = dir / "truncated.djvu";
+    {
+      std::ifstream in(f, std::ios::binary);
+      std::vector<char> bytes((std::istreambuf_iterator<char>(in)), {});
+      bytes.resize(bytes.size() / 3);
+      std::ofstream(truncated, std::ios::binary).write(bytes.data(), bytes.size());
+    }
+    auto t = thumtoo::djvu_render_tile_cell(truncated, 3, 0, 0, 0);
+    expect(t.status == TileStatus::Failed && !t.error.empty(),
+           "truncated file fails with a reason: " + t.error);
+    const fs::path garbage = dir / "garbage.djvu";
+    std::ofstream(garbage) << "this is not a djvu file";
+    auto g2 = thumtoo::djvu_render_tile_cell(garbage, 1, 0, 0, 0);
+    expect(g2.status == TileStatus::Failed && !g2.error.empty(),
+           "garbage file fails with a reason: " + g2.error);
+  }
+
+  // 9. The document cache keeps 4 files: a fifth evicts the oldest, which
+  //    then reopens (counted in opens).
+  thumtoo::djvu_release_document_cache();
+  thumtoo::djvu_reset_render_stats();
+  {
+    std::vector<fs::path> copies;
+    for (int i = 0; i < 5; ++i) {
+      copies.push_back(dir / ("evict" + std::to_string(i) + ".djvu"));
+      fs::copy_file(f, copies.back(), fs::copy_options::overwrite_existing);
+      (void)thumtoo::djvu_page_count(copies.back());
+    }
+    (void)thumtoo::djvu_page_count(copies[0]);
+    (void)thumtoo::djvu_page_count(copies[4]);
+    auto s0 = thumtoo::djvu_document_render_stats(copies[0]);
+    auto s4 = thumtoo::djvu_document_render_stats(copies[4]);
+    expect(s0 && s0->opens == 2, "evicted document reopened");
+    expect(s4 && s4->opens == 1, "recent document stayed open");
   }
 
   thumtoo::djvu_release_document_cache();

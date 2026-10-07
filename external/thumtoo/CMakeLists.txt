@@ -165,6 +165,16 @@ add_library(thumtoo
   src/ocr.cpp
   src/appearance.cpp
   src/xdg_thumbnail.cpp
+  # Host-side tile LOD core (planner, loader, scheduler, draw plan), shared
+  # by biltoo and Galapix. See docs/TILE_LOD.md.
+  src/lod/lod_planner.cpp
+  src/lod/draw_plan.cpp
+  src/lod/tile_loader.cpp
+  src/lod/tile_scheduler.cpp
+  src/lod/tile_session.cpp
+  src/lod/source_records.cpp
+  src/lod/source_status.cpp
+  src/lod/client_tile_backend.cpp
 )
 add_library(thumtoo::thumtoo ALIAS thumtoo)
 
@@ -312,8 +322,8 @@ if(THUMTOO_BUILD_TOOLS)
   target_link_libraries(thumtoo-tile PRIVATE thumtoo)
   target_link_libraries(thumtoo-export PRIVATE thumtoo)
   target_link_libraries(thumtoo-bench PRIVATE thumtoo)
-  add_executable(thumtoo-pdf-profile tools/thumtoo_pdf_profile.cpp)
-  target_link_libraries(thumtoo-pdf-profile PRIVATE thumtoo)
+  add_executable(thumtoo-page-profile tools/thumtoo_page_profile.cpp)
+  target_link_libraries(thumtoo-page-profile PRIVATE thumtoo)
   # The golden-path tools use only libvips / libarchive / libunarr, not the
   # thumtoo library; they take the generated version.hpp (header-only) for
   # --version and share the CLI/output layers in tools/golden/.
@@ -358,6 +368,12 @@ if(THUMTOO_BUILD_TESTS)
   add_test(NAME lqip COMMAND thumtoo-test-lqip)
   target_link_libraries(thumtoo-test-uri PRIVATE thumtoo)
   add_test(NAME uri COMMAND thumtoo-test-uri)
+  add_executable(thumtoo-test-lod tests/test_lod.cpp)
+  target_link_libraries(thumtoo-test-lod PRIVATE thumtoo)
+  add_test(NAME lod COMMAND thumtoo-test-lod)
+  add_executable(thumtoo-test-lod-client-backend tests/test_lod_client_backend.cpp)
+  target_link_libraries(thumtoo-test-lod-client-backend PRIVATE thumtoo)
+  add_test(NAME lod_client_backend COMMAND thumtoo-test-lod-client-backend)
   add_executable(thumtoo-test-appearance tests/test_appearance.cpp)
   target_link_libraries(thumtoo-test-appearance PRIVATE thumtoo)
   add_test(NAME appearance COMMAND thumtoo-test-appearance)
@@ -407,6 +423,11 @@ if(THUMTOO_BUILD_TESTS)
       target_link_libraries(thumtoo-test-pdf-profile PRIVATE ${MUPDF_LIBRARY})
     endif()
     add_test(NAME pdf_profile COMMAND thumtoo-test-pdf-profile)
+    add_executable(thumtoo-test-epub-tiles tests/test_epub_tiles.cpp)
+    target_link_libraries(thumtoo-test-epub-tiles PRIVATE thumtoo)
+    target_compile_definitions(thumtoo-test-epub-tiles PRIVATE
+      THUMTOO_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures")
+    add_test(NAME epub_tiles COMMAND thumtoo-test-epub-tiles)
   endif()
   if(THUMTOO_HAVE_DJVU)
     add_executable(thumtoo-test-djvu-tiles tests/test_djvu_tiles.cpp)
@@ -421,6 +442,8 @@ if(THUMTOO_BUILD_TESTS)
   add_executable(thumtoo-test-djvu-text tests/test_djvu_text.cpp)
   target_link_libraries(thumtoo-test-djvu-text PRIVATE thumtoo)
   add_test(NAME djvu_text COMMAND thumtoo-test-djvu-text)
+  target_compile_definitions(thumtoo-test-djvu-text PRIVATE
+    THUMTOO_FIXTURES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/tests/fixtures")
   add_executable(thumtoo-test-epub-text tests/test_epub_text.cpp)
   target_link_libraries(thumtoo-test-epub-text PRIVATE thumtoo)
   add_test(NAME epub_text COMMAND thumtoo-test-epub-text)

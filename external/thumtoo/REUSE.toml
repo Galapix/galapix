@@ -28,6 +28,7 @@ SPDX-License-Identifier = "GPL-3.0-or-later"
 path = [
   "tests/fixtures/hello.pdf",
   "tests/fixtures/pages.djvu",
+  "tests/fixtures/book.epub",
 ]
 SPDX-FileCopyrightText = "2026 Ingo Ruhnke <grumbel@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"

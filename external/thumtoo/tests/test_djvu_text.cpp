@@ -27,8 +27,12 @@ int main() {
   std::cout << "SKIP: DjVu not available at build time\n";
   return 0;
 #else
-  // Optional fixture path via env (no durable sample in tree yet).
+  // THUMTOO_TEST_DJVU overrides the committed fixture (page 1 has a text
+  // layer, see tests/fixtures/make_djvu_fixtures.sh).
   const char* fixture = std::getenv("THUMTOO_TEST_DJVU");
+#if defined(THUMTOO_FIXTURES_DIR)
+  if (!fixture || !*fixture) fixture = THUMTOO_FIXTURES_DIR "/pages.djvu";
+#endif
   if (!fixture || !*fixture) {
     std::cout << "SKIP: set THUMTOO_TEST_DJVU to a .djvu with a text layer\n";
     // API must still be linkable and reject bad paths cleanly.

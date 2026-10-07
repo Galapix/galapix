@@ -17,6 +17,7 @@
 //     counts each real decode into the render stats.
 
 #include "thumtoo/pdf_mupdf.hpp"
+#include "mupdf_runtime.hpp"
 #include "thumtoo/constants.hpp"
 #include "thumtoo/format.hpp"
 
@@ -751,6 +752,7 @@ struct DocEntry {
   std::filesystem::path path;
   std::filesystem::file_time_type mtime{};
   bool as_text = false;
+  std::optional<mupdf::OpenSpec> spec;  // reflow layout (EPUB), if any
 
   std::mutex mu;  // guards everything below
   bool open_attempted = false;
@@ -785,7 +787,8 @@ DocCache& doc_cache() {
   return *c;
 }
 
-std::shared_ptr<DocEntry> cache_entry(const std::filesystem::path& path) {
+std::shared_ptr<DocEntry> cache_entry(const std::filesystem::path& path,
+                                      const mupdf::OpenSpec* spec) {
   std::error_code ec;
   const auto mtime = std::filesystem::last_write_time(path, ec);
   const std::string norm = path.lexically_normal().string();
@@ -796,7 +799,8 @@ std::shared_ptr<DocEntry> cache_entry(const std::filesystem::path& path) {
     c.forced_text.insert(norm);
   }
   const bool as_text = c.forced_text.count(norm) > 0;
-  const std::string key = as_text ? norm + "#txt" : norm;
+  std::string key = as_text ? norm + "#txt" : norm;
+  if (spec) key += "#layout:" + spec->key;
   for (auto it = c.lru.begin(); it != c.lru.end(); ++it) {
     if ((*it)->key != key) continue;
     if (!ec && (*it)->mtime == mtime) {
@@ -814,6 +818,7 @@ std::shared_ptr<DocEntry> cache_entry(const std::filesystem::path& path) {
   e->path = path;
   e->mtime = ec ? std::filesystem::file_time_type{} : mtime;
   e->as_text = as_text;
+  if (spec) e->spec = *spec;
   c.lru.push_front(e);
   while (static_cast<int>(c.lru.size()) > kPdfDocumentCacheSize) {
     c.lru.pop_back();  // users keep their shared_ptr
@@ -840,6 +845,27 @@ void open_locked(fz_context* ctx, DocEntry& e) {
     fz_try(ctx) { doc = fz_open_document(ctx, file.c_str()); }
     fz_catch(ctx) { doc = nullptr; }
   }
+  if (doc && e.spec) {
+    // Reflowable: publication CSS policy, then lay the whole document out
+    // once for this page box (the expensive step — cached with the entry).
+    const mupdf::OpenSpec& sp = *e.spec;
+    const std::string css = sp.css;
+    int laid_out = 0;
+    fz_var(laid_out);
+    fz_try(ctx) {
+      fz_style_document(ctx, doc, sp.use_document_css ? 1 : 0, css.c_str());
+      fz_layout_document(ctx, doc, sp.width_pt, sp.height_pt, sp.em);
+      laid_out = 1;
+    }
+    fz_catch(ctx) { laid_out = 0; }
+    if (!laid_out) {
+      fz_drop_document(ctx, doc);
+      doc = nullptr;
+      e.open_error = "layout failed" +
+                     (g_last_mupdf_error.empty() ? "" : ": " + g_last_mupdf_error);
+      return;
+    }
+  }
   e.doc = doc;
   if (!doc) {
     e.open_error = g_last_mupdf_error.empty() ? "cannot open document" : g_last_mupdf_error;
@@ -852,12 +878,14 @@ void open_locked(fz_context* ctx, DocEntry& e) {
 /// Construct outside fz_try blocks (it has a destructor).
 class DocAccess {
  public:
-  explicit DocAccess(const std::filesystem::path& path) : ctx_(thread_ctx()) {
+  explicit DocAccess(const std::filesystem::path& path,
+                     const mupdf::OpenSpec* spec = nullptr)
+      : ctx_(thread_ctx()) {
     if (!ctx_) {
       error_ = "MuPDF context unavailable";
       return;
     }
-    entry_ = cache_entry(path);
+    entry_ = cache_entry(path, spec);
     lock_ = std::unique_lock<std::mutex>(entry_->mu, std::try_to_lock);
     if (!lock_.owns_lock()) {
       const Clock::time_point t0 = Clock::now();
@@ -1046,8 +1074,9 @@ struct ListLease {
   }
 };
 
-void lease_list(const std::filesystem::path& path, int page_1based, ListLease& out) {
-  DocAccess acc(path);
+void lease_list(const std::filesystem::path& path, const mupdf::OpenSpec* spec,
+                int page_1based, ListLease& out) {
+  DocAccess acc(path, spec);
   PageSlot* s = acc ? acc.listed_slot(page_1based) : nullptr;
   if (!s) {
     out.error = acc.error().empty() ? "cannot open document" : acc.error();
@@ -1170,9 +1199,13 @@ void mupdf_clear_last_error()
   g_last_mupdf_error.clear();
 }
 
-std::optional<int> mupdf_page_count(const std::filesystem::path& path) {
-  DocAccess acc(path);
-  if (!acc) return std::nullopt;
+std::optional<int> mupdf::page_count(const std::filesystem::path& path,
+                                     const OpenSpec* spec, std::string* error) {
+  DocAccess acc(path, spec);
+  if (!acc) {
+    if (error) *error = acc.error();
+    return std::nullopt;
+  }
   fz_context* ctx = acc.ctx();
   fz_document* doc = acc.doc();
   int n = 0;
@@ -1209,17 +1242,18 @@ Size layout_size_from_bounds(fz_rect box) {
 
 }  // namespace
 
-std::optional<Size> mupdf_page_layout_size(const std::filesystem::path& path,
-                                           int page_1based) {
-  DocAccess acc(path);
+std::optional<Size> mupdf::page_layout_size(const std::filesystem::path& path,
+                                            const OpenSpec* spec, int page_1based) {
+  DocAccess acc(path, spec);
   PageSlot* s = acc.slot(page_1based);
   if (!s) return std::nullopt;
   return layout_size_from_bounds(s->bounds);
 }
 
-std::optional<PdfPageProfile> mupdf_page_profile(const std::filesystem::path& path,
-                                                 int page_1based, std::string* error) {
-  DocAccess acc(path);
+std::optional<PdfPageProfile> mupdf::page_profile(const std::filesystem::path& path,
+                                                  const OpenSpec* spec, int page_1based,
+                                                  std::string* error) {
+  DocAccess acc(path, spec);
   PageSlot* s = acc ? acc.listed_slot(page_1based) : nullptr;
   if (!s) {
     if (error) *error = acc.error().empty() ? "cannot open document" : acc.error();
@@ -1236,11 +1270,12 @@ std::optional<std::string> mupdf_scale_refusal(const std::filesystem::path& path
   return refusal_for(*prof, scale);
 }
 
-std::optional<PdfRaster> mupdf_rasterize_page(const std::filesystem::path& path,
-                                              int page_1based, int max_edge) {
+std::optional<PdfRaster> mupdf::rasterize_page(const std::filesystem::path& path,
+                                               const OpenSpec* spec, int page_1based,
+                                               int max_edge) {
   if (max_edge < 1) return std::nullopt;
   ListLease lease;
-  lease_list(path, page_1based, lease);
+  lease_list(path, spec, page_1based, lease);
   if (!lease.list) return std::nullopt;
   fz_context* ctx = thread_ctx();
   const fz_rect box = lease.bounds;
@@ -1259,12 +1294,13 @@ std::optional<PdfRaster> mupdf_rasterize_page(const std::filesystem::path& path,
   return out;
 }
 
-std::optional<PdfRaster> mupdf_rasterize_page_region(
-    const std::filesystem::path& path, int page_1based, double dpi, int px,
-    int py, int pw, int ph) {
+std::optional<PdfRaster> mupdf::rasterize_region(const std::filesystem::path& path,
+                                                 const OpenSpec* spec, int page_1based,
+                                                 double dpi, int px, int py, int pw,
+                                                 int ph) {
   if (page_1based < 1 || pw <= 0 || ph <= 0 || dpi <= 0.0) return std::nullopt;
   ListLease lease;
-  lease_list(path, page_1based, lease);
+  lease_list(path, spec, page_1based, lease);
   if (!lease.list) return std::nullopt;
   // Unit chain: page points (fz_bound_page, origin at the page box corner)
   // → device pixels via scale dpi/72; (px,py,pw,ph) is the exclusive device
@@ -1279,8 +1315,8 @@ std::optional<PdfRaster> mupdf_rasterize_page_region(
   return run_list_region(thread_ctx(), lease.list, ctm, bbox, nullptr);
 }
 
-PdfCellRender mupdf_render_tile_cell(const std::filesystem::path& path,
-                                     int page_1based, int scale, int x, int y) {
+PdfCellRender mupdf::render_cell(const std::filesystem::path& path, const OpenSpec* spec,
+                                 int page_1based, int scale, int x, int y) {
   PdfCellRender out;
   if (x < 0 || y < 0) {
     out.status = TileStatus::Unavailable;
@@ -1288,7 +1324,7 @@ PdfCellRender mupdf_render_tile_cell(const std::filesystem::path& path,
     return out;
   }
   ListLease lease;
-  lease_list(path, page_1based, lease);
+  lease_list(path, spec, page_1based, lease);
   if (!lease.list) {
     out.status = TileStatus::Failed;
     out.error = lease.error;
@@ -1346,6 +1382,57 @@ PdfCellRender mupdf_render_tile_cell(const std::filesystem::path& path,
   out.status = TileStatus::Ok;
   out.raster = std::move(raster);
   return out;
+}
+
+bool mupdf::with_document(const std::filesystem::path& path, const OpenSpec* spec,
+                          int page,
+                          const std::function<void(fz_context*, fz_document*, fz_page*)>& fn,
+                          std::string* error) {
+  DocAccess acc(path, spec);
+  if (!acc) {
+    if (error) *error = acc.error();
+    return false;
+  }
+  fz_page* p = nullptr;
+  if (page >= 1) {
+    p = acc.page(page);
+    if (!p) {
+      if (error) *error = acc.error();
+      return false;
+    }
+  }
+  fn(acc.ctx(), acc.doc(), p);
+  return true;
+}
+
+std::optional<int> mupdf_page_count(const std::filesystem::path& path) {
+  return mupdf::page_count(path, nullptr);
+}
+
+std::optional<Size> mupdf_page_layout_size(const std::filesystem::path& path,
+                                           int page_1based) {
+  return mupdf::page_layout_size(path, nullptr, page_1based);
+}
+
+std::optional<PdfPageProfile> mupdf_page_profile(const std::filesystem::path& path,
+                                                 int page_1based, std::string* error) {
+  return mupdf::page_profile(path, nullptr, page_1based, error);
+}
+
+std::optional<PdfRaster> mupdf_rasterize_page(const std::filesystem::path& path,
+                                              int page_1based, int max_edge) {
+  return mupdf::rasterize_page(path, nullptr, page_1based, max_edge);
+}
+
+std::optional<PdfRaster> mupdf_rasterize_page_region(
+    const std::filesystem::path& path, int page_1based, double dpi, int px,
+    int py, int pw, int ph) {
+  return mupdf::rasterize_region(path, nullptr, page_1based, dpi, px, py, pw, ph);
+}
+
+PdfCellRender mupdf_render_tile_cell(const std::filesystem::path& path,
+                                     int page_1based, int scale, int x, int y) {
+  return mupdf::render_cell(path, nullptr, page_1based, scale, x, y);
 }
 
 std::optional<PdfDocumentRenderStats> mupdf_document_render_stats(
@@ -1715,8 +1802,10 @@ std::optional<PdfRaster> mupdf_page_thumb_rgb(const std::filesystem::path& path,
   fz_var(ly);
   fz_var(ok);
   fz_try(ctx) {
+    // A location is (chapter, page within chapter): reflowable documents
+    // (EPUB) have many chapters, so convert to the absolute page number.
     fz_location loc = fz_resolve_link(ctx, doc, uri, &lx, &ly);
-    page = loc.page;
+    page = loc.chapter < 0 ? -1 : fz_page_number_from_location(ctx, doc, loc);
     ok = 1;
   }
   fz_catch(ctx) { ok = 0; }

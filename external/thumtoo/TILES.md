@@ -254,8 +254,24 @@ reason. Vector and Mixed pages are never capped (a stamp on a scan stays
 sharp). `PdfPageProfile::summary` states the decision in one line; hosts show
 it.
 
-Inspect any file: `thumtoo-pdf-profile [--json] [--render SCALE|cap]
-[--threads N] FILE.pdf [PAGE…]` — profile plus a decode-count benchmark.
+Inspect any file: `thumtoo-page-profile [--json] [--render SCALE|cap]
+[--threads N] FILE [PAGE…]` (PDF, DjVu, EPUB) — profile plus a decode-count
+benchmark.
+
+### EPUB rendering (2026-10-07)
+
+EPUB runs on the same runtime (`src/mupdf_runtime.hpp`): the layout (page
+box, base font, reader-policy CSS) is an `OpenSpec`, and each (file, layout)
+is one cached document, laid out **once per process** (it used to be laid out
+once per worker thread and again on every book/layout switch). Pages get
+display lists, profiles (text pages Vector, a full-page cover Raster with its
+CSS page background ignored, figures Mixed), decode-once images, the same
+cell status/reason contract and render stats (`opens` counts layouts).
+Internal links and outline entries resolve to absolute pages
+(`fz_page_number_from_location`; a location is chapter + page-in-chapter, so
+every EPUB outline entry used to point at page 1).
+`tests/test_epub_tiles.cpp` on `tests/fixtures/book.epub`
+(`make_epub_fixture.py`).
 
 ### DjVu rendering (2026-10-07)
 
@@ -279,6 +295,8 @@ pixels") instead of interpolating.
 - Decoder errors (ddjvu error messages) are kept and returned as the cell's
   reason; `djvu_document_render_stats` counts page decodes, cells, refusals,
   failures and lock waits.
+- Text layers: every word used to be listed twice (line children walked
+  twice) — fixed; `test_djvu_text` now runs on the committed fixture.
 - Stitching: JB2 is exact; IW44 layers differ by ≤ 6/255 between render rects
   (djvulibre reconstructs wavelets per rect; removing it needs a ~128 px margin
   per cell — not worth 3× the pixels). `tests/test_djvu_tiles.cpp` on

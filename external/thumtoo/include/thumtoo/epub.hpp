@@ -53,9 +53,22 @@ struct ParsedEpubUri {
     const std::filesystem::path& path, int page_1based, const EpubLayout& layout,
     double dpi, int px, int py, int pw, int ph);
 
-[[nodiscard]] std::optional<PdfRaster> epub_render_tile_cell(
+/// One live cell from the laid-out page's shared display list (same runtime,
+/// profile cap and status/reason contract as pdf_render_tile_cell).
+[[nodiscard]] PdfCellRender epub_render_tile_cell(
     const std::filesystem::path& path, int page_1based, const EpubLayout& layout,
     int scale, int x, int y);
+
+/// Page profile of the laid-out page (usually Vector or Mixed; a full-page
+/// cover image is Raster and capped at its dpi).
+[[nodiscard]] std::optional<PdfPageProfile> epub_page_profile(
+    const std::filesystem::path& path, int page_1based, const EpubLayout& layout,
+    std::string* error = nullptr);
+
+/// Render/decode accounting; one registry for all MuPDF-backed formats, so
+/// this equals pdf_document_render_stats(path). `opens` counts layouts.
+[[nodiscard]] std::optional<PdfDocumentRenderStats> epub_document_render_stats(
+    const std::filesystem::path& path);
 
 /**
  * Text + link regions for one laid-out EPUB page (MuPDF).
