@@ -105,7 +105,8 @@ include(GNUInstallDirs)
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 option(WITH_THUMTOO "Use thumtoo as tile cache backend" OFF)
-set(THUMTOO_DIR "" CACHE PATH "thumtoo source tree or install prefix")
+set(THUMTOO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/thumtoo" CACHE PATH
+  "thumtoo source tree or install prefix (default: vendored external/thumtoo)")
 
 if(THREADSANITIZER)
   add_compile_options(-fsanitize=thread)
@@ -151,27 +152,51 @@ else()
   # GL entry points via glad (wstdisplay); do not link GLEW.
 endif()
 
+# Libraries are vendored as git subtrees in external/ and built as
+# subdirectories. Each library skips find_package() for targets that
+# already exist, so the order below follows the dependency graph.
+# libgalapix is a shared library and links them statically.
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 function(build_dependencies)
-  if(BUILD_TESTS)
-    set(BUILD_TESTS OFF)
-    tinycmmc_find_dependency(uitest)
-  endif()
+  # Let option() in the older subprojects honor the variables set here
+  set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
   set(BUILD_TESTS OFF)
+  set(BUILD_EXTRA OFF)
+  set(BUILD_BENCHMARKS OFF)
+  set(WARNINGS OFF)
+  set(WERROR OFF)
 
+  add_subdirectory(external/geomcpp EXCLUDE_FROM_ALL)
+  add_subdirectory(external/logmich EXCLUDE_FROM_ALL)
+  add_subdirectory(external/sexp-cpp EXCLUDE_FROM_ALL)
+  add_subdirectory(external/strutcpp EXCLUDE_FROM_ALL)
+  add_subdirectory(external/babyxml EXCLUDE_FROM_ALL)
+  # libexif is not a Galapix dependency, keep surf without it even when
+  # thumtoo's dependencies bring it into the build environment
+  set(WITH_EXIF OFF)
+  # Galapix uses Magick++ itself, surf's ImageMagick plugin targets IM6.
+  # surf checks MAGICKXX_FOUND, which Galapix' own pkg_search_module()
+  # leaves in the cache, shadow it here.
+  set(WITH_MAGICKXX OFF)
+  set(MAGICKXX_FOUND FALSE)
+  add_subdirectory(external/surfcpp EXCLUDE_FROM_ALL)
+  set(PRIO_USE_JSONCPP OFF)
+  add_subdirectory(external/priocpp EXCLUDE_FROM_ALL)
+  add_subdirectory(external/xdgcpp EXCLUDE_FROM_ALL)
 
-
-  tinycmmc_find_dependency(geom)
-  tinycmmc_find_dependency(logmich)
-  tinycmmc_find_dependency(sexp)
-  tinycmmc_find_dependency(strut)
-  tinycmmc_find_dependency(surf)
-  tinycmmc_find_dependency(prio)
-  tinycmmc_find_dependency(wstdisplay)
+  # Galapix only needs the display module of wst
+  set(WST_INPUT OFF)
+  set(WST_GUI OFF)
+  set(WST_SPRITE OFF)
+  set(WST_DEMOS OFF)
+  add_subdirectory(external/wst EXCLUDE_FROM_ALL)
 endfunction()
 build_dependencies()
 
-# XDG Base Directory helpers (ImGui.ini path, future config).
-find_package(xdgcpp REQUIRED)
+if(BUILD_TESTS)
+  add_subdirectory(external/uitest EXCLUDE_FROM_ALL)
+endif()
 
 # compile libgalapix
 file(GLOB LIBGALAPIX_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}

@@ -22,7 +22,7 @@
 #include <iostream>
 
 #include <surf/color.hpp>
-#include <wstdisplay/graphics_context.hpp>
+#include <wstdisplay/canvas.hpp>
 
 #include "galapix/image_renderer.hpp"
 #include "galapix/image_tile_cache.hpp"
@@ -99,7 +99,7 @@ Image::cache_cleanup()
 }
 
 void
-Image::prepare_tiles(Rectf const& cliprect, float zoom)
+Image::prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom)
 {
   if (!m_provider || !m_cache || !m_renderer) {
     return;
@@ -107,9 +107,9 @@ Image::prepare_tiles(Rectf const& cliprect, float zoom)
   // Mark/ensure first so LQIP can be queued, then process() uploads same frame.
   m_renderer->prepare(cliprect, zoom);
   if (m_overview) {
-    m_overview->process();
+    m_overview->process(device);
   }
-  m_cache->process_queue();
+  m_cache->process_queue(device);
 }
 
 void
@@ -132,17 +132,17 @@ Image::request_overview_levels(Rectf const& /*cliprect*/, float /*zoom*/)
 }
 
 void
-Image::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
+Image::draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom)
 {
   if (!m_provider)
   {
-    gc.fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
+    canvas.fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
                  surf::Color::from_rgb888(255,255,0));
   }
   else
   {
     // Uploads and requests were handled in prepare_tiles; draw is pure.
-    m_renderer->draw(gc, cliprect, zoom);
+    m_renderer->draw(canvas, cliprect, zoom);
   }
 }
 
@@ -247,9 +247,9 @@ Image::get_url() const
 }
 
 void
-Image::draw_mark(wstdisplay::GraphicsContext& gc)
+Image::draw_mark(wstdisplay::Canvas& canvas)
 {
-  gc.draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255));
+  canvas.draw_rect(get_image_rect(), surf::Color::from_rgb888(255, 255, 255));
 }
 
 void

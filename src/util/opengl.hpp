@@ -20,9 +20,9 @@
 #ifdef HAVE_OPENGLES2
 #  include <GLES2/gl2.h>
 #else
-// wstdisplay uses glad; do not include system GL/glew headers here or
-// glad will refuse to compile in the same translation unit.
-#  include <glad/gl.h>
+// wstdisplay keeps its glad loader private, plain GL 1.x calls are
+// enough here.
+#  include <GL/gl.h>
 #endif
 
 #define assert_gl(msg) assert_gl_helper(__FILE__, __LINE__, msg)

@@ -22,8 +22,9 @@
 #include <set>
 #include <memory>
 #include <vector>
-#include <wstdisplay/surface.hpp>
+#include <wstdisplay/fwd.hpp>
 
+#include "galapix/texture_surface.hpp"
 #include "galapix/tile.hpp"
 #include "galapix/tile_cache_id.hpp"
 #include "galapix/tile_provider.hpp"
@@ -53,7 +54,7 @@ public:
 
     JobHandle job_handle;
     Status status;
-    wstdisplay::SurfacePtr surface;
+    TextureSurfacePtr surface;
 
     SurfaceStruct() :
       job_handle(JobHandle::create()),
@@ -63,7 +64,7 @@ public:
 
     SurfaceStruct(JobHandle const& job_handle_,
                   Status status_,
-                  wstdisplay::SurfacePtr surface_,
+                  TextureSurfacePtr surface_,
                   int attempts_ = 1) :
       job_handle(job_handle_),
       status(status_),
@@ -105,10 +106,11 @@ public:
       prepare/draw split. */
   SurfaceStruct request_tile(int x, int y, int scale);
 
-  wstdisplay::SurfacePtr get_tile(int x, int y, int scale);
-  wstdisplay::SurfacePtr find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
+  TextureSurfacePtr get_tile(int x, int y, int scale);
+  TextureSurfacePtr find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out);
 
-  void process_queue();
+  /** Upload decoded tiles to \a device, budgeted per frame */
+  void process_queue(wstdisplay::Device& device);
 
   /** Clear the cache completly */
   void clear();

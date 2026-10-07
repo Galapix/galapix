@@ -22,6 +22,7 @@
 
 #include "app/imgui_overlay.hpp"
 
+#include <wstdisplay/canvas.hpp>
 #include <wstdisplay/opengl_window.hpp>
 #include <wstsystem/fwd.hpp>
 
@@ -46,6 +47,7 @@ public:
 
 private:
   void process_event(SDL_Event const& event);
+  void draw_frame();
   void update_gamecontrollers(float delta);
 
   void add_gamecontroller(int joy_id);
@@ -54,8 +56,9 @@ private:
   float get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const;
 
 private:
-  std::unique_ptr<wstsys::System> m_system;
+  std::unique_ptr<wstsystem::System> m_system;
   std::unique_ptr<wstdisplay::OpenGLWindow> m_window;
+  wstdisplay::Canvas m_canvas;
   Viewer& m_viewer;
 
   bool m_quit;

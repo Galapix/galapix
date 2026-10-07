@@ -70,7 +70,7 @@ public:
   virtual Rectf get_image_rect() const;
 
   /** Mark visible tiles / process uploads. Default: no-op. Called before issue. */
-  virtual void prepare_tiles(Rectf const& cliprect, float zoom) {}
+  virtual void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom) {}
   virtual int pending_upload_count() const { return 0; }
   virtual int pending_tile_requests() const { return 0; }
 
@@ -79,8 +79,8 @@ public:
   /** Soft levels after grid issue; default no-op. */
   virtual void request_overview_levels(Rectf const&, float) {}
 
-  virtual void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) = 0;
-  virtual void draw_mark(wstdisplay::GraphicsContext& gc) = 0;
+  virtual void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom) = 0;
+  virtual void draw_mark(wstdisplay::Canvas& canvas) = 0;
 
   virtual URL get_url() const = 0;
 

@@ -30,8 +30,8 @@
 #include <surf/transform.hpp>
 #include <surf/plugins/png.hpp>
 #include <wstsystem/system.hpp>
-#include <wstdisplay/graphics_context.hpp>
 #include <wstdisplay/opengl_window.hpp>
+#include <wstdisplay/renderer.hpp>
 
 #include "galapix/viewer.hpp"
 #include "galapix/image_tile_cache.hpp"
@@ -89,33 +89,30 @@ float deadzone(float value, float threshold)
 
 AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
                      Viewer& viewer) :
-  m_system(std::make_unique<wstsys::System>()),
+  m_system(std::make_unique<wstsystem::System>()),
   m_window(m_system->create_window({
     .title = "Galapix",
     .icon = {},
     .size = size,
     .mode = fullscreen ? wstdisplay::OpenGLWindow::Mode::FullscreenDesktop : wstdisplay::OpenGLWindow::Mode::Window,
     .resizable = true,
-    .anti_aliasing = anti_aliasing})),
+    .anti_aliasing = anti_aliasing,
+    // Pace the loop with display refresh. A fixed SDL_Delay(10) previously
+    // left only ~6ms of budget for draw+upload at 60Hz and guaranteed jank.
+    .vsync = true})),
+  m_canvas(),
   m_viewer(viewer),
   m_quit(false),
   m_fullscreen(fullscreen),
   m_spnav_allow_rotate(false),
   m_gamecontrollers()
 {
-  // OpenGLWindow::handle_event updates glViewport; keep ortho + Viewer in sync.
+  // The Renderer takes the frame size in begin_frame(), only the Viewer
+  // needs to know about window resizes.
   m_window->sig_resized.connect([this](geom::isize const& new_size) {
-    m_window->get_gc().set_ortho(new_size);
     m_viewer.reshape(new_size);
   });
   m_viewer.reshape(m_window->get_size());
-
-  // Pace the loop with display refresh. A fixed SDL_Delay(10) previously
-  // left only ~6ms of budget for draw+upload at 60Hz and guaranteed jank.
-  if (SDL_GL_SetSwapInterval(1) != 0) {
-    log_warn("SDL_GL_SetSwapInterval(1) failed: {}; frames will not be vsynced",
-             SDL_GetError());
-  }
 
   SDL_Window* sdl_window = SDL_GetWindowFromID(m_window->get_id());
   SDL_GLContext glctx = SDL_GL_GetCurrentContext();
@@ -126,6 +123,10 @@ AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
 
 AppViewer::~AppViewer()
 {
+  // Tile and overview textures belong to the window's Device, release
+  // them while it is still around.
+  m_viewer.clear_cache();
+
   m_imgui.shutdown();
   for(SDL_GameController* gamecontroller: m_gamecontrollers)
   {
@@ -277,7 +278,7 @@ AppViewer::process_event(SDL_Event const& event)
       //break;
 
     case SDL_WINDOWEVENT:
-      // Forwards RESIZED → glViewport + sig_resized (ortho + Viewer::reshape).
+      // Forwards RESIZED → sig_resized (Viewer::reshape).
       m_window->handle_event(event.window);
       break;
 
@@ -591,6 +592,20 @@ AppViewer::process_event(SDL_Event const& event)
   }
 }
 
+void
+AppViewer::draw_frame()
+{
+  wstdisplay::Renderer& renderer = m_window->get_renderer();
+  renderer.begin_frame(m_window->get_drawable_size());
+  m_viewer.draw(renderer, m_canvas);
+  // Restores the GL state for ImGui
+  renderer.end_frame();
+
+  m_imgui.begin_frame();
+  m_imgui.draw_status(m_viewer);
+  m_imgui.end_frame();
+}
+
 float
 AppViewer::get_axis(SDL_GameController* gamecontroller, SDL_GameControllerAxis axis) const
 {
@@ -724,10 +739,7 @@ AppViewer::run()
       update_gamecontrollers(delta);
 
       m_viewer.update(delta);
-      m_viewer.draw(m_window->get_gc());
-      m_imgui.begin_frame();
-      m_imgui.draw_status(m_viewer);
-      m_imgui.end_frame();
+      draw_frame();
     }
     else
     {
@@ -740,10 +752,7 @@ AppViewer::run()
 
       // FIXME: We should try to detect if we need a redraw and
       // only draw then, else we will redraw on each mouse motion
-      m_viewer.draw(m_window->get_gc());
-      m_imgui.begin_frame();
-      m_imgui.draw_status(m_viewer);
-      m_imgui.end_frame();
+      draw_frame();
       ticks = SDL_GetTicks();
     }
 

@@ -139,19 +139,20 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
   // so deep zoom is cheap; the previous −4 floor (~2304 dpi) stopped refining
   // around “one tile ≈ one character”. −8 ≈ 36.8k dpi is well past readable
   // text; thumtoo does not durable-cache below kPdfMinDurableTileScale (−2).
-  // Vector PDFs: deep live region tiles (scale down to -8). Image-heavy /
-  // scanned pages: layout scale only — region render re-decodes huge JPEG
-  // XObjects per cell and is not useful past ~layout dpi.
+  // Vector/Mixed PDF pages: deep live region tiles (scale down to -8).
+  // Raster (scanned) pages: thumtoo answers scales finer than the native
+  // image dpi with Unavailable (PdfPageProfile::finest_useful_scale), do
+  // not request them.
   constexpr int kPdfMinLiveTileScaleVector = -8;  // 144 * 256 ≈ 36864 dpi
   int min_scale = 0;
   if (thumtoo::is_pdf_page_uri(uri)) {
     min_scale = kPdfMinLiveTileScaleVector;
     if (auto parsed = thumtoo::parse_pdf_uri(uri)) {
-      if (!thumtoo::pdf_page_allows_live_tiles(parsed->pdf_path, parsed->page,
-                                               parsed->backend)) {
-        min_scale = 0;
-        log_info("ThumtooTileProvider: image-heavy PDF ({}) min_scale=0 {}",
-                 thumtoo::pdf_backend_name(parsed->backend), uri);
+      auto const profile = thumtoo::pdf_page_profile(parsed->pdf_path, parsed->page);
+      if (profile && profile->finest_useful_scale) {
+        min_scale = std::max(min_scale, *profile->finest_useful_scale);
+        log_info("ThumtooTileProvider: raster PDF page ({}) min_scale={} {}",
+                 thumtoo::pdf_backend_name(parsed->backend), min_scale, uri);
       } else {
         log_debug("ThumtooTileProvider: PDF backend={} min_scale={}",
                   thumtoo::pdf_backend_name(parsed->backend), min_scale);

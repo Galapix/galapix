@@ -5,8 +5,8 @@ tile cache instead of (or alongside) its SQLite `tiles` table.
 
 ## Build
 
-Nix default package enables thumtoo (flake input `thumtoo` +
-`-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…`).
+Nix default package enables thumtoo (`-DWITH_THUMTOO=ON`, `THUMTOO_DIR`
+defaults to the vendored git subtree `external/thumtoo`).
 
 Manual CMake:
 
@@ -26,13 +26,10 @@ Defines `HAVE_THUMTOO=1` on `libgalapix`.
 
 ## Dependency / local forks
 
-The Nix flake pulls **thumtoo source** as a locked flake input (`flake =
-false`) and passes it as `THUMTOO_DIR`.
-
-If you must change thumtoo for Galapix before upstream accepts the work, use
-**`git subtree`** (see AGENTS.md — thumtoo dependency policy). Do not grow a
-pile of `patches/thumtoo-*.patch` files applied via `pkgs.applyPatches`.
-Upstream in batches, then switch back to the flake input.
+thumtoo is vendored as a **git subtree** in `external/thumtoo` (see AGENTS.md
+— Vendored libraries). Changes Galapix needs are made there and upstreamed in
+batches; do not grow a pile of `patches/thumtoo-*.patch` files applied via
+`pkgs.applyPatches`.
 
 ## API
 
@@ -124,7 +121,7 @@ Size probes, ladder previews, and **grid tiles** for PDF pages are handled by
 thumtoo (rasterize at reported 72 dpi media-box size, then cut 256² JPEG
 cells). Requires a thumtoo build that includes PDF tile encode (no longer
 stubs `request_tile` for `//page:N`). Until that lands on thumtoo master,
-override the flake input to a checkout that has the fix.
+point `THUMTOO_DIR` at a checkout that has the fix.
 
 MIME types in `galapix.desktop` align with `thumtoo::media_mime_types()` plus
 Galapix-only types (SVG, XCF, workspace).

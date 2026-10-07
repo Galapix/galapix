@@ -46,13 +46,13 @@ public:
   Image(URL const& url, TileProviderPtr provider = {}, JobManager* job_manager = nullptr);
   ~Image() override;
 
-  void prepare_tiles(Rectf const& cliprect, float zoom) override;
+  void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom) override;
   /** Start provider jobs for tiles marked in prepare_tiles (budgeted). */
   void issue_tile_requests() override;
   /** Levels soft-underlay upgrade after grid jobs have taken budget. */
   void request_overview_levels(Rectf const& cliprect, float zoom) override;
-  void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom) override;
-  void draw_mark(wstdisplay::GraphicsContext& gc) override;
+  void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom) override;
+  void draw_mark(wstdisplay::Canvas& canvas) override;
 
   // Used for sorting and debugging
   URL get_url() const override;

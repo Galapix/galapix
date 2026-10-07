@@ -119,7 +119,7 @@ Workspace::layout_random()
 }
 
 void
-Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
+Workspace::prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom)
 {
   // Pass 1: visibility + mark needed tiles (no provider jobs yet).
   // Also process_queue for off-screen images that still have decoded tiles
@@ -133,13 +133,13 @@ Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
       {
         i->on_enter_screen();
       }
-      i->prepare_tiles(cliprect, zoom);
+      i->prepare_tiles(device, cliprect, zoom);
     }
     else
     {
       // process_queue even when off-screen so decoded tiles still upload
       if (i->pending_upload_count() > 0 || i->pending_tile_requests() > 0) {
-        i->prepare_tiles(cliprect, zoom);
+        i->prepare_tiles(device, cliprect, zoom);
       }
       if (i->is_visible())
       {
@@ -170,20 +170,20 @@ Workspace::prepare_tiles(Rectf const& cliprect, float zoom)
 }
 
 void
-Workspace::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
+Workspace::draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom)
 {
   for(auto& i: m_images)
   {
     if (geom::intersects(i->get_image_rect(), cliprect))
     {
       // enter/leave handled in prepare_tiles (same visibility test)
-      i->draw(gc, cliprect, zoom);
+      i->draw(canvas, cliprect, zoom);
     }
   }
 
   for(auto& i: *m_selection)
   {
-    i->draw_mark(gc);
+    i->draw_mark(canvas);
   }
 }
 

@@ -5,81 +5,29 @@
     nixpkgs.url = "github:NixOS/nixpkgs?ref=nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
 
-    tinycmmc.url = "github:grumbel/tinycmmc";
-    tinycmmc.inputs.nixpkgs.follows = "nixpkgs";
-    tinycmmc.inputs.flake-utils.follows = "flake-utils";
-
-    geomcpp.url = "github:grumbel/geomcpp";
-    geomcpp.inputs.nixpkgs.follows = "nixpkgs";
-
-
-
-    logmich.url = "github:logmich/logmich";
-    logmich.inputs.nixpkgs.follows = "nixpkgs";
-
-    priocpp.url = "github:grumbel/priocpp";
-    priocpp.inputs.nixpkgs.follows = "nixpkgs";
-    priocpp.inputs.flake-utils.follows = "flake-utils";
-    priocpp.inputs.logmich.follows = "logmich";
-    priocpp.inputs.sexpcpp.follows = "sexpcpp";
-
-    sexpcpp.url = "github:lispparser/sexp-cpp";
-    sexpcpp.inputs.nixpkgs.follows = "nixpkgs";
-    sexpcpp.inputs.flake-utils.follows = "flake-utils";
-
-    strutcpp.url = "github:grumbel/strutcpp";
-    strutcpp.inputs.nixpkgs.follows = "nixpkgs";
-
-    xdgcpp.url = "github:Grumbel/xdgcpp";
-    xdgcpp.inputs.nixpkgs.follows = "nixpkgs";
-    xdgcpp.inputs.flake-utils.follows = "flake-utils";
-
-    surfcpp.url = "github:grumbel/surfcpp";
-    surfcpp.inputs.nixpkgs.follows = "nixpkgs";
-    surfcpp.inputs.geomcpp.follows = "geomcpp";
-    surfcpp.inputs.logmich.follows = "logmich";
-
-    uitest.url = "github:grumbel/uitest";
-    uitest.inputs.nixpkgs.follows = "nixpkgs";
-    uitest.inputs.flake-utils.follows = "flake-utils";
-
-    babyxml.url = "github:grumbel/babyxml";
-    babyxml.inputs.nixpkgs.follows = "nixpkgs";
-
-    wstdisplay.url = "github:WindstilleTeam/wstdisplay";
-    wstdisplay.inputs.nixpkgs.follows = "nixpkgs";
-    wstdisplay.inputs.geomcpp.follows = "geomcpp";
-    wstdisplay.inputs.babyxml.follows = "babyxml";
-    wstdisplay.inputs.surfcpp.follows = "surfcpp";
-    wstdisplay.inputs.logmich.follows = "logmich";
-
-    # Tile backend: full flake (lib.mkBuildInputs / pinMupdf), same as biltoo.
-    # Source tree for CMake add_subdirectory is the flake outPath.
-    # If Galapix must diverge from upstream again, vendor via git subtree
-    # (see AGENTS.md); do not reintroduce pkgs.applyPatches + patches/*.patch.
-    thumtoo = {
-      url = "github:Grumbel/thumtoo";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
+    # All libraries (tinycmmc, geomcpp, logmich, priocpp, sexp-cpp,
+    # strutcpp, xdgcpp, surfcpp, babyxml, uitest, wst, thumtoo) are
+    # vendored as git subtrees in external/ and built with CMake
+    # add_subdirectory(), see AGENTS.md.
   };
 
-  outputs = { self, nixpkgs, flake-utils,
-              tinycmmc, geomcpp, logmich, priocpp, sexpcpp, strutcpp, surfcpp, uitest, babyxml, wstdisplay, xdgcpp, thumtoo }:
+  outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
+        # thumtoo's lib (mkBuildInputs, pinMupdf) from the vendored
+        # flake.nix, its outputs function is evaluated directly as
+        # external/ is no flake input. lib uses none of the inputs
+        # except nixpkgs.
+        thumtooLib = ((import ./external/thumtoo/flake.nix).outputs {
+          self = { };
+          inherit nixpkgs;
+          benchtoo = null;
+        }).lib;
         # MuPDF ≥ 1.28 — same pin as biltoo / thumtoo.lib.pinMupdf.
-        pinMupdf =
-          if thumtoo.lib ? pinMupdf then
-            thumtoo.lib.pinMupdf
-          else
-            (p: p.mupdf);
-        pkgsForThumtoo = pkgs // { mupdf = pinMupdf pkgs; };
-        # Source tree for CMake add_subdirectory (flake outPath).
-        thumtooSrc = thumtoo;
+        pkgsForThumtoo = pkgs // { mupdf = thumtooLib.pinMupdf pkgs; };
         # Same pkg-config deps as standalone thumtoo (libunarr, mupdf, …).
-        thumtooBuildInputs = thumtoo.lib.mkBuildInputs pkgsForThumtoo;
+        thumtooBuildInputs = thumtooLib.mkBuildInputs pkgsForThumtoo;
         # Match biltoo: VERSION file + flake revCount/shortRev (not git-describe).
         versionBase = nixpkgs.lib.strings.removeSuffix "\n" (builtins.readFile ./VERSION);
         gitRev = "${self.shortRev or self.dirtyShortRev or "dirty"}";
@@ -112,7 +60,6 @@
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
-              "-DTHUMTOO_DIR=${thumtooSrc}"
               "-DPROJECT_VERSION_FULL=${version}"
               # SQLiteCpp ships a deprecation note on SQLite::SQLite3 (upstream).
               "-Wno-dev"
@@ -137,11 +84,12 @@
 
               SDL2
               SDL2_image
+              freetype # wstdisplay fonts
               curl
               imagemagick
               libGL
               libGLU
-              # libexif: no direct Galapix refs; drop unless surfcpp needs it at link time
+              # libexif: no direct Galapix refs; surf is built with WITH_EXIF=OFF
               libspnav
 
               # Silence pkg-config noise from nested probes (biltoo does the same).
@@ -149,20 +97,7 @@
             ]
             # thumtoo (via add_subdirectory): same deps as standalone thumtoo
             # (sqlite, vips, jxl, archive, poppler, pinned mupdf, djvu, …).
-            ++ thumtooBuildInputs
-            ++ [
-              tinycmmc.packages.${system}.default
-              logmich.packages.${system}.default
-              geomcpp.packages.${system}.default
-              priocpp.packages.${system}.default
-              surfcpp.packages.${system}.default
-              babyxml.packages.${system}.default
-              sexpcpp.packages.${system}.default
-              wstdisplay.packages.${system}.default
-              uitest.packages.${system}.default
-              strutcpp.packages.${system}.default
-              xdgcpp.packages.${system}.default
-            ];
+            ++ thumtooBuildInputs;
           };
         };
 
@@ -189,14 +124,12 @@
               # Resolve thumtoo source for -DTHUMTOO_DIR:
               # 1) explicit THUMTOO_DIR
               # 2) sibling checkout ../thumtoo (common when developing both)
-              # 3) flake input (locked in flake.lock)
+              # 3) vendored git subtree external/thumtoo
               if [ -z "''${THUMTOO_DIR:-}" ]; then
                 if [ -f "$GALAPIX_SOURCE/../thumtoo/CMakeLists.txt" ]; then
                   THUMTOO_DIR="$(cd "$GALAPIX_SOURCE/../thumtoo" && pwd)"
-                elif [ -f "$GALAPIX_SOURCE/third_party/thumtoo/CMakeLists.txt" ]; then
-                  THUMTOO_DIR="$(cd "$GALAPIX_SOURCE/third_party/thumtoo" && pwd)"
                 else
-                  THUMTOO_DIR="${thumtooSrc}"
+                  THUMTOO_DIR="$GALAPIX_SOURCE/external/thumtoo"
                 fi
               fi
               export THUMTOO_DIR
@@ -210,7 +143,7 @@
                   -DWERROR=ON \
                   -DBUILD_BENCHMARKS=OFF \
                   -DWITH_THUMTOO=ON \
-                  -DTHUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}" \
+                  -DTHUMTOO_DIR="$THUMTOO_DIR" \
                   -Wno-dev
               ''
             );
@@ -295,16 +228,14 @@
               export GALAPIX_BUILD_DIR="''${GALAPIX_BUILD_DIR:-/tmp/galapix-build}"
               # PNGs are generated into the build tree (not source data/).
               export GALAPIX_DATADIR="''${GALAPIX_DATADIR:-$GALAPIX_BUILD_DIR/share/galapix}"
-              export THUMTOO_DIR="''${THUMTOO_DIR:-${thumtooSrc}}"
               echo "galapix dev shell (CMAKE_BUILD_TYPE=''${CMAKE_BUILD_TYPE:-Debug})"
               echo "  build dir: $GALAPIX_BUILD_DIR"
               echo "  GALAPIX_DATADIR=$GALAPIX_DATADIR"
-              echo "  THUMTOO_DIR=$THUMTOO_DIR"
               echo "  galapix-configure     # cmake -S . -B \$GALAPIX_BUILD_DIR -G Ninja (+ thumtoo, WARNINGS=ON WERROR=ON)"
 echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-build         # incremental cmake --build"
               echo "  galapix-run [args]    # build + run galapix"
-              echo "  THUMTOO_DIR           # override thumtoo source (default: ../thumtoo or flake lock)"
+              echo "  THUMTOO_DIR           # override thumtoo source (default: ../thumtoo or external/thumtoo)"
               echo "  galapix-run-gdb [args]# build + gdb --args galapix"
               echo "  nix build             # packaged RelWithDebInfo-style derivation"
               echo "  also: nix develop -c galapix-run /tmp/*.jpg"

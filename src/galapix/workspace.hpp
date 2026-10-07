@@ -85,9 +85,9 @@ public:
   // ---------------------------------------------
 
   /** Phase 1: mark needed tiles, issue requests, process uploads. */
-  void prepare_tiles(Rectf const& cliprect, float zoom);
+  void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom);
   /** Phase 2: pure draw (lookup + GL). */
-  void draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom);
+  void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom);
   void update(float delta);
 
   // ---------------------------------------------

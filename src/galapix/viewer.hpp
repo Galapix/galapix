@@ -70,7 +70,9 @@ public:
   Viewer(System& system, Workspace* workspace);
   ~Viewer();
 
-  void draw(wstdisplay::GraphicsContext& gc);
+  /** Record the frame into \a canvas and render it with \a renderer,
+      between Renderer::begin_frame() and end_frame() */
+  void draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas);
   void update(float delta);
 
   void redraw();

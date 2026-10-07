@@ -19,7 +19,7 @@
 #include <iostream>
 
 #include <surf/color.hpp>
-#include <wstdisplay/graphics_context.hpp>
+#include <wstdisplay/canvas.hpp>
 
 #include "galapix/viewer.hpp"
 
@@ -64,14 +64,14 @@ ZoomRectTool::down(Vector2i const& pos)
 }
 
 void
-ZoomRectTool::draw(wstdisplay::GraphicsContext& gc)
+ZoomRectTool::draw(wstdisplay::Canvas& canvas)
 {
   if (drag_active)
   {
     Rectf rect(click_pos,
                viewer->get_state().screen2world(mouse_pos));
     rect = geom::normalize(rect);
-    gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
+    canvas.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }
 }
 

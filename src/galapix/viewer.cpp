@@ -29,7 +29,8 @@
 
 #include <surf/software_surface.hpp>
 #include <surf/color.hpp>
-#include <wstdisplay/graphics_context.hpp>
+#include <wstdisplay/canvas.hpp>
+#include <wstdisplay/renderer.hpp>
 
 #include "galapix/system.hpp"
 #include "galapix/viewer.hpp"
@@ -61,6 +62,7 @@
 #include "tools/view_rotate_tool.hpp"
 #include "tools/zoom_rect_tool.hpp"
 #include "tools/zoom_tool.hpp"
+#include "util/canvas_grid.hpp"
 #include "util/filesystem.hpp"
 
 namespace galapix {
@@ -177,7 +179,7 @@ Viewer::redraw()
 }
 
 void
-Viewer::draw(wstdisplay::GraphicsContext& gc)
+Viewer::draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas)
 {
   using clock = std::chrono::steady_clock;
   static bool const frame_timing =
@@ -244,47 +246,67 @@ Viewer::draw(wstdisplay::GraphicsContext& gc)
   modelview *= glm::translate(glm::vec3(m_state.get_offset().x(), m_state.get_offset().y(), 0.0f));
   modelview *= glm::scale(glm::vec3(m_state.get_scale(), m_state.get_scale(), 1.0f));
 
-  gc.set_modelview(modelview);
-  gc.clear(m_background_colors[static_cast<size_t>(m_background_color)]);
+  canvas.clear();
 
   if (clip_debug)
   {
-    gc.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
+    canvas.draw_rect(cliprect, surf::Color::from_rgb888(255, 0, 255));
   }
 
   {
     auto const t0 = frame_timing ? clock::now() : clock::time_point{};
-    m_workspace->prepare_tiles(cliprect, m_state.get_scale());
+    m_workspace->prepare_tiles(renderer.get_device(), cliprect, m_state.get_scale());
     if (frame_timing) {
       ms_prepare = std::chrono::duration<double, std::milli>(clock::now() - t0).count();
     }
   }
   {
     auto const t0 = frame_timing ? clock::now() : clock::time_point{};
-    m_workspace->draw(gc, cliprect, m_state.get_scale());
+    m_workspace->draw(canvas, cliprect, m_state.get_scale());
     if (frame_timing) {
       ms_draw = std::chrono::duration<double, std::milli>(clock::now() - t0).count();
     }
   }
 
-  left_tool->draw(gc);
-  middle_tool->draw(gc);
-  right_tool->draw(gc);
+  left_tool->draw(canvas);
+  middle_tool->draw(canvas);
+  right_tool->draw(canvas);
 
-  gc.set_modelview(glm::mat4(1));
+  // The grid is drawn in window coordinates, unaffected by the view
+  canvas.set_space(wstdisplay::Space::Screen);
   if (m_draw_grid)
   {
+    geom::fsize const area(m_size);
     if (m_pin_grid)
     {
-      gc.draw_grid(m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec(),
-                             m_grid_size * m_state.get_scale(),
-                             m_grid_color);
+      draw_grid(canvas,
+                Vector2f(m_grid_offset.as_vec() * m_state.get_scale() + m_state.get_offset().as_vec()),
+                m_grid_size * m_state.get_scale(),
+                m_grid_color, area);
     }
     else
     {
-      gc.draw_grid(m_grid_offset, m_grid_size, m_grid_color);
+      draw_grid(canvas, m_grid_offset, m_grid_size, m_grid_color, area);
     }
   }
+
+  // Viewer works in window coordinates, the frame is in drawable
+  // pixels, which differ on high-DPI displays
+  glm::mat4 screen_matrix(1.0f);
+  if (m_size.width() > 0 && m_size.height() > 0)
+  {
+    geom::isize const frame_size = renderer.get_frame_size();
+    screen_matrix = glm::scale(glm::vec3(static_cast<float>(frame_size.width()) / static_cast<float>(m_size.width()),
+                                         static_cast<float>(frame_size.height()) / static_cast<float>(m_size.height()),
+                                         1.0f));
+  }
+
+  renderer.render(canvas, wstdisplay::RenderPass{
+      .target = {},
+      .clear = m_background_colors[static_cast<size_t>(m_background_color)],
+      .world_matrix = screen_matrix * modelview,
+      .screen_matrix = screen_matrix,
+    });
 
   // First-paint / fill progress when GALAPIX_OPEN_TIMING is set. Pre-viewer
   // open is already timed in ViewerCommand; multi-second delays are here.

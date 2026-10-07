@@ -10,16 +10,14 @@
 
 #include <algorithm>
 
-#include <glad/gl.h>
-
 #include <chrono>
 #include <logmich/log.hpp>
 #include <surf/convert.hpp>
 #include <surf/software_surface_factory.hpp>
 #include <surf/pixel_format.hpp>
 #include <surf/pixel_data.hpp>
-#include <wstdisplay/graphics_context.hpp>
-#include <wstdisplay/texture.hpp>
+#include <wstdisplay/canvas.hpp>
+#include <wstdisplay/device.hpp>
 
 #include "job/job_manager.hpp"
 #include "jobs/overview_load_job.hpp"
@@ -59,26 +57,16 @@ int min_scale_for_overview(int original_width, int original_height,
   return 3;
 }
 
-wstdisplay::SurfacePtr surface_from_software(surf::SoftwareSurface image)
+TextureSurfacePtr surface_from_software(wstdisplay::Device& device, surf::SoftwareSurface image)
 {
   if (image.get_format() != surf::PixelFormat::RGBA8) {
     image = surf::convert(image, surf::PixelFormat::RGBA8);
   }
 
-  auto texture = wstdisplay::Texture::create(GL_TEXTURE_2D, image.get_size());
-  texture->put(image, 0, 0);
-  texture->set_filter(GL_LINEAR);
-
-  float const tw = static_cast<float>(texture->get_width());
-  float const th = static_cast<float>(texture->get_height());
-  float const maxu = static_cast<float>(image.get_width()) / tw;
-  float const maxv = static_cast<float>(image.get_height()) / th;
-
-  return wstdisplay::Surface::create(
-    texture,
-    geom::frect(0.0f, 0.0f, maxu, maxv),
-    geom::fsize(static_cast<float>(image.get_width()),
-                static_cast<float>(image.get_height())));
+  wstdisplay::Unique<wstdisplay::Texture> texture =
+    device.create_texture(image, {.filter = wstdisplay::TextureFilter::Linear});
+  wstdisplay::Surface const surface(texture, image.get_size());
+  return std::make_shared<TextureSurface const>(std::move(texture), surface);
 }
 
 } // namespace
@@ -314,7 +302,7 @@ ImageOverview::receive_software(std::optional<surf::SoftwareSurface> surface,
 }
 
 void
-ImageOverview::process()
+ImageOverview::process(wstdisplay::Device& device)
 {
   std::optional<surf::SoftwareSurface> surface;
   if (!m_queue.try_pop(surface)) {
@@ -337,7 +325,7 @@ ImageOverview::process()
   try {
     int const sw = surface->get_width();
     int const sh = surface->get_height();
-    m_surface = surface_from_software(std::move(*surface));
+    m_surface = surface_from_software(device, std::move(*surface));
     m_state = State::Ready;
     if (m_underlay == Underlay::Lqip) {
       log_debug("ImageOverview: LQIP GL upload ready {}x{}", sw, sh);
@@ -350,10 +338,10 @@ ImageOverview::process()
 }
 
 void
-ImageOverview::draw(wstdisplay::GraphicsContext& gc, Rectf const& image_rect)
+ImageOverview::draw(wstdisplay::Canvas& canvas, Rectf const& image_rect)
 {
   if (m_surface) {
-    m_surface->draw(gc, image_rect);
+    canvas.draw(m_surface->get(), image_rect);
   }
 }
 

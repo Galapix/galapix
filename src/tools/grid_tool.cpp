@@ -17,9 +17,10 @@
 #include "tools/grid_tool.hpp"
 
 #include <surf/color.hpp>
-#include <wstdisplay/graphics_context.hpp>
+#include <wstdisplay/canvas.hpp>
 
 #include "galapix/viewer.hpp"
+#include "util/canvas_grid.hpp"
 
 namespace galapix {
 
@@ -65,7 +66,7 @@ GridTool::down(Vector2i const& pos)
 }
 
 void
-GridTool::draw(wstdisplay::GraphicsContext& gc)
+GridTool::draw(wstdisplay::Canvas& canvas)
 {
   if (drag_active)
   {
@@ -74,7 +75,7 @@ GridTool::draw(wstdisplay::GraphicsContext& gc)
       Rectf rect(viewer->get_state().screen2world(click_pos),
                  viewer->get_state().screen2world(mouse_pos));
       rect = geom::normalize(rect);
-      gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
+      canvas.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
     }
     else
     {
@@ -84,7 +85,8 @@ GridTool::draw(wstdisplay::GraphicsContext& gc)
                  viewer->get_state().screen2world(mouse_pos));
       rect = geom::normalize(rect);
 
-      gc.draw_grid(Vector2f(rect.left(), rect.top()), rect.size(), surf::Color::from_rgba8888(255, 255, 0, 255));
+      draw_grid(canvas, Vector2f(rect.left(), rect.top()), rect.size(), surf::Color::from_rgba8888(255, 255, 0, 255),
+                geom::fsize(viewer->get_size()));
     }
   }
 }

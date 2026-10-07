@@ -53,12 +53,14 @@ Dependencies
 | **libsigc++-2** | Signals |
 | **curl** | Optional network URLs (thumtoo / backends) |
 
-### Bundled / flake inputs
+### Bundled libraries
 
-Several libraries are pulled as Nix flake inputs or live under
-`external/` (ImGui, etc.):
+These libraries are vendored as git subtrees under `external/` and built
+together with Galapix (ImGui is a plain copy there as well):
 
-* [wstdisplay](https://github.com/WindstilleTeam/wstdisplay) — OpenGL window / GC
+* [wst](https://github.com/WindstilleTeam/wst) — wstdisplay: OpenGL window, renderer
+* [thumtoo](https://github.com/Grumbel/thumtoo) — tile/size backend
+* [xdgcpp](https://github.com/Grumbel/xdgcpp), [uitest](https://github.com/grumbel/uitest)
 * [surfcpp](https://github.com/grumbel/surfcpp) — software surfaces, codecs
 * [geomcpp](https://github.com/grumbel/geomcpp), [logmich](https://github.com/logmich/logmich),
   [priocpp](https://github.com/grumbel/priocpp), [sexpcpp](https://github.com/lispparser/sexp-cpp),
@@ -97,14 +99,11 @@ galapix-build
 galapix-run [OPTIONS] [FILES]...
 ```
 
-Override the thumtoo source tree when testing a local checkout:
+Override the thumtoo source tree when testing a local checkout with
+`THUMTOO_DIR=/path/to/thumtoo galapix-configure` in `nix develop`.
 
-```bash
-nix develop --override-input thumtoo path:/path/to/thumtoo
-```
-
-Default CMake flags from the flake include `-DWITH_THUMTOO=ON` and
-`-DTHUMTOO_DIR=<flake input>`.
+The flake builds with `-DWITH_THUMTOO=ON`; `THUMTOO_DIR` defaults to the
+vendored `external/thumtoo`.
 
 ### Manual CMake
 

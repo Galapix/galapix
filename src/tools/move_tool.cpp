@@ -17,7 +17,7 @@
 #include "tools/move_tool.hpp"
 
 #include <surf/color.hpp>
-#include <wstdisplay/graphics_context.hpp>
+#include <wstdisplay/canvas.hpp>
 
 #include "galapix/workspace.hpp"
 #include "galapix/viewer.hpp"
@@ -96,14 +96,14 @@ MoveTool::down(Vector2i const& pos)
 }
 
 void
-MoveTool::draw(wstdisplay::GraphicsContext& gc)
+MoveTool::draw(wstdisplay::Canvas& canvas)
 {
   if (drag_active)
   {
     Rectf rect(click_pos,
                viewer->get_state().screen2world(mouse_pos));
     rect = geom::normalize(rect);
-    gc.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
+    canvas.draw_rect(rect, surf::Color::from_rgb888(255, 255, 255));
   }
 }
 

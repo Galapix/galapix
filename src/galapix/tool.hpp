@@ -36,7 +36,7 @@ public:
   virtual void up  (Vector2i const& pos) =0;
   virtual void down(Vector2i const& pos) =0;
 
-  virtual void draw(wstdisplay::GraphicsContext& gc) =0;
+  virtual void draw(wstdisplay::Canvas& canvas) =0;
 
 protected:
   Viewer* viewer;

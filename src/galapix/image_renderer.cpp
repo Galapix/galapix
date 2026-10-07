@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <cmath>
 #include <surf/color.hpp>
-#include <wstdisplay/graphics_context.hpp>
+#include <wstdisplay/canvas.hpp>
 
 #include "galapix/image.hpp"
 #include "galapix/image_tile_cache.hpp"
@@ -96,11 +96,11 @@ downscale_to_steps(int downscale)
 }
 
 void
-draw_tile_debug_overlay(wstdisplay::GraphicsContext& gc, Rectf const& tile_rect,
+draw_tile_debug_overlay(wstdisplay::Canvas& canvas, Rectf const& tile_rect,
                         int displayed_scale, int requested_scale)
 {
-  gc.fill_rect(tile_rect, debug_fill_for_scale(displayed_scale, requested_scale));
-  gc.draw_rect(tile_rect, debug_outline_for_scale(displayed_scale, requested_scale));
+  canvas.fill_rect(tile_rect, debug_fill_for_scale(displayed_scale, requested_scale));
+  canvas.draw_rect(tile_rect, debug_outline_for_scale(displayed_scale, requested_scale));
 }
 
 } // namespace
@@ -241,7 +241,7 @@ ImageRenderer::prepare(Rectf const& cliprect, float zoom)
 }
 
 void
-ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scale, float zoom)
+ImageRenderer::draw_tile(wstdisplay::Canvas& canvas, int x, int y, int scale, float zoom)
 {
   // Pure lookup — requests were issued in prepare / issue_requests.
   ImageTileCache::SurfaceStruct sstruct = m_cache->lookup_tile(x, y, scale);
@@ -249,12 +249,12 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
                         get_vertex(x+1, y+1, zoom));
   if (sstruct.surface)
   {
-    sstruct.surface->draw(gc, tile_rect);
+    canvas.draw(sstruct.surface->get(), tile_rect);
 
     if (ImageTileCache::tile_debug())
     {
       // Semi-transparent scale tint + outline (exact requested scale).
-      draw_tile_debug_overlay(gc, tile_rect, scale, scale);
+      draw_tile_debug_overlay(canvas, tile_rect, scale, scale);
     }
     return;
   }
@@ -262,7 +262,7 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
   // Exact tile missing: paint coarser stand-in first (tiles that were on
   // screen before zoom-in), then any finer children that already arrived.
   int downscale = 1;
-  wstdisplay::SurfacePtr stand_in = m_cache->find_smaller_tile(x, y, scale, downscale);
+  TextureSurfacePtr stand_in = m_cache->find_smaller_tile(x, y, scale, downscale);
 
   if (stand_in)
   {
@@ -277,11 +277,11 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
                              geom::fpoint(std::min(subsection.right(),  stand_in->get_width()),
                                           std::min(subsection.bottom(), stand_in->get_height())));
 
-    stand_in->draw(gc, subsection, tile_rect);
+    canvas.draw(stand_in->get().region(subsection), tile_rect);
     if (ImageTileCache::tile_debug()) {
       // Upscaled coarser pyramid level — tint encodes that level's scale.
       int const displayed_scale = scale + downscale_to_steps(downscale);
-      draw_tile_debug_overlay(gc, tile_rect, displayed_scale, scale);
+      draw_tile_debug_overlay(canvas, tile_rect, displayed_scale, scale);
     }
   }
   else if (sstruct.status == ImageTileCache::SurfaceStruct::SURFACE_REQUESTED)
@@ -292,42 +292,42 @@ ImageRenderer::draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int scal
     if (ov.has_surface()) {
       // Soft underlay already drawn — light tint only in tile-debug? skip fill.
       if (ImageTileCache::tile_debug()) {
-        gc.fill_rect(tile_rect, Color::from_rgba8888(155, 0, 155, 70));
-        gc.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
+        canvas.fill_rect(tile_rect, Color::from_rgba8888(155, 0, 155, 70));
+        canvas.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
       }
     } else if (ov.state() == ImageOverview::State::Loading) {
       // LQIP/levels in flight — do not cover with opaque purple.
       if (ImageTileCache::tile_debug()) {
-        gc.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
+        canvas.draw_rect(tile_rect, Color::from_rgb888(155, 0, 155));
       }
     } else {
-      gc.fill_rect(tile_rect, Color::from_rgb888(155, 0, 155));
+      canvas.fill_rect(tile_rect, Color::from_rgb888(155, 0, 155));
     }
   }
 
   // Progressive refine: draw any finer children that are already loaded.
-  wstdisplay::SurfacePtr nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
-  wstdisplay::SurfacePtr ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
-  wstdisplay::SurfacePtr sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
-  wstdisplay::SurfacePtr se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
-  if (nw) { nw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f))); }
-  if (ne) { ne->draw(gc, Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f))); }
-  if (sw) { sw->draw(gc, Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f))); }
-  if (se) { se->draw(gc, Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f))); }
+  TextureSurfacePtr nw = m_cache->get_tile(2*x,   2*y,   scale - 1);
+  TextureSurfacePtr ne = m_cache->get_tile(2*x+1, 2*y,   scale - 1);
+  TextureSurfacePtr sw = m_cache->get_tile(2*x,   2*y+1, scale - 1);
+  TextureSurfacePtr se = m_cache->get_tile(2*x+1, 2*y+1, scale - 1);
+  if (nw) { canvas.draw(nw->get(), Rectf(get_vertex(2*x+0, 2*y+0, zoom/2.0f), get_vertex(2*x+1, 2*y+1, zoom/2.0f))); }
+  if (ne) { canvas.draw(ne->get(), Rectf(get_vertex(2*x+1, 2*y+0, zoom/2.0f), get_vertex(2*x+2, 2*y+1, zoom/2.0f))); }
+  if (sw) { canvas.draw(sw->get(), Rectf(get_vertex(2*x+0, 2*y+1, zoom/2.0f), get_vertex(2*x+1, 2*y+2, zoom/2.0f))); }
+  if (se) { canvas.draw(se->get(), Rectf(get_vertex(2*x+1, 2*y+1, zoom/2.0f), get_vertex(2*x+2, 2*y+2, zoom/2.0f))); }
 }
 
 void
-ImageRenderer::draw_tiles(wstdisplay::GraphicsContext& gc, Rect const& rect, int scale, float zoom)
+ImageRenderer::draw_tiles(wstdisplay::Canvas& canvas, Rect const& rect, int scale, float zoom)
 {
   for(int y = rect.top(); y < rect.bottom(); ++y) {
     for(int x = rect.left(); x < rect.right(); ++x) {
-      draw_tile(gc, x, y, scale, zoom);
+      draw_tile(canvas, x, y, scale, zoom);
     }
   }
 }
 
 bool
-ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom)
+ImageRenderer::draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom)
 {
   ViewPlan const plan = plan_view(cliprect, zoom);
 
@@ -337,13 +337,13 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
 
   Rectf image_rect = m_image.get_image_rect();
   // Soft whole-image preview under tiles (load was requested in prepare).
-  m_image.overview().draw(gc, image_rect);
+  m_image.overview().draw(canvas, image_rect);
 
   // Purple only when Idle with nothing queued — Loading often means LQIP is
   // already in the upload queue (process next frame) or levels are in flight.
   if (!m_image.overview().has_surface() &&
       m_image.overview().state() == ImageOverview::State::Idle) {
-    gc.fill_rect(image_rect, surf::Color::from_rgb888(155, 0, 155));
+    canvas.fill_rect(image_rect, surf::Color::from_rgb888(155, 0, 155));
   }
 
   if (plan.skip_grid) {
@@ -351,9 +351,9 @@ ImageRenderer::draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, floa
   }
 
   if (plan.one_cell) {
-    draw_tile(gc, 0, 0, plan.tiledb_scale, plan.tile_zoom);
+    draw_tile(canvas, 0, 0, plan.tiledb_scale, plan.tile_zoom);
   } else {
-    draw_tiles(gc, plan.tile_rect, plan.tiledb_scale, plan.tile_zoom);
+    draw_tiles(canvas, plan.tile_rect, plan.tiledb_scale, plan.tile_zoom);
   }
 
   return true;

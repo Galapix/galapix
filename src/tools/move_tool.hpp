@@ -34,7 +34,7 @@ public:
   void up(Vector2i const& pos) override;
   void down(Vector2i const& pos) override;
 
-  void draw(wstdisplay::GraphicsContext& gc) override;
+  void draw(wstdisplay::Canvas& canvas) override;
   void update(Vector2i const& pos, float delta);
 
 private:

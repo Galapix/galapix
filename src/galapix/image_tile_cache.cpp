@@ -28,12 +28,11 @@
 #include <assert.h>
 #include <cstring>
 
-#include <glad/gl.h>
 #include <surf/blit.hpp>
 #include <surf/fill.hpp>
 #include <surf/pixel.hpp>
 #include <surf/software_surface.hpp>
-#include <wstdisplay/texture.hpp>
+#include <wstdisplay/device.hpp>
 
 #include "galapix/viewer.hpp"
 #include "math/math.hpp"
@@ -138,8 +137,8 @@ pad_tile_edge_clamp(surf::SoftwareSurface const& src, int tile_size)
 }
 
 /** Upload tile without mipmaps; pad edge tiles so LINEAR never hits black. */
-wstdisplay::SurfacePtr
-surface_from_software(surf::SoftwareSurface const& image)
+TextureSurfacePtr
+surface_from_software(wstdisplay::Device& device, surf::SoftwareSurface const& image)
 {
   constexpr int kTile = 256;
   int const content_w = image.get_width();
@@ -150,12 +149,9 @@ surface_from_software(surf::SoftwareSurface const& image)
     upload = pad_tile_edge_clamp(image, kTile);
   }
 
-  // Texture::create(SoftwareSurface) uses gluBuild2DMipmaps; edge tiles have
-  // shown a black bottom row with that path. Allocate empty + put level 0 only.
-  auto texture = wstdisplay::Texture::create(
-    GL_TEXTURE_2D, upload.get_size());
-  texture->put(upload, 0, 0);
-  texture->set_filter(GL_LINEAR);
+  // Level 0 only, no mipmaps.
+  wstdisplay::Unique<wstdisplay::Texture> texture =
+    device.create_texture(upload, {.filter = wstdisplay::TextureFilter::Linear});
 
   float const tw = static_cast<float>(texture->get_width());
   float const th = static_cast<float>(texture->get_height());
@@ -163,11 +159,12 @@ surface_from_software(surf::SoftwareSurface const& image)
   float const maxu = static_cast<float>(content_w) / tw;
   float const maxv = static_cast<float>(content_h) / th;
 
-  return wstdisplay::Surface::create(
+  wstdisplay::Surface const surface(
     texture,
     geom::frect(0.0f, 0.0f, maxu, maxv),
     geom::fsize(static_cast<float>(content_w),
                 static_cast<float>(content_h)));
+  return std::make_shared<TextureSurface const>(std::move(texture), surface);
 }
 
 } // namespace
@@ -203,7 +200,7 @@ ImageTileCache::prefetch_overview()
   }
 }
 
-wstdisplay::SurfacePtr
+TextureSurfacePtr
 ImageTileCache::get_tile(int x, int y, int scale)
 {
   if (x < 0 || y < 0 || scale < m_min_scale)
@@ -275,7 +272,7 @@ ImageTileCache::queue_tile_request(int x, int y, int scale)
 
   m_cache[cache_id] = SurfaceStruct(job_handle,
                                     SurfaceStruct::SURFACE_REQUESTED,
-                                    wstdisplay::SurfacePtr(),
+                                    TextureSurfacePtr(),
                                     next_attempts);
 }
 
@@ -388,7 +385,7 @@ ImageTileCache::issue_requests()
     JobHandle job_handle = JobHandle::create();
     m_cache[id] = SurfaceStruct(job_handle,
                                 SurfaceStruct::SURFACE_REQUESTED,
-                                wstdisplay::SurfacePtr(),
+                                TextureSurfacePtr(),
                                 next_attempts);
 
     batch.emplace_back(
@@ -479,7 +476,7 @@ ImageTileCache::cleanup()
   }
 }
 
-wstdisplay::SurfacePtr
+TextureSurfacePtr
 ImageTileCache::find_smaller_tile(int x, int y, int tiledb_scale, int& downscale_out)
 {
   // Lookup only — do not enqueue from the draw path. Walking every coarser
@@ -581,7 +578,7 @@ ImageTileCache::request_scale_holding() const
 }
 
 void
-ImageTileCache::process_queue()
+ImageTileCache::process_queue(wstdisplay::Device& device)
 {
   // Cap GL uploads per image per frame. Was 2 and starved gallery fill when
   // many overview tiles were already decoded. Higher budget drains the
@@ -600,11 +597,11 @@ ImageTileCache::process_queue()
     {
       m_cache[tile_id] = SurfaceStruct(JobHandle::create(),
                                        SurfaceStruct::SURFACE_SUCCEEDED,
-                                       surface_from_software(tile.get_surface()));
+                                       surface_from_software(device, tile.get_surface()));
     }
     else
     {
-      i->second.surface = surface_from_software(tile.get_surface());
+      i->second.surface = surface_from_software(device, tile.get_surface());
       i->second.status = SurfaceStruct::SURFACE_SUCCEEDED;
     }
     ++uploaded;

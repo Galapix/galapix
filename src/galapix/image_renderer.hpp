@@ -40,12 +40,12 @@ public:
 
   /** Pure draw: overview + tile surfaces / stand-ins / placeholders.
       Must not enqueue provider work. */
-  bool draw(wstdisplay::GraphicsContext& gc, Rectf const& cliprect, float zoom);
+  bool draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom);
 
 private:
   Vector2f get_vertex(int x, int y, float zoom) const;
-  void draw_tile(wstdisplay::GraphicsContext& gc, int x, int y, int tiledb_scale, float zoom);
-  void draw_tiles(wstdisplay::GraphicsContext& gc, Rect const& rect, int tiledb_scale, float zoom);
+  void draw_tile(wstdisplay::Canvas& canvas, int x, int y, int tiledb_scale, float zoom);
+  void draw_tiles(wstdisplay::Canvas& canvas, Rect const& rect, int tiledb_scale, float zoom);
 
   /** Shared visibility / LOD decision for prepare and draw. */
   struct ViewPlan

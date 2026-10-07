@@ -14,7 +14,9 @@
 #include <optional>
 
 #include <surf/software_surface.hpp>
-#include <wstdisplay/surface.hpp>
+#include <wstdisplay/fwd.hpp>
+
+#include "galapix/texture_surface.hpp"
 
 #include "galapix/tile_provider.hpp"
 #include "job/job_handle.hpp"
@@ -84,10 +86,10 @@ public:
   void ensure_levels(TileProviderPtr provider, int target_long_edge = 256);
 
   /** Main thread: promote decoded software surface to a GL texture. */
-  void process();
+  void process(wstdisplay::Device& device);
 
   /** Draw stretched to the image rect (under tiles). */
-  void draw(wstdisplay::GraphicsContext& gc, Rectf const& image_rect);
+  void draw(wstdisplay::Canvas& canvas, Rectf const& image_rect);
 
   void clear();
 
@@ -98,7 +100,7 @@ private:
   State m_state = State::Idle;
   JobHandle m_job = JobHandle::create();
   ThreadMessageQueue2<std::optional<surf::SoftwareSurface>> m_queue;
-  wstdisplay::SurfacePtr m_surface;
+  TextureSurfacePtr m_surface;
   Underlay m_underlay = Underlay::None;
   bool m_levels_requested = false;
   /** One-shot debug: avoid per-frame spam when ensure_lqip is empty. */

@@ -56,7 +56,7 @@ when benchmarks show split seeks lose; implementation may live in thumtoo later.
 class ImageOverview {
   enum class State { None, Requested, Ready, Failed };
   State state;
-  wstdisplay::SurfacePtr surface;  // soft whole-image texture
+  TextureSurfacePtr surface;  // soft whole-image texture
   JobHandle job;
 };
 

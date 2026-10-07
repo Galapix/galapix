@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <logmich/log.hpp>
 
 #include "galapix/mandelbrot_tile_provider.hpp"
 #include "galapix/system.hpp"

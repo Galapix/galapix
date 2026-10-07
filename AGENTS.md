@@ -22,7 +22,7 @@ rendering, layout tools, and (historically) its own SQLite tile tables.
 | [thumtoo](https://github.com/Grumbel/thumtoo) | Size index + ladder + Phase 4 grid tiles (256² JPEG) |
 | [biltoo](https://github.com/Grumbel/biltoo) | Qt viewer; primary thumtoo ladder consumer |
 | [dirtoo](https://github.com/Grumbel/dirtoo) | File manager; checksums, archives, Thumbnailer1 client |
-| [wstdisplay](https://github.com/WindstilleTeam/wstdisplay) | OpenGL window / GraphicsContext (SDL) |
+| [wst](https://github.com/WindstilleTeam/wst) | `wstdisplay` module: OpenGL window, Device, Renderer, Canvas (SDL) |
 | [surfcpp](https://github.com/grumbel/surfcpp) | SoftwareSurface, JPEG/PNG load |
 
 ## Handoff
@@ -75,14 +75,14 @@ full resolution**, tile size **256**.
 ## Session handoff (2026-09-07)
 
 Continue from **galapix-035** + **thumtoo-006** bundles (or newer). See TODO.md
-“Session handoff”. Thumtoo is a **flake input** (`flake = false`); lock with
-`nix flake lock --update-input thumtoo`. ImGui overlay is F1; status also key `l`.
+“Session handoff”. Thumtoo is vendored as a git subtree in `external/thumtoo`
+(see “Vendored libraries”). ImGui overlay is F1; status also key `l`.
 CLI has no subcommands (viewer is default).
 
 ## thumtoo integration (status 2026-09-07)
 
-Built with `-DWITH_THUMTOO=ON -DTHUMTOO_DIR=…` (Nix flake enables this via
-flake input `thumtoo`). Defines `HAVE_THUMTOO=1`.
+Built with `-DWITH_THUMTOO=ON` (`THUMTOO_DIR` defaults to the vendored
+`external/thumtoo`; the Nix flake enables this). Defines `HAVE_THUMTOO=1`.
 
 | Behaviour | Detail |
 |-----------|--------|
@@ -107,10 +107,19 @@ size checks) after decode.
 
 ## OpenGL / SDL notes
 
-- Window events must reach `wstdisplay::OpenGLWindow::handle_event` so
-  **glViewport** updates on resize.
-- On `sig_resized`, call `GraphicsContext::set_ortho` and `Viewer::reshape`.
-- GL loaded via **glad** (aligned with wstdisplay), not GLEW.
+- wstdisplay (from [wst](https://github.com/WindstilleTeam/wst)) records
+  draws into a `wstdisplay::Canvas`; `Viewer::draw` renders it with the
+  view transform as `RenderPass::world_matrix` (grid in `Space::Screen`).
+  A frame is `Renderer::begin_frame` → `Viewer::draw` → `end_frame` →
+  ImGui → `swap_buffers` (`AppViewer::draw_frame`).
+- GPU resources belong to the window's `wstdisplay::Device`. Tiles and
+  overviews are `TextureSurfacePtr` (owns a `Unique<Texture>` + `Surface`);
+  uploads take a `Device&` (`prepare_tiles` → `process_queue`). Release them
+  before the window goes away (`~AppViewer` clears the cache).
+- Window events must reach `wstdisplay::OpenGLWindow::handle_event`; on
+  `sig_resized` call `Viewer::reshape`.
+- wstdisplay keeps its glad loader private; the few raw GL calls in Galapix
+  (ImGui icons) use `<GL/gl.h>`.
 - Edge tiles are padded to 256² with edge-clamped pixels; UV covers content
   only (`maxu`/`maxv`). Upload uses level-0 only (no gluBuild2DMipmaps).
 - `ThumtooTileProvider` max_scale must match thumtoo (until image fits in one
@@ -119,30 +128,43 @@ size checks) after decode.
   worthwhile future optimization in wstdisplay + ImageRenderer; not required
   for correctness. Prefer fixing seams/filters first.
 
-## thumtoo dependency policy
+## Vendored libraries
 
-**Default:** flake input `thumtoo` (`flake = false`) → source path for
-`THUMTOO_DIR` / `add_subdirectory`. Prefer upstream thumtoo master; do not
-carry long-lived `patches/*.patch` + `pkgs.applyPatches` for thumtoo.
+All libraries are **git subtrees** (squashed) in `external/`, built with
+CMake `add_subdirectory()` (see `build_dependencies()` in CMakeLists.txt).
+The flake only has `nixpkgs` and `flake-utils` as inputs; thumtoo's system
+dependencies come from `external/thumtoo/flake.nix` (`lib.mkBuildInputs`).
+
+| Prefix | Upstream |
+|--------|----------|
+| `external/tinycmmc` | https://github.com/grumbel/tinycmmc.git |
+| `external/geomcpp` | https://github.com/grumbel/geomcpp.git |
+| `external/logmich` | https://github.com/logmich/logmich.git |
+| `external/sexp-cpp` | https://github.com/lispparser/sexp-cpp.git |
+| `external/priocpp` | https://github.com/grumbel/priocpp.git |
+| `external/strutcpp` | https://github.com/grumbel/strutcpp.git |
+| `external/xdgcpp` | https://github.com/Grumbel/xdgcpp.git |
+| `external/babyxml` | https://github.com/grumbel/babyxml.git |
+| `external/surfcpp` | https://github.com/grumbel/surfcpp.git |
+| `external/uitest` | https://github.com/grumbel/uitest.git |
+| `external/wst` | https://github.com/WindstilleTeam/wst.git |
+| `external/thumtoo` | https://github.com/Grumbel/thumtoo.git |
+
+`external/imgui` is a plain copy (see its README.galapix.md).
+
+Update one: `git subtree pull --prefix external/<name> <url> master --squash`.
+Changes needed by Galapix are made in the subtree and upstreamed in batches
+(`git subtree push` or a topic PR); do not carry `patches/*.patch` +
+`pkgs.applyPatches`. Local changes not yet upstream:
+
+- `external/priocpp`: `PRIO_INSTALL` option (no install/export rules as a
+  subdirectory, like logmich/sexp-cpp/surf).
 
 **Local thumtoo while developing both:** `galapix-run` / `galapix-configure`
 resolve `THUMTOO_DIR` as (1) env `THUMTOO_DIR`, (2) sibling
-`$GALAPIX_SOURCE/../thumtoo`, (3) flake-locked input. If the CMake cache still
-points at another tree, `galapix-build` reconfigures automatically. Printout:
-`galapix-run: THUMTOO_DIR=…` on stderr. Update the lock with
-`nix flake lock --update-input thumtoo` when you want CI/nix build to track
-upstream again.
-
-**If Galapix needs thumtoo changes again** (before they can land upstream):
-
-1. **Vendor with `git subtree`** under e.g. `third_party/thumtoo` (or
-   `external/thumtoo`), not a stack of floating patch files.
-2. Point `THUMTOO_DIR` / the flake at that tree while the fork diverges.
-3. Develop and test against the subtree; **upstream in larger batches**
-   (squash or topic PR to [thumtoo](https://github.com/Grumbel/thumtoo)), then
-   drop the subtree and return to the flake input.
-4. Avoid `pkgs.applyPatches` / in-repo `patches/thumtoo-*.patch` for ongoing
-   work — they are hard to iterate on and easy to leave stale in `flake.nix`.
+`$GALAPIX_SOURCE/../thumtoo`, (3) vendored `external/thumtoo`. If the CMake
+cache still points at another tree, `galapix-build` reconfigures
+automatically. Printout: `galapix-run: THUMTOO_DIR=…` on stderr.
 
 Interactive `request_tile` only builds the requested scale (upstream thumtoo
 as of the single-scale change). Full pyramids: `request_tile_pyramid` /
