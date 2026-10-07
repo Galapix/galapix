@@ -1,0 +1,51 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-BENCH 1 "2026-09-16" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-bench \- cold-cache phase timing for thumtoo
+.SH SYNOPSIS
+.B thumtoo-bench
+[\fIOPTION\fR]...
+\fIPATH\fR...
+.SH DESCRIPTION
+Benchmark thumtoo cold-cache phases on files or archives. Each phase uses a
+fresh stats window; overall wall time is also reported. Default cache root is
+under
+.B thumtoo-bench
+and is wiped each run unless .B \-\-keep\-cache is set. .B \-\-json emits machine-readable phase timings.
+.PP
+Typical phases: size probe, optional soft ladder, optional tile pyramid or
+single-cell request. See
+.B \-\-help
+for options (
+.BR \-\-jobs ,
+.BR \-\-ladder ,
+.BR \-\-tiles ,
+.BR \-\-tile\-cell ,
+\&...).
+.SH OUTPUT
+By default a phase table followed by the statistics of each phase is printed.
+.B \-\-csv
+prints one row per phase plus a total row (add
+.B \-\-no\-header
+to append to an existing file).
+.B \-\-json
+prints one document; every phase carries its numbers as
+.I counters
+next to the formatted
+.IR stats .
+Warnings and errors go to standard error.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+No readable image was found in the given paths, or the run failed.
+.TP
+.B 2
+Usage error.
+.SH SEE ALSO
+.BR thumtoo (7),
+.BR thumtoo-prepare (1),
+.BR thumtoo-status (1)

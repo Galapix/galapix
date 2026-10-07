@@ -1,0 +1,26 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-GC 1 "2026-09-16" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-gc \- manual Store maintenance
+.SH SYNOPSIS
+.B thumtoo-gc
+[\fIOPTION\fR]...
+.SH DESCRIPTION
+Manual maintenance for the redesign Store (no automatic eviction). Can target
+URIs or paths, print a store summary, list orphans, or operate under a URI
+prefix. Prefer
+.B \-\-dry\-run
+before destructive actions.
+.PP
+Legacy schema-4 flags were removed; on-disk
+.B legacy/
+trees are left untouched by Client.
+.PP
+See
+.B \-\-help
+for the full option list.
+.SH SEE ALSO
+.BR thumtoo (7),
+.BR thumtoo-status (1),
+.BR thumtoo-prepare (1)

@@ -1,0 +1,22 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-TILE 1 "2026-09-16" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-tile \- request or inspect a single tile cell
+.SH SYNOPSIS
+.B thumtoo-tile
+[\fIOPTION\fR]...
+.SH DESCRIPTION
+CLI helper around
+.B Client::request_tile
+for one scale/x/y cell. Useful for debugging Galapix-compatible 256\(mu256
+JPEG cells and live PDF region tiles.
+.PP
+See
+.B \-\-help
+for the full option list (URI, scale, cell coordinates, cache directory,
+cache-only mode).
+.SH SEE ALSO
+.BR thumtoo (7),
+.BR thumtoo-prepare (1),
+.BR thumtoo-status (1)

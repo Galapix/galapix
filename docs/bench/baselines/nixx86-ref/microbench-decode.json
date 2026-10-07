@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "tool": "thumtoo-microbench-decode",
+  "repeats": 5,
+  "warmups": 1,
+  "cases": [
+    {
+      "path": "/home/ingo/projects/thumtoo/benchtoo/result/synthetic/jpeg/photo_1920x1080_q90.jpg",
+      "file": "photo_1920x1080_q90.jpg",
+      "width": 1920,
+      "height": 1080,
+      "mpix": 2.0736,
+      "metrics": {
+        "size_ms": 0.294335,
+        "full_ms": 1.64376,
+        "shrink2_ms": 0.351431,
+        "shrink4_ms": 0.218311,
+        "shrink8_ms": 0.210446,
+        "thumb32_ms": 6.55077,
+        "thumb256_ms": 13.3109
+      }
+    }
+  ]
+}

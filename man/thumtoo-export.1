@@ -1,0 +1,25 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-EXPORT 1 "2026-09-25" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-export \- assemble all tiles at one scale into a PNG
+.SH SYNOPSIS
+.B thumtoo-export
+[\fIOPTION\fR]...
+.I URI
+.SH DESCRIPTION
+Fetches every exclusive grid cell for
+.I URI
+at a pyramid scale and writes one RGB PNG of the full level
+.RB ( dim_at_tile_scale ).
+Useful for debugging host paint vs encode (missing lines, seams).
+.PP
+.B \-\-raw\-pdf
+rasterizes each cell with MuPDF region render (no JPEG) for PDF page URIs.
+.PP
+See
+.B \-\-help
+for options (\-\-scale, \-\-cache, \-\-force, \-\-cache\-only, \-o).
+.SH SEE ALSO
+.BR thumtoo-tile (1),
+.BR thumtoo-prepare (1)

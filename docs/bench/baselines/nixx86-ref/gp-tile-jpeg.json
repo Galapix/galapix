@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "tool": "thumtoo-gp-tile",
+  "file": "/home/ingo/projects/thumtoo/benchtoo/result/synthetic/jpeg/photo_1920x1080_q90.jpg",
+  "width": 1920,
+  "height": 1080,
+  "tile": 256,
+  "cells": 40,
+  "timed_cells": 8,
+  "repeats": 5,
+  "rows": [
+    {"codec": "jpeg", "quality": 80, "encode_ms": 4.30227, "decode_ms": 6.83933, "bytes_total": 243215, "bytes_per_cell_mean": 6080.38}
+  ]
+}

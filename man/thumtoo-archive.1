@@ -1,0 +1,49 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-ARCHIVE 1 "2026-09-16" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-archive \- list and extract archives via thumtoo backends
+.SH SYNOPSIS
+.B thumtoo-archive
+.B list
+\fIARCHIVE\fR
+.P
+.B thumtoo-archive
+.B info
+\fIARCHIVE\fR
+.P
+.B thumtoo-archive
+.B cat
+\fIARCHIVE\fR
+\fIMEMBER\fR
+.P
+.B thumtoo-archive
+.B extract
+\fIARCHIVE\fR
+[\fB\-C\fR \fIDIR\fR]
+[\fIMEMBER\fR...]
+.P
+.B thumtoo-archive
+.B extract\-all
+\fIARCHIVE\fR
+[\fB\-C\fR \fIDIR\fR]
+.SH DESCRIPTION
+Uses the same archive stack as biltoo
+.B //archive:
+URIs: libunarr for .rar/.cbr when available, otherwise libarchive.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+Usage or general error.
+.TP
+.B 2
+Archive open / TOC failed.
+.TP
+.B 3
+Extract failed.
+.SH SEE ALSO
+.BR thumtoo (7),
+.BR thumtoo-prepare (1)

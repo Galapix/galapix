@@ -1,0 +1,48 @@
+{
+  "nodes": {
+    "benchtoo": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790844045,
+        "narHash": "sha256-DBdA57umI7I+8Ka+cl1GasUPEz1oE1mzEEwjVzH6BT8=",
+        "owner": "Grumbel",
+        "repo": "benchtoo",
+        "rev": "6379815f6808892fc4e416ee7cd824b2df688dca",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Grumbel",
+        "repo": "benchtoo",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1790689126,
+        "narHash": "sha256-ilerN1WLSvF+HMjziC/Wv99J5y02maDH+6hZPwsORKg=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b4fd65b198c599cbe814fcb9f42d25d021595ec9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "benchtoo": "benchtoo",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
