@@ -15,7 +15,7 @@ API: `pdf_page_profile`, `pdf_scale_refusal`, `pdf_document_render_stats`,
 `pdf_render_tile_cell` → `PdfCellRender{status, raster, error}`.
 Docs: TILES.md "PDF rendering". Tests: `tests/test_pdf_profile.cpp` (fixtures
 built with MuPDF's writer, `tests/pdf_fixtures.cpp`). Tool:
-`thumtoo-pdf-profile`. Corpus: benchtoo `gen_pdf_classes.py`.
+`thumtoo-page-profile`. Corpus: benchtoo `gen_pdf_classes.py`.
 
 ### DjVu rendering
 Per-document cache + contexts, decoded pages reused across cells (6–17×
@@ -23,8 +23,12 @@ faster), host-matching coarse grid, page profile + render stats, real error
 reasons, scales < 0 Unavailable. TILES.md "DjVu rendering"; test
 `test_djvu_tiles` with committed `tests/fixtures/pages.djvu`.
 
-Open: EPUB still renders per cell with per-thread MuPDF contexts and no
-profile/stats.
+### EPUB rendering
+On the shared MuPDF runtime (OpenSpec = layout): one layout per (file,
+layout) per process, display lists, profiles, decode-once, status/reason,
+stats. Outline/link pages fixed (were chapter-relative). Test
+`test_epub_tiles` with committed `tests/fixtures/book.epub`.
+Tool renamed `thumtoo-page-profile` (PDF, DjVu, EPUB).
 
 ### request_tile_cells
 Interactive cells now answer exactly once each (Ok / Cancelled / Failed /

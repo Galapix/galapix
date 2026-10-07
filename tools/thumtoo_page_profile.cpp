@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
 // SPDX-License-Identifier: GPL-3.0-or-later
 
-// thumtoo-pdf-profile — how thumtoo classifies and renders PDF pages.
+// thumtoo-page-profile — how thumtoo classifies and renders document pages
+// (PDF and other MuPDF documents, DjVu, EPUB at the default layout).
 //
-//   thumtoo-pdf-profile [--json] [--render SCALE|cap] [--threads N]
-//                       FILE.pdf [PAGE...]
+//   thumtoo-page-profile [--json] [--render SCALE|cap] [--threads N]
+//                        FILE [PAGE...]
 //
 // Prints each page's PdfPageProfile (kind, images and their dpi, vector and
 // glyph counts, resolution cap, summary). --render renders every cell of the
@@ -13,6 +14,9 @@
 // the decode-once benchmark.
 
 #include "thumtoo/constants.hpp"
+#include "thumtoo/djvu.hpp"
+#include "thumtoo/epub.hpp"
+#include "thumtoo/format.hpp"
 #include "thumtoo/pdf.hpp"
 #include "thumtoo/types.hpp"
 
@@ -22,6 +26,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <functional>
 #include <iostream>
 #include <mutex>
 #include <optional>
@@ -52,6 +57,74 @@ std::string json_escape(const std::string& s) {
   return out;
 }
 
+/// The per-format calls the tool needs.
+struct Backend {
+  const char* name = "pdf";
+  std::function<std::optional<int>(const std::filesystem::path&)> page_count;
+  std::function<std::optional<thumtoo::PdfPageProfile>(const std::filesystem::path&, int,
+                                                       std::string*)>
+      profile;
+  std::function<std::optional<thumtoo::Size>(const std::filesystem::path&, int)> layout;
+  std::function<thumtoo::Size(thumtoo::Size, int)> size_at_scale;
+  /// status, error
+  std::function<std::pair<thumtoo::TileStatus, std::string>(const std::filesystem::path&,
+                                                            int, int, int, int)>
+      render;
+  std::function<std::optional<thumtoo::PdfDocumentRenderStats>(const std::filesystem::path&)>
+      stats;
+  std::function<void()> reset;
+};
+
+Backend backend_for(const std::filesystem::path& file) {
+  Backend b;
+  if (thumtoo::is_likely_djvu_path(file)) {
+    b.name = "djvu";
+    b.page_count = [](const auto& f) { return thumtoo::djvu_page_count(f); };
+    b.profile = [](const auto& f, int p, std::string* e) {
+      return thumtoo::djvu_page_profile(f, p, e);
+    };
+    b.layout = [](const auto& f, int p) { return thumtoo::djvu_page_layout_size(f, p); };
+    b.size_at_scale = thumtoo::djvu_page_size_at_scale;
+    b.render = [](const auto& f, int p, int s, int x, int y) {
+      auto c = thumtoo::djvu_render_tile_cell(f, p, s, x, y);
+      return std::make_pair(c.status, c.error);
+    };
+    b.stats = [](const auto& f) { return thumtoo::djvu_document_render_stats(f); };
+    b.reset = [] { thumtoo::djvu_reset_render_stats(); };
+    return b;
+  }
+  if (thumtoo::is_likely_epub_path(file)) {
+    const auto L = thumtoo::default_epub_layout();
+    b.name = "epub";
+    b.page_count = [L](const auto& f) { return thumtoo::epub_page_count(f, L); };
+    b.profile = [L](const auto& f, int p, std::string* e) {
+      return thumtoo::epub_page_profile(f, p, L, e);
+    };
+    b.layout = [L](const auto& f, int p) { return thumtoo::epub_page_layout_size(f, p, L); };
+    b.size_at_scale = thumtoo::pdf_page_size_at_scale;
+    b.render = [L](const auto& f, int p, int s, int x, int y) {
+      auto c = thumtoo::epub_render_tile_cell(f, p, L, s, x, y);
+      return std::make_pair(c.status, c.error);
+    };
+    b.stats = [](const auto& f) { return thumtoo::epub_document_render_stats(f); };
+    b.reset = [] { thumtoo::pdf_reset_render_stats(); };
+    return b;
+  }
+  b.page_count = [](const auto& f) { return thumtoo::pdf_page_count(f); };
+  b.profile = [](const auto& f, int p, std::string* e) {
+    return thumtoo::pdf_page_profile(f, p, e);
+  };
+  b.layout = [](const auto& f, int p) { return thumtoo::pdf_page_layout_size(f, p); };
+  b.size_at_scale = thumtoo::pdf_page_size_at_scale;
+  b.render = [](const auto& f, int p, int s, int x, int y) {
+    auto c = thumtoo::pdf_render_tile_cell(f, p, s, x, y);
+    return std::make_pair(c.status, c.error);
+  };
+  b.stats = [](const auto& f) { return thumtoo::pdf_document_render_stats(f); };
+  b.reset = [] { thumtoo::pdf_reset_render_stats(); };
+  return b;
+}
+
 struct RenderResult {
   int scale = 0;
   int cells = 0;
@@ -63,16 +136,16 @@ struct RenderResult {
   std::optional<thumtoo::PdfPageRenderStats> stats;
 };
 
-RenderResult render_page(const std::filesystem::path& pdf, int page, int scale,
-                         int threads) {
+RenderResult render_page(const Backend& be, const std::filesystem::path& pdf, int page,
+                         int scale, int threads) {
   RenderResult r;
   r.scale = scale;
-  auto layout = thumtoo::pdf_page_layout_size(pdf, page);
+  auto layout = be.layout(pdf, page);
   if (!layout) {
     r.first_error = "no layout size";
     return r;
   }
-  const auto full = thumtoo::pdf_page_size_at_scale(*layout, scale);
+  const auto full = be.size_at_scale(*layout, scale);
   const int nx = (full.width + thumtoo::kTileSize - 1) / thumtoo::kTileSize;
   const int ny = (full.height + thumtoo::kTileSize - 1) / thumtoo::kTileSize;
   r.cells = nx * ny;
@@ -83,15 +156,15 @@ RenderResult render_page(const std::filesystem::path& pdf, int page, int scale,
   for (int t = 0; t < std::max(1, threads); ++t) {
     pool.emplace_back([&] {
       for (int i = next++; i < r.cells; i = next++) {
-        auto cell = thumtoo::pdf_render_tile_cell(pdf, page, scale, i % nx, i / nx);
-        switch (cell.status) {
+        const auto [status, error] = be.render(pdf, page, scale, i % nx, i / nx);
+        switch (status) {
           case thumtoo::TileStatus::Ok: ++ok; break;
           case thumtoo::TileStatus::Unavailable: ++unavailable; break;
           default: ++failed; break;
         }
-        if (cell.status != thumtoo::TileStatus::Ok) {
+        if (status != thumtoo::TileStatus::Ok) {
           std::lock_guard lock(mu);
-          if (r.first_error.empty()) r.first_error = cell.error;
+          if (r.first_error.empty()) r.first_error = error;
         }
       }
     });
@@ -103,7 +176,7 @@ RenderResult render_page(const std::filesystem::path& pdf, int page, int scale,
   r.ok = ok;
   r.unavailable = unavailable;
   r.failed = failed;
-  if (auto st = thumtoo::pdf_document_render_stats(pdf)) {
+  if (auto st = be.stats(pdf)) {
     for (const auto& p : st->pages) {
       if (p.page == page) r.stats = p;
     }
@@ -112,8 +185,8 @@ RenderResult render_page(const std::filesystem::path& pdf, int page, int scale,
 }
 
 void usage() {
-  std::cerr << "usage: thumtoo-pdf-profile [--json] [--render SCALE|cap] "
-               "[--threads N] FILE.pdf [PAGE...]\n";
+  std::cerr << "usage: thumtoo-page-profile [--json] [--render SCALE|cap] "
+               "[--threads N] FILE [PAGE...]\n";
 }
 
 }  // namespace
@@ -145,9 +218,10 @@ int main(int argc, char** argv) {
     usage();
     return 2;
   }
-  const auto count = thumtoo::pdf_page_count(pdf);
+  const Backend be = backend_for(pdf);
+  const auto count = be.page_count(pdf);
   if (!count) {
-    std::cerr << pdf << ": cannot open as PDF\n";
+    std::cerr << pdf << ": cannot open as " << be.name << "\n";
     return 1;
   }
   if (pages.empty()) {
@@ -155,17 +229,20 @@ int main(int argc, char** argv) {
   }
 
   int failures = 0;
-  if (json) std::cout << "{\"file\":\"" << json_escape(pdf.string()) << "\",\"pages\":[";
+  if (json) {
+    std::cout << "{\"file\":\"" << json_escape(pdf.string()) << "\",\"format\":\""
+              << be.name << "\",\"pages\":[";
+  }
   bool first = true;
   for (int page : pages) {
     std::string error;
-    thumtoo::pdf_reset_render_stats();
-    auto prof = thumtoo::pdf_page_profile(pdf, page, &error);
+    be.reset();
+    auto prof = be.profile(pdf, page, &error);
     std::optional<RenderResult> rr;
     if (prof && render) {
       const int scale = *render == "cap" ? prof->finest_useful_scale.value_or(0)
                                          : std::atoi(render->c_str());
-      rr = render_page(pdf, page, scale, threads);
+      rr = render_page(be, pdf, page, scale, threads);
       failures += rr->failed;
     }
     if (!prof) ++failures;

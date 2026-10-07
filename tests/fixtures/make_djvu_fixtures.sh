@@ -8,10 +8,11 @@
 #
 #   tests/fixtures/make_djvu_fixtures.sh
 #
-# pages.djvu (bundled, 3 pages, Letter):
-#   1  bitonal  2550x3300 @ 300 dpi   JB2 text page (Sjbz)
+# pages.djvu (bundled, 4 pages, Letter):
+#   1  bitonal  2550x3300 @ 300 dpi   JB2 text page (Sjbz) + hidden text layer
 #   2  photo    1275x1650 @ 150 dpi   IW44 colour page (BG44)
 #   3  compound 2550x3300 @ 300 dpi   JB2 mask + 100 dpi IW44 background
+#   4  empty    2550x3300 @ 300 dpi   INFO only (no image layers)
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 work=$(mktemp -d)
@@ -58,5 +59,15 @@ djvuextract "$work/bitonal.djvu" Sjbz="$work/mask.jb2"
 djvuextract "$work/bg.djvu" BG44="$work/bg.iw44"
 djvumake "$work/compound.djvu" INFO=2550,3300,300 Sjbz="$work/mask.jb2" \
   FGbz=#000000 BG44="$work/bg.iw44"
-djvm -c "$here/pages.djvu" "$work/bitonal.djvu" "$work/photo.djvu" "$work/compound.djvu"
+djvumake "$work/empty.djvu" INFO=2550,3300,300
+# Hidden text layer (OCR-style) on the bitonal page: 3 lines, 9 words.
+cat > "$work/text.sexp" <<'TXT'
+(page 0 0 2550 3300
+ (line 150 3000 2400 3100 (word 150 3000 600 3100 "Hidden") (word 650 3000 1100 3100 "text") (word 1150 3000 1700 3100 "layer"))
+ (line 150 2850 2400 2950 (word 150 2850 600 2950 "for") (word 650 2850 1100 2950 "search") (word 1150 2850 1700 2950 "tests"))
+ (line 150 2700 2400 2800 (word 150 2700 600 2800 "thumtoo") (word 650 2700 1100 2800 "djvu") (word 1150 2700 1700 2800 "fixture")))
+TXT
+djvused "$work/bitonal.djvu" -e "select 1; set-txt $work/text.sexp" -s
+djvm -c "$here/pages.djvu" "$work/bitonal.djvu" "$work/photo.djvu" "$work/compound.djvu" \
+  "$work/empty.djvu"
 ls -l "$here/pages.djvu"

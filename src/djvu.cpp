@@ -808,8 +808,10 @@ void walk_text_sexpr(miniexp_t expr, std::vector<TextRegion>& regions,
       reg.text = std::move(text);
       reg.bbox = TextRect{x0, y0, x1, y1};
       if (!reg.bbox.empty()) regions.push_back(std::move(reg));
-      return;
     }
+    // Word children were walked above; walking them again below listed
+    // every word twice.
+    return;
   }
 
   // Recurse into children for page/column/region/para containers.

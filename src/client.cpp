@@ -1604,30 +1604,23 @@ TileResult Client::materialize_tile_result(const std::string& uri, int scale,
     return {TileStatus::Unavailable, std::nullopt,
             "negative (denser) scales exist only for document pages"};
   }
-  if (auto dj = parse_djvu_uri(uri)) {
-    // DjVu pages: same as PDF — the renderer reports why.
-    try {
-      if (auto t = get_tile(uri, scale, x, y)) {
-        if (auto rgb = decode_tile_blob_to_rgb888(std::move(*t))) {
-          return {TileStatus::Ok, std::move(rgb), {}};
-        }
-      }
-      if (!skip_probe) {
-        Job probe;
-        probe.kind = JobKind::ProbeSize;
-        probe.uri = uri;
-        handle_probe_size_store(probe);
-      }
-      auto sm = meta_from_store(uri);
-      return render_djvu_cell(sm ? sm->content_id : std::string(), *dj, scale, x, y);
-    } catch (const std::exception& ex) {
-      return {TileStatus::Failed, std::nullopt,
-              std::string("exception while rendering DjVu cell: ") + ex.what()};
-    }
-  }
+  // Document pages (PDF, DjVu, EPUB): the renderer knows why a cell has no
+  // pixels (profile refusal, decoder error) — report that, never guess.
+  std::function<TileResult(const std::string&)> render_document;
   if (auto pdf = parse_pdf_uri(uri)) {
-    // PDF pages: the renderer knows why a cell has no pixels (page profile
-    // refusal, MuPDF error) — report that instead of guessing afterwards.
+    render_document = [this, pdf, scale, x, y](const std::string& cid) {
+      return render_pdf_cell(cid, *pdf, scale, x, y);
+    };
+  } else if (auto dj = parse_djvu_uri(uri)) {
+    render_document = [this, dj, scale, x, y](const std::string& cid) {
+      return render_djvu_cell(cid, *dj, scale, x, y);
+    };
+  } else if (auto ep = parse_epub_uri(uri)) {
+    render_document = [this, ep, scale, x, y](const std::string& cid) {
+      return render_epub_cell(cid, *ep, scale, x, y);
+    };
+  }
+  if (render_document) {
     try {
       if (auto t = get_tile(uri, scale, x, y)) {
         if (auto rgb = decode_tile_blob_to_rgb888(std::move(*t))) {
@@ -1641,10 +1634,10 @@ TileResult Client::materialize_tile_result(const std::string& uri, int scale,
         handle_probe_size_store(probe);
       }
       auto sm = meta_from_store(uri);
-      return render_pdf_cell(sm ? sm->content_id : std::string(), *pdf, scale, x, y);
+      return render_document(sm ? sm->content_id : std::string());
     } catch (const std::exception& ex) {
       return {TileStatus::Failed, std::nullopt,
-              std::string("exception while rendering PDF cell: ") + ex.what()};
+              std::string("exception while rendering document cell: ") + ex.what()};
     }
   }
   std::optional<TileBlob> cell;
@@ -4694,6 +4687,21 @@ TileResult Client::render_djvu_cell(const std::string& content_id,
                               cell.raster->height, scale, x, y, TileSource::DjvuRegion);
 }
 
+TileResult Client::render_epub_cell(const std::string& content_id,
+                                    const ParsedEpubUri& epub, int scale, int x,
+                                    int y) {
+  PdfCellRender cell =
+      epub_render_tile_cell(epub.epub_path, epub.page, epub.layout, scale, x, y);
+  if (cell.status != TileStatus::Ok || !cell.raster || cell.raster->rgb.empty()) {
+    if (cell.status == TileStatus::Ok) {
+      return {TileStatus::Failed, std::nullopt, "renderer returned no pixels"};
+    }
+    return {cell.status, std::nullopt, std::move(cell.error)};
+  }
+  return finish_document_cell(content_id, std::move(cell.raster->rgb), cell.raster->width,
+                              cell.raster->height, scale, x, y, TileSource::Full);
+}
+
 std::optional<TileBlob> Client::materialize_tile_cell(const std::string& uri,
                                                      int scale, int x, int y,
                                                      bool skip_probe) {
@@ -4738,27 +4746,9 @@ std::optional<TileBlob> Client::materialize_tile_cell(const std::string& uri,
       return std::move(r.tile);
     }
   } else if (auto ep = parse_epub_uri(uri)) {
-    auto raster = epub_render_tile_cell(ep->epub_path, ep->page, ep->layout,
-                                        scale, x, y);
-    if (raster && !raster->rgb.empty()) {
-      if (scale >= kPdfMinDurableTileScale) {
-        if (auto jpeg = encode_tile_cell_rgb(
-                raster->rgb.data(), raster->width, raster->height, scale, x, y,
-                kPdfTileQuality)) {
-          jpeg->source = TileSource::Full;
-          store_tiles(content_id, std::vector<TileBlob>{*jpeg});
-        }
-      }
-      TileBlob live;
-      live.scale = scale;
-      live.x = x;
-      live.y = y;
-      live.width = raster->width;
-      live.height = raster->height;
-      live.codec = kTileCodecRgb888;
-      live.source = TileSource::Full;
-      live.bytes = std::move(raster->rgb);
-      return live;
+    TileResult r = render_epub_cell(content_id, *ep, scale, x, y);
+    if (r.tile) {
+      return std::move(r.tile);
     }
   } else if (auto arch = parse_archive_uri(uri)) {
     if (!arch->member_path.empty()) {
@@ -4947,11 +4937,10 @@ void Client::handle_ensure_tiles_store(Job& job) {
   } else if (auto ep = parse_epub_uri(job.uri)) {
     append_doc_pyramid(
         [&](int s, int x, int y) -> std::optional<TileBlob> {
-          auto raster = epub_render_tile_cell(ep->epub_path, ep->page, ep->layout,
-                                              s, x, y);
-          if (!raster || raster->rgb.empty()) return std::nullopt;
-          return encode_tile_cell_rgb(raster->rgb.data(), raster->width,
-                                      raster->height, s, x, y, kPdfTileQuality);
+          auto cell = epub_render_tile_cell(ep->epub_path, ep->page, ep->layout, s, x, y);
+          if (!cell.raster || cell.raster->rgb.empty()) return std::nullopt;
+          return encode_tile_cell_rgb(cell.raster->rgb.data(), cell.raster->width,
+                                      cell.raster->height, s, x, y, kPdfTileQuality);
         },
         TileSource::Full);
   } else if (auto path = path_from_file_uri(job.uri)) {

@@ -99,6 +99,7 @@ man thumtoo-prepare
 | [INTEGRATION.md](INTEGRATION.md) | API mapping for biltoo-style hosts |
 | [docs/HOST_CUTOVER.md](docs/HOST_CUTOVER.md) | Store-only client expectations |
 | [TILES.md](TILES.md) | Tile pyramid behaviour |
+| [docs/TILE_LOD.md](docs/TILE_LOD.md) | Host tile LOD core (`thumtoo::lod`): planner, cell state machine, scheduler |
 | [docs/DATABASE.md](docs/DATABASE.md) | On-disk schema overview |
 | [TAGS.md](TAGS.md) | Content-hash tags |
 
