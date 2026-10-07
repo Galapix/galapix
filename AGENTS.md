@@ -43,6 +43,7 @@ Latest session notes and tip bundles: top of [TODO.md](TODO.md).
 | [docs/THUMTOO.md](docs/THUMTOO.md) | thumtoo flags; **future** URI/blob retrieval + live PDF tiles |
 | [docs/STATUS_REPORTING.md](docs/STATUS_REPORTING.md) | Console + ImGui status overlay (F1) |
 | [docs/OVERVIEW.md](docs/OVERVIEW.md) | Fast overview layer (≠ grid tiles) |
+| [docs/ECS_REWRITE.md](docs/ECS_REWRITE.md) | Tile bug findings; plan: tiles on `thumtoo::lod`, workspace as ECS (EnTT) |
 | [NEWS.md](NEWS.md) | Release notes |
 | thumtoo [INTEGRATION_GALAPIX.md](https://github.com/Grumbel/thumtoo/blob/master/INTEGRATION_GALAPIX.md) | Library-side mapping |
 | thumtoo [TILES.md](https://github.com/Grumbel/thumtoo/blob/master/TILES.md) | Scale/tile conventions |
