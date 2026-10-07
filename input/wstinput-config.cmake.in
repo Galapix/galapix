@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2021 Ingo Ruhnke <grumbel@gmail.com>
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/wstinput-config-version.cmake")
+
+include(CMakeFindDependencyMacro)
+find_dependency(PkgConfig REQUIRED)
+pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
+find_dependency(logmich REQUIRED)
+find_dependency(prio REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/wstinput-targets.cmake")
+
+check_required_components(wstinput)
+
+# EOF #

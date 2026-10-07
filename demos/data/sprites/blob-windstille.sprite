@@ -1,0 +1,20 @@
+;; SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+;; Windstille format: actions with an image grid
+(sprite
+  (actions
+    (action
+      (name "bounce")
+      (speed 12)
+      (offset -16 -32)
+      (image-grid (file "blob.png") (x-size 32) (y-size 32))
+      (events
+        (sound (frame 4) (name "boing"))
+        (particles (frame 4) (kind "dust") (count 3))))
+    (action
+      (name "big")
+      (speed 6)
+      (scale 2)
+      (offset -16 -32)
+      (image-grid (file "blob.png") (x-size 32) (y-size 32)))))
