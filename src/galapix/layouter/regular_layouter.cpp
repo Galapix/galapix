@@ -16,8 +16,6 @@
 
 #include "galapix/layouter/regular_layouter.hpp"
 
-#include "galapix/image_collection.hpp"
-#include "galapix/image.hpp"
 #include "math/math.hpp"
 
 namespace galapix {
@@ -29,7 +27,7 @@ RegularLayouter::RegularLayouter(float aspect_w, float aspect_h) :
 }
 
 void
-RegularLayouter::layout(ImageCollection const& images)
+RegularLayouter::layout(std::vector<LayoutItem>& images)
 {
   if (!images.empty())
   {
@@ -37,20 +35,20 @@ RegularLayouter::layout(ImageCollection const& images)
 
     for(size_t i = 0; i < images.size(); ++i)
     {
-      float target_scale = std::min(1000.0f / static_cast<float>(images[i]->get_original_width()),
-                                     1000.0f / static_cast<float>(images[i]->get_original_height()));
+      float target_scale = std::min(1000.0f / static_cast<float>(images[i].size.width),
+                                     1000.0f / static_cast<float>(images[i].size.height));
 
-      images[i]->set_scale(target_scale);
+      images[i].transform.scale = target_scale;
 
       if ((i/w) % 2 == 0)
       {
-        images[i]->set_pos(Vector2f(static_cast<float>(i % w) * 1024.0f,
-                                    static_cast<float>(i / w) * 1024.0f)); // NOLINT
+        images[i].transform.pos = Vector2f(static_cast<float>(i % w) * 1024.0f,
+                                    static_cast<float>(i / w) * 1024.0f); // NOLINT
       }
       else
       {
-        images[i]->set_pos(Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
-                                    static_cast<float>(i / w) * 1024.0f)); // NOLINT
+        images[i].transform.pos = Vector2f(static_cast<float>(w - (i % w)-1) * 1024.0f,
+                                    static_cast<float>(i / w) * 1024.0f); // NOLINT
       }
     }
   }

@@ -18,10 +18,19 @@
 #define HEADER_GALAPIX_GALAPIX_LAYOUTER_LAYOUTER_HPP
 
 #include <memory>
+#include <vector>
+
+#include "galapix/components.hpp"
 
 namespace galapix {
 
-class ImageCollection;
+/** What a layouter sees of one image: its native size and the transform
+    it writes */
+struct LayoutItem
+{
+  ImageSize size;
+  Transform transform;
+};
 
 class Layouter
 {
@@ -31,7 +40,8 @@ public:
   Layouter() {}
   virtual ~Layouter() {}
 
-  virtual void layout(ImageCollection const& images) =0;
+  /** Set the transform of every item, in workspace order */
+  virtual void layout(std::vector<LayoutItem>& items) =0;
 
 private:
   Layouter(Layouter const&);

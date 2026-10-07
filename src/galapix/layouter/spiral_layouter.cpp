@@ -16,8 +16,6 @@
 
 #include "galapix/layouter/spiral_layouter.hpp"
 
-#include "galapix/image.hpp"
-#include "galapix/image_collection.hpp"
 #include "math/math.hpp"
 
 namespace galapix {
@@ -105,26 +103,26 @@ SpiralLayouter::advance()
 }
 
 void
-SpiralLayouter::layout(WorkspaceItem& item)
+SpiralLayouter::layout(LayoutItem& item)
 {
   // normalize the image size to 1000x1000
-  float target_scale = std::min(1000.0f / static_cast<float>(item.get_original_width()),
-                                 1000.0f / static_cast<float>(item.get_original_height()));
+  float target_scale = std::min(1000.0f / static_cast<float>(item.size.width),
+                                 1000.0f / static_cast<float>(item.size.height));
 
-  item.set_scale(target_scale);
-  item.set_pos(Vector2f(static_cast<float>(m_pos.x()) * 1024.0f,
-                               static_cast<float>(m_pos.y()) * 1024.0f));
+  item.transform.scale = target_scale;
+  item.transform.pos = Vector2f(static_cast<float>(m_pos.x()) * 1024.0f,
+                               static_cast<float>(m_pos.y()) * 1024.0f);
 
   advance();
 }
 
 void
-SpiralLayouter::layout(ImageCollection const& images)
+SpiralLayouter::layout(std::vector<LayoutItem>& images)
 {
   reset();
-  for(auto const& i: images)
+  for(LayoutItem& item : images)
   {
-    layout(*i);
+    layout(item);
   }
 }
 

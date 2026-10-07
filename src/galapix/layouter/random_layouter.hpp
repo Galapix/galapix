@@ -30,7 +30,7 @@ class RandomLayouter : public Layouter
 public:
   RandomLayouter();
 
-  void layout(ImageCollection const& images) override;
+  void layout(std::vector<LayoutItem>& items) override;
 
 private:
   RandomLayouter(RandomLayouter const&);

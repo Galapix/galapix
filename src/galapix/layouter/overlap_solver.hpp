@@ -17,7 +17,9 @@
 #ifndef HEADER_GALAPIX_GALAPIX_LAYOUTER_OVERLAP_SOLVER_HPP
 #define HEADER_GALAPIX_GALAPIX_LAYOUTER_OVERLAP_SOLVER_HPP
 
-#include "galapix/image_collection.hpp"
+#include <vector>
+
+#include "galapix/layouter/layouter.hpp"
 
 namespace galapix {
 
@@ -31,7 +33,7 @@ namespace galapix {
  *  @param gap Extra clearance between resolved bounds (world units).
  *  @return Number of separation iterations performed.
  */
-int solve_image_overlaps(ImageCollection& images, float gap = 16.0f);
+int solve_image_overlaps(std::vector<LayoutItem>& items, float gap = 16.0f);
 
 } // namespace galapix
 

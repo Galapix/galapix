@@ -47,7 +47,7 @@
 #  include <thumtoo/expand.hpp>
 #  include <filesystem>
 #endif
-#include "galapix/image.hpp"
+#include "galapix/image_opener.hpp"
 #include "galapix/size_probe_session.hpp"
 #include "util/url.hpp"
 #include "galapix/image_tiles.hpp"
@@ -741,9 +741,9 @@ Viewer::zoom_home()
 void
 Viewer::zoom_to_selection()
 {
-  if (!m_workspace->get_selection()->empty())
+  if (!m_workspace->selection_empty())
   {
-    m_state.zoom_to(m_size, m_workspace->get_selection()->get_bounding_rect());
+    m_state.zoom_to(m_size, m_workspace->get_selection_rect());
   }
   else
   {
@@ -801,7 +801,9 @@ Viewer::get_trackball_mode() const
 void
 Viewer::load()
 {
-  m_workspace->load("/tmp/workspace-dump.galapix");
+  ImageOpener const opener(m_job_manager, m_thumtoo);
+  m_workspace->load("/tmp/workspace-dump.galapix", opener);
+  opener.start_size_probe(*m_workspace);
 }
 
 void
@@ -815,14 +817,10 @@ Viewer::save()
 void
 Viewer::refresh_selection()
 {
-  // FIXME: Make force on Shift-F5 and normal F5 only refresh if the file changed
-  log_info("Viewer::refresh_selection()");
-  SelectionPtr selection = m_workspace->get_selection();
-  bool force = true; // FIXME: keystates[SDLK_RSHIFT] || keystates[SDLK_LSHIFT];
-  for(Selection::iterator i = selection->begin(); i != selection->end(); ++i)
-  {
-    (*i)->refresh(force);
-  }
+  // FIXME: Not implemented, reload the selected images from their source
+  // (WorkspaceItem::refresh() was never implemented either). Make force on
+  // Shift-F5 and normal F5 only refresh if the file changed.
+  log_info("Viewer::refresh_selection(): not implemented");
 }
 
 void
@@ -1040,53 +1038,18 @@ Viewer::process_pending_opens()
     batches.swap(m_pending_open_batches);
   }
 
+  ImageOpener const opener(m_job_manager, m_thumtoo);
   int added = 0;
-#ifdef HAVE_THUMTOO
-  std::shared_ptr<SizeProbeSession> probe;
-  if (m_thumtoo) {
-    probe = m_workspace->size_probe();
-    if (!probe) {
-      probe = std::make_shared<SizeProbeSession>();
-      m_workspace->set_size_probe(probe);
-    }
-  }
-#endif
   for (auto& batch : batches) {
     for (std::string const& uri_str : batch) {
-      URL u = URL::is_url(uri_str) ? URL::from_string(uri_str)
-                                   : URL::from_filename(uri_str);
-      TileProviderPtr provider;
-#ifdef HAVE_THUMTOO
-      std::string th_uri;
-      if (m_thumtoo) {
-        th_uri = thumtoo_uri_from_url(u);
-        if (!th_uri.empty()) {
-          // Cache-only SQLite read — never request_size+drain on GUI.
-          if (auto sz = m_thumtoo->get_size(th_uri)) {
-            provider = ThumtooTileProvider::create_from_size(
-              m_thumtoo, th_uri, sz->width, sz->height);
-          } else {
-            m_thumtoo->request_size(
-              th_uri, [](std::string, thumtoo::SizeReply) {});
-          }
-        }
+      URL const u = URL::is_url(uri_str) ? URL::from_string(uri_str)
+                                         : URL::from_filename(uri_str);
+      if (opener.open(*m_workspace, u) != entt::null) {
+        ++added;
       }
-#endif
-      auto image = std::make_shared<Image>(u, provider);
-#ifdef HAVE_THUMTOO
-      if (m_thumtoo && probe && !th_uri.empty() && !provider) {
-        probe->add_pending(image, th_uri);
-      }
-#endif
-      m_workspace->add_image(image);
-      ++added;
     }
   }
-#ifdef HAVE_THUMTOO
-  if (m_thumtoo && probe && added > 0) {
-    probe->start_drain(m_thumtoo, probe);
-  }
-#endif
+  opener.start_size_probe(*m_workspace);
 
   if (added > 0) {
     log_info("open_paths: added {} item(s)", added);

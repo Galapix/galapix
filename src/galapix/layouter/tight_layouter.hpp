@@ -30,8 +30,8 @@ class TightLayouter : public Layouter
 public:
   TightLayouter(float w, float h);
 
-  void layout_zigzag(ImageCollection const& images) const;
-  void layout(ImageCollection const& images) override;
+  void layout_zigzag(std::vector<LayoutItem>& items) const;
+  void layout(std::vector<LayoutItem>& items) override;
 
 private:
   float m_aspect_w;

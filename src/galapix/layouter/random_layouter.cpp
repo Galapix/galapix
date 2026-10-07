@@ -16,8 +16,6 @@
 
 #include "galapix/layouter/random_layouter.hpp"
 
-#include "galapix/image.hpp"
-#include "galapix/image_collection.hpp"
 
 namespace galapix {
 
@@ -26,17 +24,17 @@ RandomLayouter::RandomLayouter()
 }
 
 void
-RandomLayouter::layout(ImageCollection const& images)
+RandomLayouter::layout(std::vector<LayoutItem>& images)
 {
   const int width = static_cast<int>(std::sqrt(float(images.size())) * 1500.0f);
 
-  for(ImageCollection::const_iterator i = images.begin(); i != images.end(); ++i)
+  for(LayoutItem& item : images)
   {
-    (*i)->set_pos(Vector2f(static_cast<float>(rand() % width),
-                                  static_cast<float>(rand() % width)));
+    item.transform.pos = Vector2f(static_cast<float>(rand() % width),
+                                  static_cast<float>(rand() % width));
 
     // FIXME: Make this relative to image size
-    (*i)->set_scale(static_cast<float>(rand()%1000) / 1000.0f + 0.25f);
+    item.transform.scale = static_cast<float>(rand()%1000) / 1000.0f + 0.25f;
   }
 }
 

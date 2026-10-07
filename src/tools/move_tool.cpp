@@ -73,18 +73,19 @@ MoveTool::down(Vector2i const& pos)
 {
   click_pos = viewer->get_state().screen2world(pos);
 
-  WorkspaceItemPtr image = viewer->get_workspace()->get_image(click_pos);
+  Workspace& workspace = *viewer->get_workspace();
+  entt::entity const image = workspace.get_image(click_pos);
 
-  if (image)
+  if (image != entt::null)
   {
     // FIXME: add shift/ctrl modifier
-    if (viewer->get_workspace()->get_selection()->has(image))
+    if (workspace.is_selected(image))
     {
-      viewer->get_workspace()->get_selection()->remove_image(image);
+      workspace.deselect(image);
     }
     else
     {
-      viewer->get_workspace()->get_selection()->add_image(image);
+      workspace.select(image);
     }
     move_active = true;
   }

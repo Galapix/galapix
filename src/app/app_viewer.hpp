@@ -27,7 +27,6 @@
 #include <wstsystem/fwd.hpp>
 
 #include "math/size.hpp"
-#include "galapix/image.hpp"
 
 namespace galapix {
 

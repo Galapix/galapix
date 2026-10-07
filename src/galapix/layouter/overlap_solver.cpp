@@ -25,7 +25,6 @@
 
 #include <logmich/log.hpp>
 
-#include "galapix/workspace_item.hpp"
 
 namespace galapix {
 
@@ -109,7 +108,7 @@ bool separate_pair(Body& a, Body& b, float gap)
 } // namespace
 
 int
-solve_image_overlaps(ImageCollection& images, float gap)
+solve_image_overlaps(std::vector<LayoutItem>& images, float gap)
 {
   int const n = static_cast<int>(images.size());
   if (n < 2) {
@@ -118,10 +117,11 @@ solve_image_overlaps(ImageCollection& images, float gap)
 
   std::vector<Body> bodies(static_cast<std::size_t>(n));
   for (int i = 0; i < n; ++i) {
-    WorkspaceItemPtr const& item = images[static_cast<ImageCollection::size_type>(i)];
-    Vector2f const pos = item->get_pos();
-    float const w = item->get_scaled_width();
-    float const h = item->get_scaled_height();
+    LayoutItem const& item = images[static_cast<std::size_t>(i)];
+    Vector2f const pos = item.transform.pos;
+    Sizef const scaled = scaled_size(item.transform, item.size);
+    float const w = scaled.width();
+    float const h = scaled.height();
     bodies[static_cast<std::size_t>(i)].cx = pos.x();
     bodies[static_cast<std::size_t>(i)].cy = pos.y();
     bodies[static_cast<std::size_t>(i)].hw = std::max(w * 0.5f, 0.5f);
@@ -187,8 +187,7 @@ solve_image_overlaps(ImageCollection& images, float gap)
 
   for (int i = 0; i < n; ++i) {
     Body const& b = bodies[static_cast<std::size_t>(i)];
-    images[static_cast<ImageCollection::size_type>(i)]->set_pos(
-      Vector2f(b.cx, b.cy));
+    images[static_cast<std::size_t>(i)].transform.pos = Vector2f(b.cx, b.cy);
   }
 
   if (iters >= kMaxIters && last_pairs > 0) {

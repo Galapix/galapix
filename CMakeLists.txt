@@ -191,6 +191,9 @@ function(build_dependencies)
   set(WST_SPRITE OFF)
   set(WST_DEMOS OFF)
   add_subdirectory(external/wst EXCLUDE_FROM_ALL)
+
+  # Workspace entities and components (header-only)
+  add_subdirectory(external/entt EXCLUDE_FROM_ALL)
 endfunction()
 build_dependencies()
 
@@ -227,6 +230,7 @@ target_link_libraries(libgalapix PUBLIC
   sexp::sexp
   geom::geom
   wstdisplay::wstdisplay
+  EnTT::EnTT
   PkgConfig::MAGICKXX
   PkgConfig::SIGCXX
   ${GALAPIX_SPNAV_LIBRARIES}
@@ -234,6 +238,10 @@ target_link_libraries(libgalapix PUBLIC
   OpenGL::GLU
   CURL::libcurl
   Threads::Threads)
+
+# Third-party headers: keep the project warnings (-Weffc++, WERROR) off them.
+set_property(TARGET EnTT APPEND PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES
+  "$<TARGET_PROPERTY:EnTT,INTERFACE_INCLUDE_DIRECTORIES>")
 
 install(TARGETS libgalapix
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

@@ -16,6 +16,7 @@
 
 #include "util/status_notify.hpp"
 #include "galapix/viewer.hpp"
+#include "galapix/workspace.hpp"
 #include "thumtoo/thumtoo_tile_provider.hpp"
 
 namespace galapix {
@@ -33,12 +34,12 @@ SizeProbeSession::SizeProbeSession() :
 }
 
 void
-SizeProbeSession::add_pending(std::shared_ptr<Image> image, std::string uri)
+SizeProbeSession::add_pending(entt::entity image, std::string uri)
 {
-  if (!image || uri.empty()) {
+  if (image == entt::null || uri.empty()) {
     return;
   }
-  m_pending.push_back(Item{std::weak_ptr<Image>(std::move(image)), std::move(uri)});
+  m_pending.push_back(Item{image, std::move(uri)});
   ++m_total;
 }
 
@@ -83,7 +84,7 @@ SizeProbeSession::start_drain(std::shared_ptr<thumtoo::Client> client,
 }
 
 void
-SizeProbeSession::tick()
+SizeProbeSession::tick(Workspace& workspace)
 {
   auto client = m_client;
   if (!client || m_pending.empty()) {
@@ -109,9 +110,8 @@ SizeProbeSession::tick()
   still.reserve(m_pending.size());
 
   for (auto& item : m_pending) {
-    auto img = item.image.lock();
-    if (!img) {
-      continue;
+    if (!workspace.valid(item.image)) {
+      continue;  // deleted meanwhile
     }
     auto sz = client->get_size(item.uri);
     if (!sz || sz->width <= 0 || sz->height <= 0) {
@@ -121,7 +121,7 @@ SizeProbeSession::tick()
     auto provider = ThumtooTileProvider::create_from_size(
       client, item.uri, sz->width, sz->height);
     if (provider) {
-      img->set_tile_provider(std::move(provider));
+      workspace.set_tile_provider(item.image, std::move(provider));
       ++m_completed;
     } else {
       still.push_back(std::move(item));

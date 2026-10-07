@@ -23,16 +23,15 @@
 
 namespace galapix {
 
-class WorkspaceItem;
 
 class SpiralLayouter : public Layouter
 {
 public:
   SpiralLayouter();
 
-  void layout(ImageCollection const& images) override;
+  void layout(std::vector<LayoutItem>& items) override;
   void reset();
-  void layout(WorkspaceItem& item);
+  void layout(LayoutItem& item);
 
 private:
   void advance();

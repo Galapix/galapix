@@ -43,7 +43,7 @@ ResizeTool::move(Vector2i const& pos, Vector2i const& /*rel*/)
     if (b != 0.0f)
     {
       //std::cout << a << " " << b << " " << a / b << std::endl;
-      viewer->get_workspace()->get_selection()->scale((1.0f/old_scale) * (a/b));
+      viewer->get_workspace()->scale_selection((1.0f/old_scale) * (a/b));
       old_scale = a/b; // FIXME: Hack, should scale to original scale
     }
   }
@@ -61,7 +61,7 @@ ResizeTool::down(Vector2i const& pos)
 {
   resize_active    = true;
   resize_center    = viewer->get_state().screen2world(pos);
-  selection_center = viewer->get_workspace()->get_selection()->get_center();
+  selection_center = viewer->get_workspace()->get_selection_center();
 }
 
 } // namespace galapix

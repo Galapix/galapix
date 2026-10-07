@@ -26,7 +26,7 @@ class RegularLayouter : public Layouter
 public:
   RegularLayouter(float aspect_w, float aspect_h);
 
-  void layout(ImageCollection const& images) override;
+  void layout(std::vector<LayoutItem>& items) override;
 
 private:
   float m_aspect_w;

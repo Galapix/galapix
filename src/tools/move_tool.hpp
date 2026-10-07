@@ -19,7 +19,6 @@
 
 #include <vector>
 
-#include "galapix/image.hpp"
 #include "galapix/tool.hpp"
 
 namespace galapix {

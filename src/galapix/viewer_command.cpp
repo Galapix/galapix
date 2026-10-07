@@ -16,6 +16,7 @@
 
 #include "galapix/viewer_command.hpp"
 
+#include "galapix/image_opener.hpp"
 #include "galapix/size_probe_session.hpp"
 
 #include <chrono>
@@ -202,11 +203,9 @@ ViewerCommand::run(std::vector<URL> const& urls)
   OpenTiming timing("ViewerCommand::run");
   Workspace workspace;
 
-#ifdef HAVE_THUMTOO
-  // Single session for pattern + file URL size probes (async; UI opens first).
-  auto size_probe = std::make_shared<SizeProbeSession>();
-  workspace.set_size_probe(size_probe);
-#endif
+  // Adds images; thumtoo sizes that are not cached yet are probed in the
+  // background (SizeProbeSession), the UI opens first.
+  ImageOpener const opener(m_job_manager, m_thumtoo);
 
 #ifdef HAVE_THUMTOO
   // Expand PDF pages and archive image members into per-item URLs so the rest
@@ -290,19 +289,8 @@ ViewerCommand::run(std::vector<URL> const& urls)
         if (!url_opt || row.uri.empty()) {
           ++skipped;
         } else {
-          TileProviderPtr provider;
-          if (auto sz = m_thumtoo->get_size(row.uri)) {
-            provider = ThumtooTileProvider::create_from_size(
-              m_thumtoo, row.uri, sz->width, sz->height);
-          }
-          auto image = std::make_shared<Image>(
-            *url_opt, provider);
-          workspace.add_image(image);
+          opener.open_thumtoo(workspace, *url_opt, row.uri);
           ++added;
-          if (!provider) {
-            m_thumtoo->request_size(row.uri, [](std::string, thumtoo::SizeReply) {});
-            size_probe->add_pending(image, row.uri);
-          }
         }
         std::cout << "Pattern match: " << (i + 1) << "/" << total
                   << " (" << added << " images)"
@@ -342,58 +330,16 @@ ViewerCommand::run(std::vector<URL> const& urls)
     if (i->has_stdio_name() && Filesystem::has_extension(i->get_stdio_name(), ".galapix"))
     {
       // FIXME: Right place for this?
-      workspace.load(i->get_stdio_name());
-    }
-    else if (i->get_protocol() == "builtin")
-    {
-      if (i->get_payload() == "mandelbrot")
-      {
-        workspace.add_image(std::make_shared<Image>(*i, std::make_shared<MandelbrotTileProvider>(m_job_manager)));
-      }
-      else
-      {
-        std::cout << "Galapix::view(): unknown builtin:// requested: " << *i << " ignoring" << std::endl;
-      }
-    }
-    else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
-    {
-      workspace.add_image(std::make_shared<Image>(*i, ZoomifyTileProvider::create(*i, m_job_manager)));
+      workspace.load(i->get_stdio_name(), opener);
     }
     else
     {
-#ifdef HAVE_THUMTOO
-      if (m_thumtoo) {
-        std::string const uri = thumtoo_uri_from_url(*i);
-        TileProviderPtr provider;
-        if (!uri.empty()) {
-          if (auto sz = m_thumtoo->get_size(uri)) {
-            provider = ThumtooTileProvider::create_from_size(
-              m_thumtoo, uri, sz->width, sz->height);
-          }
-        }
-        auto image = std::make_shared<Image>(*i, provider);
-        workspace.add_image(image);
-        if (!provider && !uri.empty()) {
-          m_thumtoo->request_size(uri, [](std::string, thumtoo::SizeReply) {});
-          size_probe->add_pending(image, uri);
-        }
-      } else
-#endif
-      {
-        workspace.add_image(std::make_shared<Image>(*i, TileProviderPtr{}));
-      }
+      opener.open(workspace, *i);
     }
   }
 
-#ifdef HAVE_THUMTOO
-  if (m_thumtoo && size_probe->total() > 0) {
-    size_probe->start_drain(m_thumtoo, size_probe);
-  } else if (m_thumtoo) {
-    // No outstanding probes; drop empty session.
-    workspace.set_size_probe({});
-  }
+  opener.start_size_probe(workspace);
   timing.mark("size_probe");
-#endif
 
 
   if (!urls.empty())

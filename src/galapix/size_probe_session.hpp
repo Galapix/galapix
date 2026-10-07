@@ -14,11 +14,13 @@
 #include <string>
 #include <vector>
 
-#include "galapix/image.hpp"
+#include <entt/entity/entity.hpp>
 
 namespace thumtoo { class Client; }
 
 namespace galapix {
+
+class Workspace;
 
 /** Background thumtoo size probes while the viewer is already running.
  *
@@ -31,7 +33,7 @@ class SizeProbeSession
 public:
   SizeProbeSession();
 
-  void add_pending(std::shared_ptr<Image> image, std::string uri);
+  void add_pending(entt::entity image, std::string uri);
 
   /** Number of images still waiting for a size. */
   int remaining() const { return static_cast<int>(m_pending.size()); }
@@ -44,12 +46,12 @@ public:
                    std::shared_ptr<SizeProbeSession> self);
 
   /** Main-thread: attach providers for sizes that are ready; update UI. */
-  void tick();
+  void tick(Workspace& workspace);
 
 private:
   struct Item
   {
-    std::weak_ptr<Image> image;
+    entt::entity image;
     std::string uri;
   };
 

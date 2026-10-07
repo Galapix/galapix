@@ -18,8 +18,6 @@
 
 #include <iostream>
 
-#include "galapix/image.hpp"
-#include "galapix/image_collection.hpp"
 
 namespace galapix {
 
@@ -30,16 +28,16 @@ TightLayouter::TightLayouter(float w, float h) :
 }
 
 void
-TightLayouter::layout(ImageCollection const& images)
+TightLayouter::layout(std::vector<LayoutItem>& images)
 {
   float spacing = 24.0f;
 
   float width = 0;
   // calculate the total width
-  for(auto const& image: images)
+  for(LayoutItem& image : images)
   {
-    const float scale = (1000.0f + spacing) / static_cast<float>(image->get_original_height());
-    width += static_cast<float>(image->get_original_width()) * scale;
+    const float scale = (1000.0f + spacing) / static_cast<float>(image.size.height);
+    width += static_cast<float>(image.size.width) * scale;
   }
 
   width /= std::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
@@ -48,9 +46,9 @@ TightLayouter::layout(ImageCollection const& images)
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
 
-  auto relayout_row = [width, spacing](std::vector<WorkspaceItemPtr>& row) {
+  auto relayout_row = [width, spacing](std::vector<LayoutItem*>& row) {
     float row_width = spacing * static_cast<float>(row.size()-1);
-    for(auto& image: row) { row_width += image->get_scaled_width(); }
+    for(LayoutItem* image: row) { row_width += scaled_size(image->transform, image->size).width(); }
 
     //std::cout << width << " " << row_width << std::endl;
     Vector2f offset((width - row_width)/2.0f, 0.0f);
@@ -64,24 +62,24 @@ TightLayouter::layout(ImageCollection const& images)
     row.clear();
   };
 
-  std::vector<WorkspaceItemPtr> row;
-  for(auto const& image: images)
+  std::vector<LayoutItem*> row;
+  for(LayoutItem& image : images)
   {
-    row.push_back(image);
+    row.push_back(&image);
 
-    const float scale = 1000.0f / static_cast<float>(image->get_original_height());
-    image->set_scale(scale);
+    const float scale = 1000.0f / static_cast<float>(image.size.height);
+    image.transform.scale = scale;
 
     auto set_pos = [&](Vector2f const& p){
       last_pos = p;
-      image->set_pos(p + geom::fsize(static_cast<float>(image->get_original_width()),
-                                     static_cast<float>(image->get_original_height())) * scale / 2.0f);
+      image.transform.pos = p + geom::fsize(static_cast<float>(image.size.width),
+                                     static_cast<float>(image.size.height)) * scale / 2.0f;
     };
 
     if (go_right)
     {
       // going right
-      if (pos.x() + (static_cast<float>(image->get_original_width())*scale) > width)
+      if (pos.x() + (static_cast<float>(image.size.width)*scale) > width)
       {
         pos = geom::fpoint(last_pos.x(),
                            pos.y() + 1000.0f + spacing);
@@ -94,28 +92,28 @@ TightLayouter::layout(ImageCollection const& images)
       else
       {
         set_pos(pos);
-        pos = geom::fpoint(pos.x() + static_cast<float>(image->get_original_width()) * scale + spacing,
+        pos = geom::fpoint(pos.x() + static_cast<float>(image.size.width) * scale + spacing,
                            pos.y());
       }
     }
     else
     {
       // going left
-      if (pos.x() - (static_cast<float>(image->get_original_width()) * scale) < 0)
+      if (pos.x() - (static_cast<float>(image.size.width) * scale) < 0)
       {
         pos = geom::fpoint(pos.x(), pos.y() + 1000.0f + spacing);
 
         go_right = true;
 
         set_pos(pos);
-        pos = geom::fpoint(pos.x() + static_cast<float>(image->get_original_width()) * scale + spacing,
+        pos = geom::fpoint(pos.x() + static_cast<float>(image.size.width) * scale + spacing,
                            pos.y());
 
         relayout_row(row);
       }
       else
       {
-        pos = geom::fpoint(pos.x() - (static_cast<float>(image->get_original_width()) * scale + spacing),
+        pos = geom::fpoint(pos.x() - (static_cast<float>(image.size.width) * scale + spacing),
                            pos.y());
         set_pos(pos);
       }
@@ -125,16 +123,16 @@ TightLayouter::layout(ImageCollection const& images)
 }
 
 void
-TightLayouter::layout_zigzag(ImageCollection const& images) const
+TightLayouter::layout_zigzag(std::vector<LayoutItem>& images) const
 {
   float spacing = 24.0f;
 
   float width = 0;
   // calculate the total width
-  for(auto const& image: images)
+  for(LayoutItem& image : images)
   {
-    const float scale = (1000.0f + spacing) / static_cast<float>(image->get_original_height());
-    width += static_cast<float>(image->get_original_width()) * scale;
+    const float scale = (1000.0f + spacing) / static_cast<float>(image.size.height);
+    width += static_cast<float>(image.size.width) * scale;
   }
 
   width /= std::sqrt(width / ((m_aspect_w / m_aspect_h) * (1000.0f + spacing)));
@@ -143,21 +141,21 @@ TightLayouter::layout_zigzag(ImageCollection const& images) const
   Vector2f last_pos(0.0f, 0.0f);
   bool go_right = true;
 
-  for(auto const& image: images)
+  for(LayoutItem& image : images)
   {
-    const float scale = 1000.0f / static_cast<float>(image->get_original_height());
-    image->set_scale(scale);
+    const float scale = 1000.0f / static_cast<float>(image.size.height);
+    image.transform.scale = scale;
 
     auto set_pos = [&](Vector2f const& p){
         last_pos = p;
-        image->set_pos(p + geom::fsize(static_cast<float>(image->get_original_width()),
-                                       static_cast<float>(image->get_original_height())) * scale / 2.0f);
+        image.transform.pos = p + geom::fsize(static_cast<float>(image.size.width),
+                                       static_cast<float>(image.size.height)) * scale / 2.0f;
       };
 
     if (go_right)
     {
       // going right
-      if (pos.x() + (static_cast<float>(image->get_original_width())*scale) > width)
+      if (pos.x() + (static_cast<float>(image.size.width)*scale) > width)
       {
         pos = geom::fpoint(last_pos.x(),
                            pos.y() + 1000.0f + spacing);
@@ -169,26 +167,26 @@ TightLayouter::layout_zigzag(ImageCollection const& images) const
       else
       {
         set_pos(pos);
-        pos = geom::fpoint(pos.x() + static_cast<float>(image->get_original_width()) * scale + spacing,
+        pos = geom::fpoint(pos.x() + static_cast<float>(image.size.width) * scale + spacing,
                            pos.y());
       }
     }
     else
     {
       // going left
-      if (pos.x() - (static_cast<float>(image->get_original_width()) * scale) < 0)
+      if (pos.x() - (static_cast<float>(image.size.width) * scale) < 0)
       {
         pos = geom::fpoint(pos.x(),
                            pos.y() + 1000.0f + spacing);
         go_right = true;
 
         set_pos(pos);
-        pos = geom::fpoint(pos.x() + static_cast<float>(image->get_original_width()) * scale + spacing,
+        pos = geom::fpoint(pos.x() + static_cast<float>(image.size.width) * scale + spacing,
                            pos.y());
       }
       else
       {
-        pos = geom::fpoint(pos.x() - (static_cast<float>(image->get_original_width()) * scale + spacing),
+        pos = geom::fpoint(pos.x() - (static_cast<float>(image.size.width) * scale + spacing),
                            pos.y());
         set_pos(pos);
       }
