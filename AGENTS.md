@@ -55,9 +55,9 @@ CLI (files / http(s) URLs; optional leading "view")
   → ViewerCommand
       → Database (resource cache4.sqlite3 only; no cache4_tiles)
       → thumtoo::Client when HAVE_THUMTOO
-      → Workspace + Image(TileProvider)
+      → ImageOpener → Workspace (entt::registry: Source, Transform, ImageSize, Tiles, Selected)
   → System::launch_viewer (SDL) + ImGui Status/Help
-      → Image → ImageTiles (thumtoo::lod TileSession / shared TileLoader)
+      → Workspace::prepare_tiles / draw → ImageTiles (thumtoo::lod TileSession / shared TileLoader)
       → TileProvider::create_backend → thumtoo request_tile_cells / JobManager
 ```
 
@@ -116,6 +116,17 @@ posting through the queue (or an equivalent GUI Executor).
 `surf::SoftwareSurface` is **not** contextual-bool; use `std::optional` (or
 size checks) after decode.
 
+## Workspace (ECS)
+
+Images are entities in the Workspace's `entt::registry` with the plain-data
+components of `src/galapix/components.hpp` (`Source`, `Transform`,
+`ImageSize`, `Tiles`, tags `Visible`, `Selected`, `ScaleIsNative`). The
+registry is main-thread only; workers post results elsewhere (tile loader
+inbox, size probe). `Workspace::images()` is the display order, which sorting
+and layout use. Layouters are pure functions over `LayoutItem` (native size +
+`Transform`). New URLs go through `ImageOpener`. `test/workspace_test.cpp`
+covers the workspace without GL or thumtoo.
+
 ## OpenGL / SDL notes
 
 - wstdisplay (from [wst](https://github.com/WindstilleTeam/wst)) records
@@ -161,6 +172,7 @@ dependencies come from `external/thumtoo/flake.nix` (`lib.mkBuildInputs`).
 | `external/surfcpp` | https://github.com/grumbel/surfcpp.git |
 | `external/uitest` | https://github.com/grumbel/uitest.git |
 | `external/wst` | https://github.com/WindstilleTeam/wst.git |
+| `external/entt` | https://github.com/skypjack/entt.git (tag v3.16.0) |
 | `external/thumtoo` | https://github.com/Grumbel/thumtoo.git |
 
 `external/imgui` is a plain copy (see its README.galapix.md).

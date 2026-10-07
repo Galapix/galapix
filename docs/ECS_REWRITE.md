@@ -5,9 +5,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # ECS rewrite of the image / tile pipeline
 
-Status (2026-10-07): **stage 1 done** — tiles run on `thumtoo::lod`
-(thumtoo `7e87428`); `ImageTileCache`, `ImageRenderer`, `ImageOverview`
-are gone. Stages 2–3 (EnTT workspace, tools) are next.
+Status (2026-10-07): **stages 1 and 2 done** — tiles run on
+`thumtoo::lod` (thumtoo `7e87428`); the workspace is an EnTT registry
+(EnTT v3.16.0 in `external/entt`), `Image`, `WorkspaceItem`,
+`ImageCollection` and `Selection` are gone, the tools already use the
+entity based Workspace API. Stage 3 is what is left in Viewer (see
+Migration).
 
 ## Why
 
@@ -148,4 +151,5 @@ One branch, commits that each build and run:
    delete `ImageTileCache`, `ImageRenderer`, `ImageOverview`; fixes findings
    1–9.
 2. EnTT subtree; workspace, selection, layouters, save/load on components.
-3. Tools and Viewer queries on components; remove `WorkspaceItem`.
+3. Viewer: tool state and view queries as data (`Viewer` still owns the
+   tools as objects and reaches into the Workspace through methods).
