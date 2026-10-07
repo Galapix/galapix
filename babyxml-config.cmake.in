@@ -1,0 +1,6 @@
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/babyxml-config-version.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/babyxml-targets.cmake")
+
+# EOF #
