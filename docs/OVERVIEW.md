@@ -5,6 +5,10 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # Fast overview layer (design)
 
+> **Historical (2026-10-07):** `ImageOverview` and its levels underlay were
+> removed. Images show the LQIP and the coarser tile levels that
+> `thumtoo::lod` demands first, like biltoo. See ECS_REWRITE.md.
+
 Stand-in pixels for “something on screen” that are **not** durable 256² grid
 tiles. Complements [TILE_LOADING.md](TILE_LOADING.md).
 

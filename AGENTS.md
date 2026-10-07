@@ -57,7 +57,8 @@ CLI (files / http(s) URLs; optional leading "view")
       → thumtoo::Client when HAVE_THUMTOO
       → Workspace + Image(TileProvider)
   → System::launch_viewer (SDL) + ImGui Status/Help
-      → ImageTileCache → TileProvider::request_tile
+      → Image → ImageTiles (thumtoo::lod TileSession / shared TileLoader)
+      → TileProvider::create_backend → thumtoo request_tile_cells / JobManager
 ```
 
 **Tip bundles:** galapix-055 + thumtoo-024 — see [TODO.md](TODO.md) session handoff.
@@ -66,9 +67,18 @@ CLI (files / http(s) URLs; optional leading "view")
 
 | Class | Backend |
 |-------|---------|
-| `ThumtooTileProvider` | thumtoo `get_tile` / `request_tile` (HAVE_THUMTOO) |
-| `ZoomifyTileProvider` | Zoomify ImageProperties.xml |
-| `MandelbrotTileProvider` | Procedural |
+| `ThumtooTileProvider` | `thumtoo::lod::ClientTileBackend` (`request_tile_cells`), loader shared per URI |
+| `ZoomifyTileProvider` | Zoomify ImageProperties.xml, `JobTileBackend` |
+| `MandelbrotTileProvider` | Procedural, `JobTileBackend` |
+
+Tile state lives in thumtoo's tile LOD core (thumtoo `docs/TILE_LOD.md`):
+one `TileLoader` per source owns every cell (Missing → Queued → Ready /
+Failed / Unavailable), the `TileScheduler` is the only issuer and is pumped
+from `Viewer::draw` (`tile_lod::pump_if_due`). `ImageTiles` publishes the
+visible region (`TileSession::set_viewport`), uploads Ready cells as
+textures and draws the draw plan. Every backend must answer each cell
+exactly once. See docs/ECS_REWRITE.md for why the old ImageTileCache /
+ImageOverview path was replaced.
 
 Scale convention matches historical Galapix and thumtoo Phase 4: **scale 0 =
 full resolution**, tile size **256**.
@@ -113,20 +123,22 @@ size checks) after decode.
   view transform as `RenderPass::world_matrix` (grid in `Space::Screen`).
   A frame is `Renderer::begin_frame` → `Viewer::draw` → `end_frame` →
   ImGui → `swap_buffers` (`AppViewer::draw_frame`).
-- GPU resources belong to the window's `wstdisplay::Device`. Tiles and
-  overviews are `TextureSurfacePtr` (owns a `Unique<Texture>` + `Surface`);
-  uploads take a `Device&` (`prepare_tiles` → `process_queue`). Release them
-  before the window goes away (`~AppViewer` clears the cache).
+- GPU resources belong to the window's `wstdisplay::Device`. Tile and LQIP
+  textures are `TextureSurfacePtr` (owns a `Unique<Texture>` + `Surface`);
+  uploads take a `Device&` (`prepare_tiles` → `ImageTiles::update`). Release
+  them before the window goes away (`~AppViewer` clears the cache).
+- World-space outlines (selection, tools, tile debug) pass `1 / zoom` as
+  the Canvas line width, lines are quads in canvas units.
 - Window events must reach `wstdisplay::OpenGLWindow::handle_event`; on
   `sig_resized` call `Viewer::reshape`.
 - wstdisplay keeps its glad loader private; the few raw GL calls in Galapix
   (ImGui icons) use `<GL/gl.h>`.
-- Edge tiles are padded to 256² with edge-clamped pixels; UV covers content
-  only (`maxu`/`maxv`). Upload uses level-0 only (no gluBuild2DMipmaps).
+- Tile textures have the cell's exact size (edge cells smaller), clamped
+  and linear, level 0 only.
 - `ThumtooTileProvider` max_scale must match thumtoo (until image fits in one
   256² tile), not ImageEntry’s ≤8px pyramid depth.
 - **Texture arrays / atlas batching** (one draw call for many tiles) is a
-  worthwhile future optimization in wstdisplay + ImageRenderer; not required
+  worthwhile future optimization (wstdisplay batches draws by texture); not required
   for correctness. Prefer fixing seams/filters first.
 
 ## Vendored libraries

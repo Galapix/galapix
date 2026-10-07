@@ -25,6 +25,7 @@
 #  include <thumtoo/archive.hpp>
 #  include <thumtoo/client.hpp>
 #  include <thumtoo/image.hpp>
+#  include <thumtoo/lod/tile_backend.hpp>
 #  include <thumtoo/pdf.hpp>
 
 #  include "thumtoo/thumtoo_callback_queue.hpp"
@@ -115,7 +116,7 @@ int main(int argc, char** argv)
   }
 
   thumtoo::image_library_init();
-  auto client = thumtoo::Client::open(
+  std::shared_ptr<thumtoo::Client> client = thumtoo::Client::open(
     cache, galapix::ThumtooCallbackQueue::instance().make_executor());
   std::cout << "cache: " << cache << "\n";
 
@@ -213,13 +214,15 @@ int main(int argc, char** argv)
     auto t0 = clock::now();
     std::atomic<int> remaining{0};
     int issued = 0;
+    std::vector<std::shared_ptr<thumtoo::lod::TileBackend>> backends;
     for (auto const& p : providers) {
       int const scale = p->get_max_scale();
       ++issued;
       remaining.fetch_add(1);
-      p->request_tile(
-        scale, galapix::Vector2i(0, 0),
-        [&remaining](galapix::Tile const&) {
+      backends.push_back(p->create_backend());
+      backends.back()->fetch(
+        {thumtoo::lod::FetchRequest{{scale, 0, 0}, 1}},
+        [&remaining](thumtoo::lod::FetchResult const&) {
           remaining.fetch_sub(1);
         });
     }

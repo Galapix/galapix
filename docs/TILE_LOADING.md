@@ -1,4 +1,4 @@
-<!-- Note (2026-09-07): Galapix SQLite `TileGenerationJob` path removed; file tiles use thumtoo. Overview still uses TileGenerator::load_surface. -->
+<!-- Note (2026-10-07): tile loading is thumtoo::lod (thumtoo docs/TILE_LOD.md) since ImageTileCache / ImageOverview were replaced; this document is the earlier strategy discussion. See ECS_REWRITE.md. -->
 
 <!--
 SPDX-FileCopyrightText: 2008-2026 Ingo Ruhnke <grumbel@gmail.com>

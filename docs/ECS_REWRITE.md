@@ -5,9 +5,9 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # ECS rewrite of the image / tile pipeline
 
-Status: **proposal** (2026-10-07). Done so far: the tile LOD core from
-biltoo moved to thumtoo as `thumtoo::lod` (thumtoo `7e87428`, pulled into
-`external/thumtoo`). Nothing in Galapix uses it yet.
+Status (2026-10-07): **stage 1 done** — tiles run on `thumtoo::lod`
+(thumtoo `7e87428`); `ImageTileCache`, `ImageRenderer`, `ImageOverview`
+are gone. Stages 2–3 (EnTT workspace, tools) are next.
 
 ## Why
 
