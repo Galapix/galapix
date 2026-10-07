@@ -13,86 +13,19 @@
 #include <algorithm>
 #include <optional>
 #include <logmich/log.hpp>
-#include <surf/color.hpp>
-#include <surf/convert.hpp>
-#include <surf/software_surface.hpp>
-#include <surf/pixel_format.hpp>
-#include <surf/plugins/jpeg.hpp>
 
-#include "job/job_handle.hpp"
 #include "math/size.hpp"
-#include "math/vector2i.hpp"
-#include "util/blob.hpp"
 
 #include <thumtoo/client.hpp>
 #include <thumtoo/pdf.hpp>
 #include <thumtoo/epub.hpp>
+#include <thumtoo/lod/client_tile_backend.hpp>
 #include <thumtoo/constants.hpp>
 #include <thumtoo/uri.hpp>
 
 namespace galapix {
 
 namespace {
-
-/** Decode tile bytes: rgb888 live cells or JPEG durable cache.
- *
- *  Converts to RGBA8 so row pitch is width*4 (multiple of 4). wstdisplay
- *  Texture upload uses GL_UNPACK_ALIGNMENT=4; tightly packed RGB8 rows with
- *  width not divisible by 4 (common for edge tiles) otherwise shear and look
- *  like scrambled greyscale.
- */
-std::optional<surf::SoftwareSurface> surface_from_tile_blob(thumtoo::TileBlob const& tb)
-{
-  if (tb.bytes.empty()) {
-    return std::nullopt;
-  }
-
-  // Live PDF path: raw RGB888 from thumtoo (no JPEG).
-  if (tb.codec == "rgb888") {
-    int const w = tb.width > 0 ? tb.width : 0;
-    int const h = tb.height > 0 ? tb.height : 0;
-    if (w <= 0 || h <= 0) {
-      return std::nullopt;
-    }
-    std::size_t const need =
-      static_cast<std::size_t>(w) * static_cast<std::size_t>(h) * 3u;
-    if (tb.bytes.size() < need) {
-      log_error("ThumtooTileProvider: rgb888 size mismatch {} < {}",
-                tb.bytes.size(), need);
-      return std::nullopt;
-    }
-    auto surface = surf::SoftwareSurface::create(
-      surf::PixelFormat::RGBA8, geom::isize(w, h));
-    auto& view = surface.as_pixelview<surf::RGBA8Pixel>();
-    for (int y = 0; y < h; ++y) {
-      std::uint8_t const* src =
-        tb.bytes.data() +
-        static_cast<std::size_t>(y) * static_cast<std::size_t>(w) * 3u;
-      surf::RGBA8Pixel* dst = view.get_row(y);
-      for (int x = 0; x < w; ++x) {
-        dst[x] = surf::RGBA8Pixel(src[x * 3 + 0], src[x * 3 + 1],
-                                  src[x * 3 + 2], 255);
-      }
-    }
-    return surface;
-  }
-
-  try {
-    auto surface = surf::jpeg::load_from_mem(
-      std::span<uint8_t const>(tb.bytes.data(), tb.bytes.size()));
-    if (surface.get_format() != surf::PixelFormat::RGBA8) {
-      surface = surf::convert(surface, surf::PixelFormat::RGBA8);
-    }
-    return surface;
-  } catch (std::exception const& err) {
-    log_error("ThumtooTileProvider: JPEG decode failed: {}", err.what());
-    return std::nullopt;
-  } catch (...) {
-    log_error("ThumtooTileProvider: JPEG decode failed");
-    return std::nullopt;
-  }
-}
-
 
 /** Max scale at which the image still fits in a single kTileSize (256) tile.
  *  Must match thumtoo::Client::get_tile_coverage theoretical range and
@@ -219,106 +152,12 @@ ThumtooTileProvider::ThumtooTileProvider(
 {
 }
 
-JobHandle
-ThumtooTileProvider::request_tile(int tilescale, Vector2i const& pos,
-                                  const std::function<void(Tile)>& callback)
+std::shared_ptr<thumtoo::lod::TileBackend>
+ThumtooTileProvider::create_backend()
 {
-  JobHandle job_handle = JobHandle::create();
-  const int x = pos.x();
-  const int y = pos.y();
-
-  auto deliver = [job_handle, callback, tilescale, pos, uri = m_uri](
-                   std::optional<thumtoo::TileBlob> tb) mutable {
-    // cancel_jobs may have erased the cache entry already; still mark the
-    // handle so any stale entry is treated as dead and re-queued.
-    if (job_handle.is_aborted()) {
-      return;
-    }
-    if (!tb || tb->bytes.empty()) {
-      // Common while generating; stand-ins cover the cell until retry succeeds.
-      log_debug("ThumtooTileProvider: no tile {} scale={} pos=({},{})",
-                uri, tilescale, pos.x(), pos.y());
-      job_handle.set_failed();
-      return;
-    }
-    auto surface = surface_from_tile_blob(*tb);
-    if (!surface) {
-      log_error(
-        "ThumtooTileProvider: decode failed {} scale={} pos=({},{}) "
-        "codec={} bytes={} meta={}x{}",
-        uri, tilescale, pos.x(), pos.y(), tb->codec, tb->bytes.size(),
-        tb->width, tb->height);
-      job_handle.set_failed();
-      return;
-    }
-    log_debug("ThumtooTileProvider: delivered {} scale={} pos=({},{}) "
-              "codec={} {}x{}",
-              uri, tilescale, pos.x(), pos.y(), tb->codec, tb->width,
-              tb->height);
-    callback(Tile(tilescale, pos, *surface));
-    job_handle.set_finished();
-  };
-
-  // Always complete on a Client worker (inline executor): never JPEG-decode on
-  // the GUI thread during draw. Durable cache hits are still handled inside
-  // Client::request_tile via get_tile (no re-encode).
-  m_client->request_tile(
-    m_uri, tilescale, x, y,
-    [deliver = std::move(deliver)](std::string, int, int, int,
-                                   std::optional<thumtoo::TileBlob> tb) mutable {
-      deliver(std::move(tb));
-    });
-
-  return job_handle;
-}
-
-
-
-void
-ThumtooTileProvider::request_tiles(std::vector<TileRequest> requests)
-{
-  if (requests.empty()) {
-    return;
-  }
-
-  auto cbs = std::make_shared<std::vector<TileRequest>>(std::move(requests));
-  std::vector<thumtoo::Client::TileCoord> coords;
-  coords.reserve(cbs->size());
-  for (auto const& r : *cbs) {
-    coords.push_back(
-      thumtoo::Client::TileCoord{r.scale, r.pos.x(), r.pos.y()});
-  }
-
-  // Index-based completion: never re-match scale/x/y (missed matches left
-  // JobHandles REQUESTED forever and tiles never appeared).
-  m_client->request_tiles(
-    m_uri, std::move(coords),
-    [cbs](std::size_t index, std::optional<thumtoo::TileBlob> tb) {
-      if (index >= cbs->size()) {
-        return;
-      }
-      TileRequest& r = (*cbs)[index];
-      if (r.job_handle.is_aborted()) {
-        return;
-      }
-      if (!tb || tb->bytes.empty()) {
-        r.job_handle.set_failed();
-        return;
-      }
-      auto surface = surface_from_tile_blob(*tb);
-      if (!surface) {
-        r.job_handle.set_failed();
-        return;
-      }
-      try {
-        if (r.callback) {
-          r.callback(Tile(r.scale, r.pos, *surface));
-        }
-        r.job_handle.set_finished();
-      } catch (...) {
-        r.job_handle.set_failed();
-      }
-    });
+  // request_tile_cells / cancel_tile_cells, cells arrive decoded to RGBA8
+  // on the Client worker (thumtoo docs/TILE_LOD.md).
+  return std::make_shared<thumtoo::lod::ClientTileBackend>(m_client, m_uri);
 }
 
 } // namespace galapix

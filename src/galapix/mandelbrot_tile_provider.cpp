@@ -20,6 +20,7 @@
 
 #include "job/job.hpp"
 #include "job/job_manager.hpp"
+#include "galapix/job_tile_backend.hpp"
 #include "galapix/mandelbrot_tile_job.hpp"
 
 #include "math/math.hpp"
@@ -42,14 +43,16 @@ MandelbrotTileProvider::~MandelbrotTileProvider()
 {
 }
 
-JobHandle
-MandelbrotTileProvider::request_tile(int scale, Vector2i const& pos,
-                                     const std::function<void (Tile)>& callback)
+std::shared_ptr<thumtoo::lod::TileBackend>
+MandelbrotTileProvider::create_backend()
 {
-  //std::cout << "MandelbrotTileProvider::request_tile(): " << scale << " " << pos << std::endl;
-  JobHandle job_handle = JobHandle::create();
-  m_job_manager.request(JobPtr(new MandelbrotTileJob(job_handle, m_size, scale, pos, callback)));
-  return job_handle;
+  Size const size = m_size;
+  return std::make_shared<JobTileBackend>(
+    m_job_manager, 0, m_max_scale,
+    [size](JobHandle const& handle, int scale, Vector2i const& pos,
+           std::function<void (Tile)> const& callback) -> JobPtr {
+      return std::make_shared<MandelbrotTileJob>(handle, size, scale, pos, callback);
+    });
 }
 
 int

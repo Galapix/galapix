@@ -84,9 +84,9 @@ public:
 
   // ---------------------------------------------
 
-  /** Phase 1: mark needed tiles, issue requests, process uploads. */
+  /** Visible images publish tile demand and upload textures. */
   void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom);
-  /** Phase 2: pure draw (lookup + GL). */
+  /** Record the visible images into the canvas. */
   void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom);
   void update(float delta);
 
@@ -98,16 +98,17 @@ public:
     void print_info(Rectf const& rect) const;
   void print_images(Rectf const& rect) const;
 
-  /** Aggregate tile job / upload backlog across all images (for status). */
+  /** Aggregate tile state across all images (for status): outstanding
+      requests, cells waiting for upload, cells, uploaded textures. */
   void tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_entries,
                       int* out_ready_surfaces = nullptr) const;
 
-  /** Print stuck REQUESTED tile jobs (for GALAPIX_OPEN_TIMING / debugging). */
-  void dump_stuck_tile_requests(int limit_per_image = 8) const;
-  void dump_tile_request_queues(int limit_per_image = 24) const;
+  /** Print the tile status line of visible images that are not complete. */
+  void print_tile_status(int limit = 24) const;
 
-  /** Count images by overview state (Idle / Loading / Ready / Failed). */
-  void overview_stats(int& out_idle, int& out_loading, int& out_ready, int& out_failed) const;
+  /** Count visible images by tile phase (thumtoo::lod::TileSession::Phase). */
+  void tile_phase_stats(int& out_loading, int& out_complete, int& out_degraded,
+                        int& out_error) const;
 
   // ---------------------------------------------
   void load(std::string const& filename);

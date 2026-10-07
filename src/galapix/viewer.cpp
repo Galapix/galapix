@@ -50,7 +50,8 @@
 #include "galapix/image.hpp"
 #include "galapix/size_probe_session.hpp"
 #include "util/url.hpp"
-#include "galapix/image_tile_cache.hpp"
+#include "galapix/image_tiles.hpp"
+#include "galapix/tile_lod.hpp"
 #include "galapix/workspace.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
@@ -201,8 +202,10 @@ Viewer::draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas)
   }
   m_mark_for_redraw.store(false);
 
-  // Stagger new provider jobs across frames (see ImageTileCache budget).
-  ImageTileCache::begin_frame_request_budget(128);
+  // Tile requests: the scheduler issues and applies results; texture
+  // uploads are capped per frame across all images.
+  tile_lod::pump_if_due();
+  ImageTiles::begin_frame(64);
 
   bool clip_debug = false;
 
@@ -336,12 +339,8 @@ Viewer::draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas)
                 << " upload_q=" << uploads
                 << " ready=" << ready
                 << " cache=" << entries << "\n";
-      // Only dump cells that look stuck (age past reclaim threshold), not
-      // every in-flight REQUESTED handle.
       if (requests > 0) {
-        std::cout << "[open-timing] live REQUESTED sample (any age):\n";
-        m_workspace->dump_tile_request_queues(24);
-        m_workspace->dump_stuck_tile_requests(8);
+        m_workspace->print_tile_status(24);
       }
     }
     if (!logged_first_ready && ready > 0) {
@@ -376,9 +375,11 @@ Viewer::draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas)
       std::chrono::duration<double, std::milli>(clock::now() - t_frame0).count();
     int requests = 0, upload_q = 0, entries = 0, ready = 0;
     m_workspace->tile_load_stats(requests, upload_q, entries, &ready);
-    int const uploads = ImageTileCache::frame_uploads();
-    int const new_reqs = ImageTileCache::frame_requests_started();
-    int const budget_left = ImageTileCache::request_budget_remaining();
+    int const uploads = ImageTiles::frame_uploads();
+    static std::uint64_t last_issued = 0;
+    std::uint64_t const issued = tile_lod::scheduler_stats().issued_total;
+    int const new_reqs = static_cast<int>(issued - last_issued);
+    last_issued = issued;
 #ifdef HAVE_THUMTOO
     int const cb_q = ThumtooCallbackQueue::instance().size();
 #else
@@ -395,7 +396,6 @@ Viewer::draw(wstdisplay::Renderer& renderer, wstdisplay::Canvas& canvas)
                 << " scale=" << m_state.get_scale()
                 << " upl=" << uploads
                 << " new_req=" << new_reqs
-                << " budget_left=" << budget_left
                 << " req=" << requests
                 << " upload_q=" << upload_q
                 << " ready=" << ready
@@ -883,8 +883,6 @@ Viewer::print_info()
 void
 Viewer::print_state()
 {
-  m_workspace->dump_tile_request_queues(16);
-
   // User-facing status (key "l"): use stdout like print_images/print_info.
   // log_info is silent unless --verbose / --debug.
   std::cout << "-- Viewer state -----------------------------------------" << std::endl;
@@ -896,16 +894,16 @@ Viewer::print_state()
     int uploads = 0;
     int cache_entries = 0;
     m_workspace->tile_load_stats(requests, uploads, cache_entries);
-    std::cout << "  tiles: pending_requests=" << requests
+    std::cout << "  tiles: queued=" << requests
               << "  pending_uploads=" << uploads
-              << "  cache_entries=" << cache_entries << std::endl;
-    int ov_idle = 0, ov_loading = 0, ov_ready = 0, ov_failed = 0;
-    m_workspace->overview_stats(ov_idle, ov_loading, ov_ready, ov_failed);
-    std::cout << "  overview: idle=" << ov_idle
-              << "  loading=" << ov_loading
-              << "  ready=" << ov_ready
-              << "  failed=" << ov_failed
-              << "  (stdio files only; archives skip)" << std::endl;
+              << "  cells=" << cache_entries << std::endl;
+    int loading = 0, complete = 0, degraded = 0, error = 0;
+    m_workspace->tile_phase_stats(loading, complete, degraded, error);
+    std::cout << "  visible images: loading=" << loading
+              << "  complete=" << complete
+              << "  degraded=" << degraded
+              << "  error=" << error << std::endl;
+    m_workspace->print_tile_status(16);
   } else {
     std::cout << "  workspace: (none)" << std::endl;
   }
@@ -1074,7 +1072,7 @@ Viewer::process_pending_opens()
         }
       }
 #endif
-      auto image = std::make_shared<Image>(u, provider, &m_job_manager);
+      auto image = std::make_shared<Image>(u, provider);
 #ifdef HAVE_THUMTOO
       if (m_thumtoo && probe && !th_uri.empty() && !provider) {
         probe->add_pending(image, th_uri);

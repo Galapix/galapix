@@ -34,8 +34,7 @@ public:
   MandelbrotTileProvider(JobManager& job_manager);
   ~MandelbrotTileProvider() override;
 
-  JobHandle request_tile(int tilescale, Vector2i const& pos,
-                                 const std::function<void (Tile)>& callback) override;
+  std::shared_ptr<thumtoo::lod::TileBackend> create_backend() override;
 
   int  get_max_scale() const override;
   int  get_tilesize() const override;

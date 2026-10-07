@@ -34,7 +34,7 @@
 #include <wstdisplay/renderer.hpp>
 
 #include "galapix/viewer.hpp"
-#include "galapix/image_tile_cache.hpp"
+#include "galapix/image_tiles.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
 #include "spnav/space_navigator.hpp"
@@ -105,6 +105,7 @@ AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
   m_quit(false),
   m_fullscreen(fullscreen),
   m_spnav_allow_rotate(false),
+  m_imgui(),
   m_gamecontrollers()
 {
   // The Renderer takes the frame size in begin_frame(), only the Viewer
@@ -511,10 +512,10 @@ AppViewer::process_event(SDL_Event const& event)
 
         case SDLK_v:
           {
-            bool on = !galapix::ImageTileCache::tile_debug();
-            galapix::ImageTileCache::set_tile_debug(on);
+            bool on = !galapix::ImageTiles::tile_debug();
+            galapix::ImageTiles::set_tile_debug(on);
             std::string msg = std::string("Tile debug: ") + (on ? "ON" : "OFF")
-              + " (tint=pyramid scale, green bias=exact, purple=loading)";
+              + " (tint=pyramid scale, green bias=exact, purple=no tile)";
             std::cout << msg << "\n";
             ImguiOverlay::notify(std::move(msg));
           }
@@ -523,8 +524,8 @@ AppViewer::process_event(SDL_Event const& event)
         case SDLK_u:
           {
             // SDLK_r is already move/rotate tool; use u = "use cache only".
-            bool on = !galapix::ImageTileCache::tile_requests_enabled();
-            galapix::ImageTileCache::set_tile_requests_enabled(on);
+            bool on = !galapix::ImageTiles::requests_enabled();
+            galapix::ImageTiles::set_requests_enabled(on);
             std::string msg = std::string("Tile requests: ")
               + (on ? "ENABLED" : "DISABLED (cache-only)")
               + (on ? " — new provider jobs allowed" : " — new provider jobs suppressed");

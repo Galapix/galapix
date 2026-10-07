@@ -17,38 +17,23 @@
 #include "galapix/image.hpp"
 
 #include <algorithm>
-#include <cmath>
-#include <functional>
 #include <iostream>
 
 #include <surf/color.hpp>
 #include <wstdisplay/canvas.hpp>
 
-#include "galapix/image_renderer.hpp"
-#include "galapix/image_tile_cache.hpp"
-#include "galapix/viewer.hpp"
-#include "util/weak_functor.hpp"
-
 namespace galapix {
 
-using namespace surf;
-
-Image::Image(URL const& url, TileProviderPtr provider, JobManager* job_manager) :
+Image::Image(URL const& url, TileProviderPtr provider) :
   m_url(url),
-  m_provider(std::move(provider)),
-  m_job_manager(job_manager),
-  m_cache(),
-  m_renderer(),
-  m_overview(std::make_shared<ImageOverview>())
+  m_provider(),
+  m_tiles()
 {
-  set_tile_provider(m_provider);
+  set_tile_provider(std::move(provider));
 }
 
 Image::~Image()
 {
-  if (m_overview) {
-    m_overview->clear();
-  }
 }
 
 int
@@ -80,69 +65,39 @@ Image::get_original_height() const
 void
 Image::clear_cache()
 {
-  if (m_cache)
-  {
-    m_cache->clear();
-  }
-  if (m_overview) {
-    m_overview->clear();
+  if (m_tiles) {
+    m_tiles->clear();
   }
 }
 
 void
 Image::cache_cleanup()
 {
-  if (m_cache)
-  {
-    m_cache->cleanup();
+  // Off-screen images give their GPU textures back; the pixels stay with
+  // the tile loader until its byte budget evicts them.
+  if (m_tiles && !is_visible()) {
+    m_tiles->release_textures();
   }
 }
 
 void
 Image::prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom)
 {
-  if (!m_provider || !m_cache || !m_renderer) {
-    return;
+  if (m_tiles) {
+    m_tiles->update(device, get_image_rect(), get_scale(), cliprect, zoom);
   }
-  // Mark/ensure first so LQIP can be queued, then process() uploads same frame.
-  m_renderer->prepare(cliprect, zoom);
-  if (m_overview) {
-    m_overview->process(device);
-  }
-  m_cache->process_queue(device);
-}
-
-void
-Image::issue_tile_requests()
-{
-  if (m_cache) {
-    m_cache->issue_requests();
-  }
-}
-
-void
-Image::request_overview_levels(Rectf const& /*cliprect*/, float /*zoom*/)
-{
-  if (!m_overview || !m_provider) {
-    return;
-  }
-  int const disp_long = static_cast<int>(std::ceil(
-    std::max(get_scaled_width(), get_scaled_height())));
-  m_overview->ensure_levels(m_provider, disp_long);
 }
 
 void
 Image::draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom)
 {
-  if (!m_provider)
+  if (!m_tiles)
   {
-    canvas.fill_rect(Rectf(get_top_left_pos(), Sizef(get_scaled_width(), get_scaled_height())),
-                 surf::Color::from_rgb888(255,255,0));
+    canvas.fill_rect(get_image_rect(), surf::Color::from_rgb888(255,255,0));
   }
   else
   {
-    // Uploads and requests were handled in prepare_tiles; draw is pure.
-    m_renderer->draw(canvas, cliprect, zoom);
+    m_tiles->draw(canvas, get_image_rect(), get_scale());
   }
 }
 
@@ -152,21 +107,11 @@ Image::set_tile_provider(TileProviderPtr provider)
   float old_size = static_cast<float>(std::max(get_original_width(),
                                                get_original_height()));
 
-  // cleanup the old provider if present
+  m_tiles.reset();
+  m_provider = std::move(provider);
   if (m_provider)
   {
-    m_cache.reset();
-    m_renderer.reset();
-    m_provider.reset();
-  }
-
-  // set the new provider and related data
-  if (provider)
-  {
-    m_provider = std::move(provider);
-    m_cache    = std::make_shared<ImageTileCache>(m_provider);
-    m_cache->prefetch_overview();
-    m_renderer = std::make_unique<ImageRenderer>(*this, m_cache);
+    m_tiles = std::make_unique<ImageTiles>(m_provider);
   }
 
   // Fixup the scale to fit into the old constrains more or less (only
@@ -176,68 +121,23 @@ Image::set_tile_provider(TileProviderPtr provider)
   set_scale(get_scale() * old_size / new_size);
 }
 
+ImageTiles::Stats
+Image::tile_stats() const
+{
+  return m_tiles ? m_tiles->stats() : ImageTiles::Stats();
+}
+
+std::string
+Image::tile_status_line() const
+{
+  return m_tiles ? m_tiles->status_line() : std::string("no size yet");
+}
+
 void
 Image::print_info() const
 {
-  std::cout << "  Image: " << this << std::endl;
-  if (m_cache) {
-    std::cout << "    Tile cache entries: " << m_cache->cache_entry_count()
-              << "  pending requests: " << m_cache->pending_request_count()
-              << "  pending uploads: " << m_cache->pending_upload_count()
-              << std::endl;
-  }
-  if (m_overview) {
-    char const* ov = "idle";
-    switch (m_overview->state()) {
-      case ImageOverview::State::Idle:    ov = "idle"; break;
-      case ImageOverview::State::Loading: ov = "loading"; break;
-      case ImageOverview::State::Ready:   ov = "ready"; break;
-      case ImageOverview::State::Failed:  ov = "failed"; break;
-    }
-    std::cout << "    Overview: " << ov << std::endl;
-  }
-}
-
-int
-Image::pending_tile_requests() const
-{
-  return m_cache ? m_cache->pending_request_count() : 0;
-}
-
-void
-Image::dump_stuck_tile_requests(int limit) const
-{
-  if (m_cache) {
-    std::cout << "  image " << m_url << ":\n";
-    m_cache->dump_stuck_requests(limit);
-  }
-}
-
-void
-Image::dump_tile_request_queue(int limit) const
-{
-  if (m_cache) {
-    std::cout << "  image " << m_url << ":\n";
-    m_cache->dump_request_queue(limit);
-  }
-}
-
-int
-Image::pending_tile_uploads() const
-{
-  return m_cache ? m_cache->pending_upload_count() : 0;
-}
-
-int
-Image::tile_cache_entries() const
-{
-  return m_cache ? m_cache->cache_entry_count() : 0;
-}
-
-int
-Image::ready_tile_surfaces() const
-{
-  return m_cache ? m_cache->ready_surface_count() : 0;
+  std::cout << "  Image: " << this << " " << m_url << std::endl;
+  std::cout << "    " << tile_status_line() << std::endl;
 }
 
 URL
@@ -256,10 +156,8 @@ void
 Image::on_leave_screen()
 {
   WorkspaceItem::on_leave_screen();
-  cache_cleanup();
-  // Keep overview if already Ready; abort in-flight to save work off-screen.
-  if (m_overview && m_overview->state() == ImageOverview::State::Loading) {
-    m_overview->clear();
+  if (m_tiles) {
+    m_tiles->hide();
   }
 }
 

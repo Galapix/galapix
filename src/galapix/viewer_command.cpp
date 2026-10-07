@@ -296,7 +296,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
               m_thumtoo, row.uri, sz->width, sz->height);
           }
           auto image = std::make_shared<Image>(
-            *url_opt, provider, &m_job_manager);
+            *url_opt, provider);
           workspace.add_image(image);
           ++added;
           if (!provider) {
@@ -348,7 +348,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
     {
       if (i->get_payload() == "mandelbrot")
       {
-        workspace.add_image(std::make_shared<Image>(*i, std::make_shared<MandelbrotTileProvider>(m_job_manager), &m_job_manager));
+        workspace.add_image(std::make_shared<Image>(*i, std::make_shared<MandelbrotTileProvider>(m_job_manager)));
       }
       else
       {
@@ -357,7 +357,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
     }
     else if (Filesystem::has_extension(i->str(), "ImageProperties.xml"))
     {
-      workspace.add_image(std::make_shared<Image>(*i, ZoomifyTileProvider::create(*i, m_job_manager), &m_job_manager));
+      workspace.add_image(std::make_shared<Image>(*i, ZoomifyTileProvider::create(*i, m_job_manager)));
     }
     else
     {
@@ -371,7 +371,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
               m_thumtoo, uri, sz->width, sz->height);
           }
         }
-        auto image = std::make_shared<Image>(*i, provider, &m_job_manager);
+        auto image = std::make_shared<Image>(*i, provider);
         workspace.add_image(image);
         if (!provider && !uri.empty()) {
           m_thumtoo->request_size(uri, [](std::string, thumtoo::SizeReply) {});
@@ -380,7 +380,7 @@ ViewerCommand::run(std::vector<URL> const& urls)
       } else
 #endif
       {
-        workspace.add_image(std::make_shared<Image>(*i, TileProviderPtr{}, &m_job_manager));
+        workspace.add_image(std::make_shared<Image>(*i, TileProviderPtr{}));
       }
     }
   }

@@ -19,8 +19,9 @@ namespace galapix {
 /** Optional queue for GUI-marshaled thumtoo callbacks.
  *
  *  Default make_executor() is thumtoo::Executor{} (inline on the Client worker).
- *  Tile JPEG decode and receive_tile queue push run off the GUI thread. OpenGL
- *  texture upload stays in ImageTileCache::process_queue on the main thread.
+ *  Tile decode (thumtoo::lod::ClientTileBackend) and the TileLoader inbox
+ *  push run off the GUI thread. OpenGL texture upload stays in ImageTiles
+ *  on the main thread.
  *  pump() is a no-op with the default executor.
  */
 class ThumtooCallbackQueue

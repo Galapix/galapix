@@ -69,15 +69,8 @@ public:
 
   virtual Rectf get_image_rect() const;
 
-  /** Mark visible tiles / process uploads. Default: no-op. Called before issue. */
+  /** Visible this frame: publish tile demand, upload textures. Default: no-op. */
   virtual void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom) {}
-  virtual int pending_upload_count() const { return 0; }
-  virtual int pending_tile_requests() const { return 0; }
-
-  /** Start provider jobs for tiles marked in prepare_tiles. Default: no-op. */
-  virtual void issue_tile_requests() {}
-  /** Soft levels after grid issue; default no-op. */
-  virtual void request_overview_levels(Rectf const&, float) {}
 
   virtual void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom) = 0;
   virtual void draw_mark(wstdisplay::Canvas& canvas) = 0;

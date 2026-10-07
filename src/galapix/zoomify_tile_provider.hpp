@@ -55,15 +55,14 @@ private:
   ZoomifyTileProvider(std::string const& basedir, Size const& size, int tilesize, JobManager& job_manager);
 
 public:
-  JobHandle request_tile(int scale, Vector2i const& pos,
-                         const std::function<void (Tile)>& callback) override;
+  std::shared_ptr<thumtoo::lod::TileBackend> create_backend() override;
 
   int get_max_scale() const override { return m_max_scale; }
   int  get_tilesize() const override { return m_tilesize; }
   Size get_size() const override { return m_size; }
 
 private:
-  int get_tile_group(int scale, Vector2i const& pos);
+  int get_tile_group(int scale, Vector2i const& pos) const;
 
 private:
   Size        m_size;

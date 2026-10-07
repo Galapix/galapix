@@ -45,10 +45,10 @@ public:
   ThumtooTileProvider(std::shared_ptr<thumtoo::Client> client, std::string uri,
                       Size size, int max_scale, int min_scale);
 
-  JobHandle request_tile(int tilescale, Vector2i const& pos,
-                         const std::function<void(Tile)>& callback) override;
+  std::shared_ptr<thumtoo::lod::TileBackend> create_backend() override;
 
-  void request_tiles(std::vector<TileRequest> requests) override;
+  /** Images of the same URI share one tile loader. */
+  std::string get_loader_key() const override { return m_uri; }
 
   int get_max_scale() const override { return m_max_scale; }
   int get_min_scale() const override { return m_min_scale; }

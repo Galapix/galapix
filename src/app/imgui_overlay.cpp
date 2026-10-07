@@ -30,7 +30,7 @@
 #include <xdg.h>
 
 #include "galapix/viewer.hpp"
-#include "galapix/image_tile_cache.hpp"
+#include "galapix/image_tiles.hpp"
 #include "util/status_notify.hpp"
 #include "galapix/viewer_state.hpp"
 #include "galapix/workspace.hpp"
@@ -545,21 +545,21 @@ ImguiOverlay::draw_status_panel(Viewer& viewer)
     ws->tile_load_stats(requests, uploads, cache_entries);
     ImGui::Separator();
     ImGui::Text("tiles");
-    ImGui::Text("  pending requests: %d", requests);
-    ImGui::Text("  pending uploads:  %d", uploads);
-    ImGui::Text("  cache entries:    %d", cache_entries);
+    ImGui::Text("  queued requests: %d", requests);
+    ImGui::Text("  pending uploads: %d", uploads);
+    ImGui::Text("  cells:           %d", cache_entries);
     ImGui::Text("  tile_debug: %s  (key toggles overlay colours)",
-                galapix::ImageTileCache::tile_debug() ? "ON" : "off");
+                galapix::ImageTiles::tile_debug() ? "ON" : "off");
     ImGui::TextWrapped(
-      "Press 'l' (print_state) for full in-flight request list on stdout: "
-      "scale, pos, age, attempts, fin/fail/abort per cell.");
+      "Press 'l' (print_state) for the tile status of every visible image "
+      "that is not complete, with the failure reason.");
 
-    int ov_idle = 0, ov_loading = 0, ov_ready = 0, ov_failed = 0;
-    ws->overview_stats(ov_idle, ov_loading, ov_ready, ov_failed);
+    int loading = 0, complete = 0, degraded = 0, error = 0;
+    ws->tile_phase_stats(loading, complete, degraded, error);
     ImGui::Separator();
-    ImGui::Text("overview (stdio)");
-    ImGui::Text("  idle=%d  loading=%d  ready=%d  failed=%d",
-                ov_idle, ov_loading, ov_ready, ov_failed);
+    ImGui::Text("visible images");
+    ImGui::Text("  loading=%d  complete=%d  degraded=%d  error=%d",
+                loading, complete, degraded, error);
   }
 
   ImGui::End();

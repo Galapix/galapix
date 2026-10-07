@@ -18,84 +18,54 @@
 #define HEADER_GALAPIX_GALAPIX_IMAGE_HPP
 
 #include <memory>
-#include <map>
 #include <string>
 
+#include "galapix/image_tiles.hpp"
 #include "galapix/tile_provider.hpp"
-#include "galapix/tile.hpp"
-#include "galapix/image_overview.hpp"
-#include "job/job_handle.hpp"
-#include "job/thread_message_queue2.hpp"
+#include "galapix/workspace_item.hpp"
 #include "math/rect.hpp"
 #include "math/vector2f.hpp"
 #include "util/url.hpp"
-#include "galapix/workspace_item.hpp"
-#include "math/rect.hpp"
 
 namespace galapix {
 
-class ImageTileCache;
-class ImageRenderer;
-class JobManager;
-class Image;
-
 class Image final : public WorkspaceItem
 {
-  friend class ImageRenderer;
 public:
-  Image(URL const& url, TileProviderPtr provider = {}, JobManager* job_manager = nullptr);
+  Image(URL const& url, TileProviderPtr provider = {});
   ~Image() override;
 
+  /** Visible this frame: publish tile demand, upload textures. */
   void prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom) override;
-  /** Start provider jobs for tiles marked in prepare_tiles (budgeted). */
-  void issue_tile_requests() override;
-  /** Levels soft-underlay upgrade after grid jobs have taken budget. */
-  void request_overview_levels(Rectf const& cliprect, float zoom) override;
+
   void draw(wstdisplay::Canvas& canvas, Rectf const& cliprect, float zoom) override;
   void draw_mark(wstdisplay::Canvas& canvas) override;
 
-  // Used for sorting and debugging
   URL get_url() const override;
 
   int get_original_width() const override;
   int get_original_height() const override;
 
-  // Debug stuff
   void clear_cache() override;
   void cache_cleanup() override;
-  void print_info() const override;
 
-  /** Outstanding tile jobs for this image (0 if no cache yet). */
-  int pending_tile_requests() const override;
-  void dump_stuck_tile_requests(int limit = 16) const;
-  void dump_tile_request_queue(int limit = 32) const;
-  /** Decoded tiles waiting for GL upload. */
-  int pending_tile_uploads() const;
-  int pending_upload_count() const override { return pending_tile_uploads(); }
-  int tile_cache_entries() const;
-  int ready_tile_surfaces() const;
+  void print_info() const override;
 
   void on_leave_screen() override;
 
-  ImageOverview& overview() { return *m_overview; }
-  ImageOverview const& overview() const { return *m_overview; }
-  ImageOverview::State overview_state() const {
-    return m_overview ? m_overview->state() : ImageOverview::State::Idle;
-  }
-  JobManager* job_manager() const { return m_job_manager; }
+  /** Tile state, empty while the image has no provider (size probe). */
+  ImageTiles::Stats tile_stats() const;
+  std::string tile_status_line() const;
+  bool has_tiles() const { return static_cast<bool>(m_tiles); }
 
   /** Attach or replace the tile provider (e.g. after async size probe). */
   void set_tile_provider(TileProviderPtr provider);
   TileProviderPtr get_tile_provider() const { return m_provider; }
 
 private:
-  URL       m_url;
+  URL m_url;
   TileProviderPtr m_provider;
-  JobManager* m_job_manager;
-
-  std::shared_ptr<ImageTileCache> m_cache;
-  std::unique_ptr<ImageRenderer>  m_renderer;
-  std::shared_ptr<ImageOverview> m_overview;
+  std::unique_ptr<ImageTiles> m_tiles;
 
 private:
   Image(Image const&) = delete;

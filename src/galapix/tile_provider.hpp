@@ -19,12 +19,13 @@
 
 #include <functional>
 #include <memory>
-#include <vector>
+#include <string>
 
-#include "galapix/tile.hpp"
-#include "job/job_handle.hpp"
 #include "math/size.hpp"
-#include "math/vector2i.hpp"
+
+namespace thumtoo::lod {
+class TileBackend;
+}
 
 namespace galapix {
 
@@ -32,39 +33,29 @@ class TileProvider;
 
 using TileProviderPtr = std::shared_ptr<TileProvider>;
 
-/** A TileProvider is the data source from which an Image requests the
-    tiles */
+/** A TileProvider is the data source of an Image: its size, scale range
+    and a thumtoo::lod::TileBackend that produces the tiles (see
+    ImageTiles and thumtoo docs/TILE_LOD.md) */
 class TileProvider
 {
 public:
   TileProvider() {}
   virtual ~TileProvider() {}
 
-  virtual JobHandle request_tile(int tilescale, Vector2i const& pos,
-                                 const std::function<void (Tile)>& callback) =0;
+  /** Tile producer for this image. Must answer every requested cell
+      exactly once (Ok, Cancelled, Failed or Unavailable). */
+  virtual std::shared_ptr<thumtoo::lod::TileBackend> create_backend() =0;
 
-  /** Optional multi-cell request. Default calls request_tile per entry.
-      Providers may coalesce into one backend job (shared decode). */
-  struct TileRequest {
-    int scale;
-    Vector2i pos;
-    JobHandle job_handle;
-    std::function<void (Tile)> callback;
-
-    TileRequest(int scale_, Vector2i pos_, JobHandle handle_,
-                std::function<void (Tile)> callback_)
-      : scale(scale_),
-        pos(pos_),
-        job_handle(std::move(handle_)),
-        callback(std::move(callback_))
-    {}
-  };
-  virtual void request_tiles(std::vector<TileRequest> requests);
+  /** Images with the same non-empty key share one tile loader (one
+      request per cell, one copy of the pixels). Empty: not shared. */
+  virtual std::string get_loader_key() const { return {}; }
 
   virtual int get_max_scale() const =0;
+
   /** Finest scale the provider can produce. Raster images: 0. PDF/live:
       may be negative (sharper than nominal get_size() layout). */
   virtual int get_min_scale() const { return 0; }
+
   virtual int get_tilesize() const =0;
   virtual Size get_size() const =0;
 

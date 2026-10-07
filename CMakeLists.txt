@@ -104,7 +104,7 @@ include(GNUInstallDirs)
 
 option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
-option(WITH_THUMTOO "Use thumtoo as tile cache backend" OFF)
+option(WITH_THUMTOO "Use thumtoo as tile backend (required)" ON)
 set(THUMTOO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/thumtoo" CACHE PATH
   "thumtoo source tree or install prefix (default: vendored external/thumtoo)")
 
@@ -240,6 +240,11 @@ install(TARGETS libgalapix
 
 
 # Optional thumtoo tile backend (Galapix-compatible 256² JPEG pyramid).
+# Tiles go through thumtoo::lod (ImageTiles), Galapix has no other tile path.
+if(NOT WITH_THUMTOO)
+  message(FATAL_ERROR "Galapix requires thumtoo (WITH_THUMTOO=ON): tiles use thumtoo::lod")
+endif()
+
 if(WITH_THUMTOO)
   if(NOT THUMTOO_DIR)
     message(FATAL_ERROR "WITH_THUMTOO requires THUMTOO_DIR (source or prefix)")

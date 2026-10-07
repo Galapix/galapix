@@ -23,9 +23,9 @@ thumtoo::Executor
 ThumtooCallbackQueue::make_executor()
 {
   // Default / inline Executor: Client worker threads run tile callbacks on the
-  // worker itself. JPEG decode + ImageTileCache::receive_tile (queue push) stay
-  // off the GUI thread. receive_tile only pushes a thread-safe queue and may
-  // SDL_PushEvent for redraw — it must not touch OpenGL.
+  // worker itself. Tile decode to RGBA8 (thumtoo::lod::ClientTileBackend) and
+  // the TileLoader inbox push stay off the GUI thread; the scheduler wake only
+  // requests a redraw — nothing here may touch OpenGL.
   //
   // Size probes during create() complete inside Client::drain() without a
   // main-thread pump.

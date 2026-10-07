@@ -121,10 +121,6 @@ Workspace::layout_random()
 void
 Workspace::prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, float zoom)
 {
-  // Pass 1: visibility + mark needed tiles (no provider jobs yet).
-  // Also process_queue for off-screen images that still have decoded tiles
-  // waiting for GL upload — otherwise pending_uploads can stick until the
-  // image scrolls back into view (or forever if it never does).
   for (auto& i : m_images)
   {
     if (geom::intersects(i->get_image_rect(), cliprect))
@@ -135,36 +131,9 @@ Workspace::prepare_tiles(wstdisplay::Device& device, Rectf const& cliprect, floa
       }
       i->prepare_tiles(device, cliprect, zoom);
     }
-    else
+    else if (i->is_visible())
     {
-      // process_queue even when off-screen so decoded tiles still upload
-      if (i->pending_upload_count() > 0 || i->pending_tile_requests() > 0) {
-        i->prepare_tiles(device, cliprect, zoom);
-      }
-      if (i->is_visible())
-      {
-        i->on_leave_screen();
-      }
-    }
-  }
-  // Pass 2: issue under the global budget. Still per-image FIFO within the
-  // mark order, but every visible image has its stand-ins/targets recorded
-  // before any queue_tile_request runs — fairer than interleaving issue.
-  for (auto& i : m_images)
-  {
-    if (geom::intersects(i->get_image_rect(), cliprect))
-    {
-      i->issue_tile_requests();
-    }
-  }
-  // Pass 3: levels soft-underlay with *remaining* budget only. Doing this in
-  // prepare stole the whole frame budget so grid tiles never started until
-  // the user zoomed (re-mark / new scales).
-  for (auto& i : m_images)
-  {
-    if (geom::intersects(i->get_image_rect(), cliprect))
-    {
-      i->request_overview_levels(cliprect, zoom);
+      i->on_leave_screen();
     }
   }
 }
@@ -273,30 +242,23 @@ Workspace::print_images(Rectf const& rect) const
 }
 
 void
-Workspace::dump_tile_request_queues(int limit_per_image) const
+Workspace::print_tile_status(int limit) const
 {
-  std::cout << "=== tile request queues ===\n";
+  std::cout << "=== tiles (visible, not complete) ===\n";
+  int n = 0;
   for (auto const& item : m_images) {
     auto image = std::dynamic_pointer_cast<Image>(item);
-    if (!image) {
+    if (!image || !image->is_visible() || !image->has_tiles()) {
       continue;
     }
-    image->dump_tile_request_queue(limit_per_image);
-  }
-}
-
-void
-Workspace::dump_stuck_tile_requests(int limit_per_image) const
-{
-  for (auto const& item : m_images) {
-    auto image = std::dynamic_pointer_cast<Image>(item);
-    if (!image) {
+    if (image->tile_stats().phase == thumtoo::lod::TileSession::Phase::Complete) {
       continue;
     }
-    if (image->pending_tile_requests() <= 0) {
-      continue;
+    if (n++ >= limit) {
+      std::cout << "  ...\n";
+      break;
     }
-    image->dump_stuck_tile_requests(limit_per_image);
+    std::cout << "  " << image->get_url() << ": " << image->tile_status_line() << "\n";
   }
 }
 
@@ -313,10 +275,11 @@ Workspace::tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_e
     if (!image) {
       continue;
     }
-    out_requests += image->pending_tile_requests();
-    out_uploads += image->pending_tile_uploads();
-    out_cache_entries += image->tile_cache_entries();
-    ready += image->ready_tile_surfaces();
+    ImageTiles::Stats const stats = image->tile_stats();
+    out_requests += stats.queued;
+    out_uploads += stats.pending_uploads;
+    out_cache_entries += stats.cells;
+    ready += stats.textures;
   }
   if (out_ready_surfaces) {
     *out_ready_surfaces = ready;
@@ -324,22 +287,26 @@ Workspace::tile_load_stats(int& out_requests, int& out_uploads, int& out_cache_e
 }
 
 void
-Workspace::overview_stats(int& out_idle, int& out_loading, int& out_ready, int& out_failed) const
+Workspace::tile_phase_stats(int& out_loading, int& out_complete, int& out_degraded,
+                            int& out_error) const
 {
-  out_idle = 0;
+  using Phase = thumtoo::lod::TileSession::Phase;
+
   out_loading = 0;
-  out_ready = 0;
-  out_failed = 0;
+  out_complete = 0;
+  out_degraded = 0;
+  out_error = 0;
   for (auto const& item : m_images) {
     auto image = std::dynamic_pointer_cast<Image>(item);
-    if (!image) {
+    if (!image || !image->is_visible() || !image->has_tiles()) {
       continue;
     }
-    switch (image->overview_state()) {
-      case ImageOverview::State::Idle:    ++out_idle; break;
-      case ImageOverview::State::Loading: ++out_loading; break;
-      case ImageOverview::State::Ready:   ++out_ready; break;
-      case ImageOverview::State::Failed:  ++out_failed; break;
+    switch (image->tile_stats().phase) {
+      case Phase::Idle: break;
+      case Phase::Loading: ++out_loading; break;
+      case Phase::Complete: ++out_complete; break;
+      case Phase::Degraded: ++out_degraded; break;
+      case Phase::Error: ++out_error; break;
     }
   }
 }

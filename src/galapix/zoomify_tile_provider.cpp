@@ -22,6 +22,7 @@
 
 #include <surf/plugins/jpeg.hpp>
 
+#include "galapix/job_tile_backend.hpp"
 #include "job/job_manager.hpp"
 #include "job/job.hpp"
 #include "math/math.hpp"
@@ -106,7 +107,7 @@ ZoomifyTileProvider::create(URL const& url, JobManager& job_manager)
 }
 
 int
-ZoomifyTileProvider::get_tile_group(int scale, Vector2i const& pos)
+ZoomifyTileProvider::get_tile_group(int scale, Vector2i const& pos) const
 {
   int tilenum = (m_info[static_cast<size_t>(scale)].m_size.width() * pos.y() + pos.x()) +
     m_info[static_cast<size_t>(scale)].m_previous_tiles_count;
@@ -114,20 +115,20 @@ ZoomifyTileProvider::get_tile_group(int scale, Vector2i const& pos)
   return tilenum / 256;
 }
 
-JobHandle
-ZoomifyTileProvider::request_tile(int scale, Vector2i const& pos,
-                                  const std::function<void (Tile)>& callback)
+std::shared_ptr<thumtoo::lod::TileBackend>
+ZoomifyTileProvider::create_backend()
 {
-  int tile_group = get_tile_group(scale, pos);
-
-  // construct the URL of the tile
-  std::ostringstream out;
-  out << m_basedir << "TileGroup" << tile_group << "/"
-      << (m_max_scale - scale) << "-" << pos.x() << "-" << pos.y() << ".jpg";
-
-  JobHandle job_handle = JobHandle::create();
-  m_job_manager.request(std::make_shared<ZoomifyTileJob>(job_handle, URL::from_string(out.str()), scale, pos, callback));
-  return job_handle;
+  // The tile URL is computed in fetch() on the main thread, while the
+  // provider owning the loader is alive.
+  return std::make_shared<JobTileBackend>(
+    m_job_manager, 0, m_max_scale,
+    [this](JobHandle const& handle, int scale, Vector2i const& pos,
+           std::function<void (Tile)> const& callback) -> JobPtr {
+      std::ostringstream out;
+      out << m_basedir << "TileGroup" << get_tile_group(scale, pos) << "/"
+          << (m_max_scale - scale) << "-" << pos.x() << "-" << pos.y() << ".jpg";
+      return std::make_shared<ZoomifyTileJob>(handle, URL::from_string(out.str()), scale, pos, callback);
+    });
 }
 
 } // namespace galapix
