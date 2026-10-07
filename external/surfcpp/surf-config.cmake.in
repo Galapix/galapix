@@ -1,0 +1,9 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+@SURF_CONFIG_DEPENDENCIES@
+include("${CMAKE_CURRENT_LIST_DIR}/surf-targets.cmake")
+
+check_required_components(surf)
+
+# EOF #
