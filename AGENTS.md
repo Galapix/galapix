@@ -127,6 +127,13 @@ and layout use. Layouters are pure functions over `LayoutItem` (native size +
 `Transform`). New URLs go through `ImageOpener`. `test/workspace_test.cpp`
 covers the workspace without GL or thumtoo.
 
+Tools are data: `ToolKind` + one `ToolDrag` slot per mouse button and held
+key (`src/tools/tools.hpp`), run by plain functions; a tool set is three
+`ToolKind`s. Keyboard shortcuts live in one `KeyBinding` table
+(`AppViewer::make_key_bindings`) that also renders the Help panel — add new
+keys there, not in a switch. `test/tools_test.cpp` drives the tools through
+a `Viewer` without a window.
+
 ## OpenGL / SDL notes
 
 - wstdisplay (from [wst](https://github.com/WindstilleTeam/wst)) records

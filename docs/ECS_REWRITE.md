@@ -5,12 +5,12 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # ECS rewrite of the image / tile pipeline
 
-Status (2026-10-07): **stages 1 and 2 done** — tiles run on
-`thumtoo::lod` (thumtoo `7e87428`); the workspace is an EnTT registry
-(EnTT v3.16.0 in `external/entt`), `Image`, `WorkspaceItem`,
-`ImageCollection` and `Selection` are gone, the tools already use the
-entity based Workspace API. Stage 3 is what is left in Viewer (see
-Migration).
+Status (2026-10-07): **done** — tiles run on `thumtoo::lod` (thumtoo
+`7e87428`); the workspace is an EnTT registry (EnTT v3.16.0 in
+`external/entt`); tools are `ToolKind` + `ToolDrag` data, key bindings one
+table that also renders the Help panel. Remaining OOP is `Viewer` itself
+(view state, grid, background, gamma settings) and `AppViewer`; see
+"Not done".
 
 ## Why
 
@@ -151,5 +151,13 @@ One branch, commits that each build and run:
    delete `ImageTileCache`, `ImageRenderer`, `ImageOverview`; fixes findings
    1–9.
 2. EnTT subtree; workspace, selection, layouters, save/load on components.
-3. Viewer: tool state and view queries as data (`Viewer` still owns the
-   tools as objects and reaches into the Workspace through methods).
+3. Tools as `ToolKind` + `ToolDrag`, key bindings as a table, size probe
+   completion polled by `Viewer::update` instead of calling back.
+
+## Not done
+
+- `Viewer` still bundles view state, grid, background colors and the
+  (unimplemented) gamma controls; they could become plain structs.
+- `Viewer::current()->redraw()` remains as the any-thread wake-up.
+- Image rotation (`Transform::angle`, rotate tool) is stored but never
+  drawn.
