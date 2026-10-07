@@ -1,0 +1,11 @@
+;; SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+;; Pingus format: one image with frames in an array
+(pingus-sprite
+  (image "blob.png")
+  (array 8 1)
+  (speed 80)
+  (origin "bottom_center")
+  (events
+    (sound (at-step 4) (name "boing") (volume 0.5))))

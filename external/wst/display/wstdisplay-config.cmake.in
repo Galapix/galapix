@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2021 Ingo Ruhnke <grumbel@gmail.com>
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/wstdisplay-config-version.cmake")
+
+include(CMakeFindDependencyMacro)
+
+find_dependency(Threads)
+find_dependency(Freetype)
+# only linked where a GL library exists
+find_package(OpenGL QUIET)
+find_dependency(PkgConfig)
+
+find_dependency(babyxml)
+find_dependency(geom)
+find_dependency(surf)
+find_dependency(logmich)
+
+pkg_search_module(SDL2 REQUIRED sdl2 IMPORTED_TARGET)
+
+include("${CMAKE_CURRENT_LIST_DIR}/wstdisplay-targets.cmake")
+
+check_required_components(wstdisplay)
+
+# EOF #
