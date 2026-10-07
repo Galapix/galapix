@@ -45,6 +45,12 @@ option(PRIO_USE_JSONCPP "Enable support for jsoncpp" ON)
 option(PRIO_USE_SEXPCPP "Enable support for sexp-cpp" ON)
 option(WARNINGS "Enable extra compiler warnings" OFF)
 option(WERROR "Treat warnings as errors" OFF)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  set(_prio_is_top_level ON)
+else()
+  set(_prio_is_top_level OFF)
+endif()
+option(PRIO_INSTALL "Generate install and export rules, off by default when prio is a subdirectory" ${_prio_is_top_level})
 
 if(NOT PRIO_USE_JSONCPP AND NOT PRIO_USE_SEXPCPP)
   message(FATAL_ERROR "At least one of PRIO_USE_JSONCPP or PRIO_USE_SEXPCPP must be ON")
@@ -306,6 +312,8 @@ if(BUILD_EXTRA)
 endif()
 
 # --- install / export (inlined from former tinycmmc_export_and_install_library) ---
+# not when built as a subdirectory of a project that installs its own way
+if(PRIO_INSTALL)
 install(TARGETS prio
   EXPORT prio
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -335,5 +343,6 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/prio-config-version.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/prio-config.cmake
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/prio)
+endif()
 
 # EOF #
