@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "tool": "thumtoo-gp-archive",
+  "archive": "/home/ingo/projects/thumtoo/benchtoo/result/archives/book_pages.cbz",
+  "backend": "libarchive",
+  "unarr_built": true,
+  "members": 3,
+  "metrics": {
+    "toc_ms": 0.046517,
+    "extract_all_ms": 0.542651,
+    "extract_first_ms": 0.315354,
+    "extract_last_ms": 0.14324,
+    "extract_scattered10_ms": 0.627252
+  }
+}

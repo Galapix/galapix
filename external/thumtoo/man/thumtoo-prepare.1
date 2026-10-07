@@ -1,0 +1,121 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-PREPARE 1 "2026-09-16" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-prepare \- probe sizes and optionally warm soft ladder / tile cache
+.SH SYNOPSIS
+.B thumtoo-prepare
+[\fIOPTION\fR]...
+\fIPATH\fR...
+.SH DESCRIPTION
+Register paths in the thumtoo Store cache and measure native image dimensions.
+Default is size-only (no soft/tiles) so cold size probes can be timed without a
+GUI host. Optionally encode durable soft previews and Galapix-style 256\(mu256
+JPEG tile pyramids so viewers (galapix, biltoo) can open without on-demand
+encode cost.
+.PP
+Work is done in phases printed on stderr (unless
+.BR \-q ):
+.TP
+.B phase 1: size probe
+One job per URI. Reads the source only when size is not already in the Store;
+otherwise a cache hit. Lines look like
+.BI [probe " n/N] " status "  " URI "  " WxH .
+Status
+.B incomplete
+means size is stored (normal after a successful probe).
+.B ready
+means soft/full content was already considered ready.
+.B failed
+means the probe could not obtain dimensions.
+Phase end prints wall_ms, ok/fail, and probes_per_s.
+.B Sequential
+archives (RAR/CBR, tar, solid 7z) share one extract cursor per file — extra
+.B \-\-jobs
+do not parallelize members of the same archive.
+.TP
+.B phase 2: soft ladder
+Only with
+.BR \-\-ladder .
+Encodes a durable preview at the requested long edge.
+.TP
+.B phase 2 or 3: tile pyramid
+Only with
+.BR \-\-tiles .
+Builds the multi-scale 256\(mu256 JPEG pyramid (plain files and archive members).
+.PP
+Stdout ends with a one-line Store tally (blobs, locators, media, tiles).
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show help and exit.
+.TP
+.BR \-q ", " \-\-quiet
+Suppress per-job progress on stderr.
+.TP
+.BI \-\-cache " DIR"
+Cache root (default:
+.I $XDG_CACHE_HOME/thumtoo
+or
+.IR ~/.cache/thumtoo ).
+.TP
+.BI \-\-ladder " EDGE"
+After probes, encode one soft preview per URI (largest policy edge \(<= EDGE).
+.TP
+.B \-\-tiles
+After probes, build tile pyramids for each sized URI.
+.TP
+.BI \-\-min\-scale " N"
+Finest tile scale to generate (default: 0 = full resolution).
+.TP
+.BI \-\-max\-scale " M"
+Coarsest tile scale (default: \-1 = until single-tile coverage).
+.TP
+.B \-\-stats
+Print detailed timings on stderr (implied by
+.B \-\-tiles
+/
+.BR \-\-ladder ).
+.TP
+.B \-\-stats\-line
+One-line timings (script-friendly).
+.TP
+.BI \-\-jobs " N"
+Worker threads (default: CPUs, max 32).
+.TP
+.BR \-\-sizes\-only ", " \-\-size\-only
+Size probes only (default when no
+.BR \-\-tiles / \-\-ladder / \-\-lqip ).
+Prints wall time and throughput; no soft or tile phase.
+.TP
+.B \-\-no\-cache
+Ephemeral Store: three SQLite
+.B :memory:
+databases (index/bulk/user). Nothing is written under
+.BR \-\-cache .
+Use for pure cold-probe timing without durable Store I/O.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B non-zero
+Usage error or fatal exception.
+.SH EXAMPLES
+.nf
+# Time cold size probes only (no biltoo):
+thumtoo-prepare --sizes-only --no-cache /path/to/archive.rar
+thumtoo-prepare --sizes-only --stats /path/to/archive.rar
+thumtoo-prepare --sizes-only --jobs 1 /path/to/archive.rar
+thumtoo-prepare --tiles /path/to/album/
+thumtoo-prepare --tiles /path/to/archive.rar
+thumtoo-prepare --ladder 512 --tiles photo.jpg
+thumtoo-status path photo.jpg
+.fi
+.SH SEE ALSO
+.BR thumtoo (7),
+.BR thumtoo-status (1),
+.BR thumtoo-tile (1),
+.BR thumtoo-gc (1),
+.BR thumtoo-archive (1),
+.BR thumtoo-bench (1)

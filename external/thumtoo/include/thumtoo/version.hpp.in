@@ -1,0 +1,85 @@
+// SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#pragma once
+
+#include <ostream>
+#include <string_view>
+
+// Generated at configure time from the top-level VERSION file (and optional
+// git/Nix suffix). Changing VERSION only regenerates this header and recompiles
+// translation units that include it — not the whole library via -D flags.
+
+#define THUMTOO_VERSION_MAJOR @THUMTOO_VERSION_MAJOR@
+#define THUMTOO_VERSION_MINOR @THUMTOO_VERSION_MINOR@
+#define THUMTOO_VERSION_PATCH @THUMTOO_VERSION_PATCH@
+#define THUMTOO_VERSION_STRING "@THUMTOO_VERSION_STRING@"
+
+/* Optional backends (1 = linked at build time, 0 = not available). */
+#ifndef THUMTOO_HAVE_UNARR
+#define THUMTOO_HAVE_UNARR @THUMTOO_HAVE_UNARR@
+#endif
+#ifndef THUMTOO_HAVE_MUPDF
+#define THUMTOO_HAVE_MUPDF @THUMTOO_HAVE_MUPDF@
+#endif
+#ifndef THUMTOO_HAVE_DJVU
+#define THUMTOO_HAVE_DJVU @THUMTOO_HAVE_DJVU@
+#endif
+#ifndef THUMTOO_HAVE_CURL
+#define THUMTOO_HAVE_CURL @THUMTOO_HAVE_CURL@
+#endif
+#ifndef THUMTOO_HAVE_DBUS
+#define THUMTOO_HAVE_DBUS @THUMTOO_HAVE_DBUS@
+#endif
+
+namespace thumtoo {
+
+/// Full version string (e.g. "0.1.0-dev.42+g1a2b3c4" or "0.1.0").
+[[nodiscard]] inline std::string_view version_string() noexcept {
+  return THUMTOO_VERSION_STRING;
+}
+
+[[nodiscard]] inline constexpr int version_major() noexcept {
+  return THUMTOO_VERSION_MAJOR;
+}
+[[nodiscard]] inline constexpr int version_minor() noexcept {
+  return THUMTOO_VERSION_MINOR;
+}
+[[nodiscard]] inline constexpr int version_patch() noexcept {
+  return THUMTOO_VERSION_PATCH;
+}
+
+[[nodiscard]] inline constexpr bool feature_unarr() noexcept {
+  return THUMTOO_HAVE_UNARR != 0;
+}
+[[nodiscard]] inline constexpr bool feature_mupdf() noexcept {
+  return THUMTOO_HAVE_MUPDF != 0;
+}
+[[nodiscard]] inline constexpr bool feature_djvu() noexcept {
+  return THUMTOO_HAVE_DJVU != 0;
+}
+[[nodiscard]] inline constexpr bool feature_curl() noexcept {
+  return THUMTOO_HAVE_CURL != 0;
+}
+[[nodiscard]] inline constexpr bool feature_dbus() noexcept {
+  return THUMTOO_HAVE_DBUS != 0;
+}
+
+/// Write "thumtoo <version>" plus optional feature lines (for --version).
+inline void print_version(std::ostream& os) {
+  os << "thumtoo " << version_string() << '\n';
+  const auto line = [&](const char* name, bool on) {
+    os << "  " << name << ": " << (on ? "enabled" : "missing") << '\n';
+  };
+  // Always-on deps in a normal build (linked PUBLIC / REQUIRED).
+  line("libarchive (zip/tar/7z/rar)", true);
+  line("libvips (decode/tiles)", true);
+  line("sqlite3 (store)", true);
+  line("libunarr (solid RAR/CBR)", feature_unarr());
+  line("MuPDF (PDF/EPUB pages)", feature_mupdf());
+  line("DjVuLibre (DjVu pages)", feature_djvu());
+  line("libcurl (HTTP/S fetch)", feature_curl());
+  line("D-Bus XDG Thumbnailer1", feature_dbus());
+}
+
+}  // namespace thumtoo

@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: thumtoo
+Description: Media index and display-pixel ladder library
+Version: @THUMTOO_VERSION_STRING@
+Libs: -L${libdir} -lthumtoo
+Cflags: -I${includedir}
+Requires.private: sqlite3 vips libarchive

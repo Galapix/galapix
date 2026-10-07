@@ -1,0 +1,207 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO 7 "2026-09-17" "thumtoo" "Miscellaneous"
+.SH NAME
+thumtoo \- image cache and index library (overview and environment)
+.SH DESCRIPTION
+.B thumtoo
+is a
+.B cache and index library
+for image and document pixels. It is
+.B not
+an image viewer or file manager. Desktop applications such as biltoo open a
+.B Client
+against an on-disk
+.B Store
+and request sizes, soft previews, zoomable 256\(mu256 tile pyramids, archive
+member listings, and optional user data (tags, sets).
+.PP
+Hosts link
+.I libthumtoo
+and include headers under
+.IR <thumtoo/*.hpp> .
+Command-line tools
+.RB ( thumtoo-prepare ,
+.BR thumtoo-status ,
+.BR thumtoo-tile ,
+.BR thumtoo-gc ,
+.BR thumtoo-archive ,
+.BR thumtoo-bench )
+operate on the same Store layout.
+.SS Client model
+.TP
+.B open
+.BR thumtoo::Client::open ( cache_root , executor , workers , data_root )
+opens (or creates) the Store under
+.I cache_root
+and optional user data under
+.IR data_root .
+.TP
+.B get_*
+Non-blocking SQLite reads. Safe to call from a GUI thread.
+.TP
+.B request_*
+Enqueue work on a worker pool (default: hardware concurrency, capped).
+Completion callbacks run on the
+.B Executor
+passed to
+.BR open()
+(GUI loop, main thread, or inline for CLI tools) \(em never directly from a
+worker unless the Executor is inline.
+.TP
+.B Interest / tiles
+Hosts publish which URIs are visible (interest). Tiles are 256\(mu256 cells;
+scale 0 is full resolution; each +1 halves linear size (floor-half dimensions).
+See
+.IR TILES.md
+in the source tree.
+.SS Cache layout
+Default durable cache root:
+.IP
+.I $XDG_CACHE_HOME/thumtoo/
+.br
+or, if
+.B XDG_CACHE_HOME
+is unset,
+.IR ~/.cache/thumtoo/ .
+.PP
+Typical contents (schema \(>= 100):
+.IP
+.I index.sqlite
+\(em locators, media rows, tile coverage
+.br
+.I blobs/
+\(em content-addressed payloads
+.PP
+User overlay (tags and related data) defaults to
+.IR data_root
+=
+.I $XDG_STATE_HOME/thumtoo/
+(or
+.IR ~/.local/state/thumtoo/ )
+when
+.B Client::open
+is called with an empty
+.IR data_root .
+Hosts may still pass an explicit path.
+.PP
+The Store is always rooted at the cache directory itself (legacy nested
+.I store/
+layouts are migrated when present). Older environment switches such as
+.B THUMTOO_STORE_ROOT
+and
+.B THUMTOO_STORE_ONLY
+are ignored by current clients.
+.SS URIs
+Paths are stored as URIs (for example
+.IR file:///path/to/image.jpg ).
+Archive members use an archive URI form (see
+.BR thumtoo-archive (1)
+and
+.BR thumtoo-status (1)
+examples).
+.SH ENVIRONMENT
+Boolean flags treat a non-empty value as on, except
+.BR 0 ,
+.BR false ,
+and
+.B no
+(case-insensitive first letter) which are off.
+.TP
+.B THUMTOO_DEBUG
+When on, the Client prints task traces to
+.B stderr
+and appends the same lines to
+.I $XDG_CACHE_HOME/thumtoo/debug.log
+(or
+.IR ~/.cache/thumtoo/debug.log ).
+Re-checked at runtime so a late
+.B export
+in the same process takes effect.
+.TP
+.B BILTOO_THUMTOO_DEBUG
+Same effect as
+.B THUMTOO_DEBUG
+(host alias used by biltoo).
+.TP
+.B THUMTOO_DEBUG_OVERLAY
+When on, enables debug overlay helpers (also accepted as
+.BR BILTOO_DEBUG_OVERLAY ).
+.TP
+.B THUMTOO_DEBUG_APPEARANCE
+When on, traces appearance/grade paths (also accepted as
+.BR BILTOO_DEBUG_APPEARANCE ).
+.TP
+.B THUMTOO_DEBUG_ARCHIVE
+When on, prints archive open / TOC / extract / visit lines to
+.B stderr
+(prefix
+.BR thumtoo-archive: ).
+Also enabled when
+.B THUMTOO_DEBUG
+is on. Useful for solid RAR timing without full Client task noise.
+.TP
+.B THUMTOO_MIRROR_ARCHIVES
+When on, sequential extract may copy the archive once under
+.I cache/archive_mirror/
+before opening (default off).
+.TP
+.B XDG_CACHE_HOME
+Parent of the default cache directory
+.IR thumtoo/ .
+CLI tools that take
+.B \-\-cache
+override this for that invocation only.
+.TP
+.B XDG_STATE_HOME
+Default parent for
+.I data_root
+.RI ( user.sqlite
+tags/collections) and appearance state when present; otherwise
+.B HOME
+.RI ( ~/.local/state ).
+.TP
+.B XDG_DATA_HOME
+Legacy location for
+.IR user.sqlite ;
+on open, a missing state-root file is migrated from here when present.
+.TP
+.B HOME
+Fallback for cache and state paths when XDG variables are unset.
+.PP
+Build-time feature macros (not runtime environment), such as
+.BR THUMTOO_HAVE_CURL ,
+.BR THUMTOO_HAVE_MUPDF ,
+and
+.BR THUMTOO_HAVE_DJVU ,
+select optional backends at compile time. Hosts may also test
+.B THUMTOO_API_*
+macros in
+.I <thumtoo/client.hpp>
+for API availability.
+.SH FILES
+.TP
+.I $XDG_CACHE_HOME/thumtoo/
+Default Store root (index, blobs, optional debug.log).
+.TP
+.I $XDG_STATE_HOME/thumtoo/
+Default
+.I data_root
+.RI ( user.sqlite )
+and appearance state.
+.SH SEE ALSO
+.BR thumtoo-prepare (1),
+.BR thumtoo-status (1),
+.BR thumtoo-tile (1),
+.BR thumtoo-gc (1),
+.BR thumtoo-archive (1),
+.BR thumtoo-bench (1)
+.PP
+Source documentation:
+.IR README.md ,
+.IR INTEGRATION.md ,
+.IR TILES.md ,
+.IR docs/DATABASE.md ,
+.IR docs/HOST_CUTOVER.md .
+.SH AUTHOR
+Ingo Ruhnke <grumbel@gmail.com>

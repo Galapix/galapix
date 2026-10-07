@@ -1,0 +1,48 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-STATUS 1 "2026-09-16" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-status \- inspect a thumtoo Store cache or one path/URI
+.SH SYNOPSIS
+.B thumtoo-status
+[\fB\-\-cache\fR \fIDIR\fR]
+[\fBsummary\fR|\fBstore\fR]
+.P
+.B thumtoo-status
+[\fB\-\-cache\fR \fIDIR\fR]
+.B path
+\fIPATH\fR|\fIURI\fR
+.SH DESCRIPTION
+Report redesign Store (schema \(>= 100) contents.
+.TP
+.B summary
+(default) Cache layout, schema version, blob/locator/media/region/tile counts.
+.TP
+.B path PATH|URI
+Per-URI report: locator, opaque
+.B mtime_ticks
+(file_clock fingerprint; may be negative, not Unix nanoseconds), optional
+wall-clock
+.BR file_mtime ,
+LQIP presence, media size, and tile pyramid coverage
+(min/max scale, per-scale have/expected/missing).
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show help and exit.
+.TP
+.BI \-\-cache " DIR"
+Cache root (default:
+.I $XDG_CACHE_HOME/thumtoo
+or
+.IR ~/.cache/thumtoo ).
+.SH EXAMPLES
+.nf
+thumtoo-status
+thumtoo-status path /home/me/pic.jpg
+thumtoo-status path 'file:///a.rar//archive:dir/img.jpg'
+.fi
+.SH SEE ALSO
+.BR thumtoo (7),
+.BR thumtoo-prepare (1),
+.BR thumtoo-gc (1)

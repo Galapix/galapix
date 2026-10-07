@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "tool": "thumtoo-gp-archive",
+  "note": "Example baseline structure only — replace with machine-captured JSON.",
+  "backend": "libarchive",
+  "unarr_built": false,
+  "members": 2,
+  "metrics": {
+    "toc_ms": 0.03,
+    "extract_all_ms": 0.5,
+    "extract_first_ms": 0.3,
+    "extract_last_ms": 0.12,
+    "extract_scattered10_ms": 0.45
+  }
+}
