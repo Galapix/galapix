@@ -121,18 +121,10 @@
                 exit 1
               fi
               GALAPIX_BUILD_DIR="''${GALAPIX_BUILD_DIR:-/tmp/galapix-build}"
-              # Resolve thumtoo source for -DTHUMTOO_DIR:
-              # 1) explicit THUMTOO_DIR
-              # 2) sibling checkout ../thumtoo (common when developing both)
-              # 3) vendored git subtree external/thumtoo
-              if [ -z "''${THUMTOO_DIR:-}" ]; then
-                if [ -f "$GALAPIX_SOURCE/../thumtoo/CMakeLists.txt" ]; then
-                  THUMTOO_DIR="$(cd "$GALAPIX_SOURCE/../thumtoo" && pwd)"
-                else
-                  THUMTOO_DIR="$GALAPIX_SOURCE/external/thumtoo"
-                fi
-              fi
-              export THUMTOO_DIR
+              # thumtoo source for -DTHUMTOO_DIR: the vendored git subtree
+              # external/thumtoo, or THUMTOO_SOURCE_DIR to build against
+              # another checkout
+              THUMTOO_DIR="''${THUMTOO_SOURCE_DIR:-$GALAPIX_SOURCE/external/thumtoo}"
             '';
             galapixConfigure = pkgs.writeShellScriptBin "galapix-configure" (
               galapixDevPreamble
@@ -235,7 +227,7 @@
 echo "  version: cmake reads VERSION + .git (0.3.0-dev.N+gHASH)"
               echo "  galapix-build         # incremental cmake --build"
               echo "  galapix-run [args]    # build + run galapix"
-              echo "  THUMTOO_DIR           # override thumtoo source (default: ../thumtoo or external/thumtoo)"
+              echo "  THUMTOO_SOURCE_DIR    # override thumtoo source (default: external/thumtoo)"
               echo "  galapix-run-gdb [args]# build + gdb --args galapix"
               echo "  nix build             # packaged RelWithDebInfo-style derivation"
               echo "  also: nix develop -c galapix-run /tmp/*.jpg"

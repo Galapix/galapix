@@ -100,7 +100,7 @@ galapix-run [OPTIONS] [FILES]...
 ```
 
 Override the thumtoo source tree when testing a local checkout with
-`THUMTOO_DIR=/path/to/thumtoo galapix-configure` in `nix develop`.
+`THUMTOO_SOURCE_DIR=/path/to/thumtoo galapix-configure` in `nix develop`.
 
 The flake builds with `-DWITH_THUMTOO=ON`; `THUMTOO_DIR` defaults to the
 vendored `external/thumtoo`.

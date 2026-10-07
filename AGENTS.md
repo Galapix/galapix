@@ -161,10 +161,10 @@ Changes needed by Galapix are made in the subtree and upstreamed in batches
   subdirectory, like logmich/sexp-cpp/surf).
 
 **Local thumtoo while developing both:** `galapix-run` / `galapix-configure`
-resolve `THUMTOO_DIR` as (1) env `THUMTOO_DIR`, (2) sibling
-`$GALAPIX_SOURCE/../thumtoo`, (3) vendored `external/thumtoo`. If the CMake
-cache still points at another tree, `galapix-build` reconfigures
-automatically. Printout: `galapix-run: THUMTOO_DIR=…` on stderr.
+pass `-DTHUMTOO_DIR` from env `THUMTOO_SOURCE_DIR`, defaulting to the
+vendored `external/thumtoo`. If the CMake cache still points at another
+tree, `galapix-build` reconfigures automatically. Printout:
+`galapix-run: THUMTOO_DIR=…` on stderr.
 
 Interactive `request_tile` only builds the requested scale (upstream thumtoo
 as of the single-scale change). Full pyramids: `request_tile_pyramid` /
@@ -190,7 +190,7 @@ galapix-configure   # cmake -G Ninja -DWITH_THUMTOO=ON …
 galapix-build
 galapix-run /tmp/*.jpg --verbose --debug
 # galapix-run-gdb …   # gdb --args galapix
-# Override: GALAPIX_BUILD_DIR=… THUMTOO_DIR=… CMAKE_BUILD_TYPE=…
+# Override: GALAPIX_BUILD_DIR=… THUMTOO_SOURCE_DIR=… CMAKE_BUILD_TYPE=…
 
 # Manual
 cmake -B build -DWITH_THUMTOO=ON -DTHUMTOO_DIR=/path/to/thumtoo …
