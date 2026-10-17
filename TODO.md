@@ -13,14 +13,18 @@
 - `app_viewer`: force `OpenGLWindow::Api::GLES2` when `HAVE_OPENGLES2`.
 - flake: `-DUSE_OPENGLES2=ON`, drop `libGLU` (keep `libGL` for GLESv2 via glvnd).
 - wstdisplay already treats GLES 2.0 as baseline; no special GL features used.
+- **BCMHOST / `/opt/vc`:** legacy RPi only. pkg-config `glesv2` path never adds
+  `/opt/vc` (avoids shadowing mesa GLES headers). Auto-enable GLES if
+  `bcm_host.h` is present and the option was still off; `/opt/vc` include/lib
+  only on the find_library fallback when BCM is detected.
 
 ### Apply
 ```bash
-git pull /path/to/galapix-173.1-gles2-483037b.bundle HEAD
+git pull /path/to/galapix-173.2-gles2-483037b.bundle HEAD
 ```
 
 ### Done criteria
-- [x] Bundle **173**
+- [x] Bundle **173.2**
 
 ---
 

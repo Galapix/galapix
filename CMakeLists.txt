@@ -136,31 +136,45 @@ pkg_search_module(MAGICKXX REQUIRED Magick++ GraphicsMagick++ IMPORTED_TARGET)
 
 pkg_search_module(SIGCXX REQUIRED sigc++-3.0 IMPORTED_TARGET)
 
+# Legacy Raspberry Pi (pre-mesa / proprietary stack): headers under /opt/vc.
+# Modern Pi OS and desktop GLES use mesa; that path must never shadow system
+# GLES2 headers when pkg-config finds a normal glesv2.
 check_include_file(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
-if(USE_OPENGLES2 OR HAVE_BCMHOST)
+if(HAVE_BCMHOST AND NOT USE_OPENGLES2)
+  message(STATUS "Legacy bcm_host.h found at /opt/vc; enabling OpenGL ES 2.0")
+  set(USE_OPENGLES2 ON CACHE BOOL "Use OpenGL ES 2.0 instead of desktop OpenGL" FORCE)
+endif()
+
+if(USE_OPENGLES2)
   message(STATUS "Using OpenGL ES 2.0")
-  # Prefer pkg-config (Nix, distros); fall back to find_library.
+  # Prefer pkg-config (Nix, distros, modern Raspberry Pi OS / mesa).
   pkg_check_modules(GLESV2 IMPORTED_TARGET glesv2)
   if(TARGET PkgConfig::GLESV2)
     add_library(OpenGL::GL INTERFACE IMPORTED)
     target_link_libraries(OpenGL::GL INTERFACE PkgConfig::GLESV2)
+    # Do not add /opt/vc here: it would shadow mesa GLES headers if both exist.
   else()
+    # Fall back to find_library. Optional OPENGL_LIBPATH; legacy Pi uses /opt/vc/lib.
+    if(HAVE_BCMHOST)
+      list(APPEND CMAKE_LIBRARY_PATH /opt/vc/lib)
+    endif()
     find_library(OPENGL_LIBRARIES GLESv2 ${OPENGL_LIBPATH})
     if(NOT OPENGL_LIBRARIES)
       message(FATAL_ERROR "USE_OPENGLES2 is ON but libGLESv2 was not found")
     endif()
     add_library(OpenGL::GL INTERFACE IMPORTED)
     target_link_libraries(OpenGL::GL INTERFACE ${OPENGL_LIBRARIES})
+    # Proprietary stack only: GLES headers and libs live under /opt/vc.
+    if(HAVE_BCMHOST)
+      target_include_directories(OpenGL::GL INTERFACE /opt/vc/include)
+      target_link_directories(OpenGL::GL INTERFACE /opt/vc/lib)
+    endif()
   endif()
   # HAVE_OPENGLES2: galapix sources (window API, icon uploads).
   # IMGUI_IMPL_OPENGL_ES2: Dear ImGui backend uses GLES2 headers / no desktop loader.
   target_compile_definitions(OpenGL::GL INTERFACE
     HAVE_OPENGLES2
     IMGUI_IMPL_OPENGL_ES2)
-  if(HAVE_BCMHOST)
-    target_include_directories(OpenGL::GL INTERFACE /opt/vc/include)
-    target_link_directories(OpenGL::GL INTERFACE /opt/vc/lib)
-  endif()
   # No GLU on GLES; keep an empty target so link lines stay uniform.
   add_library(OpenGL::GLU INTERFACE IMPORTED)
 else()

@@ -155,6 +155,11 @@ a `Viewer` without a window.
   When ON, links `libGLESv2`, defines `HAVE_OPENGLES2` + `IMGUI_IMPL_OPENGL_ES2`,
   and forces `OpenGLWindow::Api::GLES2`. Desktop GL 3.3 remains available with
   `-DUSE_OPENGLES2=OFF` (needs `find_package(OpenGL)` / libGL + optional GLU).
+- **Legacy Raspberry Pi (`/opt/vc`, `bcm_host.h`):** only used when pkg-config
+  `glesv2` is missing. If `bcm_host.h` is found and GLES was not requested,
+  CMake forces `USE_OPENGLES2` and may add `/opt/vc` include/lib for the
+  proprietary stack. Modern mesa GLES (Nix, current Pi OS) never gets those
+  paths, so `/opt/vc` cannot shadow system `GLES2/gl2.h`.
 - Tile textures have the cell's exact size (edge cells smaller), clamped
   and linear, level 0 only.
 - `ThumtooTileProvider` max_scale must match thumtoo (until image fits in one
