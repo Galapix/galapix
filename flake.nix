@@ -60,6 +60,7 @@
               # "-DBUILD_TESTS=ON"
               "-DBUILD_BENCHMARKS=ON"
               "-DWITH_THUMTOO=ON"
+              "-DUSE_OPENGLES2=ON"
               "-DPROJECT_VERSION_FULL=${version}"
               # SQLiteCpp ships a deprecation note on SQLite::SQLite3 (upstream).
               "-Wno-dev"
@@ -87,8 +88,9 @@
               freetype # wstdisplay fonts
               curl
               imagemagick
+              # GLES2 path (USE_OPENGLES2=ON): libGL (glvnd) provides libGLESv2.
+              # Desktop OpenGL / GLU are optional via CMake USE_OPENGLES2=OFF.
               libGL
-              libGLU
               # libexif: no direct Galapix refs; surf is built with WITH_EXIF=OFF
               libspnav
 

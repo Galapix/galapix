@@ -1,5 +1,29 @@
 # TODO / agent handoff
 
+## Status (2026-10-17)
+
+**Tip: galapix-173-gles2.** Port to OpenGL ES 2.0; desktop OpenGL optional.
+
+### This change
+- CMake `USE_OPENGLES2`: find `glesv2` (pkg-config) or `libGLESv2`; define
+  `HAVE_OPENGLES2` + `IMGUI_IMPL_OPENGL_ES2`; empty `OpenGL::GLU` stub.
+- Desktop path unchanged (`find_package(OpenGL)`); GLU only if provided.
+- `imgui_overlay`: GLES2 headers, skip `GL_UNPACK_ROW_LENGTH` when absent,
+  ImGui GLSL `#version 100` vs `#version 130`.
+- `app_viewer`: force `OpenGLWindow::Api::GLES2` when `HAVE_OPENGLES2`.
+- flake: `-DUSE_OPENGLES2=ON`, drop `libGLU` (keep `libGL` for GLESv2 via glvnd).
+- wstdisplay already treats GLES 2.0 as baseline; no special GL features used.
+
+### Apply
+```bash
+git pull /path/to/galapix-173.1-gles2-483037b.bundle HEAD
+```
+
+### Done criteria
+- [x] Bundle **173**
+
+---
+
 ## Status (2026-09-30)
 
 **Tip:** galapix thumtoo flake wiring (biltoo-style).

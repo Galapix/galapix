@@ -150,7 +150,11 @@ a `Viewer` without a window.
 - Window events must reach `wstdisplay::OpenGLWindow::handle_event`; on
   `sig_resized` call `Viewer::reshape`.
 - wstdisplay keeps its glad loader private; the few raw GL calls in Galapix
-  (ImGui icons) use `<GL/gl.h>`.
+  (ImGui icons) use `<GLES2/gl2.h>` when `HAVE_OPENGLES2`, else `<GL/gl.h>`.
+- **GLES2 vs desktop OpenGL:** CMake option `USE_OPENGLES2` (flake sets ON).
+  When ON, links `libGLESv2`, defines `HAVE_OPENGLES2` + `IMGUI_IMPL_OPENGL_ES2`,
+  and forces `OpenGLWindow::Api::GLES2`. Desktop GL 3.3 remains available with
+  `-DUSE_OPENGLES2=OFF` (needs `find_package(OpenGL)` / libGL + optional GLU).
 - Tile textures have the cell's exact size (edge cells smaller), clamped
   and linear, level 0 only.
 - `ThumtooTileProvider` max_scale must match thumtoo (until image fits in one
