@@ -98,6 +98,9 @@ AppViewer::AppViewer(Size const& size, bool fullscreen, int  anti_aliasing,
     .mode = fullscreen ? wstdisplay::OpenGLWindow::Mode::FullscreenDesktop : wstdisplay::OpenGLWindow::Mode::Window,
     .resizable = true,
     .anti_aliasing = anti_aliasing,
+#ifdef HAVE_OPENGLES2
+    .api = wstdisplay::OpenGLWindow::Api::GLES2,
+#endif
     // Pace the loop with display refresh. A fixed SDL_Delay(10) previously
     // left only ~6ms of budget for draw+upload at 60Hz and guaranteed jank.
     .vsync = true})),

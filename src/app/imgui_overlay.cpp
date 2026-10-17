@@ -23,7 +23,11 @@
 #include <vector>
 
 #include <SDL_image.h>
-#include <GL/gl.h>
+#ifdef HAVE_OPENGLES2
+#  include <GLES2/gl2.h>
+#else
+#  include <GL/gl.h>
+#endif
 #include <imgui.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
@@ -157,7 +161,10 @@ ImguiOverlay::load_icon_png(IconId id, std::string const& filename)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  // GLES 2.0 has no GL_UNPACK_ROW_LENGTH (desktop / some ES extensions only).
+#ifdef GL_UNPACK_ROW_LENGTH
   glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+#endif
   glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, rgba->w, rgba->h, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, rgba->pixels);
@@ -246,7 +253,13 @@ ImguiOverlay::init(SDL_Window* window, SDL_GLContext gl_context)
     ImGui::DestroyContext();
     return false;
   }
-  if (!ImGui_ImplOpenGL3_Init("#version 130")) {
+  // GLES 2.0 → GLSL ES 1.00; desktop GL 3.x → GLSL 130 (matches wst GL 3.3 core).
+#ifdef HAVE_OPENGLES2
+  char const* glsl_version = "#version 100";
+#else
+  char const* glsl_version = "#version 130";
+#endif
+  if (!ImGui_ImplOpenGL3_Init(glsl_version)) {
     ImGui_ImplSDL2_Shutdown();
     ImGui::DestroyContext();
     return false;

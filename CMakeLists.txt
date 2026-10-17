@@ -102,7 +102,10 @@ message(STATUS "Galapix version: ${PROJECT_VERSION_FULL} (CMake PROJECT_VERSION=
 include(CheckIncludeFile)
 include(GNUInstallDirs)
 
-option(USE_OPENGLES2 "Use OpenGLES2 instead of OpenGL" OFF)
+# GLES 2.0 is the baseline (wstdisplay treats it as such). Desktop OpenGL 3.3
+# remains available when USE_OPENGLES2 is OFF (default OFF for local desktop
+# builds that already have GL; the flake enables GLES).
+option(USE_OPENGLES2 "Use OpenGL ES 2.0 instead of desktop OpenGL" OFF)
 option(THREADSANITIZER "Thread Sanitizer" OFF)
 option(WITH_THUMTOO "Use thumtoo as tile backend (required)" ON)
 set(THUMTOO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/thumtoo" CACHE PATH
@@ -135,21 +138,39 @@ pkg_search_module(SIGCXX REQUIRED sigc++-3.0 IMPORTED_TARGET)
 
 check_include_file(/opt/vc/include/bcm_host.h HAVE_BCMHOST)
 if(USE_OPENGLES2 OR HAVE_BCMHOST)
-  message(STATUS "Using OpenGLES2")
-  find_library(OPENGL_LIBRARIES GLESv2 ${OPENGL_LIBPATH})
-
-  add_library(OpenGL::GL INTERFACE IMPORTED)
-  target_link_libraries(OpenGL::GL INTERFACE ${OPENGL_LIBRARIES})
-  target_compile_definitions(OpenGL::GL INTERFACE HAVE_OPENGLES2)
+  message(STATUS "Using OpenGL ES 2.0")
+  # Prefer pkg-config (Nix, distros); fall back to find_library.
+  pkg_check_modules(GLESV2 IMPORTED_TARGET glesv2)
+  if(TARGET PkgConfig::GLESV2)
+    add_library(OpenGL::GL INTERFACE IMPORTED)
+    target_link_libraries(OpenGL::GL INTERFACE PkgConfig::GLESV2)
+  else()
+    find_library(OPENGL_LIBRARIES GLESv2 ${OPENGL_LIBPATH})
+    if(NOT OPENGL_LIBRARIES)
+      message(FATAL_ERROR "USE_OPENGLES2 is ON but libGLESv2 was not found")
+    endif()
+    add_library(OpenGL::GL INTERFACE IMPORTED)
+    target_link_libraries(OpenGL::GL INTERFACE ${OPENGL_LIBRARIES})
+  endif()
+  # HAVE_OPENGLES2: galapix sources (window API, icon uploads).
+  # IMGUI_IMPL_OPENGL_ES2: Dear ImGui backend uses GLES2 headers / no desktop loader.
+  target_compile_definitions(OpenGL::GL INTERFACE
+    HAVE_OPENGLES2
+    IMGUI_IMPL_OPENGL_ES2)
   if(HAVE_BCMHOST)
     target_include_directories(OpenGL::GL INTERFACE /opt/vc/include)
     target_link_directories(OpenGL::GL INTERFACE /opt/vc/lib)
   endif()
+  # No GLU on GLES; keep an empty target so link lines stay uniform.
   add_library(OpenGL::GLU INTERFACE IMPORTED)
 else()
   set(OpenGL_GL_PREFERENCE "GLVND")
   find_package(OpenGL REQUIRED)
   # GL entry points via glad (wstdisplay); do not link GLEW.
+  # OpenGL::GLU is provided by find_package(OpenGL) when present.
+  if(NOT TARGET OpenGL::GLU)
+    add_library(OpenGL::GLU INTERFACE IMPORTED)
+  endif()
 endif()
 
 # Libraries are vendored as git subtrees in external/ and built as
