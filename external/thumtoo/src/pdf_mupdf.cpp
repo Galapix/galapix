@@ -340,10 +340,8 @@ fz_pixmap* counting_get_pixmap(fz_context* ctx, fz_image* img, fz_irect* subarea
     gate->cv.wait(gate->mu, [&fl] { return fl.done; });
     --fl.waiters;
     fz_pixmap* shared = fl.result ? fz_keep_pixmap(ctx, fl.result) : nullptr;
-    if (shared) {
-      *subarea = fl.rect_out;
-      *l2factor = fl.l2_out;
-    }
+    const fz_irect rect_out = fl.rect_out;
+    const int l2_out = fl.l2_out;
     if (fl.waiters == 0) {
       fz_drop_pixmap(ctx, fl.result);
       fl.result = nullptr;
@@ -355,7 +353,20 @@ fz_pixmap* counting_get_pixmap(fz_context* ctx, fz_image* img, fz_irect* subarea
       }
     }
     gate->mu.unlock();
+    if (shared && l2_out > 0) {
+      // fz_get_pixmap_from_image subsamples the returned pixmap IN PLACE by
+      // the remaining l2factor. Every consumer needs its own copy or the
+      // threads corrupt each other's tiles.
+      fz_pixmap* priv = nullptr;
+      fz_var(priv);
+      fz_try(ctx) { priv = fz_clone_pixmap(ctx, shared); }
+      fz_always(ctx) { fz_drop_pixmap(ctx, shared); }
+      fz_catch(ctx) { priv = nullptr; }
+      shared = priv;
+    }
     if (shared) {
+      *subarea = rect_out;
+      *l2factor = l2_out;
       record_shared_wait(ci);
       return shared;
     }
@@ -374,6 +385,7 @@ fz_pixmap* counting_get_pixmap(fz_context* ctx, fz_image* img, fz_irect* subarea
   char message[256] = {0};
   fz_var(pix);
   fz_var(failed);
+  fz_var(code);
   const Clock::time_point t0 = Clock::now();
   fz_try(ctx) { pix = inner->get_pixmap(ctx, inner, subarea, w, h, l2factor); }
   fz_catch(ctx) {
@@ -383,12 +395,27 @@ fz_pixmap* counting_get_pixmap(fz_context* ctx, fz_image* img, fz_irect* subarea
   }
   const double ms = ms_since(t0);
 
+  // The caller (fz_get_pixmap_from_image) subsamples `pix` in place when
+  // *l2factor > 0 and the store shares it, so waiters must be handed an
+  // untouched snapshot, not `pix` itself.
+  fz_pixmap* snapshot = nullptr;
+  if (pix && !failed) {
+    if (*l2factor > 0) {
+      fz_var(snapshot);
+      fz_try(ctx) { snapshot = fz_clone_pixmap(ctx, pix); }
+      fz_catch(ctx) { snapshot = nullptr; }  // waiters then decode themselves
+    } else {
+      snapshot = fz_keep_pixmap(ctx, pix);
+    }
+  }
+
   gate->mu.lock();
   flight->done = true;
   flight->rect_out = *subarea;
   flight->l2_out = *l2factor;
-  if (flight->waiters > 0 && pix) {
-    flight->result = fz_keep_pixmap(ctx, pix);
+  if (flight->waiters > 0 && snapshot) {
+    flight->result = snapshot;
+    snapshot = nullptr;
   } else if (flight->waiters == 0) {
     for (auto it = gate->flights.begin(); it != gate->flights.end(); ++it) {
       if (&*it == flight) {
@@ -399,6 +426,7 @@ fz_pixmap* counting_get_pixmap(fz_context* ctx, fz_image* img, fz_irect* subarea
   }
   gate->cv.notify_all();
   gate->mu.unlock();
+  fz_drop_pixmap(ctx, snapshot);  // unused (no waiters)
 
   if (failed) {
     fz_throw(ctx, code, "%s", message);

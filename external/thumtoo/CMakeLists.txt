@@ -144,6 +144,9 @@ pkg_check_modules(LIBCURL IMPORTED_TARGET libcurl)
 
 add_library(thumtoo
   src/store.cpp
+  src/cache_reader.cpp
+  src/remote_protocol.cpp
+  src/remote_cache.cpp
   src/uri.cpp
   src/client.cpp
   src/activity.cpp
@@ -275,6 +278,19 @@ else()
 endif()
 thumtoo_export_to_parent(THUMTOO_HAVE_CURL)
 
+# Remote Client (Client::open_remote → thumtoo-serve): libcurl + nlohmann_json.
+find_package(nlohmann_json 3 CONFIG QUIET)
+set(THUMTOO_HAVE_REMOTE 0)
+if(LIBCURL_FOUND AND nlohmann_json_FOUND)
+  target_link_libraries(thumtoo PRIVATE nlohmann_json::nlohmann_json)
+  target_compile_definitions(thumtoo PUBLIC THUMTOO_HAVE_REMOTE=1)
+  set(THUMTOO_HAVE_REMOTE 1)
+  message(STATUS "thumtoo: remote Client enabled (thumtoo-serve over HTTP)")
+else()
+  message(STATUS "thumtoo: remote Client disabled (needs libcurl + nlohmann_json)")
+endif()
+thumtoo_export_to_parent(THUMTOO_HAVE_REMOTE)
+
 # Optional: session-bus Thumbnailer1 (XDG thumbnails). Cache paths work without it.
 option(THUMTOO_WITH_DBUS "XDG Thumbnailer1 via libdbus-1" ON)
 set(THUMTOO_HAVE_DBUS 0)
@@ -324,6 +340,25 @@ if(THUMTOO_BUILD_TOOLS)
   target_link_libraries(thumtoo-bench PRIVATE thumtoo)
   add_executable(thumtoo-page-profile tools/thumtoo_page_profile.cpp)
   target_link_libraries(thumtoo-page-profile PRIVATE thumtoo)
+
+  # Read-only HTTP server for a cache (docs/REMOTE.md). Optional: cpp-httplib.
+  find_package(httplib CONFIG QUIET)
+  if(httplib_FOUND AND THUMTOO_HAVE_REMOTE)
+    option(THUMTOO_BUILD_SERVE "Build thumtoo-serve (cpp-httplib)" ON)
+  else()
+    option(THUMTOO_BUILD_SERVE "Build thumtoo-serve (cpp-httplib)" OFF)
+  endif()
+  if(THUMTOO_BUILD_SERVE)
+    if(NOT httplib_FOUND OR NOT THUMTOO_HAVE_REMOTE)
+      message(FATAL_ERROR "THUMTOO_BUILD_SERVE needs cpp-httplib, libcurl and nlohmann_json")
+    endif()
+    add_executable(thumtoo-serve tools/thumtoo_serve.cpp)
+    target_link_libraries(thumtoo-serve PRIVATE thumtoo httplib::httplib
+                          nlohmann_json::nlohmann_json)
+    message(STATUS "thumtoo: thumtoo-serve enabled")
+  else()
+    message(STATUS "thumtoo: thumtoo-serve disabled (needs cpp-httplib + remote)")
+  endif()
   # The golden-path tools use only libvips / libarchive / libunarr, not the
   # thumtoo library; they take the generated version.hpp (header-only) for
   # --version and share the CLI/output layers in tools/golden/.
@@ -356,6 +391,17 @@ if(THUMTOO_BUILD_TESTS)
   add_executable(thumtoo-test-store-root tests/test_store_root.cpp)
   target_link_libraries(thumtoo-test-store-root PRIVATE thumtoo)
   add_test(NAME store_root COMMAND thumtoo-test-store-root)
+  if(TARGET thumtoo-serve)
+    add_executable(thumtoo-test-remote tests/test_remote.cpp)
+    target_link_libraries(thumtoo-test-remote PRIVATE thumtoo)
+    target_compile_definitions(thumtoo-test-remote PRIVATE
+      THUMTOO_SERVE_BIN="$<TARGET_FILE:thumtoo-serve>")
+    add_dependencies(thumtoo-test-remote thumtoo-serve)
+    add_test(NAME remote COMMAND thumtoo-test-remote)
+  endif()
+  add_executable(thumtoo-test-cache-reader tests/test_cache_reader.cpp)
+  target_link_libraries(thumtoo-test-cache-reader PRIVATE thumtoo)
+  add_test(NAME cache_reader COMMAND thumtoo-test-cache-reader)
   add_executable(thumtoo-test-store-only tests/test_store_only.cpp)
   target_link_libraries(thumtoo-test-store-only PRIVATE thumtoo)
   add_test(NAME store_only COMMAND thumtoo-test-store-only)
@@ -505,6 +551,10 @@ if(THUMTOO_BUILD_TOOLS)
   install(FILES
     man/thumtoo.7
     DESTINATION ${CMAKE_INSTALL_MANDIR}/man7)
+  if(TARGET thumtoo-serve)
+    install(TARGETS thumtoo-serve RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES man/thumtoo-serve.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+  endif()
 endif()
 
 # pkg-config for consumers (biltoo, etc.). Static lib: Requires.private lists public deps.

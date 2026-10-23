@@ -71,6 +71,18 @@ request_tile_pyramid(uri, min_scale, max_scale, callback)  // optional batch
 
 `TileBlob`: scale, x, y, width, height, codec, bytes.
 
+### Cache-only reads without a Client (`CacheReader`)
+
+`thumtoo/cache_reader.hpp` resolves location → `ContentMeta` / tile target /
+coverage / tile bytes from the Store alone (no source file, no workers, no
+writes). `Client::get_tile` / `get_tile_coverage` / `meta_from_store` are thin
+wrappers over it. Pair it with `Store::open_readonly(cache_root)` to read a
+cache next to a live writer (WAL; schema_version must match this build, nothing
+is created, migrated or deleted). `list_tiles(uri)` lists stored cells;
+`list_locations(prefix, after, limit)` pages blob-bound locator URIs. Basis for
+`thumtoo-serve` and the remote Client ([docs/REMOTE.md](docs/REMOTE.md)).
+Test: `tests/test_cache_reader.cpp`.
+
 On miss, interactive `request_tile(s)` encode **one cell** (not the full pyramid).
 JPEG `scale>0` uses DCT `jpegload` shrink; concurrent cells of the same file share
 one shrink decode (`jpeg_shrink_acquire`, tip 305). Pyramid prepare still builds

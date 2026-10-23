@@ -412,6 +412,67 @@ sqlite3* open_sqlite_memory() {
 
 }  // namespace
 
+namespace {
+
+sqlite3* open_sqlite_readonly(const std::filesystem::path& path) {
+  sqlite3* db = nullptr;
+  if (sqlite3_open_v2(path.string().c_str(), &db, SQLITE_OPEN_READONLY,
+                      nullptr) != SQLITE_OK) {
+    const char* msg = db ? sqlite3_errmsg(db) : "open failed";
+    std::string err = path.string() + ": " + (msg ? msg : "");
+    if (db) sqlite3_close(db);
+    throw std::runtime_error(err);
+  }
+  // No journal_mode pragma: that is a write. The writer keeps the file in WAL.
+  exec_sql(db, "PRAGMA busy_timeout=5000;");
+  exec_sql(db, "PRAGMA query_only=ON;");
+  return db;
+}
+
+int require_schema_version(sqlite3* db, const std::filesystem::path& path,
+                           int want) {
+  auto ver = meta_get_db(db, kSchemaMetaVersionKey);
+  if (!ver) {
+    throw std::runtime_error(path.string() + ": no schema_version");
+  }
+  const int v = std::stoi(*ver);
+  if (v != want) {
+    throw std::runtime_error(
+        path.string() + ": schema_version " + std::to_string(v) +
+        ", this build reads " + std::to_string(want) +
+        (v < want ? " (open the cache once with a thumtoo writer to migrate)"
+                  : " (cache was written by a newer thumtoo)"));
+  }
+  return v;
+}
+
+}  // namespace
+
+Store Store::open_readonly(const std::filesystem::path& cache_root) {
+  namespace fs = std::filesystem;
+  const fs::path index_path = cache_root / "index.sqlite";
+  const fs::path bulk_path = cache_root / "bulk.sqlite";
+  for (const auto& p : {index_path, bulk_path}) {
+    std::error_code ec;
+    if (!fs::is_regular_file(p, ec)) {
+      throw std::runtime_error(p.string() + ": no thumtoo cache file");
+    }
+  }
+  sqlite3* index = open_sqlite_readonly(index_path);
+  sqlite3* bulk = nullptr;
+  try {
+    bulk = open_sqlite_readonly(bulk_path);
+  } catch (...) {
+    sqlite3_close(index);
+    throw;
+  }
+  Store store(index, bulk, /*user=*/nullptr, cache_root, /*data_root=*/{}, 0);
+  store.index_schema_version_ =
+      require_schema_version(store.index_, index_path, kStoreIndexSchemaVersion);
+  require_schema_version(store.bulk_, bulk_path, kStoreBulkSchemaVersion);
+  return store;
+}
+
 Store Store::open_memory() {
   sqlite3* index = open_sqlite_memory();
   sqlite3* bulk = open_sqlite_memory();
@@ -1465,6 +1526,61 @@ std::vector<Store::LocatorRow> Store::list_locators(int limit) const {
           reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
     }
     out.push_back(std::move(r));
+  }
+  sqlite3_finalize(stmt);
+  return out;
+}
+
+std::vector<std::string> Store::list_locator_uris(std::string_view uri_prefix,
+                                                  std::string_view after,
+                                                  int limit) const {
+  if (limit <= 0) return {};
+  sqlite3_stmt* stmt = nullptr;
+  if (sqlite3_prepare_v2(index_,
+                         "SELECT uri FROM locator WHERE uri >= ?1 AND uri > ?2 "
+                         "AND blob_id IS NOT NULL ORDER BY uri LIMIT ?3;",
+                         -1, &stmt, nullptr) != SQLITE_OK) {
+    throw_sqlite(index_, "prepare list_locator_uris");
+  }
+  // An empty string_view may have data() == nullptr, which binds SQL NULL.
+  const std::string prefix_s(uri_prefix);
+  const std::string after_s(after);
+  sqlite3_bind_text(stmt, 1, prefix_s.c_str(), -1, SQLITE_TRANSIENT);
+  sqlite3_bind_text(stmt, 2, after_s.c_str(), -1, SQLITE_TRANSIENT);
+  sqlite3_bind_int(stmt, 3, limit);
+  std::vector<std::string> out;
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    std::string uri(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
+                    static_cast<std::size_t>(sqlite3_column_bytes(stmt, 0)));
+    // Rows are in byte order, so the first non-match ends the prefix range.
+    if (!uri.starts_with(uri_prefix)) break;
+    out.push_back(std::move(uri));
+  }
+  sqlite3_finalize(stmt);
+  return out;
+}
+
+std::vector<std::string> Store::list_locator_uris_like(
+    std::string_view uri_like_pattern, std::string_view after,
+    int limit) const {
+  if (limit <= 0 || uri_like_pattern.empty()) return {};
+  sqlite3_stmt* stmt = nullptr;
+  if (sqlite3_prepare_v2(index_,
+                         "SELECT uri FROM locator WHERE uri LIKE ?1 ESCAPE '\\' "
+                         "AND uri > ?2 AND blob_id IS NOT NULL ORDER BY uri "
+                         "LIMIT ?3;",
+                         -1, &stmt, nullptr) != SQLITE_OK) {
+    throw_sqlite(index_, "prepare list_locator_uris_like");
+  }
+  const std::string pattern_s(uri_like_pattern);
+  const std::string after_s(after);
+  sqlite3_bind_text(stmt, 1, pattern_s.c_str(), -1, SQLITE_TRANSIENT);
+  sqlite3_bind_text(stmt, 2, after_s.c_str(), -1, SQLITE_TRANSIENT);
+  sqlite3_bind_int(stmt, 3, limit);
+  std::vector<std::string> out;
+  while (sqlite3_step(stmt) == SQLITE_ROW) {
+    out.emplace_back(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)),
+                     static_cast<std::size_t>(sqlite3_column_bytes(stmt, 0)));
   }
   sqlite3_finalize(stmt);
   return out;

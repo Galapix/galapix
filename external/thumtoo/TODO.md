@@ -1,5 +1,19 @@
 # TODO / agent handoff
 
+## Status (2026-10-23)
+
+**Tip:** `thumtoo-serve` + `Client::open_remote` ([docs/REMOTE.md](docs/REMOTE.md)).
+Read-only HTTP server (cpp-httplib, optional `THUMTOO_BUILD_SERVE`) over
+`Store::open_readonly` + `CacheReader`; token auth (loopback exempt), no TLS,
+`--allow-prefix`. Remote Client = same `Client` class with `remote_`
+(`src/remote_cache.*`, libcurl + nlohmann_json): get_* from an in-RAM memo
+filled by listings / request_size, request_tile_cells over HTTP, 404 →
+Unavailable. Tests `test_remote` (spawns the server), `test_cache_reader`.
+galapix: `--thumtoo-cache http://HOST:PORT/?token=…` + `-p PATTERN`.
+
+**Later:** parallel cell fetch inside one request_tile_cells batch; HTTP
+keep-alive tuning; optional generate-on-miss (server would become a writer).
+
 ## Status (2026-10-07)
 
 **Tip:** PDF rendering rewrite — shared display lists, decode-once images,

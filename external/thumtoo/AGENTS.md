@@ -37,6 +37,7 @@ Post-release: prefer SQLite schema migration over cache wipe (see docs/DIRTOO_BA
 | [docs/BLOB_AND_OVERLAY.md](docs/BLOB_AND_OVERLAY.md) | Pointer only → DATABASE.md |
 | [docs/DIRTOO_BACKBONE.md](docs/DIRTOO_BACKBONE.md) | dirtoo virtual FS backbone; schema migrate policy; tags/sets JSON |
 | [docs/BENCHMARK_KIT.md](docs/BENCHMARK_KIT.md) | Benchmark kit plan (codec/archive/golden paths/corpus flake) |
+| [docs/REMOTE.md](docs/REMOTE.md) | thumtoo-serve routes/auth; Client::open_remote contract |
 
 ## Handoff
 

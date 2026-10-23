@@ -4,6 +4,7 @@
 #pragma once
 
 #include "thumtoo/archive.hpp"
+#include "thumtoo/cache_reader.hpp"
 #include "thumtoo/executor.hpp"
 #include "thumtoo/store.hpp"
 #include "thumtoo/types.hpp"
@@ -31,6 +32,9 @@
 #include <vector>
 
 namespace thumtoo {
+
+class RemoteCache;
+struct RemoteInfo;
 
 /// Host feature probes (biltoo may #ifdef these when linking older trees).
 #ifndef THUMTOO_API_INTEREST_EPOCH
@@ -120,7 +124,26 @@ class Client {
   static std::unique_ptr<Client> open_memory(Executor executor = {},
                                              unsigned worker_threads = 0);
 
-  /// Redesign index/bulk/user (Store-only).
+  /// Read-only Client on a thumtoo-serve (docs/REMOTE.md):
+  /// `http://host:port/?token=T`. Throws std::runtime_error when the server is
+  /// unreachable, rejects the token, or thumtoo lacks remote support.
+  ///
+  /// Browse/view subset with the same threading contract: get_size /
+  /// get_meta / get_tile_coverage / get_lqip answer from an in-RAM memo filled
+  /// by list_locators* and request_size (never block on the network);
+  /// request_size, request_tile_cells and request_tile fetch on the workers.
+  /// Cells the server does not have answer Unavailable (it never generates).
+  /// store() is unavailable; tags, prepare, purge and pixel requests are
+  /// no-ops or misses.
+  static std::unique_ptr<Client> open_remote(std::string_view url,
+                                             Executor executor = {},
+                                             unsigned worker_threads = 0);
+
+  [[nodiscard]] bool is_remote() const noexcept { return remote_ != nullptr; }
+  /// Base URL of a remote Client (token stripped); empty for a local one.
+  [[nodiscard]] std::string remote_url() const;
+
+  /// Redesign index/bulk/user (Store-only). Local Clients only.
   [[nodiscard]] Store& store() { return *store_; }
   [[nodiscard]] const Store& store() const { return *store_; }
 
@@ -603,10 +626,7 @@ class Client {
                              const std::vector<TileBlob>& tiles);
 
   /// Resolve pure/page content_id to Store media+region for tile read fallback.
-  struct StoreTileTarget {
-    std::int64_t media_id = 0;
-    std::int64_t region_id = 0;
-  };
+  using StoreTileTarget = CacheReader::TileTarget;
   [[nodiscard]] std::optional<StoreTileTarget> store_tile_target_for_content_id(
       std::string_view content_id) const;
 
@@ -615,6 +635,12 @@ class Client {
       std::string_view uri) const;
   [[nodiscard]] LocatorRow locator_row_from_store(
       const Store::LocatorRow& sl) const;
+  [[nodiscard]] static LocatorRow locator_row_from_remote(const RemoteInfo& info);
+  /// filter = RemoteCache::ListFilter (int keeps remote_cache.hpp private).
+  [[nodiscard]] std::vector<LocatorRow> list_remote_locators(
+      int filter, std::string_view value, int limit) const;
+  void handle_probe_size_remote(Job& job);
+  void handle_ensure_tiles_remote(Job& job);
 
   /// Ensure a Store blob + locators for an archive container (no full-file hash).
   [[nodiscard]] std::optional<std::int64_t> ensure_store_container_blob(
@@ -684,6 +710,8 @@ class Client {
       std::string_view url);
 
   std::unique_ptr<Store> store_;
+  /// Set for open_remote Clients (store_ is null then).
+  std::unique_ptr<RemoteCache> remote_;
   Executor executor_;
 
   mutable std::mutex mu_;  // also locked from const interest_epoch()

@@ -1,0 +1,56 @@
+.\" SPDX-FileCopyrightText: 2026 Ingo Ruhnke <grumbel@gmail.com>
+.\" SPDX-License-Identifier: GPL-3.0-or-later
+.TH THUMTOO-SERVE 1 "2026-10-23" "thumtoo" "User Commands"
+.SH NAME
+thumtoo-serve \- serve a thumtoo cache read-only over HTTP
+.SH SYNOPSIS
+.B thumtoo-serve
+[\fIOPTION\fR]...
+.SH DESCRIPTION
+Exposes the locations, metadata and stored tiles of a thumtoo cache over
+HTTP for remote viewers (a thumtoo Client opened with
+.BR Client::open_remote ,
+e.g. galapix with
+.BR "\-\-thumtoo\-cache http://HOST:PORT/?token=..." ).
+Nothing is generated: a tile that is not in the cache answers 404. The cache
+is opened read-only and may be in use by other programs.
+.SH OPTIONS
+.TP
+.BI \-\-cache " DIR"
+Cache root (default \fI$XDG_CACHE_HOME/thumtoo\fR or \fI~/.cache/thumtoo\fR).
+.TP
+.BI \-\-listen " HOST:PORT"
+Bind address (default 127.0.0.1:8080).
+.TP
+.BI \-\-allow\-prefix " URI"
+Only expose locations whose URI starts with \fIURI\fR. Repeatable.
+.TP
+.BI \-\-token\-file " FILE"
+Read the access token from \fIFILE\fR; create it (mode 0600) with a random
+token if it does not exist.
+.TP
+.B \-\-no\-auth
+Never require a token.
+.TP
+.BI \-\-threads " N"
+Request threads (default 8).
+.TP
+.BR \-v ", " \-\-verbose
+Log every request to stderr.
+.TP
+.BR \-V ", " \-\-version
+Print the version.
+.SH AUTHENTICATION
+A loopback bind needs no token. Any other bind requires one: a random token
+per start unless \fB\-\-token\-file\fR is given. The URL printed at startup
+carries it as \fB?token=\fR; clients may also send
+.B "Authorization: Bearer TOKEN"
+or the \fBthumtoo_token\fR cookie.
+.PP
+There is no TLS. To encrypt, tunnel the port (\fBssh \-L\fR, Tailscale,
+WireGuard) or put a reverse proxy in front.
+.SH SEE ALSO
+.BR thumtoo (7),
+.BR thumtoo-status (1)
+.PP
+docs/REMOTE.md in the thumtoo sources describes the routes.
