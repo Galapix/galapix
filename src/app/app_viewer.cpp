@@ -70,6 +70,25 @@ Key sdlkey2viewer(SDL_Keycode key)
   }
 }
 
+bool is_touch_mouse_event(SDL_Event const& event)
+{
+  switch (event.type)
+  {
+    case SDL_MOUSEMOTION:
+      return event.motion.which == SDL_TOUCH_MOUSEID;
+
+    case SDL_MOUSEBUTTONDOWN:
+    case SDL_MOUSEBUTTONUP:
+      return event.button.which == SDL_TOUCH_MOUSEID;
+
+    case SDL_MOUSEWHEEL:
+      return event.wheel.which == SDL_TOUCH_MOUSEID;
+
+    default:
+      return false;
+  }
+}
+
 float deadzone(float value, float threshold)
 {
   if (fabsf(value) < threshold)
@@ -158,6 +177,12 @@ AppViewer::process_event(SDL_Event const& event)
 
   // Feed ImGui; skip viewer handling when it wants capture.
   if (m_imgui.process_event(event)) {
+    return;
+  }
+
+  // SDL also emulates the mouse from touch. ImGui above uses that to
+  // make its buttons tappable, the viewer gets the fingers instead.
+  if (is_touch_mouse_event(event)) {
     return;
   }
 
@@ -291,6 +316,12 @@ AppViewer::process_event(SDL_Event const& event)
       m_window->handle_event(event.window);
       break;
 
+    case SDL_FINGERDOWN:
+    case SDL_FINGERMOTION:
+    case SDL_FINGERUP:
+      process_finger_event(event.type, event.tfinger);
+      break;
+
     case SDL_MOUSEMOTION:
       m_viewer.on_mouse_motion(Vector2i(event.motion.x,    event.motion.y),
                                Vector2i(event.motion.xrel, event.motion.yrel));
@@ -350,6 +381,45 @@ AppViewer::process_event(SDL_Event const& event)
 
     case SDL_KEYUP:
       m_viewer.on_key_up(sdlkey2viewer(event.key.keysym.sym));
+      break;
+
+    default:
+      break;
+  }
+}
+
+void
+AppViewer::process_finger_event(Uint32 type, SDL_TouchFingerEvent const& finger)
+{
+  // Touchpads (indirect devices) report positions relative to the pad,
+  // not the window; they keep driving the mouse pointer.
+  if (SDL_GetTouchDeviceType(finger.touchId) != SDL_TOUCH_DEVICE_DIRECT) {
+    return;
+  }
+
+  // Finger ids are only unique per touch device, a gesture across two
+  // touchscreens at once is not supported.
+  std::int64_t const id = finger.fingerId;
+
+  geom::isize const size = m_window->get_size();
+  Vector2f const pos(finger.x * static_cast<float>(size.width()),
+                     finger.y * static_cast<float>(size.height()));
+
+  switch (type)
+  {
+    case SDL_FINGERDOWN:
+      // Fingers that start on an ImGui window belong to it
+      if (!m_imgui.hit_test(pos.x(), pos.y())) {
+        m_viewer.on_finger_down(id, pos);
+      }
+      break;
+
+    case SDL_FINGERMOTION:
+      m_viewer.on_finger_motion(id, pos);
+      break;
+
+    case SDL_FINGERUP:
+      m_viewer.on_finger_up(id);
       break;
 
     default:

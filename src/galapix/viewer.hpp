@@ -28,6 +28,7 @@
 #include <surf/color.hpp>
 #include <wstdisplay/fwd.hpp>
 
+#include "galapix/touch_gesture.hpp"
 #include "galapix/viewer_state.hpp"
 #include "job/job_manager.hpp"
 #include "math/vector2f.hpp"
@@ -79,6 +80,13 @@ public:
   void on_mouse_motion(Vector2i const& pos, Vector2i const& rel);
   void on_mouse_button_down(Vector2i const& pos, MouseButton btn);
   void on_mouse_button_up(Vector2i const& pos, MouseButton btn);
+
+  /** Touchscreen: one finger pans, two pinch zoom and twist rotate.
+      Positions are in screen coordinates, like the mouse. */
+  void on_finger_down(std::int64_t id, Vector2f const& pos);
+  void on_finger_motion(std::int64_t id, Vector2f const& pos);
+  void on_finger_up(std::int64_t id);
+  bool touch_active() const { return m_touch.active(); }
 
   bool is_active() const;
 
@@ -186,6 +194,7 @@ private:
   ToolDrag m_key_zoom_out;
   ToolDrag m_key_view_rotate;
   bool m_trackball_mode;
+  TouchGesture m_touch;
 
   Vector2i m_mouse_pos;
 

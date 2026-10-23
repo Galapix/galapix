@@ -40,6 +40,12 @@ public:
   void move(Vector2f const& pos);
 
   void rotate(float r);
+
+  /** Touch gesture step: zoom by \a factor and rotate by \a degrees,
+      moving the content under screen position \a from to \a to. Unlike
+      screen2world() this honors the view rotation. */
+  void pinch(Vector2f const& from, Vector2f const& to, float factor, float degrees);
+
   void set_angle(float r);
   void set_offset(Vector2f const& o);
   void set_scale(float s);

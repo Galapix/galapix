@@ -4,6 +4,9 @@
   `cache4_tiles.sqlite3` and SQLite tile generation removed.
 * Resource DB (`cache4.sqlite3`) remains for `-p` until thumtoo query exists.
 * `--no-thumtoo` is no longer supported.
+* Touchscreen: one finger pans, two fingers pinch-zoom and twist-rotate
+  the view (rotation engages after a 10° twist). Touch no longer drives
+  the mouse tools; ImGui panels stay tappable.
 
 ## Unreleased
 

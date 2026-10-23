@@ -50,6 +50,11 @@ public:
   void end_frame();
 
   bool want_capture_mouse() const;
+
+  /** True if a window drawn last frame covers the window position
+      (x, y). Touch events need this: unlike the mouse they arrive
+      without hover and WantCaptureMouse lags a frame behind. */
+  bool hit_test(float x, float y) const;
   bool want_capture_keyboard() const;
 
   /** Queue a short-lived on-screen toast (also still printed to stdout by callers).

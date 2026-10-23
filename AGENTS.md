@@ -127,6 +127,13 @@ and layout use. Layouters are pure functions over `LayoutItem` (native size +
 `Transform`). New URLs go through `ImageOpener`. `test/workspace_test.cpp`
 covers the workspace without GL or thumtoo.
 
+Touch: `AppViewer::process_finger_event` feeds direct-touch `SDL_FINGER*`
+events to `Viewer::on_finger_*` → `TouchGesture` (pure, per-move deltas of
+centroid / spread / angle) → `ViewerState::pinch`, which keeps the content
+under the fingers including view rotation. SDL's touch-emulated mouse
+events (`SDL_TOUCH_MOUSEID`) only reach ImGui; fingers that land on an ImGui
+window (`ImguiOverlay::hit_test`) are not tracked. `test/touch_gesture_test.cpp`.
+
 Tools are data: `ToolKind` + one `ToolDrag` slot per mouse button and held
 key (`src/tools/tools.hpp`), run by plain functions; a tool set is three
 `ToolKind`s. Keyboard shortcuts live in one `KeyBinding` table

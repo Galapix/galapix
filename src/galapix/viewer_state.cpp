@@ -60,6 +60,23 @@ ViewerState::rotate(float r)
 }
 
 void
+ViewerState::pinch(Vector2f const& from, Vector2f const& to, float factor, float degrees)
+{
+  // screen = center + R(angle) * (offset + scale * world - center)
+  glm::vec2 const center(static_cast<float>(m_viewer.get_width())  / 2.0f,
+                         static_cast<float>(m_viewer.get_height()) / 2.0f);
+
+  glm::vec2 const world = (glm::rotate(from.as_vec() - center, glm::radians(-angle))
+                           + center - offset.as_vec()) / scale;
+
+  scale *= factor;
+  angle += degrees;
+
+  offset = Vector2f(glm::rotate(to.as_vec() - center, glm::radians(-angle))
+                    + center - scale * world);
+}
+
+void
 ViewerState::set_angle(float r)
 {
   angle = r;

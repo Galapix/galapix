@@ -29,6 +29,7 @@
 #  include <GL/gl.h>
 #endif
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <imgui_impl_opengl3.h>
 #include <imgui_impl_sdl2.h>
 #include <logmich/log.hpp>
@@ -314,6 +315,23 @@ ImguiOverlay::process_event(SDL_Event const& event)
   }
   if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
     return m_visible && io.WantTextInput;
+  }
+  return false;
+}
+
+bool
+ImguiOverlay::hit_test(float x, float y) const
+{
+  if (!m_initialized) {
+    return false;
+  }
+  ImGuiContext const& g = *ImGui::GetCurrentContext();
+  for (ImGuiWindow const* window : g.Windows) {
+    if (window->WasActive && !window->Hidden &&
+        !(window->Flags & ImGuiWindowFlags_NoMouseInputs) &&
+        window->Rect().Contains(ImVec2(x, y))) {
+      return true;
+    }
   }
   return false;
 }

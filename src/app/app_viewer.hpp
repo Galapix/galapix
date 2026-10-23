@@ -47,6 +47,7 @@ public:
 
 private:
   void process_event(SDL_Event const& event);
+  void process_finger_event(Uint32 type, SDL_TouchFingerEvent const& finger);
   void draw_frame();
 
   /** The keyboard shortcuts, also listed in the Help panel */

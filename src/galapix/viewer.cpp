@@ -88,6 +88,7 @@ Viewer::Viewer(System& system, Workspace* workspace_) :
   m_key_zoom_out{ToolKind::ZoomOut},
   m_key_view_rotate{ToolKind::ViewRotate},
   m_trackball_mode(false),
+  m_touch(),
   m_mouse_pos(),
   m_background_color(),
   m_background_colors(),
@@ -427,6 +428,26 @@ Viewer::on_mouse_button_up(Vector2i const& pos, MouseButton btn)
   if (index < m_buttons.size()) {
     tool_up(*this, m_buttons[index], pos);
   }
+}
+
+void
+Viewer::on_finger_down(std::int64_t id, Vector2f const& pos)
+{
+  m_touch.finger_down(id, pos);
+}
+
+void
+Viewer::on_finger_motion(std::int64_t id, Vector2f const& pos)
+{
+  if (std::optional<TouchDelta> const delta = m_touch.finger_motion(id, pos)) {
+    m_state.pinch(delta->from, delta->to, delta->zoom, delta->angle);
+  }
+}
+
+void
+Viewer::on_finger_up(std::int64_t id)
+{
+  m_touch.finger_up(id);
 }
 
 void
