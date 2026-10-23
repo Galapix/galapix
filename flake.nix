@@ -84,6 +84,8 @@
         djvulibre
         djvulibre.dev
         curl
+        nlohmann_json  # remote Client / thumtoo-serve JSON
+        httplib        # thumtoo-serve (header-only cpp-httplib)
         openssl        # libcrypto.pc
         dbus           # dbus-1.pc (XDG Thumbnailer1)
         # dbus-1.pc Requires.private: libsystemd — silence pkg-config spam

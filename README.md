@@ -28,6 +28,7 @@ cache.
 | Archives | Cached member lists for zip, tar, and similar containers (read-only) |
 | Tags and sets | Optional user data keyed by content hash (survives cache rebuilds) |
 | Directory snapshots | Optional cached folder listings for faster reopen (e.g. slow disks) |
+| Remote cache | `thumtoo-serve` (read-only HTTP) + `Client::open_remote` — [docs/REMOTE.md](docs/REMOTE.md) |
 | Purge helpers | `purge_uri` / `purge_path` drop size, pixels, tiles, and cached text layers |
 
 Optional backends (pkg-config): MuPDF, DjVu, libunarr, curl, **tesseract** (+ **leptonica** for `lept.pc`), **dbus** (+ **systemd** for `libsystemd.pc` on Nix). `lib.mkBuildInputs` lists the full set so configure does not spam missing `.pc` files.

@@ -102,6 +102,13 @@ class Store {
   /// probe benchmarks (`thumtoo-prepare --no-cache`) without Store I/O.
   static Store open_memory();
 
+  /// Read-only view of an existing cache: index.sqlite + bulk.sqlite under
+  /// cache_root, no user.sqlite. Never creates, migrates or deletes anything,
+  /// so it is safe next to a live writer (WAL). Throws when a file is missing
+  /// or a schema_version differs from this build (open the cache once with a
+  /// writer of this build to migrate). Any write call fails (SQLITE_READONLY).
+  static Store open_readonly(const std::filesystem::path& cache_root);
+
   [[nodiscard]] const std::filesystem::path& cache_root() const {
     return cache_root_;
   }
@@ -210,6 +217,15 @@ class Store {
   [[nodiscard]] std::vector<LocatorRow> list_locators(int limit = 100) const;
   [[nodiscard]] std::vector<LocatorRow> list_locators_by_uri_prefix(
       std::string_view uri_prefix, int limit = 100) const;
+  /// URIs of blob-bound locators starting with uri_prefix (empty = all), in
+  /// ascending byte order, strictly after `after` (empty = from the start).
+  /// Range scan on the uri index; page with after = last uri returned.
+  [[nodiscard]] std::vector<std::string> list_locator_uris(
+      std::string_view uri_prefix, std::string_view after, int limit) const;
+  /// Same, filtered by SQL LIKE on uri (% and _ wildcards, '\\' escapes).
+  [[nodiscard]] std::vector<std::string> list_locator_uris_like(
+      std::string_view uri_like_pattern, std::string_view after,
+      int limit) const;
   /// SQL LIKE on uri (caller supplies pattern; % and _ wildcards).
   [[nodiscard]] std::vector<LocatorRow> list_locators_like(
       std::string_view uri_like_pattern, int limit = 100) const;

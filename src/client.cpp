@@ -4,6 +4,9 @@
 #include "thumtoo/client.hpp"
 
 #include "thumtoo/activity.hpp"
+#include "thumtoo/cache_reader.hpp"
+#include "thumtoo/remote.hpp"
+#include "remote_cache.hpp"
 #include "thumtoo/text.hpp"
 #include "thumtoo/ocr.hpp"
 #include "thumtoo/build_stats.hpp"
@@ -103,62 +106,6 @@ void dbg(const char* fmt, ...) {
     std::fputc('\n', f);
     std::fflush(f);
   }
-}
-
-/** Parse composite content_id suffix after "sha256:" + 64 hex. */
-struct ContentIdParts {
-  std::optional<int> page_1based;
-  std::optional<std::string> epub_layout_key;  // format_epub_layout_params
-  std::optional<int> pdfimage_1based;
-  /// Region key for Page kind (PDF/DjVu: "N"; EPUB: "N|layout").
-  std::string page_region_key;
-};
-
-[[nodiscard]] bool parse_content_id_suffix(std::string_view rest_after_hex,
-                                           ContentIdParts* out) {
-  if (!out) return false;
-  *out = ContentIdParts{};
-  if (rest_after_hex.empty()) return true;
-  constexpr std::string_view kPage = ":page:";
-  constexpr std::string_view kPdfImage = ":pdfimage:";
-  constexpr std::string_view kEpub = ":epub:";
-  if (rest_after_hex.size() > kPage.size() &&
-      rest_after_hex.substr(0, kPage.size()) == kPage) {
-    const std::string_view after = rest_after_hex.substr(kPage.size());
-    std::size_t end = 0;
-    while (end < after.size() && after[end] >= '0' && after[end] <= '9') ++end;
-    if (end == 0) return false;
-    try {
-      out->page_1based = std::stoi(std::string(after.substr(0, end)));
-    } catch (...) {
-      return false;
-    }
-    if (*out->page_1based < 1) return false;
-    std::string_view tail = after.substr(end);
-    if (tail.size() >= kEpub.size() && tail.substr(0, kEpub.size()) == kEpub) {
-      out->epub_layout_key = std::string(tail.substr(kEpub.size()));
-      if (out->epub_layout_key->empty()) return false;
-      out->page_region_key =
-          epub_page_region_key(*out->page_1based, *out->epub_layout_key);
-    } else if (!tail.empty()) {
-      return false;  // unknown suffix after page number
-    } else {
-      out->page_region_key = std::to_string(*out->page_1based);
-    }
-    return true;
-  }
-  if (rest_after_hex.size() > kPdfImage.size() &&
-      rest_after_hex.substr(0, kPdfImage.size()) == kPdfImage) {
-    try {
-      out->pdfimage_1based =
-          std::stoi(std::string(rest_after_hex.substr(kPdfImage.size())));
-    } catch (...) {
-      return false;
-    }
-    if (*out->pdfimage_1based < 1) return false;
-    return true;
-  }
-  return false;
 }
 
 std::string format_from_member(std::string_view member) {
@@ -289,6 +236,25 @@ std::unique_ptr<Client> Client::open(const std::filesystem::path& cache_root,
       new Client(std::move(store), std::move(executor), worker_threads));
 }
 
+std::unique_ptr<Client> Client::open_remote(std::string_view url,
+                                            Executor executor,
+                                            unsigned worker_threads) {
+  // Handshake before any worker starts: a bad URL or token throws here.
+  auto remote = std::make_unique<RemoteCache>(url);
+  if (debug_enabled()) {
+    dbg("Client::open_remote %s", remote->base_url().c_str());
+  }
+  std::unique_ptr<Client> client(
+      new Client(nullptr, std::move(executor), worker_threads));
+  // No job can be queued yet, so workers observe remote_ via mu_ later.
+  client->remote_ = std::move(remote);
+  return client;
+}
+
+std::string Client::remote_url() const {
+  return remote_ ? remote_->base_url() : std::string();
+}
+
 std::unique_ptr<Client> Client::open_memory(Executor executor,
                                             unsigned worker_threads) {
   auto store = std::make_unique<Store>(Store::open_memory());
@@ -301,125 +267,22 @@ std::unique_ptr<Client> Client::open_memory(Executor executor,
 
 
 std::optional<ContentMeta> Client::meta_from_store(std::string_view uri) const {
+  if (remote_) {
+    auto info = remote_->cached(uri);
+    return info ? info->meta : std::nullopt;
+  }
   if (!store_) return std::nullopt;
-  auto loc = store_->find_locator(uri);
-  if (!loc || !loc->blob_id) return std::nullopt;
-
-  auto ref = store_->blob_ref_sha256(*loc->blob_id);
-  if (!ref || !ref->starts_with("blob:")) return std::nullopt;
-  // "blob:sha256:…" → legacy-style "sha256:…"
-  ContentMeta cm;
-  cm.content_id = ref->substr(5);
-
-  if (auto pdf = parse_pdf_uri(uri)) {
-    auto media =
-        store_->find_media_for_blob(*loc->blob_id, MediaKind::Document);
-    if (!media) return std::nullopt;
-    auto region = store_->find_region_by_key(
-        media->id, RegionKind::Page, std::to_string(pdf->page));
-    if (!region) return std::nullopt;
-    cm.content_id += ":page:" + std::to_string(pdf->page);
-    cm.format = "pdf";
-    cm.status = ContentStatus::Incomplete;
-    if (!store_->list_tile_scales(media->id, region->id).empty()) {
-      cm.status = ContentStatus::Ready;
-    }
-    // One size only: page document layout (region.width/height at probe).
-    // Never shared media dims; never invent size from tiles; never open source.
-    if (region->width && region->height && *region->width > 0
-        && *region->height > 0) {
-      cm.size = Size{*region->width, *region->height};
-    }
-    return cm;
-  }
-
-  if (auto pimg = parse_pdf_image_uri(uri)) {
-    auto media =
-        store_->find_media_for_blob(*loc->blob_id, MediaKind::Document);
-    if (!media) return std::nullopt;
-    const std::string key = std::to_string(pimg->image);
-    auto region =
-        store_->find_region_by_key(media->id, RegionKind::Fragment, key);
-    if (!region) return std::nullopt;
-    cm.content_id += ":pdfimage:" + key;
-    cm.format = "pdfimage";
-    cm.status = ContentStatus::Incomplete;
-    if (!store_->list_tile_scales(media->id, region->id).empty()) {
-      cm.status = ContentStatus::Ready;
-    }
-    // Region size first; media dims only as last Store fallback — no source open.
-    if (region->width && region->height && *region->width > 0
-        && *region->height > 0) {
-      cm.size = Size{*region->width, *region->height};
-    } else if (media->width && media->height) {
-      cm.size = Size{*media->width, *media->height};
-    }
-    return cm;
-  }
-
-  if (auto dj = parse_djvu_uri(uri)) {
-    auto media =
-        store_->find_media_for_blob(*loc->blob_id, MediaKind::Document);
-    if (!media) return std::nullopt;
-    auto region = store_->find_region_by_key(
-        media->id, RegionKind::Page, std::to_string(dj->page));
-    if (!region) return std::nullopt;
-    cm.content_id += ":page:" + std::to_string(dj->page);
-    cm.format = "djvu";
-    cm.status = ContentStatus::Incomplete;
-    if (!store_->list_tile_scales(media->id, region->id).empty()) {
-      cm.status = ContentStatus::Ready;
-    }
-    if (region->width && region->height && *region->width > 0
-        && *region->height > 0) {
-      cm.size = Size{*region->width, *region->height};
-    }
-    return cm;
-  }
-
-  if (auto ep = parse_epub_uri(uri)) {
-    auto media =
-        store_->find_media_for_blob(*loc->blob_id, MediaKind::Document);
-    if (!media) return std::nullopt;
-    const std::string rkey = epub_page_region_key(ep->page, ep->layout);
-    auto region = store_->find_region_by_key(
-        media->id, RegionKind::Page, rkey);
-    if (!region) return std::nullopt;
-    // Layout is part of tile identity (docs/EPUB.md): sha256:…:page:N:epub:…
-    cm.content_id += epub_content_id_page_suffix(ep->page, ep->layout);
-    cm.format = "epub";
-    cm.status = ContentStatus::Incomplete;
-    if (!store_->list_tile_scales(media->id, region->id).empty()) {
-      cm.status = ContentStatus::Ready;
-    }
-    if (region->width && region->height && *region->width > 0
-        && *region->height > 0) {
-      cm.size = Size{*region->width, *region->height};
-    }
-    return cm;
-  }
-
-  if (auto media =
-          store_->find_media_for_blob(*loc->blob_id, MediaKind::Image)) {
-    if (media->width && media->height) {
-      cm.size = Size{*media->width, *media->height};
-    }
-    cm.format = "image";
-    cm.status = ContentStatus::Incomplete;
-    if (auto full = store_->find_full_region(media->id)) {
-      if (!store_->list_tile_scales(media->id, full->id).empty()) {
-        cm.status = ContentStatus::Ready;
-      }
-    }
-    return cm;
-  }
-  return std::nullopt;
+  return CacheReader(*store_).meta(uri);
 }
 
 std::optional<Size> Client::get_size(std::string_view uri) const {
   // Size-only Store read. Must stay cache-only and cheap:
   // no list_tile_scales, no source open, no LQIP/EMB.
   // Hosts use this to hydrate process memos before Gallery size gates.
+  if (remote_) {
+    auto m = meta_from_store(uri);
+    return m ? m->size : std::nullopt;
+  }
   if (!store_ || uri.empty()) return std::nullopt;
   try {
     auto loc = store_->find_locator(uri);
@@ -586,7 +449,36 @@ Client::LocatorRow Client::locator_row_from_store(const Store::LocatorRow& sl) c
   return r;
 }
 
+Client::LocatorRow Client::locator_row_from_remote(const RemoteInfo& info) {
+  Client::LocatorRow r{};
+  r.uri = info.uri;
+  if (info.meta) r.content_id = info.meta->content_id;
+  r.outer_path = info.outer_path;
+  r.member_path = info.member_path;
+  r.size = info.file_size;
+  r.mtime_ns = info.mtime_ns;
+  return r;
+}
+
+std::vector<Client::LocatorRow> Client::list_remote_locators(
+    int filter, std::string_view value, int limit) const {
+  std::vector<Client::LocatorRow> out;
+  try {
+    for (const auto& info : remote_->list(
+             static_cast<RemoteCache::ListFilter>(filter), value, limit)) {
+      out.push_back(locator_row_from_remote(info));
+    }
+  } catch (const std::exception& ex) {
+    std::fprintf(stderr, "thumtoo: %s\n", ex.what());
+  }
+  return out;
+}
+
 std::vector<Client::LocatorRow> Client::list_locators(int limit) const {
+  if (remote_) {
+    return list_remote_locators(
+        static_cast<int>(RemoteCache::ListFilter::All), {}, limit);
+  }
   if (!store_) return {};
   std::vector<Client::LocatorRow> out;
   for (const auto& sl : store_->list_locators(limit)) {
@@ -596,6 +488,12 @@ std::vector<Client::LocatorRow> Client::list_locators(int limit) const {
 }
 
 std::optional<Client::LocatorRow> Client::find_locator(std::string_view uri) const {
+  if (remote_) {
+    auto info = remote_->cached(uri);
+    if (!info) info = remote_->fetch_info(std::string(uri));
+    if (!info) return std::nullopt;
+    return locator_row_from_remote(*info);
+  }
   if (!store_) return std::nullopt;
   auto sl = store_->find_locator(uri);
   if (!sl) return std::nullopt;
@@ -604,6 +502,10 @@ std::optional<Client::LocatorRow> Client::find_locator(std::string_view uri) con
 
 std::vector<Client::LocatorRow> Client::list_locators_by_uri_prefix(
     std::string_view uri_prefix, int limit) const {
+  if (remote_ && !uri_prefix.empty()) {
+    return list_remote_locators(
+        static_cast<int>(RemoteCache::ListFilter::Prefix), uri_prefix, limit);
+  }
   if (!store_ || uri_prefix.empty()) return {};
   std::vector<Client::LocatorRow> out;
   for (const auto& sl : store_->list_locators_by_uri_prefix(uri_prefix, limit)) {
@@ -614,6 +516,13 @@ std::vector<Client::LocatorRow> Client::list_locators_by_uri_prefix(
 
 std::vector<Client::LocatorRow> Client::list_locators_by_outer_path_prefix(
     std::string_view path_prefix, int limit) const {
+  if (remote_ && !path_prefix.empty()) {
+    // Paths are the server's: no local absolute()/stat. Every locator under
+    // a path has a file:// URI below file_uri_from_path(path).
+    return list_locators_by_uri_prefix(
+        file_uri_from_path(std::filesystem::path(std::string(path_prefix))),
+        limit);
+  }
   if (!store_ || path_prefix.empty()) return {};
   std::vector<Client::LocatorRow> out;
   for (const auto& sl :
@@ -634,6 +543,11 @@ std::vector<Client::LocatorRow> Client::list_locators_by_outer_path_prefix(
 
 std::vector<Client::LocatorRow> Client::list_locators_like(
     std::string_view uri_like_pattern, int limit) const {
+  if (remote_ && !uri_like_pattern.empty()) {
+    return list_remote_locators(
+        static_cast<int>(RemoteCache::ListFilter::Like), uri_like_pattern,
+        limit);
+  }
   if (!store_ || uri_like_pattern.empty()) return {};
   std::vector<Client::LocatorRow> out;
   for (const auto& sl : store_->list_locators_like(uri_like_pattern, limit)) {
@@ -944,48 +858,10 @@ std::optional<PixelLevel> Client::get_pixels_from_tiles(std::string_view uri,
 
 namespace {
 
-struct LqipKey {
-  std::int64_t blob_id = 0;
-  int page_1based = 0;  // 0 = whole blob
-};
+using LqipKey = CacheReader::LqipKey;
 
 std::optional<LqipKey> lqip_key_lookup(const Store& store, std::string_view uri) {
-  if (auto pdf = parse_pdf_uri(uri)) {
-    // Prefer page URI locator, else document file locator.
-    if (auto loc = store.find_locator(uri); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, pdf->page};
-    const auto fu = file_uri_from_path(pdf->pdf_path);
-    if (auto loc = store.find_locator(fu); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, pdf->page};
-    return std::nullopt;
-  }
-  if (auto pimg = parse_pdf_image_uri(uri)) {
-    if (auto loc = store.find_locator(uri); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, 0};
-    const auto fu = file_uri_from_path(pimg->pdf_path);
-    if (auto loc = store.find_locator(fu); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, 0};
-    return std::nullopt;
-  }
-  if (auto dj = parse_djvu_uri(uri)) {
-    if (auto loc = store.find_locator(uri); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, dj->page};
-    const auto fu = file_uri_from_path(dj->djvu_path);
-    if (auto loc = store.find_locator(fu); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, dj->page};
-    return std::nullopt;
-  }
-  if (auto ep = parse_epub_uri(uri)) {
-    if (auto loc = store.find_locator(uri); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, ep->page};
-    const auto fu = file_uri_from_path(ep->epub_path);
-    if (auto loc = store.find_locator(fu); loc && loc->blob_id)
-      return LqipKey{*loc->blob_id, ep->page};
-    return std::nullopt;
-  }
-  if (auto loc = store.find_locator(uri); loc && loc->blob_id)
-    return LqipKey{*loc->blob_id, 0};
-  return std::nullopt;
+  return CacheReader(store).lqip_key(uri);
 }
 
 std::optional<LqipKey> lqip_key_ensure(Store& store, std::string_view uri) {
@@ -1030,16 +906,12 @@ std::optional<LqipKey> lqip_key_ensure(Store& store, std::string_view uri) {
 
 std::optional<std::vector<std::uint8_t>> Client::get_lqip(
     std::string_view uri) const {
-  if (!store_ || uri.empty()) return std::nullopt;
-  auto key = lqip_key_lookup(*store_, uri);
-  if (!key) return std::nullopt;
-  // Embedded JPEG previews share blob_lqip storage under a distinct kind —
-  // never treat them as ThumbHash/Handsum LQIP.
-  if (auto kind = store_->get_blob_lqip_kind(key->blob_id, key->page_1based);
-      kind && *kind == kLqipKindEmbeddedJpeg) {
-    return std::nullopt;
+  if (remote_) {
+    auto info = remote_->cached(uri);
+    return info ? info->lqip : std::nullopt;
   }
-  return store_->get_blob_lqip(key->blob_id, key->page_1based);
+  if (!store_ || uri.empty()) return std::nullopt;
+  return CacheReader(*store_).lqip(uri);
 }
 
 std::optional<EmbeddedPreview> Client::get_embedded_preview(
@@ -1180,126 +1052,26 @@ bool Client::has_tile(std::string_view uri, int scale, int x, int y) const {
 
 std::optional<TileBlob> Client::get_tile(std::string_view uri, int scale, int x,
                                          int y) const {
-  auto sm = meta_from_store(uri);
-  if (!sm) return std::nullopt;
-  if (auto tgt = store_tile_target_for_content_id(sm->content_id)) {
-    auto bytes =
-        store_->get_tile_data(tgt->media_id, tgt->region_id, scale, x, y);
-    if (!bytes) return std::nullopt;
-    auto row =
-        store_->find_tile_meta(tgt->media_id, tgt->region_id, scale, x, y);
-    TileBlob t;
-    t.scale = scale;
-    t.x = x;
-    t.y = y;
-    if (row) {
-      t.width = row->width;
-      t.height = row->height;
-      if (row->codec_id == CodecId::Jxl) t.codec = "jxl";
-      else if (row->codec_id == CodecId::Png) t.codec = "png";
-      else t.codec = kDefaultTileCodec;
-    } else {
-      t.codec = kDefaultTileCodec;
-    }
-    // Do not reject on w/h vs expected_tile_cell_wh. JPEG DCT vs floor-half
-    // drift is a few pixels; paint stretches the full bitmap into the grid
-    // cell. Re-encode-on-mismatch caused miss loops and host Failed cells.
-    t.bytes = std::move(*bytes);
-    t.source = TileSource::Full;
-    debug_overlay_tile(t, uri);
-    return t;
-  }
-  return std::nullopt;
+  if (!store_) return std::nullopt;
+  auto t = CacheReader(*store_).tile(uri, scale, x, y);
+  if (t) debug_overlay_tile(*t, uri);
+  return t;
 }
 
 std::optional<Client::StoreTileTarget> Client::store_tile_target_for_content_id(
     std::string_view content_id) const {
   if (!store_ || content_id.empty()) return std::nullopt;
-
-  constexpr std::string_view kSha = "sha256:";
-  if (!content_id.starts_with(kSha) || content_id.size() < kSha.size() + 64) {
-    return std::nullopt;
-  }
-
-  const std::string_view rest(content_id.data() + kSha.size(),
-                              content_id.size() - kSha.size());
-  const std::string_view hex = rest.substr(0, 64);
-  for (char c : hex) {
-    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
-          (c >= 'A' && c <= 'F'))) {
-      return std::nullopt;
-    }
-  }
-
-  ContentIdParts parts;
-  if (rest.size() > 64) {
-    if (!parse_content_id_suffix(rest.substr(64), &parts)) {
-      return std::nullopt;
-    }
-  }
-
-  auto digest = Store::parse_sha256_digest(hex);
-  if (!digest || digest->size() != 32) return std::nullopt;
-
-  auto blob_id = store_->find_blob_by_hash(HashAlgoId::Sha256, *digest);
-  if (!blob_id) return std::nullopt;
-
-  if (parts.page_1based) {
-    auto media = store_->find_media_for_blob(*blob_id, MediaKind::Document);
-    if (!media) return std::nullopt;
-    auto region = store_->find_region_by_key(
-        media->id, RegionKind::Page, parts.page_region_key);
-    if (!region) return std::nullopt;
-    return StoreTileTarget{media->id, region->id};
-  }
-
-  if (parts.pdfimage_1based) {
-    auto media = store_->find_media_for_blob(*blob_id, MediaKind::Document);
-    if (!media) return std::nullopt;
-    auto region = store_->find_region_by_key(
-        media->id, RegionKind::Fragment, std::to_string(*parts.pdfimage_1based));
-    if (!region) return std::nullopt;
-    return StoreTileTarget{media->id, region->id};
-  }
-
-  auto media = store_->find_media_for_blob(*blob_id, MediaKind::Image);
-  if (!media) return std::nullopt;
-  auto full = store_->find_full_region(media->id);
-  if (!full) return std::nullopt;
-  return StoreTileTarget{media->id, full->id};
+  return CacheReader(*store_).tile_target(content_id);
 }
 
 std::optional<TileCoverage> Client::get_tile_coverage(
     std::string_view uri) const {
-  auto meta = meta_from_store(uri);
-  if (!meta) return std::nullopt;
-  TileCoverage cov;
-  if (meta->size) cov.size = *meta->size;
-  if (auto tgt = store_tile_target_for_content_id(meta->content_id)) {
-    auto scales = store_->list_tile_scales(tgt->media_id, tgt->region_id);
-    if (!scales.empty()) {
-      cov.min_scale = scales.front();
-      cov.max_scale = scales.back();
-      return cov;
-    }
+  if (remote_) {
+    auto info = remote_->cached(uri);
+    return info ? info->coverage : std::nullopt;
   }
-  // No tiles stored yet: theoretical coverage from native size alone.
-  if (!meta->size || meta->size->width <= 0 || meta->size->height <= 0) {
-    return std::nullopt;
-  }
-  cov.min_scale = 0;
-  int w = meta->size->width;
-  int h = meta->size->height;
-  int s = 0;
-  while (w > kTileSize || h > kTileSize) {
-    w = dim_at_tile_scale(w, 1);
-    h = dim_at_tile_scale(h, 1);
-    if (w < 1) w = 1;
-    if (h < 1) h = 1;
-    ++s;
-  }
-  cov.max_scale = s;
-  return cov;
+  if (!store_) return std::nullopt;
+  return CacheReader(*store_).tile_coverage(uri);
 }
 
 
@@ -1598,6 +1370,9 @@ std::size_t Client::cancel_cells_in_batch(
 
 TileResult Client::materialize_tile_result(const std::string& uri, int scale,
                                            int x, int y, bool skip_probe) {
+  if (remote_) {
+    return remote_->fetch_tile(uri, scale, x, y);
+  }
   const bool document = parse_pdf_uri(uri) || parse_djvu_uri(uri) ||
                         parse_epub_uri(uri);
   if (scale < 0 && !document) {
@@ -2262,7 +2037,7 @@ void Client::request_size(std::string uri, SizeCallback cb) {
 
   // Multipage PDF/MD/text: fill all missing page dims in one open so hosts do
   // not serial-ProbeSize the tail of a large document.
-  if (auto pdf = parse_pdf_uri(uri)) {
+  if (auto pdf = parse_pdf_uri(uri); pdf && !remote_) {
     (void)ensure_pdf_page_sizes(pdf->pdf_path, pdf->backend);
     if (reply_from_store(uri)) {
       return;
@@ -3274,7 +3049,8 @@ void Client::worker_main() {
       // members ≈ 15s settle). Interactive tiles run as single jobs so the
       // fixed worker pool processes them in parallel. ProbeSize / soft /
       // LQIP / FocusFull still batch (one extract pays for many members).
-      if (!single.uri.empty() &&
+      // Remote: nothing to extract locally, every job is one HTTP request.
+      if (!remote_ && !single.uri.empty() &&
           (single.kind == JobKind::ProbeSize ||
            single.kind == JobKind::EnsurePixels ||
            single.kind == JobKind::EnsureLqip ||
@@ -3859,6 +3635,7 @@ void Client::request_lqip(std::string uri) {
 }
 
 void Client::handle_ensure_lqip(Job& job) {
+  if (remote_) return;  // read-only: LQIP arrives with //info
   // Decode/Handsum only — must not run on the GUI thread.
   (void)ensure_lqip(job.uri);
 }
@@ -4474,6 +4251,10 @@ void Client::handle_probe_size(
     Job& job,
     const std::optional<std::vector<std::uint8_t>>& preextracted) {
   global_build_stats().probes_done.fetch_add(1, std::memory_order_relaxed);
+  if (remote_) {
+    handle_probe_size_remote(job);
+    return;
+  }
   handle_probe_size_store(job, preextracted);
 }
 
@@ -4519,6 +4300,17 @@ void Client::handle_ensure_pixels(
     dbg("EnsurePixels START uri=%s max_edge=%d frame=%d", job.uri.c_str(),
         job.max_edge, job.frame_idx);
   }
+  if (remote_) {
+    // Whole-image rasters are not served (tiles only); answer the miss.
+    if (job.pixels_cb) {
+      auto cb = std::move(job.pixels_cb);
+      executor_.post([cb = std::move(cb), uri = job.uri,
+                      edge = job.max_edge]() mutable {
+        cb(std::move(uri), edge, std::nullopt);
+      });
+    }
+    return;
+  }
   handle_ensure_pixels_store(job);
 }
 
@@ -4534,36 +4326,16 @@ void Client::put_tiles_to_store(const std::string& content_id,
                                    const std::vector<TileBlob>& tiles) {
   if (!store_ || tiles.empty() || content_id.empty()) return;
 
-  constexpr std::string_view kSha = "sha256:";
-  if (!content_id.starts_with(kSha) || content_id.size() < kSha.size() + 64) {
-    return;
-  }
+  // Composite ids without page/pdfimage mapping are not stored.
+  auto parsed = parse_content_id(content_id);
+  if (!parsed) return;
+  const ContentIdParts& parts = *parsed;
 
-  const std::string_view rest(content_id.data() + kSha.size(),
-                              content_id.size() - kSha.size());
-  const std::string_view hex = rest.substr(0, 64);
-  for (char c : hex) {
-    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') ||
-          (c >= 'A' && c <= 'F'))) {
-      return;
-    }
-  }
-
-  ContentIdParts parts;
-  if (rest.size() > 64) {
-    if (!parse_content_id_suffix(rest.substr(64), &parts)) {
-      return;  // composite ids without page/pdfimage mapping
-    }
-  }
-
-  auto digest = Store::parse_sha256_digest(hex);
-  if (!digest || digest->size() != 32) return;
-
-  auto blob_id = store_->find_blob_by_hash(HashAlgoId::Sha256, *digest);
+  auto blob_id = store_->find_blob_by_hash(HashAlgoId::Sha256, parts.sha256);
   if (!blob_id) {
     try {
       blob_id = store_->insert_blob({}, BlobStatus::Ok);
-      store_->put_hash(*blob_id, HashAlgoId::Sha256, *digest);
+      store_->put_hash(*blob_id, HashAlgoId::Sha256, parts.sha256);
     } catch (const std::exception& ex) {
       if (debug_enabled()) {
         dbg("put_tiles_to_store insert_blob: %s", ex.what());
@@ -4982,6 +4754,36 @@ void Client::handle_ensure_tiles_store(Job& job) {
   reply_pyramid_done(!tiles.empty());
 }
 
+void Client::handle_probe_size_remote(Job& job) {
+  SizeReply reply;
+  if (auto info = remote_->fetch_info(job.uri)) {
+    if (info->meta) reply.size = info->meta->size;
+    reply.lqip = std::move(info->lqip);
+  }
+  if (!job.size_cb) return;
+  executor_.post([cb = std::move(job.size_cb), uri = job.uri,
+                  reply = std::move(reply)]() mutable {
+    cb(std::move(uri), std::move(reply));
+  });
+}
+
+void Client::handle_ensure_tiles_remote(Job& job) {
+  // Legacy request_tile: one cell, nullopt on any miss. Pyramids cannot be
+  // built remotely (read-only server) and answer the miss.
+  std::optional<TileBlob> tile;
+  if (!job.tile_pyramid) {
+    TileResult r =
+        remote_->fetch_tile(job.uri, job.tile_scale, job.tile_x, job.tile_y);
+    if (r.status == TileStatus::Ok) tile = std::move(r.tile);
+  }
+  if (!job.tile_cb) return;
+  executor_.post([cb = std::move(job.tile_cb), uri = job.uri,
+                  scale = job.tile_scale, x = job.tile_x, y = job.tile_y,
+                  tile = std::move(tile)]() mutable {
+    cb(std::move(uri), scale, x, y, std::move(tile));
+  });
+}
+
 void Client::handle_ensure_tiles(
     Job& job, const std::optional<std::vector<std::uint8_t>>& preextracted) {
   (void)preextracted;
@@ -4990,6 +4792,10 @@ void Client::handle_ensure_tiles(
     dbg("EnsureTiles START uri=%s scale=%d cell=%d,%d pyramid=%d",
         job.uri.c_str(), job.tile_scale, job.tile_x, job.tile_y,
         job.tile_pyramid ? 1 : 0);
+  }
+  if (remote_) {
+    handle_ensure_tiles_remote(job);
+    return;
   }
   handle_ensure_tiles_store(job);
 }
