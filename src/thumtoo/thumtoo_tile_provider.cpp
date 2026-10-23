@@ -78,7 +78,13 @@ ThumtooTileProvider::create_from_size(std::shared_ptr<thumtoo::Client> client,
   // not request them.
   constexpr int kPdfMinLiveTileScaleVector = -8;  // 144 * 256 ≈ 36864 dpi
   int min_scale = 0;
-  if (thumtoo::is_pdf_page_uri(uri)) {
+  if (client->is_remote()) {
+    // thumtoo-serve only has stored cells (no live PDF renders, no source
+    // file here for a page profile): never ask finer than what is stored.
+    if (auto cov = client->get_tile_coverage(uri)) {
+      min_scale = std::min(cov->min_scale, max_scale);
+    }
+  } else if (thumtoo::is_pdf_page_uri(uri)) {
     min_scale = kPdfMinLiveTileScaleVector;
     if (auto parsed = thumtoo::parse_pdf_uri(uri)) {
       auto const profile = thumtoo::pdf_page_profile(parsed->pdf_path, parsed->page);

@@ -72,6 +72,30 @@ for local files and archive members (Galapix `//rar:` / `//zip:` → thumtoo
 With `--no-thumtoo` (or a build without `HAVE_THUMTOO`), behaviour is the
 historical SQLite tile path.
 
+### Remote cache (thumtoo-serve)
+
+Browse another machine's thumtoo cache read-only:
+
+```bash
+# on the machine with the cache (prints the URL incl. ?token=)
+thumtoo-serve --listen 0.0.0.0:8080
+# here
+galapix --thumtoo-cache 'http://HOST:8080/?token=…' -p '*'
+galapix --thumtoo-cache 'http://HOST:8080/?token=…' -p /home/ingo/Pictures
+galapix --thumtoo-cache 'http://HOST:8080/?token=…' file:///remote/path/a.jpg
+```
+
+A URL in `--thumtoo-cache` opens `thumtoo::Client::open_remote` instead of
+`Client::open`; everything else (ImageOpener, SizeProbeSession,
+ThumtooTileProvider, `thumtoo::lod::ClientTileBackend`) is unchanged.
+`-p` patterns list the server's locators (and fill the size/LQIP memo, so
+images get providers immediately). Only **stored** tiles exist remotely:
+`ThumtooTileProvider` caps `min_scale` at the stored coverage (no live PDF
+cells, no local page profile) and unstored cells answer `Unavailable`.
+Positional local paths and directory expansion still use the local
+filesystem, so remote content is opened via `-p` or `file://` URIs of the
+server. Protocol and auth: thumtoo `docs/REMOTE.md`.
+
 ## Status
 
 - [x] `ThumtooTileProvider` + URI conversion

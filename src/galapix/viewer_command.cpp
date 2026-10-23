@@ -40,6 +40,7 @@
 #  include <thumtoo/client.hpp>
 #  include <thumtoo/image.hpp>
 #  include <thumtoo/pdf.hpp>
+#  include <thumtoo/remote.hpp>
 #  include <thumtoo/djvu.hpp>
 #  include <thumtoo/expand.hpp>
 #  include <cstdlib>
@@ -139,7 +140,14 @@ ViewerCommand::ViewerCommand(System& system, Options const& opts) :
 #ifdef HAVE_THUMTOO
   // HAVE_THUMTOO builds always use thumtoo for file tiles (no cache4_tiles).
   thumtoo::image_library_init();
-  {
+  if (thumtoo::is_remote_cache_url(m_opts.thumtoo_cache)) {
+    // thumtoo-serve on another machine: same Client API, read-only, stored
+    // tiles only. Throws when unreachable or the token is wrong.
+    m_thumtoo = thumtoo::Client::open_remote(
+      m_opts.thumtoo_cache, ThumtooCallbackQueue::instance().make_executor());
+    std::cout << "Using thumtoo server: " << m_thumtoo->remote_url()
+              << " (read-only; browse with -p PATTERN)" << std::endl;
+  } else {
     std::filesystem::path cache = m_opts.thumtoo_cache.empty()
                                     ? default_thumtoo_cache()
                                     : std::filesystem::path(m_opts.thumtoo_cache);
